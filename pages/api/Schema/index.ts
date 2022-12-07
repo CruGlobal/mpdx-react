@@ -9,6 +9,8 @@ import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
 import TaskAnalyticsTypeDefs from './TaskAnalytics/taskAnalytics.graphql';
 import FourteenMonthReportTypeDefs from './reports/fourteenMonth/fourteenMonth.graphql';
 import { FourteenMonthReportResolvers } from './reports/fourteenMonth/resolvers';
+import { PartnerGivingAnalysisReportResolvers } from './reports/partnerGivingAnalysis/resolvers';
+import PartnerGivingAnalysisTypeDefs from './reports/partnerGivingAnalysis/partnerGivingAnalysis.graphql';
 import ExpectedMonthlyTotalReportTypeDefs from './reports/expectedMonthlyTotal/expectedMonthlyTotal.graphql';
 import { ExpectedMonthlyTotalReportResolvers } from './reports/expectedMonthlyTotal/resolvers';
 import DesignationAccountsTypeDefs from './reports/designationAccounts/designationAccounts.graphql';
@@ -37,6 +39,10 @@ import ReportsPledgeHistoriesTyeDefs from './reports/pledgeHistories/pledgeHisto
 import { ReportsPledgeHistoriesResolvers } from './reports/pledgeHistories/resolvers';
 import DesginationDisplayNamesTypeDefs from './donations/getDesignationDisplayNames.graphql';
 import { DesginationDisplayNamesResolvers } from './donations/resolvers';
+import TaskLocationTypeDefs from './Tasks/TaskLocation/taskLocation.graphql';
+import { TaskLocationResolvers } from './Tasks/TaskLocation/resolvers';
+import UpdateTaskLocationTypeDefs from './Tasks/TaskLocation/Update/updateTaskLocation.graphql';
+import { UpdateTaskLocationResolvers } from './Tasks/TaskLocation/Update/resolvers';
 
 const schema = buildSubgraphSchema([
   {
@@ -75,6 +81,10 @@ const schema = buildSubgraphSchema([
     resolvers: FourteenMonthReportResolvers,
   },
   {
+    typeDefs: PartnerGivingAnalysisTypeDefs,
+    resolvers: PartnerGivingAnalysisReportResolvers,
+  },
+  {
     typeDefs: ExpectedMonthlyTotalReportTypeDefs,
     resolvers: ExpectedMonthlyTotalReportResolvers,
   },
@@ -105,6 +115,14 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: DesginationDisplayNamesTypeDefs,
     resolvers: DesginationDisplayNamesResolvers,
+  },
+  {
+    typeDefs: TaskLocationTypeDefs,
+    resolvers: TaskLocationResolvers,
+  },
+  {
+    typeDefs: UpdateTaskLocationTypeDefs,
+    resolvers: UpdateTaskLocationResolvers,
   },
 ]);
 

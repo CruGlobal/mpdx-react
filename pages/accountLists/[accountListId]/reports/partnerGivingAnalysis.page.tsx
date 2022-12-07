@@ -9,7 +9,9 @@ import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
+import { ContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
+import { useContactFiltersQuery } from '../contacts/Contacts.generated';
 
 const PartnerGivingAnalysisReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -24,6 +26,12 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     setNavListOpen(!isNavListOpen);
   };
 
+  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>({});
+  const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
+    variables: { accountListId: accountListId ?? '' },
+    skip: !accountListId,
+  });
+
   return (
     <>
       <Head>
@@ -34,13 +42,19 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
       {accountListId ? (
         <PartnerGivingAnalysisReportPageWrapper>
           <SidePanelsLayout
-            isScrollBox={false}
+            isScrollBox={true}
             leftPanel={
-              <NavReportsList
-                isOpen={isNavListOpen}
-                selectedId="designationAccounts"
-                onClose={handleNavListToggle}
-              />
+              isNavListOpen && filtersLoading ? (
+                <Loading loading />
+              ) : (
+                <FilterPanel
+                  filters={filterData?.accountList.contactFilterGroups ?? []}
+                  savedFilters={[]}
+                  selectedFilters={activeFilters}
+                  onClose={() => setNavListOpen(false)}
+                  onSelectedFiltersChanged={setActiveFilters}
+                />
+              )
             }
             leftOpen={isNavListOpen}
             leftWidth="290px"
@@ -50,6 +64,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Partner Giving Analysis Report')}
+                contactFilters={activeFilters}
               />
             }
           />

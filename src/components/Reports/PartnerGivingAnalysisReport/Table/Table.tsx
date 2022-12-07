@@ -1,10 +1,11 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
 import {
   Checkbox,
   Table,
   TableBody,
-  TableCell,
+  TableCell as TableCellMui,
   TableContainer,
   TableRow,
 } from '@mui/material';
@@ -37,6 +38,20 @@ const StickyTable = styled(Table)(({}) => ({
   height: 'calc(100vh - 96px)',
 }));
 
+const TableCell = styled(TableCellMui)({
+  fontSize: '1.15em',
+});
+
+function formatCurrency(amount: number, currency: string): string {
+  // Force to 2 decimal places and add commas between thousands
+  return (
+    Intl.NumberFormat([], {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount) + ` ${currency}`
+  );
+}
+
 export const PartnerGivingAnalysisReportTable: FC<
   PartnerGivingAnalysisReportTableProps
 > = ({
@@ -60,7 +75,7 @@ export const PartnerGivingAnalysisReportTable: FC<
       <StickyTable
         stickyHeader={true}
         aria-label="partner giving analysis report table"
-        data-testid="PartnerGivingAnalysis"
+        data-testid="PartnerGivingAnalysisReport"
       >
         <TableHead
           items={[
@@ -69,27 +84,27 @@ export const PartnerGivingAnalysisReportTable: FC<
               label: t('Name'),
             },
             {
-              id: 'giftTotal',
+              id: 'donationPeriodSum',
               label: t('Gift Total'),
             },
             {
-              id: 'giftCount',
+              id: 'donationPeriodCount',
               label: t('Gift Count'),
             },
             {
-              id: 'giftAverage',
+              id: 'donationPeriodAverage',
               label: t('Gift Average'),
             },
             {
-              id: 'lastGiftAmount',
+              id: 'lastDonationAmount',
               label: t('Last Gift Amount'),
             },
             {
-              id: 'lastGiftDate',
+              id: 'lastDonationDate',
               label: t('Last Gift Date'),
             },
             {
-              id: 'lifeTimeTotal',
+              id: 'totalDonations',
               label: t('Lifetime Total'),
             },
           ]}
@@ -118,12 +133,39 @@ export const PartnerGivingAnalysisReportTable: FC<
                   />
                 </TableCell>
                 <TableCell>{contact.name}</TableCell>
-                <TableCell align="center">{contact.giftTotal}</TableCell>
-                <TableCell align="center">{contact.giftCount}</TableCell>
-                <TableCell align="center">{contact.giftAverage}</TableCell>
-                <TableCell align="center">{contact.lastGiftAmount}</TableCell>
-                <TableCell align="center">{contact.lastGiftDate}</TableCell>
-                <TableCell align="center">{contact.lifeTimeTotal}</TableCell>
+                <TableCell align="center">
+                  {formatCurrency(
+                    contact.donationPeriodSum,
+                    contact.pledgeCurrency,
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {contact.donationPeriodCount}
+                </TableCell>
+                <TableCell align="center">
+                  {formatCurrency(
+                    contact.donationPeriodAverage,
+                    contact.pledgeCurrency,
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {formatCurrency(
+                    contact.lastDonationAmount,
+                    contact.lastDonationCurrency,
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {DateTime.fromFormat(
+                    contact.lastDonationDate,
+                    'yyyy-MM-dd',
+                  ).toLocaleString(DateTime.DATE_SHORT)}
+                </TableCell>
+                <TableCell align="center">
+                  {formatCurrency(
+                    contact.totalDonations,
+                    contact.pledgeCurrency,
+                  )}
+                </TableCell>
               </TableRow>
             );
           })}

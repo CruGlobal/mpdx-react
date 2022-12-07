@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   BoxProps,
   Button,
@@ -13,9 +16,8 @@ import {
 } from '@mui/material';
 import { useTheme, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import Close from '@mui/icons-material/Close';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { filter } from 'lodash';
 import {
   ContactFilterNewsletterEnum,
@@ -77,6 +79,17 @@ const LinkButton = styled(Button)(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
+const FlatAccordionWrapper = styled(Box)(({ theme }) => ({
+  '& .MuiPaper-elevation1': {
+    boxShadow: 'none',
+    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+  },
+  '& .MuiAccordionDetails-root': {
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+}));
+
 interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
   savedFilters: UserOptionFragment[];
@@ -98,8 +111,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const [selectedGroup, setSelectedGroup] = useState<FilterGroup>();
-  const [savedFilterOpen, setSavedFilterOpen] = useState(false);
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
@@ -164,9 +175,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           }, {});
         // Set the selected filter with our saved filter data
         onSelectedFiltersChanged(newFilter);
-
-        // close the saved filter panel
-        setSavedFilterOpen(false);
         return;
       }
       // Map through keys to convert key to camel from snake
@@ -207,7 +215,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'reversePledgeAmount':
               case 'reversePledgeCurrency':
               case 'reversePledgeFrequency':
-              case 'reversePrimaryAddress':
               case 'reverseReferrer':
               case 'reverseRegion':
               case 'reverseRelatedTaskAction':
@@ -404,9 +411,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
       // Set the selected filter with our saved filter data
       onSelectedFiltersChanged(newFilter);
-
-      // close the saved filter panel
-      setSavedFilterOpen(false);
     }
   };
 
@@ -418,13 +422,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   return (
     <Box {...boxProps}>
       <div style={{ overflow: 'hidden' }}>
-        <Slide
-          in={!selectedGroup && !savedFilterOpen}
-          direction="right"
-          appear={false}
-          mountOnEnter
-          unmountOnExit
-        >
+        <Slide in direction="right" appear={false} mountOnEnter unmountOnExit>
           <div>
             <FilterHeader>
               <Box
@@ -465,7 +463,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 onSelectedFiltersChanged={onSelectedFiltersChanged}
               />
             )}
-            <FilterList dense>
+            <FilterList dense sx={{ paddingY: 0 }}>
               {filters?.length === 0 ? (
                 <ListItem data-testid="NoFiltersState">
                   <ListItemText
@@ -476,15 +474,40 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               ) : (
                 <>
                   {savedFilters.length > 0 && (
-                    <Collapse key={'savedFilters'} in={true}>
-                      <ListItem button onClick={() => setSavedFilterOpen(true)}>
-                        <ListItemText
-                          primary={t('Saved Filters')}
-                          primaryTypographyProps={{ variant: 'subtitle1' }}
-                        />
-                        <ArrowForwardIos fontSize="small" color="disabled" />
-                      </ListItem>
-                    </Collapse>
+                    <FlatAccordionWrapper>
+                      <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMore />}>
+                          <Typography>{t('Saved Filters')}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <FilterList dense sx={{ paddingY: 0 }}>
+                            {savedFilters.map((filter) => {
+                              const filterName = filter?.key
+                                ?.replace(
+                                  /^(graphql_)?saved_(contacts|tasks|)_filter_/,
+                                  '',
+                                )
+                                .replaceAll('_', ' ');
+
+                              return (
+                                <ListItem
+                                  key={filter.id}
+                                  button
+                                  onClick={() => setSelectedSavedFilter(filter)}
+                                >
+                                  <ListItemText
+                                    primary={filterName}
+                                    primaryTypographyProps={{
+                                      variant: 'subtitle1',
+                                    }}
+                                  />
+                                </ListItem>
+                              );
+                            })}
+                          </FilterList>
+                        </AccordionDetails>
+                      </Accordion>
+                    </FlatAccordionWrapper>
                   )}
 
                   {filters
@@ -497,23 +520,38 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                           in={showAll || isGroupVisible(group)}
                           data-testid="FilterGroup"
                         >
-                          <ListItem
-                            button
-                            onClick={() => setSelectedGroup(group)}
-                          >
-                            <ListItemText
-                              primary={`${group.name} ${
-                                selectedOptions.length > 0
-                                  ? `(${selectedOptions.length})`
-                                  : ''
-                              }`}
-                              primaryTypographyProps={{ variant: 'subtitle1' }}
-                            />
-                            <ArrowForwardIos
-                              fontSize="small"
-                              color="disabled"
-                            />
-                          </ListItem>
+                          <FlatAccordionWrapper>
+                            <Accordion>
+                              <AccordionSummary expandIcon={<ExpandMore />}>
+                                <Typography>
+                                  {group.name}
+                                  {selectedOptions.length > 0
+                                    ? ` (${selectedOptions.length})`
+                                    : ''}
+                                </Typography>
+                              </AccordionSummary>
+                              <AccordionDetails>
+                                <FilterList dense>
+                                  {group.filters.map((filter) => {
+                                    const filterKey = snakeToCamel(
+                                      filter.filterKey,
+                                    ) as FilterKey;
+
+                                    return (
+                                      <FilterListItem
+                                        key={filterKey}
+                                        filter={filter}
+                                        value={selectedFilters[filterKey]}
+                                        onUpdate={(value) =>
+                                          updateSelectedFilter(filterKey, value)
+                                        }
+                                      />
+                                    );
+                                  })}
+                                </FilterList>
+                              </AccordionDetails>
+                            </Accordion>
+                          </FlatAccordionWrapper>
                         </Collapse>
                       );
                     })}
@@ -525,92 +563,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   ) : null}
                 </>
               )}
-            </FilterList>
-          </div>
-        </Slide>
-        <Slide in={savedFilterOpen} direction="left" mountOnEnter unmountOnExit>
-          <div>
-            <FilterHeader>
-              <IconButton
-                data-testid="CloseFilterGroupButton"
-                size="small"
-                edge="start"
-                onClick={() => setSavedFilterOpen(false)}
-                style={{ verticalAlign: 'middle' }}
-              >
-                <ArrowBackIos fontSize="small" />
-              </IconButton>
-              <Typography
-                variant="h6"
-                component="span"
-                style={{ verticalAlign: 'middle' }}
-              >
-                {t('Saved Filters')}
-              </Typography>
-            </FilterHeader>
-            <FilterList dense>
-              {savedFilters.map((filter) => {
-                const filterName = (
-                  filter.key?.includes('graphql_')
-                    ? filter.key.includes('graphql_saved_contacts_filter_')
-                      ? filter.key?.replace(
-                          'graphql_saved_contacts_filter_',
-                          '',
-                        )
-                      : filter.key?.replace('graphql_saved_tasks_filter_', '')
-                    : filter.key?.includes('saved_contacts_filter_')
-                    ? filter.key?.replace('saved_contacts_filter_', '')
-                    : filter.key?.replace('saved_tasks_filter_', '')
-                )?.replaceAll('_', ' ');
-
-                return (
-                  <ListItem
-                    key={filter.id}
-                    button
-                    onClick={() => setSelectedSavedFilter(filter)}
-                  >
-                    <ListItemText
-                      primary={filterName}
-                      primaryTypographyProps={{ variant: 'subtitle1' }}
-                    />
-                  </ListItem>
-                );
-              })}
-            </FilterList>
-          </div>
-        </Slide>
-        <Slide in={!!selectedGroup} direction="left" mountOnEnter unmountOnExit>
-          <div>
-            <FilterHeader>
-              <IconButton
-                data-testid="CloseFilterGroupButton"
-                size="small"
-                edge="start"
-                onClick={() => setSelectedGroup(undefined)}
-              >
-                <ArrowBackIos fontSize="small" />
-              </IconButton>
-              <Typography
-                variant="h6"
-                component="span"
-                style={{ verticalAlign: 'middle' }}
-              >
-                {selectedGroup?.name}
-              </Typography>
-            </FilterHeader>
-            <FilterList dense>
-              {selectedGroup?.filters?.map((filter) => {
-                const filterKey = snakeToCamel(filter.filterKey) as FilterKey;
-
-                return (
-                  <FilterListItem
-                    key={filterKey}
-                    filter={filter}
-                    value={selectedFilters[filterKey]}
-                    onUpdate={(value) => updateSelectedFilter(filterKey, value)}
-                  />
-                );
-              })}
             </FilterList>
           </div>
         </Slide>

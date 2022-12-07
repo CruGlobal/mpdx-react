@@ -6765,6 +6765,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@types/luxon@npm:3.1.0"
+  checksum: 04768029342ad76fc2a9339436c143ea64797b35cf9b03ddded787c13eae30f0ca1246e51c2c5365ed912f98068e13a967a3931b137eb4585248a0ad7ec3fa86
+  languageName: node
+  linkType: hard
+
 "@types/mdast@npm:^3.0.0":
   version: 3.0.10
   resolution: "@types/mdast@npm:3.0.10"
@@ -18128,6 +18135,7 @@ __metadata:
     "@testing-library/user-event": ^13.5.0
     "@types/google.maps": ^3.50.2
     "@types/jest": ^29.0.3
+    "@types/luxon": ^3.1.0
     "@types/node": ^18.7.18
     "@types/react": ^18.0.21
     "@types/testing-library__jest-dom": ^5.14.5
@@ -18203,6 +18211,7 @@ __metadata:
     tss-react: ^4.1.3
     typescript: ^4.8.3
     url-loader: ^4.1.1
+    use-debounce: ^8.0.4
     uuid: ^9.0.0
     yup: ^0.32.11
   languageName: unknown
@@ -24487,6 +24496,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 7913df383a5a6fcb399212eedefaac2e0c6f843555202d4e3010bac3848afe38ecaa3d0d6500ad1d936fbeffd637e6c517e68edb024af5e6beca7f27f3ce7b21
+  languageName: node
+  linkType: hard
+
+"use-debounce@npm:^8.0.4":
+  version: 8.0.4
+  resolution: "use-debounce@npm:8.0.4"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 0f8b9e571f68a4694033ec00690bf73d781ac890140ae9ed4b330f71f7adb3f7d7df5cdaa32923c4d03fdc9de8a11be0f84301175ae4f66208af52ad03c55504
   languageName: node
   linkType: hard
 
