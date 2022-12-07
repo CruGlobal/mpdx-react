@@ -41,6 +41,8 @@ import TaskLocationTypeDefs from './Tasks/TaskLocation/taskLocation.graphql';
 import { TaskLocationResolvers } from './Tasks/TaskLocation/resolvers';
 import UpdateTaskLocationTypeDefs from './Tasks/TaskLocation/Update/updateTaskLocation.graphql';
 import { UpdateTaskLocationResolvers } from './Tasks/TaskLocation/Update/resolvers';
+import DestroyDonorAccountTypeDefs from './Contacts/DonorAccounts/Destroy/destroyDonorAccount.graphql';
+import { DestroyDonorAccountResolvers } from './Contacts/DonorAccounts/Destroy//resolvers';
 
 const schema = buildSubgraphSchema([
   {
@@ -117,6 +119,10 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: UpdateTaskLocationTypeDefs,
     resolvers: UpdateTaskLocationResolvers,
+  },
+  {
+    typeDefs: DestroyDonorAccountTypeDefs,
+    resolvers: DestroyDonorAccountResolvers,
   },
 ]);
 

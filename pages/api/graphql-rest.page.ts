@@ -1,4 +1,5 @@
 import {
+  ContactDonorAccountType,
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
@@ -66,6 +67,10 @@ import { PageConfig, NextApiRequest } from 'next';
 import { ApolloServer } from 'apollo-server-micro';
 import { getLocationForTask } from './Schema/Tasks/TaskLocation/datahandler';
 import { UpdateTaskLocation } from './Schema/Tasks/TaskLocation/Update/datahandler';
+import {
+  DestroyDonorAccount,
+  DestroyDonorAccountResponse,
+} from './Schema/Contacts/DonorAccounts/Destroy/datahander';
 
 function camelToSnake(str: string): string {
   return str.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
@@ -624,6 +629,43 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateTaskLocation(data);
+  }
+
+  async destroyDonorAccount(
+    contactId: string,
+    donorAccountId: string,
+    donorAccounts: ContactDonorAccountType[],
+  ) {
+    const { data }: { data: DestroyDonorAccountResponse } = await this.put(
+      `contacts/${contactId}`,
+      {
+        data: {
+          id: contactId,
+          type: 'contacts',
+          attributes: {
+            overwrite: true,
+          },
+          relationships: {
+            donor_accounts: {
+              data: donorAccounts,
+            },
+          },
+        },
+        included: donorAccounts.map((donorAccount) => {
+          const donorAccountData: {
+            id: string;
+            attributes?: { _destroy: string };
+          } = { id: donorAccount.id };
+          if (donorAccountId === donorAccount.id) {
+            donorAccountData.attributes = {
+              _destroy: '1',
+            };
+          }
+          return donorAccountData;
+        }),
+      },
+    );
+    return DestroyDonorAccount(data);
   }
 }
 

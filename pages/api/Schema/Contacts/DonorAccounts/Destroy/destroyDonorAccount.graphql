@@ -1,0 +1,20 @@
+extend type Mutation {
+  destroyDonorAccount(
+    input: ContactDestroyDonorAccountInput!
+  ): ContactDestroyDonorAccountPayload
+}
+
+input ContactDestroyDonorAccountInput {
+  contactId: ID!
+  donorAccountId: ID!
+  donorAccounts: [ContactDonorAccountType]!
+}
+
+input ContactDonorAccountType {
+  id: ID!
+  type: String!
+}
+
+type ContactDestroyDonorAccountPayload {
+  id: ID!
+}
