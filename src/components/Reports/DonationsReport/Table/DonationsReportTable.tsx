@@ -65,7 +65,7 @@ interface Donation {
   foreignCurrency: string;
   convertedAmount: number;
   foreignAmount: number;
-  designation: string;
+  designation: string | undefined | null;
   method: string | null;
   id: string;
 }
@@ -91,8 +91,7 @@ export const DonationsReportTable: React.FC<Props> = ({
     });
 
   const nodes = data?.donations.nodes || [];
-
-  console.log(data);
+  const designationNames = data?.getDesignationDisplayNames || [];
 
   const accountCurrency = accountListData?.accountList.currency || 'USD';
 
@@ -105,7 +104,9 @@ export const DonationsReportTable: React.FC<Props> = ({
       foreignCurrency: data.amount.currency,
       convertedAmount: data.amount.convertedAmount,
       foreignAmount: data.amount.amount,
-      designation: `${data.designationAccount.name} (${data.designationAccount.accountNumber})`,
+      designation: designationNames.find(
+        (designation) => designation?.id === data.id,
+      )?.displayName,
       method: data.paymentMethod || null,
       id: data.id,
     };
