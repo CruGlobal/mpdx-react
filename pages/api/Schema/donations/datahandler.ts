@@ -1,22 +1,32 @@
 import { DesignationWithDisplayName } from '../../graphql-rest.page.generated';
 
-export interface DonationReponse {
+export interface DonationReponseData {
   id: string;
   relationships: {
     designation_account: {
       data: {
         id: string;
-        display_name: string;
       };
     };
   };
 }
 
-export const getDesignationDisplayNames = (
-  data: DonationReponse,
-): DesignationWithDisplayName => {
-  return {
-    id: data.id,
-    displayName: data.relationships.designation_account.data.display_name,
+export interface DonationReponseIncluded {
+  id: string;
+  attributes: {
+    display_name: string;
   };
+}
+
+export const getDesignationDisplayNames = (
+  data: DonationReponseData[],
+  included: DonationReponseIncluded[],
+): DesignationWithDisplayName[] => {
+  return data.map((donation) => ({
+    id: donation.id,
+    displayName: included.find(
+      (designation) =>
+        donation.relationships.designation_account.data.id === designation.id,
+    )?.attributes.display_name,
+  }));
 };

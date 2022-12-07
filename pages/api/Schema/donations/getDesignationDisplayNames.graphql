@@ -3,7 +3,7 @@ extend type Query {
     accountListId: ID!
     startDate: ISO8601Date
     endDate: ISO8601Date
-  ): DesignationWithDisplayName
+  ): [DesignationWithDisplayName]
 }
 
 type DesignationWithDisplayName {
