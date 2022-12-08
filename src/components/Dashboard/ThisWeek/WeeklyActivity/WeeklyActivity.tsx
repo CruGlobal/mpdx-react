@@ -106,7 +106,8 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     });
   }, [interval]);
 
-  const [openWeeklyReportModal, setOpenWeeklyReportModal] = useState(false);
+  const [openWeeklyReportModal, setOpenWeeklyReportModal] =
+    useState<boolean>(false);
 
   const onWeeklyReportOpen = () => {
     setOpenWeeklyReportModal(true);
