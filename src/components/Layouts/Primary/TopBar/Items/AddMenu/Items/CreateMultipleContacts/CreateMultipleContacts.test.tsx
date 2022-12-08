@@ -89,18 +89,9 @@ describe('CreateMultipleContacts', () => {
         </ThemeProvider>,
       );
 
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'First' })[0],
-        first,
-      );
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'Last' })[0],
-        last,
-      );
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'Spouse' })[0],
-        spouse,
-      );
+      userEvent.type(getAllByRole('textbox', { name: 'First' })[0], first);
+      userEvent.type(getAllByRole('textbox', { name: 'Last' })[0], last);
+      userEvent.type(getAllByRole('textbox', { name: 'Spouse' })[0], spouse);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
@@ -110,7 +101,7 @@ describe('CreateMultipleContacts', () => {
       expect(operation.variables.attributes.name).toEqual(
         `${last}, ${first} and ${spouse}`,
       );
-    });
+    }, 10000);
 
     it('creates multiple contacts', async () => {
       const { getByText, getAllByRole } = render(
@@ -128,40 +119,16 @@ describe('CreateMultipleContacts', () => {
         </ThemeProvider>,
       );
 
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'First' })[0],
-        first,
-      );
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'First' })[1],
-        first2,
-      );
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'First' })[2],
-        first3,
-      );
+      userEvent.type(getAllByRole('textbox', { name: 'First' })[0], first);
+      userEvent.type(getAllByRole('textbox', { name: 'First' })[1], first2);
+      userEvent.type(getAllByRole('textbox', { name: 'First' })[2], first3);
 
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'Last' })[0],
-        last,
-      );
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'Last' })[1],
-        last2,
-      );
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'Last' })[2],
-        last3,
-      );
+      userEvent.type(getAllByRole('textbox', { name: 'Last' })[0], last);
+      userEvent.type(getAllByRole('textbox', { name: 'Last' })[1], last2);
+      userEvent.type(getAllByRole('textbox', { name: 'Last' })[2], last3);
 
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'Spouse' })[0],
-        spouse,
-      );
-      userEvent.type(
-        getAllByRole('textbox', { hidden: true, name: 'Spouse' })[1],
-        spouse2,
-      );
+      userEvent.type(getAllByRole('textbox', { name: 'Spouse' })[0], spouse);
+      userEvent.type(getAllByRole('textbox', { name: 'Spouse' })[1], spouse2);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
@@ -184,6 +151,6 @@ describe('CreateMultipleContacts', () => {
       expect(operation3.variables.attributes.name).toEqual(
         `${last3}, ${first3}`,
       );
-    });
+    }, 10000);
   });
 });
