@@ -1,11 +1,12 @@
 import { DialogActions, DialogContent, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import { ContactFiltersDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { TaskFiltersDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeleteButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
-import { ContactFiltersDocument } from 'src/components/Contacts/ContactFilters/ContactFilters.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDeleteTagMutation } from './Chip/DeleteTag.generated';
 
@@ -24,6 +25,7 @@ export const FilterTagDeleteModal: React.FC<FilterTagDeleteModalProps> = ({
   const { route } = useRouter();
   const [deleteTag] = useDeleteTagMutation();
   const accountListId = useAccountListId();
+  const { enqueueSnackbar } = useSnackbar();
 
   const page = route.split('/')[3];
 
@@ -40,6 +42,11 @@ export const FilterTagDeleteModal: React.FC<FilterTagDeleteModalProps> = ({
           variables: { accountListId },
         },
       ],
+      onCompleted: () => {
+        enqueueSnackbar(t('Tag deleted!'), {
+          variant: 'success',
+        });
+      },
     });
     onClose(false);
   };
