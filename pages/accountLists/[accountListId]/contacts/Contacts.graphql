@@ -31,6 +31,9 @@ query ContactFilters($accountListId: ID!) {
     contactFilterGroups {
       ...FilterPanelGroup
     }
+    partnerGivingAnalysisFilterGroups {
+      ...FilterPanelGroup
+    }
   }
   userOptions {
     ...UserOption
