@@ -521,7 +521,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                           data-testid="FilterGroup"
                         >
                           <FlatAccordionWrapper>
-                            <Accordion>
+                            <Accordion
+                              TransitionProps={{ unmountOnExit: true }}
+                            >
                               <AccordionSummary expandIcon={<ExpandMore />}>
                                 <Typography>
                                   {group.name}

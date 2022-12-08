@@ -150,7 +150,6 @@ describe('FilterPanel', () => {
     it('opens and selects a filter', async () => {
       const {
         getByTestId,
-        getAllByTestId,
         getByText,
         queryByTestId,
         queryAllByTestId,
@@ -201,14 +200,20 @@ describe('FilterPanel', () => {
           'Contact for Appointment',
         ),
       );
-      expect(getAllByTestId('multiSelectFilter')).toHaveLength(2);
+      expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
         status: [ContactFilterStatusEnum.ContactForAppointment],
       });
     });
 
     it('should display a selected filter', async () => {
-      const { getByText, getAllByText, queryByTestId, getAllByTestId } = render(
+      const {
+        getByTestId,
+        getByText,
+        getAllByText,
+        queryByTestId,
+        getAllByTestId,
+      } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<SaveFilterMutation>>
@@ -237,8 +242,8 @@ describe('FilterPanel', () => {
       ).toHaveLength(2);
       expect(
         getAllByText(filterPanelDefaultMock.filters[1].title),
-      ).toHaveLength(6);
-      expect(getAllByTestId('multiSelectFilter')).toHaveLength(2);
+      ).toHaveLength(3);
+      expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
       expect(getByText('Group 1 (1)')).toBeVisible();
     });
 
@@ -459,7 +464,6 @@ describe('FilterPanel', () => {
     it('opens and selects a filter', async () => {
       const {
         getByTestId,
-        getAllByTestId,
         getByText,
         queryByTestId,
         queryAllByTestId,
@@ -511,7 +515,7 @@ describe('FilterPanel', () => {
         ),
       );
 
-      expect(getAllByTestId('multiSelectFilter')).toHaveLength(2);
+      expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
         status: [ContactFilterStatusEnum.ContactForAppointment],
       });
