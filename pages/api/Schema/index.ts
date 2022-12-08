@@ -43,6 +43,8 @@ import TaskLocationTypeDefs from './Tasks/TaskLocation/taskLocation.graphql';
 import { TaskLocationResolvers } from './Tasks/TaskLocation/resolvers';
 import UpdateTaskLocationTypeDefs from './Tasks/TaskLocation/Update/updateTaskLocation.graphql';
 import { UpdateTaskLocationResolvers } from './Tasks/TaskLocation/Update/resolvers';
+import DeleteTagsTypeDefs from './Tags/Delete/deleteTags.graphql';
+import { DeleteTagsResolvers } from './Tags/Delete/resolvers';
 
 const schema = buildSubgraphSchema([
   {
@@ -123,6 +125,10 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: UpdateTaskLocationTypeDefs,
     resolvers: UpdateTaskLocationResolvers,
+  },
+  {
+    typeDefs: DeleteTagsTypeDefs,
+    resolvers: DeleteTagsResolvers,
   },
 ]);
 

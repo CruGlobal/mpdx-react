@@ -84,7 +84,7 @@ class MpdxRestApi extends RESTDataSource {
 
   willSendRequest(request: RequestOptions) {
     request.headers.set('Authorization', this.context.authHeader);
-    request.headers.set('content-type', 'application/vnd.api+json');
+    request.headers.set('Content-Type', 'application/vnd.api+json');
   }
 
   // Overridden to accept JSON API Content Type application/vnd.api+json
@@ -651,6 +651,13 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateTaskLocation(data);
+  }
+
+  async deleteTags(tagName: string, page: string) {
+    const { data } = await this.delete(`${page}/tags/bulk`, {
+      data: [{ data: { type: 'tags', attributes: { name: tagName } } }],
+    });
+    return data;
   }
 }
 
