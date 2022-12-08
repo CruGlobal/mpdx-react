@@ -21,6 +21,7 @@ interface FilterTagChipProps {
 const TagChip = styled(Chip)(
   ({ selectType }: { selectType: 'none' | 'include' | 'exclude' }) => ({
     color: theme.palette.common.white,
+    margin: theme.spacing(0.5),
     backgroundColor:
       selectType === 'include'
         ? theme.palette.mpdxBlue.main
