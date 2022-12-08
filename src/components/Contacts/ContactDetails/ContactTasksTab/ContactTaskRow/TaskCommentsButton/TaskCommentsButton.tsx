@@ -4,8 +4,10 @@ import theme from 'src/theme';
 import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
 import React from 'react';
 
-const TaskRowWrap = styled(Button)(
-  ({ small, detailsPage }: { small: boolean; detailsPage: boolean }) => ({
+const TaskRowWrap = styled(Button, {
+  shouldForwardProp: (prop) => prop !== 'small' && prop !== 'detailsPage',
+})<{ small?: boolean; detailsPage?: boolean }>(
+  ({ theme, small, detailsPage }) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -18,21 +20,19 @@ const TaskRowWrap = styled(Button)(
   }),
 );
 
-const TaskCommentIcon = styled(ChatBubbleOutline)(
-  ({ small }: { small: boolean }) => ({
-    color: theme.palette.text.secondary,
-    fontSize: small ? 16 : 20,
-  }),
-);
+const TaskCommentIcon = styled(ChatBubbleOutline, {
+  shouldForwardProp: (prop) => prop !== 'small',
+})<{ small?: boolean }>(({ small }) => ({
+  color: theme.palette.text.secondary,
+  fontSize: small ? 16 : 20,
+}));
 
-const TaskCommentNumber = styled(Typography)(
-  ({ isComplete }: { isComplete: boolean }) => ({
-    color: isComplete
-      ? theme.palette.text.secondary
-      : theme.palette.text.primary,
-    margin: theme.spacing(0.5),
-  }),
-);
+const TaskCommentNumber = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'isComplete',
+})<{ isComplete?: boolean }>(({ isComplete }) => ({
+  color: isComplete ? theme.palette.text.secondary : theme.palette.text.primary,
+  margin: theme.spacing(0.5),
+}));
 
 interface TaskCommentsButtonProps {
   isComplete: boolean;
