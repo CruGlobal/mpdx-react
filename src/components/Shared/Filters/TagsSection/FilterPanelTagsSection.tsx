@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import LocalOffer from '@mui/icons-material/LocalOffer';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ContactFilterSetInput,
@@ -18,6 +18,7 @@ import {
 } from '../../../../../graphql/types.generated';
 import { FilterTagChip } from './Chip/FilterTagChip';
 import theme from 'src/theme';
+import { FilterTagDeleteModal } from './FilterTagDeleteModal';
 
 interface FilterPanelTagsSectionProps {
   filterOptions: FilterOption[] | Record<string, never>[];
@@ -56,6 +57,10 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
   const { t } = useTranslation();
   const { pathname } = useRouter();
 
+  const [selectedTag, setSelectedTag] = useState('');
+  const [openFilterTagDeleteModal, setOpenFilterTagDeleteModal] =
+    useState(false);
+
   return (
     <TagsAccordionWrapper>
       <Accordion>
@@ -88,6 +93,8 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
                     value={option.value}
                     selectedFilters={selectedFilters}
                     onSelectedFiltersChanged={onSelectedFiltersChanged}
+                    openDeleteModal={setOpenFilterTagDeleteModal}
+                    setSelectedTag={setSelectedTag}
                   />
                 )}
               </>
@@ -95,6 +102,11 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
           </TagsSectionWrapper>
         </AccordionDetails>
       </Accordion>
+      <FilterTagDeleteModal
+        tagName={selectedTag}
+        isOpen={openFilterTagDeleteModal}
+        onClose={setOpenFilterTagDeleteModal}
+      />
     </TagsAccordionWrapper>
   );
 };
