@@ -654,9 +654,26 @@ class MpdxRestApi extends RESTDataSource {
   }
 
   async deleteTags(tagName: string, page: string) {
-    const { data } = await this.delete(`${page}/tags/bulk`, {
-      data: [{ data: { type: 'tags', attributes: { name: tagName } } }],
-    });
+    const { data } = await this.delete(
+      `${page}/tags/bulk`,
+      {
+        '0[name]': tagName,
+      },
+      {
+        body: JSON.stringify({
+          data: [
+            {
+              data: {
+                type: 'tags',
+                attributes: {
+                  name: tagName,
+                },
+              },
+            },
+          ],
+        }),
+      },
+    );
     return data;
   }
 }
