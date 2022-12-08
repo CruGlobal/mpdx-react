@@ -40,6 +40,14 @@ yarn start
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 Note: there is a test account you can use. Get this from another developer if you want to use it.
 
+#### Favicon & Logo
+
+You will need to add these environment vars locally, so the logo and favicon shows.
+
+```NEXT_PUBLIC_MEDIA_LOGO=/images/logo.svg
+NEXT_PUBLIC_MEDIA_FAVICON=/favicon.png
+```
+
 ## GraphQL Playground
 
 The GraphQL playground can be a useful tool/interface for testing out queries and mutations. It can accessed locally during development via [http://localhost:3000/api/graphql](http://localhost:3000/api/graphql).

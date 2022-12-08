@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
-import logo from '../../../../images/logo.svg';
 import NotificationMenu from './Items/NotificationMenu/NotificationMenu';
 import AddMenu from './Items/AddMenu/AddMenu';
 import SearchMenu from './Items/SearchMenu/SearchMenu';
@@ -56,7 +55,11 @@ const TopBar = ({
           )}
           <Hidden mdDown={!!accountListId}>
             <NextLink href="/">
-              <img src={logo} alt="logo" style={{ cursor: 'pointer' }} />
+              <img
+                src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
+                alt="logo"
+                style={{ cursor: 'pointer' }}
+              />
             </NextLink>
           </Hidden>
           <Hidden mdDown>
