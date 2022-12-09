@@ -97,12 +97,12 @@ export const CreateMultipleContacts = ({
   const { enqueueSnackbar } = useSnackbar();
   const initialContacts: InitialContactInterface = {
     contacts: new Array(10).fill({
-      firstName: undefined,
-      spouseName: undefined,
-      lastName: undefined,
-      address: undefined,
-      phone: undefined,
-      email: undefined,
+      firstName: '',
+      spouseName: '',
+      lastName: '',
+      address: '',
+      phone: '',
+      email: '',
     }),
   };
 
