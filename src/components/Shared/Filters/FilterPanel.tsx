@@ -415,7 +415,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   };
 
   const tagsFilters: FilterOption[] | Record<string, never>[] = (
-    filters.find((filter) => filter.name === 'Tags')
+    filters?.find((filter) => filter.name === 'Tags')
       ?.filters[0] as MultiselectFilter
   )?.options ?? [{}];
 
@@ -511,7 +511,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   )}
 
                   {filters
-                    .filter((filter) => filter.name !== 'Tags')
+                    ?.filter((filter) => filter.name !== 'Tags')
                     ?.map((group) => {
                       const selectedOptions = getOptionsSelected(group);
                       return (
