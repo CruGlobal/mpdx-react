@@ -33,6 +33,7 @@ export const FilterListItemSlider: React.FC<Props> = ({
       </ListItem>
       <ListItem>
         <Slider
+          data-testid="sliderFilter"
           sx={(theme) => ({ marginX: theme.spacing(1) })}
           getAriaLabel={() => filter.title}
           value={[value?.min ?? valueMin, value?.max ?? valueMax]}
