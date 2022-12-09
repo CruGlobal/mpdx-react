@@ -24,8 +24,8 @@ import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   FilterGroup,
-  FilterOption,
   MultiselectFilter,
+  ReportContactFilterSetInput,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import {
@@ -39,10 +39,18 @@ import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
+type ReportContactFilterKey = keyof ReportContactFilterSetInput;
+type ReportContactFilterValue = ReportContactFilterSetInput[ContactFilterKey];
 type TaskFilterKey = keyof TaskFilterSetInput;
 type TaskFilterValue = TaskFilterSetInput[TaskFilterKey];
-export type FilterKey = ContactFilterKey | TaskFilterKey;
-export type FilterValue = ContactFilterValue | TaskFilterValue;
+export type FilterKey =
+  | ContactFilterKey
+  | TaskFilterKey
+  | ReportContactFilterKey;
+export type FilterValue =
+  | ContactFilterValue
+  | TaskFilterValue
+  | ReportContactFilterValue;
 
 export const snakeToCamel = (inputKey: string): string => {
   const stringParts = inputKey.split('_');
@@ -90,18 +98,22 @@ const FlatAccordionWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
+type FilterInput = ContactFilterSetInput &
+  TaskFilterSetInput &
+  ReportContactFilterSetInput;
+
 interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
+  defaultExpandedFilterGroups?: Set<string>;
   savedFilters: UserOptionFragment[];
-  selectedFilters: ContactFilterSetInput & TaskFilterSetInput;
+  selectedFilters: FilterInput;
   onClose: () => void;
-  onSelectedFiltersChanged: (
-    selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
-  ) => void;
+  onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   filters,
+  defaultExpandedFilterGroups = new Set(),
   savedFilters,
   onClose,
   selectedFilters,
@@ -115,13 +127,13 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [showAll, setShowAll] = useState(false);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
-      const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
+      const newFilters: FilterInput = {
         ...selectedFilters,
         [name]: value,
       };
       onSelectedFiltersChanged(newFilters);
     } else {
-      const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
+      const newFilters: FilterInput = {
         ...selectedFilters,
       };
       delete newFilters[name];
@@ -186,13 +198,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           } as { name: string; value: FilterKey }),
       );
 
-      const newFilter = filters.reduce<
-        ContactFilterSetInput & TaskFilterSetInput
-      >((acc, filter) => {
+      const newFilter = filters.reduce<FilterInput>((acc, filter) => {
         if (filter.name === 'params') {
-          const nonDefaultFilters = Object.entries(filter.value).reduce<
-            ContactFilterSetInput & TaskFilterSetInput
-          >((acc, [name, value]) => {
+          const nonDefaultFilters = Object.entries(
+            filter.value,
+          ).reduce<FilterInput>((acc, [name, value]) => {
             const key = snakeToCamel(name) as FilterKey;
             switch (key) {
               // Boolean
@@ -208,6 +218,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'reverseDesignationAccountId':
               case 'reverseDonation':
               case 'reverseDonationAmount':
+              case 'reverseDonationPeriodAverage':
+              case 'reverseDonationPeriodCount':
+              case 'reverseDonationPeriodPercentRank':
+              case 'reverseDonationPeriodSum':
               case 'reverseIds':
               case 'reverseLikely':
               case 'reverseLocale':
@@ -376,6 +390,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'contactInfoWorkPhone':
               case 'contactType':
               case 'donationAmountRange':
+              case 'donationPeriodAverage':
+              case 'donationPeriodCount':
+              case 'donationPeriodPercentRank':
+              case 'donationPeriodSum':
               case 'nameLike':
               case 'notes':
               case 'optOut':
@@ -414,10 +432,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     }
   };
 
-  const tagsFilters: FilterOption[] | Record<string, never>[] = (
-    filters?.find((filter) => filter.name === 'Tags')
-      ?.filters[0] as MultiselectFilter
-  )?.options ?? [{}];
+  const tagsFilters =
+    (
+      filters.find((filter) => filter.name === 'Tags')
+        ?.filters[0] as MultiselectFilter
+    )?.options ?? [];
 
   return (
     <Box {...boxProps}>
@@ -521,7 +540,12 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                           data-testid="FilterGroup"
                         >
                           <FlatAccordionWrapper>
-                            <Accordion>
+                            <Accordion
+                              TransitionProps={{ unmountOnExit: true }}
+                              defaultExpanded={defaultExpandedFilterGroups.has(
+                                group.name,
+                              )}
+                            >
                               <AccordionSummary expandIcon={<ExpandMore />}>
                                 <Typography>
                                   {group.name}

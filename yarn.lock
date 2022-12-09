@@ -6894,6 +6894,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4.14.191":
+  version: 4.14.191
+  resolution: "@types/lodash@npm:4.14.191"
+  checksum: ba0d5434e10690869f32d5ea49095250157cae502f10d57de0a723fd72229ce6c6a4979576f0f13e0aa9fbe3ce2457bfb9fa7d4ec3d6daba56730a51906d1491
+  languageName: node
+  linkType: hard
+
 "@types/long@npm:^4.0.0":
   version: 4.0.2
   resolution: "@types/long@npm:4.0.2"
@@ -18272,6 +18279,7 @@ __metadata:
     "@testing-library/user-event": ^13.5.0
     "@types/google.maps": ^3.50.2
     "@types/jest": ^29.0.3
+    "@types/lodash": ^4.14.191
     "@types/luxon": ^3.1.0
     "@types/node": ^18.7.18
     "@types/react": ^18.0.21
