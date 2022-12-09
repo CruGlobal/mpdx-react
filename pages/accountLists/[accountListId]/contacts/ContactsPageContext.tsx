@@ -161,13 +161,16 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
   }, [loadingContactIds]);
 
   useEffect(() => {
-    getContactIds({
-      variables: {
-        accountListId,
-        first: data?.contacts?.totalCount ?? 0,
-        contactsFilters: activeFilters,
-      },
-    });
+    const contactCount = data?.contacts?.totalCount ?? 0;
+    if (contactCount > 0) {
+      getContactIds({
+        variables: {
+          accountListId,
+          first: contactCount,
+          contactsFilters: activeFilters,
+        },
+      });
+    }
   }, [activeFilters, searchTerm, starredFilter, data]);
 
   const {

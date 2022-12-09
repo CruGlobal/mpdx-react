@@ -183,13 +183,16 @@ const TasksPage: React.FC = () => {
   }, [loadingTaskIds]);
 
   useEffect(() => {
-    getTaskIds({
-      variables: {
-        accountListId,
-        first: data?.tasks?.totalCount ?? 0,
-        tasksFilters: activeFilters,
-      },
-    });
+    const taskCount = data?.tasks?.totalCount ?? 0;
+    if (taskCount) {
+      getTaskIds({
+        variables: {
+          accountListId,
+          first: taskCount,
+          tasksFilters: activeFilters,
+        },
+      });
+    }
   }, [activeFilters, searchTerm, starredFilter, data]);
 
   const {
