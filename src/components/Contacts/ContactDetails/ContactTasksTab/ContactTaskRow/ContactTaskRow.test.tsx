@@ -231,7 +231,7 @@ describe('ContactTaskRow', () => {
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(
-        getByRole('img', { hidden: true, name: 'Outlined Delete Icon' }),
+        getByRole('img', { name: 'Outlined Delete Icon' }),
       );
       expect(
         await findByText(
