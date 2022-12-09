@@ -80,7 +80,7 @@ export const WeeklyReportModal = ({
   onClose,
 }: WeeklyReportModalProps) => {
   const { t } = useTranslation();
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState<number>(1);
   const setupError = false;
 
   // TODO: Integrate questions from production
@@ -171,7 +171,7 @@ export const WeeklyReportModal = ({
   ];
 
   const errorFlag = questions.length === 0 || setupError;
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const handleWeeklyReportPrev = () => {
     setActiveStep((prevState) => prevState - 1);
