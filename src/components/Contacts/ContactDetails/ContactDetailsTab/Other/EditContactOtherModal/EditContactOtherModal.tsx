@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -33,10 +33,6 @@ import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
-import {
-  ContactDetailContext,
-  ContactDetailsType,
-} from '../../../ContactDetailContext';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
 import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
@@ -91,17 +87,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const languages = constants?.languages ?? [];
   const timezones = useGetTimezones();
 
-  const {
-    selectedReferralId: selectedId,
-    setSelectedReferralId: setSelectedId,
-    searchReferrelName: searchTerm,
-    setSearchReferralName: setSearchTerm,
-  } = React.useContext(ContactDetailContext) as ContactDetailsType;
-
-  useEffect(() => {
-    setSelectedId(referral?.referredBy.id ?? '');
-    setSearchTerm(referral?.referredBy.name ?? '');
-  }, []);
+  const [selectedId, setSelectedId] = useState(referral?.referredBy.id ?? '');
+  const [searchTerm, setSearchTerm] = useState(referral?.referredBy.name ?? '');
 
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
@@ -114,7 +101,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
-        contactsFilters: { wildcardSearch: searchTerm as string },
+        contactsFilters: searchTerm ? { wildcardSearch: searchTerm } : {},
       },
     });
 
@@ -122,7 +109,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
-        contactsFilters: { ids: [selectedId] },
+        contactsFilters: selectedId ? { ids: [selectedId] } : {},
       },
     });
 

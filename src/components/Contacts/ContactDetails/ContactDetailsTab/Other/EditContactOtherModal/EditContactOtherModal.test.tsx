@@ -231,14 +231,13 @@ describe('EditContactOtherModal', () => {
     const getFilteredContactsCalls = mutationSpy.mock.calls
       .map(([{ operation }]) => operation)
       .filter(
-        ({ operationName, variables }) =>
-          operationName === 'GetTaskModalContactsFiltered' &&
-          Array.isArray(variables.contactsFilters.ids),
+        ({ operationName }) => operationName === 'GetTaskModalContactsFiltered',
       );
+    // Test that the search by id and search by name calls are merged into one query when the referral is missing
+    expect(getFilteredContactsCalls).toHaveLength(1);
     // Test that contactsFilters.ids isn't ever [undefined]
-    expect(getFilteredContactsCalls.length).toBeGreaterThanOrEqual(1);
     getFilteredContactsCalls.forEach(({ variables }) => {
-      expect(variables.contactsFilters.ids).toEqual(['']);
+      expect(variables.contactsFilters.ids).toBeUndefined();
     });
   });
 
