@@ -77,6 +77,7 @@ describe('FilterTagDeleteModal', () => {
     await waitFor(() => expect(handleClose).toHaveBeenCalled());
   });
 
+  //TODO: fails because of refetch query (line 38 in FilterTagDeleteModal)
   it.skip('handle clicking delete', async () => {
     const mutationSpy = jest.fn();
     const { getByRole } = render(
