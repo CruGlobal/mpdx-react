@@ -24,7 +24,6 @@ import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   FilterGroup,
-  FilterOption,
   MultiselectFilter,
   ReportContactFilterSetInput,
   TaskFilterSetInput,
@@ -433,10 +432,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     }
   };
 
-  const tagsFilters: FilterOption[] | Record<string, never>[] = (
-    filters?.find((filter) => filter.name === 'Tags')
-      ?.filters[0] as MultiselectFilter
-  )?.options ?? [{}];
+  const tagsFilters =
+    (
+      filters.find((filter) => filter.name === 'Tags')
+        ?.filters[0] as MultiselectFilter
+    )?.options ?? [];
 
   return (
     <Box {...boxProps}>

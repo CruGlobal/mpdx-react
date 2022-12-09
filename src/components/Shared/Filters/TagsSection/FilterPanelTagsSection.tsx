@@ -20,7 +20,7 @@ import { FilterTagChip } from './Chip/FilterTagChip';
 import theme from 'src/theme';
 
 interface FilterPanelTagsSectionProps {
-  filterOptions: FilterOption[] | Record<string, never>[];
+  filterOptions: FilterOption[];
   selectedFilters: ContactFilterSetInput & TaskFilterSetInput;
   onSelectedFiltersChanged: (
     selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
@@ -79,19 +79,17 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
                 )}
               </TagsSectionDescription>
             </Box>
-            {filterOptions.map((option) => (
-              <>
-                {option.value !== '--any--' && (
-                  <FilterTagChip
-                    key={option.name}
-                    name={option.name}
-                    value={option.value}
-                    selectedFilters={selectedFilters}
-                    onSelectedFiltersChanged={onSelectedFiltersChanged}
-                  />
-                )}
-              </>
-            ))}
+            {filterOptions
+              .filter((option) => option.value !== '--any--')
+              .map((option) => (
+                <FilterTagChip
+                  key={option.name}
+                  name={option.name}
+                  value={option.value}
+                  selectedFilters={selectedFilters}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              ))}
           </TagsSectionWrapper>
         </AccordionDetails>
       </Accordion>
