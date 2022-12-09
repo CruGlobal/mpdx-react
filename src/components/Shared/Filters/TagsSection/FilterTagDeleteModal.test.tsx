@@ -77,7 +77,7 @@ describe('FilterTagDeleteModal', () => {
     await waitFor(() => expect(handleClose).toHaveBeenCalled());
   });
 
-  it('handle clicking delete', async () => {
+  it.skip('handle clicking delete', async () => {
     const mutationSpy = jest.fn();
     const { getByRole } = render(
       <SnackbarProvider>
