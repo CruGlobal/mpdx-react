@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from '../../../../../theme';
 import { FilterTagChip } from './FilterTagChip';
@@ -66,5 +66,24 @@ describe('FilterTagChip', () => {
     expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
       excludeTags: ['test'],
     });
+  });
+
+  it('handles delete', async () => {
+    const { getByText, getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <FilterTagChip
+          name={name}
+          value={value}
+          selectedFilters={{}}
+          onSelectedFiltersChanged={onSelectedFiltersChanged}
+          setSelectedTag={setSelectedTag}
+          openDeleteModal={setOpenFilterTagDeleteModal}
+        />
+      </ThemeProvider>,
+    );
+    expect(getByText('test')).toBeInTheDocument();
+    const chipDelete = getByRole('button').children[1];
+    userEvent.click(chipDelete);
+    await waitFor(() => expect(setOpenFilterTagDeleteModal).toHaveBeenCalled());
   });
 });
