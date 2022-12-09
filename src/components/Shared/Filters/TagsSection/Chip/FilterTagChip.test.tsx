@@ -8,6 +8,8 @@ import { FilterTagChip } from './FilterTagChip';
 const name = 'test';
 const value = '123';
 const onSelectedFiltersChanged = jest.fn();
+const setSelectedTag = jest.fn();
+const setOpenFilterTagDeleteModal = jest.fn();
 
 describe('FilterTagChip', () => {
   it('default', () => {
@@ -18,6 +20,8 @@ describe('FilterTagChip', () => {
           value={value}
           selectedFilters={{}}
           onSelectedFiltersChanged={onSelectedFiltersChanged}
+          setSelectedTag={setSelectedTag}
+          openDeleteModal={setOpenFilterTagDeleteModal}
         />
       </ThemeProvider>,
     );
@@ -32,6 +36,8 @@ describe('FilterTagChip', () => {
           value={value}
           selectedFilters={{}}
           onSelectedFiltersChanged={onSelectedFiltersChanged}
+          setSelectedTag={setSelectedTag}
+          openDeleteModal={setOpenFilterTagDeleteModal}
         />
       </ThemeProvider>,
     );
@@ -49,6 +55,8 @@ describe('FilterTagChip', () => {
           value={value}
           selectedFilters={{ tags: ['test'] }}
           onSelectedFiltersChanged={onSelectedFiltersChanged}
+          setSelectedTag={setSelectedTag}
+          openDeleteModal={setOpenFilterTagDeleteModal}
         />
       </ThemeProvider>,
     );
