@@ -23,7 +23,7 @@ export const FilterTagDeleteModal: React.FC<FilterTagDeleteModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { route } = useRouter();
-  const [deleteTag] = useDeleteTagMutation();
+  const [deleteTag, { loading: deleting }] = useDeleteTagMutation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -69,7 +69,9 @@ export const FilterTagDeleteModal: React.FC<FilterTagDeleteModalProps> = ({
         </Typography>
       </DialogContent>
       <DialogActions>
-        <DeleteButton onClick={onDeleteTag}>Delete Tag</DeleteButton>
+        <DeleteButton onClick={onDeleteTag} disabled={deleting}>
+          Delete Tag
+        </DeleteButton>
       </DialogActions>
     </Modal>
   );
