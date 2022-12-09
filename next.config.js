@@ -41,11 +41,9 @@ module.exports = withPlugins([
     env: {
       NEXTAUTH_URL: process.env.NEXTAUTH_URL,
       JWT_SECRET: process.env.JWT_SECRET ?? 'development-key',
-      // API_URL: process.env.API_URL ?? 'https://jbirdjavi.ngrok.io/graphql',
-      API_URL: 'https://jbirdjavi.ngrok.io/graphql',
-      // REST_API_URL:
-      //   process.env.REST_API_URL ?? 'https://jbirdjavi.ngrok.io/api/v2/',
-      REST_API_URL: 'https://jbirdjavi.ngrok.io/api/v2/',
+      API_URL: process.env.API_URL ?? 'https://api.stage.mpdx.org/graphql',
+      REST_API_URL:
+        process.env.REST_API_URL ?? 'https://api.stage.mpdx.org/api/v2/',
       SITE_URL: siteUrl,
       CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
@@ -54,6 +52,12 @@ module.exports = withPlugins([
       OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
       OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
       OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
+      API_OAUTH_CLIENT_ID:
+        process.env.API_OAUTH_CLIENT_ID ?? '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',
+      API_OAUTH_CLIENT_SECRET:
+        process.env.API_OAUTH_CLIENT_SECRET,
+      API_OAUTH_ISSUER:
+        process.env.API_OAUTH_ISSUER ?? 'https://api.stage.mpdx.org',
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
       ONESKY_API_SECRET: process.env.ONESKY_API_SECRET,

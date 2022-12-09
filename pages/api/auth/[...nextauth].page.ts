@@ -39,18 +39,18 @@ const options: NextAuthOptions = {
       userinfo: { params: { scope: 'openid email profile' } },
     }),
     {
-      id: "auth0",
-      name: "Wycliffe",
-      type: "oauth",
-      clientId: process.env.AUTH0_CLIENT_ID,
-      clientSecret: process.env.AUTH0_CLIENT_SECRET,
+      id: 'auth0', //apioauth
+      name: 'Wycliffe',
+      type: 'oauth',
+      clientId: process.env.API_OAUTH_CLIENT_ID,
+      clientSecret: process.env.API_OAUTH_CLIENT_SECRET,
       authorization: {
-        url: "https://jbirdjavi.ngrok.io/oauth/authorize",
-        params: { scope: 'read write', response_type: 'code' }
+        url: `${process.env.API_OAUTH_ISSUER}/oauth/authorize`,
+        params: { scope: 'read write', response_type: 'code' },
       },
       token: {
-        url: "https://jbirdjavi.ngrok.io/oauth/token",
-        params: { scope: 'read write', response_type: 'code' }
+        url: `${process.env.API_OAUTH_ISSUER}/oauth/token`,
+        params: { scope: 'read write', response_type: 'code' },
       },
       userinfo: {
         async request() {
@@ -58,35 +58,37 @@ const options: NextAuthOptions = {
           // Since we pass the access_token to our API, which returns a JWT, user and authenicates via Graph QL
           // We can just return a object with hardcoded info, as it doesn't get used anywhere.
           return {
-            "sub": "83692",
-            "name": "Alice Adams",
-            "given_name": "Alice",
-            "family_name": "Adams",
-            "email": "someone.else@hotmail.cpm",
-            "picture": "https://example.com/83692/photo.jpg"
-          }
-        }
+            sub: '83692',
+            name: 'Alice Adams',
+            given_name: 'Alice',
+            family_name: 'Adams',
+            email: 'someone.else@hotmail.cpm',
+            picture: 'https://example.com/83692/photo.jpg',
+          };
+        },
       },
       idToken: false,
       profile(profile) {
         return {
           id: profile?.sub,
           email: profile?.email,
-        }
+        };
       },
-      checks: ['pkce', 'state']
+      checks: ['pkce', 'state'],
     },
   ],
   secret: process.env.JWT_SECRET,
   callbacks: {
     signIn: async ({ user, account }) => {
       const { access_token } = account;
-      console.log("SignIn 1", account)
+      console.log('SignIn 1', account);
       // Here you need to access our server to access the JWT
       if (!access_token) {
-        throw new Error(`${account.provider} sign in failed to return an access_token`);
+        throw new Error(
+          `${account.provider} sign in failed to return an access_token`,
+        );
       }
-      console.log("SignIn 2", user)
+      console.log('SignIn 2', user);
 
       if (account.provider === 'auth0') {
         const { data } = await client.mutate<
@@ -98,7 +100,7 @@ const options: NextAuthOptions = {
             accessToken: access_token,
           },
         });
-        console.log("SignIn 3", data)
+        console.log('SignIn 3', data);
 
         if (data?.apiOauthSignIn?.token) {
           user.apiToken = data.apiOauthSignIn.token;
