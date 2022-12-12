@@ -13,7 +13,6 @@ import {
   Grid,
   InputLabel,
   MenuItem,
-  Select,
   TextField,
   Theme,
   useMediaQuery,
@@ -43,6 +42,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -148,18 +148,18 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       | 'locale'
       | 'timezone'
       | 'website'
-    > & { referredById: string | undefined }
+    > & { referredById: string | null | undefined }
   > = yup.object({
     id: yup.string().required(),
     churchName: yup.string().nullable(),
     preferredContactMethod: yup
       .mixed<PreferredContactMethodEnum>()
-      .oneOf(Object.values(PreferredContactMethodEnum))
+      .oneOf([...Object.values(PreferredContactMethodEnum), null])
       .nullable(),
     locale: yup.string().nullable(),
     timezone: yup.string().nullable(),
     website: yup.string().nullable(),
-    referredById: yup.string(),
+    referredById: yup.string().nullable(),
   });
 
   const onSubmit = async (
@@ -300,7 +300,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           }}
                         />
                       )}
-                      value={referredById}
+                      value={referredById || null}
                       onChange={(_, referredBy): void => {
                         setFieldValue('referredById', referredBy);
                         setSelectedId(referredBy || '');
@@ -319,7 +319,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                     >
                       {t('Preferred Contact Method')}
                     </InputLabel>
-                    <Select
+                    <NullableSelect
                       label={t('Preferred Contact Method')}
                       labelId="preferred-contact-method-select-label"
                       value={preferredContactMethod}
@@ -342,7 +342,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           );
                         },
                       )}
-                    </Select>
+                    </NullableSelect>
                   </FormControl>
                 </ContactInputWrapper>
                 <ContactInputWrapper>
@@ -352,7 +352,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         <InputLabel id="language-select-label">
                           {t('Language')}
                         </InputLabel>
-                        <Select
+                        <NullableSelect
                           label={t('Language')}
                           labelId="language-select-label"
                           value={locale}
@@ -385,7 +385,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                                 </MenuItem>
                               ),
                           )}
-                        </Select>
+                        </NullableSelect>
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -393,7 +393,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         <InputLabel id="timezone-select-label">
                           {t('Timezone')}
                         </InputLabel>
-                        <Select
+                        <NullableSelect
                           label={t('Timezone')}
                           labelId="timezone-select-label"
                           value={timezone}
@@ -423,7 +423,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                               {t(value)}
                             </MenuItem>
                           ))}
-                        </Select>
+                        </NullableSelect>
                       </FormControl>
                     </Grid>
                   </Grid>
