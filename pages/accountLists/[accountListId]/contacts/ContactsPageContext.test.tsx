@@ -15,6 +15,7 @@ import {
   ContactsPageContext,
   ContactsPageProvider,
   ContactsPageType,
+  setRedirectPathname,
 } from './ContactsPageContext';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 
@@ -215,4 +216,18 @@ it.skip('does not have a contact id and changes to map', async () => {
       query: {},
     }),
   );
+});
+
+it('Should return the tasks URL when user is on the tasks page', async () => {
+  // I tried to test this through rendering the component,
+  // I couldn't work it out so I'm just testing the function instead.
+  const router = {
+    pathname: '/accountLists/[accountListId]/tasks/[[...contactId]]',
+    query: { accountListId, contactId: ['list', 'abc'] },
+    isReady,
+    push,
+  };
+  const pathName = setRedirectPathname(router, accountListId);
+
+  expect(pathName).toBe('/accountLists/account-list-1/tasks');
 });
