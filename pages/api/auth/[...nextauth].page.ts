@@ -81,14 +81,12 @@ const options: NextAuthOptions = {
   callbacks: {
     signIn: async ({ user, account }) => {
       const { access_token } = account;
-      console.log('SignIn 1', account);
       // Here you need to access our server to access the JWT
       if (!access_token) {
         throw new Error(
           `${account.provider} sign in failed to return an access_token`,
         );
       }
-      console.log('SignIn 2', user);
 
       if (account.provider === 'auth0') {
         const { data } = await client.mutate<
@@ -100,7 +98,6 @@ const options: NextAuthOptions = {
             accessToken: access_token,
           },
         });
-        console.log('SignIn 3', data);
 
         if (data?.apiOauthSignIn?.token) {
           user.apiToken = data.apiOauthSignIn.token;
