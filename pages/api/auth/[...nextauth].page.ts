@@ -39,8 +39,8 @@ const options: NextAuthOptions = {
       userinfo: { params: { scope: 'openid email profile' } },
     }),
     {
-      id: 'auth0', //apioauth
-      name: 'Wycliffe',
+      id: 'apioauth', //
+      name: '0Auth',
       type: 'oauth',
       clientId: process.env.API_OAUTH_CLIENT_ID,
       clientSecret: process.env.API_OAUTH_CLIENT_SECRET,

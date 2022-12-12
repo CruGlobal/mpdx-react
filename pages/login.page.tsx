@@ -27,15 +27,17 @@ partners in a quick and easy way."
         Sign In
       </Button>
 
-      <Button
-        size="large"
-        variant="contained"
-        onClick={() => signIn('auth0')}
-        color="inherit"
-        style={{ marginLeft: '10px' }}
-      >
-        Sign In with Wycliffe
-      </Button>
+      {process.env.NEXT_PUBLIC_USE_API_OAUTH === "true" &&
+        <Button
+          size="large"
+          variant="contained"
+          onClick={() => signIn('apioauth')}
+          color="inherit"
+          style={{ marginLeft: '10px' }}
+        >
+          Sign In with OAuth
+        </Button>
+      }
 
       <Button
         size="large"
