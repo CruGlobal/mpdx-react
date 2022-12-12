@@ -1,5 +1,6 @@
 query GetDonationGraph($accountListId: ID!) {
   accountList(id: $accountListId) {
+    id
     currency
     monthlyGoal
     totalPledges

@@ -15,7 +15,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
     id: 'task',
     subject: 'the quick brown fox jumps over the lazy dog',
     activityType: ActivityTypeEnum.PrayerRequest,
-    contacts: { nodes: [{ name: 'Smith, Roger' }], totalCount: 1 },
+    contacts: { nodes: [{ name: 'Smith, Roger', id: '1' }], totalCount: 1 },
     startAt: DateTime.local(2012, 1, 5, 1, 2).toISODate(),
     completedAt: null,
   };
