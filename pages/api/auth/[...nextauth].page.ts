@@ -28,6 +28,10 @@ if (!process.env.OKTA_CLIENT_ID || !process.env.OKTA_CLIENT_SECRET) {
   throw new Error('OKTA_CLIENT_ID or OKTA_CLIENT_SECRET envs not defined');
 }
 
+if (!process.env.API_OAUTH_CLIENT_ID || !process.env.API_OAUTH_CLIENT_SECRET) {
+  throw new Error('API_OAUTH_CLIENT_ID or API_OAUTH_CLIENT_SECRET envs not defined');
+}
+
 const options: NextAuthOptions = {
   providers: [
     OktaProvider({
@@ -39,7 +43,7 @@ const options: NextAuthOptions = {
       userinfo: { params: { scope: 'openid email profile' } },
     }),
     {
-      id: 'apioauth', //
+      id: 'apioauth',
       name: '0Auth',
       type: 'oauth',
       clientId: process.env.API_OAUTH_CLIENT_ID,
