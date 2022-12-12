@@ -53,9 +53,9 @@ module.exports = withPlugins([
       OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
       OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
       API_OAUTH_CLIENT_ID:
-        process.env.API_OAUTH_CLIENT_ID ?? '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',
-      API_OAUTH_CLIENT_SECRET:
-        process.env.API_OAUTH_CLIENT_SECRET,
+        process.env.API_OAUTH_CLIENT_ID ??
+        '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',
+      API_OAUTH_CLIENT_SECRET: process.env.API_OAUTH_CLIENT_SECRET,
       API_OAUTH_ISSUER:
         process.env.API_OAUTH_ISSUER ?? 'https://api.stage.mpdx.org',
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,

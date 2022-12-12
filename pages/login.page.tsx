@@ -27,7 +27,7 @@ partners in a quick and easy way."
         Sign In
       </Button>
 
-      {process.env.NEXT_PUBLIC_USE_API_OAUTH === "true" &&
+      {process.env.NEXT_PUBLIC_USE_API_OAUTH === 'true' && (
         <Button
           size="large"
           variant="contained"
@@ -37,7 +37,7 @@ partners in a quick and easy way."
         >
           Sign In with OAuth
         </Button>
-      }
+      )}
 
       <Button
         size="large"
