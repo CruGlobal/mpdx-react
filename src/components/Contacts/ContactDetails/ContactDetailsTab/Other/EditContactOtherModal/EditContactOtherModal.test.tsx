@@ -242,6 +242,49 @@ describe('EditContactOtherModal', () => {
     });
   });
 
+  it('should handle empty contact method', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdateContactOtherMutation> onCall={mutationSpy}>
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <EditContactOtherModal
+                    accountListId={accountListId}
+                    isOpen={true}
+                    handleClose={handleClose}
+                    contact={{ ...mockContact, preferredContactMethod: null }}
+                    referral={undefined}
+                  />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+
+    userEvent.click(getByLabelText('Preferred Contact Method'));
+    userEvent.click(getByText('None'));
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
+        variant: 'success',
+      }),
+    );
+
+    const saveContactCalls = mutationSpy.mock.calls
+      .map(([{ operation }]) => operation)
+      .filter(({ operationName }) => operationName === 'UpdateContactOther');
+
+    expect(saveContactCalls).toHaveLength(1);
+    expect(saveContactCalls[0].variables.attributes).toMatchObject({
+      preferredContactMethod: null,
+    });
+  });
+
   it('should edit contact other details', async () => {
     const mutationSpy = jest.fn();
     const newChurchName = 'Great Cool Church II';
