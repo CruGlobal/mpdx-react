@@ -6,6 +6,7 @@ import {
   IconButton,
   Typography,
   Button,
+  Link,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
@@ -140,16 +141,14 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               <ContactPersonIconContainer>
                 <Phone color="disabled" />
               </ContactPersonIconContainer>
-              <Typography
-                variant="subtitle1"
-                component="a"
-                href={`tel:${person.primaryPhoneNumber?.number}`}
-              >
-                {person.primaryPhoneNumber?.number}
+              <Typography variant="subtitle1">
+                <Link href={`tel:${person.primaryPhoneNumber?.number}`}>
+                  {person.primaryPhoneNumber?.number}
+                </Link>
               </Typography>
               {person.primaryPhoneNumber?.location ? (
-                <Typography variant="caption">
-                  {` - ${person.primaryPhoneNumber.location}`}
+                <Typography variant="caption" marginLeft={1}>
+                  {t(person.primaryPhoneNumber.location)}
                 </Typography>
               ) : null}
             </ContactPersonRowContainer>
@@ -160,12 +159,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               <ContactPersonIconContainer>
                 <Email color="disabled" />
               </ContactPersonIconContainer>
-              <Typography
-                variant="subtitle1"
-                component="a"
-                href={`mailto:${person.primaryEmailAddress?.email}`}
-              >
-                {person.primaryEmailAddress?.email}
+              <Typography variant="subtitle1">
+                <Link href={`mailto:${person.primaryEmailAddress?.email}`}>
+                  {person.primaryEmailAddress?.email}
+                </Link>
               </Typography>
             </ContactPersonRowContainer>
           ) : null}

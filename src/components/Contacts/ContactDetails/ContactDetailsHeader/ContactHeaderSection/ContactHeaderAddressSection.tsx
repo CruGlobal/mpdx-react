@@ -48,6 +48,8 @@ export const ContactHeaderAddressSection = ({
     const { street, city, state, postalCode } = primaryAddress;
 
     if (street && city && state && postalCode) {
+      const mapURL = `https://www.google.com/maps/search/?api=1&query=${street}%2C+${city}%2C+${state}+${postalCode}`;
+
       return (
         <ContactHeaderSection icon={<LocationIcon />}>
           <Typography variant="subtitle1">{envelope}</Typography>
@@ -56,8 +58,14 @@ export const ContactHeaderAddressSection = ({
             <Typography
               style={{ display: 'inline-block' }}
               variant="subtitle1"
-            >{`${city}, ${state} ${postalCode}`}</Typography>
-            <Link style={{ display: 'inline-block' }} variant="subtitle1">
+            >{`${city}, ${state} ${postalCode}`}</Typography>{' '}
+            <Link
+              href={mapURL.replaceAll(' ', '+')}
+              target="_blank"
+              rel="noopener"
+              style={{ display: 'inline-block' }}
+              variant="subtitle1"
+            >
               {t('Google Maps')}
             </Link>
           </Box>

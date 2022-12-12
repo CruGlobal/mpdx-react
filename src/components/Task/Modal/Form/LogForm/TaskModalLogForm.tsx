@@ -38,15 +38,13 @@ import {
   TaskUpdateInput,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
-import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
-import { TaskFilter } from '../../../List/List';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
   useGetDataForTaskModalQuery,
   useCreateTaskMutation,
   useDeleteTaskMutation,
   useGetTaskModalContactsFilteredQuery,
+  useUpdateTaskLocationMutation,
 } from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
@@ -63,13 +61,17 @@ import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
+import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
+import { TaskLocation } from '../TaskModalForm';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
   margin: 'auto',
 }));
 
-const taskSchema: yup.SchemaOf<TaskCreateInput | TaskUpdateInput> = yup.object({
+const taskSchema: yup.SchemaOf<
+  TaskCreateInput | TaskUpdateInput | TaskLocation
+> = yup.object({
   id: yup.string().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>(),
   subject: yup.string().required(),
@@ -84,15 +86,14 @@ const taskSchema: yup.SchemaOf<TaskCreateInput | TaskUpdateInput> = yup.object({
   result: yup.mixed<ResultEnum>(),
   nextAction: yup.mixed<ActivityTypeEnum>(),
   notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
+  location: yup.string().nullable(),
 });
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskModalQuery['task'];
+  task?: (GetTaskForTaskModalQuery['task'] & TaskLocation) | null;
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
-  filter?: TaskFilter;
-  rowsPerPage: number;
 }
 
 interface NextActionsSectionProps {
@@ -145,10 +146,8 @@ const TaskModalLogForm = ({
   task,
   onClose,
   defaultValues,
-  filter,
-  rowsPerPage,
 }: Props): ReactElement => {
-  const initialTask: TaskCreateInput = task
+  const initialTask: TaskCreateInput & TaskLocation = task
     ? {
         ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
         contactIds: task.contacts.nodes.map(({ id }) => id),
@@ -157,6 +156,7 @@ const TaskModalLogForm = ({
         id: null,
         activityType: null,
         subject: '',
+        location: null,
         startAt: null,
         completedAt: DateTime.local()
           .plus({ hours: 1 })
@@ -186,6 +186,7 @@ const TaskModalLogForm = ({
   const [createTask, { loading: creating }] = useCreateTaskMutation();
   const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
+  const [updateTaskLocation] = useUpdateTaskLocationMutation();
 
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
@@ -194,11 +195,24 @@ const TaskModalLogForm = ({
     [],
   );
 
-  const onSubmit = async (attributes: TaskCreateInput): Promise<void> => {
+  const onSubmit = async (
+    attributes: TaskCreateInput & TaskLocation,
+  ): Promise<void> => {
     const body = commentBody.trim();
+    //TODO: Delete all location related stuff when field gets added to rails schema
+    const location = attributes.location;
+    delete attributes.location;
     const { data } = await createTask({
       variables: { accountListId, attributes },
       update: (_cache, { data }) => {
+        if (data?.createTask?.task.id && location) {
+          updateTaskLocation({
+            variables: {
+              taskId: data?.createTask?.task.id,
+              location,
+            },
+          });
+        }
         if (data?.createTask?.task.id && body !== '') {
           const id = uuidv4();
           createTaskComment({
@@ -211,10 +225,6 @@ const TaskModalLogForm = ({
         }
       },
       refetchQueries: [
-        {
-          query: GetTasksForTaskListDocument,
-          variables: { accountListId, first: rowsPerPage, ...filter },
-        },
         {
           query: TasksDocument,
           variables: { accountListId },
@@ -293,10 +303,6 @@ const TaskModalLogForm = ({
         },
         refetchQueries: [
           {
-            query: GetTasksForTaskListDocument,
-            variables: { accountListId, first: rowsPerPage, ...filter },
-          },
-          {
             query: GetThisWeekDocument,
             variables: {
               accountListId,
@@ -334,6 +340,7 @@ const TaskModalLogForm = ({
           contactIds,
           result,
           nextAction,
+          location,
         },
         setFieldValue,
         handleChange,
@@ -383,6 +390,18 @@ const TaskModalLogForm = ({
                   </Select>
                 </FormControl>
               </Grid>
+              {activityType === ActivityTypeEnum.Appointment && (
+                <Grid item>
+                  <TextField
+                    label={t('Location')}
+                    value={location}
+                    onChange={handleChange('location')}
+                    fullWidth
+                    multiline
+                    inputProps={{ 'aria-label': 'Location' }}
+                  />
+                </Grid>
+              )}
               <Grid item>
                 <Autocomplete
                   multiple

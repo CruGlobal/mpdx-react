@@ -19,7 +19,6 @@ import {
 import { styled } from '@mui/material/styles';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -44,6 +43,8 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -343,7 +344,7 @@ export const EditPartnershipInfoModal: React.FC<
                   >
                     {Object.values(StatusEnum).map((value) => (
                       <MenuItem key={value} value={value}>
-                        {t(value)}
+                        {getLocalizedContactStatus(t, value)}
                       </MenuItem>
                     ))}
                   </Select>
@@ -434,28 +435,29 @@ export const EditPartnershipInfoModal: React.FC<
                     onChange={(e) =>
                       setFieldValue('pledgeFrequency', e.target.value)
                     }
-                    IconComponent={() =>
-                      status !== StatusEnum.PartnerFinancial ? (
-                        <Tooltip
-                          title={
-                            <Typography>
-                              {t(
-                                'Commitments can only be set if status is Partner - Financial',
-                              )}
-                            </Typography>
-                          }
-                        >
-                          <InfoIcon />
-                        </Tooltip>
-                      ) : (
-                        <ArrowDropDownIcon />
-                      )
+                    IconComponent={
+                      status !== StatusEnum.PartnerFinancial
+                        ? () => (
+                            <Tooltip
+                              sx={{ marginRight: '14px' }}
+                              title={
+                                <Typography>
+                                  {t(
+                                    'Commitments can only be set if status is Partner - Financial',
+                                  )}
+                                </Typography>
+                              }
+                            >
+                              <InfoIcon />
+                            </Tooltip>
+                          )
+                        : undefined
                     }
                   >
                     <MenuItem value={''} disabled></MenuItem>
                     {Object.values(PledgeFrequencyEnum).map((value) => (
                       <MenuItem key={value} value={value}>
-                        {t(value)}
+                        {getLocalizedPledgeFrequency(t, value)}
                       </MenuItem>
                     ))}
                   </Select>

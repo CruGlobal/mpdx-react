@@ -20,7 +20,7 @@ import { FilterTagChip } from './Chip/FilterTagChip';
 import theme from 'src/theme';
 
 interface FilterPanelTagsSectionProps {
-  filterOptions: FilterOption[] | Record<string, never>[];
+  filterOptions: FilterOption[];
   selectedFilters: ContactFilterSetInput & TaskFilterSetInput;
   onSelectedFiltersChanged: (
     selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
@@ -60,7 +60,6 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
     <TagsAccordionWrapper>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMore />}>
-          {' '}
           <Box display="flex">
             <LocalOffer />
             <Typography style={{ marginLeft: 8 }}>{t('Tags')}</Typography>
@@ -74,24 +73,23 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
                   'Click a tag twice to look up all {{page}} do not have that tag.',
                   {
                     page: pathname?.includes('contacts')
-                      ? 'contacts who'
-                      : 'tasks that',
+                      ? t('contacts who')
+                      : t('tasks that'),
                   },
                 )}
               </TagsSectionDescription>
             </Box>
-            {filterOptions.map((option) => (
-              <>
-                {option.value !== '--any--' && (
-                  <FilterTagChip
-                    name={option.name}
-                    value={option.value}
-                    selectedFilters={selectedFilters}
-                    onSelectedFiltersChanged={onSelectedFiltersChanged}
-                  />
-                )}
-              </>
-            ))}
+            {filterOptions
+              .filter((option) => option.value !== '--any--')
+              .map((option) => (
+                <FilterTagChip
+                  key={option.name}
+                  name={option.name}
+                  value={option.value}
+                  selectedFilters={selectedFilters}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              ))}
           </TagsSectionWrapper>
         </AccordionDetails>
       </Accordion>

@@ -11,6 +11,14 @@ query GetDonationsTable(
       ...ExpectedDonationData
     }
   }
+  getDesignationDisplayNames(
+    accountListId: $accountListId
+    startDate: $startDate
+    endDate: $endDate
+  ) {
+    id
+    displayName
+  }
 }
 
 fragment ExpectedDonationData on Donation {

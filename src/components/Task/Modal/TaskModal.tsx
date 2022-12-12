@@ -8,10 +8,12 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../graphql/types.generated';
-import { TaskFilter } from '../List/List';
 import { useAccountListId } from '../../../hooks/useAccountListId';
-import { useGetTaskForTaskModalQuery } from '../Modal/TaskModalTask.generated';
-import TaskModalForm from './Form/TaskModalForm';
+import {
+  GetTaskForTaskModalQuery,
+  useGetTaskForTaskModalQuery,
+} from '../Modal/TaskModalTask.generated';
+import TaskModalForm, { TaskLocation } from './Form/TaskModalForm';
 import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
 import TaskModalCommentsList from './Comments/TaskModalCommentsList';
 import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
@@ -22,8 +24,6 @@ export interface TaskModalProps {
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
   showCompleteForm?: boolean;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
-  filter?: TaskFilter;
-  rowsPerPage?: number;
 }
 
 export enum TaskModalTabsEnum {
@@ -37,8 +37,6 @@ const TaskModal = ({
   onClose,
   view,
   defaultValues,
-  filter,
-  rowsPerPage,
 }: TaskModalProps): ReactElement => {
   const accountListId = useAccountListId();
   const [open, setOpen] = useState(!taskId);
@@ -57,7 +55,10 @@ const TaskModal = ({
     onClose && onClose();
   };
 
-  const task = data?.task;
+  const task: (GetTaskForTaskModalQuery['task'] & TaskLocation) | null =
+    data?.task
+      ? { ...data?.task, location: data?.taskLocation?.location }
+      : null;
 
   const renderTitle = (): string => {
     switch (view) {
@@ -101,8 +102,6 @@ const TaskModal = ({
             task={task}
             onClose={onModalClose}
             defaultValues={defaultValues}
-            filter={filter}
-            rowsPerPage={rowsPerPage || 100}
           />
         );
       default:
@@ -112,8 +111,6 @@ const TaskModal = ({
             task={task}
             onClose={onModalClose}
             defaultValues={defaultValues}
-            filter={filter}
-            rowsPerPage={rowsPerPage || 100}
             view={view}
           />
         );

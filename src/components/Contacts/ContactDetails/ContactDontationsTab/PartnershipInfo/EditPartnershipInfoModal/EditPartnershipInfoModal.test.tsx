@@ -162,19 +162,17 @@ describe('EditPartnershipInfoModal', () => {
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByLabelText('Frequency');
-    expect(statusInput.textContent).toEqual(StatusEnum.PartnerFinancial);
+    expect(statusInput.textContent).toEqual('Partner - Financial');
 
     expect(amountInput).toHaveValue(50);
-    expect(frequencyInput.textContent).toEqual(
-      PledgeFrequencyEnum.Every_2Months,
-    );
+    expect(frequencyInput.textContent).toEqual('Every 2 Months');
     userEvent.click(statusInput);
-    userEvent.click(getByText(StatusEnum.AskInFuture));
+    userEvent.click(getByText('Ask In Future'));
 
     // Values get reset and inputs becomes disabled when status is not PARTNER_FINANCIAL
     expect(amountInput).toHaveValue(0);
     expect(amountInput).toBeDisabled();
-    expect(statusInput.textContent).toEqual(StatusEnum.AskInFuture);
+    expect(statusInput.textContent).toEqual('Ask In Future');
 
     // these are flaky for some reason, disabling for now
     // await waitFor(() => expect(frequencyInput.textContent).toBe(''));
@@ -210,20 +208,16 @@ describe('EditPartnershipInfoModal', () => {
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByLabelText('Frequency');
-    expect(statusInput.textContent).toEqual(StatusEnum.PartnerFinancial);
+    expect(statusInput.textContent).toEqual('Partner - Financial');
 
     expect(amountInput).toHaveValue(50);
 
-    expect(frequencyInput.textContent).toEqual(
-      PledgeFrequencyEnum.Every_2Months,
-    );
+    expect(frequencyInput.textContent).toEqual('Every 2 Months');
     userEvent.type(amountInput, '0');
     userEvent.click(frequencyInput);
-    userEvent.click(getByText(PledgeFrequencyEnum.Annual));
+    userEvent.click(getByText('Annual'));
 
-    await waitFor(() =>
-      expect(frequencyInput.textContent).toEqual(PledgeFrequencyEnum.Annual),
-    );
+    await waitFor(() => expect(frequencyInput.textContent).toEqual('Annual'));
     expect(amountInput).toHaveValue(500);
 
     userEvent.click(getByText('Save'));

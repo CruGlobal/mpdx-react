@@ -10,7 +10,7 @@ const onSelectAll = jest.fn();
 
 const order = 'asc';
 const orderBy = 'giftTotal';
-const items: Item[] = [{ id: 'giftTotal', label: 'Gift Total' }];
+const items: Item[] = [{ id: 'donationPeriodSum', label: 'Gift Total' }];
 
 describe('PartnerGivingAnalysisReportTableHead', () => {
   it('default', async () => {
