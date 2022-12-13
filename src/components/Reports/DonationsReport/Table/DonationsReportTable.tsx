@@ -173,7 +173,11 @@ export const DonationsReportTable: React.FC<Props> = ({
         alignItems="center"
         justifyContent="end"
       >
-        <Typography>{donation.appeal?.name}</Typography>
+        {donation.appeal?.name && (
+          <Typography data-testid="appeal-name">
+            {donation.appeal?.name}
+          </Typography>
+        )}
         <IconButton color="primary">
           <EditIcon />
         </IconButton>
@@ -306,13 +310,16 @@ export const DonationsReportTable: React.FC<Props> = ({
       <Divider style={{ margin: 12 }} variant="middle"></Divider>
       {!isEmpty ? (
         <DataTable>
-          <DataGrid
-            rows={donations}
-            columns={columns}
-            autoHeight
-            disableSelectionOnClick
-            hideFooter
-          />
+          <Box data-testid="111aaa">
+            <DataGrid
+              rows={donations}
+              columns={columns}
+              autoHeight
+              disableSelectionOnClick
+              hideFooter
+              disableVirtualization
+            />
+          </Box>
           <Table>
             {Object.entries(totalForeignDonations).map(([currency, total]) => (
               <TableRow data-testid="donationRow" key={currency}>
