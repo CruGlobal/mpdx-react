@@ -288,7 +288,6 @@ export const DonationsReportTable: React.FC<Props> = ({
           <DataGrid
             rows={donations}
             columns={columns}
-            autoPageSize
             autoHeight
             disableSelectionOnClick
             hideFooter
