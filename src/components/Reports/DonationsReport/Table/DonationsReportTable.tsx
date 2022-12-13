@@ -1,3 +1,4 @@
+import { Appeal } from '../../../../../graphql/types.generated';
 import React from 'react';
 import {
   Box,
@@ -75,6 +76,7 @@ interface Donation {
   designation: string | undefined | null;
   method: string | null;
   id: string;
+  appeal: Partial<Appeal> | undefined | null;
 }
 
 export const DonationsReportTable: React.FC<Props> = ({
@@ -116,6 +118,7 @@ export const DonationsReportTable: React.FC<Props> = ({
       )?.displayName,
       method: data.paymentMethod || null,
       id: data.id,
+      appeal: data.appeal,
     };
   };
 
@@ -161,11 +164,22 @@ export const DonationsReportTable: React.FC<Props> = ({
     return <Typography>{donation.designation}</Typography>;
   };
 
-  const button = () => (
-    <IconButton color="primary">
-      <EditIcon />
-    </IconButton>
-  );
+  const button = (params: GridCellParams) => {
+    const donation = params.row as Donation;
+    return (
+      <Box
+        width={'100%'}
+        display="flex"
+        alignItems="center"
+        justifyContent="end"
+      >
+        <Typography>{donation.appeal?.name}</Typography>
+        <IconButton color="primary">
+          <EditIcon />
+        </IconButton>
+      </Box>
+    );
+  };
 
   const columns: GridColDef[] = [
     {
