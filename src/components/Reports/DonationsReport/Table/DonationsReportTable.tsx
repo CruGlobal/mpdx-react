@@ -40,6 +40,13 @@ const DataTable = styled(Box)(({ theme }) => ({
         ? theme.palette.common.white
         : theme.palette.cruGrayLight.main,
   },
+  '& .MuiDataGrid-cell': {
+    '& .MuiTypography-root': {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    },
+  },
 }));
 
 const LoadingBox = styled(Box)(({ theme }) => ({
