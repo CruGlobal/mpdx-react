@@ -310,16 +310,14 @@ export const DonationsReportTable: React.FC<Props> = ({
       <Divider style={{ margin: 12 }} variant="middle"></Divider>
       {!isEmpty ? (
         <DataTable>
-          <Box data-testid="111aaa">
-            <DataGrid
-              rows={donations}
-              columns={columns}
-              autoHeight
-              disableSelectionOnClick
-              hideFooter
-              disableVirtualization
-            />
-          </Box>
+          <DataGrid
+            rows={donations}
+            columns={columns}
+            autoHeight
+            disableSelectionOnClick
+            hideFooter
+            disableVirtualization
+          />
           <Table>
             {Object.entries(totalForeignDonations).map(([currency, total]) => (
               <TableRow data-testid="donationRow" key={currency}>
