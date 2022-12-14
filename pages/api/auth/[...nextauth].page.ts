@@ -28,9 +28,9 @@ if (!process.env.OKTA_CLIENT_ID || !process.env.OKTA_CLIENT_SECRET) {
   throw new Error('OKTA_CLIENT_ID or OKTA_CLIENT_SECRET envs not defined');
 }
 
-if (!process.env.API_OAUTH_CLIENT_ID || !process.env.API_OAUTH_CLIENT_SECRET) {
-  throw new Error('API_OAUTH_CLIENT_ID or API_OAUTH_CLIENT_SECRET envs not defined');
-}
+// if (!process.env.API_OAUTH_CLIENT_ID || !process.env.API_OAUTH_CLIENT_SECRET) {
+//   throw new Error('API_OAUTH_CLIENT_ID or API_OAUTH_CLIENT_SECRET envs not defined');
+// }
 
 const options: NextAuthOptions = {
   providers: [
@@ -44,7 +44,7 @@ const options: NextAuthOptions = {
     }),
     {
       id: 'apioauth',
-      name: '0Auth',
+      name: 'OAuth',
       type: 'oauth',
       clientId: process.env.API_OAUTH_CLIENT_ID,
       clientSecret: process.env.API_OAUTH_CLIENT_SECRET,
@@ -66,7 +66,7 @@ const options: NextAuthOptions = {
             name: 'Alice Adams',
             given_name: 'Alice',
             family_name: 'Adams',
-            email: 'someone.else@hotmail.cpm',
+            email: 'alice.adams@gmail.cpm',
             picture: 'https://example.com/83692/photo.jpg',
           };
         },
@@ -92,7 +92,7 @@ const options: NextAuthOptions = {
         );
       }
 
-      if (account.provider === 'auth0') {
+      if (account.provider === 'apioauth') {
         const { data } = await client.mutate<
           ApiOauthSignInMutation,
           ApiOauthSignInMutationVariables

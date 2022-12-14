@@ -10,6 +10,12 @@ if (process.env.secrets) {
   process.env.OKTA_CLIENT_SECRET = JSON.parse(
     process.env.secrets,
   ).OKTA_CLIENT_SECRET;
+  process.env.API_OAUTH_CLIENT_SECRET = JSON.parse(
+    process.env.secrets,
+  ).API_OAUTH_CLIENT_SECRET;
+  process.env.ROLLBAR_SERVER_ACCESS_TOKEN = JSON.parse(
+    process.env.secrets,
+  ).ROLLBAR_SERVER_ACCESS_TOKEN;
 }
 
 const prod = process.env.NODE_ENV === 'production';
@@ -62,6 +68,7 @@ module.exports = withPlugins([
       ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
       ONESKY_API_SECRET: process.env.ONESKY_API_SECRET,
       ONESKY_API_KEY: process.env.ONESKY_API_KEY,
+      ROLLBAR_SERVER_ACCESS_TOKEN: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
     },
     experimental: {
       modularizeImports: {
