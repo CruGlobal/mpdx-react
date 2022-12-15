@@ -1,0 +1,12 @@
+extend type Mutation {
+  deleteTags(input: DeleteTagsInput!): DeleteTagsPayload
+}
+
+input DeleteTagsInput {
+  tagName: String!
+  page: String!
+}
+
+type DeleteTagsPayload {
+  id: ID
+}

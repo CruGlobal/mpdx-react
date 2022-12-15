@@ -14,11 +14,14 @@ interface FilterTagChipProps {
   onSelectedFiltersChanged: (
     selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
   ) => void;
+  setSelectedTag: (tagName: string) => void;
+  openDeleteModal: (open: boolean) => void;
 }
 
 const TagChip = styled(Chip)(
   ({ selectType }: { selectType: 'none' | 'include' | 'exclude' }) => ({
     color: theme.palette.common.white,
+    margin: theme.spacing(0.5),
     backgroundColor:
       selectType === 'include'
         ? theme.palette.mpdxBlue.main
@@ -41,6 +44,8 @@ export const FilterTagChip: React.FC<FilterTagChipProps> = ({
   value,
   selectedFilters,
   onSelectedFiltersChanged,
+  setSelectedTag,
+  openDeleteModal,
 }) => {
   const includedTags = selectedFilters.tags ?? [];
   const excludedTags = selectedFilters.excludeTags ?? [];
@@ -93,6 +98,10 @@ export const FilterTagChip: React.FC<FilterTagChipProps> = ({
       selectType={getChipSelectType(name)}
       onClick={() => toggleSelect(name)}
       //TODO: Add onDelete functionality
+      onDelete={() => {
+        setSelectedTag(name);
+        openDeleteModal(true);
+      }}
     />
   );
 };
