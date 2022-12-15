@@ -2,6 +2,7 @@ import {
   ContactFilterStatusEnum,
   DaterangeFilter,
   MultiselectFilter,
+  NumericRangeFilter,
   TextFilter,
 } from '../../../../graphql/types.generated';
 
@@ -31,4 +32,14 @@ export const mockTextFilter: TextFilter = {
   filterKey: 'text',
   title: 'Text',
   options: [],
+};
+
+export const mockSliderFilter: NumericRangeFilter = {
+  __typename: 'NumericRangeFilter',
+  filterKey: 'donation_period_amount',
+  title: 'Donation Amount',
+  min: 10,
+  max: 100,
+  minLabel: 'Min',
+  maxLabel: 'Max',
 };

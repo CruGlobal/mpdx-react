@@ -231,14 +231,56 @@ describe('EditContactOtherModal', () => {
     const getFilteredContactsCalls = mutationSpy.mock.calls
       .map(([{ operation }]) => operation)
       .filter(
-        ({ operationName, variables }) =>
-          operationName === 'GetTaskModalContactsFiltered' &&
-          Array.isArray(variables.contactsFilters.ids),
+        ({ operationName }) => operationName === 'GetTaskModalContactsFiltered',
       );
+    // Test that the search by id and search by name calls are merged into one query when the referral is missing
+    expect(getFilteredContactsCalls).toHaveLength(1);
     // Test that contactsFilters.ids isn't ever [undefined]
-    expect(getFilteredContactsCalls.length).toBeGreaterThanOrEqual(1);
     getFilteredContactsCalls.forEach(({ variables }) => {
-      expect(variables.contactsFilters.ids).toEqual(['']);
+      expect(variables.contactsFilters.ids).toBeUndefined();
+    });
+  });
+
+  it('should handle empty contact method', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdateContactOtherMutation> onCall={mutationSpy}>
+              <ContactsPageProvider>
+                <ContactDetailProvider>
+                  <EditContactOtherModal
+                    accountListId={accountListId}
+                    isOpen={true}
+                    handleClose={handleClose}
+                    contact={{ ...mockContact, preferredContactMethod: null }}
+                    referral={undefined}
+                  />
+                </ContactDetailProvider>
+              </ContactsPageProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+
+    userEvent.click(getByLabelText('Preferred Contact Method'));
+    userEvent.click(getByText('None'));
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
+        variant: 'success',
+      }),
+    );
+
+    const saveContactCalls = mutationSpy.mock.calls
+      .map(([{ operation }]) => operation)
+      .filter(({ operationName }) => operationName === 'UpdateContactOther');
+
+    expect(saveContactCalls).toHaveLength(1);
+    expect(saveContactCalls[0].variables.attributes).toMatchObject({
+      preferredContactMethod: null,
     });
   });
 

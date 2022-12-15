@@ -21,7 +21,7 @@ import theme from 'src/theme';
 import { FilterTagDeleteModal } from './FilterTagDeleteModal';
 
 interface FilterPanelTagsSectionProps {
-  filterOptions: FilterOption[] | Record<string, never>[];
+  filterOptions: FilterOption[];
   selectedFilters: ContactFilterSetInput & TaskFilterSetInput;
   onSelectedFiltersChanged: (
     selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
@@ -84,21 +84,19 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
                 )}
               </TagsSectionDescription>
             </Box>
-            {filterOptions.map((option) => (
-              <>
-                {option.value !== '--any--' && (
-                  <FilterTagChip
-                    key={option.name}
-                    name={option.name}
-                    value={option.value}
-                    selectedFilters={selectedFilters}
-                    onSelectedFiltersChanged={onSelectedFiltersChanged}
-                    openDeleteModal={setOpenFilterTagDeleteModal}
-                    setSelectedTag={setSelectedTag}
-                  />
-                )}
-              </>
-            ))}
+            {filterOptions
+              .filter((option) => option.value !== '--any--')
+              .map((option) => (
+                <FilterTagChip
+                  key={option.name}
+                  name={option.name}
+                  value={option.value}
+                  selectedFilters={selectedFilters}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                  openDeleteModal={setOpenFilterTagDeleteModal}
+                  setSelectedTag={setSelectedTag}
+                />
+              ))}
           </TagsSectionWrapper>
         </AccordionDetails>
       </Accordion>

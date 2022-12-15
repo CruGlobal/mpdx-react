@@ -82,6 +82,16 @@ export const ContactsPageContext = React.createContext<ContactsPageType | null>(
   null,
 );
 
+export const setRedirectPathname = (router, accountListId) => {
+  let pathName = `/accountLists/${accountListId}/contacts`;
+  if (
+    router.pathname === '/accountLists/[accountListId]/tasks/[[...contactId]]'
+  ) {
+    pathName = `/accountLists/${accountListId}/tasks`;
+  }
+  return pathName;
+};
+
 interface Props {
   children?: React.ReactNode;
 }
@@ -161,13 +171,16 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
   }, [loadingContactIds]);
 
   useEffect(() => {
-    getContactIds({
-      variables: {
-        accountListId,
-        first: data?.contacts?.totalCount ?? 0,
-        contactsFilters: activeFilters,
-      },
-    });
+    const contactCount = data?.contacts?.totalCount ?? 0;
+    if (contactCount > 0) {
+      getContactIds({
+        variables: {
+          accountListId,
+          first: contactCount,
+          contactsFilters: activeFilters,
+        },
+      });
+    }
   }, [activeFilters, searchTerm, starredFilter, data]);
 
   const {
@@ -280,10 +293,13 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
         delete filteredQuery['filters'];
       }
     }
+
+    const pathName = setRedirectPathname(router, accountListId);
+
     push(
       id
         ? {
-            pathname: `/accountLists/${accountListId}/contacts${
+            pathname: `${pathName}${
               viewMode === TableViewModeEnum.List
                 ? ''
                 : viewMode === TableViewModeEnum.Flows
@@ -293,7 +309,7 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
             query: filteredQuery,
           }
         : {
-            pathname: `/accountLists/${accountListId}/contacts/${
+            pathname: `${pathName}/${
               viewMode === TableViewModeEnum.List
                 ? ''
                 : viewMode === TableViewModeEnum.Flows

@@ -27,7 +27,7 @@ it('renders with data', async () => {
               amountCurrency: 'CAD',
               createdAt: DateTime.now().minus({ month: 3 }).toISO(),
               id: 'abc',
-              name: 'John',
+              name: 'Appeal Test 1',
             },
             donationDate: DateTime.now().minus({ minutes: 4 }).toISO(),
             donorAccount: {
@@ -44,19 +44,13 @@ it('renders with data', async () => {
               convertedCurrency: 'CAD',
               currency: 'CAD',
             },
-            appeal: {
-              amount: 10,
-              amountCurrency: 'CAD',
-              createdAt: DateTime.now().minus({ month: 3 }).toISO(),
-              id: 'abc',
-              name: 'John',
-            },
+            appeal: null,
             donationDate: DateTime.now().minus({ minutes: 5 }).toISO(),
             donorAccount: {
               displayName: 'John',
-              id: 'abc',
+              id: 'def',
             },
-            id: 'abc',
+            id: 'def',
             paymentMethod: 'pay',
           },
         ],
@@ -64,17 +58,18 @@ it('renders with data', async () => {
     },
   };
 
-  const { getAllByTestId, queryAllByRole, queryByRole } = render(
-    <ThemeProvider theme={theme}>
-      <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
-        <DonationsReportTable
-          accountListId={'abc'}
-          time={time}
-          setTime={setTime}
-        />
-      </GqlMockedProvider>
-    </ThemeProvider>,
-  );
+  const { getAllByTestId, queryAllByRole, queryByRole, queryAllByText } =
+    render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+          <DonationsReportTable
+            accountListId={'abc'}
+            time={time}
+            setTime={setTime}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
 
   await waitFor(() =>
     expect(queryByRole('progressbar')).not.toBeInTheDocument(),
@@ -83,6 +78,10 @@ it('renders with data', async () => {
   expect(queryAllByRole('button')[1]).toBeInTheDocument();
 
   expect(getAllByTestId('donationRow')[0]).toBeInTheDocument();
+
+  await waitFor(() => expect(queryAllByText('Appeal Test 1')).toHaveLength(1));
+
+  expect(getAllByTestId('appeal-name')).toHaveLength(1);
 });
 
 it('renders empty', async () => {

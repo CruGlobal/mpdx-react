@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -13,7 +13,6 @@ import {
   Grid,
   InputLabel,
   MenuItem,
-  Select,
   TextField,
   Theme,
   useMediaQuery,
@@ -33,16 +32,13 @@ import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
-import {
-  ContactDetailContext,
-  ContactDetailsType,
-} from '../../../ContactDetailContext';
 import { useUpdateContactOtherMutation } from './EditContactOther.generated';
 import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -91,17 +87,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const languages = constants?.languages ?? [];
   const timezones = useGetTimezones();
 
-  const {
-    selectedReferralId: selectedId,
-    setSelectedReferralId: setSelectedId,
-    searchReferrelName: searchTerm,
-    setSearchReferralName: setSearchTerm,
-  } = React.useContext(ContactDetailContext) as ContactDetailsType;
-
-  useEffect(() => {
-    setSelectedId(referral?.referredBy.id ?? '');
-    setSearchTerm(referral?.referredBy.name ?? '');
-  }, []);
+  const [selectedId, setSelectedId] = useState(referral?.referredBy.id ?? '');
+  const [searchTerm, setSearchTerm] = useState(referral?.referredBy.name ?? '');
 
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
@@ -114,7 +101,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
-        contactsFilters: { wildcardSearch: searchTerm as string },
+        contactsFilters: searchTerm ? { wildcardSearch: searchTerm } : {},
       },
     });
 
@@ -122,7 +109,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
-        contactsFilters: { ids: [selectedId] },
+        contactsFilters: selectedId ? { ids: [selectedId] } : {},
       },
     });
 
@@ -148,18 +135,18 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       | 'locale'
       | 'timezone'
       | 'website'
-    > & { referredById: string | undefined }
+    > & { referredById: string | null | undefined }
   > = yup.object({
     id: yup.string().required(),
     churchName: yup.string().nullable(),
     preferredContactMethod: yup
       .mixed<PreferredContactMethodEnum>()
-      .oneOf(Object.values(PreferredContactMethodEnum))
+      .oneOf([...Object.values(PreferredContactMethodEnum), null])
       .nullable(),
     locale: yup.string().nullable(),
     timezone: yup.string().nullable(),
     website: yup.string().nullable(),
-    referredById: yup.string(),
+    referredById: yup.string().nullable(),
   });
 
   const onSubmit = async (
@@ -300,7 +287,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           }}
                         />
                       )}
-                      value={referredById}
+                      value={referredById || null}
                       onChange={(_, referredBy): void => {
                         setFieldValue('referredById', referredBy);
                         setSelectedId(referredBy || '');
@@ -319,7 +306,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                     >
                       {t('Preferred Contact Method')}
                     </InputLabel>
-                    <Select
+                    <NullableSelect
                       label={t('Preferred Contact Method')}
                       labelId="preferred-contact-method-select-label"
                       value={preferredContactMethod}
@@ -342,7 +329,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           );
                         },
                       )}
-                    </Select>
+                    </NullableSelect>
                   </FormControl>
                 </ContactInputWrapper>
                 <ContactInputWrapper>
@@ -352,7 +339,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         <InputLabel id="language-select-label">
                           {t('Language')}
                         </InputLabel>
-                        <Select
+                        <NullableSelect
                           label={t('Language')}
                           labelId="language-select-label"
                           value={locale}
@@ -385,7 +372,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                                 </MenuItem>
                               ),
                           )}
-                        </Select>
+                        </NullableSelect>
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -393,7 +380,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         <InputLabel id="timezone-select-label">
                           {t('Timezone')}
                         </InputLabel>
-                        <Select
+                        <NullableSelect
                           label={t('Timezone')}
                           labelId="timezone-select-label"
                           value={timezone}
@@ -423,7 +410,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                               {t(value)}
                             </MenuItem>
                           ))}
-                        </Select>
+                        </NullableSelect>
                       </FormControl>
                     </Grid>
                   </Grid>

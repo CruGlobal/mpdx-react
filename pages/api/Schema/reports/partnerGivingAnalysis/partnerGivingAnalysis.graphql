@@ -60,7 +60,7 @@ enum ContactFilterPledgeReceivedEnum {
   RECEIVED
 }
 
-input ContactFilterSetInput {
+input ReportContactFilterSetInput {
   """
   Filter by Address No Longer Valid; Accepts values 'true', or 'false'
   """
@@ -187,6 +187,14 @@ input ContactFilterSetInput {
   Filter by Gift Date; Accepts date range with text value like 'MM/DD/YYYY - MM/DD/YYYY'
   """
   donationDate: DateRangeInput
+
+  donationPeriodAverage: NumericRangeInput
+
+  donationPeriodCount: NumericRangeInput
+
+  donationPeriodPercentRank: NumericRangeInput
+
+  donationPeriodSum: NumericRangeInput
 
   """
   Filter contacts that have any of the tags included in this filter; comma separated value for multiple
@@ -331,6 +339,10 @@ input ContactFilterSetInput {
   reverseDesignationAccountId: Boolean
   reverseDonation: Boolean
   reverseDonationAmount: Boolean
+  reverseDonationPeriodAverage: Boolean
+  reverseDonationPeriodCount: Boolean
+  reverseDonationPeriodPercentRank: Boolean
+  reverseDonationPeriodSum: Boolean
   reverseIds: Boolean
   reverseLikely: Boolean
   reverseLocale: Boolean
@@ -460,7 +472,7 @@ input PartnerGivingAnalysisReportInput {
   pageSize: Int!
   sortField: String!
   sortDirection: SortDirection!
-  contactFilters: ContactFilterSetInput
+  contactFilters: ReportContactFilterSetInput
 }
 
 type PartnerGivingAnalysisReportContact {

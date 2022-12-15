@@ -5,7 +5,7 @@ import {
 } from '../../graphql/types.generated';
 import {
   ContactFilterNewsletterEnum,
-  ContactFilterSetInput,
+  ReportContactFilterSetInput,
   ContactFilterStatusEnum,
   DateRangeInput,
   FourteenMonthReportCurrencyType,
@@ -285,7 +285,7 @@ class MpdxRestApi extends RESTDataSource {
     pageSize: number,
     sortField: string,
     sortAscending: boolean,
-    contactFilters: ContactFilterSetInput | null | undefined,
+    contactFilters: ReportContactFilterSetInput | null | undefined,
   ) {
     // Adapted from src/components/Shared/Filters/FilterPanel.tsx
     // This code essentially does the reverse of the logic in setSelectedSavedFilter
@@ -318,6 +318,10 @@ class MpdxRestApi extends RESTDataSource {
         case 'reverseDesignationAccountId':
         case 'reverseDonation':
         case 'reverseDonationAmount':
+        case 'reverseDonationPeriodAverage':
+        case 'reverseDonationPeriodCount':
+        case 'reverseDonationPeriodPercentRank':
+        case 'reverseDonationPeriodSum':
         case 'reverseIds':
         case 'reverseLikely':
         case 'reverseLocale':
@@ -465,6 +469,10 @@ class MpdxRestApi extends RESTDataSource {
         case 'contactInfoPhone':
         case 'contactInfoWorkPhone':
         case 'donationAmountRange':
+        case 'donationPeriodAverage':
+        case 'donationPeriodCount':
+        case 'donationPeriodPercentRank':
+        case 'donationPeriodSum':
         case 'nameLike':
         case 'notes':
         case 'optOut':
