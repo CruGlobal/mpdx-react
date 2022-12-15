@@ -5,6 +5,8 @@ import ScalarTypeDefs from './scalars.graphql';
 import { ScalarResolvers } from './scalarResolvers';
 import { ExportContactsResolvers } from './ExportContacts/resolvers';
 import ExportContactsTypeDefs from './ExportContacts/exportContacts.graphql';
+import { MergeContactsResolvers } from './MergeContacts/resolvers';
+import MergeContactsTypeDefs from './MergeContacts/mergeContacts.graphql';
 import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
 import TaskAnalyticsTypeDefs from './TaskAnalytics/taskAnalytics.graphql';
 import FourteenMonthReportTypeDefs from './reports/fourteenMonth/fourteenMonth.graphql';
@@ -76,6 +78,7 @@ const schema = buildSubgraphSchema([
     resolvers: ContactPrimaryAddressResolvers,
   },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
+  { typeDefs: MergeContactsTypeDefs, resolvers: MergeContactsResolvers },
   {
     typeDefs: FourteenMonthReportTypeDefs,
     resolvers: FourteenMonthReportResolvers,
