@@ -1,3 +1,4 @@
+import { Appeal } from '../../../../../graphql/types.generated';
 import React from 'react';
 import {
   Box,
@@ -40,6 +41,13 @@ const DataTable = styled(Box)(({ theme }) => ({
         ? theme.palette.common.white
         : theme.palette.cruGrayLight.main,
   },
+  '& .MuiDataGrid-cell': {
+    '& .MuiTypography-root': {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    },
+  },
 }));
 
 const LoadingBox = styled(Box)(({ theme }) => ({
@@ -68,6 +76,7 @@ interface Donation {
   designation: string | undefined | null;
   method: string | null;
   id: string;
+  appeal: Partial<Appeal> | undefined | null;
 }
 
 export const DonationsReportTable: React.FC<Props> = ({
@@ -109,6 +118,7 @@ export const DonationsReportTable: React.FC<Props> = ({
       )?.displayName,
       method: data.paymentMethod || null,
       id: data.id,
+      appeal: data.appeal,
     };
   };
 
@@ -154,11 +164,26 @@ export const DonationsReportTable: React.FC<Props> = ({
     return <Typography>{donation.designation}</Typography>;
   };
 
-  const button = () => (
-    <IconButton color="primary">
-      <EditIcon />
-    </IconButton>
-  );
+  const button = (params: GridCellParams) => {
+    const donation = params.row as Donation;
+    return (
+      <Box
+        width={'100%'}
+        display="flex"
+        alignItems="center"
+        justifyContent="end"
+      >
+        {donation.appeal?.name && (
+          <Typography data-testid="appeal-name">
+            {donation.appeal?.name}
+          </Typography>
+        )}
+        <IconButton color="primary">
+          <EditIcon />
+        </IconButton>
+      </Box>
+    );
+  };
 
   const columns: GridColDef[] = [
     {
@@ -288,10 +313,10 @@ export const DonationsReportTable: React.FC<Props> = ({
           <DataGrid
             rows={donations}
             columns={columns}
-            autoPageSize
             autoHeight
             disableSelectionOnClick
             hideFooter
+            disableVirtualization
           />
           <Table>
             {Object.entries(totalForeignDonations).map(([currency, total]) => (
