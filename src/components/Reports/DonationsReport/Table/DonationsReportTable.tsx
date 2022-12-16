@@ -188,12 +188,12 @@ export const DonationsReportTable: React.FC<Props> = ({
       field: 'date',
       headerName: t('Date'),
       type: 'date',
-      width: 80,
+      width: 100,
     },
     {
       field: 'partner',
       headerName: t('Partner'),
-      width: 280,
+      width: 360,
       renderCell: link,
     },
     {
@@ -237,7 +237,7 @@ export const DonationsReportTable: React.FC<Props> = ({
   if (currencyList.length === 1 && currencyList.includes(accountCurrency)) {
     columns.splice(3, 1);
     columns.forEach(
-      (column) => (column.width = column.width ? column.width + 36 : 0),
+      (column) => (column.width = column.width ? column.width + 20 : 0),
     );
   }
 
