@@ -1,0 +1,31 @@
+mutation MassActionsMerge($loserContactIds: [ID!]!, $winnerContactId: ID!) {
+  mergeContacts(
+    input: {
+      loserContactIds: $loserContactIds
+      winnerContactId: $winnerContactId
+    }
+  )
+}
+
+query GetContactsForMerging($accountListId: ID!, $contactIds: [ID!]!) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { ids: $contactIds }
+  ) {
+    nodes {
+      id
+      avatar
+      name
+      primaryAddress {
+        id
+        street
+        city
+        state
+        postalCode
+        source
+      }
+      createdAt
+      status
+    }
+  }
+}

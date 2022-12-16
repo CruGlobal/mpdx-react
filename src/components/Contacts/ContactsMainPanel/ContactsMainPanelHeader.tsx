@@ -27,6 +27,7 @@ import { MassActionsCreateAppealModal } from '../MassActions/AddToAppeal/MassAct
 import { ExportsModal } from '../MassActions/Exports/ExportsModal';
 import { MailMergedLabelModal } from '../MassActions/Exports/MailMergedLabelModal/MailMergedLabelModal';
 import { MassActionsExportEmailsModal } from '../MassActions/Exports/Emails/MassActionsExportEmailsModal';
+import { MassActionsMergeModal } from '../MassActions/Merge/MassActionsMergeModal';
 import {
   ListHeader,
   TableViewModeEnum,
@@ -86,6 +87,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
+  const [mergeModalOpen, setMergeModalOpen] = useState(false);
 
   const { data } = useContactsQuery({
     variables: {
@@ -156,6 +158,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
         openCreateAppealModal={setCreateAppealModalOpen}
         openExportsModal={setExportsModalOpen}
         openExportEmailsModal={setExportEmailsModalOpen}
+        openMergeModal={setMergeModalOpen}
         buttonGroup={
           <Hidden xsDown>
             <Box display="flex" alignItems="center">
@@ -260,6 +263,13 @@ export const ContactsMainPanelHeader: React.FC = () => {
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setExportEmailsModalOpen(false)}
+        />
+      )}
+      {mergeModalOpen && (
+        <MassActionsMergeModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setMergeModalOpen(false)}
         />
       )}
     </>
