@@ -64,6 +64,7 @@ module.exports = withPlugins([
       API_OAUTH_CLIENT_SECRET: process.env.API_OAUTH_CLIENT_SECRET,
       API_OAUTH_ISSUER:
         process.env.API_OAUTH_ISSUER ?? 'https://api.stage.mpdx.org',
+      API_OAUTH_VISIBLE_NAME: process.env.API_OAUTH_VISIBLE_NAME ?? 'SSO',
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
       ONESKY_API_SECRET: process.env.ONESKY_API_SECRET,

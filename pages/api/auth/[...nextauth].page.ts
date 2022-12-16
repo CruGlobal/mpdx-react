@@ -44,7 +44,7 @@ const options: NextAuthOptions = {
     }),
     {
       id: 'apioauth',
-      name: 'OAuth',
+      name: process.env.API_OAUTH_VISIBLE_NAME,
       type: 'oauth',
       clientId: process.env.API_OAUTH_CLIENT_ID,
       clientSecret: process.env.API_OAUTH_CLIENT_SECRET,

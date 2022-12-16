@@ -35,7 +35,7 @@ partners in a quick and easy way."
           color="inherit"
           style={{ marginLeft: '10px' }}
         >
-          Sign In with OAuth
+          Sign In with {process.env.API_OAUTH_VISIBLE_NAME}
         </Button>
       )}
 
