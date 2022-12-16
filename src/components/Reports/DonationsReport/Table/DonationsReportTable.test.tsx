@@ -81,7 +81,7 @@ it('renders with data', async () => {
 
   await waitFor(() => expect(queryAllByText('Appeal Test 1')).toHaveLength(1));
 
-  expect(getAllByTestId('appeal-name')).toHaveLength(1);
+  expect(getAllByTestId('appeal-name')).toHaveLength(2);
 });
 
 it('renders empty', async () => {
