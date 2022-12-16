@@ -171,13 +171,11 @@ export const DonationsReportTable: React.FC<Props> = ({
         width={'100%'}
         display="flex"
         alignItems="center"
-        justifyContent="end"
+        justifyContent="space-between"
       >
-        {donation.appeal?.name && (
-          <Typography data-testid="appeal-name">
-            {donation.appeal?.name}
-          </Typography>
-        )}
+        <Typography data-testid="appeal-name">
+          {donation.appeal?.name}
+        </Typography>
         <IconButton color="primary">
           <EditIcon />
         </IconButton>
