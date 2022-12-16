@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
-import { ContactsPageProvider } from '../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import { ContactsQuery } from '../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
 import { ContactsContainer } from './ContactsContainer';
+import { ContactsPage } from '../../../pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 export default {
   title: 'Contacts/Container',
@@ -11,9 +11,9 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider<ContactsQuery>>
-      <ContactsPageProvider>
+      <ContactsPage>
         <ContactsContainer />
-      </ContactsPageProvider>
+      </ContactsPage>
     </GqlMockedProvider>
   );
 };

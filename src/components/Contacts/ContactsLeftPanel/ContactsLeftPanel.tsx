@@ -2,9 +2,9 @@ import _ from 'lodash';
 import React from 'react';
 import { ContactsMapPanel } from '../ContactsMap/ContactsMapPanel';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+  ContactsContext,
+  ContactsType,
+} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { TableViewModeEnum } from '../../../../src/components/Shared/Header/ListHeader';
 
@@ -21,14 +21,14 @@ export const ContactsLeftPanel: React.FC = () => {
     selected,
     setSelected,
     viewMode,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
   return (
     <>
       {viewMode !== TableViewModeEnum.Map ? (
         filterData && !filtersLoading ? (
           <FilterPanel
-            filters={filterData?.accountList.contactFilterGroups}
+            filters={filterData?.accountList?.contactFilterGroups}
             savedFilters={savedFilters}
             selectedFilters={activeFilters}
             onClose={toggleFilterPanel}

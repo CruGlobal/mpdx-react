@@ -8,9 +8,9 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import _ from 'lodash';
 import { SidePanelsLayout } from '../Layouts/SidePanelsLayout';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from '../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+  ContactsContext,
+  ContactsType,
+} from '../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { TableViewModeEnum } from '../Shared/Header/ListHeader';
 import Loading from '../Loading';
 import { ContactsMainPanel } from './ContactsMainPanel/ContactsMainPanel';
@@ -30,7 +30,7 @@ export const ContactsContainer: React.FC = ({}) => {
     contactDetailsOpen,
     viewMode,
     setContactFocus,
-  } = useContext(ContactsPageContext) as ContactsPageType;
+  } = useContext(ContactsContext) as ContactsType;
 
   return (
     <>

@@ -5,9 +5,9 @@ import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+  ContactsContext,
+  ContactsType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 
 export const ContactsList: React.FC = () => {
@@ -21,7 +21,7 @@ export const ContactsList: React.FC = () => {
     urlFilters,
     isFiltered,
     setActiveFilters,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {

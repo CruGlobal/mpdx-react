@@ -6,7 +6,6 @@ import {
   gqlMock,
   GqlMockedProvider,
 } from '../../../../__tests__/util/graphqlMocking';
-import { ContactsPageProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import { GetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -16,6 +15,7 @@ import {
   ContactRowFragmentDoc,
 } from './ContactRow.generated';
 import theme from 'src/theme';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'account-list-1';
 
@@ -74,9 +74,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider<GetUserOptionsQuery>>
           <ThemeProvider theme={theme}>
-            <ContactsPageProvider>
+            <ContactsPage>
               <ContactRow contact={contact} />
-            </ContactsPageProvider>
+            </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -99,9 +99,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider<GetUserOptionsQuery>>
           <ThemeProvider theme={theme}>
-            <ContactsPageProvider>
+            <ContactsPage>
               <ContactRow contact={contact} />
-            </ContactsPageProvider>
+            </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -118,9 +118,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider<GetUserOptionsQuery>>
           <ThemeProvider theme={theme}>
-            <ContactsPageProvider>
+            <ContactsPage>
               <ContactRow contact={contact} />
-            </ContactsPageProvider>
+            </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -142,9 +142,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider<GetUserOptionsQuery>>
           <ThemeProvider theme={theme}>
-            <ContactsPageProvider>
+            <ContactsPage>
               <ContactRow contact={contact} />
-            </ContactsPageProvider>
+            </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,

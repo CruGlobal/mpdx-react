@@ -9,7 +9,7 @@ import {
   GetContactDetailsHeaderQuery,
 } from './ContactDetailsHeader/ContactDetailsHeader.generated';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'abc';
 const contactId = 'contact-1';
@@ -27,11 +27,11 @@ export const Default = (): ReactElement => {
   return (
     <TestRouter router={router}>
       <GqlMockedProvider<GetContactDetailsHeaderQuery>>
-        <ContactsPageProvider>
+        <ContactsPage>
           <ContactDetailProvider>
             <ContactDetails onClose={() => {}} />
           </ContactDetailProvider>
-        </ContactsPageProvider>
+        </ContactsPage>
       </GqlMockedProvider>
     </TestRouter>
   );
@@ -55,11 +55,11 @@ export const Loading = (): ReactElement => {
           },
         ]}
       >
-        <ContactsPageProvider>
+        <ContactsPage>
           <ContactDetailProvider>
             <ContactDetails onClose={() => {}} />
           </ContactDetailProvider>
-        </ContactsPageProvider>
+        </ContactsPage>
       </MockedProvider>
     </TestRouter>
   );

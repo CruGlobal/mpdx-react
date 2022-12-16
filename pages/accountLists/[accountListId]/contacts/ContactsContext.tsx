@@ -27,7 +27,7 @@ import {
 import { Coordinates } from './map/map';
 import { useGetIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
-export type ContactsPageType = {
+export type ContactsType = {
   accountListId: string | undefined;
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
@@ -78,9 +78,7 @@ export type ContactsPageType = {
   userOptionsLoading: boolean;
 };
 
-export const ContactsPageContext = React.createContext<ContactsPageType | null>(
-  null,
-);
+export const ContactsContext = React.createContext<ContactsType | null>(null);
 
 export const getRedirectPathname = (
   routerPathname: string,
@@ -111,9 +109,29 @@ export const getRedirectPathname = (
 
 interface Props {
   children?: React.ReactNode;
+  urlFilters?: any;
+  activeFilters: ContactFilterSetInput;
+  setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
+  starredFilter: ContactFilterSetInput;
+  setStarredFilter: (filter: ContactFilterSetInput) => void;
+  filterPanelOpen: boolean;
+  setFilterPanelOpen: (open: boolean) => void;
+  contactId: string | string[] | undefined;
+  searchTerm: string | string[] | undefined;
 }
 
-export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
+export const ContactsProvider: React.FC<Props> = ({
+  children,
+  urlFilters,
+  activeFilters,
+  setActiveFilters,
+  starredFilter,
+  setStarredFilter,
+  filterPanelOpen,
+  setFilterPanelOpen,
+  contactId,
+  searchTerm,
+}) => {
   const accountListId = useAccountListId() ?? '';
   const router = useRouter();
   const { query, push, replace, isReady, pathname } = router;
@@ -124,22 +142,9 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
     undefined,
   );
 
-  const { contactId, searchTerm } = query;
-
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
   }
-
-  //#region Filters
-  const urlFilters =
-    query?.filters && JSON.parse(decodeURI(query.filters as string));
-
-  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
-    urlFilters ?? {},
-  );
-
-  const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
 
   //User options for display view
   const { data: userOptions, loading: userOptionsLoading } =
@@ -181,6 +186,21 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
   // Only query when the filters or total count change and store data in state
   const [allContactIds, setAllContactIds] = useState<string[]>([]);
 
+  const {
+    ids,
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+  } = useMassSelection(
+    data?.contacts?.totalCount ?? 0,
+    allContactIds,
+    activeFilters,
+    searchTerm as string,
+    starredFilter,
+  );
+  //#endregion
+
   useEffect(() => {
     if (!loadingContactIds && contactIds?.contacts.nodes) {
       setAllContactIds(contactIds?.contacts.nodes.map((contact) => contact.id));
@@ -199,21 +219,6 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
       });
     }
   }, [activeFilters, searchTerm, starredFilter, data]);
-
-  const {
-    ids,
-    selectionType,
-    isRowChecked,
-    toggleSelectAll,
-    toggleSelectionById,
-  } = useMassSelection(
-    data?.contacts?.totalCount ?? 0,
-    allContactIds,
-    activeFilters,
-    searchTerm as string,
-    starredFilter,
-  );
-  //#endregion
 
   useEffect(() => {
     if (isReady && contactId) {
@@ -253,19 +258,6 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
       }
     }
   }, [loading, viewMode]);
-
-  useEffect(() => {
-    const { filters: _, ...oldQuery } = query;
-    replace({
-      pathname,
-      query: {
-        ...oldQuery,
-        ...(Object.keys(activeFilters).length > 0
-          ? { filters: encodeURI(JSON.stringify(activeFilters)) }
-          : undefined),
-      },
-    });
-  }, [activeFilters]);
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
@@ -433,7 +425,7 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
   });
 
   return (
-    <ContactsPageContext.Provider
+    <ContactsContext.Provider
       value={{
         accountListId: accountListId ?? '',
         contactId: contactId,
@@ -475,6 +467,6 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
       }}
     >
       {children}
-    </ContactsPageContext.Provider>
+    </ContactsContext.Provider>
   );
 };
