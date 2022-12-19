@@ -24,7 +24,9 @@ const FullHeightBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-const ScrollBox = styled(FullHeightBox)(({ isscroll }: ScrollBoxProps) => ({
+const ScrollBox = styled(FullHeightBox, {
+  shouldForwardProp: (prop) => prop !== 'isscroll',
+})(({ isscroll }: ScrollBoxProps) => ({
   overflowY: isscroll === 1 ? 'auto' : 'hidden',
 }));
 

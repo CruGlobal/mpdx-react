@@ -403,25 +403,27 @@ const TaskModalLogForm = ({
                 </Grid>
               )}
               <Grid item>
-                <Autocomplete
-                  multiple
-                  options={
-                    (
-                      mergedContacts &&
-                      [...mergedContacts].sort((a, b) =>
-                        a.name.localeCompare(b.name),
-                      )
-                    )?.map(({ id }) => id) || []
-                  }
-                  getOptionLabel={(contactId) =>
-                    mergedContacts.find(({ id }) => id === contactId)?.name ??
-                    ''
-                  }
-                  loading={
-                    loading || loadingFilteredById || loadingFilteredByName
-                  }
-                  renderInput={(params): ReactElement => {
-                    return !loadingFilteredById ? (
+                {loadingFilteredById ? (
+                  <CircularProgress color="primary" size={20} />
+                ) : (
+                  <Autocomplete
+                    multiple
+                    options={
+                      (
+                        mergedContacts &&
+                        [...mergedContacts].sort((a, b) =>
+                          a.name.localeCompare(b.name),
+                        )
+                      )?.map(({ id }) => id) || []
+                    }
+                    getOptionLabel={(contactId) =>
+                      mergedContacts.find(({ id }) => id === contactId)?.name ??
+                      ''
+                    }
+                    loading={
+                      loading || loadingFilteredById || loadingFilteredByName
+                    }
+                    renderInput={(params): ReactElement => (
                       <TextField
                         {...params}
                         onChange={handleSearchTermChange}
@@ -442,19 +444,17 @@ const TaskModalLogForm = ({
                           ),
                         }}
                       />
-                    ) : (
-                      <CircularProgress color="primary" size={20} />
-                    );
-                  }}
-                  value={contactIds ?? undefined}
-                  onChange={(_, contactIds): void => {
-                    setFieldValue('contactIds', contactIds);
-                    setSelectedIds(contactIds);
-                  }}
-                  isOptionEqualToValue={(option, value): boolean =>
-                    option === value
-                  }
-                />
+                    )}
+                    value={contactIds ?? undefined}
+                    onChange={(_, contactIds): void => {
+                      setFieldValue('contactIds', contactIds);
+                      setSelectedIds(contactIds);
+                    }}
+                    isOptionEqualToValue={(option, value): boolean =>
+                      option === value
+                    }
+                  />
+                )}
               </Grid>
               <Grid item>
                 <FormControl fullWidth>

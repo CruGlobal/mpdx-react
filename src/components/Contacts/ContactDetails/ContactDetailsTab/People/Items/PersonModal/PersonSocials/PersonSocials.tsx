@@ -36,17 +36,17 @@ const ContactAddText = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
-const SocialsTextField = styled(TextField)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
+const SocialsTextField = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
-const SocialSelect = styled(Select)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
+const SocialSelect = styled(Select, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
 interface PersonSocialProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;

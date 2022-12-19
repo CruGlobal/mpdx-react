@@ -63,6 +63,7 @@ import {
   getLocalizedNotificationType,
 } from 'src/utils/functions/getLocalizedNotificationStrings';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 
 export interface TaskLocation {
   location?: string | null | undefined;
@@ -511,25 +512,27 @@ const TaskModalForm = ({
                 </Grid>
               )}
               <Grid item>
-                <Autocomplete
-                  multiple
-                  options={
-                    (
-                      mergedContacts &&
-                      [...mergedContacts].sort((a, b) =>
-                        a.name.localeCompare(b.name),
-                      )
-                    )?.map(({ id }) => id) || []
-                  }
-                  getOptionLabel={(contactId) =>
-                    mergedContacts.find(({ id }) => id === contactId)?.name ??
-                    ''
-                  }
-                  loading={
-                    loading || loadingFilteredById || loadingFilteredByName
-                  }
-                  renderInput={(params): ReactElement => {
-                    return !loadingFilteredById ? (
+                {loadingFilteredById ? (
+                  <CircularProgress color="primary" size={20} />
+                ) : (
+                  <Autocomplete
+                    multiple
+                    options={
+                      (
+                        mergedContacts &&
+                        [...mergedContacts].sort((a, b) =>
+                          a.name.localeCompare(b.name),
+                        )
+                      )?.map(({ id }) => id) || []
+                    }
+                    getOptionLabel={(contactId) =>
+                      mergedContacts.find(({ id }) => id === contactId)?.name ??
+                      ''
+                    }
+                    loading={
+                      loading || loadingFilteredById || loadingFilteredByName
+                    }
+                    renderInput={(params): ReactElement => (
                       <TextField
                         {...params}
                         onChange={handleSearchTermChange}
@@ -546,19 +549,17 @@ const TaskModalForm = ({
                           ),
                         }}
                       />
-                    ) : (
-                      <CircularProgress color="primary" size={20} />
-                    );
-                  }}
-                  value={contactIds ?? undefined}
-                  onChange={(_, contactIds): void => {
-                    setFieldValue('contactIds', contactIds);
-                    setSelectedIds(contactIds);
-                  }}
-                  isOptionEqualToValue={(option, value): boolean =>
-                    option === value
-                  }
-                />
+                    )}
+                    value={contactIds ?? undefined}
+                    onChange={(_, contactIds): void => {
+                      setFieldValue('contactIds', contactIds);
+                      setSelectedIds(contactIds);
+                    }}
+                    isOptionEqualToValue={(option, value): boolean =>
+                      option === value
+                    }
+                  />
+                )}
               </Grid>
               {initialTask.completedAt && availableResults.length > 0 && (
                 <Grid item>
@@ -640,7 +641,8 @@ const TaskModalForm = ({
                         marginBottom: theme.spacing(1),
                       }}
                     >
-                      Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
+                      {t('Notifications')}
+                      <InfoIcon style={{ marginLeft: '5px' }} />
                     </Typography>
                   </Tooltip>
                   <Grid container spacing={2}>
@@ -660,7 +662,7 @@ const TaskModalForm = ({
                             </Typography>
                           }
                         >
-                          <Select
+                          <NullableSelect
                             labelId="notificationType"
                             value={notificationType}
                             onChange={(e) =>
@@ -668,13 +670,12 @@ const TaskModalForm = ({
                             }
                             label={t('Type')}
                           >
-                            <MenuItem value={undefined}>{t('None')}</MenuItem>
                             {Object.values(NotificationTypeEnum).map((val) => (
                               <MenuItem key={val} value={val}>
                                 {getLocalizedNotificationType(t, val)}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </NullableSelect>
                         </Tooltip>
                       </FormControl>
                     </Grid>

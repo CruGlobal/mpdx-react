@@ -18,26 +18,26 @@ interface FilterTagChipProps {
   openDeleteModal: (open: boolean) => void;
 }
 
-const TagChip = styled(Chip)(
-  ({ selectType }: { selectType: 'none' | 'include' | 'exclude' }) => ({
-    color: theme.palette.common.white,
-    margin: theme.spacing(0.5),
+const TagChip = styled(Chip, {
+  shouldForwardProp: (prop) => prop !== 'selectType',
+})(({ selectType }: { selectType: 'none' | 'include' | 'exclude' }) => ({
+  color: theme.palette.common.white,
+  margin: theme.spacing(0.5),
+  backgroundColor:
+    selectType === 'include'
+      ? theme.palette.mpdxBlue.main
+      : selectType === 'exclude'
+      ? theme.palette.error.main
+      : theme.palette.cruGrayMedium.main,
+  '&:focus': {
     backgroundColor:
       selectType === 'include'
         ? theme.palette.mpdxBlue.main
         : selectType === 'exclude'
         ? theme.palette.error.main
         : theme.palette.cruGrayMedium.main,
-    '&:focus': {
-      backgroundColor:
-        selectType === 'include'
-          ? theme.palette.mpdxBlue.main
-          : selectType === 'exclude'
-          ? theme.palette.error.main
-          : theme.palette.cruGrayMedium.main,
-    },
-  }),
-);
+  },
+}));
 
 export const FilterTagChip: React.FC<FilterTagChipProps> = ({
   name,

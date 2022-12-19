@@ -10,6 +10,8 @@ import {
   TableCell,
   TableRow,
   CircularProgress,
+  TableHead,
+  TableBody,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
@@ -319,39 +321,47 @@ export const DonationsReportTable: React.FC<Props> = ({
             disableVirtualization
           />
           <Table>
-            {Object.entries(totalForeignDonations).map(([currency, total]) => (
-              <TableRow data-testid="donationRow" key={currency}>
-                <TableCell style={{ width: 395 }}>
+            <TableHead>
+              {Object.entries(totalForeignDonations).map(
+                ([currency, total]) => (
+                  <TableRow data-testid="donationRow" key={currency}>
+                    <TableCell style={{ width: 395 }}>
+                      <Typography
+                        style={{ float: 'right', fontWeight: 'bold' }}
+                      >
+                        {t('Total {{currency}} Donations:', { currency })}
+                      </Typography>
+                    </TableCell>
+                    <TableCell style={{ width: 150 }}>
+                      <Typography style={{ float: 'left', fontWeight: 'bold' }}>
+                        {Math.round(total.convertedTotal * 100) / 100}{' '}
+                        {accountCurrency}
+                      </Typography>
+                    </TableCell>
+                    <TableCell style={{}}>
+                      <Typography style={{ float: 'left', fontWeight: 'bold' }}>
+                        {Math.round(total.foreignTotal * 100) / 100} {currency}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ),
+              )}
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>
                   <Typography style={{ float: 'right', fontWeight: 'bold' }}>
-                    {t('Total {{currency}} Donations:', { currency })}
+                    {t('Total Donations: ')}
                   </Typography>
                 </TableCell>
-                <TableCell style={{ width: 150 }}>
+                <TableCell>
                   <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {Math.round(total.convertedTotal * 100) / 100}{' '}
-                    {accountCurrency}
+                    {Math.round(totalDonations * 100) / 100}
                   </Typography>
                 </TableCell>
-                <TableCell style={{}}>
-                  <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {Math.round(total.foreignTotal * 100) / 100} {currency}
-                  </Typography>
-                </TableCell>
+                <TableCell />
               </TableRow>
-            ))}
-            <TableRow>
-              <TableCell>
-                <Typography style={{ float: 'right', fontWeight: 'bold' }}>
-                  {t('Total Donations: ')}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                  {Math.round(totalDonations * 100) / 100}
-                </Typography>
-              </TableCell>
-              <TableCell />
-            </TableRow>
+            </TableBody>
           </Table>
         </DataTable>
       ) : loading || loadingAccountListData ? (

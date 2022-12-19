@@ -247,7 +247,7 @@ const NotificationMenuItem = ({
                   {dateFormat(DateTime.fromISO(item.notification.occurredAt))}
                 </Typography>{' '}
                 —{' '}
-                <Typography variant="body2" display="inline">
+                <Typography component="span" variant="body2">
                   {message}
                 </Typography>
               </>
