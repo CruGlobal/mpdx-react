@@ -9,8 +9,15 @@ fragment ContactPartnerAccounts on Contact {
         accountNumber
         organization {
           id
+          name
         }
       }
     }
+  }
+}
+
+query GetAccountListSalaryOrganization($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    salaryOrganizationId
   }
 }
