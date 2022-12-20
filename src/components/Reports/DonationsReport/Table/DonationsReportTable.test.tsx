@@ -88,6 +88,8 @@ it('renders with data', async () => {
   await waitFor(() => expect(queryAllByText('Appeal Test 1')).toHaveLength(1));
 
   expect(getAllByTestId('appeal-name')).toHaveLength(2);
+
+  expect(getAllByTestId('appeal-name')[1] as HTMLElement).toHaveTextContent('');
 });
 
 it('renders empty', async () => {
