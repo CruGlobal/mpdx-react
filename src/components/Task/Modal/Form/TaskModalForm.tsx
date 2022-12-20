@@ -692,7 +692,7 @@ const TaskModalForm = ({
                             <Typography
                               style={{ display: 'flex', alignItems: 'center' }}
                             >
-                              {t(' Time')}
+                              {t('Time')}
                             </Typography>
                           }
                           fullWidth
@@ -712,7 +712,7 @@ const TaskModalForm = ({
                           <Typography
                             style={{ display: 'flex', alignItems: 'center' }}
                           >
-                            {t(' Unit')}
+                            {t('Unit')}
                           </Typography>
                         </InputLabel>
                         <Tooltip
@@ -732,7 +732,7 @@ const TaskModalForm = ({
                                 e.target.value,
                               )
                             }
-                            label={t(' Unit')}
+                            label={t('Unit')}
                           >
                             {Object.values(NotificationTimeUnitEnum).map(
                               (val) => (
