@@ -5,6 +5,7 @@ import React, { ReactElement, ReactNode } from 'react';
 interface Props {
   children?: ReactNode;
   icon?: ReactNode;
+  rightIcon?: ReactNode;
 }
 
 const IconWrap = styled(Box)(({}) => ({
@@ -22,12 +23,14 @@ const DetailWrap = styled(Box)(({}) => ({
 
 export const ContactHeaderSection = ({
   icon,
+  rightIcon,
   children,
 }: Props): ReactElement => {
   return (
     <Box display="flex" alignItems="start">
       <IconWrap>{icon}</IconWrap>
       <DetailWrap>{children}</DetailWrap>
+      {rightIcon}
     </Box>
   );
 };

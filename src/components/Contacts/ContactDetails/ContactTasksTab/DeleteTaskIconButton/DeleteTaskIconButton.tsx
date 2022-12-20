@@ -15,11 +15,13 @@ export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
 interface DeleteTaskIconButtonProps {
   accountListId: string;
   taskId: string;
+  onDeleteConfirm?: () => void;
 }
 
 export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
   accountListId,
   taskId,
+  onDeleteConfirm,
 }) => {
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
 
@@ -31,9 +33,7 @@ export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
       <DeleteConfirmation
         deleteType="task"
         open={removeDialogOpen}
-        onClickConfirm={() => {
-          return true;
-        }} // onDeleteTask
+        onClickConfirm={onDeleteConfirm} // onDeleteTask
         onClickDecline={handleRemoveDialog}
         accountListId={accountListId}
         taskId={taskId}

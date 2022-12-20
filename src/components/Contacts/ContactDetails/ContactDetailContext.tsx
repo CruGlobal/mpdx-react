@@ -19,10 +19,6 @@ export type ContactDetailsType = {
   setEditingAddressId: React.Dispatch<React.SetStateAction<string | undefined>>;
   addAddressModalOpen: boolean;
   setAddAddressModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedReferralId: string;
-  setSelectedReferralId: React.Dispatch<React.SetStateAction<string>>;
-  searchReferrelName: string;
-  setSearchReferralName: React.Dispatch<React.SetStateAction<string>>;
   personEditShowMore: boolean;
   setPersonEditShowMore: React.Dispatch<React.SetStateAction<boolean>>;
   removeDialogOpen: boolean;
@@ -71,9 +67,6 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
     setSelectedTabKey(newKey);
   };
 
-  const [selectedReferralId, setSelectedReferralId] = useState('');
-  const [searchReferrelName, setSearchReferralName] = useState('');
-
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [removeDialogOpen, handleRemoveDialogOpen] = useState(false);
 
@@ -107,10 +100,6 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
         selectedTabKey: selectedTabKey,
         setSelectedTabKey: setSelectedTabKey,
         handleTabChange: handleTabChange,
-        selectedReferralId: selectedReferralId,
-        setSelectedReferralId: setSelectedReferralId,
-        searchReferrelName: searchReferrelName,
-        setSearchReferralName: setSearchReferralName,
         personEditShowMore: personEditShowMore,
         setPersonEditShowMore: setPersonEditShowMore,
         removeDialogOpen: removeDialogOpen,

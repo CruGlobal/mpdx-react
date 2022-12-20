@@ -6,7 +6,7 @@ import {
 } from '../../graphql/types.generated';
 import {
   ContactFilterNewsletterEnum,
-  ContactFilterSetInput,
+  ReportContactFilterSetInput,
   ContactFilterStatusEnum,
   DateRangeInput,
   FourteenMonthReportCurrencyType,
@@ -65,6 +65,11 @@ import {
 import Cors from 'micro-cors';
 import { PageConfig, NextApiRequest } from 'next';
 import { ApolloServer } from 'apollo-server-micro';
+import {
+  DonationReponseData,
+  DonationReponseIncluded,
+  getDesignationDisplayNames,
+} from './Schema/donations/datahandler';
 import { getLocationForTask } from './Schema/Tasks/TaskLocation/datahandler';
 import { UpdateTaskLocation } from './Schema/Tasks/TaskLocation/Update/datahandler';
 import {
@@ -84,7 +89,7 @@ class MpdxRestApi extends RESTDataSource {
 
   willSendRequest(request: RequestOptions) {
     request.headers.set('Authorization', this.context.authHeader);
-    request.headers.set('content-type', 'application/vnd.api+json');
+    request.headers.set('Content-Type', 'application/vnd.api+json');
   }
 
   // Overridden to accept JSON API Content Type application/vnd.api+json
@@ -137,6 +142,23 @@ class MpdxRestApi extends RESTDataSource {
     });
 
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
+  }
+
+  async mergeContacts(loserContactIds: Array<string>, winnerContactId: string) {
+    const response = await this.post('contacts/merges/bulk', {
+      data: loserContactIds.map((loserId) => ({
+        data: {
+          type: 'contacts',
+          attributes: {
+            loser_id: loserId,
+            winner_id: winnerContactId,
+          },
+        },
+      })),
+    });
+
+    // Return the id of the winner
+    return response[0].data.id;
   }
 
   async getAccountListAnalytics(
@@ -285,7 +307,7 @@ class MpdxRestApi extends RESTDataSource {
     pageSize: number,
     sortField: string,
     sortAscending: boolean,
-    contactFilters: ContactFilterSetInput | null | undefined,
+    contactFilters: ReportContactFilterSetInput | null | undefined,
   ) {
     // Adapted from src/components/Shared/Filters/FilterPanel.tsx
     // This code essentially does the reverse of the logic in setSelectedSavedFilter
@@ -318,6 +340,10 @@ class MpdxRestApi extends RESTDataSource {
         case 'reverseDesignationAccountId':
         case 'reverseDonation':
         case 'reverseDonationAmount':
+        case 'reverseDonationPeriodAverage':
+        case 'reverseDonationPeriodCount':
+        case 'reverseDonationPeriodPercentRank':
+        case 'reverseDonationPeriodSum':
         case 'reverseIds':
         case 'reverseLikely':
         case 'reverseLocale':
@@ -465,6 +491,10 @@ class MpdxRestApi extends RESTDataSource {
         case 'contactInfoPhone':
         case 'contactInfoWorkPhone':
         case 'donationAmountRange':
+        case 'donationPeriodAverage':
+        case 'donationPeriodCount':
+        case 'donationPeriodPercentRank':
+        case 'donationPeriodSum':
         case 'nameLike':
         case 'notes':
         case 'optOut':
@@ -611,6 +641,28 @@ class MpdxRestApi extends RESTDataSource {
     return UpdateComment(data);
   }
 
+  async getDesginationDisplayNames(
+    accountListId: string,
+    startDate: string | undefined | null,
+    endDate: string | undefined | null,
+  ) {
+    //'2022-11-01..2022-11-30'
+    const {
+      data,
+      included,
+    }: { data: DonationReponseData[]; included: DonationReponseIncluded[] } =
+      await this.get(
+        `account_lists/${accountListId}/donations?fields[designation_account]=display_name&filter[donation_date]=${startDate?.slice(
+          0,
+          10,
+        )}...${endDate?.slice(
+          0,
+          10,
+        )}&include=designation_account&per_page=10000`,
+      );
+    return getDesignationDisplayNames(data, included);
+  }
+
   async getTaskLocation(_accountListId: string, taskId: string) {
     const { data } = await this.get(`tasks/${taskId}`);
     return getLocationForTask(data);
@@ -688,6 +740,30 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return DestroyDonorAccount(data);
+  }
+
+  async deleteTags(tagName: string, page: string) {
+    const { data } = await this.delete(
+      `${page}/tags/bulk`,
+      {
+        '0[name]': tagName,
+      },
+      {
+        body: JSON.stringify({
+          data: [
+            {
+              data: {
+                type: 'tags',
+                attributes: {
+                  name: tagName,
+                },
+              },
+            },
+          ],
+        }),
+      },
+    );
+    return data;
   }
 }
 

@@ -63,6 +63,7 @@ import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { TaskLocation } from '../TaskModalForm';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -113,32 +114,28 @@ const NextActionsSection: React.FC<NextActionsSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const availableNextActions = possibleNextActions(activityType);
-  return (
-    <>
-      {availableNextActions.length > 0 && (
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
-            <Select
-              labelId="nextAction"
-              label={t('Next Action')}
-              value={nextAction}
-              onChange={(e) => setFieldValue('nextAction', e.target.value)}
-            >
-              <MenuItem value={ActivityTypeEnum.None}>{t('None')}</MenuItem>
-              {availableNextActions
-                .filter((val) => val !== 'NONE')
-                .map((val) => (
-                  <MenuItem key={val} value={val}>
-                    {getLocalizedTaskType(t, val)}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Grid>
-      )}
-    </>
-  );
+  return availableNextActions.length > 0 ? (
+    <Grid item xs={12}>
+      <FormControl fullWidth>
+        <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
+        <Select
+          labelId="nextAction"
+          label={t('Next Action')}
+          value={nextAction}
+          onChange={(e) => setFieldValue('nextAction', e.target.value)}
+        >
+          <MenuItem value={ActivityTypeEnum.None}>{t('None')}</MenuItem>
+          {availableNextActions
+            .filter((val) => val !== ActivityTypeEnum.None)
+            .map((val) => (
+              <MenuItem key={val} value={val}>
+                {getLocalizedTaskType(t, val)}
+              </MenuItem>
+            ))}
+        </Select>
+      </FormControl>
+    </Grid>
+  ) : null;
 };
 
 const TaskModalLogForm = ({
@@ -371,7 +368,7 @@ const TaskModalLogForm = ({
               <Grid item>
                 <FormControl fullWidth>
                   <InputLabel id="activityType">{t('Action')}</InputLabel>
-                  <Select
+                  <NullableSelect
                     labelId="activityType"
                     label={t('Action')}
                     value={activityType}
@@ -379,15 +376,14 @@ const TaskModalLogForm = ({
                       setFieldValue('activityType', e.target.value)
                     }
                   >
-                    <MenuItem value={undefined}>{t('None')}</MenuItem>
                     {Object.values(ActivityTypeEnum)
-                      .filter((val) => val !== 'NONE')
+                      .filter((val) => val !== ActivityTypeEnum.None)
                       .map((val) => (
                         <MenuItem key={val} value={val}>
                           {getLocalizedTaskType(t, val)}
                         </MenuItem>
                       ))}
-                  </Select>
+                  </NullableSelect>
                 </FormControl>
               </Grid>
               {activityType === ActivityTypeEnum.Appointment && (
@@ -403,25 +399,27 @@ const TaskModalLogForm = ({
                 </Grid>
               )}
               <Grid item>
-                <Autocomplete
-                  multiple
-                  options={
-                    (
-                      mergedContacts &&
-                      [...mergedContacts].sort((a, b) =>
-                        a.name.localeCompare(b.name),
-                      )
-                    )?.map(({ id }) => id) || []
-                  }
-                  getOptionLabel={(contactId) =>
-                    mergedContacts.find(({ id }) => id === contactId)?.name ??
-                    ''
-                  }
-                  loading={
-                    loading || loadingFilteredById || loadingFilteredByName
-                  }
-                  renderInput={(params): ReactElement => {
-                    return !loadingFilteredById ? (
+                {loadingFilteredById ? (
+                  <CircularProgress color="primary" size={20} />
+                ) : (
+                  <Autocomplete
+                    multiple
+                    options={
+                      (
+                        mergedContacts &&
+                        [...mergedContacts].sort((a, b) =>
+                          a.name.localeCompare(b.name),
+                        )
+                      )?.map(({ id }) => id) || []
+                    }
+                    getOptionLabel={(contactId) =>
+                      mergedContacts.find(({ id }) => id === contactId)?.name ??
+                      ''
+                    }
+                    loading={
+                      loading || loadingFilteredById || loadingFilteredByName
+                    }
+                    renderInput={(params): ReactElement => (
                       <TextField
                         {...params}
                         onChange={handleSearchTermChange}
@@ -442,24 +440,22 @@ const TaskModalLogForm = ({
                           ),
                         }}
                       />
-                    ) : (
-                      <CircularProgress color="primary" size={20} />
-                    );
-                  }}
-                  value={contactIds ?? undefined}
-                  onChange={(_, contactIds): void => {
-                    setFieldValue('contactIds', contactIds);
-                    setSelectedIds(contactIds);
-                  }}
-                  isOptionEqualToValue={(option, value): boolean =>
-                    option === value
-                  }
-                />
+                    )}
+                    value={contactIds ?? undefined}
+                    onChange={(_, contactIds): void => {
+                      setFieldValue('contactIds', contactIds);
+                      setSelectedIds(contactIds);
+                    }}
+                    isOptionEqualToValue={(option, value): boolean =>
+                      option === value
+                    }
+                  />
+                )}
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
                   <InputLabel id="result">{t('Result')}</InputLabel>
-                  <Select
+                  <NullableSelect
                     labelId="result"
                     label={t('Result')}
                     value={result}
@@ -467,7 +463,7 @@ const TaskModalLogForm = ({
                   >
                     {activityType ? (
                       possibleResults(activityType)
-                        .filter((val) => val !== 'NONE')
+                        .filter((val) => val !== ResultEnum.None)
                         .map((val) => (
                           <MenuItem key={val} value={val}>
                             {getLocalizedResultString(t, val)}
@@ -478,7 +474,7 @@ const TaskModalLogForm = ({
                         {getLocalizedResultString(t, ResultEnum.Done)}
                       </MenuItem>
                     )}
-                  </Select>
+                  </NullableSelect>
                 </FormControl>
               </Grid>
               <Grid item>

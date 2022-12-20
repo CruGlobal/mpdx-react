@@ -2,7 +2,7 @@ import { Box, Checkbox, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
@@ -15,7 +15,9 @@ import { TaskDueDate } from './TaskDueDate/TaskDueDate';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
-const TaskRowWrap = styled(Box)(({ isChecked }: { isChecked: boolean }) => ({
+const TaskRowWrap = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isChecked',
+})<{ isChecked?: boolean }>(({ theme, isChecked }) => ({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
@@ -75,13 +77,13 @@ const StarIconWrap = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
-const FieldLoadingState = styled(Skeleton)(
-  ({ width, margin }: { width: number; margin: string }) => ({
-    width,
-    height: '24px',
-    margin: margin,
-  }),
-);
+const FieldLoadingState = styled(Skeleton, {
+  shouldForwardProp: (prop) => prop !== 'width' && prop !== 'margin',
+})(({ width, margin }: { width: number; margin: string }) => ({
+  width,
+  height: '24px',
+  margin: margin,
+}));
 
 interface ContactTaskRowProps {
   accountListId: string;
@@ -97,6 +99,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   onTaskCheckToggle,
 }) => {
   const { t } = useTranslation();
+  const [hasBeenDeleted, setHasBeenDeleted] = useState<boolean>(false);
 
   const { openTaskModal } = useTaskModal();
 
@@ -120,6 +123,10 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
       taskId: task?.id,
       view: 'edit',
     });
+  };
+
+  const handleDeleteConfirm = () => {
+    setHasBeenDeleted(true);
   };
 
   if (!task) {
@@ -151,43 +158,54 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const isComplete = !!task.completedAt;
 
   return (
-    <TaskRowWrap isChecked={isChecked}>
-      <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
-        <Checkbox
-          checked={isChecked}
-          color="secondary"
-          onChange={() => onTaskCheckToggle(task.id)}
-          value={isChecked}
-        />
-        <TaskCompleteButton
-          isComplete={isComplete}
-          onClick={handleCompleteButtonPressed}
-        />
-      </TaskItemWrap>
-      <SubjectWrap onClick={handleSubjectPressed}>
-        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
-        <TaskDescription>{subject}</TaskDescription>
-      </SubjectWrap>
+    <>
+      {!hasBeenDeleted && (
+        <TaskRowWrap isChecked={isChecked}>
+          <TaskItemWrap
+            width={theme.spacing(20)}
+            justifyContent="space-between"
+          >
+            <Checkbox
+              checked={isChecked}
+              color="secondary"
+              onChange={() => onTaskCheckToggle(task.id)}
+              value={isChecked}
+            />
+            <TaskCompleteButton
+              isComplete={isComplete}
+              onClick={handleCompleteButtonPressed}
+            />
+          </TaskItemWrap>
+          <SubjectWrap onClick={handleSubjectPressed}>
+            <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+            <TaskDescription>{subject}</TaskDescription>
+          </SubjectWrap>
 
-      <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
-        <AssigneeName noWrap>{assigneeName}</AssigneeName>
-        <Box width={theme.spacing(12)}>
-          <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
-        </Box>
-        <TaskCommentsButton
-          isComplete={isComplete}
-          numberOfComments={comments?.totalCount}
-          onClick={handleCommentButtonPressed}
-          detailsPage
-        />
+          <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
+            <AssigneeName noWrap>{assigneeName}</AssigneeName>
+            <Box width={theme.spacing(12)}>
+              <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+            </Box>
+            <TaskCommentsButton
+              isComplete={isComplete}
+              numberOfComments={comments?.totalCount}
+              onClick={handleCommentButtonPressed}
+              detailsPage
+            />
 
-        <DeleteTaskIconButton accountListId={accountListId} taskId={task.id} />
-        <StarTaskIconButton
-          accountListId={accountListId}
-          taskId={task.id}
-          isStarred={task.starred}
-        />
-      </TaskItemWrap>
-    </TaskRowWrap>
+            <DeleteTaskIconButton
+              accountListId={accountListId}
+              taskId={task.id}
+              onDeleteConfirm={handleDeleteConfirm}
+            />
+            <StarTaskIconButton
+              accountListId={accountListId}
+              taskId={task.id}
+              isStarred={task.starred}
+            />
+          </TaskItemWrap>
+        </TaskRowWrap>
+      )}
+    </>
   );
 };

@@ -1,3 +1,4 @@
+import { Appeal } from '../../../../../graphql/types.generated';
 import React from 'react';
 import {
   Box,
@@ -9,6 +10,8 @@ import {
   TableCell,
   TableRow,
   CircularProgress,
+  TableHead,
+  TableBody,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
@@ -40,6 +43,13 @@ const DataTable = styled(Box)(({ theme }) => ({
         ? theme.palette.common.white
         : theme.palette.cruGrayLight.main,
   },
+  '& .MuiDataGrid-cell': {
+    '& .MuiTypography-root': {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    },
+  },
 }));
 
 const LoadingBox = styled(Box)(({ theme }) => ({
@@ -59,15 +69,17 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 
 interface Donation {
   date: Date;
+  contactId: string | null;
   partnerId: string;
   partner: string;
   currency: string;
   foreignCurrency: string;
   convertedAmount: number;
   foreignAmount: number;
-  designation: string;
+  designation: string | undefined | null;
   method: string | null;
   id: string;
+  appeal: Partial<Appeal> | undefined | null;
 }
 
 export const DonationsReportTable: React.FC<Props> = ({
@@ -91,21 +103,26 @@ export const DonationsReportTable: React.FC<Props> = ({
     });
 
   const nodes = data?.donations.nodes || [];
+  const designationNames = data?.getDesignationDisplayNames || [];
 
   const accountCurrency = accountListData?.accountList.currency || 'USD';
 
   const createData = (data: ExpectedDonationDataFragment): Donation => {
     return {
       date: new Date(data.donationDate),
+      contactId: data.donorAccount.contacts.nodes[0]?.id ?? null,
       partnerId: data.donorAccount.id,
       partner: data.donorAccount.displayName,
       currency: data.amount.convertedCurrency,
       foreignCurrency: data.amount.currency,
       convertedAmount: data.amount.convertedAmount,
       foreignAmount: data.amount.amount,
-      designation: `${data.designationAccount.name} (${data.designationAccount.accountNumber})`,
+      designation: designationNames.find(
+        (designation) => designation?.id === data.id,
+      )?.displayName,
       method: data.paymentMethod || null,
       id: data.id,
+      appeal: data.appeal,
     };
   };
 
@@ -116,9 +133,13 @@ export const DonationsReportTable: React.FC<Props> = ({
 
     return (
       <Typography>
-        <Link href={`../../${accountListId}/contacts/${donation.partnerId}`}>
-          {donation.partner}
-        </Link>
+        {donation.contactId ? (
+          <Link href={`../../${accountListId}/contacts/${donation.contactId}`}>
+            {donation.partner}
+          </Link>
+        ) : (
+          donation.partner
+        )}
       </Typography>
     );
   };
@@ -151,11 +172,26 @@ export const DonationsReportTable: React.FC<Props> = ({
     return <Typography>{donation.designation}</Typography>;
   };
 
-  const button = () => (
-    <IconButton color="primary">
-      <EditIcon />
-    </IconButton>
-  );
+  const button = (params: GridCellParams) => {
+    const donation = params.row as Donation;
+    return (
+      <Box
+        width={'100%'}
+        display="flex"
+        alignItems="center"
+        justifyContent="end"
+      >
+        {donation.appeal?.name && (
+          <Typography data-testid="appeal-name">
+            {donation.appeal?.name}
+          </Typography>
+        )}
+        <IconButton color="primary">
+          <EditIcon />
+        </IconButton>
+      </Box>
+    );
+  };
 
   const columns: GridColDef[] = [
     {
@@ -285,45 +321,53 @@ export const DonationsReportTable: React.FC<Props> = ({
           <DataGrid
             rows={donations}
             columns={columns}
-            autoPageSize
             autoHeight
             disableSelectionOnClick
             hideFooter
+            disableVirtualization
           />
           <Table>
-            {Object.entries(totalForeignDonations).map(([currency, total]) => (
-              <TableRow data-testid="donationRow" key={currency}>
-                <TableCell style={{ width: 395 }}>
+            <TableHead>
+              {Object.entries(totalForeignDonations).map(
+                ([currency, total]) => (
+                  <TableRow data-testid="donationRow" key={currency}>
+                    <TableCell style={{ width: 395 }}>
+                      <Typography
+                        style={{ float: 'right', fontWeight: 'bold' }}
+                      >
+                        {t('Total {{currency}} Donations:', { currency })}
+                      </Typography>
+                    </TableCell>
+                    <TableCell style={{ width: 150 }}>
+                      <Typography style={{ float: 'left', fontWeight: 'bold' }}>
+                        {Math.round(total.convertedTotal * 100) / 100}{' '}
+                        {accountCurrency}
+                      </Typography>
+                    </TableCell>
+                    <TableCell style={{}}>
+                      <Typography style={{ float: 'left', fontWeight: 'bold' }}>
+                        {Math.round(total.foreignTotal * 100) / 100} {currency}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ),
+              )}
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>
                   <Typography style={{ float: 'right', fontWeight: 'bold' }}>
-                    {t('Total {{currency}} Donations:', { currency })}
+                    {t('Total Donations: ')}
                   </Typography>
                 </TableCell>
-                <TableCell style={{ width: 150 }}>
+                <TableCell>
                   <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {Math.round(total.convertedTotal * 100) / 100}{' '}
-                    {accountCurrency}
+                    {Math.round(totalDonations * 100) / 100}
                   </Typography>
                 </TableCell>
-                <TableCell style={{}}>
-                  <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {Math.round(total.foreignTotal * 100) / 100} {currency}
-                  </Typography>
-                </TableCell>
+                <TableCell />
               </TableRow>
-            ))}
-            <TableRow>
-              <TableCell>
-                <Typography style={{ float: 'right', fontWeight: 'bold' }}>
-                  {t('Total Donations: ')}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                  {Math.round(totalDonations * 100) / 100}
-                </Typography>
-              </TableCell>
-              <TableCell />
-            </TableRow>
+            </TableBody>
           </Table>
         </DataTable>
       ) : loading || loadingAccountListData ? (

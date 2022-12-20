@@ -28,7 +28,11 @@ query Contacts(
 
 query ContactFilters($accountListId: ID!) {
   accountList(id: $accountListId) {
+    id
     contactFilterGroups {
+      ...FilterPanelGroup
+    }
+    partnerGivingAnalysisFilterGroups {
       ...FilterPanelGroup
     }
   }

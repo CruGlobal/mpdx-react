@@ -1,0 +1,18 @@
+extend type Mutation {
+  """
+  Returns the ids of the winner
+  """
+  mergeContacts(input: MergeContactsInput!): ID!
+}
+
+input MergeContactsInput {
+  """
+  The ids of the contacts to make the losers of the merge
+  """
+  loserContactIds: [ID!]!
+
+  """
+  The id of the contact to make the winner of the merge
+  """
+  winnerContactId: ID!
+}

@@ -31,6 +31,7 @@ const data: GetDashboardQuery = {
     firstName: 'Roger',
   },
   accountList: {
+    id: '1',
     name: 'My Account List',
     monthlyGoal: 1000,
     receivedPledges: 400,

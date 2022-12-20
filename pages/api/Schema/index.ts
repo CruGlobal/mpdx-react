@@ -5,6 +5,8 @@ import ScalarTypeDefs from './scalars.graphql';
 import { ScalarResolvers } from './scalarResolvers';
 import { ExportContactsResolvers } from './ExportContacts/resolvers';
 import ExportContactsTypeDefs from './ExportContacts/exportContacts.graphql';
+import { MergeContactsResolvers } from './MergeContacts/resolvers';
+import MergeContactsTypeDefs from './MergeContacts/mergeContacts.graphql';
 import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
 import TaskAnalyticsTypeDefs from './TaskAnalytics/taskAnalytics.graphql';
 import FourteenMonthReportTypeDefs from './reports/fourteenMonth/fourteenMonth.graphql';
@@ -37,12 +39,16 @@ import AccountListCoachesTypeDefs from './AccountListCoaches/accountListCoaches.
 import { AccountListCoachesResolvers } from './AccountListCoaches/resolvers';
 import ReportsPledgeHistoriesTyeDefs from './reports/pledgeHistories/pledgeHistories.graphql';
 import { ReportsPledgeHistoriesResolvers } from './reports/pledgeHistories/resolvers';
+import DesginationDisplayNamesTypeDefs from './donations/getDesignationDisplayNames.graphql';
+import { DesginationDisplayNamesResolvers } from './donations/resolvers';
 import TaskLocationTypeDefs from './Tasks/TaskLocation/taskLocation.graphql';
 import { TaskLocationResolvers } from './Tasks/TaskLocation/resolvers';
 import UpdateTaskLocationTypeDefs from './Tasks/TaskLocation/Update/updateTaskLocation.graphql';
 import { UpdateTaskLocationResolvers } from './Tasks/TaskLocation/Update/resolvers';
 import DestroyDonorAccountTypeDefs from './Contacts/DonorAccounts/Destroy/destroyDonorAccount.graphql';
 import { DestroyDonorAccountResolvers } from './Contacts/DonorAccounts/Destroy//resolvers';
+import DeleteTagsTypeDefs from './Tags/Delete/deleteTags.graphql';
+import { DeleteTagsResolvers } from './Tags/Delete/resolvers';
 
 const schema = buildSubgraphSchema([
   {
@@ -76,6 +82,7 @@ const schema = buildSubgraphSchema([
     resolvers: ContactPrimaryAddressResolvers,
   },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
+  { typeDefs: MergeContactsTypeDefs, resolvers: MergeContactsResolvers },
   {
     typeDefs: FourteenMonthReportTypeDefs,
     resolvers: FourteenMonthReportResolvers,
@@ -113,6 +120,10 @@ const schema = buildSubgraphSchema([
     resolvers: UpdateCommentResolvers,
   },
   {
+    typeDefs: DesginationDisplayNamesTypeDefs,
+    resolvers: DesginationDisplayNamesResolvers,
+  },
+  {
     typeDefs: TaskLocationTypeDefs,
     resolvers: TaskLocationResolvers,
   },
@@ -123,6 +134,10 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: DestroyDonorAccountTypeDefs,
     resolvers: DestroyDonorAccountResolvers,
+  },
+  {
+    typeDefs: DeleteTagsTypeDefs,
+    resolvers: DeleteTagsResolvers,
   },
 ]);
 

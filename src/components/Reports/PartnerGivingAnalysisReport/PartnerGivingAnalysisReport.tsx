@@ -13,14 +13,15 @@ import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import { PartnerGivingAnalysisReportActions as Actions } from './Actions/Actions';
 // import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
-import { ContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
+import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 
 interface Props {
   accountListId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
+  onSelectContact: (contactId: string) => void;
   title: string;
-  contactFilters?: ContactFilterSetInput;
+  contactFilters?: ReportContactFilterSetInput;
 }
 
 export type Contact = PartnerGivingAnalysisReportContact;
@@ -29,6 +30,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   accountListId,
   isNavListOpen,
   onNavListToggle,
+  onSelectContact,
   title,
   contactFilters: filters,
 }) => {
@@ -41,7 +43,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const [query, setQuery] = useState<string>('');
   const [search] = useDebounce(query, 500);
 
-  const contactFilters: ContactFilterSetInput = {
+  const contactFilters: ReportContactFilterSetInput = {
     ...filters,
     ...(search.length > 0
       ? {
@@ -144,6 +146,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       ) : contacts.length > 0 ? (
         <>
           <Table
+            onClick={onSelectContact}
             onRequestSort={handleRequestSort}
             onSelectAll={handleSelectAll}
             onSelectOne={handleSelectOne}

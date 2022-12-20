@@ -17,7 +17,7 @@ import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
-import { getLocalizedPledgeFequency } from 'src/utils/functions/getLocalizedPledgeFequency';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
@@ -70,59 +70,58 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
     return (
       <>
         {status ? (
-          <ContactHeaderSection icon={<HandshakeIcon />}>
+          <ContactHeaderSection
+            icon={<HandshakeIcon />}
+            rightIcon={
+              <IconButton onClick={() => setEditPartnershipModalOpen(true)}>
+                <CreateIcon />
+              </IconButton>
+            }
+          >
             <Box
               width="100%"
               display="flex"
               justifyContent="space-between"
               alignItems="flex-start"
             >
-              <>
-                <Typography variant="subtitle1">
-                  {statusText}
-                  {status === StatusEnum.PartnerFinancial ? (
-                    <>
-                      {contact?.pledgeAmount && contact?.pledgeFrequency ? (
-                        <Typography variant="subtitle1">
-                          {`${
-                            contact.pledgeAmount && contact?.pledgeCurrency
-                              ? currencyFormat(
-                                  contact.pledgeAmount,
-                                  contact.pledgeCurrency,
-                                )
-                              : contact.pledgeAmount
-                          } ${`- ${getLocalizedPledgeFequency(
-                            t,
-                            contact.pledgeFrequency,
-                          )}`}`}
-                        </Typography>
-                      ) : null}
-
+              <Typography variant="subtitle1">
+                {statusText}
+                {status === StatusEnum.PartnerFinancial ? (
+                  <>
+                    {contact?.pledgeAmount && contact?.pledgeFrequency ? (
                       <Typography variant="subtitle1">
-                        {lateStatusEnum !== undefined && (
-                          <ContactLateStatusLabel
-                            lateStatusEnum={lateStatusEnum}
-                            isDetail={true}
-                          />
-                        )}
+                        {`${
+                          contact.pledgeAmount && contact?.pledgeCurrency
+                            ? currencyFormat(
+                                contact.pledgeAmount,
+                                contact.pledgeCurrency,
+                              )
+                            : contact.pledgeAmount
+                        } ${`- ${getLocalizedPledgeFrequency(
+                          t,
+                          contact.pledgeFrequency,
+                        )}`}`}
                       </Typography>
-                    </>
-                  ) : null}
-                </Typography>
-              </>
-              <IconButton
-                onClick={() => setEditPartnershipModalOpen(true)}
-                style={{ padding: 0 }}
-              >
-                <CreateIcon />
-              </IconButton>
+                    ) : null}
+
+                    <Typography variant="subtitle1">
+                      {lateStatusEnum !== undefined && (
+                        <ContactLateStatusLabel
+                          lateStatusEnum={lateStatusEnum}
+                          isDetail={true}
+                        />
+                      )}
+                    </Typography>
+                  </>
+                ) : null}
+              </Typography>
             </Box>
           </ContactHeaderSection>
         ) : (
           <Box display="flex" justifyContent="flex-end">
             <IconButton
+              sx={{ margin: 1, padding: '12px' }}
               onClick={() => setEditPartnershipModalOpen(true)}
-              style={{ padding: 12 }}
             >
               <CreateIcon />
             </IconButton>

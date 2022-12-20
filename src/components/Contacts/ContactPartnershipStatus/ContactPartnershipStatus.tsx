@@ -10,7 +10,7 @@ import {
 import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/ContactPartnershipStatusLabel';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { getLocalizedPledgeFequency } from 'src/utils/functions/getLocalizedPledgeFequency';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { useTranslation } from 'react-i18next';
 
 interface ContactPartnershipStatusProps {
@@ -69,7 +69,7 @@ export const ContactPartnershipStatus: React.FC<
             {pledgeAmount && pledgeCurrency
               ? currencyFormat(pledgeAmount, pledgeCurrency)
               : pledgeAmount}{' '}
-            {pledgeFrequency && getLocalizedPledgeFequency(t, pledgeFrequency)}{' '}
+            {pledgeFrequency && getLocalizedPledgeFrequency(t, pledgeFrequency)}{' '}
             {status === ContactPartnershipStatusEnum.PartnerFinancial &&
               lateStatusEnum !== undefined && (
                 <ContactLateStatusLabel lateStatusEnum={lateStatusEnum} />

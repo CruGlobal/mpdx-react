@@ -82,6 +82,28 @@ export const ContactsPageContext = React.createContext<ContactsPageType | null>(
   null,
 );
 
+export const getRedirectPathname = (
+  routerPathname: string,
+  accountListId: string,
+): string => {
+  if (
+    routerPathname === '/accountLists/[accountListId]/contacts/[[...contactId]]'
+  ) {
+    return `/accountLists/${accountListId}/contacts`;
+  } else if (
+    routerPathname === '/accountLists/[accountListId]/tasks/[[...contactId]]'
+  ) {
+    return `/accountLists/${accountListId}/tasks`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/reports/partnerGivingAnalysis/[[...contactId]]'
+  ) {
+    return `/accountLists/${accountListId}/reports/partnerGivingAnalysis`;
+  } else {
+    return '';
+  }
+};
+
 interface Props {
   children?: React.ReactNode;
 }
@@ -161,13 +183,16 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
   }, [loadingContactIds]);
 
   useEffect(() => {
-    getContactIds({
-      variables: {
-        accountListId,
-        first: data?.contacts?.totalCount ?? 0,
-        contactsFilters: activeFilters,
-      },
-    });
+    const contactCount = data?.contacts?.totalCount ?? 0;
+    if (contactCount > 0) {
+      getContactIds({
+        variables: {
+          accountListId,
+          first: contactCount,
+          contactsFilters: activeFilters,
+        },
+      });
+    }
   }, [activeFilters, searchTerm, starredFilter, data]);
 
   const {
@@ -280,10 +305,13 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
         delete filteredQuery['filters'];
       }
     }
+
+    const pathName = getRedirectPathname(router.pathname, accountListId);
+
     push(
       id
         ? {
-            pathname: `/accountLists/${accountListId}/contacts${
+            pathname: `${pathName}${
               viewMode === TableViewModeEnum.List
                 ? ''
                 : viewMode === TableViewModeEnum.Flows
@@ -293,7 +321,7 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
             query: filteredQuery,
           }
         : {
-            pathname: `/accountLists/${accountListId}/contacts/${
+            pathname: `${pathName}/${
               viewMode === TableViewModeEnum.List
                 ? ''
                 : viewMode === TableViewModeEnum.Flows

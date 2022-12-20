@@ -63,6 +63,7 @@ import {
   getLocalizedNotificationType,
 } from 'src/utils/functions/getLocalizedNotificationStrings';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 
 export interface TaskLocation {
   location?: string | null | undefined;
@@ -341,7 +342,7 @@ const TaskModalForm = ({
               <Grid item>
                 <FormControl fullWidth>
                   <InputLabel id="activityType">{t('Action')}</InputLabel>
-                  <Select
+                  <NullableSelect
                     labelId="activityType"
                     value={activityType}
                     onChange={(e) =>
@@ -349,15 +350,14 @@ const TaskModalForm = ({
                     }
                     label={t('Action')}
                   >
-                    <MenuItem value={undefined}>{t('None')}</MenuItem>
                     {Object.values(ActivityTypeEnum)
-                      .filter((val) => val !== 'NONE')
+                      .filter((val) => val !== ActivityTypeEnum.None)
                       .map((val) => (
                         <MenuItem key={val} value={val}>
                           {getLocalizedTaskType(t, val)}
                         </MenuItem>
                       ))}
-                  </Select>
+                  </NullableSelect>
                 </FormControl>
               </Grid>
               {activityType === ActivityTypeEnum.Appointment && (
@@ -375,7 +375,6 @@ const TaskModalForm = ({
               <Grid item>
                 {!loading ? (
                   <Autocomplete
-                    loading={loading}
                     options={
                       (data?.accountListUsers?.nodes &&
                         data.accountListUsers.nodes.map(
@@ -390,23 +389,9 @@ const TaskModalForm = ({
                       return `${user?.firstName} ${user?.lastName}`;
                     }}
                     renderInput={(params): ReactElement => (
-                      <TextField
-                        {...params}
-                        label={t('Assignee')}
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {loading && (
-                                <CircularProgress color="primary" size={20} />
-                              )}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
-                        }}
-                      />
+                      <TextField {...params} label={t('Assignee')} />
                     )}
-                    value={userId}
+                    value={userId ?? null}
                     onChange={(_, userId): void =>
                       setFieldValue('userId', userId)
                     }
@@ -511,25 +496,27 @@ const TaskModalForm = ({
                 </Grid>
               )}
               <Grid item>
-                <Autocomplete
-                  multiple
-                  options={
-                    (
-                      mergedContacts &&
-                      [...mergedContacts].sort((a, b) =>
-                        a.name.localeCompare(b.name),
-                      )
-                    )?.map(({ id }) => id) || []
-                  }
-                  getOptionLabel={(contactId) =>
-                    mergedContacts.find(({ id }) => id === contactId)?.name ??
-                    ''
-                  }
-                  loading={
-                    loading || loadingFilteredById || loadingFilteredByName
-                  }
-                  renderInput={(params): ReactElement => {
-                    return !loadingFilteredById ? (
+                {loadingFilteredById ? (
+                  <CircularProgress color="primary" size={20} />
+                ) : (
+                  <Autocomplete
+                    multiple
+                    options={
+                      (
+                        mergedContacts &&
+                        [...mergedContacts].sort((a, b) =>
+                          a.name.localeCompare(b.name),
+                        )
+                      )?.map(({ id }) => id) || []
+                    }
+                    getOptionLabel={(contactId) =>
+                      mergedContacts.find(({ id }) => id === contactId)?.name ??
+                      ''
+                    }
+                    loading={
+                      loading || loadingFilteredById || loadingFilteredByName
+                    }
+                    renderInput={(params): ReactElement => (
                       <TextField
                         {...params}
                         onChange={handleSearchTermChange}
@@ -546,19 +533,17 @@ const TaskModalForm = ({
                           ),
                         }}
                       />
-                    ) : (
-                      <CircularProgress color="primary" size={20} />
-                    );
-                  }}
-                  value={contactIds ?? undefined}
-                  onChange={(_, contactIds): void => {
-                    setFieldValue('contactIds', contactIds);
-                    setSelectedIds(contactIds);
-                  }}
-                  isOptionEqualToValue={(option, value): boolean =>
-                    option === value
-                  }
-                />
+                    )}
+                    value={contactIds ?? []}
+                    onChange={(_, contactIds): void => {
+                      setFieldValue('contactIds', contactIds);
+                      setSelectedIds(contactIds);
+                    }}
+                    isOptionEqualToValue={(option, value): boolean =>
+                      option === value
+                    }
+                  />
+                )}
               </Grid>
               {initialTask.completedAt && availableResults.length > 0 && (
                 <Grid item>
@@ -621,7 +606,7 @@ const TaskModalForm = ({
                   onChange={(_, tagList): void =>
                     setFieldValue('tagList', tagList)
                   }
-                  value={tagList ?? undefined}
+                  value={tagList ?? []}
                   options={data?.accountList?.taskTagList || []}
                 />
               </Grid>
@@ -640,7 +625,8 @@ const TaskModalForm = ({
                         marginBottom: theme.spacing(1),
                       }}
                     >
-                      Notifications <InfoIcon style={{ marginLeft: '5px' }} />{' '}
+                      {t('Notifications')}
+                      <InfoIcon style={{ marginLeft: '5px' }} />
                     </Typography>
                   </Tooltip>
                   <Grid container spacing={2}>
@@ -660,7 +646,7 @@ const TaskModalForm = ({
                             </Typography>
                           }
                         >
-                          <Select
+                          <NullableSelect
                             labelId="notificationType"
                             value={notificationType}
                             onChange={(e) =>
@@ -668,13 +654,12 @@ const TaskModalForm = ({
                             }
                             label={t('Type')}
                           >
-                            <MenuItem value={undefined}>{t('None')}</MenuItem>
                             {Object.values(NotificationTypeEnum).map((val) => (
                               <MenuItem key={val} value={val}>
                                 {getLocalizedNotificationType(t, val)}
                               </MenuItem>
                             ))}
-                          </Select>
+                          </NullableSelect>
                         </Tooltip>
                       </FormControl>
                     </Grid>
@@ -692,11 +677,11 @@ const TaskModalForm = ({
                             <Typography
                               style={{ display: 'flex', alignItems: 'center' }}
                             >
-                              {t(' Time')}
+                              {t('Time')}
                             </Typography>
                           }
                           fullWidth
-                          value={notificationTimeBefore}
+                          value={notificationTimeBefore ?? ''}
                           onChange={handleChange('notificationTimeBefore')}
                           inputProps={{
                             'aria-label': 'Time',
@@ -712,7 +697,7 @@ const TaskModalForm = ({
                           <Typography
                             style={{ display: 'flex', alignItems: 'center' }}
                           >
-                            {t(' Unit')}
+                            {t('Unit')}
                           </Typography>
                         </InputLabel>
                         <Tooltip
@@ -723,7 +708,7 @@ const TaskModalForm = ({
                             </Typography>
                           }
                         >
-                          <Select
+                          <NullableSelect
                             labelId="notificationTimeUnit"
                             value={notificationTimeUnit}
                             onChange={(e) =>
@@ -732,9 +717,8 @@ const TaskModalForm = ({
                                 e.target.value,
                               )
                             }
-                            label={t(' Unit')}
+                            label={t('Unit')}
                           >
-                            <MenuItem value={undefined}>{t('None')}</MenuItem>
                             {Object.values(NotificationTimeUnitEnum).map(
                               (val) => (
                                 <MenuItem key={val} value={val}>
@@ -742,7 +726,7 @@ const TaskModalForm = ({
                                 </MenuItem>
                               ),
                             )}
-                          </Select>
+                          </NullableSelect>
                         </Tooltip>
                       </FormControl>
                     </Grid>

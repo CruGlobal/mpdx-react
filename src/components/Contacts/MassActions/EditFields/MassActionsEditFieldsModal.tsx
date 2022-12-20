@@ -32,6 +32,8 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 
 interface MassActionsEditFieldsModalProps {
   ids: string[];
@@ -173,7 +175,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       </MenuItem>
                       {Object.values(StatusEnum).map((val) => (
                         <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
+                          {getLocalizedContactStatus(t, val)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -197,7 +199,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       </MenuItem>
                       {Object.values(LikelyToGiveEnum).map((val) => (
                         <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
+                          {getLocalizedLikelyToGive(t, val)}
                         </MenuItem>
                       ))}
                     </Select>
