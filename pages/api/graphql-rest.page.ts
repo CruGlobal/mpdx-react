@@ -691,52 +691,35 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: DestroyDonorAccountResponse } = await this.put(
       `contacts/${contactId}`,
       {
-        data: {
-          id: contactId,
-          type: 'contacts',
+        included: donorAccounts.map((donorAccount) => ({
+          type: 'donor_accounts',
+          id: donorAccount.id,
           attributes: {
-            overwrite: true,
+            accountNumber: donorAccount.accountNumber,
+            _destroy: donorAccount.id === donorAccountId ? '1' : '0',
           },
+          relationships: {
+            organization: {
+              data: {
+                type: 'organization',
+                id: donorAccount.organization?.id,
+              },
+            },
+          },
+        })),
+        data: {
+          type: 'contacts',
+          id: contactId,
+          attributes: { overwrite: true },
           relationships: {
             donor_accounts: {
               data: donorAccounts.map((donorAccount) => ({
                 id: donorAccount.id,
-                type: donorAccount.type,
+                type: 'donor_accounts',
               })),
             },
           },
         },
-        included: donorAccounts.map((donorAccount) => {
-          const donorAccountData: {
-            id: string;
-            attributes: { _destroy?: string; account_numner: string };
-            relationships: {
-              organization: {
-                data: {
-                  id: string;
-                  type: string;
-                } | null;
-              };
-            };
-          } = {
-            id: donorAccount.id,
-            attributes: { account_numner: donorAccount.accountNumber },
-            relationships: {
-              organization: {
-                data: donorAccount.organization?.id
-                  ? {
-                      id: donorAccount.organization.id,
-                      type: donorAccount.organization.type,
-                    }
-                  : null,
-              },
-            },
-          };
-          if (donorAccountId === donorAccount.id) {
-            donorAccountData.attributes._destroy = '1';
-          }
-          return donorAccountData;
-        }),
       },
     );
     return DestroyDonorAccount(data);
