@@ -342,7 +342,7 @@ const TaskModalForm = ({
               <Grid item>
                 <FormControl fullWidth>
                   <InputLabel id="activityType">{t('Action')}</InputLabel>
-                  <Select
+                  <NullableSelect
                     labelId="activityType"
                     value={activityType}
                     onChange={(e) =>
@@ -350,7 +350,6 @@ const TaskModalForm = ({
                     }
                     label={t('Action')}
                   >
-                    <MenuItem value={undefined}>{t('None')}</MenuItem>
                     {Object.values(ActivityTypeEnum)
                       .filter((val) => val !== ActivityTypeEnum.None)
                       .map((val) => (
@@ -358,7 +357,7 @@ const TaskModalForm = ({
                           {getLocalizedTaskType(t, val)}
                         </MenuItem>
                       ))}
-                  </Select>
+                  </NullableSelect>
                 </FormControl>
               </Grid>
               {activityType === ActivityTypeEnum.Appointment && (
@@ -407,7 +406,7 @@ const TaskModalForm = ({
                         }}
                       />
                     )}
-                    value={userId}
+                    value={userId ?? null}
                     onChange={(_, userId): void =>
                       setFieldValue('userId', userId)
                     }
@@ -550,7 +549,7 @@ const TaskModalForm = ({
                         }}
                       />
                     )}
-                    value={contactIds ?? undefined}
+                    value={contactIds ?? []}
                     onChange={(_, contactIds): void => {
                       setFieldValue('contactIds', contactIds);
                       setSelectedIds(contactIds);
@@ -622,7 +621,7 @@ const TaskModalForm = ({
                   onChange={(_, tagList): void =>
                     setFieldValue('tagList', tagList)
                   }
-                  value={tagList ?? undefined}
+                  value={tagList ?? []}
                   options={data?.accountList?.taskTagList || []}
                 />
               </Grid>
@@ -697,7 +696,7 @@ const TaskModalForm = ({
                             </Typography>
                           }
                           fullWidth
-                          value={notificationTimeBefore}
+                          value={notificationTimeBefore ?? ''}
                           onChange={handleChange('notificationTimeBefore')}
                           inputProps={{
                             'aria-label': 'Time',
@@ -724,7 +723,7 @@ const TaskModalForm = ({
                             </Typography>
                           }
                         >
-                          <Select
+                          <NullableSelect
                             labelId="notificationTimeUnit"
                             value={notificationTimeUnit}
                             onChange={(e) =>
@@ -735,7 +734,6 @@ const TaskModalForm = ({
                             }
                             label={t(' Unit')}
                           >
-                            <MenuItem value={undefined}>{t('None')}</MenuItem>
                             {Object.values(NotificationTimeUnitEnum).map(
                               (val) => (
                                 <MenuItem key={val} value={val}>
@@ -743,7 +741,7 @@ const TaskModalForm = ({
                                 </MenuItem>
                               ),
                             )}
-                          </Select>
+                          </NullableSelect>
                         </Tooltip>
                       </FormControl>
                     </Grid>

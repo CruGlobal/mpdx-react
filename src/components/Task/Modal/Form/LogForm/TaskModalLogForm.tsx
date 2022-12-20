@@ -63,6 +63,7 @@ import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { TaskLocation } from '../TaskModalForm';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -371,7 +372,7 @@ const TaskModalLogForm = ({
               <Grid item>
                 <FormControl fullWidth>
                   <InputLabel id="activityType">{t('Action')}</InputLabel>
-                  <Select
+                  <NullableSelect
                     labelId="activityType"
                     label={t('Action')}
                     value={activityType}
@@ -379,7 +380,6 @@ const TaskModalLogForm = ({
                       setFieldValue('activityType', e.target.value)
                     }
                   >
-                    <MenuItem value={undefined}>{t('None')}</MenuItem>
                     {Object.values(ActivityTypeEnum)
                       .filter((val) => val !== ActivityTypeEnum.None)
                       .map((val) => (
@@ -387,7 +387,7 @@ const TaskModalLogForm = ({
                           {getLocalizedTaskType(t, val)}
                         </MenuItem>
                       ))}
-                  </Select>
+                  </NullableSelect>
                 </FormControl>
               </Grid>
               {activityType === ActivityTypeEnum.Appointment && (
@@ -459,7 +459,7 @@ const TaskModalLogForm = ({
               <Grid item>
                 <FormControl fullWidth>
                   <InputLabel id="result">{t('Result')}</InputLabel>
-                  <Select
+                  <NullableSelect
                     labelId="result"
                     label={t('Result')}
                     value={result}
@@ -478,7 +478,7 @@ const TaskModalLogForm = ({
                         {getLocalizedResultString(t, ResultEnum.Done)}
                       </MenuItem>
                     )}
-                  </Select>
+                  </NullableSelect>
                 </FormControl>
               </Grid>
               <Grid item>
