@@ -131,6 +131,28 @@ const DonationHistories = ({
     reportsDonationHistories?.averageIgnoreCurrent ?? 0,
   );
 
+  const handleClick = (
+    period: {
+      activePayload: Array<{ payload: { period: DateTime } }>;
+    } | null,
+  ) => {
+    if (!period) {
+      // The click was inside the chart but wasn't on a period
+      return;
+    }
+
+    if (setTime) {
+      setTime(period.activePayload[0].payload.period);
+    } else {
+      push({
+        pathname: `/accountLists/${accountListId}/reports/donations`,
+        query: {
+          month: period.activePayload[0].payload.period.toISO(),
+        },
+      });
+    }
+  };
+
   return (
     <>
       <Box my={{ xs: 1, sm: 2 }}>
@@ -264,27 +286,7 @@ const DonationHistories = ({
                         left: 20,
                         right: 20,
                       }}
-                      onClick={
-                        setTime
-                          ? (period: {
-                              activePayload: {
-                                payload: { period: DateTime };
-                              }[];
-                            }) =>
-                              setTime(period.activePayload[0].payload.period)
-                          : (period: {
-                              activePayload: {
-                                payload: { period: DateTime };
-                              }[];
-                            }) =>
-                              push({
-                                pathname: `/accountLists/${accountListId}/reports/donations`,
-                                query: {
-                                  month:
-                                    period.activePayload[0].payload.period.toISO(),
-                                },
-                              })
-                      }
+                      onClick={handleClick}
                     >
                       <Legend />
                       <CartesianGrid vertical={false} />
