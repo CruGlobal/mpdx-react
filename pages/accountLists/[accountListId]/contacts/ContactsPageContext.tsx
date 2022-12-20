@@ -99,6 +99,11 @@ export const getRedirectPathname = (
     '/accountLists/[accountListId]/reports/partnerGivingAnalysis/[[...contactId]]'
   ) {
     return `/accountLists/${accountListId}/reports/partnerGivingAnalysis`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/reports/donations/[[...contactId]]'
+  ) {
+    return `/accountLists/${accountListId}/reports/donations`;
   } else {
     return '';
   }

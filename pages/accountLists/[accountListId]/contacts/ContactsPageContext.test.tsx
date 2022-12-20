@@ -231,6 +231,15 @@ describe('ContactsPageContext', () => {
       expect(pathname).toBe('/accountLists/account-list-1/tasks');
     });
 
+    it('should return the donations report URL when user is on the partner donations report page', async () => {
+      const pathname = getRedirectPathname(
+        '/accountLists/[accountListId]/reports/donations/[[...contactId]]',
+        accountListId,
+      );
+
+      expect(pathname).toBe('/accountLists/account-list-1/reports/donations');
+    });
+
     it('should return the partner giving analysis URL when user is on the partner giving analysis page', async () => {
       const pathname = getRedirectPathname(
         '/accountLists/[accountListId]/reports/partnerGivingAnalysis/[[...contactId]]',

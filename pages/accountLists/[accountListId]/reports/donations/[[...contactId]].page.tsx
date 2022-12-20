@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
@@ -8,6 +9,9 @@ import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+import { getRouterQueryParam } from 'src/utils/routerQueryParam';
+import { ContactsPageProvider } from '../../contacts/ContactsPageContext';
+import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 
 const DonationsReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -15,11 +19,20 @@ const DonationsReportPageWrapper = styled(Box)(({ theme }) => ({
 
 const DonationsReportPage: React.FC = () => {
   const { t } = useTranslation();
+  const router = useRouter();
   const accountListId = useAccountListId();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
+  const selectedContactId = getRouterQueryParam(router, 'contactId');
+
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
+  };
+
+  const handleSelectContact = (contactId: string) => {
+    router.push(
+      `/accountLists/${accountListId}/reports/donations/${contactId}`,
+    );
   };
 
   return (
@@ -47,9 +60,18 @@ const DonationsReportPage: React.FC = () => {
                 accountListId={accountListId}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
+                onSelectContact={handleSelectContact}
                 title={t('Donations')}
               />
             }
+            rightPanel={
+              selectedContactId ? (
+                <ContactsPageProvider>
+                  <ContactsRightPanel onClose={() => handleSelectContact('')} />
+                </ContactsPageProvider>
+              ) : undefined
+            }
+            rightOpen={typeof selectedContactId !== 'undefined'}
           />
         </DonationsReportPageWrapper>
       ) : (
