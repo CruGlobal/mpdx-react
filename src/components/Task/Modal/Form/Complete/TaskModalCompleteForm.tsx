@@ -45,6 +45,7 @@ import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { TaskLocation } from '../TaskModalForm';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -250,7 +251,7 @@ const TaskModalCompleteForm = ({
                 <Grid item>
                   <FormControl fullWidth>
                     <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
-                    <Select
+                    <NullableSelect
                       label={t('Next Action')}
                       labelId="nextAction"
                       value={nextAction}
@@ -258,15 +259,14 @@ const TaskModalCompleteForm = ({
                         setFieldValue('nextAction', e.target.value)
                       }
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {availableNextActions
-                        .filter((val) => val !== 'NONE')
+                        .filter((val) => val !== ActivityTypeEnum.None)
                         .map((val) => (
                           <MenuItem key={val} value={val}>
                             {getLocalizedTaskType(t, val)}
                           </MenuItem>
                         ))}
-                    </Select>
+                    </NullableSelect>
                   </FormControl>
                 </Grid>
               )}

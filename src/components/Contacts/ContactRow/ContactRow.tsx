@@ -48,7 +48,9 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       : {}),
   }));
 
-  const StyledCheckbox = styled(Checkbox)(() => ({
+  const StyledCheckbox = styled(Checkbox, {
+    shouldForwardProp: (prop) => prop !== 'value',
+  })(() => ({
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.04)',
     },
@@ -89,7 +91,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
           <ListItemText
             primary={
-              <Typography variant="h6" noWrap>
+              <Typography component="span" variant="h6" noWrap>
                 <Box component="span" display="flex" alignItems="center">
                   {name}
                   <CelebrationIcons contact={contact} />
@@ -99,7 +101,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             secondary={
               primaryAddress && (
                 <Hidden smDown>
-                  <Typography component="p" variant="body2">
+                  <Typography component="span" variant="body2">
                     {[
                       primaryAddress.street,
                       primaryAddress.city,

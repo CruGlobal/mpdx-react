@@ -15,7 +15,7 @@ import {
   ContactsPageContext,
   ContactsPageProvider,
   ContactsPageType,
-  setRedirectPathname,
+  getRedirectPathname,
 } from './ContactsPageContext';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 
@@ -83,151 +83,163 @@ const TestRender: React.FC = () => {
   );
 };
 
-it.skip('has a contact id', async () => {
-  const { getByText } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter
-        router={{
-          query: { accountListId, contactId: ['list', 'abc'] },
-          isReady,
-          push,
-        }}
-      >
-        <GqlMockedProvider<GetUserOptionsQuery>
-          mocks={{
-            GetUserOptions: {
-              userOptions: [
-                {
-                  id: 'test-id',
-                  key: 'contacts_view',
-                  value: 'flows',
-                },
-              ],
-            },
+describe('ContactsPageContext', () => {
+  it.skip('has a contact id', async () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId, contactId: ['list', 'abc'] },
+            isReady,
+            push,
           }}
         >
-          <ContactsPageProvider>
-            <TestRender />
-          </ContactsPageProvider>
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
-  );
-  expect(getByText('Loading')).toBeInTheDocument();
-  await waitFor(() => expect(getByText('Flows Button')).toBeInTheDocument());
-  await waitFor(() => userEvent.click(getByText('Flows Button')));
-  await waitFor(() => expect(getByText('flows')).toBeInTheDocument());
-  await waitFor(() =>
-    expect(push).toHaveBeenCalledWith({
-      pathname: '/accountLists/account-list-1/contacts/flows/abc',
-      query: {},
-    }),
-  );
-});
+          <GqlMockedProvider<GetUserOptionsQuery>
+            mocks={{
+              GetUserOptions: {
+                userOptions: [
+                  {
+                    id: 'test-id',
+                    key: 'contacts_view',
+                    value: 'flows',
+                  },
+                ],
+              },
+            }}
+          >
+            <ContactsPageProvider>
+              <TestRender />
+            </ContactsPageProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    expect(getByText('Loading')).toBeInTheDocument();
+    await waitFor(() => expect(getByText('Flows Button')).toBeInTheDocument());
+    await waitFor(() => userEvent.click(getByText('Flows Button')));
+    await waitFor(() => expect(getByText('flows')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith({
+        pathname: '/accountLists/account-list-1/contacts/flows/abc',
+        query: {},
+      }),
+    );
+  });
 
-it.skip('has a contact id and switches twice', async () => {
-  const { getByText } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter
-        router={{
-          query: { accountListId, contactId: ['list', 'abc'] },
-          isReady,
-          push,
-        }}
-      >
-        <GqlMockedProvider<GetUserOptionsQuery>
-          mocks={{
-            GetUserOptions: {
-              userOptions: [
-                {
-                  id: 'test-id',
-                  key: 'contacts_view',
-                  value: 'flows',
-                },
-              ],
-            },
+  it.skip('has a contact id and switches twice', async () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId, contactId: ['list', 'abc'] },
+            isReady,
+            push,
           }}
         >
-          <ContactsPageProvider>
-            <TestRender />
-          </ContactsPageProvider>
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
-  );
-  expect(getByText('Loading')).toBeInTheDocument();
-  await waitFor(() => expect(getByText('Map Button')).toBeInTheDocument());
-  userEvent.click(getByText('Map Button'));
-  await waitFor(() => expect(getByText('map')).toBeInTheDocument());
-  await waitFor(() =>
-    expect(push).toHaveBeenCalledWith({
-      pathname: '/accountLists/account-list-1/contacts/map/abc',
-      query: {},
-    }),
-  );
-  userEvent.click(getByText('List Button'));
-  await waitFor(() => expect(getByText('list')).toBeInTheDocument());
-  await waitFor(() =>
-    expect(push).toHaveBeenCalledWith({
-      pathname: '/accountLists/account-list-1/contacts/abc',
-      query: {},
-    }),
-  );
-});
+          <GqlMockedProvider<GetUserOptionsQuery>
+            mocks={{
+              GetUserOptions: {
+                userOptions: [
+                  {
+                    id: 'test-id',
+                    key: 'contacts_view',
+                    value: 'flows',
+                  },
+                ],
+              },
+            }}
+          >
+            <ContactsPageProvider>
+              <TestRender />
+            </ContactsPageProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    expect(getByText('Loading')).toBeInTheDocument();
+    await waitFor(() => expect(getByText('Map Button')).toBeInTheDocument());
+    userEvent.click(getByText('Map Button'));
+    await waitFor(() => expect(getByText('map')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith({
+        pathname: '/accountLists/account-list-1/contacts/map/abc',
+        query: {},
+      }),
+    );
+    userEvent.click(getByText('List Button'));
+    await waitFor(() => expect(getByText('list')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith({
+        pathname: '/accountLists/account-list-1/contacts/abc',
+        query: {},
+      }),
+    );
+  });
 
-it.skip('does not have a contact id and changes to map', async () => {
-  const { getByText, queryByText } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter
-        router={{
-          query: { accountListId },
-          isReady,
-          push,
-        }}
-      >
-        <GqlMockedProvider<GetUserOptionsQuery>
-          mocks={{
-            GetUserOptions: {
-              userOptions: [
-                {
-                  id: 'test-id',
-                  key: 'contacts_view',
-                  value: 'list',
-                },
-              ],
-            },
+  it.skip('does not have a contact id and changes to map', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId },
+            isReady,
+            push,
           }}
         >
-          <ContactsPageProvider>
-            <TestRender />
-          </ContactsPageProvider>
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
-  );
-  expect(getByText('Loading')).toBeInTheDocument();
-  await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-  await waitFor(() => expect(getByText('Map Button')).toBeInTheDocument());
-  userEvent.click(getByText('Map Button'));
-  await waitFor(() => expect(getByText('map')).toBeInTheDocument());
-  await waitFor(() =>
-    expect(push).toHaveBeenCalledWith({
-      pathname: '/accountLists/account-list-1/contacts//map',
-      query: {},
-    }),
-  );
-});
+          <GqlMockedProvider<GetUserOptionsQuery>
+            mocks={{
+              GetUserOptions: {
+                userOptions: [
+                  {
+                    id: 'test-id',
+                    key: 'contacts_view',
+                    value: 'list',
+                  },
+                ],
+              },
+            }}
+          >
+            <ContactsPageProvider>
+              <TestRender />
+            </ContactsPageProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    expect(getByText('Loading')).toBeInTheDocument();
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() => expect(getByText('Map Button')).toBeInTheDocument());
+    userEvent.click(getByText('Map Button'));
+    await waitFor(() => expect(getByText('map')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith({
+        pathname: '/accountLists/account-list-1/contacts//map',
+        query: {},
+      }),
+    );
+  });
 
-it('Should return the tasks URL when user is on the tasks page', async () => {
-  // I tried to test this through rendering the component,
-  // I couldn't work it out so I'm just testing the function instead.
-  const router = {
-    pathname: '/accountLists/[accountListId]/tasks/[[...contactId]]',
-    query: { accountListId, contactId: ['list', 'abc'] },
-    isReady,
-    push,
-  };
-  const pathName = setRedirectPathname(router, accountListId);
+  describe('getRedirectPathname', () => {
+    it('should return the tasks URL when user is on the tasks page', async () => {
+      // I tried to test this through rendering the component,
+      // I couldn't work it out so I'm just testing the function instead.
+      const pathname = getRedirectPathname(
+        '/accountLists/[accountListId]/tasks/[[...contactId]]',
+        accountListId,
+      );
 
-  expect(pathName).toBe('/accountLists/account-list-1/tasks');
+      expect(pathname).toBe('/accountLists/account-list-1/tasks');
+    });
+
+    it('should return the partner giving analysis URL when user is on the partner giving analysis page', async () => {
+      const pathname = getRedirectPathname(
+        '/accountLists/[accountListId]/reports/partnerGivingAnalysis/[[...contactId]]',
+        accountListId,
+      );
+
+      expect(pathname).toBe(
+        '/accountLists/account-list-1/reports/partnerGivingAnalysis',
+      );
+    });
+  });
 });

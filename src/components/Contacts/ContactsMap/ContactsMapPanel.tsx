@@ -56,7 +56,9 @@ const ContactList = styled(AccordionDetails)(() => ({
   width: '100%',
 }));
 
-const ContactWrapper = styled(Box)(({ current }: { current: boolean }) => ({
+const ContactWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'current',
+})(({ current }: { current: boolean }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
