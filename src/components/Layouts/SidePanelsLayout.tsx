@@ -6,23 +6,25 @@ type ScrollBoxProps = {
   isscroll?: 1 | 0;
 };
 
-const FullHeightBox = styled(Box)(({ theme }) => ({
-  height: `calc(100vh - ${theme.mixins.toolbar.minHeight}px)`,
-  ['@media (min-width:0px) and (orientation: landscape)']: {
-    height: `calc(100vh - ${
-      theme.mixins.toolbar[
-        '@media (min-width:0px) and (orientation: landscape)'
-      ] as { minHeight: number }
-    }px)`,
-  },
-  ['@media (min-width:600px)']: {
-    height: `calc(100vh - ${
-      theme.mixins.toolbar['@media (min-width:600px)'] as {
-        minHeight: number;
-      }
-    }px)`,
-  },
-}));
+const FullHeightBox = styled(Box)(({ theme }) => {
+  const toolbar = theme.mixins.toolbar as {
+    minHeight: number;
+    ['@media (min-width:600px)']: { minHeight: number };
+    ['@media (min-width:0px)']: {
+      ['@media (orientation: landscape)']: { minHeight: number };
+    };
+  };
+
+  return {
+    height: `calc(100vh - ${toolbar.minHeight}px)`,
+    ['@media (min-width:0px) and (orientation: landscape)']: {
+      height: `calc(100vh - ${toolbar['@media (min-width:0px)']['@media (orientation: landscape)'].minHeight}px)`,
+    },
+    ['@media (min-width:600px)']: {
+      height: `calc(100vh - ${toolbar['@media (min-width:600px)'].minHeight}px)`,
+    },
+  };
+});
 
 const ScrollBox = styled(FullHeightBox, {
   shouldForwardProp: (prop) => prop !== 'isscroll',
