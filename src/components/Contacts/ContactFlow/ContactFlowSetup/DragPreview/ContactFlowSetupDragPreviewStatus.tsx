@@ -9,7 +9,9 @@ interface Props {
   width: number;
 }
 
-const DragLayerStatusBox = styled(Box)(({ width }: { width: number }) => ({
+const DragLayerStatusBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'width',
+})(({ width }: { width: number }) => ({
   width: width,
   padding: theme.spacing(1.5),
   backgroundColor: theme.palette.mpdxYellow.main,

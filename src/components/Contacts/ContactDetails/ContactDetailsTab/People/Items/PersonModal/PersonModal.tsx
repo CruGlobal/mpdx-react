@@ -45,20 +45,20 @@ import {
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
-export const ContactInputField = styled(TextField)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    // '&& > label': {
-    //   textTransform: 'uppercase',
-    // },
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
+export const ContactInputField = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
+  // '&& > label': {
+  //   textTransform: 'uppercase',
+  // },
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
-export const PrimaryControlLabel = styled(FormControlLabel)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
+export const PrimaryControlLabel = styled(FormControlLabel, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
