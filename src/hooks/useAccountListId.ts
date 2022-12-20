@@ -1,17 +1,12 @@
 import { useRouter } from 'next/router';
+import { getRouterQueryParam } from 'src/utils/routerQueryParam';
 
 export const useAccountListId = (): string | undefined => {
-  const { query, isReady } = useRouter();
+  const router = useRouter();
 
-  if (!isReady) {
+  if (!router.isReady) {
     return undefined;
   }
 
-  const { accountListId } = query;
-
-  if (Array.isArray(accountListId)) {
-    throw new Error('accountListId should not be an array');
-  }
-
-  return accountListId;
+  return getRouterQueryParam(router, 'accountListId');
 };
