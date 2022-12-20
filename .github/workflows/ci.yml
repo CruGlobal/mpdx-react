@@ -106,32 +106,6 @@ jobs:
       - name: 💅 Prettier Check
         run: yarn prettier:check
 
-  chromatic:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          # Chromatic needs access to the full Git history graph
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - name: 📦 Install Dependencies
-        run: yarn install --immutable --immutable-cache
-      - name: 📈 Run GraphQL Codegen
-        run: |
-          yarn gql
-          yarn gql:server
-      - name: 📙 Upload to Chromatic
-        if: ${{ github.event_name == 'pull_request' }}
-        run: yarn chromatic --exit-zero-on-changes --skip 'dependabot/**' --exit-once-uploaded
-        env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-      - name: 📗 Upload to Chromatic accepting changes
-        if: ${{ github.event_name != 'pull_request' }}
-        run: yarn chromatic --auto-accept-changes --skip 'dependabot/**' --exit-once-uploaded
-        env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
   yarn-check-cache:
     runs-on: ubuntu-latest
     steps:
