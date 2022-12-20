@@ -375,7 +375,6 @@ const TaskModalForm = ({
               <Grid item>
                 {!loading ? (
                   <Autocomplete
-                    loading={loading}
                     options={
                       (data?.accountListUsers?.nodes &&
                         data.accountListUsers.nodes.map(
@@ -390,21 +389,7 @@ const TaskModalForm = ({
                       return `${user?.firstName} ${user?.lastName}`;
                     }}
                     renderInput={(params): ReactElement => (
-                      <TextField
-                        {...params}
-                        label={t('Assignee')}
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {loading && (
-                                <CircularProgress color="primary" size={20} />
-                              )}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
-                        }}
-                      />
+                      <TextField {...params} label={t('Assignee')} />
                     )}
                     value={userId ?? null}
                     onChange={(_, userId): void =>

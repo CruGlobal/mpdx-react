@@ -114,32 +114,28 @@ const NextActionsSection: React.FC<NextActionsSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const availableNextActions = possibleNextActions(activityType);
-  return (
-    <>
-      {availableNextActions.length > 0 && (
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
-            <Select
-              labelId="nextAction"
-              label={t('Next Action')}
-              value={nextAction}
-              onChange={(e) => setFieldValue('nextAction', e.target.value)}
-            >
-              <MenuItem value={ActivityTypeEnum.None}>{t('None')}</MenuItem>
-              {availableNextActions
-                .filter((val) => val !== ActivityTypeEnum.None)
-                .map((val) => (
-                  <MenuItem key={val} value={val}>
-                    {getLocalizedTaskType(t, val)}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Grid>
-      )}
-    </>
-  );
+  return availableNextActions.length > 0 ? (
+    <Grid item xs={12}>
+      <FormControl fullWidth>
+        <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
+        <Select
+          labelId="nextAction"
+          label={t('Next Action')}
+          value={nextAction}
+          onChange={(e) => setFieldValue('nextAction', e.target.value)}
+        >
+          <MenuItem value={ActivityTypeEnum.None}>{t('None')}</MenuItem>
+          {availableNextActions
+            .filter((val) => val !== ActivityTypeEnum.None)
+            .map((val) => (
+              <MenuItem key={val} value={val}>
+                {getLocalizedTaskType(t, val)}
+              </MenuItem>
+            ))}
+        </Select>
+      </FormControl>
+    </Grid>
+  ) : null;
 };
 
 const TaskModalLogForm = ({
