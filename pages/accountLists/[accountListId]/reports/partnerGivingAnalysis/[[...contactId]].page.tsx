@@ -91,7 +91,6 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           MPDX | {t('Reports')} | {t('Partner Giving Analysis')}
         </title>
       </Head>
-      {selectedContactId}
       {accountListId ? (
         <PartnerGivingAnalysisReportPageWrapper>
           <SidePanelsLayout
