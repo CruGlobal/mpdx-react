@@ -12,8 +12,11 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
-import { useContactFiltersQuery } from '../contacts/Contacts.generated';
+import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
 import { useDebounce } from 'use-debounce';
+import { ContactsPageProvider } from '../../contacts/ContactsPageContext';
+import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { useRouter } from 'next/router';
 
 const PartnerGivingAnalysisReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -33,6 +36,14 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+
+  const router = useRouter();
+  const { contactId } = router.query;
+  if (typeof contactId === 'string') {
+    throw new Error('contactId must not be a string');
+  }
+  const selectedContactId =
+    typeof contactId === 'undefined' ? null : contactId[0];
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -67,6 +78,12 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     return [reportFilterGroup, ...groups];
   }, [filterData]);
 
+  const handleSelectContact = (contactId: string) => {
+    router.push(
+      `/accountLists/${accountListId}/reports/partnerGivingAnalysis/${contactId}`,
+    );
+  };
+
   return (
     <>
       <Head>
@@ -74,6 +91,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           MPDX | {t('Reports')} | {t('Partner Giving Analysis')}
         </title>
       </Head>
+      {selectedContactId}
       {accountListId ? (
         <PartnerGivingAnalysisReportPageWrapper>
           <SidePanelsLayout
@@ -99,10 +117,19 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
                 accountListId={accountListId}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
+                onSelectContact={handleSelectContact}
                 title={t('Partner Giving Analysis Report')}
                 contactFilters={debouncedFilters}
               />
             }
+            rightPanel={
+              selectedContactId ? (
+                <ContactsPageProvider>
+                  <ContactsRightPanel onClose={() => handleSelectContact('')} />
+                </ContactsPageProvider>
+              ) : undefined
+            }
+            rightOpen={typeof selectedContactId !== 'undefined'}
           />
         </PartnerGivingAnalysisReportPageWrapper>
       ) : (

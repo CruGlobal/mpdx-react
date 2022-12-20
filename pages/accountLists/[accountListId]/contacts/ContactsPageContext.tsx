@@ -82,14 +82,26 @@ export const ContactsPageContext = React.createContext<ContactsPageType | null>(
   null,
 );
 
-export const setRedirectPathname = (router, accountListId) => {
-  let pathName = `/accountLists/${accountListId}/contacts`;
+export const getRedirectPathname = (
+  routerPathname: string,
+  accountListId: string,
+): string => {
   if (
-    router.pathname === '/accountLists/[accountListId]/tasks/[[...contactId]]'
+    routerPathname === '/accountLists/[accountListId]/contacts/[[...contactId]]'
   ) {
-    pathName = `/accountLists/${accountListId}/tasks`;
+    return `/accountLists/${accountListId}/contacts`;
+  } else if (
+    routerPathname === '/accountLists/[accountListId]/tasks/[[...contactId]]'
+  ) {
+    return `/accountLists/${accountListId}/tasks`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/reports/partnerGivingAnalysis/[[...contactId]]'
+  ) {
+    return `/accountLists/${accountListId}/reports/partnerGivingAnalysis`;
+  } else {
+    return '';
   }
-  return pathName;
 };
 
 interface Props {
@@ -294,7 +306,7 @@ export const ContactsPageProvider: React.FC<Props> = ({ children }) => {
       }
     }
 
-    const pathName = setRedirectPathname(router, accountListId);
+    const pathName = getRedirectPathname(router.pathname, accountListId);
 
     push(
       id

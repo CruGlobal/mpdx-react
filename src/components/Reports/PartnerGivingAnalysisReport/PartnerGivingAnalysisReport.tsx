@@ -19,6 +19,7 @@ interface Props {
   accountListId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
+  onSelectContact: (contactId: string) => void;
   title: string;
   contactFilters?: ReportContactFilterSetInput;
 }
@@ -29,6 +30,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   accountListId,
   isNavListOpen,
   onNavListToggle,
+  onSelectContact,
   title,
   contactFilters: filters,
 }) => {
@@ -144,6 +146,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       ) : contacts.length > 0 ? (
         <>
           <Table
+            onClick={onSelectContact}
             onRequestSort={handleRequestSort}
             onSelectAll={handleSelectAll}
             onSelectOne={handleSelectOne}
