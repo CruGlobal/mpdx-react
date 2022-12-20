@@ -37,6 +37,11 @@ fragment ExpectedDonationData on Donation {
   }
   donationDate
   donorAccount {
+    contacts {
+      nodes {
+        id
+      }
+    }
     displayName
     id
   }

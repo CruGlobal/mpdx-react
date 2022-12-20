@@ -69,6 +69,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 
 interface Donation {
   date: Date;
+  contactId: string | null;
   partnerId: string;
   partner: string;
   currency: string;
@@ -109,6 +110,7 @@ export const DonationsReportTable: React.FC<Props> = ({
   const createData = (data: ExpectedDonationDataFragment): Donation => {
     return {
       date: new Date(data.donationDate),
+      contactId: data.donorAccount.contacts.nodes[0]?.id ?? null,
       partnerId: data.donorAccount.id,
       partner: data.donorAccount.displayName,
       currency: data.amount.convertedCurrency,
@@ -131,9 +133,13 @@ export const DonationsReportTable: React.FC<Props> = ({
 
     return (
       <Typography>
-        <Link href={`../../${accountListId}/contacts/${donation.partnerId}`}>
-          {donation.partner}
-        </Link>
+        {donation.contactId ? (
+          <Link href={`../../${accountListId}/contacts/${donation.contactId}`}>
+            {donation.partner}
+          </Link>
+        ) : (
+          donation.partner
+        )}
       </Typography>
     );
   };
