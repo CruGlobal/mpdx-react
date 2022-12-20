@@ -127,7 +127,7 @@ const NextActionsSection: React.FC<NextActionsSectionProps> = ({
             >
               <MenuItem value={ActivityTypeEnum.None}>{t('None')}</MenuItem>
               {availableNextActions
-                .filter((val) => val !== 'NONE')
+                .filter((val) => val !== ActivityTypeEnum.None)
                 .map((val) => (
                   <MenuItem key={val} value={val}>
                     {getLocalizedTaskType(t, val)}
@@ -381,7 +381,7 @@ const TaskModalLogForm = ({
                   >
                     <MenuItem value={undefined}>{t('None')}</MenuItem>
                     {Object.values(ActivityTypeEnum)
-                      .filter((val) => val !== 'NONE')
+                      .filter((val) => val !== ActivityTypeEnum.None)
                       .map((val) => (
                         <MenuItem key={val} value={val}>
                           {getLocalizedTaskType(t, val)}
@@ -467,7 +467,7 @@ const TaskModalLogForm = ({
                   >
                     {activityType ? (
                       possibleResults(activityType)
-                        .filter((val) => val !== 'NONE')
+                        .filter((val) => val !== ResultEnum.None)
                         .map((val) => (
                           <MenuItem key={val} value={val}>
                             {getLocalizedResultString(t, val)}

@@ -260,7 +260,7 @@ const TaskModalCompleteForm = ({
                     >
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {availableNextActions
-                        .filter((val) => val !== 'NONE')
+                        .filter((val) => val !== ActivityTypeEnum.None)
                         .map((val) => (
                           <MenuItem key={val} value={val}>
                             {getLocalizedTaskType(t, val)}

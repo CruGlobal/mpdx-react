@@ -352,7 +352,7 @@ const TaskModalForm = ({
                   >
                     <MenuItem value={undefined}>{t('None')}</MenuItem>
                     {Object.values(ActivityTypeEnum)
-                      .filter((val) => val !== 'NONE')
+                      .filter((val) => val !== ActivityTypeEnum.None)
                       .map((val) => (
                         <MenuItem key={val} value={val}>
                           {getLocalizedTaskType(t, val)}
