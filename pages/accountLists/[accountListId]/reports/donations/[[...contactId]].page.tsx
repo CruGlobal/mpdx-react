@@ -10,7 +10,7 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 import { getQueryParam } from 'src/utils/queryParam';
-import { ContactsPageProvider } from '../../contacts/ContactsPageContext';
+import { ContactsPage } from '../../contacts/ContactsPage';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 
 const DonationsReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -66,9 +66,9 @@ const DonationsReportPage: React.FC = () => {
             }
             rightPanel={
               selectedContactId ? (
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactsRightPanel onClose={() => handleSelectContact('')} />
-                </ContactsPageProvider>
+                </ContactsPage>
               ) : undefined
             }
             rightOpen={typeof selectedContactId !== 'undefined'}

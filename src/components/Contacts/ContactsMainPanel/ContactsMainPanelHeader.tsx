@@ -15,9 +15,9 @@ import _ from 'lodash';
 import { useSnackbar } from 'notistack';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+  ContactsContext,
+  ContactsType,
+} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { MassActionsRemoveTagsModal } from '../MassActions/RemoveTags/MassActionsRemoveTagsModal';
 import { MassActionsAddTagsModal } from '../MassActions/AddTags/MassActionsAddTagsModal';
 import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
@@ -76,7 +76,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     urlFilters,
     handleViewModeChange,
     selectedIds,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
   const [openRemoveTagsModal, setOpenRemoveTagsModal] = useState(false);
   const [openAddTagsModal, setOpenAddTagsModal] = useState(false);

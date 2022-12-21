@@ -14,7 +14,7 @@ import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
 import { useDebounce } from 'use-debounce';
-import { ContactsPageProvider } from '../../contacts/ContactsPageContext';
+import { ContactsPage } from '../../contacts/ContactsPage';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useRouter } from 'next/router';
 import { getQueryParam } from 'src/utils/queryParam';
@@ -119,9 +119,9 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
             }
             rightPanel={
               selectedContactId ? (
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactsRightPanel onClose={() => handleSelectContact('')} />
-                </ContactsPageProvider>
+                </ContactsPage>
               ) : undefined
             }
             rightOpen={typeof selectedContactId !== 'undefined'}

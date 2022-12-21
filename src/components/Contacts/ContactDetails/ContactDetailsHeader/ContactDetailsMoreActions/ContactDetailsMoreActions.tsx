@@ -25,9 +25,9 @@ import {
   ContactsQuery,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+  ContactsContext,
+  ContactsType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { MoreActionHideContactModal } from './MoreActionHideContactModal';
 
 type AddMenuItem = {
@@ -114,8 +114,8 @@ export const ContactDetailsMoreAcitions: React.FC<
   const { openTaskModal } = useTaskModal();
   const { t } = useTranslation();
   const { accountListId, searchTerm, router } = React.useContext(
-    ContactsPageContext,
-  ) as ContactsPageType;
+    ContactsContext,
+  ) as ContactsType;
   const { query, push } = router;
   const { ...queryWithoutContactId } = query;
 

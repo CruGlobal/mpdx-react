@@ -10,7 +10,7 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from '../../../../../graphql/types.generated';
-import { ContactsPageContext, ContactsPageType } from '../ContactsPageContext';
+import { ContactsContext, ContactsType } from '../ContactsContext';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
 
@@ -94,7 +94,7 @@ export const ContactsMap: React.FC = ({}) => {
     selected,
     setSelected,
     setContactFocus: onContactSelected,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
   const onMapLoad = useCallback((map) => {
     mapRef.current = map;

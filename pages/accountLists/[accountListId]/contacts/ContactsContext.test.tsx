@@ -12,12 +12,12 @@ import {
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
 import {
-  ContactsPageContext,
-  ContactsPageProvider,
-  ContactsPageType,
+  ContactsContext,
+  ContactsType,
   getRedirectPathname,
-} from './ContactsPageContext';
+} from './ContactsContext';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { ContactsPage } from './ContactsPage';
 
 const accountListId = 'account-list-1';
 const push = jest.fn();
@@ -47,8 +47,8 @@ jest.mock('notistack', () => ({
 
 const TestRender: React.FC = () => {
   const { viewMode, handleViewModeChange, userOptionsLoading } = useContext(
-    ContactsPageContext,
-  ) as ContactsPageType;
+    ContactsContext,
+  ) as ContactsType;
   return (
     <Box>
       {!userOptionsLoading ? (
@@ -107,9 +107,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPageProvider>
+            <ContactsPage>
               <TestRender />
-            </ContactsPageProvider>
+            </ContactsPage>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -149,9 +149,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPageProvider>
+            <ContactsPage>
               <TestRender />
-            </ContactsPageProvider>
+            </ContactsPage>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -199,9 +199,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPageProvider>
+            <ContactsPage>
               <TestRender />
-            </ContactsPageProvider>
+            </ContactsPage>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,

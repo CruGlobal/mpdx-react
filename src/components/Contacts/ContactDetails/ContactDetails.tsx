@@ -7,9 +7,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+  ContactsContext,
+  ContactsType,
+} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
@@ -74,7 +74,7 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
     accountListId,
     contactDetailsId: contactId,
     setContactFocus,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
   const { selectedTabKey, handleTabChange: handleChange } = React.useContext(
     ContactDetailContext,
