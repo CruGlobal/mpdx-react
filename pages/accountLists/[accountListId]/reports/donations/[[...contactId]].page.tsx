@@ -72,6 +72,7 @@ const DonationsReportPage: React.FC = () => {
               ) : undefined
             }
             rightOpen={typeof selectedContactId !== 'undefined'}
+            rightWidth="60%"
           />
         </DonationsReportPageWrapper>
       ) : (
