@@ -30,6 +30,7 @@ import {
 
 interface Props {
   accountListId: string;
+  onSelectContact: (contactId: string) => void;
   time: DateTime;
   setTime: (time: DateTime) => void;
 }
@@ -84,6 +85,7 @@ interface Donation {
 
 export const DonationsReportTable: React.FC<Props> = ({
   accountListId,
+  onSelectContact,
   time,
   setTime,
 }) => {
@@ -132,14 +134,14 @@ export const DonationsReportTable: React.FC<Props> = ({
     const donation = params.row as Donation;
 
     return (
-      <Typography>
-        {donation.contactId ? (
-          <Link href={`../../${accountListId}/contacts/${donation.contactId}`}>
-            {donation.partner}
-          </Link>
-        ) : (
-          donation.partner
-        )}
+      <Typography sx={{ cursor: 'pointer' }}>
+        <Link
+          onClick={() =>
+            donation.contactId && onSelectContact(donation.contactId)
+          }
+        >
+          {donation.partner}
+        </Link>
       </Typography>
     );
   };

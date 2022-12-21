@@ -1,20 +1,22 @@
 import { FC, ReactElement } from 'react';
 import { Box, Theme, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { CSSProperties } from '@mui/styles';
+
+interface ToolbarMixin extends CSSProperties {
+  minHeight: number;
+  ['@media (min-width:600px)']: { minHeight: number };
+  ['@media (min-width:0px)']: {
+    ['@media (orientation: landscape)']: { minHeight: number };
+  };
+}
 
 type ScrollBoxProps = {
-  isscroll?: 1 | 0;
+  isScrollable?: boolean;
 };
 
 const FullHeightBox = styled(Box)(({ theme }) => {
-  const toolbar = theme.mixins.toolbar as {
-    minHeight: number;
-    ['@media (min-width:600px)']: { minHeight: number };
-    ['@media (min-width:0px)']: {
-      ['@media (orientation: landscape)']: { minHeight: number };
-    };
-  };
-
+  const toolbar = theme.mixins.toolbar as ToolbarMixin;
   return {
     height: `calc(100vh - ${toolbar.minHeight}px)`,
     ['@media (min-width:0px) and (orientation: landscape)']: {
@@ -27,9 +29,9 @@ const FullHeightBox = styled(Box)(({ theme }) => {
 });
 
 const ScrollBox = styled(FullHeightBox, {
-  shouldForwardProp: (prop) => prop !== 'isscroll',
-})(({ isscroll }: ScrollBoxProps) => ({
-  overflowY: isscroll === 1 ? 'auto' : 'hidden',
+  shouldForwardProp: (prop) => prop !== 'isScrollable',
+})(({ isScrollable }: ScrollBoxProps) => ({
+  overflowY: isScrollable ? 'auto' : 'hidden',
 }));
 
 const OuterWrapper = styled(Box)({
@@ -52,7 +54,7 @@ const ExpandingContent = styled(Box)(({ open }: { open: boolean }) => ({
   zIndex: 10,
 }));
 
-const LeftPanelWrapper = styled(ScrollBox)(({ theme }: { theme: Theme }) => ({
+const LeftPanelWrapper = styled(ScrollBox)(({ theme }) => ({
   flexShrink: 0,
   borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
   left: 0,
@@ -64,20 +66,32 @@ const LeftPanelWrapper = styled(ScrollBox)(({ theme }: { theme: Theme }) => ({
     zIndex: 20,
   },
 }));
-const RightPanelWrapper = styled(ScrollBox)(({ theme }: { theme: Theme }) => ({
-  position: 'absolute',
-  zIndex: 20,
-  top: 0,
-  right: 0,
-  transition: 'transform ease-in-out 225ms',
-  background: theme.palette.common.white,
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-  },
-  [theme.breakpoints.up('md')]: {
-    borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
-  },
-}));
+
+const RightPanelWrapper = styled(ScrollBox)(({ theme }) => {
+  const toolbar = theme.mixins.toolbar as ToolbarMixin;
+  return {
+    position: 'fixed',
+    zIndex: 20,
+    right: 0,
+    transition: 'transform ease-in-out 225ms',
+    overflowY: 'scroll',
+    background: theme.palette.common.white,
+    top: toolbar.minHeight,
+    ['@media (min-width:0px) and (orientation: landscape)']: {
+      top: toolbar['@media (min-width:0px)']['@media (orientation: landscape)']
+        .minHeight,
+    },
+    ['@media (min-width:600px)']: {
+      top: toolbar['@media (min-width:600px)'].minHeight,
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+    },
+    [theme.breakpoints.up('md')]: {
+      borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
+    },
+  };
+});
 
 interface SidePanelsLayoutProps {
   isScrollBox?: boolean;
@@ -113,7 +127,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
             flexBasis={leftWidth}
             style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}
           >
-            <ScrollBox isscroll={isScrollBox ? 1 : 0}>{leftPanel}</ScrollBox>
+            <ScrollBox isScrollable={isScrollBox}>{leftPanel}</ScrollBox>
           </LeftPanelWrapper>
           <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
         </CollapsibleWrapper>
@@ -122,7 +136,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
         width={isMobile ? '100%' : rightWidth}
         style={{ transform: rightOpen ? 'none' : 'translate(100%)' }}
       >
-        <ScrollBox isscroll={isScrollBox ? 1 : 0}>{rightPanel}</ScrollBox>
+        <ScrollBox isScrollable>{rightPanel}</ScrollBox>
       </RightPanelWrapper>
     </OuterWrapper>
   );

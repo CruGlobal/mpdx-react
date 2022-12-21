@@ -17,6 +17,7 @@ import { useDebounce } from 'use-debounce';
 import { ContactsPageProvider } from '../../contacts/ContactsPageContext';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useRouter } from 'next/router';
+import { getQueryParam } from 'src/utils/queryParam';
 
 const PartnerGivingAnalysisReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -38,12 +39,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
   const router = useRouter();
-  const { contactId } = router.query;
-  if (typeof contactId === 'string') {
-    throw new Error('contactId must not be a string');
-  }
-  const selectedContactId =
-    typeof contactId === 'undefined' ? null : contactId[0];
+  const selectedContactId = getQueryParam(router.query, 'contactId');
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);

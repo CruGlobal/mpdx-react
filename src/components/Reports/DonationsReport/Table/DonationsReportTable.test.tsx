@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import theme from '../../../../theme';
@@ -9,6 +10,7 @@ import { DonationsReportTable } from './DonationsReportTable';
 
 const time = DateTime.now();
 const setTime = jest.fn();
+const onSelectContact = jest.fn();
 
 const mocks = {
   GetDonationsTable: {
@@ -63,13 +65,52 @@ const mocks = {
   },
 };
 
-it('renders with data', async () => {
-  const { getAllByTestId, queryAllByRole, queryByRole, queryAllByText } =
-    render(
+describe('DonationsReportTable', () => {
+  it('renders with data', async () => {
+    const { getAllByTestId, queryAllByRole, queryByRole, queryAllByText } =
+      render(
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+            <DonationsReportTable
+              accountListId={'abc'}
+              onSelectContact={onSelectContact}
+              time={time}
+              setTime={setTime}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
+      );
+
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+    );
+
+    expect(queryAllByRole('button')[1]).toBeInTheDocument();
+
+    expect(getAllByTestId('donationRow')[0]).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(queryAllByText('Appeal Test 1')).toHaveLength(1),
+    );
+
+    expect(getAllByTestId('appeal-name')).toHaveLength(1);
+  });
+
+  it('renders empty', async () => {
+    const mocks = {
+      GetDonationsTable: {
+        donations: {
+          nodes: [],
+        },
+      },
+    };
+
+    const { queryByTestId, queryAllByRole, queryByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
           <DonationsReportTable
             accountListId={'abc'}
+            onSelectContact={onSelectContact}
             time={time}
             setTime={setTime}
           />
@@ -77,116 +118,85 @@ it('renders with data', async () => {
       </ThemeProvider>,
     );
 
-  await waitFor(() =>
-    expect(queryByRole('progressbar')).not.toBeInTheDocument(),
-  );
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+    );
 
-  expect(queryAllByRole('button')[1]).toBeInTheDocument();
+    expect(queryAllByRole('button')[1]).toBeInTheDocument();
 
-  expect(getAllByTestId('donationRow')[0]).toBeInTheDocument();
+    expect(queryByTestId('donationRow')).not.toBeInTheDocument();
+  });
 
-  await waitFor(() => expect(queryAllByText('Appeal Test 1')).toHaveLength(1));
+  it('is clickable', async () => {
+    const { queryAllByText } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+          <DonationsReportTable
+            accountListId={'abc'}
+            onSelectContact={onSelectContact}
+            time={time}
+            setTime={setTime}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
 
-  expect(getAllByTestId('appeal-name')).toHaveLength(1);
-});
+    await waitFor(() => expect(queryAllByText('John')).toHaveLength(2));
 
-it('renders empty', async () => {
-  const mocks = {
-    GetDonationsTable: {
-      donations: {
-        nodes: [],
-      },
-    },
-  };
+    userEvent.click(queryAllByText('John')[0]);
+    expect(onSelectContact).toHaveBeenCalledWith('contact1');
+  });
 
-  const { queryByTestId, queryAllByRole, queryByRole } = render(
-    <ThemeProvider theme={theme}>
-      <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
-        <DonationsReportTable
-          accountListId={'abc'}
-          time={time}
-          setTime={setTime}
-        />
-      </GqlMockedProvider>
-    </ThemeProvider>,
-  );
-
-  await waitFor(() =>
-    expect(queryByRole('progressbar')).not.toBeInTheDocument(),
-  );
-
-  expect(queryAllByRole('button')[1]).toBeInTheDocument();
-
-  expect(queryByTestId('donationRow')).not.toBeInTheDocument();
-});
-
-it('renders contact link', async () => {
-  const { queryAllByRole, queryAllByText } = render(
-    <ThemeProvider theme={theme}>
-      <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
-        <DonationsReportTable
-          accountListId={'abc'}
-          time={time}
-          setTime={setTime}
-        />
-      </GqlMockedProvider>
-    </ThemeProvider>,
-  );
-
-  await waitFor(() => expect(queryAllByText('John')).toHaveLength(2));
-
-  expect((queryAllByRole('link')[0] as HTMLLinkElement).href).toContain(
-    'contact1',
-  );
-});
-
-it('renders no contact link when missing', async () => {
-  const mocks = {
-    GetDonationsTable: {
-      donations: {
-        nodes: [
-          {
-            amount: {
-              amount: 10,
-              convertedAmount: 10,
-              convertedCurrency: 'CAD',
-              currency: 'CAD',
-            },
-            appeal: {
-              amount: 10,
-              amountCurrency: 'CAD',
-              createdAt: DateTime.now().minus({ month: 3 }).toISO(),
-              id: 'abc',
-              name: 'Appeal Test 1',
-            },
-            donationDate: DateTime.now().minus({ minutes: 4 }).toISO(),
-            donorAccount: {
-              contacts: {
-                nodes: [],
+  it('is not clickable when contact is missing', async () => {
+    const mocks = {
+      GetDonationsTable: {
+        donations: {
+          nodes: [
+            {
+              amount: {
+                amount: 10,
+                convertedAmount: 10,
+                convertedCurrency: 'CAD',
+                currency: 'CAD',
               },
-              displayName: 'John',
+              appeal: {
+                amount: 10,
+                amountCurrency: 'CAD',
+                createdAt: DateTime.now().minus({ month: 3 }).toISO(),
+                id: 'abc',
+                name: 'Appeal Test 1',
+              },
+              donationDate: DateTime.now().minus({ minutes: 4 }).toISO(),
+              donorAccount: {
+                contacts: {
+                  nodes: [],
+                },
+                displayName: 'John',
+                id: 'abc',
+              },
               id: 'abc',
+              paymentMethod: 'pay',
             },
-            id: 'abc',
-            paymentMethod: 'pay',
-          },
-        ],
+          ],
+        },
       },
-    },
-  };
-  const { queryAllByRole, queryAllByText } = render(
-    <ThemeProvider theme={theme}>
-      <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
-        <DonationsReportTable
-          accountListId={'abc'}
-          time={time}
-          setTime={setTime}
-        />
-      </GqlMockedProvider>
-    </ThemeProvider>,
-  );
+    };
+    const { queryAllByText, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+          <DonationsReportTable
+            accountListId={'abc'}
+            onSelectContact={onSelectContact}
+            time={time}
+            setTime={setTime}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
 
-  await waitFor(() => expect(queryAllByText('John')).toHaveLength(1));
+    await waitFor(() => expect(queryAllByText('John')).toHaveLength(1));
 
-  expect(queryAllByRole('link').length).toBe(0);
+    userEvent.click(getByText('John'));
+    expect(onSelectContact).not.toHaveBeenCalled();
+  });
 });
