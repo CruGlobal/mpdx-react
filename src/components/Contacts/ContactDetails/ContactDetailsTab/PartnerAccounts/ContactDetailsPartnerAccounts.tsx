@@ -8,16 +8,17 @@ import {
 } from './ContactPartnerAccounts.generated';
 import { styled } from '@mui/system';
 import Delete from '@mui/icons-material/Delete';
-import { useDeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
-import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Add from '@mui/icons-material/Add';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import { TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useDeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
+import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
+import { useSnackbar } from 'notistack';
 
 const newPartnerAccountSchema = yup.object({
   accountNumber: yup.string(),
@@ -54,6 +55,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
     variables: { accountListId: accountListId },
   });
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const deleteContactDonorAccount = async (id: string) => {
     await deleteDonorAccount({
@@ -82,17 +84,18 @@ export const ContactDetailsPartnerAccounts: React.FC<
         },
       ],
     });
+    enqueueSnackbar('Partner account deleted!', { variant: 'success' });
   };
 
-  const onAddPartnerAccount = async (accountNumber) => {
+  const onAddPartnerAccount = async (fields) => {
     await updateContact({
       variables: {
         accountListId,
         attributes: {
           id: contact.id,
           donorAccount: {
-            name: accountNumber.accountNumber,
-            accountNumber: accountNumber.accountNumber,
+            name: fields.displayName,
+            accountNumber: fields.displayName,
             organizationId:
               accountListData?.accountList.salaryOrganizationId ?? '',
           },
@@ -109,6 +112,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
       ],
     });
     setShowForm(false);
+    enqueueSnackbar('Partner account added!', { variant: 'success' });
   };
 
   return (
@@ -119,12 +123,12 @@ export const ContactDetailsPartnerAccounts: React.FC<
       </ActionButton>
       {showForm && (
         <Formik
-          initialValues={{ accountNumber: '' }}
+          initialValues={{ displayName: '' }}
           validationSchema={newPartnerAccountSchema}
           onSubmit={onAddPartnerAccount}
         >
           {({
-            values: { accountNumber },
+            values: { displayName },
             handleChange,
             handleSubmit,
             isSubmitting,
@@ -135,13 +139,13 @@ export const ContactDetailsPartnerAccounts: React.FC<
             <form onSubmit={handleSubmit} noValidate>
               <TextField
                 label={t('Account Name')}
-                value={accountNumber}
-                onChange={handleChange('accountNumber')}
+                value={displayName}
+                onChange={handleChange('displayName')}
                 inputProps={{ 'aria-label': 'Account Number' }}
-                error={!!errors.accountNumber && touched.accountNumber}
+                error={!!errors.displayName && touched.displayName}
                 helperText={
-                  errors.accountNumber &&
-                  touched.accountNumber &&
+                  errors.displayName &&
+                  touched.displayName &&
                   t('Field is required')
                 }
                 required

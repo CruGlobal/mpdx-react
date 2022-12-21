@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import React from 'react';
@@ -18,6 +18,19 @@ const contactId = 'contact-1';
 const router = {
   query: { accountListId, contactId: [contactId] },
 };
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 const contact = {
   id: '123',
@@ -129,7 +142,16 @@ describe('ContactDetailsPartnerAccounts', () => {
       'new-account',
     );
     userEvent.click(getByRole('button', { name: 'submit' }));
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await waitFor(() =>
+      expect(
+        queryByRole('textbox', { name: 'Account Number' }),
+      ).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Partner account added!', {
+        variant: 'success',
+      }),
+    );
     const { operation } = mutationSpy.mock.calls[0][0];
     // TODO: get this to have proper variables
     expect(operation.variables).toEqual({ accountListId: '' });
@@ -159,7 +181,11 @@ describe('ContactDetailsPartnerAccounts', () => {
     userEvent.click(queryAllByRole('button', { name: '' })[0]);
     expect(getByText('donor-1')).toBeInTheDocument();
     expect(getByText('donor-2')).toBeInTheDocument();
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Partner account deleted!', {
+        variant: 'success',
+      }),
+    );
     // TODO: get this to have proper variables
     const { operation } = mutationSpy.mock.calls[0][0];
     expect(operation.variables).toEqual({ accountListId: '' });
