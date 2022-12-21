@@ -7,7 +7,7 @@ import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocki
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPageProvider } from '../../../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import { ContactDetailsPartnerAccounts } from './ContactDetailsPartnerAccounts';
 import { DeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
 import { UpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
