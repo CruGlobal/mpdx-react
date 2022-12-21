@@ -137,7 +137,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
                 label={t('Account Name')}
                 value={accountNumber}
                 onChange={handleChange('accountNumber')}
-                inputProps={{ 'aria-label': 'Subject' }}
+                inputProps={{ 'aria-label': 'Account Number' }}
                 error={!!errors.accountNumber && touched.accountNumber}
                 helperText={
                   errors.accountNumber &&
@@ -147,6 +147,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
                 required
               />
               <IconButton
+                aria-label="submit"
                 type="submit"
                 disabled={isSubmitting || !isValid || updating}
               >
