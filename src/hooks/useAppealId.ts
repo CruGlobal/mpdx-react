@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { getRouterQueryParam } from 'src/utils/routerQueryParam';
+import { getQueryParam } from 'src/utils/queryParam';
 
 export const useAppealId = (): string | undefined => {
   const router = useRouter();
@@ -8,5 +8,5 @@ export const useAppealId = (): string | undefined => {
     return undefined;
   }
 
-  return getRouterQueryParam(router, 'appealId');
+  return getQueryParam(router.query, 'appealId');
 };

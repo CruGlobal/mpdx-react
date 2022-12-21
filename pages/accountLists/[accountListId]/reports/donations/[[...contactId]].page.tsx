@@ -9,7 +9,7 @@ import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
-import { getRouterQueryParam } from 'src/utils/routerQueryParam';
+import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsPageProvider } from '../../contacts/ContactsPageContext';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 
@@ -23,7 +23,7 @@ const DonationsReportPage: React.FC = () => {
   const accountListId = useAccountListId();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
-  const selectedContactId = getRouterQueryParam(router, 'contactId');
+  const selectedContactId = getQueryParam(router.query, 'contactId');
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);

@@ -1,11 +1,11 @@
-import { NextRouter } from 'next/router';
+import { ParsedUrlQuery } from 'querystring';
 
-// Return the value of a router query param
-export const getRouterQueryParam = (
-  router: NextRouter,
+// Return the value of a query param as a string or undefined
+export const getQueryParam = (
+  query: ParsedUrlQuery,
   param: string,
 ): string | undefined => {
-  const value = router.query[param];
+  const value = query[param];
   if (typeof value === 'undefined') {
     return undefined;
   } else if (typeof value === 'string') {

@@ -17,7 +17,7 @@ import { useDebounce } from 'use-debounce';
 import { ContactsPageProvider } from '../../contacts/ContactsPageContext';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useRouter } from 'next/router';
-import { getRouterQueryParam } from 'src/utils/routerQueryParam';
+import { getQueryParam } from 'src/utils/queryParam';
 
 const PartnerGivingAnalysisReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -39,7 +39,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
   const router = useRouter();
-  const selectedContactId = getRouterQueryParam(router, 'contactId');
+  const selectedContactId = getQueryParam(router.query, 'contactId');
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
