@@ -698,14 +698,16 @@ class MpdxRestApi extends RESTDataSource {
             accountNumber: donorAccount.accountNumber,
             _destroy: donorAccount.id === donorAccountId ? '1' : '0',
           },
-          relationships: {
-            organization: {
-              data: {
-                type: 'organization',
-                id: donorAccount.organization?.id,
+          ...(donorAccount.organization && {
+            relationships: {
+              organization: {
+                data: {
+                  type: 'organization',
+                  id: donorAccount.organization.id,
+                },
               },
             },
-          },
+          }),
         })),
         data: {
           type: 'contacts',
