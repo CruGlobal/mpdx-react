@@ -176,7 +176,6 @@ describe('AddAddressModal', () => {
     expect(operation.variables.attributes.street).toEqual(newStreet);
 
     const { operation: operation2 } = mutationSpy.mock.calls[1][0];
-    console.log(operation2);
     expect(operation2.variables.primaryAddressId).not.toBeNull();
   });
 

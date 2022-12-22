@@ -22,6 +22,7 @@ module.exports = {
     'import/no-anonymous-default-export': 'error',
     'import/dynamic-import-chunkname': 'error',
     eqeqeq: 'error',
+    'no-console': 'error',
     '@typescript-eslint/no-loss-of-precision': 'warn',
     '@typescript-eslint/no-unused-vars': [
       'error',
