@@ -1,0 +1,18 @@
+mutation UpdateDonation(
+  $accountListId: ID!
+  $attributes: DonationUpdateInput!
+) {
+  updateDonation(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    donation {
+      id
+    }
+  }
+}
+
+mutation DeleteDonation($accountListId: ID!, $id: ID!) {
+  deleteDonation(input: { accountListId: $accountListId, id: $id }) {
+    id
+  }
+}

@@ -13,11 +13,11 @@ import {
   MenuItem,
   Select,
   TextField,
-  Typography,
 } from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
-import React, { ReactElement } from 'react';
+import { useSnackbar } from 'notistack';
+import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DeleteButton,
@@ -26,15 +26,24 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { useGetAppealsForMassActionQuery } from 'src/components/Contacts/MassActions/AddToAppeal/GetAppealsForMassAction.generated';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import * as yup from 'yup';
+import { GetDonationsTableDocument } from '../../GetDonationsTable.generated';
 import { Donation } from '../DonationsReportTable';
+import {
+  useDeleteDonationMutation,
+  useUpdateDonationMutation,
+} from './EditDonation.generated';
 
 interface EditDonationModalProps {
   open: boolean;
   donation?: Donation | null | undefined;
   handleClose: () => void;
+  startDate: string;
+  endDate: string;
 }
 
 const donationSchema = yup.object({
@@ -67,19 +76,97 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   open,
   donation,
   handleClose,
+  startDate,
+  endDate,
 }) => {
   const { t } = useTranslation();
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+  const accountListId = useAccountListId() ?? '';
   const constants = useApiConstants();
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
-  const onSubmit = async (attributes) => {
-    console.log(attributes);
+  const { data: appeals, loading: loadingAppeals } =
+    useGetAppealsForMassActionQuery({ variables: { accountListId } });
+
+  const [updateDonation, { loading: updatingDonation }] =
+    useUpdateDonationMutation();
+
+  const [deleteDonation, { loading: deletingDonation }] =
+    useDeleteDonationMutation();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const onSubmit = async (fields) => {
+    await updateDonation({
+      variables: {
+        accountListId,
+        attributes: {
+          appealId: fields.appeal,
+          appealAmount: parseFloat(fields.appealAmount),
+          motivation: fields.motivation,
+          memo: fields.memo,
+          id: donation?.id ?? '',
+          amount: parseFloat(fields.convertedAmount),
+          currency: fields.currency,
+          donationDate: fields.date,
+        },
+      },
+      refetchQueries: [
+        {
+          query: GetDonationsTableDocument,
+          variables: { accountListId, startDate, endDate },
+        },
+      ],
+      onCompleted: () => {
+        enqueueSnackbar(t('Donation updated!'), {
+          variant: 'success',
+        });
+        handleClose();
+      },
+    });
   };
+
+  const handleDelete = async () => {
+    await deleteDonation({
+      variables: {
+        accountListId,
+        id: donation?.id ?? '',
+      },
+      refetchQueries: [
+        {
+          query: GetDonationsTableDocument,
+          variables: { accountListId, startDate, endDate },
+        },
+      ],
+      onCompleted: () => {
+        enqueueSnackbar(t('Donation deleted!'), {
+          variant: 'success',
+        });
+        handleClose();
+      },
+    });
+  };
+
   return (
     <Modal title={t('Edit Donation')} isOpen={open} handleClose={handleClose}>
       <Formik
-        initialValues={donation ? donation : initialDonation}
+        initialValues={
+          donation
+            ? {
+                convertedAmount: donation.convertedAmount,
+                currency: donation.currency,
+                date: donation.date,
+                motivation: '',
+                giftId: '',
+                partner: donation.partner,
+                designation: donation.designation,
+                appeal: donation.appeal?.id ?? '',
+                appealAmount: '',
+                memo: '',
+              }
+            : initialDonation
+        }
         validationSchema={donationSchema}
         onSubmit={onSubmit}
       >
@@ -100,7 +187,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
           handleChange,
           handleSubmit,
           isSubmitting,
-          isValid,
           errors,
           touched,
         }): ReactElement => (
@@ -238,23 +324,45 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                         setFieldValue('designation', e.target.value)
                       }
                     >
-                      <MenuItem value={designation}>{designation}</MenuItem>
+                      <MenuItem value={designation as string}>
+                        {designation}
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="appeal">{t('Appeal')}</InputLabel>
-                    <Select
-                      labelId="appeal"
-                      label={t('Appeal')}
-                      value={appeal}
-                      onChange={(e) => setFieldValue('appeal', e.target.value)}
-                    >
-                      <MenuItem value={appeal}>{appeal}</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
+                {!loadingAppeals && (
+                  <Grid item xs={12} md={6}>
+                    <FormControl fullWidth>
+                      <InputLabel id="appeal">{t('Appeal')}</InputLabel>
+                      <Select
+                        labelId="appeal"
+                        label={t('Appeal')}
+                        value={appeal ?? ''}
+                        onChange={(e) =>
+                          setFieldValue('appeal', e.target.value)
+                        }
+                      >
+                        {appeals?.appeals.nodes.map((appeal) => (
+                          <MenuItem key={appeal.id} value={appeal.id}>
+                            {appeal.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )}
+                {appeal && (
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      value={appealAmount}
+                      label={t('Appeal Amount')}
+                      onChange={handleChange('appealAmount')}
+                      fullWidth
+                      inputProps={{ 'aria-label': 'appealAmount' }}
+                      disabled={!appeal}
+                    />
+                  </Grid>
+                )}
                 <Grid item xs={12} md={6}>
                   <TextField
                     value={memo}
@@ -267,20 +375,18 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
               </FormFieldsGridContainer>
             </DialogContent>
             <DialogActions>
-              {/* {task?.id ? (
-                <DeleteButton onClick={() => setRemoveDialogOpen(true)} />
-              ) : null} */}
+              <DeleteButton onClick={() => setRemoveDialogOpen(true)} />
               <CancelButton disabled={isSubmitting} onClick={handleClose} />
-              <SubmitButton disabled={!isValid || isSubmitting}>
-                {/* {creating && (
+              <SubmitButton disabled={isSubmitting}>
+                {(updatingDonation || deletingDonation) && (
                   <>
                     <CircularProgress color="primary" size={20} />
                     &nbsp;
                   </>
-                )} */}
+                )}
                 {t('Save')}
               </SubmitButton>
-              {/* 
+
               <Dialog
                 open={removeDialogOpen}
                 aria-labelledby={t('Remove task confirmation')}
@@ -289,11 +395,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
               >
                 <DialogTitle>{t('Confirm')}</DialogTitle>
                 <DialogContent dividers>
-                  {deleting ? (
-                    <LoadingIndicator color="primary" size={50} />
+                  {deletingDonation ? (
+                    <CircularProgress color="primary" size={50} />
                   ) : (
                     <DialogContentText>
-                      {t('Are you sure you wish to delete the selected task?')}
+                      {t('Are you sure you wish to delete this donation?')}
                     </DialogContentText>
                   )}
                 </DialogContent>
@@ -301,11 +407,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   <CancelButton onClick={() => setRemoveDialogOpen(false)}>
                     {t('No')}
                   </CancelButton>
-                  <SubmitButton type="button" onClick={onDeleteTask}>
+                  <SubmitButton type="button" onClick={handleDelete}>
                     {t('Yes')}
                   </SubmitButton>
                 </DialogActions>
-              </Dialog> */}
+              </Dialog>
             </DialogActions>
           </form>
         )}
