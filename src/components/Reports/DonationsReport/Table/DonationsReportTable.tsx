@@ -405,6 +405,8 @@ export const DonationsReportTable: React.FC<Props> = ({
           open={openEditDonationModal}
           donation={selectedDonation}
           handleClose={() => handleClose()}
+          startDate={startDate}
+          endDate={endDate}
         />
       )}
     </>
