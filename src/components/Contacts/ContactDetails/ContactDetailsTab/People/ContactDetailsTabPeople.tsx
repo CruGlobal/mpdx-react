@@ -111,7 +111,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
 
   const personView = (person: ContactPersonFragment) => {
     return (
-      <ContactPersonContainer>
+      <ContactPersonContainer key={person.id}>
         {/* TODO - add avatar link */}
         <ContactPersonAvatar
           alt={`${person.firstName} ${person.lastName}`}

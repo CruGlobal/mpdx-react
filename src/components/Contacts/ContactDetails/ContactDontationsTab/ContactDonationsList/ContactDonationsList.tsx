@@ -54,9 +54,11 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
         <>
           <Table role="table">
             <TableHead>
-              <TableCell>{t('Date')}</TableCell>
-              <TableCell>{t('Amount')}</TableCell>
-              <TableCell>{t('Converted Amount')}</TableCell>
+              <TableRow>
+                <TableCell>{t('Date')}</TableCell>
+                <TableCell>{t('Amount')}</TableCell>
+                <TableCell>{t('Converted Amount')}</TableCell>
+              </TableRow>
             </TableHead>
             {data?.contact.donations.nodes ? (
               data?.contact.donations.nodes.map((donation) => (

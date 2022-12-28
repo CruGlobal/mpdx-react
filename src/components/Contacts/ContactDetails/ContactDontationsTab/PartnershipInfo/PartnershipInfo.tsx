@@ -90,6 +90,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       <Box display="flex" justifyContent="space-between">
         <PartnershipTitle variant="h6">{t('Partnership')}</PartnershipTitle>
         <IconButton
+          sx={{ margin: 1 }}
           onClick={() => setEditPartnershipModalOpen(true)}
           aria-label={t('Edit Icon')}
         >

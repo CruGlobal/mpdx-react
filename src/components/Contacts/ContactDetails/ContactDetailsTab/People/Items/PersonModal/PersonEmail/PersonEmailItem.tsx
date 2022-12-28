@@ -46,7 +46,9 @@ interface Props {
     | undefined;
 }
 
-const EmailSelect = styled(Select)(({ destroyed }: { destroyed: boolean }) => ({
+const EmailSelect = styled(Select, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
   textDecoration: destroyed ? 'line-through' : 'none',
 }));
 
@@ -75,7 +77,6 @@ export const PersonEmailItem: React.FC<Props> = ({
 
   const handleChange = () => {
     handleChangePrimary(index);
-    console.log(index);
   };
 
   return (

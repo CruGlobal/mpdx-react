@@ -23,6 +23,7 @@ import {
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { useSnackbar } from 'notistack';
 
 const HeaderWrap = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'contactDetailsOpen',
@@ -127,6 +128,7 @@ interface ListHeaderProps {
   openTasksRemoveTagsModal?: (open: boolean) => void;
   openTasksAddTagsModal?: (open: boolean) => void;
   openExportsModal?: (open: boolean) => void;
+  openMergeModal?: (open: boolean) => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -158,8 +160,10 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   openTasksRemoveTagsModal,
   openTasksAddTagsModal,
   openExportsModal,
+  openMergeModal,
 }) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -226,7 +230,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openAddTagsModal &&
               openRemoveTagsModal &&
               openExportsModal &&
-              openExportEmailsModal && (
+              openExportEmailsModal &&
+              openMergeModal && (
                 <>
                   <Hidden xsDown>
                     {selectedIds?.length > 0 && (
@@ -265,7 +270,24 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                           >
                             <ListItemText>{t('Export')}</ListItemText>
                           </MenuItem>
-                          <MenuItem divider>
+                          <MenuItem
+                            divider
+                            onClick={() => {
+                              if (selectedIds.length >= 2) {
+                                openMergeModal(true);
+                              } else {
+                                enqueueSnackbar(
+                                  t(
+                                    'You must select at least 2 contacts to merge.',
+                                  ),
+                                  {
+                                    variant: 'error',
+                                  },
+                                );
+                              }
+                              handleClose();
+                            }}
+                          >
                             <ListItemText>{t('Merge')}</ListItemText>
                           </MenuItem>
                           <MenuItem

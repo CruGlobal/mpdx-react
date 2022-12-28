@@ -4,9 +4,9 @@ import { ContactFlow } from '../ContactFlow/ContactFlow';
 import { ContactsList } from '../ContactsList/ContactsList';
 import { ContactsMap } from '../../../../pages/accountLists/[accountListId]/contacts/map/map';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+  ContactsContext,
+  ContactsType,
+} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { ContactsMainPanelHeader } from './ContactsMainPanelHeader';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 
@@ -19,7 +19,7 @@ export const ContactsMainPanel: React.FC = () => {
     setContactFocus,
     viewMode,
     userOptionsLoading,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
   return (
     <>

@@ -22,7 +22,9 @@ type EntryHistory = {
   [key: string]: number | string;
 };
 
-const LegendIdentifier = styled('div')(({ color }: { color: string }) => ({
+const LegendIdentifier = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'color',
+})(({ color }: { color: string }) => ({
   display: 'inline-block',
   height: '5px',
   width: '20px',

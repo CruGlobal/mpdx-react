@@ -47,7 +47,10 @@ export const PersonName: React.FC<PersonNameProps> = ({
               src={person?.lastName ?? ''}
             />
             <Typography>
-              <Box fontWeight="fontWeightBold">{`${person.firstName} ${person.lastName}`}</Box>
+              <Box
+                component="span"
+                fontWeight="fontWeightBold"
+              >{`${person.firstName} ${person.lastName}`}</Box>
             </Typography>
             <ModalSectionDeleteIcon />
           </>

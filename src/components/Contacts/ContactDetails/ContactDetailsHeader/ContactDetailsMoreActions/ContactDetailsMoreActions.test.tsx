@@ -12,7 +12,7 @@ import useTaskModal from '../../../../../hooks/useTaskModal';
 import { UpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = '111';
 const contactId = 'contact-1';
@@ -52,7 +52,7 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
                     status={StatusEnum.AskInFuture}
@@ -60,7 +60,7 @@ describe('ContactDetailsMoreActions', () => {
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -82,7 +82,7 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
                     status={StatusEnum.AskInFuture}
@@ -90,7 +90,7 @@ describe('ContactDetailsMoreActions', () => {
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -114,7 +114,7 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
                     status={StatusEnum.AskInFuture}
@@ -122,7 +122,7 @@ describe('ContactDetailsMoreActions', () => {
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -157,7 +157,7 @@ describe('ContactDetailsMoreActions', () => {
                 },
               }}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
                     status={StatusEnum.AskInFuture}
@@ -165,7 +165,7 @@ describe('ContactDetailsMoreActions', () => {
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -198,7 +198,7 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<DeleteContactMutation>>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
                     status={StatusEnum.AskInFuture}
@@ -206,7 +206,7 @@ describe('ContactDetailsMoreActions', () => {
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -236,7 +236,7 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<DeleteContactMutation>>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
                     status={StatusEnum.AskInFuture}
@@ -244,7 +244,7 @@ describe('ContactDetailsMoreActions', () => {
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -268,7 +268,7 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<DeleteContactMutation>>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
                     status={StatusEnum.AskInFuture}
@@ -276,7 +276,7 @@ describe('ContactDetailsMoreActions', () => {
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>

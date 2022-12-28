@@ -15,9 +15,9 @@ import _ from 'lodash';
 import { useSnackbar } from 'notistack';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+  ContactsContext,
+  ContactsType,
+} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { MassActionsRemoveTagsModal } from '../MassActions/RemoveTags/MassActionsRemoveTagsModal';
 import { MassActionsAddTagsModal } from '../MassActions/AddTags/MassActionsAddTagsModal';
 import { MassActionsAddToAppealModal } from '../MassActions/AddToAppeal/MassActionsAddToAppealModal';
@@ -27,6 +27,7 @@ import { MassActionsCreateAppealModal } from '../MassActions/AddToAppeal/MassAct
 import { ExportsModal } from '../MassActions/Exports/ExportsModal';
 import { MailMergedLabelModal } from '../MassActions/Exports/MailMergedLabelModal/MailMergedLabelModal';
 import { MassActionsExportEmailsModal } from '../MassActions/Exports/Emails/MassActionsExportEmailsModal';
+import { MassActionsMergeModal } from '../MassActions/Merge/MassActionsMergeModal';
 import {
   ListHeader,
   TableViewModeEnum,
@@ -75,7 +76,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     urlFilters,
     handleViewModeChange,
     selectedIds,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
   const [openRemoveTagsModal, setOpenRemoveTagsModal] = useState(false);
   const [openAddTagsModal, setOpenAddTagsModal] = useState(false);
@@ -86,6 +87,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
+  const [mergeModalOpen, setMergeModalOpen] = useState(false);
 
   const { data } = useContactsQuery({
     variables: {
@@ -156,6 +158,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
         openCreateAppealModal={setCreateAppealModalOpen}
         openExportsModal={setExportsModalOpen}
         openExportEmailsModal={setExportEmailsModalOpen}
+        openMergeModal={setMergeModalOpen}
         buttonGroup={
           <Hidden xsDown>
             <Box display="flex" alignItems="center">
@@ -260,6 +263,13 @@ export const ContactsMainPanelHeader: React.FC = () => {
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setExportEmailsModalOpen(false)}
+        />
+      )}
+      {mergeModalOpen && (
+        <MassActionsMergeModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setMergeModalOpen(false)}
         />
       )}
     </>

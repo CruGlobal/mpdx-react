@@ -77,13 +77,13 @@ const StarIconWrap = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
-const FieldLoadingState = styled(Skeleton)(
-  ({ width, margin }: { width: number; margin: string }) => ({
-    width,
-    height: '24px',
-    margin: margin,
-  }),
-);
+const FieldLoadingState = styled(Skeleton, {
+  shouldForwardProp: (prop) => prop !== 'width' && prop !== 'margin',
+})(({ width, margin }: { width: number; margin: string }) => ({
+  width,
+  height: '24px',
+  margin: margin,
+}));
 
 interface ContactTaskRowProps {
   accountListId: string;

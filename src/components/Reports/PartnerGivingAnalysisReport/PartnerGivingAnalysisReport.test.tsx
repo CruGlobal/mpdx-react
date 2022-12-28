@@ -10,6 +10,13 @@ import theme from 'src/theme';
 const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
+const onSelectContact = jest.fn();
+const defaultProps = {
+  accountListId,
+  title,
+  onNavListToggle,
+  onSelectContact,
+};
 
 jest.mock('next/router', () => ({
   useRouter: () => {
@@ -81,12 +88,7 @@ describe('PartnerGivingAnalysisReport', () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>>
-          <PartnerGivingAnalysisReport
-            accountListId={accountListId}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-          />
+          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -102,12 +104,7 @@ describe('PartnerGivingAnalysisReport', () => {
     const { getAllByTestId, getByTestId, queryByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery> mocks={mocks}>
-          <PartnerGivingAnalysisReport
-            accountListId={accountListId}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-          />
+          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -130,10 +127,8 @@ describe('PartnerGivingAnalysisReport', () => {
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery> mocks={mocks}>
           <PartnerGivingAnalysisReport
-            accountListId={accountListId}
+            {...defaultProps}
             isNavListOpen={false}
-            title={title}
-            onNavListToggle={onNavListToggle}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -167,12 +162,7 @@ describe('PartnerGivingAnalysisReport', () => {
         <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
           mocks={mocksWithZeroContacts}
         >
-          <PartnerGivingAnalysisReport
-            accountListId={accountListId}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-          />
+          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -198,10 +188,8 @@ describe('PartnerGivingAnalysisReport', () => {
           onCall={mutationSpy}
         >
           <PartnerGivingAnalysisReport
-            accountListId={accountListId}
+            {...defaultProps}
             isNavListOpen={false}
-            title={title}
-            onNavListToggle={onNavListToggle}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -261,12 +249,7 @@ describe('PartnerGivingAnalysisReport', () => {
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <PartnerGivingAnalysisReport
-            accountListId={accountListId}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-          />
+          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -302,12 +285,7 @@ describe('PartnerGivingAnalysisReport', () => {
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <PartnerGivingAnalysisReport
-            accountListId={accountListId}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-          />
+          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -334,12 +312,7 @@ describe('PartnerGivingAnalysisReport', () => {
     const { getAllByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery> mocks={mocks}>
-          <PartnerGivingAnalysisReport
-            accountListId={accountListId}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-          />
+          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -385,6 +358,29 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(getAllByRole('checkbox')[0]).not.toBeChecked();
   });
 
+  it('contact names are clickable', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    userEvent.click(getByText('Ababa, Aladdin und Jasmine (Princess)'));
+    expect(onSelectContact).toHaveBeenCalledWith('01');
+  });
+
   it('formats currencies', async () => {
     const mutationSpy = jest.fn();
     const { getByText, queryByTestId } = render(
@@ -393,12 +389,7 @@ describe('PartnerGivingAnalysisReport', () => {
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <PartnerGivingAnalysisReport
-            accountListId={accountListId}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-          />
+          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );

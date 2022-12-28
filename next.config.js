@@ -86,16 +86,23 @@ module.exports = withPlugins([
           topLevelAwait: true,
         },
       };
-      config.module.rules.push({
-        test: /\.(graphql|gql)$/,
-        include: path.resolve(__dirname, '../'),
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'graphql-tag/loader',
-          },
-        ],
-      });
+      config.module.rules.push(
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: 'javascript/auto',
+        },
+        {
+          test: /\.(graphql|gql)$/,
+          include: path.resolve(__dirname, '../'),
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: 'graphql-tag/loader',
+            },
+          ],
+        },
+      );
 
       const fileLoaderRule = config.module.rules.find(
         (rule) => rule.test && rule.test.test('.svg'),

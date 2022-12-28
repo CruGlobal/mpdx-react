@@ -22,16 +22,16 @@ const HeaderTitle = styled(Typography)(({}) => ({
   lineHeight: 1.1,
 }));
 
-const NavListButton = styled(IconButton)(
-  ({ panelOpen }: { panelOpen: boolean }) => ({
-    display: 'inline-block',
-    width: 48,
-    height: 48,
-    borderradius: 24,
-    margin: theme.spacing(1),
-    backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
-  }),
-);
+const NavListButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'panelOpen',
+})(({ panelOpen }: { panelOpen: boolean }) => ({
+  display: 'inline-block',
+  width: 48,
+  height: 48,
+  borderradius: 24,
+  margin: theme.spacing(1),
+  backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
+}));
 
 const NavListIcon = styled(FilterList)(({ theme }) => ({
   width: 24,

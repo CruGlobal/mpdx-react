@@ -6,6 +6,7 @@ import { PartnerGivingAnalysisReportTable } from './Table';
 import theme from 'src/theme';
 import { GetPartnerGivingAnalysisReportQuery } from '../PartnerGivingAnalysisReport.generated';
 
+const onClick = jest.fn();
 const onRequestSort = jest.fn();
 const onSelectAll = jest.fn();
 const onSelectOne = jest.fn();
@@ -74,6 +75,7 @@ describe('PartnerGivingAnalysisReportTable', () => {
           orderBy={null}
           selectedContacts={selectedContacts}
           onRequestSort={onRequestSort}
+          onClick={onClick}
           onSelectAll={onSelectAll}
           onSelectOne={onSelectOne}
           contacts={
@@ -105,6 +107,7 @@ describe('PartnerGivingAnalysisReportTable', () => {
           orderBy={null}
           selectedContacts={selectedContacts}
           onRequestSort={onRequestSort}
+          onClick={onClick}
           onSelectAll={onSelectAll}
           onSelectOne={onSelectOne}
           contacts={
@@ -124,5 +127,34 @@ describe('PartnerGivingAnalysisReportTable', () => {
     const checkbox = getAllByRole('checkbox')[0];
     userEvent.click(checkbox);
     expect(onSelectAll).toHaveBeenCalled();
+  });
+
+  it('click event should happen', async () => {
+    const { getByText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <PartnerGivingAnalysisReportTable
+          order="asc"
+          orderBy={null}
+          selectedContacts={selectedContacts}
+          onRequestSort={onRequestSort}
+          onClick={onClick}
+          onSelectAll={onSelectAll}
+          onSelectOne={onSelectOne}
+          contacts={
+            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
+              .contacts
+          }
+        />
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    userEvent.click(getByText('Ababa, Aladdin und Jasmine (Princess)'));
+    expect(onClick).toHaveBeenCalledWith('01');
   });
 });

@@ -26,11 +26,11 @@ interface FourteenMonthReportTableProps extends TableHeadProps {
   ref: React.Ref<HTMLTableElement>;
 }
 
-const NameTypography = styled(Typography)(
-  ({ expanded }: { expanded: boolean }) => ({
-    marginLeft: expanded ? 0 : theme.spacing(1),
-  }),
-);
+const NameTypography = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'expanded',
+})(({ expanded }: { expanded: boolean }) => ({
+  marginLeft: expanded ? 0 : theme.spacing(1),
+}));
 
 const PrintableContainer = styled(TableContainer)(() => ({
   // First style set size as landscape

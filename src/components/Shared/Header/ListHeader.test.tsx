@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Button from '@mui/material/Button';
 import { ThemeProvider } from '@mui/material/styles';
+import { SnackbarProvider } from 'notistack';
 import theme from '../../../theme';
 
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -25,14 +26,53 @@ const openEditFieldsModal = jest.fn();
 const openHideContactsModal = jest.fn();
 const openRemoveTagsModal = jest.fn();
 const openExportEmailsModal = jest.fn();
+const openMergeModal = jest.fn();
 const openCompleteTasksModal = jest.fn();
 const openDeleteTasksModal = jest.fn();
 const openEditTasksModal = jest.fn();
 const openTasksRemoveTagsModal = jest.fn();
 const openTasksAddTagsModal = jest.fn();
 const openExportsModal = jest.fn();
+const mockedProps = {
+  toggleStarredFilter,
+  toggleFilterPanel,
+  onCheckAllItems,
+  onSearchTermChanged,
+  openAddToAppealModal,
+  openEditFieldsModal,
+  openHideContactsModal,
+  openRemoveTagsModal,
+  openAddTagsModal,
+  openCreateAppealModal,
+  openMergeModal,
+  openExportsModal,
+  openExportEmailsModal,
+  openCompleteTasksModal,
+  openEditTasksModal,
+  openDeleteTasksModal,
+  openTasksAddTagsModal,
+  openTasksRemoveTagsModal,
+};
 
 jest.mock('../../../hooks/useTaskModal');
+
+const mockEnqueue = jest.fn();
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
+const MocksProviders = (props: { children: JSX.Element }) => (
+  <ThemeProvider theme={theme}>
+    <SnackbarProvider>{props.children}</SnackbarProvider>
+  </ThemeProvider>
+);
 
 const openTaskModal = jest.fn();
 
@@ -73,29 +113,18 @@ describe('ListHeader', () => {
   describe('Contact', () => {
     it('renders contact header', () => {
       const { getByPlaceholderText, getByTestId, getByText } = render(
-        <ThemeProvider theme={theme}>
+        <MocksProviders>
           <ListHeader
             selectedIds={selectedIds}
             page="contact"
             activeFilters={false}
             starredFilter={{}}
-            toggleStarredFilter={toggleStarredFilter}
             headerCheckboxState={ListHeaderCheckBoxState.unchecked}
             filterPanelOpen={false}
             contactDetailsOpen={false}
-            toggleFilterPanel={toggleFilterPanel}
-            onCheckAllItems={onCheckAllItems}
-            onSearchTermChanged={onSearchTermChanged}
-            openAddToAppealModal={openAddToAppealModal}
-            openEditFieldsModal={openEditFieldsModal}
-            openHideContactsModal={openHideContactsModal}
-            openRemoveTagsModal={openRemoveTagsModal}
-            openAddTagsModal={openAddTagsModal}
-            openCreateAppealModal={openCreateAppealModal}
-            openExportsModal={openExportsModal}
-            openExportEmailsModal={openExportEmailsModal}
+            {...mockedProps}
           />
-        </ThemeProvider>,
+        </MocksProviders>,
       );
 
       expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -106,30 +135,19 @@ describe('ListHeader', () => {
 
     it('renders contact header with contact card open', () => {
       const { getByPlaceholderText, queryByTestId, queryByText } = render(
-        <ThemeProvider theme={theme}>
+        <MocksProviders>
           <ListHeader
             selectedIds={selectedIds}
             page="contact"
             activeFilters={false}
             starredFilter={{}}
             contactsView={TableViewModeEnum.List}
-            toggleStarredFilter={toggleStarredFilter}
             headerCheckboxState={ListHeaderCheckBoxState.unchecked}
             filterPanelOpen={true}
             contactDetailsOpen={true}
-            toggleFilterPanel={toggleFilterPanel}
-            onCheckAllItems={onCheckAllItems}
-            onSearchTermChanged={onSearchTermChanged}
-            openAddToAppealModal={openAddToAppealModal}
-            openEditFieldsModal={openEditFieldsModal}
-            openHideContactsModal={openHideContactsModal}
-            openRemoveTagsModal={openRemoveTagsModal}
-            openAddTagsModal={openAddTagsModal}
-            openCreateAppealModal={openCreateAppealModal}
-            openExportsModal={openExportsModal}
-            openExportEmailsModal={openExportEmailsModal}
+            {...mockedProps}
           />
-        </ThemeProvider>,
+        </MocksProviders>,
       );
 
       expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -141,24 +159,20 @@ describe('ListHeader', () => {
     it('renders a button group and switches views', async () => {
       const { getByTestId } = render(
         <TestRouter router={router}>
-          <ThemeProvider theme={theme}>
+          <MocksProviders>
             <ListHeader
               selectedIds={selectedIds}
               page="contact"
               activeFilters={false}
               starredFilter={{}}
               contactsView={TableViewModeEnum.List}
-              toggleStarredFilter={toggleStarredFilter}
               headerCheckboxState={ListHeaderCheckBoxState.unchecked}
               filterPanelOpen={true}
               contactDetailsOpen={true}
-              toggleFilterPanel={toggleFilterPanel}
-              onCheckAllItems={onCheckAllItems}
-              onSearchTermChanged={onSearchTermChanged}
-              openEditFieldsModal={openEditFieldsModal}
               buttonGroup={<ButtonGroup />}
+              {...mockedProps}
             />
-          </ThemeProvider>
+          </MocksProviders>
         </TestRouter>,
       );
 
@@ -186,29 +200,18 @@ describe('ListHeader', () => {
   it('opens the more actions menu and clicks the add task action', () => {
     const { getByPlaceholderText, getByTestId, getByText, queryByText } =
       render(
-        <ThemeProvider theme={theme}>
+        <MocksProviders>
           <ListHeader
             selectedIds={selectedIds}
             page="contact"
             activeFilters={false}
             starredFilter={{}}
-            toggleStarredFilter={toggleStarredFilter}
             headerCheckboxState={ListHeaderCheckBoxState.unchecked}
             filterPanelOpen={false}
             contactDetailsOpen={false}
-            toggleFilterPanel={toggleFilterPanel}
-            onCheckAllItems={onCheckAllItems}
-            onSearchTermChanged={onSearchTermChanged}
-            openAddToAppealModal={openAddToAppealModal}
-            openEditFieldsModal={openEditFieldsModal}
-            openHideContactsModal={openHideContactsModal}
-            openRemoveTagsModal={openRemoveTagsModal}
-            openAddTagsModal={openAddTagsModal}
-            openCreateAppealModal={openCreateAppealModal}
-            openExportsModal={openExportsModal}
-            openExportEmailsModal={openExportEmailsModal}
+            {...mockedProps}
           />
-        </ThemeProvider>,
+        </MocksProviders>,
       );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -226,29 +229,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the log task action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -266,29 +258,18 @@ describe('ListHeader', () => {
   it('opens the more actions menu and clicks the add tags action', () => {
     const { getByPlaceholderText, getByTestId, getByText, queryByText } =
       render(
-        <ThemeProvider theme={theme}>
+        <MocksProviders>
           <ListHeader
             selectedIds={selectedIds}
             page="contact"
             activeFilters={false}
             starredFilter={{}}
-            toggleStarredFilter={toggleStarredFilter}
             headerCheckboxState={ListHeaderCheckBoxState.unchecked}
             filterPanelOpen={false}
             contactDetailsOpen={false}
-            toggleFilterPanel={toggleFilterPanel}
-            onCheckAllItems={onCheckAllItems}
-            onSearchTermChanged={onSearchTermChanged}
-            openAddToAppealModal={openAddToAppealModal}
-            openEditFieldsModal={openEditFieldsModal}
-            openHideContactsModal={openHideContactsModal}
-            openRemoveTagsModal={openRemoveTagsModal}
-            openAddTagsModal={openAddTagsModal}
-            openCreateAppealModal={openCreateAppealModal}
-            openExportsModal={openExportsModal}
-            openExportEmailsModal={openExportEmailsModal}
+            {...mockedProps}
           />
-        </ThemeProvider>,
+        </MocksProviders>,
       );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -304,29 +285,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the edit fields action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -340,29 +310,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the add to appeal action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -376,29 +335,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the add to new appeal action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -412,29 +360,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the hide contacts action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -448,29 +385,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the remove tags action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -484,29 +410,18 @@ describe('ListHeader', () => {
 
   it('opens export contacts modal', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -520,29 +435,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the export emails action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -554,33 +458,74 @@ describe('ListHeader', () => {
     expect(openExportEmailsModal).toHaveBeenCalled();
   });
 
+  it('opens merge contacts modal', () => {
+    const { getByPlaceholderText, getByText, queryByText } = render(
+      <MocksProviders>
+        <ListHeader
+          selectedIds={['abc', 'def']}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          {...mockedProps}
+        />
+      </MocksProviders>,
+    );
+
+    expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+    expect(queryByText('Merge')).not.toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Merge')).toBeInTheDocument();
+    userEvent.click(getByText('Merge'));
+    expect(openMergeModal).toHaveBeenCalled();
+  });
+
+  it('does not open merge contacts modal when only one contact is selected', () => {
+    const { getByText } = render(
+      <MocksProviders>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          {...mockedProps}
+        />
+      </MocksProviders>,
+    );
+
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    userEvent.click(getByText('Merge'));
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      'You must select at least 2 contacts to merge.',
+      {
+        variant: 'error',
+      },
+    );
+    expect(openMergeModal).not.toHaveBeenCalled();
+  });
+
   describe('Task', () => {
     it('renders task header', () => {
       const { getByPlaceholderText } = render(
-        <ThemeProvider theme={theme}>
+        <MocksProviders>
           <ListHeader
             selectedIds={selectedIds}
             page="task"
             activeFilters={false}
             headerCheckboxState={ListHeaderCheckBoxState.unchecked}
             starredFilter={{}}
-            toggleStarredFilter={toggleStarredFilter}
             filterPanelOpen={false}
             contactDetailsOpen={false}
-            toggleFilterPanel={toggleFilterPanel}
-            onCheckAllItems={onCheckAllItems}
-            onSearchTermChanged={onSearchTermChanged}
-            openAddToAppealModal={openAddToAppealModal}
-            openEditFieldsModal={openEditFieldsModal}
-            openHideContactsModal={openHideContactsModal}
-            openRemoveTagsModal={openRemoveTagsModal}
-            openAddTagsModal={openAddTagsModal}
-            openCreateAppealModal={openCreateAppealModal}
-            openExportsModal={openExportsModal}
-            openExportEmailsModal={openExportEmailsModal}
-            openDeleteTasksModal={openDeleteTasksModal}
+            {...mockedProps}
           />
-        </ThemeProvider>,
+        </MocksProviders>,
       );
 
       expect(getByPlaceholderText('Search Tasks')).toBeVisible();
@@ -589,29 +534,18 @@ describe('ListHeader', () => {
 
   it('checkbox is unchecked', async () => {
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     const checkbox = getByRole('checkbox');
@@ -625,34 +559,19 @@ describe('ListHeader', () => {
   });
 
   it('checkbox is checked', async () => {
-    const toggleFilterPanel = jest.fn();
-    const onSearchTermChanged = jest.fn();
-    const onCheckAllItems = jest.fn();
-
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     const checkbox = getByRole('checkbox');
@@ -664,29 +583,18 @@ describe('ListHeader', () => {
 
   it('filters button displays for no filters', async () => {
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     const filterButton = getByRole('button', {
@@ -700,29 +608,18 @@ describe('ListHeader', () => {
 
   it('filters button displays for open filter panel', async () => {
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={true}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     const filterButton = getByRole('button', {
@@ -738,29 +635,18 @@ describe('ListHeader', () => {
 
   it('filters button displays for active filters', async () => {
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     const filterButton = getByRole('button', {
@@ -776,29 +662,18 @@ describe('ListHeader', () => {
 
   it('filters button displays for active filters and filter panel open', async () => {
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={true}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     const filterButton = getByRole('button', {
@@ -814,29 +689,18 @@ describe('ListHeader', () => {
 
   it('filters button pressed', async () => {
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     const filterButton = getByRole('button', {
@@ -853,29 +717,18 @@ describe('ListHeader', () => {
     const searchText = 'name';
 
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
     const textbox = getByRole('textbox');
 
@@ -890,29 +743,18 @@ describe('ListHeader', () => {
 
   it('press star filter button and set to true', async () => {
     const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
     const starFilterButton = getByTestId('star-filter-button');
 
@@ -923,29 +765,18 @@ describe('ListHeader', () => {
 
   it('reset the star filter', async () => {
     const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{ starred: true }}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
     const starFilterButton = getByTestId('star-filter-button');
 
@@ -956,37 +787,26 @@ describe('ListHeader', () => {
 
   it('renders the total count', async () => {
     const { getByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{ starred: true }}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
           contactsView={TableViewModeEnum.List}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
     expect(getByText('Showing {{count}}')).toBeInTheDocument();
   });
 
   it('does not renders the total count', async () => {
     const { queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="contact"
@@ -994,46 +814,29 @@ describe('ListHeader', () => {
           contactsView={TableViewModeEnum.Flows}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           starredFilter={{ starred: true }}
-          toggleStarredFilter={toggleStarredFilter}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openAddToAppealModal={openAddToAppealModal}
-          openEditFieldsModal={openEditFieldsModal}
-          openHideContactsModal={openHideContactsModal}
-          openRemoveTagsModal={openRemoveTagsModal}
-          openAddTagsModal={openAddTagsModal}
-          openCreateAppealModal={openCreateAppealModal}
-          openExportsModal={openExportsModal}
-          openExportEmailsModal={openExportEmailsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
     expect(queryByText('Showing {{count}}')).not.toBeInTheDocument();
   });
 
   it('opens the more actions menu and clicks the complete tasks action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="task"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openCompleteTasksModal={openCompleteTasksModal}
-          openDeleteTasksModal={openDeleteTasksModal}
-          openEditTasksModal={openEditTasksModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
@@ -1047,23 +850,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the edit tasks action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="task"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openCompleteTasksModal={openCompleteTasksModal}
-          openEditTasksModal={openEditTasksModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
@@ -1077,24 +875,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the delete tasks action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="task"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openCompleteTasksModal={openCompleteTasksModal}
-          openEditTasksModal={openEditTasksModal}
-          openDeleteTasksModal={openDeleteTasksModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
@@ -1108,25 +900,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the add tags (tasks) action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="task"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openCompleteTasksModal={openCompleteTasksModal}
-          openEditTasksModal={openEditTasksModal}
-          openDeleteTasksModal={openDeleteTasksModal}
-          openTasksAddTagsModal={openTasksAddTagsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();
@@ -1140,26 +925,18 @@ describe('ListHeader', () => {
 
   it('opens the more actions menu and clicks the remove tags (tasks) action', () => {
     const { getByPlaceholderText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
+      <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
           page="task"
           activeFilters={false}
           starredFilter={{}}
-          toggleStarredFilter={toggleStarredFilter}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
           filterPanelOpen={false}
           contactDetailsOpen={false}
-          toggleFilterPanel={toggleFilterPanel}
-          onCheckAllItems={onCheckAllItems}
-          onSearchTermChanged={onSearchTermChanged}
-          openCompleteTasksModal={openCompleteTasksModal}
-          openEditTasksModal={openEditTasksModal}
-          openDeleteTasksModal={openDeleteTasksModal}
-          openTasksAddTagsModal={openTasksAddTagsModal}
-          openTasksRemoveTagsModal={openTasksRemoveTagsModal}
+          {...mockedProps}
         />
-      </ThemeProvider>,
+      </MocksProviders>,
     );
 
     expect(getByPlaceholderText('Search Tasks')).toBeInTheDocument();

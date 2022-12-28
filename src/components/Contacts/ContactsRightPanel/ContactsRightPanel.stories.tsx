@@ -1,7 +1,7 @@
 import React from 'react';
 import { ContactDetailProvider } from '../ContactDetails/ContactDetailContext';
 import { ContactsRightPanel } from './ContactsRightPanel';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 export default {
   title: 'Contacts/RightPanel',
@@ -9,10 +9,10 @@ export default {
 
 export const Default = (): React.ReactElement => {
   return (
-    <ContactsPageProvider>
+    <ContactsPage>
       <ContactDetailProvider>
         <ContactsRightPanel onClose={() => {}} />
       </ContactDetailProvider>
-    </ContactsPageProvider>
+    </ContactsPage>
   );
 };

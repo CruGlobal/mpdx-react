@@ -434,7 +434,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const tagsFilters =
     (
-      filters.find((filter) => filter.name === 'Tags')
+      filters?.find((filter) => filter.name === 'Tags')
         ?.filters[0] as MultiselectFilter
     )?.options ?? [];
 

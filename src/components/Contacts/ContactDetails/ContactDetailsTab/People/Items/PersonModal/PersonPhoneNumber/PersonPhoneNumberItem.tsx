@@ -45,11 +45,11 @@ interface Props {
     | undefined;
 }
 
-const PhoneNumberSelect = styled(Select)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
+const PhoneNumberSelect = styled(Select, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
 export const PersonPhoneNumberItem: React.FC<Props> = ({
   phoneNumber,

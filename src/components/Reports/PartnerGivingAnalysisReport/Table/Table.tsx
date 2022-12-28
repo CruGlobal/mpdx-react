@@ -8,6 +8,7 @@ import {
   TableCell as TableCellMui,
   TableContainer,
   TableRow,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import type { Contact } from '../PartnerGivingAnalysisReport';
@@ -15,6 +16,7 @@ import type { Order } from '../../Reports.type';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
 
 interface PartnerGivingAnalysisReportTableProps {
+  onClick: (contactId: string) => void;
   onSelectOne: (
     event: React.ChangeEvent<HTMLInputElement>,
     contactId: string,
@@ -42,6 +44,16 @@ const TableCell = styled(TableCellMui)({
   fontSize: '1.15em',
 });
 
+const ContactName = styled(Typography)(({ theme }) => ({
+  fontWeight: 700,
+  whiteSpace: 'nowrap',
+  marginRight: theme.spacing(0.5),
+  cursor: 'pointer',
+  '&:hover': {
+    textDecoration: 'underline',
+  },
+}));
+
 function formatCurrency(amount: number, currency: string): string {
   // Force to 2 decimal places and add commas between thousands
   return (
@@ -58,6 +70,7 @@ export const PartnerGivingAnalysisReportTable: FC<
   order,
   orderBy,
   contacts,
+  onClick,
   onRequestSort,
   onSelectAll,
   onSelectOne,
@@ -132,7 +145,11 @@ export const PartnerGivingAnalysisReportTable: FC<
                     value={isContactSelected}
                   />
                 </TableCell>
-                <TableCell>{contact.name}</TableCell>
+                <TableCell>
+                  <ContactName onClick={() => onClick(contact.id)}>
+                    {contact.name}
+                  </ContactName>
+                </TableCell>
                 <TableCell align="center">
                   {formatCurrency(
                     contact.donationPeriodSum,

@@ -84,7 +84,7 @@ class MpdxRestApi extends RESTDataSource {
 
   willSendRequest(request: RequestOptions) {
     request.headers.set('Authorization', this.context.authHeader);
-    request.headers.set('content-type', 'application/vnd.api+json');
+    request.headers.set('Content-Type', 'application/vnd.api+json');
   }
 
   // Overridden to accept JSON API Content Type application/vnd.api+json
@@ -137,6 +137,23 @@ class MpdxRestApi extends RESTDataSource {
     });
 
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
+  }
+
+  async mergeContacts(loserContactIds: Array<string>, winnerContactId: string) {
+    const response = await this.post('contacts/merges/bulk', {
+      data: loserContactIds.map((loserId) => ({
+        data: {
+          type: 'contacts',
+          attributes: {
+            loser_id: loserId,
+            winner_id: winnerContactId,
+          },
+        },
+      })),
+    });
+
+    // Return the id of the winner
+    return response[0].data.id;
   }
 
   async getAccountListAnalytics(
@@ -659,6 +676,30 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateTaskLocation(data);
+  }
+
+  async deleteTags(tagName: string, page: string) {
+    const { data } = await this.delete(
+      `${page}/tags/bulk`,
+      {
+        '0[name]': tagName,
+      },
+      {
+        body: JSON.stringify({
+          data: [
+            {
+              data: {
+                type: 'tags',
+                attributes: {
+                  name: tagName,
+                },
+              },
+            },
+          ],
+        }),
+      },
+    );
+    return data;
   }
 }
 

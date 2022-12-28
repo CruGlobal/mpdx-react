@@ -18,6 +18,7 @@ export const StarContactIconButton: React.FC<Props> = ({
 
   return (
     <IconButton
+      component="div"
       onClick={(event) => {
         event.stopPropagation();
         setContactStarred({

@@ -63,6 +63,7 @@ export const AddMenuPanel = (): ReactElement => {
     {
       text: 'Log Task',
       icon: EditIcon,
+      // eslint-disable-next-line no-console
       onClick: () => console.log('log task'),
     },
   ];
