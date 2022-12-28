@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -24,6 +24,7 @@ import {
   ExpectedDonationDataFragment,
   useGetAccountListCurrencyQuery,
 } from '../GetDonationsTable.generated';
+import { EditDonationModal } from './Modal/EditDonationModal';
 
 interface Props {
   accountListId: string;
@@ -57,7 +58,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-interface Donation {
+export interface Donation {
   date: Date;
   partnerId: string;
   partner: string;
@@ -76,6 +77,15 @@ export const DonationsReportTable: React.FC<Props> = ({
   setTime,
 }) => {
   const { t } = useTranslation();
+  const [openEditDonationModal, setOpenEditDonationModal] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
+    null,
+  );
+
+  const handleClose = () => {
+    setOpenEditDonationModal(false);
+    setSelectedDonation(null);
+  };
 
   const startDate = time.toString();
 
@@ -154,11 +164,19 @@ export const DonationsReportTable: React.FC<Props> = ({
     return <Typography>{donation.designation}</Typography>;
   };
 
-  const button = () => (
-    <IconButton color="primary">
-      <EditIcon />
-    </IconButton>
-  );
+  const button = (params: GridCellParams) => {
+    const donation = params.row as Donation;
+    return (
+      <IconButton color="primary">
+        <EditIcon
+          onClick={() => {
+            setOpenEditDonationModal(true);
+            setSelectedDonation(donation);
+          }}
+        />
+      </IconButton>
+    );
+  };
 
   const columns: GridColDef[] = [
     {
@@ -288,7 +306,6 @@ export const DonationsReportTable: React.FC<Props> = ({
           <DataGrid
             rows={donations}
             columns={columns}
-            autoPageSize
             autoHeight
             disableSelectionOnClick
             hideFooter
@@ -339,6 +356,13 @@ export const DonationsReportTable: React.FC<Props> = ({
             month: time.monthLong,
             year: time.year,
           })}
+        />
+      )}
+      {openEditDonationModal && (
+        <EditDonationModal
+          open={openEditDonationModal}
+          donation={selectedDonation}
+          handleClose={() => handleClose()}
         />
       )}
     </>
