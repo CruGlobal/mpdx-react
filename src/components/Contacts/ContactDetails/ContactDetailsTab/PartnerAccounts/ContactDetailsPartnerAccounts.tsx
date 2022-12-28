@@ -94,8 +94,8 @@ export const ContactDetailsPartnerAccounts: React.FC<
         attributes: {
           id: contact.id,
           donorAccount: {
-            name: fields.displayName,
-            accountNumber: fields.displayName,
+            name: fields.accountNumber,
+            accountNumber: fields.accountNumber,
             organizationId:
               accountListData?.accountList.salaryOrganizationId ?? '',
           },
@@ -123,12 +123,12 @@ export const ContactDetailsPartnerAccounts: React.FC<
       </ActionButton>
       {showForm && (
         <Formik
-          initialValues={{ displayName: '' }}
+          initialValues={{ accountNumber: '' }}
           validationSchema={newPartnerAccountSchema}
           onSubmit={onAddPartnerAccount}
         >
           {({
-            values: { displayName },
+            values: { accountNumber },
             handleChange,
             handleSubmit,
             isSubmitting,
@@ -138,14 +138,14 @@ export const ContactDetailsPartnerAccounts: React.FC<
           }): ReactElement => (
             <form onSubmit={handleSubmit} noValidate>
               <TextField
-                label={t('Account Name')}
-                value={displayName}
-                onChange={handleChange('displayName')}
+                label={t('Account Number')}
+                value={accountNumber}
+                onChange={handleChange('accountNumber')}
                 inputProps={{ 'aria-label': 'Account Number' }}
-                error={!!errors.displayName && touched.displayName}
+                error={!!errors.accountNumber && touched.accountNumber}
                 helperText={
-                  errors.displayName &&
-                  touched.displayName &&
+                  errors.accountNumber &&
+                  touched.accountNumber &&
                   t('Field is required')
                 }
                 required
