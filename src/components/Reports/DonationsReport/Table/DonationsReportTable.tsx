@@ -205,7 +205,7 @@ export const DonationsReportTable: React.FC<Props> = ({
             setSelectedDonation(donation);
           }}
         >
-          <EditIcon />
+          <EditIcon data-testid={`edit-${donation.id}`} />
         </IconButton>
       </Box>
     );

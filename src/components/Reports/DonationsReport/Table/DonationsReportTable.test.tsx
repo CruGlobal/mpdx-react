@@ -7,10 +7,19 @@ import theme from '../../../../theme';
 import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { DonationsReportTable } from './DonationsReportTable';
+import TestRouter from '__tests__/util/TestRouter';
+import { SnackbarProvider } from 'notistack';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 
 const time = DateTime.now();
 const setTime = jest.fn();
 const onSelectContact = jest.fn();
+
+const router = {
+  query: { accountListId: 'aaa' },
+  isReady: true,
+};
 
 const mocks = {
   GetDonationsTable: {
@@ -94,6 +103,44 @@ describe('DonationsReportTable', () => {
     );
 
     expect(getAllByTestId('appeal-name')).toHaveLength(1);
+  });
+
+  it('opens and closes the edit donation modal', async () => {
+    const { queryByRole, queryByText, getByText, getByTestId, getByRole } =
+      render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <TestRouter router={router}>
+                <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+                  <DonationsReportTable
+                    accountListId={'abc'}
+                    onSelectContact={onSelectContact}
+                    time={time}
+                    setTime={setTime}
+                  />
+                </GqlMockedProvider>
+              </TestRouter>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+    );
+
+    expect(queryByText('Edit Donation')).not.toBeInTheDocument();
+
+    await waitFor(() => expect(getByTestId('edit-abc')).toBeInTheDocument());
+
+    userEvent.click(getByTestId('edit-abc'));
+
+    expect(getByText('Edit Donation')).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Cancel' }));
+
+    expect(queryByText('Edit Donation')).not.toBeInTheDocument();
   });
 
   it('renders empty', async () => {
