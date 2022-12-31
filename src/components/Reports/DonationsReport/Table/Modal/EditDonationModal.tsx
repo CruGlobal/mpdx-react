@@ -47,7 +47,7 @@ interface EditDonationModalProps {
 }
 
 const donationSchema = yup.object({
-  convertedAmount: yup.string().nullable(),
+  convertedAmount: yup.string().required(),
   currency: yup.string().nullable(),
   date: yup.string().nullable(),
   motivation: yup.string().nullable(),

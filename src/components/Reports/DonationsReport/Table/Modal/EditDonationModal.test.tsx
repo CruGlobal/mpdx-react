@@ -80,7 +80,7 @@ describe('DonationsReportTable', () => {
 
   it('renders with no donation', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByRole } = render(
+    const { getByText, getByRole, queryByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
@@ -100,6 +100,17 @@ describe('DonationsReportTable', () => {
     );
     await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
     expect(getByRole('textbox', { name: 'Amount' })).toHaveValue('');
+    expect(queryByText('Field is required')).not.toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(getByText('Field is required')).toBeInTheDocument(),
+    );
+    userEvent.type(getByRole('textbox', { name: 'Amount' }), '123');
+    expect(getByRole('textbox', { name: 'Amount' })).toHaveValue('123');
+    userEvent.click(getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(queryByText('Field is required')).not.toBeInTheDocument(),
+    );
   });
 
   it('edits fields', async () => {
