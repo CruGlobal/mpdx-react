@@ -8,11 +8,14 @@ import TestRouter from '__tests__/util/TestRouter';
 import { SnackbarProvider } from 'notistack';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { UpdateDonationMutation } from './EditDonation.generated';
+import {
+  DeleteDonationMutation,
+  UpdateDonationMutation,
+} from './EditDonation.generated';
 import { EditDonationModal } from './EditDonationModal';
 import { Donation } from '../DonationsReportTable';
 
-const time = new Date();
+const time = new Date('2021-03-25');
 const router = {
   query: { accountListId: 'aaa' },
   isReady: true,
@@ -73,6 +76,70 @@ describe('DonationsReportTable', () => {
     await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Amount' })).toHaveValue('100');
+  });
+
+  it('renders with no donation', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <TestRouter router={router}>
+              <GqlMockedProvider<UpdateDonationMutation> onCall={mutationSpy}>
+                <EditDonationModal
+                  open={true}
+                  handleClose={handleClose}
+                  startDate={time.toString()}
+                  endDate={time.toString()}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
+    expect(getByRole('textbox', { name: 'Amount' })).toHaveValue('');
+  });
+
+  it('edits fields', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <TestRouter router={router}>
+              <GqlMockedProvider<UpdateDonationMutation> onCall={mutationSpy}>
+                <EditDonationModal
+                  donation={donation}
+                  open={true}
+                  handleClose={handleClose}
+                  startDate={time.toString()}
+                  endDate={time.toString()}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
+    expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
+
+    const amountTextbox = getByRole('textbox', {
+      name: 'Amount',
+    });
+    expect(amountTextbox).toHaveValue('100');
+    userEvent.type(amountTextbox, '2');
+    expect(amountTextbox).toHaveValue('1002');
+
+    const dateButton = getByRole('textbox', {
+      name: 'Choose date, selected date is Mar 24, 2021',
+    });
+    expect(dateButton).toHaveValue('Mar 24, 2021');
+    userEvent.click(dateButton);
+    userEvent.click(getByRole('gridcell', { name: '27' }));
+    expect(dateButton).toHaveValue('Mar 27, 2021');
   });
 
   it('clicks close button', async () => {
@@ -137,6 +204,47 @@ describe('DonationsReportTable', () => {
       expect(
         queryByText('Are you sure you wish to delete this donation?'),
       ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('clicks the delete confirmation', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByRole, queryByText, getByTestId, queryByTestId } =
+      render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <TestRouter router={router}>
+                <GqlMockedProvider<DeleteDonationMutation> onCall={mutationSpy}>
+                  <EditDonationModal
+                    donation={donation}
+                    open={true}
+                    handleClose={handleClose}
+                    startDate={time.toString()}
+                    endDate={time.toString()}
+                  />
+                </GqlMockedProvider>
+              </TestRouter>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+    await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
+    expect(
+      queryByText('Are you sure you wish to delete this donation?'),
+    ).not.toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Delete' }));
+    expect(
+      getByText('Are you sure you wish to delete this donation?'),
+    ).toBeInTheDocument();
+    expect(queryByTestId('loading-circle')).not.toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+    expect(getByTestId('loading-circle')).toBeInTheDocument();
+    await waitFor(() => expect(handleClose).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Donation deleted!', {
+        variant: 'success',
+      }),
     );
   });
 });

@@ -380,7 +380,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
               <SubmitButton disabled={isSubmitting}>
                 {(updatingDonation || deletingDonation) && (
                   <>
-                    <CircularProgress color="primary" size={20} />
+                    <CircularProgress
+                      color="primary"
+                      size={20}
+                      data-testid="loading-circle"
+                    />
                     &nbsp;
                   </>
                 )}
@@ -395,13 +399,9 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
               >
                 <DialogTitle>{t('Confirm')}</DialogTitle>
                 <DialogContent dividers>
-                  {deletingDonation ? (
-                    <CircularProgress color="primary" size={50} />
-                  ) : (
-                    <DialogContentText>
-                      {t('Are you sure you wish to delete this donation?')}
-                    </DialogContentText>
-                  )}
+                  <DialogContentText>
+                    {t('Are you sure you wish to delete this donation?')}
+                  </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                   <CancelButton onClick={() => setRemoveDialogOpen(false)}>
