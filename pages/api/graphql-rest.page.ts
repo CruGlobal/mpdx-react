@@ -10,12 +10,13 @@ import {
   DateRangeInput,
   FourteenMonthReportCurrencyType,
   NumericRangeInput,
+  CoachingAnswerSet,
 } from './graphql-rest.page.generated';
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
-  CoachingAnswerSetData,
-  CoachingAnswerSetIncluded,
+  getCoachingAnswer,
+  getCoachingAnswerSet,
   getCoachingAnswerSets,
 } from './Schema/CoachingAnswerSets/dataHandler';
 import { readExistingAddresses } from './Schema/ContactPrimaryAddress/datahandler';
@@ -208,21 +209,101 @@ class MpdxRestApi extends RESTDataSource {
 
   async getCoachingAnswerSets(
     accountListId: string,
-    completed?: boolean | null,
+    completed: boolean | null | undefined,
+    multiple: boolean,
   ) {
-    const {
-      data,
-      included,
-    }: {
-      data: CoachingAnswerSetData;
-      included: CoachingAnswerSetIncluded;
-    } = await this.get(
+    const response = await this.get(
       `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${
-        completed || false
+        completed ?? false
+      }${
+        multiple ? '' : '&filter[limit]=1'
       }&include=answers,questions&sort=-completed_at`,
     );
+    return getCoachingAnswerSets(response);
+  }
 
-    return getCoachingAnswerSets(data, included);
+  async getCurrentCoachingAnswerSet(
+    accountListId: string,
+    organizationId: string,
+  ): Promise<CoachingAnswerSet> {
+    // Try to find the first incomplete answer set
+    const [answerSet] = await this.getCoachingAnswerSets(
+      accountListId,
+      false,
+      false,
+    );
+    if (answerSet) {
+      return answerSet;
+    }
+
+    // Create a new answer set
+    const response = await this.post('coaching/answer_sets', {
+      data: {
+        type: 'coaching_answer_sets',
+        relationships: {
+          account_list: {
+            data: {
+              type: 'account_lists',
+              id: accountListId,
+            },
+          },
+          organization: {
+            data: {
+              type: 'organizations',
+              id: organizationId,
+            },
+          },
+        },
+      },
+      include: 'answers,questions',
+      fields: {
+        coaching_answer_sets:
+          'created_at,updated_at,completed_at,answers,questions',
+        answers: 'response',
+        questions: 'position,prompt,response_options,required',
+      },
+    });
+    return getCoachingAnswerSet(response);
+  }
+
+  async saveCoachingAnswer(
+    answerSetId: string,
+    questionId: string,
+    answerId: string | null,
+    response: string,
+  ) {
+    const body = {
+      data: {
+        type: 'coaching_answers',
+        attributes: {
+          response: response,
+        },
+      },
+      include: 'question',
+    };
+    const res = answerId
+      ? await this.put(`coaching/answers/${answerId}`, body)
+      : await this.post('coaching/answers', {
+          ...body,
+          data: {
+            ...body.data,
+            relationships: {
+              question: {
+                data: {
+                  type: 'coaching_questions',
+                  id: questionId,
+                },
+              },
+              answer_set: {
+                data: {
+                  type: 'coaching_answer_sets',
+                  id: answerSetId,
+                },
+              },
+            },
+          },
+        });
+    return getCoachingAnswer(res);
   }
 
   // TODO: This should be merged with the updateContact mutation by adding the ability to update

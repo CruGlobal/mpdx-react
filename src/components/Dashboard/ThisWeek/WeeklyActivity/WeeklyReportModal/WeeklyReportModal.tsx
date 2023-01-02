@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEventHandler, FocusEventHandler, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -20,7 +20,16 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import theme from '../../../../../theme';
+import { CoachingQuestion } from '../../../../../../graphql/types.generated';
+import {
+  CurrentCoachingAnswerSetDocument,
+  CurrentCoachingAnswerSetQuery,
+  useCurrentCoachingAnswerSetQuery,
+  useSaveCoachingAnswerMutation,
+} from './WeeklyReportModal.generated';
 import { Formik } from 'formik';
+import { useOrganizationId } from 'src/hooks/useOrganizationId';
+import { ElementOf } from 'ts-essentials';
 
 const labelStyles = {
   fontSize: '1.5rem',
@@ -34,29 +43,57 @@ const labelStyles = {
   whiteSpace: 'unset',
 };
 
-const WeeklyReportRadio = ({ question, options, value, name, show }) => (
+interface WeeklyReportInputProps {
+  question: Pick<CoachingQuestion, 'id' | 'prompt' | 'responseOptions'>;
+  value: string;
+  show: boolean;
+  onBlur: FocusEventHandler;
+  onChange: ChangeEventHandler<HTMLInputElement>;
+}
+
+const WeeklyReportRadio = ({
+  question,
+  value,
+  show,
+  onBlur,
+  onChange,
+}: WeeklyReportInputProps) => (
   <FormControl sx={{ display: show ? 'inline-flex' : 'none' }}>
-    <FormLabel sx={labelStyles}>{question}</FormLabel>
-    <RadioGroup defaultValue={value} name={name} row>
-      {options.map((option) => (
+    <FormLabel sx={labelStyles}>{question.prompt}</FormLabel>
+    <RadioGroup
+      value={value}
+      onBlur={onBlur}
+      onChange={onChange}
+      name={question.id}
+      row
+    >
+      {question.responseOptions?.map((option, index) => (
         <FormControlLabel
-          key={option.value}
-          value={option.value}
+          key={`${question.id}|${index}`}
+          value={option}
           control={<Radio />}
-          label={option.label}
+          label={option}
         />
       ))}
     </RadioGroup>
   </FormControl>
 );
 
-const WeeklyReportTextField = ({ question, value, name, show }) => (
+const WeeklyReportTextField = ({
+  question,
+  value,
+  show,
+  onBlur,
+  onChange,
+}: WeeklyReportInputProps) => (
   <TextField
     sx={{ display: show ? 'inline-flex' : 'none' }}
-    defaultValue={value}
-    name={name}
+    value={value}
+    onBlur={onBlur}
+    onChange={onChange}
+    name={question.id}
     rows={3}
-    label={question}
+    label={question.prompt}
     InputLabelProps={{
       shrink: true,
       sx: labelStyles,
@@ -71,107 +108,93 @@ const WeeklyReportTextField = ({ question, value, name, show }) => (
 );
 
 interface WeeklyReportModalProps {
+  accountListId: string;
   open: boolean;
   onClose: () => void;
 }
 
 export const WeeklyReportModal = ({
+  accountListId,
   open,
   onClose,
 }: WeeklyReportModalProps) => {
+  const organizationId = useOrganizationId();
   const { t } = useTranslation();
   const [activeStep, setActiveStep] = useState<number>(1);
   const setupError = false;
 
-  // TODO: Integrate questions from production
-  const questions = [
-    {
-      question: t('How many hours this week did you spend on MPD?'),
-      options: [
-        {
-          label: '0 - 9',
-          value: '0 - 9',
-        },
-        {
-          label: '10 - 19',
-          value: '10 - 19',
-        },
-        {
-          label: '20 - 29',
-          value: '20 - 29',
-        },
-        {
-          label: '30 - 39',
-          value: '30 - 39',
-        },
-        {
-          label: t('40 or more'),
-          value: '40 or more',
-        },
-      ],
+  const { data } = useCurrentCoachingAnswerSetQuery({
+    variables: {
+      accountListId,
+      organizationId: organizationId ?? '',
     },
-    {
-      question: t('How is your current financial situation?'),
-      options: [
-        {
-          label: t('not enough money to pay bills'),
-          value: 'not enough money to pay bills',
-        },
-        {
-          label: t('just enough for basics'),
-          value: 'just enough for basics',
-        },
-        {
-          label: t('more than enough'),
-          value: 'more than enough',
-        },
-      ],
-    },
-    {
-      question: t('How is your time with the Lord?'),
-      options: [
-        {
-          label: t('feeling distant'),
-          value: 'feeling distant',
-        },
-        {
-          label: t('connecting with God most days'),
-          value: 'connecting with God most days',
-        },
-        {
-          label: t('robust time with God'),
-          value: 'robust time with God',
-        },
-      ],
-    },
-    {
-      question: t(
-        'In addition to calls/texts/appointments, what other MPD work did you do this week?',
-      ),
-      options: [],
-    },
-    {
-      question: t('What has been encouraging in MPD this past week?'),
-      options: [],
-    },
-    {
-      question: t('What has been discouraging in MPD this past week?'),
-      options: [],
-    },
-    {
-      question: t(
-        'What is one thing you will definitely prioritize next in MPD?',
-      ),
-      options: [],
-    },
-    {
-      question: t('How can I be praying for you?'),
-      options: [],
-    },
-  ];
+    skip: !organizationId,
+  });
+  const [saveAnswerMutation] = useSaveCoachingAnswerMutation();
 
+  const answers = data?.currentCoachingAnswerSet.answers ?? [];
+  const questions = data?.currentCoachingAnswerSet.questions ?? [];
   const errorFlag = questions.length === 0 || setupError;
   const [success, setSuccess] = useState<boolean>(false);
+
+  // Lookup the answer for a question
+  const getAnswer = (
+    questionId: string,
+  ): ElementOf<
+    CurrentCoachingAnswerSetQuery['currentCoachingAnswerSet']['answers']
+  > | null =>
+    answers.find((answer) => answer.question.id === questionId) ?? null;
+
+  const initialValues = Object.fromEntries(
+    questions.map(({ id }) => [id, getAnswer(id)?.response ?? '']),
+  );
+
+  const saveAnswer = async (
+    answerId: string | null,
+    question: ElementOf<
+      CurrentCoachingAnswerSetQuery['currentCoachingAnswerSet']['questions']
+    >,
+    response: string,
+  ) => {
+    if (!data) {
+      return;
+    }
+
+    saveAnswerMutation({
+      variables: {
+        answerSetId: data.currentCoachingAnswerSet.id,
+        answerId,
+        response: response,
+        questionId: question.id,
+      },
+      update: (cache, { data: saveAnswerData }) => {
+        if (answerId || !saveAnswerData) {
+          return;
+        }
+
+        cache.updateQuery<CurrentCoachingAnswerSetQuery>(
+          {
+            query: CurrentCoachingAnswerSetDocument,
+            variables: {
+              accountListId,
+              organizationId: organizationId ?? '',
+            },
+          },
+          (cachedData) =>
+            cachedData && {
+              ...cachedData,
+              currentCoachingAnswerSet: {
+                ...cachedData.currentCoachingAnswerSet,
+                answers: [
+                  ...cachedData.currentCoachingAnswerSet.answers,
+                  saveAnswerData.saveCoachingAnswer,
+                ],
+              },
+            },
+        );
+      },
+    });
+  };
 
   const handleWeeklyReportPrev = () => {
     setActiveStep((prevState) => prevState - 1);
@@ -197,20 +220,8 @@ export const WeeklyReportModal = ({
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={localOnClose}>
       {!errorFlag ? (
-        <Formik
-          initialValues={{
-            q1: '',
-            q2: '',
-            q3: '',
-            q4: '',
-            q5: '',
-            q6: '',
-            q7: '',
-            q8: '',
-          }}
-          onSubmit={handleSuccess}
-        >
-          {({ values, handleSubmit, isSubmitting }) => (
+        <Formik initialValues={initialValues} onSubmit={handleSuccess}>
+          {({ values, setFieldValue, handleSubmit, isSubmitting }) => (
             <form onSubmit={handleSubmit}>
               <DialogContent dividers>
                 <>
@@ -238,26 +249,47 @@ export const WeeklyReportModal = ({
                     </Box>
                   )}
                   <Box>
-                    {questions.map((question, i) => {
-                      if (question.options.length > 0) {
+                    {questions.map((question, index) => {
+                      const answerId = getAnswer(question.id)?.id ?? null;
+                      if (
+                        question.responseOptions &&
+                        question.responseOptions.length > 0
+                      )
                         return (
                           <WeeklyReportRadio
-                            key={i}
-                            question={question.question}
-                            options={question.options}
-                            value={values['q' + (i + 1)]}
-                            name={`q${i + 1}`}
-                            show={activeStep === i + 1}
+                            key={question.id}
+                            question={question}
+                            value={values[question.id]}
+                            onBlur={() => {
+                              saveAnswer(
+                                answerId,
+                                question,
+                                values[question.id],
+                              );
+                            }}
+                            onChange={(event) => {
+                              setFieldValue(question.id, event.target.value);
+                            }}
+                            show={activeStep === index + 1}
                           />
                         );
-                      } else {
+                      else {
                         return (
                           <WeeklyReportTextField
-                            key={i}
-                            question={question.question}
-                            value={values['q' + (i + 1)]}
-                            name={`q${i + 1}`}
-                            show={activeStep === i + 1}
+                            key={question.id}
+                            question={question}
+                            value={values[question.id]}
+                            onBlur={() => {
+                              saveAnswer(
+                                answerId,
+                                question,
+                                values[question.id],
+                              );
+                            }}
+                            onChange={(event) => {
+                              setFieldValue(question.id, event.target.value);
+                            }}
+                            show={activeStep === index + 1}
                           />
                         );
                       }
@@ -310,7 +342,7 @@ export const WeeklyReportModal = ({
                     'Weekly report questions have not been setup for your organization.',
                   )
                 : null}
-              {!setupError && questions.length === 0
+              {!setupError && questions?.length === 0
                 ? t('No questions have been created') // TODO: Get real error message
                 : null}
             </Alert>

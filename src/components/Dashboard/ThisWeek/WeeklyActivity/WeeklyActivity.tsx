@@ -255,6 +255,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
             {t('Fill out weekly report')}
           </Button>
           <WeeklyReportModal
+            accountListId={accountListId}
             open={openWeeklyReportModal}
             onClose={onWeeklyReportClose}
           />

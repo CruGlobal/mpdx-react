@@ -1,164 +1,233 @@
+import z from 'zod';
 import {
   CoachingAnswerSet,
   CoachingAnswer,
   CoachingQuestion,
 } from '../../../../graphql/types.generated';
 
-export type CoachingAnswerSetData = CoachingAnswerSetResponseData[];
+const isNotNull = <T>(item: T | null): item is T => item !== null;
 
-export type CoachingAnswerSetIncluded = (
-  | CoachingAnswerResponse
-  | CoachingQuestionResponse
-)[];
+const coachingAnswerSetSchema = z.object({
+  id: z.string(),
+  type: z.literal('coaching_answer_sets'),
+  attributes: z.object({
+    completed_at: z.string().nullable(),
+    created_at: z.string(),
+    updated_at: z.string(),
+  }),
+  relationships: z
+    .object({
+      answers: z.object({
+        data: z.array(
+          z.object({
+            id: z.string(),
+            type: z.literal('coaching_answers'),
+          }),
+        ),
+      }),
+      questions: z.object({
+        data: z.array(
+          z.object({
+            id: z.string(),
+            type: z.literal('coaching_questions'),
+          }),
+        ),
+      }),
+    })
+    .default({ answers: { data: [] }, questions: { data: [] } }),
+});
+type CoachingAnswerSetData = z.infer<typeof coachingAnswerSetSchema>;
 
-interface CoachingAnswerSetResponseData {
-  id: string;
-  type: 'coaching_answer_sets';
-  attributes: {
-    completed_at: string;
-    created_at: string;
-    updated_at: string;
+const includedSchema = z
+  .array(
+    z.discriminatedUnion('type', [
+      z.object({
+        id: z.string(),
+        type: z.literal('coaching_answers'),
+        attributes: z.object({
+          created_at: z.string(),
+          response: z.string().nullable(),
+          updated_at: z.string(),
+        }),
+        relationships: z.object({
+          question: z.object({
+            data: z.object({
+              id: z.string(),
+              type: z.literal('coaching_questions'),
+            }),
+          }),
+        }),
+      }),
+
+      z.object({
+        id: z.string(),
+        type: z.literal('coaching_questions'),
+        attributes: z.object({
+          created_at: z.string(),
+          position: z.number(),
+          prompt: z.string(),
+          required: z.boolean(),
+          response_options: z.array(z.string()).nullable(),
+          updated_at: z.string(),
+        }),
+      }),
+    ]),
+  )
+  .default([]);
+type IncludedData = z.infer<typeof includedSchema>;
+
+const singleCoachingAnswerSetSchema = z.object({
+  data: coachingAnswerSetSchema,
+  included: includedSchema,
+});
+
+const multiCoachingAnswerSetSchema = z.object({
+  data: z.array(coachingAnswerSetSchema),
+  included: includedSchema,
+});
+
+const parseCoachingAnswerSet = (
+  answerSetData: CoachingAnswerSetData,
+  included: IncludedData,
+): CoachingAnswerSet => {
+  const {
+    id,
+    attributes: { completed_at, created_at, updated_at },
+  } = answerSetData;
+
+  const answers = answerSetData.relationships.answers.data
+    .map(({ id }) => getIncludedAnswer(id, included))
+    .filter(isNotNull);
+  const questions = answerSetData.relationships.questions.data
+    .map(({ id }) => getIncludedQuestion(id, included))
+    .filter(isNotNull);
+
+  return {
+    id,
+    answers,
+    completedAt: completed_at,
+    createdAt: created_at,
+    questions,
+    updatedAt: updated_at,
   };
-  relationships: {
-    answers: {
-      data: {
-        id: string;
-        type: 'coaching_answers';
-      }[];
-    };
-    questions: {
-      data: {
-        id: string;
-        type: 'coaching_questions';
-      }[];
-    };
-  };
-}
-
-interface CoachingAnswerResponse {
-  id: string;
-  type: 'coaching_answers';
-  attributes: {
-    created_at: string;
-    response: string;
-    updated_at: string;
-  };
-}
-
-interface CoachingQuestionResponse {
-  id: string;
-  type: 'coaching_questions';
-  attributes: {
-    created_at: string;
-    position: number;
-    prompt: string;
-    required: boolean;
-    response_options: string[] | null;
-    updated_at: string;
-  };
-}
-
-const getCoachingAnswerSets = (
-  data: CoachingAnswerSetData,
-  included: CoachingAnswerSetIncluded,
-): CoachingAnswerSet[] =>
-  data.map((answerSetData) => {
-    const {
-      id,
-      attributes: { completed_at, created_at, updated_at },
-    } = answerSetData;
-
-    //create answers
-    const answers = createCoachingAnswersList(answerSetData, included);
-    //create questions
-    const questions = createCoachingQuestionsList(answerSetData, included);
-
-    return {
-      id,
-      answers,
-      completedAt: completed_at,
-      createdAt: created_at,
-      questions,
-      updatedAt: updated_at,
-    };
-  });
-
-const createCoachingAnswersList = (
-  answerSetData: CoachingAnswerSetResponseData,
-  includedItems: CoachingAnswerSetIncluded,
-): CoachingAnswer[] => {
-  const answers: CoachingAnswer[] = [];
-
-  const ids = answerSetData.relationships.answers.data.map(
-    (answer) => answer.id,
-  );
-
-  ids.forEach((id) => {
-    const answerItem = includedItems.find(
-      (item) => item.id === id && item.type === 'coaching_answers',
-    ) as CoachingAnswerResponse | undefined;
-
-    if (answerItem) {
-      const {
-        attributes: { created_at, response, updated_at },
-      } = answerItem;
-
-      const answer: CoachingAnswer = {
-        id,
-        createdAt: created_at,
-        response,
-        updatedAt: updated_at,
-      };
-
-      answers.push(answer);
-    }
-  });
-
-  return answers;
 };
 
-const createCoachingQuestionsList = (
-  answerSetData: CoachingAnswerSetResponseData,
-  includedItems: CoachingAnswerSetIncluded,
-): CoachingQuestion[] => {
-  const questions: CoachingQuestion[] = [];
+// Find the coaching question with the provided id in the included data
+const getIncludedQuestion = (
+  questionId: string,
+  included: IncludedData,
+): CoachingQuestion | null => {
+  const questionItem = included.find((item) => item.id === questionId);
 
-  const ids = answerSetData.relationships.questions.data.map(
-    (question) => question.id,
-  );
-
-  ids.forEach((id) => {
-    const questionItem = includedItems.find(
-      (item) => item.id === id && item.type === 'coaching_questions',
-    ) as CoachingQuestionResponse | undefined;
-
-    if (questionItem) {
-      const {
-        attributes: {
-          created_at,
-          position,
-          prompt,
-          required,
-          response_options,
-          updated_at,
-        },
-      } = questionItem;
-
-      const question: CoachingQuestion = {
-        id,
-        createdAt: created_at,
+  if (questionItem && questionItem.type === 'coaching_questions') {
+    const {
+      id,
+      attributes: {
+        created_at,
         position,
         prompt,
         required,
-        responseOptions: response_options,
-        updatedAt: updated_at,
-      };
+        response_options,
+        updated_at,
+      },
+    } = questionItem;
 
-      questions.push(question);
-    }
-  });
+    return {
+      id,
+      createdAt: created_at,
+      position,
+      prompt,
+      required,
+      responseOptions: response_options,
+      updatedAt: updated_at,
+    };
+  }
 
-  return questions;
+  return null;
 };
 
-export { getCoachingAnswerSets };
+// Find the coaching answer with the provided id in the included data
+const getIncludedAnswer = (
+  answerId: string,
+  included: IncludedData,
+): CoachingAnswer | null => {
+  const answerItem = included.find((item) => item.id === answerId);
+  if (answerItem && answerItem.type === 'coaching_answers') {
+    const question = getIncludedQuestion(
+      answerItem.relationships.question.data.id,
+      included,
+    );
+    if (!question) {
+      throw new Error('Could not find question for coaching answer');
+    }
+
+    const {
+      id,
+      attributes: { created_at, response, updated_at },
+    } = answerItem;
+
+    return {
+      id,
+      createdAt: created_at,
+      response,
+      updatedAt: updated_at,
+      question,
+    };
+  }
+
+  return null;
+};
+
+export const getCoachingAnswerSet = (response: unknown): CoachingAnswerSet => {
+  const { data: answerSetData, included } =
+    singleCoachingAnswerSetSchema.parse(response);
+  return parseCoachingAnswerSet(answerSetData, included);
+};
+
+export const getCoachingAnswerSets = (
+  response: unknown,
+): CoachingAnswerSet[] => {
+  const { data, included } = multiCoachingAnswerSetSchema.parse(response);
+  return data.map((answerSetData) =>
+    parseCoachingAnswerSet(answerSetData, included),
+  );
+};
+
+const createOrUpdateAnswerSchema = z.object({
+  data: z.object({
+    id: z.string(),
+    type: z.string(),
+    attributes: z.object({
+      created_at: z.string(),
+      response: z.string(),
+      updated_at: z.string(),
+    }),
+    relationships: z.object({
+      question: z.object({
+        data: z.object({
+          id: z.string(),
+          type: z.literal('coaching_questions'),
+        }),
+      }),
+    }),
+  }),
+  included: includedSchema,
+});
+
+export const getCoachingAnswer = (response: unknown): CoachingAnswer => {
+  const { data, included } = createOrUpdateAnswerSchema.parse(response);
+  const question = getIncludedQuestion(
+    data.relationships.question.data.id,
+    included,
+  );
+  if (!question) {
+    throw new Error('Could not find question for coaching answer');
+  }
+  return {
+    id: data.id,
+    createdAt: data.attributes.created_at,
+    updatedAt: data.attributes.updated_at,
+    response: data.attributes.response,
+    question,
+  };
+};

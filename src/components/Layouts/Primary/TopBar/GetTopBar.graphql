@@ -3,6 +3,7 @@ query GetTopBar {
     nodes {
       id
       name
+      salaryOrganizationId
     }
   }
   user {
