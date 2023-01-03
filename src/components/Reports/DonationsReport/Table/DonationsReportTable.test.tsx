@@ -13,6 +13,12 @@ const setTime = jest.fn();
 const onSelectContact = jest.fn();
 
 const mocks = {
+  GetAccountListCurrency: {
+    accountList: {
+      id: 'abc',
+      currency: 'CAD',
+    },
+  },
   GetDonationsTable: {
     donations: {
       nodes: [
