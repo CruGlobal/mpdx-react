@@ -84,12 +84,13 @@ const TestRender: React.FC = () => {
 };
 
 describe('ContactsPageContext', () => {
-  it.skip('has a contact id', async () => {
+  it('has a contact id', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
             query: { accountListId, contactId: ['list', 'abc'] },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
             isReady,
             push,
           }}
@@ -126,12 +127,13 @@ describe('ContactsPageContext', () => {
     );
   });
 
-  it.skip('has a contact id and switches twice', async () => {
+  it('has a contact id and switches twice', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
             query: { accountListId, contactId: ['list', 'abc'] },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
             isReady,
             push,
           }}
@@ -176,12 +178,13 @@ describe('ContactsPageContext', () => {
     );
   });
 
-  it.skip('does not have a contact id and changes to map', async () => {
+  it('does not have a contact id and changes to map', async () => {
     const { getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
             query: { accountListId },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
             isReady,
             push,
           }}

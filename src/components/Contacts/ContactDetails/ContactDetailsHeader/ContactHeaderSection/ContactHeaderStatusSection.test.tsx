@@ -86,7 +86,7 @@ describe('ContactHeaderStatusSection', () => {
   });
 
   // eslint-disable-next-line jest/no-disabled-tests
-  it.skip.each([
+  it.each([
     ['NEVER_CONTACTED', 'Never Contacted'],
     ['ASK_IN_FUTURE', 'Ask In Future'],
     ['CULTIVATE_RELATIONSHIP', 'Cultivate Relationship'],
