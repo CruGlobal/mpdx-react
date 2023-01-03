@@ -176,7 +176,8 @@
     "graphql-ergonomock/@testing-library/jest-dom": "^5.16.5",
     "graphql-ergonomock/@testing-library/react": "^13.4.0",
     "graphql-ergonomock/@types/react": "^18.0.22",
-    "graphql-ergonomock/@types/react-dom": "^18.0.7"
+    "graphql-ergonomock/@types/react-dom": "^18.0.7",
+    "graphql-ergonomock@^1.2.0": "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix"
