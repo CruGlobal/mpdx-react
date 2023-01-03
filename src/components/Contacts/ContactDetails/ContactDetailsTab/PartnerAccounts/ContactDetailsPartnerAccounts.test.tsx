@@ -17,9 +17,18 @@ const contactId = 'contact-1';
 
 const router = {
   query: { accountListId, contactId: [contactId] },
+  isReady: true,
 };
 
 const mockEnqueue = jest.fn();
+
+const getOperationByName = (mutationSpy: jest.Mock, operationName: string) => {
+  const operations = mutationSpy.mock.calls
+    .map((call) => call[0].operation)
+    .filter((operation) => operation.operationName === operationName);
+  expect(operations).toHaveLength(1);
+  return operations[0];
+};
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -152,9 +161,20 @@ describe('ContactDetailsPartnerAccounts', () => {
         variant: 'success',
       }),
     );
-    const { operation } = mutationSpy.mock.calls[0][0];
-    // TODO: get this to have proper variables
-    expect(operation.variables).toEqual({ accountListId: '' });
+
+    expect(
+      getOperationByName(mutationSpy, 'UpdateContactOther').variables,
+    ).toEqual({
+      accountListId,
+      attributes: {
+        id: contact.id,
+        donorAccount: {
+          accountNumber: 'new-account',
+          name: 'new-account',
+          organizationId: '',
+        },
+      },
+    });
     expect(
       queryByRole('textbox', { name: 'Account Number' }),
     ).not.toBeInTheDocument();
@@ -186,8 +206,26 @@ describe('ContactDetailsPartnerAccounts', () => {
         variant: 'success',
       }),
     );
-    // TODO: get this to have proper variables
-    const { operation } = mutationSpy.mock.calls[0][0];
-    expect(operation.variables).toEqual({ accountListId: '' });
+
+    expect(
+      getOperationByName(mutationSpy, 'DeleteDonorAccount').variables,
+    ).toEqual({
+      contactId: contact.id,
+      donorAccountId: 'account1',
+      donorAccounts: [
+        {
+          accountNumber: 'donor-1',
+          id: 'account1',
+          organization: { id: 'org1', type: 'organization' },
+          type: 'donor_accounts',
+        },
+        {
+          accountNumber: 'donor-2',
+          id: 'account2',
+          organization: { id: 'org2', type: 'organization' },
+          type: 'donor_accounts',
+        },
+      ],
+    });
   });
 });
