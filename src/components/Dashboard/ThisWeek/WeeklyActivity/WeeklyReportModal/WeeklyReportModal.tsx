@@ -121,7 +121,6 @@ export const WeeklyReportModal = ({
   const organizationId = useOrganizationId();
   const { t } = useTranslation();
   const [activeStep, setActiveStep] = useState<number>(1);
-  const setupError = false;
 
   const { data } = useCurrentCoachingAnswerSetQuery({
     variables: {
@@ -134,7 +133,6 @@ export const WeeklyReportModal = ({
 
   const answers = data?.currentCoachingAnswerSet.answers ?? [];
   const questions = data?.currentCoachingAnswerSet.questions ?? [];
-  const errorFlag = questions.length === 0 || setupError;
   const [success, setSuccess] = useState<boolean>(false);
 
   // Lookup the answer for a question
@@ -219,7 +217,7 @@ export const WeeklyReportModal = ({
 
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={localOnClose}>
-      {!errorFlag ? (
+      {questions.length > 0 ? (
         <Formik initialValues={initialValues} onSubmit={handleSuccess}>
           {({ values, setFieldValue, handleSubmit, isSubmitting }) => (
             <form onSubmit={handleSubmit}>
@@ -337,18 +335,13 @@ export const WeeklyReportModal = ({
         <>
           <DialogContent dividers>
             <Alert severity="warning">
-              {setupError
-                ? t(
-                    'Weekly report questions have not been setup for your organization.',
-                  )
-                : null}
-              {!setupError && questions?.length === 0
-                ? t('No questions have been created') // TODO: Get real error message
-                : null}
+              {t(
+                'Weekly report questions have not been setup for your organization.',
+              )}
             </Alert>
           </DialogContent>
           <DialogActions>
-            <CancelButton onClick={localOnClose} />
+            <CancelButton onClick={localOnClose}>{t('Close')}</CancelButton>
           </DialogActions>
         </>
       )}
