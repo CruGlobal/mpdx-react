@@ -9,6 +9,7 @@ import TestRouter from '__tests__/util/TestRouter';
 
 const title = 'test title';
 const onNavListToggle = jest.fn();
+const onSelectContact = jest.fn();
 
 const push = jest.fn();
 
@@ -28,6 +29,7 @@ it('renders', async () => {
               accountListId={'abc'}
               isNavListOpen={true}
               onNavListToggle={onNavListToggle}
+              onSelectContact={onSelectContact}
               title={title}
             />
           </GqlMockedProvider>
@@ -116,6 +118,7 @@ it('renders with data', async () => {
             accountListId={'abc'}
             isNavListOpen={true}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
             title={title}
           />
         </GqlMockedProvider>

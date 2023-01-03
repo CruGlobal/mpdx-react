@@ -92,9 +92,11 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
     for (const [id, action] of Object.entries(actions)) {
       switch (action.action) {
         case 'merge':
+          // eslint-disable-next-line no-console
           console.log(`Merging ${id} with ${action.mergeId}`);
           break;
         case 'delete':
+          // eslint-disable-next-line no-console
           console.log(`Deleting ${id}`);
           break;
         default:

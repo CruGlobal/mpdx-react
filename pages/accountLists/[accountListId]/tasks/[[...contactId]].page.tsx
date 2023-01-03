@@ -23,7 +23,7 @@ import NullState from '../../../../src/components/Shared/Filters/NullState/NullS
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
-import { ContactsPageProvider } from '../contacts/ContactsPageContext';
+import { ContactsProvider } from '../contacts/ContactsContext';
 import {
   TasksDocument,
   useTaskFiltersQuery,
@@ -501,11 +501,21 @@ const TasksPage: React.FC = () => {
             }
             rightPanel={
               contactDetailsId ? (
-                <ContactsPageProvider>
+                <ContactsProvider
+                  urlFilters={urlFilters}
+                  activeFilters={activeFilters}
+                  setActiveFilters={setActiveFilters}
+                  starredFilter={starredFilter}
+                  setStarredFilter={setStarredFilter}
+                  filterPanelOpen={filterPanelOpen}
+                  setFilterPanelOpen={setFilterPanelOpen}
+                  contactId={contactId}
+                  searchTerm={searchTerm}
+                >
                   <ContactsRightPanel
                     onClose={() => setContactFocus(undefined)}
                   />
-                </ContactsPageProvider>
+                </ContactsProvider>
               ) : (
                 <></>
               )

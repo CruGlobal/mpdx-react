@@ -9,7 +9,7 @@ import { ContactDetailsHeader } from './ContactDetailsHeader';
 import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'abc';
 const contactId = 'contact-1';
@@ -25,7 +25,7 @@ describe('ContactDetails', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<GetContactDetailsHeaderQuery>>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -33,7 +33,7 @@ describe('ContactDetails', () => {
                     onClose={() => {}}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -59,7 +59,7 @@ describe('ContactDetails', () => {
                 },
               }}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -67,7 +67,7 @@ describe('ContactDetails', () => {
                     onClose={() => {}}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -96,7 +96,7 @@ describe('ContactDetails', () => {
                 },
               }}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -104,7 +104,7 @@ describe('ContactDetails', () => {
                     onClose={() => {}}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -133,7 +133,7 @@ describe('ContactDetails', () => {
                 },
               }}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -141,7 +141,7 @@ describe('ContactDetails', () => {
                     onClose={() => {}}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -173,7 +173,7 @@ describe('ContactDetails', () => {
                 },
               }}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -181,7 +181,7 @@ describe('ContactDetails', () => {
                     onClose={() => {}}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>

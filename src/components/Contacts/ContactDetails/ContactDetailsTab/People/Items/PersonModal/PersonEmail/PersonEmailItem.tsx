@@ -77,7 +77,6 @@ export const PersonEmailItem: React.FC<Props> = ({
 
   const handleChange = () => {
     handleChangePrimary(index);
-    console.log(index);
   };
 
   return (

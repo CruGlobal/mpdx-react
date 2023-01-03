@@ -17,8 +17,8 @@ import { ContactDetailProvider } from '../../../ContactDetailContext';
 import { UpdateContactOtherMutation } from './EditContactOther.generated';
 import { EditContactOtherModal } from './EditContactOtherModal';
 import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import TestRouter from '__tests__/util/TestRouter';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const handleClose = jest.fn();
 const mock = gqlMock<ContactOtherFragment>(ContactOtherFragmentDoc);
@@ -72,7 +72,7 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactOtherMutation>>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -82,7 +82,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -115,7 +115,7 @@ describe('EditContactOtherModal', () => {
                 },
               }}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -125,7 +125,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -150,7 +150,7 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactOtherMutation>>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -160,7 +160,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -178,7 +178,7 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactOtherMutation>>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -188,7 +188,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -210,7 +210,7 @@ describe('EditContactOtherModal', () => {
               <GqlMockedProvider<UpdateContactOtherMutation>
                 onCall={mutationSpy}
               >
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <EditContactOtherModal
                       accountListId={accountListId}
@@ -220,7 +220,7 @@ describe('EditContactOtherModal', () => {
                       referral={undefined}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </TestRouter>
@@ -248,7 +248,7 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<UpdateContactOtherMutation> onCall={mutationSpy}>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -258,7 +258,7 @@ describe('EditContactOtherModal', () => {
                     referral={undefined}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -319,7 +319,7 @@ describe('EditContactOtherModal', () => {
                 },
               }}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -329,7 +329,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
