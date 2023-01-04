@@ -217,7 +217,7 @@ export const WeeklyReportModal = ({
 
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={localOnClose}>
-      {questions.length > 0 ? (
+      {questions.length > 0 && activeStep <= questions.length && (
         <Formik initialValues={initialValues} onSubmit={handleSuccess}>
           {({ values, setFieldValue, handleSubmit, isSubmitting }) => (
             <form onSubmit={handleSubmit}>
@@ -292,12 +292,6 @@ export const WeeklyReportModal = ({
                         );
                       }
                     })}
-                    {success && ( // TODO: Translate success message
-                      <Alert severity="success">
-                        Your report was successfully submitted. View it on your
-                        coaching reports page.
-                      </Alert>
-                    )}
                   </Box>
                 </>
               </DialogContent>
@@ -309,14 +303,9 @@ export const WeeklyReportModal = ({
                       : 'space-between',
                 }}
               >
-                {activeStep > 1 && activeStep < questions.length + 1 && (
+                {activeStep > 1 && activeStep <= questions.length && (
                   <CancelButton onClick={handleWeeklyReportPrev}>
                     {t('Back')}
-                  </CancelButton>
-                )}
-                {activeStep === questions.length + 1 && (
-                  <CancelButton onClick={localOnClose}>
-                    {t('Close')}
                   </CancelButton>
                 )}
                 {activeStep < questions.length && ( // TODO: Disable button when currently visible field has no value
@@ -331,13 +320,28 @@ export const WeeklyReportModal = ({
             </form>
           )}
         </Formik>
-      ) : (
+      )}
+      {questions.length === 0 && (
         <>
           <DialogContent dividers>
             <Alert severity="warning">
               {t(
                 'Weekly report questions have not been setup for your organization.',
               )}
+            </Alert>
+          </DialogContent>
+          <DialogActions>
+            <CancelButton onClick={localOnClose}>{t('Close')}</CancelButton>
+          </DialogActions>
+        </>
+      )}
+      {success && activeStep === questions.length + 1 && (
+        <>
+          {/* TODO: Translate success message */}
+          <DialogContent dividers>
+            <Alert severity="success">
+              Your report was successfully submitted. View it on your coaching
+              reports page.
             </Alert>
           </DialogContent>
           <DialogActions>
