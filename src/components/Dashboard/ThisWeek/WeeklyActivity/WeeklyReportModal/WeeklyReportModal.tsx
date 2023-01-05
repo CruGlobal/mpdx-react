@@ -107,6 +107,44 @@ const WeeklyReportTextField = ({
   />
 );
 
+interface WeeklyReportProgressProps {
+  totalSteps: number;
+  activeStep: number;
+}
+
+const WeeklyReportProgress = ({
+  totalSteps,
+  activeStep,
+}: WeeklyReportProgressProps) => {
+  if (activeStep <= totalSteps) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+        mb={1}
+      >
+        <Box sx={{ width: '100%', mr: 1 }}>
+          <LinearProgress
+            variant="determinate"
+            value={(activeStep / totalSteps) * 100}
+          />
+        </Box>
+        <Box>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+          >{`${activeStep}/${totalSteps}`}</Typography>
+        </Box>
+      </Box>
+    );
+  } else {
+    return null;
+  }
+};
+
 interface WeeklyReportModalProps {
   accountListId: string;
   open: boolean;
@@ -228,29 +266,10 @@ export const WeeklyReportModal = ({
             <form onSubmit={handleSubmit}>
               <DialogContent dividers>
                 <>
-                  {activeStep <= questions.length && (
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}
-                      mb={1}
-                    >
-                      <Box sx={{ width: '100%', mr: 1 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={(activeStep / questions.length) * 100}
-                        />
-                      </Box>
-                      <Box>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                        >{`${activeStep}/${questions.length}`}</Typography>
-                      </Box>
-                    </Box>
-                  )}
+                  <WeeklyReportProgress
+                    totalSteps={questions.length}
+                    activeStep={activeStep}
+                  />
                   <Box>
                     {questions.map((question, index) => {
                       const answerId = getAnswer(question.id)?.id ?? null;
