@@ -171,10 +171,6 @@ export const WeeklyReportModal = ({
 
   const answers = data?.currentCoachingAnswerSet.answers ?? [];
   const questions = data?.currentCoachingAnswerSet.questions ?? [];
-  const [success, setSuccess] = useState<boolean>(false);
-  const [alert, setAlert] = useState<boolean>(
-    questions.length === 0 ? true : false,
-  );
 
   // Lookup the answer for a question
   const getAnswer = (
@@ -244,8 +240,6 @@ export const WeeklyReportModal = ({
   };
 
   const handleSuccess = () => {
-    setSuccess(true);
-    setAlert(true);
     handleWeeklyReportNext();
   };
 
@@ -253,8 +247,6 @@ export const WeeklyReportModal = ({
     onClose();
     setTimeout(() => {
       setActiveStep(1);
-      setSuccess(false);
-      setAlert(false);
     }, 1000);
   };
 
@@ -345,7 +337,7 @@ export const WeeklyReportModal = ({
           )}
         </Formik>
       )}
-      {alert && (
+      {(questions.length === 0 || activeStep === questions.length + 1) && (
         <>
           <DialogContent dividers>
             {questions.length === 0 && (
@@ -355,7 +347,7 @@ export const WeeklyReportModal = ({
                 )}
               </Alert>
             )}
-            {success && activeStep === questions.length + 1 && (
+            {questions.length > 0 && activeStep === questions.length + 1 && (
               <Alert severity="success">
                 {/* TODO: Translate success message */}
                 Your report was successfully submitted. View it on your coaching
