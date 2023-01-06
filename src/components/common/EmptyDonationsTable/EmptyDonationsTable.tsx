@@ -45,7 +45,7 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
           'You can setup an organization account to import historic donations or add a new donation.',
         )}
       </Typography>
-      <Box style={{ padding: 4 }}>
+      <Box sx={{ padding: 1, display: 'flex', gap: 2 }}>
         <Button variant="contained" onClick={connectServices}>
           Connect Services
         </Button>
