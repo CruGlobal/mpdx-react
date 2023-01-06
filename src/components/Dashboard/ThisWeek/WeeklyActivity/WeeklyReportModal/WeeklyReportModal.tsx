@@ -30,6 +30,7 @@ import {
 import { Formik } from 'formik';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import { ElementOf } from 'ts-essentials';
+import * as yup from 'yup';
 
 const labelStyles = {
   fontSize: '1.5rem',
@@ -159,6 +160,7 @@ export const WeeklyReportModal = ({
   const organizationId = useOrganizationId();
   const { t } = useTranslation();
   const [activeStep, setActiveStep] = useState<number>(1);
+  const [formData, setFormData] = useState([]);
 
   const { data } = useCurrentCoachingAnswerSetQuery({
     variables: {
@@ -180,9 +182,10 @@ export const WeeklyReportModal = ({
   > | null =>
     answers.find((answer) => answer.question.id === questionId) ?? null;
 
-  const initialValues = Object.fromEntries(
-    questions.map(({ id }) => [id, getAnswer(id)?.response ?? '']),
-  );
+  const initialValues = questions.map((q) => [
+    q.id,
+    getAnswer(q.id)?.response ?? '',
+  ]);
 
   const saveAnswer = async (
     answerId: string | null,
@@ -239,10 +242,6 @@ export const WeeklyReportModal = ({
     setActiveStep((prevState) => prevState + 1);
   };
 
-  const handleSuccess = () => {
-    handleWeeklyReportNext();
-  };
-
   const localOnClose = () => {
     onClose();
     setTimeout(() => {
@@ -252,114 +251,144 @@ export const WeeklyReportModal = ({
 
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={localOnClose}>
-      {questions.length > 0 && activeStep <= questions.length && (
-        <Formik initialValues={initialValues} onSubmit={handleSuccess}>
-          {({ values, setFieldValue, handleSubmit, isSubmitting }) => (
-            <form onSubmit={handleSubmit}>
-              <DialogContent dividers>
-                <>
-                  <WeeklyReportProgress
-                    totalSteps={questions.length}
-                    activeStep={activeStep}
-                  />
-                  <Box>
-                    {questions.map((question, index) => {
-                      const answerId = getAnswer(question.id)?.id ?? null;
-                      if (
-                        question.responseOptions &&
-                        question.responseOptions.length > 0
-                      )
-                        return (
-                          <WeeklyReportRadio
-                            key={question.id}
-                            question={question}
-                            value={values[question.id]}
-                            onBlur={() => {
-                              saveAnswer(
-                                answerId,
-                                question,
-                                values[question.id],
-                              );
-                            }}
-                            onChange={(event) => {
-                              setFieldValue(question.id, event.target.value);
-                            }}
-                            show={activeStep === index + 1}
-                          />
-                        );
-                      else {
-                        return (
-                          <WeeklyReportTextField
-                            key={question.id}
-                            question={question}
-                            value={values[question.id]}
-                            onBlur={() => {
-                              saveAnswer(
-                                answerId,
-                                question,
-                                values[question.id],
-                              );
-                            }}
-                            onChange={(event) => {
-                              setFieldValue(question.id, event.target.value);
-                            }}
-                            show={activeStep === index + 1}
-                          />
-                        );
-                      }
-                    })}
-                  </Box>
-                </>
-              </DialogContent>
-              <DialogActions
-                sx={{
-                  justifyContent:
-                    activeStep === 1 || activeStep === questions.length + 1
-                      ? 'flex-end'
-                      : 'space-between',
-                }}
+      <>
+        {/* {console.log(questions.length)} */}
+        {questions.map((question, index) => {
+          const answerId = getAnswer(question.id)?.id ?? null;
+          const currentQuestion = initialValues[index];
+          if (activeStep === index + 1) {
+            return (
+              <Box
+                sx={{ display: index === activeStep - 1 ? 'block' : 'none' }}
+                key={question.id}
               >
-                {activeStep > 1 && activeStep <= questions.length && (
-                  <CancelButton onClick={handleWeeklyReportPrev}>
-                    {t('Back')}
-                  </CancelButton>
-                )}
-                {activeStep < questions.length && ( // TODO: Disable button when currently visible field has no value
-                  <SubmitButton type="button" onClick={handleWeeklyReportNext}>
-                    {t('Next')}
-                  </SubmitButton>
-                )}
-                {activeStep === questions.length && ( // TODO: Disable button when currently visible field has no value or isSubmitting
-                  <SubmitButton type="submit" disabled={isSubmitting} />
-                )}
-              </DialogActions>
-            </form>
-          )}
-        </Formik>
-      )}
-      {(questions.length === 0 || activeStep === questions.length + 1) && (
-        <>
-          <DialogContent dividers>
-            {questions.length === 0 && (
-              <Alert severity="warning">
-                {t(
-                  'Weekly report questions have not been setup for your organization.',
-                )}
-              </Alert>
-            )}
-            {questions.length > 0 && activeStep === questions.length + 1 && (
-              <Alert severity="success">
-                {/* TODO: Translate success message */}
-                Your report was successfully submitted. View it on your coaching
-                reports page.
-              </Alert>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <CancelButton onClick={localOnClose}>{t('Close')}</CancelButton>
-          </DialogActions>
-        </>
-      )}
+                <Formik
+                  initialValues={{
+                    [currentQuestion[0]]: currentQuestion[1],
+                  }}
+                  validationSchema={yup.object().shape({
+                    [question.id]: yup.string().required(),
+                  })}
+                  onSubmit={(values) => {
+                    const data = { ...formData, ...values };
+                    setFormData(data);
+                    handleWeeklyReportNext();
+                    console.log(values);
+                  }}
+                >
+                  {({
+                    values,
+                    setFieldValue,
+                    handleSubmit,
+                    isSubmitting,
+                    isValid,
+                  }) => (
+                    <form onSubmit={handleSubmit}>
+                      <DialogContent dividers>
+                        <>
+                          <WeeklyReportProgress
+                            totalSteps={questions.length}
+                            activeStep={activeStep}
+                          />
+                          {question.responseOptions &&
+                            question.responseOptions.length > 0 && (
+                              <WeeklyReportRadio
+                                key={question.id}
+                                question={question}
+                                value={values[question.id]}
+                                onBlur={() => {
+                                  saveAnswer(
+                                    answerId,
+                                    question,
+                                    values[question.id],
+                                  );
+                                }}
+                                onChange={(event) => {
+                                  setFieldValue(
+                                    question.id,
+                                    event.target.value,
+                                  );
+                                }}
+                                show={activeStep === index + 1}
+                              />
+                            )}
+                          {(!question.responseOptions ||
+                            question.responseOptions.length === 0) && (
+                            <WeeklyReportTextField
+                              key={question.id}
+                              question={question}
+                              value={values[question.id]}
+                              onBlur={() => {
+                                saveAnswer(
+                                  answerId,
+                                  question,
+                                  values[question.id],
+                                );
+                              }}
+                              onChange={(event) => {
+                                setFieldValue(question.id, event.target.value);
+                              }}
+                              show={activeStep === index + 1}
+                            />
+                          )}
+                        </>
+                      </DialogContent>
+                      <DialogActions
+                        sx={{
+                          justifyContent:
+                            activeStep === 1 ||
+                            activeStep === questions.length + 1
+                              ? 'flex-end'
+                              : 'space-between',
+                        }}
+                      >
+                        {activeStep > 1 && activeStep <= questions.length && (
+                          <CancelButton onClick={handleWeeklyReportPrev}>
+                            {t('Back')}
+                          </CancelButton>
+                        )}
+                        {activeStep < questions.length && ( // TODO: Disable button when currently visible field has no value
+                          <SubmitButton disabled={!isValid || isSubmitting}>
+                            {t('Next')}
+                          </SubmitButton>
+                        )}
+                        {activeStep === questions.length && ( // TODO: Disable button when currently visible field has no value or isSubmitting
+                          <SubmitButton disabled={!isValid || isSubmitting} />
+                        )}
+                      </DialogActions>
+                    </form>
+                  )}
+                </Formik>
+              </Box>
+            );
+          } else {
+            return null;
+          }
+        })}
+        {(questions.length === 0 || activeStep === questions.length + 1) && (
+          <>
+            <DialogContent dividers>
+              {questions.length === 0 && (
+                <Alert severity="warning">
+                  {t(
+                    'Weekly report questions have not been setup for your organization.',
+                  )}
+                </Alert>
+              )}
+              {questions.length > 0 && activeStep === questions.length + 1 && (
+                <Alert severity="success">
+                  {/* TODO: Translate success message */}
+                  Your report was successfully submitted. View it on your
+                  coaching reports page.
+                </Alert>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <CancelButton onClick={localOnClose}>{t('Close')}</CancelButton>
+            </DialogActions>
+          </>
+        )}
+      </>
     </Modal>
   );
 };
