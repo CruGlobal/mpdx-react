@@ -181,13 +181,11 @@ export const DonationsReportTable: React.FC<Props> = ({
         width={'100%'}
         display="flex"
         alignItems="center"
-        justifyContent="end"
+        justifyContent="space-between"
       >
-        {donation.appeal?.name && (
-          <Typography data-testid="appeal-name">
-            {donation.appeal?.name}
-          </Typography>
-        )}
+        <Typography data-testid="appeal-name">
+          {donation.appeal?.name}
+        </Typography>
         <IconButton color="primary">
           <EditIcon />
         </IconButton>
@@ -200,24 +198,24 @@ export const DonationsReportTable: React.FC<Props> = ({
       field: 'date',
       headerName: t('Date'),
       type: 'date',
-      width: 140,
+      width: 100,
     },
     {
       field: 'partner',
       headerName: t('Partner'),
-      width: 260,
+      width: 360,
       renderCell: link,
     },
     {
       field: 'convertedAmount',
       headerName: t('Amount'),
-      width: 150,
+      width: 120,
       renderCell: amount,
     },
     {
       field: 'foreignAmount',
       headerName: t('Foreign Amount'),
-      width: 180,
+      width: 120,
       renderCell: foreignAmount,
     },
     {
@@ -229,7 +227,7 @@ export const DonationsReportTable: React.FC<Props> = ({
     {
       field: 'method',
       headerName: t('Method'),
-      width: 155,
+      width: 100,
     },
     {
       field: 'appeal',
@@ -249,7 +247,7 @@ export const DonationsReportTable: React.FC<Props> = ({
   if (currencyList.length === 1 && currencyList.includes(accountCurrency)) {
     columns.splice(3, 1);
     columns.forEach(
-      (column) => (column.width = column.width ? column.width + 36 : 0),
+      (column) => (column.width = column.width ? column.width + 20 : 0),
     );
   }
 

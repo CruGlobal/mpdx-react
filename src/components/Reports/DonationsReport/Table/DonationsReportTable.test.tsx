@@ -13,6 +13,12 @@ const setTime = jest.fn();
 const onSelectContact = jest.fn();
 
 const mocks = {
+  GetAccountListCurrency: {
+    accountList: {
+      id: 'abc',
+      currency: 'CAD',
+    },
+  },
   GetDonationsTable: {
     donations: {
       nodes: [
@@ -93,7 +99,9 @@ describe('DonationsReportTable', () => {
       expect(queryAllByText('Appeal Test 1')).toHaveLength(1),
     );
 
-    expect(getAllByTestId('appeal-name')).toHaveLength(1);
+    expect(getAllByTestId('appeal-name')).toHaveLength(2);
+
+    expect(getAllByTestId('appeal-name')[1]).toHaveTextContent('');
   });
 
   it('renders empty', async () => {
