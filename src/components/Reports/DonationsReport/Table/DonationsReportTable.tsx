@@ -293,7 +293,13 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   return (
     <>
-      <Box style={{ display: 'flex', margin: 8 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          margin: 1,
+          gap: 2,
+        }}
+      >
         <Typography variant="h6">{title}</Typography>
         <Button
           style={{ marginLeft: 'auto', maxHeight: 35 }}
