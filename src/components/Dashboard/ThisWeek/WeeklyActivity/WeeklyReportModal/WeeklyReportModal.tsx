@@ -27,7 +27,7 @@ import {
   useCurrentCoachingAnswerSetQuery,
   useSaveCoachingAnswerMutation,
 } from './WeeklyReportModal.generated';
-import { Formik } from 'formik';
+import { ErrorMessage, Formik } from 'formik';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import { ElementOf } from 'ts-essentials';
 import * as yup from 'yup';
@@ -267,7 +267,7 @@ export const WeeklyReportModal = ({
                     [currentQuestion[0]]: currentQuestion[1],
                   }}
                   validationSchema={yup.object().shape({
-                    [question.id]: yup.string().required(),
+                    [question.id]: yup.string().required('Required'),
                   })}
                   onSubmit={(values) => {
                     const data = { ...formData, ...values };
@@ -332,6 +332,13 @@ export const WeeklyReportModal = ({
                             />
                           )}
                         </>
+                        <ErrorMessage name={question.id}>
+                          {(msg) => (
+                            <Typography sx={{ color: 'error.main' }}>
+                              {msg}
+                            </Typography>
+                          )}
+                        </ErrorMessage>
                       </DialogContent>
                       <DialogActions
                         sx={{
