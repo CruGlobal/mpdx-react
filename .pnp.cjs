@@ -122,7 +122,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-transform-graphql", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.0"],\
             ["lint-staged", "npm:13.0.3"],\
             ["lodash", "npm:4.17.21"],\
-            ["luxon", "npm:3.0.3"],\
+            ["luxon", "npm:3.2.1"],\
             ["micro", "npm:9.4.1"],\
             ["micro-cors", "npm:0.1.1"],\
             ["mui-datatables", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.2.2"],\
@@ -7348,7 +7348,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@date-io/luxon", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.16.0"],\
             ["@date-io/core", "npm:2.16.0"],\
             ["@types/luxon", "npm:3.1.0"],\
-            ["luxon", "npm:3.0.3"]\
+            ["luxon", "npm:3.2.1"]\
           ],\
           "packagePeers": [\
             "@types/luxon",\
@@ -7362,7 +7362,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@date-io/luxon", "virtual:e40c01e9e2e423aeb6f9f8c2fd49043775bc456ac211ed4d55b21256e1b9ea85d98820e9b3fb9a8b1d42483cba9e60cf9a546375b35b2f7d6c77275380307f5f#npm:2.15.0"],\
             ["@date-io/core", "npm:2.15.0"],\
             ["@types/luxon", "npm:3.1.0"],\
-            ["luxon", "npm:3.0.3"]\
+            ["luxon", "npm:3.2.1"]\
           ],\
           "packagePeers": [\
             "@types/luxon",\
@@ -10472,7 +10472,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["clsx", "npm:1.2.1"],\
             ["date-fns", null],\
             ["dayjs", null],\
-            ["luxon", "npm:3.0.3"],\
+            ["luxon", "npm:3.2.1"],\
             ["moment", null],\
             ["prop-types", "npm:15.8.1"],\
             ["react", "npm:18.2.0"],\
@@ -26559,10 +26559,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["luxon", [\
-        ["npm:3.0.3", {\
-          "packageLocation": "./.yarn/cache/luxon-npm-3.0.3-3194094d12-67d143f102.zip/node_modules/luxon/",\
+        ["npm:3.2.1", {\
+          "packageLocation": "./.yarn/cache/luxon-npm-3.2.1-56f8d97395-3fa3def2c5.zip/node_modules/luxon/",\
           "packageDependencies": [\
-            ["luxon", "npm:3.0.3"]\
+            ["luxon", "npm:3.2.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -27375,7 +27375,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-transform-graphql", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.0"],\
             ["lint-staged", "npm:13.0.3"],\
             ["lodash", "npm:4.17.21"],\
-            ["luxon", "npm:3.0.3"],\
+            ["luxon", "npm:3.2.1"],\
             ["micro", "npm:9.4.1"],\
             ["micro-cors", "npm:0.1.1"],\
             ["mui-datatables", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.2.2"],\
