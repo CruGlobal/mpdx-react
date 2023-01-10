@@ -141,7 +141,7 @@ it.skip('should open add task panel', async () => {
   );
   await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   await waitFor(() => expect(getByText('Test Subject')).toBeInTheDocument());
-  await waitFor(() => userEvent.click(getByText('Add Task')));
+  userEvent.click(getByText('Add Task'));
   await waitFor(() => expect(openTaskModal).toHaveBeenCalled());
 });
 
@@ -167,8 +167,8 @@ it('should show Completed', async () => {
 
   await waitFor(() => expect(getByText('Historic')).toBeInTheDocument());
   await waitFor(() => expect(getByText('Current')).toBeInTheDocument());
-  await waitFor(() => userEvent.click(getByText('Historic')));
-  await waitFor(() => userEvent.click(getByText('Current')));
+  userEvent.click(getByText('Historic'));
+  userEvent.click(getByText('Current'));
   await waitFor(() =>
     expect(router).toMatchInlineSnapshot(`
       Object {
