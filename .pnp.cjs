@@ -146,7 +146,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.8"],\
             ["rollbar", "npm:2.25.2"],\
-            ["seedrandom", "npm:3.0.5"],\
             ["storybook", "npm:6.5.12"],\
             ["storybook-addon-designs", "npm:6.3.1"],\
             ["storybook-addon-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.0"],\
@@ -27399,7 +27398,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.8"],\
             ["rollbar", "npm:2.25.2"],\
-            ["seedrandom", "npm:3.0.5"],\
             ["storybook", "npm:6.5.12"],\
             ["storybook-addon-designs", "npm:6.3.1"],\
             ["storybook-addon-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.3.0"],\
