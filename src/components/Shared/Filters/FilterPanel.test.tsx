@@ -396,7 +396,7 @@ describe('FilterPanel', () => {
       expect(queryAllByTestId('FilterGroup').length).toEqual(2);
       expect(getByText('Group 1 (1)')).toBeVisible();
 
-      await waitFor(() => userEvent.click(getByText('Clear All')));
+      userEvent.click(getByText('Clear All'));
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({});
     });
 

@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { DateTime } from 'luxon';
+import { cloneDeep } from 'lodash';
 import theme from '../../../../theme';
 import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
@@ -22,6 +23,12 @@ const router = {
 };
 
 const mocks = {
+  GetAccountListCurrency: {
+    accountList: {
+      id: 'abc',
+      currency: 'CAD',
+    },
+  },
   GetDonationsTable: {
     donations: {
       nodes: [
@@ -102,7 +109,9 @@ describe('DonationsReportTable', () => {
       expect(queryAllByText('Appeal Test 1')).toHaveLength(1),
     );
 
-    expect(getAllByTestId('appeal-name')).toHaveLength(1);
+    expect(getAllByTestId('appeal-name')).toHaveLength(2);
+
+    expect(getAllByTestId('appeal-name')[1]).toHaveTextContent('');
   });
 
   it('opens and closes the edit donation modal', async () => {
@@ -245,5 +254,46 @@ describe('DonationsReportTable', () => {
 
     userEvent.click(getByText('John'));
     expect(onSelectContact).not.toHaveBeenCalled();
+  });
+
+  it('hides currency column if all currencies match the account currency', async () => {
+    const { getByLabelText, queryByLabelText } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+          <DonationsReportTable
+            accountListId={'abc'}
+            onSelectContact={onSelectContact}
+            time={time}
+            setTime={setTime}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => expect(getByLabelText('Partner')).toBeInTheDocument());
+    expect(queryByLabelText('Foreign Amount')).not.toBeInTheDocument();
+  });
+
+  it('shows currency column if a currency does not match the account currency', async () => {
+    const mocksWithMultipleCurrencies = cloneDeep(mocks);
+    mocksWithMultipleCurrencies.GetDonationsTable.donations.nodes[0].amount.currency =
+      'EUR';
+    const { getByLabelText } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery>
+          mocks={mocksWithMultipleCurrencies}
+        >
+          <DonationsReportTable
+            accountListId={'abc'}
+            onSelectContact={onSelectContact}
+            time={time}
+            setTime={setTime}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => expect(getByLabelText('Partner')).toBeInTheDocument());
+    expect(getByLabelText('Foreign Amount')).toBeInTheDocument();
   });
 });

@@ -116,7 +116,7 @@ describe('ContactsPageContext', () => {
     );
     expect(getByText('Loading')).toBeInTheDocument();
     await waitFor(() => expect(getByText('Flows Button')).toBeInTheDocument());
-    await waitFor(() => userEvent.click(getByText('Flows Button')));
+    userEvent.click(getByText('Flows Button'));
     await waitFor(() => expect(getByText('flows')).toBeInTheDocument());
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({

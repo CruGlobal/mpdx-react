@@ -4,6 +4,7 @@ import { ErrorBoundary, Provider } from '@rollbar/react';
 import type { AppProps } from 'next/app';
 import StyledEngineProvider from '@mui/material/StyledEngineProvider';
 import { ThemeProvider } from '@mui/material/styles';
+import { Box } from '@mui/material';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
 import { Session } from 'next-auth';
@@ -61,6 +62,7 @@ const App = ({
       },
     },
   };
+
   // useEffect(() => {
   //     // Remove the server-side injected CSS.
   //     const jssStyles = document.querySelector('#jss-server-side');
@@ -130,10 +132,16 @@ const App = ({
                               <TaskModalProvider>
                                 <Layout>
                                   <SnackbarUtilsConfigurator />
-                                  <Component
-                                    {...pageProps}
-                                    key={router.route}
-                                  />
+                                  <Box
+                                    sx={(theme) => ({
+                                      fontFamily: theme.typography.fontFamily,
+                                    })}
+                                  >
+                                    <Component
+                                      {...pageProps}
+                                      key={router.route}
+                                    />
+                                  </Box>
                                 </Layout>
                               </TaskModalProvider>
                             </RouterGuard>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Box, Button, ButtonGroup, Divider, Typography } from '@mui/material';
 // TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -188,7 +188,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           accountListUsersData?.accountListUsers.nodes.map(
             (accountList, _index) => {
               return (
-                <>
+                <Fragment key={accountList.id}>
                   <SideContainerIcon />
                   <SideContainerText>
                     {accountList.user.firstName +
@@ -196,7 +196,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                       accountList.user.lastName}
                   </SideContainerText>
                   <Divider style={{ margin: theme.spacing(1) }} />
-                </>
+                </Fragment>
               );
             },
           )
@@ -262,8 +262,8 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             <Divider />
             <CoachingItemContainer>
               {/*
-                TODO: MonthlyActivitySection doesn't work if coaching is not one of the 
-                Accountlists. reportDonationsHistories is required for this View and it doesn't 
+                TODO: MonthlyActivitySection doesn't work if coaching is not one of the
+                Accountlists. reportDonationsHistories is required for this View and it doesn't
                 work with coaching.
               */}
               <MonthlyActivitySection accountListId={coachingId} />

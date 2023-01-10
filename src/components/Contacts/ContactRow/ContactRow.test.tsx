@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import {
@@ -109,7 +109,7 @@ describe('ContactsRow', () => {
 
     const checkbox = getByRole('checkbox');
     expect(checkbox).not.toBeChecked();
-    await waitFor(() => userEvent.click(checkbox));
+    userEvent.click(checkbox);
     // TODO: Find a way to check that click event was pressed.
   });
 
@@ -127,7 +127,7 @@ describe('ContactsRow', () => {
     );
 
     const taskButton = getByTitle('Log Task');
-    await waitFor(() => userEvent.click(taskButton));
+    userEvent.click(taskButton);
     // TODO: Find a way to check that click event was pressed.
     expect(openTaskModal).toHaveBeenCalledWith({
       view: 'log',

@@ -25,6 +25,7 @@ import theme from '../../../../../../theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import HandoffLink from 'src/components/HandoffLink';
+import { ReportLink } from './ReportLink';
 
 export const filteredReportNavItems = ReportNavItems.filter(
   (item) => item.id !== 'partnerCurrency',
@@ -259,9 +260,10 @@ const NavMenu = (): ReactElement => {
                         id="menu-list-grow"
                       >
                         {filteredReportNavItems.map(({ id, title }) => (
-                          <NextLink
+                          <ReportLink
                             key={id}
-                            href={`/accountLists/${accountListId}/reports/${id}`}
+                            id={id}
+                            accountListId={accountListId}
                           >
                             <MenuItem
                               onClick={handleReportsMenuClose}
@@ -272,7 +274,7 @@ const NavMenu = (): ReactElement => {
                             >
                               <ListItemText primary={t(title)} />
                             </MenuItem>
-                          </NextLink>
+                          </ReportLink>
                         ))}
                       </MenuList>
                     </ClickAwayListener>
