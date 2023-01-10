@@ -78,7 +78,7 @@ export interface Donation {
   foreignCurrency: string;
   convertedAmount: number;
   foreignAmount: number;
-  designation: string | undefined | null;
+  designationAccount: { id: string; name: string };
   method: string | null;
   id: string;
   appeal: Partial<Appeal> | undefined | null;
@@ -115,7 +115,6 @@ export const DonationsReportTable: React.FC<Props> = ({
     });
 
   const nodes = data?.donations.nodes || [];
-  const designationNames = data?.getDesignationDisplayNames || [];
 
   const accountCurrency = accountListData?.accountList.currency || 'USD';
 
@@ -129,9 +128,10 @@ export const DonationsReportTable: React.FC<Props> = ({
       foreignCurrency: data.amount.currency,
       convertedAmount: data.amount.convertedAmount,
       foreignAmount: data.amount.amount,
-      designation: designationNames.find(
-        (designation) => designation?.id === data.id,
-      )?.displayName,
+      designationAccount: {
+        id: data.designationAccount.id,
+        name: data.designationAccount.name,
+      },
       method: data.paymentMethod || null,
       id: data.id,
       appeal: data.appeal,
@@ -181,7 +181,7 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const designation = (params: GridCellParams) => {
     const donation = params.row as Donation;
-    return <Typography>{donation.designation}</Typography>;
+    return <Typography>{donation.designationAccount?.name}</Typography>;
   };
 
   const button = (params: GridCellParams) => {

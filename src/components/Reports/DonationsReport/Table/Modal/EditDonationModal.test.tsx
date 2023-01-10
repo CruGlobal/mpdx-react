@@ -29,7 +29,7 @@ const donation: Donation = {
   convertedAmount: 100.0,
   currency: 'CAD',
   date: time,
-  designation: 'Designation (0000)',
+  designationAccount: { id: 'designation-1', name: 'Designation (0000)' },
   foreignAmount: 100.0,
   foreignCurrency: 'CAD',
   id: 'abc',

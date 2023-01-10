@@ -19,6 +19,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
   DeleteButton,
   CancelButton,
@@ -35,6 +36,7 @@ import { GetDonationsTableDocument } from '../../GetDonationsTable.generated';
 import { Donation } from '../DonationsReportTable';
 import {
   useDeleteDonationMutation,
+  useGetDesignationAccountsQuery,
   useUpdateDonationMutation,
 } from './EditDonation.generated';
 
@@ -52,8 +54,8 @@ const donationSchema = yup.object({
   date: yup.string().nullable(),
   motivation: yup.string().nullable(),
   giftId: yup.string().nullable(),
-  partner: yup.string().nullable(),
-  designation: yup.string().nullable(),
+  partnerId: yup.string().nullable(),
+  designationAccountId: yup.string().nullable(),
   appeal: yup.string().nullable(),
   appealAmount: yup.string().nullable(),
   memo: yup.string().nullable(),
@@ -65,12 +67,16 @@ const initialDonation = {
   date: '',
   motivation: '',
   giftId: '',
-  partner: '',
-  designation: '',
+  partnerId: '',
+  designationAccountId: '',
   appeal: '',
   appealAmount: '',
   memo: '',
 };
+
+const LoadingSpinner: React.FC = () => (
+  <CircularProgress color="primary" size={20} sx={{ marginRight: 3 }} />
+);
 
 export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   open,
@@ -88,6 +94,9 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
 
   const { data: appeals, loading: loadingAppeals } =
     useGetAppealsForMassActionQuery({ variables: { accountListId } });
+
+  const { data: designationAccounts, loading: loadingDesignationAccounts } =
+    useGetDesignationAccountsQuery({ variables: { accountListId } });
 
   const [updateDonation, { loading: updatingDonation }] =
     useUpdateDonationMutation();
@@ -110,6 +119,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
           amount: parseFloat(fields.convertedAmount),
           currency: fields.currency,
           donationDate: fields.date,
+          designationAccountId: fields.designationAccountId,
+          donorAccountId: fields.partnerId,
         },
       },
       refetchQueries: [
@@ -159,8 +170,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 date: donation.date,
                 motivation: '',
                 giftId: '',
-                partner: donation.partner,
-                designation: donation.designation,
+                partnerId: donation.partnerId,
+                designationAccountId: donation.designationAccount.id,
                 appeal: donation.appeal?.id ?? '',
                 appealAmount: '',
                 memo: '',
@@ -177,8 +188,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
             date,
             motivation,
             giftId,
-            partner,
-            designation,
+            partnerId,
+            designationAccountId,
             appeal,
             appealAmount,
             memo,
@@ -299,58 +310,67 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
+                  <DonorAccountAutocomplete
+                    accountListId={accountListId}
+                    value={partnerId}
+                    preloadedDonors={
+                      donation?.partnerId
+                        ? [{ id: donation.partnerId, name: donation.partner }]
+                        : undefined
+                    }
+                    onChange={(donorAccountId) =>
+                      setFieldValue('partnerId', donorAccountId)
+                    }
+                    label={t('Partner Account')}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
-                    <InputLabel id="parnter">{t('Partner Account')}</InputLabel>
+                    <InputLabel id="designationAccountId">
+                      {t('Designation Account')}
+                    </InputLabel>
                     <Select
-                      labelId="partner"
-                      label={t('Partner Account')}
-                      value={partner}
-                      onChange={(e) => setFieldValue('partner', e.target.value)}
+                      labelId="designationAccountId"
+                      label={t('Designation Account')}
+                      value={designationAccountId}
+                      onChange={(e) =>
+                        setFieldValue('designationAccountId', e.target.value)
+                      }
+                      endAdornment={
+                        loadingDesignationAccounts && <LoadingSpinner />
+                      }
                     >
-                      <MenuItem value={partner}>{partner}</MenuItem>
+                      {designationAccounts?.designationAccounts
+                        .flatMap(
+                          (designationAccount) =>
+                            designationAccount.designationAccounts,
+                        )
+                        .map((account) => (
+                          <MenuItem key={account.id} value={account.id}>
+                            {account.name}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
-                    <InputLabel id="designation">
-                      {t('Designation Account')}
-                    </InputLabel>
+                    <InputLabel id="appeal">{t('Appeal')}</InputLabel>
                     <Select
-                      labelId="designation"
-                      label={t('Designation Account')}
-                      value={designation}
-                      onChange={(e) =>
-                        setFieldValue('designation', e.target.value)
-                      }
+                      labelId="appeal"
+                      label={t('Appeal')}
+                      value={appeal ?? ''}
+                      onChange={(e) => setFieldValue('appeal', e.target.value)}
+                      endAdornment={loadingAppeals && <LoadingSpinner />}
                     >
-                      <MenuItem value={designation as string}>
-                        {designation}
-                      </MenuItem>
+                      {appeals?.appeals.nodes.map((appeal) => (
+                        <MenuItem key={appeal.id} value={appeal.id}>
+                          {appeal.name}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
-                {!loadingAppeals && (
-                  <Grid item xs={12} md={6}>
-                    <FormControl fullWidth>
-                      <InputLabel id="appeal">{t('Appeal')}</InputLabel>
-                      <Select
-                        labelId="appeal"
-                        label={t('Appeal')}
-                        value={appeal ?? ''}
-                        onChange={(e) =>
-                          setFieldValue('appeal', e.target.value)
-                        }
-                      >
-                        {appeals?.appeals.nodes.map((appeal) => (
-                          <MenuItem key={appeal.id} value={appeal.id}>
-                            {appeal.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                )}
                 {appeal && (
                   <Grid item xs={12} md={6}>
                     <TextField
