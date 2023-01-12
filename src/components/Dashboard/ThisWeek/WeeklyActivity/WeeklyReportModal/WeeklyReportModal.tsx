@@ -35,7 +35,7 @@ const labelStyles = {
   fontSize: '1.5rem',
   lineHeight: 1.334,
   marginBottom: theme.spacing(2),
-  color: theme.palette.text.primary,
+  color: `${theme.palette.text.primary} !important`,
   position: 'unset',
   textOverflow: 'unset',
   maxWidth: 'unset',
