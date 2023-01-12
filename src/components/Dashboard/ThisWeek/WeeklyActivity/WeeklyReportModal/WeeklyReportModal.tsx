@@ -205,7 +205,7 @@ export const WeeklyReportModal = ({
                   validationSchema={yup.object().shape({
                     [question.id]: yup.string().required(t('Required')),
                   })}
-                  onSubmit={(values: { [x: string]: string }) => {
+                  onSubmit={(values: Record<string, string>) => {
                     saveAnswer(answerId, question, values[question.id]);
                     handleWeeklyReportNext();
                   }}
