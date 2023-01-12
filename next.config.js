@@ -48,7 +48,7 @@ module.exports = withPlugins([
       CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
       BEACON_TOKEN:
-        process.env.BEACON_TOKEN ?? '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
+        process.env.BEACON_TOKEN ?? '4ed2064f-28cf-4a21-a411-74d9b69d33ad',
       OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
       OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
       OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
@@ -56,6 +56,7 @@ module.exports = withPlugins([
       ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
       ONESKY_API_SECRET: process.env.ONESKY_API_SECRET,
       ONESKY_API_KEY: process.env.ONESKY_API_KEY,
+      APP_NAME: process.env.APP_NAME,
     },
     experimental: {
       modularizeImports: {

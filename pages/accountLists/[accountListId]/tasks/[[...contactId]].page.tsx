@@ -30,6 +30,7 @@ import {
   useTasksQuery,
 } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
@@ -72,6 +73,7 @@ const TasksPage: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { query, push, replace, isReady, pathname } = useRouter();
   const { openTaskModal } = useTaskModal();
+  const { appName } = useGetAppSettings();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
@@ -318,7 +320,9 @@ const TasksPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Tasks')}</title>
+        <title>
+          {appName} | {t('Tasks')}
+        </title>
       </Head>
       {accountListId ? (
         <WhiteBackground>

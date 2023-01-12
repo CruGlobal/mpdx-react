@@ -8,6 +8,7 @@ import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports
 import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 
 const PartnerCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -17,6 +18,7 @@ const PartnerCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
 const PartnerCurrencyReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
   const handleNavListToggle = () => {
@@ -26,7 +28,9 @@ const PartnerCurrencyReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Reports - Partner')}</title>
+        <title>
+          {appName} | {t('Reports - Partner')}
+        </title>
       </Head>
       {accountListId ? (
         <PartnerCurrencyReportPageWrapper>
