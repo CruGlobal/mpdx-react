@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, FocusEventHandler, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -20,14 +20,13 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import theme from '../../../../../theme';
-import { CoachingQuestion } from '../../../../../../graphql/types.generated';
 import {
   CurrentCoachingAnswerSetDocument,
   CurrentCoachingAnswerSetQuery,
   useCurrentCoachingAnswerSetQuery,
   useSaveCoachingAnswerMutation,
 } from './WeeklyReportModal.generated';
-import { ErrorMessage, Formik } from 'formik';
+import { Formik } from 'formik';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import { ElementOf } from 'ts-essentials';
 import * as yup from 'yup';
@@ -43,70 +42,6 @@ const labelStyles = {
   transform: 'unset',
   whiteSpace: 'unset',
 };
-
-interface WeeklyReportInputProps {
-  question: Pick<CoachingQuestion, 'id' | 'prompt' | 'responseOptions'>;
-  value: string;
-  show: boolean;
-  onBlur: FocusEventHandler;
-  onChange: ChangeEventHandler<HTMLInputElement>;
-}
-
-const WeeklyReportRadio = ({
-  question,
-  value,
-  show,
-  onBlur,
-  onChange,
-}: WeeklyReportInputProps) => (
-  <FormControl sx={{ display: show ? 'inline-flex' : 'none' }}>
-    <FormLabel sx={labelStyles}>{question.prompt}</FormLabel>
-    <RadioGroup
-      value={value}
-      onBlur={onBlur}
-      onChange={onChange}
-      name={question.id}
-      row
-    >
-      {question.responseOptions?.map((option, index) => (
-        <FormControlLabel
-          key={`${question.id}|${index}`}
-          value={option}
-          control={<Radio />}
-          label={option}
-        />
-      ))}
-    </RadioGroup>
-  </FormControl>
-);
-
-const WeeklyReportTextField = ({
-  question,
-  value,
-  show,
-  onBlur,
-  onChange,
-}: WeeklyReportInputProps) => (
-  <TextField
-    sx={{ display: show ? 'inline-flex' : 'none' }}
-    value={value}
-    onBlur={onBlur}
-    onChange={onChange}
-    name={question.id}
-    rows={3}
-    label={question.prompt}
-    InputLabelProps={{
-      shrink: true,
-      sx: labelStyles,
-    }}
-    InputProps={{
-      notched: false,
-    }}
-    variant="outlined"
-    multiline
-    fullWidth
-  />
-);
 
 interface WeeklyReportProgressProps {
   totalSteps: number;
@@ -160,7 +95,6 @@ export const WeeklyReportModal = ({
   const organizationId = useOrganizationId();
   const { t } = useTranslation();
   const [activeStep, setActiveStep] = useState<number>(1);
-  const [formData, setFormData] = useState([]);
 
   const { data } = useCurrentCoachingAnswerSetQuery({
     variables: {
@@ -235,16 +169,17 @@ export const WeeklyReportModal = ({
   };
 
   const handleWeeklyReportPrev = () => {
-    setActiveStep((prevState) => prevState - 1);
+    setActiveStep((prevState) => prevState - 1); // advances active step by one
   };
 
   const handleWeeklyReportNext = () => {
-    setActiveStep((prevState) => prevState + 1);
+    setActiveStep((prevState) => prevState + 1); // reduces active step by one
   };
 
   const localOnClose = () => {
-    onClose();
+    onClose(); // closes modal
     setTimeout(() => {
+      // resets active step to 1 after one second when the modal has faded out
       setActiveStep(1);
     }, 1000);
   };
@@ -252,14 +187,13 @@ export const WeeklyReportModal = ({
   return (
     <Modal isOpen={open} title={t('Weekly Report')} handleClose={localOnClose}>
       <>
-        {/* {console.log(questions.length)} */}
         {questions.map((question, index) => {
           const answerId = getAnswer(question.id)?.id ?? null;
           const currentQuestion = initialValues[index];
           if (activeStep === index + 1) {
             return (
               <Box
-                sx={{ display: index === activeStep - 1 ? 'block' : 'none' }}
+                sx={{ display: activeStep === index + 1 ? null : 'none' }}
                 key={question.id}
               >
                 <Formik
@@ -267,78 +201,86 @@ export const WeeklyReportModal = ({
                     [currentQuestion[0]]: currentQuestion[1],
                   }}
                   validationSchema={yup.object().shape({
-                    [question.id]: yup.string().required('Required'),
+                    [question.id]: yup.string().required(t('Required')),
                   })}
-                  onSubmit={(values) => {
-                    const data = { ...formData, ...values };
-                    setFormData(data);
+                  onSubmit={(values: { [x: string]: string }) => {
+                    saveAnswer(answerId, question, values[question.id]);
                     handleWeeklyReportNext();
-                    console.log(values);
                   }}
                 >
                   {({
-                    values,
-                    setFieldValue,
+                    errors,
                     handleSubmit,
-                    isSubmitting,
                     isValid,
+                    setFieldValue,
+                    touched,
+                    values,
                   }) => (
                     <form onSubmit={handleSubmit}>
                       <DialogContent dividers>
-                        <>
-                          <WeeklyReportProgress
-                            totalSteps={questions.length}
-                            activeStep={activeStep}
-                          />
-                          {question.responseOptions &&
-                            question.responseOptions.length > 0 && (
-                              <WeeklyReportRadio
-                                key={question.id}
-                                question={question}
-                                value={values[question.id]}
-                                onBlur={() => {
-                                  saveAnswer(
-                                    answerId,
-                                    question,
-                                    values[question.id],
-                                  );
-                                }}
+                        <WeeklyReportProgress
+                          totalSteps={questions.length}
+                          activeStep={activeStep}
+                        />
+                        {question.responseOptions &&
+                          question.responseOptions.length > 0 && (
+                            <FormControl>
+                              <FormLabel sx={labelStyles}>
+                                {question.prompt}
+                              </FormLabel>
+                              <RadioGroup
+                                name={question.id}
                                 onChange={(event) => {
                                   setFieldValue(
                                     question.id,
                                     event.target.value,
                                   );
                                 }}
-                                show={activeStep === index + 1}
-                              />
-                            )}
-                          {(!question.responseOptions ||
-                            question.responseOptions.length === 0) && (
-                            <WeeklyReportTextField
-                              key={question.id}
-                              question={question}
-                              value={values[question.id]}
-                              onBlur={() => {
-                                saveAnswer(
-                                  answerId,
-                                  question,
-                                  values[question.id],
-                                );
-                              }}
-                              onChange={(event) => {
-                                setFieldValue(question.id, event.target.value);
-                              }}
-                              show={activeStep === index + 1}
-                            />
+                                value={values[question.id]}
+                                row
+                              >
+                                {question.responseOptions?.map(
+                                  (option, index) => (
+                                    <FormControlLabel
+                                      key={`${question.id}|${index}`}
+                                      value={option}
+                                      control={<Radio />}
+                                      label={option}
+                                    />
+                                  ),
+                                )}
+                              </RadioGroup>
+                            </FormControl>
                           )}
-                        </>
-                        <ErrorMessage name={question.id}>
-                          {(msg) => (
-                            <Typography sx={{ color: 'error.main' }}>
-                              {msg}
-                            </Typography>
-                          )}
-                        </ErrorMessage>
+                        {(!question.responseOptions ||
+                          question.responseOptions.length === 0) && (
+                          <TextField
+                            error={
+                              touched[question.id] &&
+                              Boolean(errors[question.id])
+                            }
+                            helperText={
+                              touched[question.id] && errors[question.id]
+                            }
+                            InputLabelProps={{
+                              shrink: true,
+                              sx: labelStyles,
+                            }}
+                            InputProps={{
+                              notched: false,
+                            }}
+                            label={question.prompt}
+                            name={question.id}
+                            onChange={(event) => {
+                              setFieldValue(question.id, event.target.value);
+                            }}
+                            rows={3}
+                            value={values[question.id]}
+                            variant="outlined"
+                            fullWidth
+                            multiline
+                          />
+                        )}
                       </DialogContent>
                       <DialogActions
                         sx={{
@@ -354,14 +296,15 @@ export const WeeklyReportModal = ({
                             {t('Back')}
                           </CancelButton>
                         )}
-                        {activeStep < questions.length && ( // TODO: Disable button when currently visible field has no value
-                          <SubmitButton disabled={!isValid || isSubmitting}>
-                            {t('Next')}
-                          </SubmitButton>
-                        )}
-                        {activeStep === questions.length && ( // TODO: Disable button when currently visible field has no value or isSubmitting
-                          <SubmitButton disabled={!isValid || isSubmitting} />
-                        )}
+                        <SubmitButton
+                          disabled={
+                            !isValid || (isValid && values[question.id] === '')
+                          }
+                        >
+                          {activeStep < questions.length
+                            ? t('Next')
+                            : t('Submit')}
+                        </SubmitButton>
                       </DialogActions>
                     </form>
                   )}
