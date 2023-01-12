@@ -1,4 +1,3 @@
-import z from 'zod';
 import {
   CoachingAnswerSet,
   CoachingAnswer,
@@ -7,98 +6,79 @@ import {
 
 const isNotNull = <T>(item: T | null): item is T => item !== null;
 
-const coachingAnswerSetSchema = z.object({
-  id: z.string(),
-  type: z.literal('coaching_answer_sets'),
-  attributes: z.object({
-    completed_at: z.string().nullable(),
-    created_at: z.string(),
-    updated_at: z.string(),
-  }),
-  relationships: z
-    .object({
-      answers: z.object({
-        data: z.array(
-          z.object({
-            id: z.string(),
-            type: z.literal('coaching_answers'),
-          }),
-        ),
-      }),
-      questions: z.object({
-        data: z.array(
-          z.object({
-            id: z.string(),
-            type: z.literal('coaching_questions'),
-          }),
-        ),
-      }),
-    })
-    .default({ answers: { data: [] }, questions: { data: [] } }),
-});
-type CoachingAnswerSetData = z.infer<typeof coachingAnswerSetSchema>;
+interface CoachingAnswerSetData {
+  id: string;
+  type: 'coaching_answer_sets';
+  attributes: {
+    completed_at: string | null;
+    created_at: string;
+    updated_at: string;
+  };
+  relationships?: {
+    answers: {
+      data: Array<{
+        id: string;
+        type: 'coaching_answers';
+      }>;
+    };
+    questions: {
+      data: Array<{
+        id: string;
+        type: 'coaching_questions';
+      }>;
+    };
+  };
+}
 
-const includedSchema = z
-  .array(
-    z.discriminatedUnion('type', [
-      z.object({
-        id: z.string(),
-        type: z.literal('coaching_answers'),
-        attributes: z.object({
-          created_at: z.string(),
-          response: z.string().nullable(),
-          updated_at: z.string(),
-        }),
-        relationships: z.object({
-          question: z.object({
-            data: z.object({
-              id: z.string(),
-              type: z.literal('coaching_questions'),
-            }),
-          }),
-        }),
-      }),
-
-      z.object({
-        id: z.string(),
-        type: z.literal('coaching_questions'),
-        attributes: z.object({
-          created_at: z.string(),
-          position: z.number(),
-          prompt: z.string(),
-          required: z.boolean(),
-          response_options: z.array(z.string()).nullable(),
-          updated_at: z.string(),
-        }),
-      }),
-    ]),
-  )
-  .default([]);
-type IncludedData = z.infer<typeof includedSchema>;
-
-const singleCoachingAnswerSetSchema = z.object({
-  data: coachingAnswerSetSchema,
-  included: includedSchema,
-});
-
-const multiCoachingAnswerSetSchema = z.object({
-  data: z.array(coachingAnswerSetSchema),
-  included: includedSchema,
-});
+type IncludedData = Array<
+  | {
+      type: 'coaching_answers';
+      id: string;
+      attributes: {
+        created_at: string;
+        response: string | null;
+        updated_at: string;
+      };
+      relationships: {
+        question: {
+          data: {
+            type: 'coaching_questions';
+            id: string;
+          };
+        };
+      };
+    }
+  | {
+      type: 'coaching_questions';
+      id: string;
+      attributes: {
+        created_at: string;
+        position: number;
+        prompt: string;
+        required: boolean;
+        response_options: string[] | null;
+        updated_at: string;
+      };
+    }
+>;
 
 const parseCoachingAnswerSet = (
   answerSetData: CoachingAnswerSetData,
-  included: IncludedData,
+  included: IncludedData = [],
 ): CoachingAnswerSet => {
   const {
     id,
     attributes: { completed_at, created_at, updated_at },
   } = answerSetData;
 
-  const answers = answerSetData.relationships.answers.data
+  const relationships = answerSetData.relationships ?? {
+    answers: { data: [] },
+    questions: { data: [] },
+  };
+  const answers = relationships.answers.data
     .map(({ id }) => getIncludedAnswer(id, included))
     .filter(isNotNull);
-  const questions = answerSetData.relationships.questions.data
+  const questions = relationships.questions.data
     .map(({ id }) => getIncludedQuestion(id, included))
     .filter(isNotNull);
 
@@ -178,47 +158,52 @@ const getIncludedAnswer = (
   return null;
 };
 
-export const getCoachingAnswerSet = (response: unknown): CoachingAnswerSet => {
-  const { data: answerSetData, included } =
-    singleCoachingAnswerSetSchema.parse(response);
-  return parseCoachingAnswerSet(answerSetData, included);
+export const getCoachingAnswerSet = (response: {
+  data: CoachingAnswerSetData;
+  included?: IncludedData;
+}): CoachingAnswerSet => {
+  const { data: answerSetData, included } = response;
+  return parseCoachingAnswerSet(answerSetData, included ?? []);
 };
 
-export const getCoachingAnswerSets = (
-  response: unknown,
-): CoachingAnswerSet[] => {
-  const { data, included } = multiCoachingAnswerSetSchema.parse(response);
+export const getCoachingAnswerSets = (response: {
+  data: Array<CoachingAnswerSetData>;
+  included?: IncludedData;
+}): CoachingAnswerSet[] => {
+  const { data, included } = response;
   return data.map((answerSetData) =>
-    parseCoachingAnswerSet(answerSetData, included),
+    parseCoachingAnswerSet(answerSetData, included ?? []),
   );
 };
 
-const createOrUpdateAnswerSchema = z.object({
-  data: z.object({
-    id: z.string(),
-    type: z.string(),
-    attributes: z.object({
-      created_at: z.string(),
-      response: z.string(),
-      updated_at: z.string(),
-    }),
-    relationships: z.object({
-      question: z.object({
-        data: z.object({
-          id: z.string(),
-          type: z.literal('coaching_questions'),
-        }),
-      }),
-    }),
-  }),
-  included: includedSchema,
-});
+interface CreateOrUpdateAnswer {
+  data: {
+    id: string;
+    type: string;
+    attributes: {
+      response: string;
+      created_at: string;
+      updated_at: string;
+    };
+    relationships: {
+      question: {
+        data: {
+          id: string;
+          type: 'coaching_questions';
+        };
+      };
+    };
+  };
+  included?: IncludedData;
+}
 
-export const getCoachingAnswer = (response: unknown): CoachingAnswer => {
-  const { data, included } = createOrUpdateAnswerSchema.parse(response);
+export const getCoachingAnswer = (
+  response: CreateOrUpdateAnswer,
+): CoachingAnswer => {
+  const { data, included } = response;
   const question = getIncludedQuestion(
     data.relationships.question.data.id,
-    included,
+    included ?? [],
   );
   if (!question) {
     throw new Error('Could not find question for coaching answer');
