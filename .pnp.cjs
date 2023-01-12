@@ -36533,7 +36533,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["yup", "npm:0.32.11"],\
             ["@babel/runtime", "npm:7.18.9"],\
-            ["@types/lodash", "npm:4.14.191"],\
+            ["@types/lodash", "npm:4.14.184"],\
             ["lodash", "npm:4.17.21"],\
             ["lodash-es", "npm:4.17.21"],\
             ["nanoclone", "npm:0.2.1"],\
