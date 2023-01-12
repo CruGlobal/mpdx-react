@@ -287,7 +287,16 @@ export const WeeklyReportModal = ({
                         }}
                       >
                         {activeStep > 1 && activeStep <= questions.length && (
-                          <CancelButton onClick={handleWeeklyReportPrev}>
+                          <CancelButton
+                            onClick={() => {
+                              handleWeeklyReportPrev();
+                              saveAnswer(
+                                answerId,
+                                question,
+                                values[question.id],
+                              );
+                            }}
+                          >
                             {t('Back')}
                           </CancelButton>
                         )}
