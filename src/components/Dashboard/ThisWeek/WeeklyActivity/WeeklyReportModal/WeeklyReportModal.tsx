@@ -214,7 +214,7 @@ export const WeeklyReportModal = ({
                     errors,
                     handleSubmit,
                     isValid,
-                    setFieldValue,
+                    handleChange,
                     touched,
                     values,
                   }) => (
@@ -232,12 +232,7 @@ export const WeeklyReportModal = ({
                               </FormLabel>
                               <RadioGroup
                                 name={question.id}
-                                onChange={(event) => {
-                                  setFieldValue(
-                                    question.id,
-                                    event.target.value,
-                                  );
-                                }}
+                                onChange={handleChange}
                                 value={values[question.id]}
                                 row
                               >
@@ -273,9 +268,7 @@ export const WeeklyReportModal = ({
                             }}
                             label={question.prompt}
                             name={question.id}
-                            onChange={(event) => {
-                              setFieldValue(question.id, event.target.value);
-                            }}
+                            onChange={handleChange}
                             rows={3}
                             value={values[question.id]}
                             variant="outlined"
