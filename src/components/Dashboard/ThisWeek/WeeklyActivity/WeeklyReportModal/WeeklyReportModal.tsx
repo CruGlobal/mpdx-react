@@ -290,11 +290,13 @@ export const WeeklyReportModal = ({
                           <CancelButton
                             onClick={() => {
                               handleWeeklyReportPrev();
-                              saveAnswer(
-                                answerId,
-                                question,
-                                values[question.id],
-                              );
+                              if (values[question.id] !== '') {
+                                saveAnswer(
+                                  answerId,
+                                  question,
+                                  values[question.id],
+                                );
+                              }
                             }}
                           >
                             {t('Back')}
