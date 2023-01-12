@@ -96,7 +96,7 @@ export const WeeklyReportModal = ({
   const { t } = useTranslation();
   const [activeStep, setActiveStep] = useState<number>(1);
 
-  const { data } = useCurrentCoachingAnswerSetQuery({
+  const { data, refetch } = useCurrentCoachingAnswerSetQuery({
     variables: {
       accountListId,
       organizationId: organizationId ?? '',
@@ -179,8 +179,10 @@ export const WeeklyReportModal = ({
   const localOnClose = () => {
     onClose(); // closes modal
     setTimeout(() => {
-      // resets active step to 1 after one second when the modal has faded out
+      // One second after the modal has faded out, reset the active step and refresh the current
+      // coaching set to get a new, blank one in case the user just completed one
       setActiveStep(1);
+      refetch();
     }, 1000);
   };
 
