@@ -200,19 +200,26 @@ interface CreateOrUpdateAnswer {
 export const getCoachingAnswer = (
   response: CreateOrUpdateAnswer,
 ): CoachingAnswer => {
-  const { data, included } = response;
+  const {
+    data: {
+      id,
+      attributes: { created_at, updated_at, response: responseAttr },
+      relationships,
+    },
+    included,
+  } = response;
   const question = getIncludedQuestion(
-    data.relationships.question.data.id,
+    relationships.question.data.id,
     included ?? [],
   );
   if (!question) {
     throw new Error('Could not find question for coaching answer');
   }
   return {
-    id: data.id,
-    createdAt: data.attributes.created_at,
-    updatedAt: data.attributes.updated_at,
-    response: data.attributes.response,
+    id: id,
+    createdAt: created_at,
+    updatedAt: updated_at,
+    response: responseAttr,
     question,
   };
 };

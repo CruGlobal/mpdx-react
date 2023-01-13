@@ -14,6 +14,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { Formik } from 'formik';
+import { ElementOf } from 'ts-essentials';
+import * as yup from 'yup';
 import Modal from '../../../../common/Modal/Modal';
 import {
   SubmitButton,
@@ -26,10 +29,7 @@ import {
   useCurrentCoachingAnswerSetQuery,
   useSaveCoachingAnswerMutation,
 } from './WeeklyReportModal.generated';
-import { Formik } from 'formik';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
-import { ElementOf } from 'ts-essentials';
-import * as yup from 'yup';
 
 const labelStyles = {
   fontSize: '1.5rem',
@@ -192,134 +192,132 @@ export const WeeklyReportModal = ({
         {questions.map((question, index) => {
           const answerId = getAnswer(question.id)?.id ?? null;
           const currentQuestion = initialValues[index];
-          if (activeStep === index + 1) {
-            return (
-              <Box
-                sx={{ display: activeStep === index + 1 ? null : 'none' }}
-                key={question.id}
-              >
-                <Formik
-                  initialValues={{
-                    [currentQuestion[0]]: currentQuestion[1],
-                  }}
-                  validationSchema={yup.object().shape({
-                    [question.id]: yup.string().required(t('Required')),
-                  })}
-                  onSubmit={(values: Record<string, string>) => {
-                    saveAnswer(answerId, question, values[question.id]);
-                    handleWeeklyReportNext();
-                  }}
-                >
-                  {({
-                    errors,
-                    handleSubmit,
-                    isValid,
-                    handleChange,
-                    touched,
-                    values,
-                  }) => (
-                    <form onSubmit={handleSubmit}>
-                      <DialogContent dividers>
-                        <WeeklyReportProgress
-                          totalSteps={questions.length}
-                          activeStep={activeStep}
-                        />
-                        {question.responseOptions &&
-                          question.responseOptions.length > 0 && (
-                            <FormControl>
-                              <FormLabel sx={labelStyles}>
-                                {question.prompt}
-                              </FormLabel>
-                              <RadioGroup
-                                name={question.id}
-                                onChange={handleChange}
-                                value={values[question.id]}
-                                row
-                              >
-                                {question.responseOptions?.map(
-                                  (option, index) => (
-                                    <FormControlLabel
-                                      key={`${question.id}|${index}`}
-                                      value={option}
-                                      control={<Radio />}
-                                      label={option}
-                                    />
-                                  ),
-                                )}
-                              </RadioGroup>
-                            </FormControl>
-                          )}
-                        {(!question.responseOptions ||
-                          question.responseOptions.length === 0) && (
-                          <TextField
-                            error={
-                              touched[question.id] &&
-                              Boolean(errors[question.id])
-                            }
-                            helperText={
-                              touched[question.id] && errors[question.id]
-                            }
-                            InputLabelProps={{
-                              shrink: true,
-                              sx: labelStyles,
-                            }}
-                            InputProps={{
-                              notched: false,
-                            }}
-                            label={question.prompt}
-                            name={question.id}
-                            onChange={handleChange}
-                            rows={3}
-                            value={values[question.id]}
-                            variant="outlined"
-                            fullWidth
-                            multiline
+          return (
+            <React.Fragment key={question.id}>
+              {activeStep === index + 1 && (
+                <Box sx={{ display: activeStep === index + 1 ? null : 'none' }}>
+                  <Formik
+                    initialValues={{
+                      [currentQuestion[0]]: currentQuestion[1],
+                    }}
+                    validationSchema={yup.object().shape({
+                      [question.id]: yup.string().required(t('Required')),
+                    })}
+                    onSubmit={(values: Record<string, string>) => {
+                      saveAnswer(answerId, question, values[question.id]);
+                      handleWeeklyReportNext();
+                    }}
+                  >
+                    {({
+                      errors,
+                      handleSubmit,
+                      isValid,
+                      handleChange,
+                      touched,
+                      values,
+                    }) => (
+                      <form onSubmit={handleSubmit}>
+                        <DialogContent dividers>
+                          <WeeklyReportProgress
+                            totalSteps={questions.length}
+                            activeStep={activeStep}
                           />
-                        )}
-                      </DialogContent>
-                      <DialogActions
-                        sx={{
-                          justifyContent:
-                            activeStep === 1 ||
-                            activeStep === questions.length + 1
-                              ? 'flex-end'
-                              : 'space-between',
-                        }}
-                      >
-                        {activeStep > 1 && activeStep <= questions.length && (
-                          <CancelButton
-                            onClick={() => {
-                              handleWeeklyReportPrev();
-                              if (values[question.id] !== '') {
-                                saveAnswer(
-                                  answerId,
-                                  question,
-                                  values[question.id],
-                                );
+                          {question.responseOptions &&
+                            question.responseOptions.length > 0 && (
+                              <FormControl>
+                                <FormLabel sx={labelStyles}>
+                                  {question.prompt}
+                                </FormLabel>
+                                <RadioGroup
+                                  name={question.id}
+                                  onChange={handleChange}
+                                  value={values[question.id]}
+                                  row
+                                >
+                                  {question.responseOptions?.map(
+                                    (option, index) => (
+                                      <FormControlLabel
+                                        key={`${question.id}|${index}`}
+                                        value={option}
+                                        control={<Radio />}
+                                        label={option}
+                                      />
+                                    ),
+                                  )}
+                                </RadioGroup>
+                              </FormControl>
+                            )}
+                          {(!question.responseOptions ||
+                            question.responseOptions.length === 0) && (
+                            <TextField
+                              error={
+                                touched[question.id] &&
+                                Boolean(errors[question.id])
                               }
-                            }}
-                          >
-                            {t('Back')}
-                          </CancelButton>
-                        )}
-                        <SubmitButton
-                          disabled={
-                            !isValid || (isValid && values[question.id] === '')
-                          }
+                              helperText={
+                                touched[question.id] && errors[question.id]
+                              }
+                              InputLabelProps={{
+                                shrink: true,
+                                sx: labelStyles,
+                              }}
+                              InputProps={{
+                                notched: false,
+                              }}
+                              label={question.prompt}
+                              name={question.id}
+                              onChange={handleChange}
+                              rows={3}
+                              value={values[question.id]}
+                              variant="outlined"
+                              fullWidth
+                              multiline
+                            />
+                          )}
+                        </DialogContent>
+                        <DialogActions
+                          sx={{
+                            justifyContent:
+                              activeStep === 1 ||
+                              activeStep === questions.length + 1
+                                ? 'flex-end'
+                                : 'space-between',
+                          }}
                         >
-                          {activeStep < questions.length
-                            ? t('Next')
-                            : t('Submit')}
-                        </SubmitButton>
-                      </DialogActions>
-                    </form>
-                  )}
-                </Formik>
-              </Box>
-            );
-          } else {
-            return null;
-          }
+                          {activeStep > 1 && activeStep <= questions.length && (
+                            <CancelButton
+                              onClick={() => {
+                                handleWeeklyReportPrev();
+                                if (values[question.id] !== '') {
+                                  saveAnswer(
+                                    answerId,
+                                    question,
+                                    values[question.id],
+                                  );
+                                }
+                              }}
+                            >
+                              {t('Back')}
+                            </CancelButton>
+                          )}
+                          <SubmitButton
+                            disabled={
+                              !isValid ||
+                              (isValid && values[question.id] === '')
+                            }
+                          >
+                            {activeStep < questions.length
+                              ? t('Next')
+                              : t('Submit')}
+                          </SubmitButton>
+                        </DialogActions>
+                      </form>
+                    )}
+                  </Formik>
+                </Box>
+              )}
+            </React.Fragment>
+          );
         })}
         {(questions.length === 0 || activeStep === questions.length + 1) && (
           <>
