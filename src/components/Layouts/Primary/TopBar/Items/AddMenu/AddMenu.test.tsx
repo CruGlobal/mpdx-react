@@ -74,9 +74,9 @@ describe('AddMenu', () => {
     );
     userEvent.click(getByRole('button', { hidden: true, name: 'Add Button' }));
     await waitFor(() =>
-      expect(getByText('Multiple Contacts')).toBeInTheDocument(),
+      expect(getByText('Add Multiple Contacts')).toBeInTheDocument(),
     );
-    userEvent.click(getByText('Multiple Contacts'));
+    userEvent.click(getByText('Add Multiple Contacts'));
     await waitFor(() =>
       expect(getByText('Add Multiple Contacts')).toBeInTheDocument(),
     );
