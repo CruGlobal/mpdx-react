@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import { v4 as uuidv4 } from 'uuid';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
+import useGetAppSettings from '../../../../../src/hooks/useGetAppSettings';
 import { ContactFlowSetupDragLayer } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
 import { UnusedStatusesColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
 import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
@@ -41,6 +42,7 @@ const ContactFlowSetupPage: React.FC = () => {
     },
   });
   const [updateUserOptions] = useUpdateUserOptionsMutation();
+  const { appName } = useGetAppSettings();
   const [flowOptions, setFlowOptions] = useState<
     {
       name: string;
@@ -176,7 +178,7 @@ const ContactFlowSetupPage: React.FC = () => {
     <>
       <Head>
         <title>
-          MPDX | {t('Contact Flows')} | {t('Setup')}
+          {appName} | {t('Contact Flows')} | {t('Setup')}
         </title>
       </Head>
       {accountListId ? (

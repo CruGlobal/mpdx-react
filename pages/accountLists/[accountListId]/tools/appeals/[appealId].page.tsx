@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Theme, Box, Container } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import AppealDrawer from '../../../../../src/components/Tool/Appeal/AppealDrawer/AppealDrawer';
 import { AppealProvider } from '../../../../../src/components/Tool/Appeal/AppealContextProvider/AppealContextProvider';
 
@@ -40,6 +41,7 @@ const AppealIdPage = (): ReactElement => {
   const { t } = useTranslation();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(true);
   const { classes } = useStyles();
+  const { appName } = useGetAppSettings();
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -48,7 +50,9 @@ const AppealIdPage = (): ReactElement => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Appeals')}</title>
+        <title>
+          {appName} | {t('Appeals')}
+        </title>
       </Head>
       <AppealProvider>
         <Box className={classes.outer}>

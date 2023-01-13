@@ -8,6 +8,7 @@ import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivin
 
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
@@ -36,6 +37,7 @@ const reportFilters = [
 const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
   const router = useRouter();
@@ -84,7 +86,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     <>
       <Head>
         <title>
-          MPDX | {t('Reports')} | {t('Partner Giving Analysis')}
+          {appName} | {t('Reports')} | {t('Partner Giving Analysis')}
         </title>
       </Head>
       {accountListId ? (

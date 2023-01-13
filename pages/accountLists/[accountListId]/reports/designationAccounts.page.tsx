@@ -7,6 +7,7 @@ import { DesignationAccountsReport } from 'src/components/Reports/DesignationAcc
 import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 
 const DesignationAccountsReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -16,6 +17,7 @@ const DesignationAccountsReportPageWrapper = styled(Box)(({ theme }) => ({
 const DesignationAccountsReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
   const handleNavListToggle = () => {
@@ -25,7 +27,9 @@ const DesignationAccountsReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Reports - Designation Accounts')}</title>
+        <title>
+          {appName} | {t('Reports - Designation Accounts')}
+        </title>
       </Head>
       {accountListId ? (
         <DesignationAccountsReportPageWrapper>

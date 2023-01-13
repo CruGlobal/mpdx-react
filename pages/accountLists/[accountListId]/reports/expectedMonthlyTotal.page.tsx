@@ -5,17 +5,19 @@ import { Box } from '@mui/material';
 import { ExpectedMonthlyTotalReportHeader } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Header/ExpectedMonthlyTotalReportHeader';
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ExpectedMonthlyTotalReport } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReport';
 
 const ExpectedMonthlyTotalReportPage = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
 
   return (
     <>
       <Head>
         <title>
-          MPDX | {t('Reports')} | {t('Expect Monthly Total')}
+          {appName} | {t('Reports')} | {t('Expect Monthly Total')}
         </title>
       </Head>
       {accountListId ? (

@@ -8,6 +8,7 @@ import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports
 import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 
 const SalaryCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -17,6 +18,7 @@ const SalaryCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
 const SalaryCurrencyReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
   const handleNavListToggle = () => {
@@ -26,7 +28,9 @@ const SalaryCurrencyReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Reports - Salary')}</title>
+        <title>
+          {appName} | {t('Reports - Salary')}
+        </title>
       </Head>
       {accountListId ? (
         <SalaryCurrencyReportPageWrapper>

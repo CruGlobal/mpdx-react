@@ -7,6 +7,7 @@ import { ResponsibilityCentersReport } from 'src/components/Reports/Responsibili
 import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 
 const ResponsibilityCentersReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -16,6 +17,7 @@ const ResponsibilityCentersReportPageWrapper = styled(Box)(({ theme }) => ({
 const ResponsibilityCentersReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
   const handleNavListToggle = () => {
@@ -25,7 +27,9 @@ const ResponsibilityCentersReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Reports - Responsibility Centers')}</title>
+        <title>
+          {appName} | {t('Reports - Responsibility Centers')}
+        </title>
       </Head>
       {accountListId ? (
         <ResponsibilityCentersReportPageWrapper>
