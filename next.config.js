@@ -56,7 +56,7 @@ module.exports = withPlugins([
       ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
       ONESKY_API_SECRET: process.env.ONESKY_API_SECRET,
       ONESKY_API_KEY: process.env.ONESKY_API_KEY,
-      APP_NAME: process.env.APP_NAME,
+      APP_NAME: process.env.APP_NAME ?? 'MPDX',
     },
     experimental: {
       modularizeImports: {
