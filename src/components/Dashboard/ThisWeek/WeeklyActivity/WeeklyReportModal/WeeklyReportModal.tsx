@@ -51,35 +51,29 @@ interface WeeklyReportProgressProps {
 const WeeklyReportProgress = ({
   totalSteps,
   activeStep,
-}: WeeklyReportProgressProps) => {
-  if (activeStep <= totalSteps) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-        mb={1}
-      >
-        <Box sx={{ width: '100%', mr: 1 }}>
-          <LinearProgress
-            variant="determinate"
-            value={(activeStep / totalSteps) * 100}
-          />
-        </Box>
-        <Box>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-          >{`${activeStep}/${totalSteps}`}</Typography>
-        </Box>
-      </Box>
-    );
-  } else {
-    return null;
-  }
-};
+}: WeeklyReportProgressProps) => (
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    }}
+    mb={1}
+  >
+    <Box sx={{ width: '100%', mr: 1 }}>
+      <LinearProgress
+        variant="determinate"
+        value={(activeStep / totalSteps) * 100}
+      />
+    </Box>
+    <Box>
+      <Typography
+        variant="body2"
+        color="text.secondary"
+      >{`${activeStep}/${totalSteps}`}</Typography>
+    </Box>
+  </Box>
+);
 
 interface WeeklyReportModalProps {
   accountListId: string;
@@ -218,10 +212,12 @@ export const WeeklyReportModal = ({
                     }) => (
                       <form onSubmit={handleSubmit}>
                         <DialogContent dividers>
-                          <WeeklyReportProgress
-                            totalSteps={questions.length}
-                            activeStep={activeStep}
-                          />
+                          {activeStep <= questions.length && (
+                            <WeeklyReportProgress
+                              totalSteps={questions.length}
+                              activeStep={activeStep}
+                            />
+                          )}
                           {question.responseOptions &&
                             question.responseOptions.length > 0 && (
                               <FormControl>
