@@ -185,7 +185,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       },
     },
     {
-      text: 'Multiple Contacts',
+      text: 'Add Multiple Contacts',
       icon: <PeopleIcon />,
       onClick: () => {
         changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);
