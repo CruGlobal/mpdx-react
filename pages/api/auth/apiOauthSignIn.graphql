@@ -1,0 +1,9 @@
+mutation apiOauthSignIn($accessToken: String!) {
+  apiOauthSignIn(input: { accessToken: $accessToken }) {
+    token
+    user {
+      id
+      name: firstName
+    }
+  }
+}

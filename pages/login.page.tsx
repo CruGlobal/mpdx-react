@@ -27,6 +27,19 @@ partners in a quick and easy way."
       >
         Sign In
       </Button>
+
+      {process.env.NEXT_PUBLIC_USE_API_OAUTH === 'true' && (
+        <Button
+          size="large"
+          variant="contained"
+          onClick={() => signIn('apioauth')}
+          color="inherit"
+          style={{ marginLeft: '10px' }}
+        >
+          Sign In with {process.env.API_OAUTH_VISIBLE_NAME}
+        </Button>
+      )}
+
       <Button
         size="large"
         startIcon={<SubjectIcon />}

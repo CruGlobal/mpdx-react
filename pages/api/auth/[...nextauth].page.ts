@@ -7,6 +7,11 @@ import {
   OktaSignInMutation,
   OktaSignInMutationVariables,
 } from './oktaSignIn.generated';
+import {
+  ApiOauthSignInDocument,
+  ApiOauthSignInMutation,
+  ApiOauthSignInMutationVariables,
+} from './apiOauthSignIn.generated';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -23,6 +28,10 @@ if (!process.env.OKTA_CLIENT_ID || !process.env.OKTA_CLIENT_SECRET) {
   throw new Error('OKTA_CLIENT_ID or OKTA_CLIENT_SECRET envs not defined');
 }
 
+// if (!process.env.API_OAUTH_CLIENT_ID || !process.env.API_OAUTH_CLIENT_SECRET) {
+//   throw new Error('API_OAUTH_CLIENT_ID or API_OAUTH_CLIENT_SECRET envs not defined');
+// }
+
 const options: NextAuthOptions = {
   providers: [
     OktaProvider({
@@ -33,15 +42,74 @@ const options: NextAuthOptions = {
       token: { params: { scope: 'openid email profile' } },
       userinfo: { params: { scope: 'openid email profile' } },
     }),
+    {
+      id: 'apioauth',
+      name: process.env.API_OAUTH_VISIBLE_NAME,
+      type: 'oauth',
+      clientId: process.env.API_OAUTH_CLIENT_ID,
+      clientSecret: process.env.API_OAUTH_CLIENT_SECRET,
+      authorization: {
+        url: `${process.env.API_OAUTH_ISSUER}/oauth/authorize`,
+        params: { scope: 'read write', response_type: 'code' },
+      },
+      token: {
+        url: `${process.env.API_OAUTH_ISSUER}/oauth/token`,
+        params: { scope: 'read write', response_type: 'code' },
+      },
+      userinfo: {
+        async request() {
+          // Our API doesn't use the auth/userInfo endpoint,  but NextAuth requires it to get the access token.
+          // Since we pass the access_token to our API, which returns a JWT, user and authenicates via Graph QL
+          // We can just return a object with hardcoded info, as it doesn't get used anywhere.
+          return {
+            sub: '83692',
+            name: 'Alice Adams',
+            given_name: 'Alice',
+            family_name: 'Adams',
+            email: 'alice.adams@gmail.cpm',
+            picture: 'https://example.com/83692/photo.jpg',
+          };
+        },
+      },
+      idToken: false,
+      profile(profile) {
+        return {
+          id: profile?.sub,
+          email: profile?.email,
+        };
+      },
+      checks: ['pkce', 'state'],
+    },
   ],
   secret: process.env.JWT_SECRET,
   callbacks: {
     signIn: async ({ user, account }) => {
       const { access_token } = account;
-
+      // Here you need to access our server to access the JWT
       if (!access_token) {
-        throw new Error('Okta sign in failed to return an access_token');
+        throw new Error(
+          `${account.provider} sign in failed to return an access_token`,
+        );
       }
+
+      if (account.provider === 'apioauth') {
+        const { data } = await client.mutate<
+          ApiOauthSignInMutation,
+          ApiOauthSignInMutationVariables
+        >({
+          mutation: ApiOauthSignInDocument,
+          variables: {
+            accessToken: access_token,
+          },
+        });
+
+        if (data?.apiOauthSignIn?.token) {
+          user.apiToken = data.apiOauthSignIn.token;
+          return true;
+        }
+        throw new Error('ApiOauthSignIn mutation failed to return a token');
+      }
+
       const { data } = await client.mutate<
         OktaSignInMutation,
         OktaSignInMutationVariables
