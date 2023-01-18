@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import PageHeading from '../../PageHeading';
 import illustration9 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-9.svg';
 
@@ -11,6 +12,7 @@ interface Props {
 const Welcome = ({ firstName }: Props): ReactElement => {
   const { t } = useTranslation();
   const today = DateTime.local();
+  const { appName } = useGetAppSettings();
   const currentHour = today.hour;
 
   let greeting = firstName
@@ -30,7 +32,10 @@ const Welcome = ({ firstName }: Props): ReactElement => {
   return (
     <PageHeading
       heading={greeting}
-      subheading={t("Welcome back to MPDX. Here's what's been happening.")}
+      subheading={t(
+        "Welcome back to {{appName}}. Here's what's been happening.",
+        { appName },
+      )}
       imgSrc={illustration9}
       height={180}
     />

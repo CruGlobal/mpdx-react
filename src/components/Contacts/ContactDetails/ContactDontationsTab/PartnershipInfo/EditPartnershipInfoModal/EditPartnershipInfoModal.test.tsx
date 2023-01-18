@@ -119,7 +119,7 @@ describe('EditPartnershipInfoModal', () => {
     );
 
     expect(getByText('Edit Partnership')).toBeInTheDocument();
-    await waitFor(() => userEvent.click(getByLabelText('Close')));
+    userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -140,7 +140,7 @@ describe('EditPartnershipInfoModal', () => {
     );
 
     expect(getByText('Edit Partnership')).toBeInTheDocument();
-    await waitFor(() => userEvent.click(getByText('Cancel')));
+    userEvent.click(getByText('Cancel'));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -342,7 +342,7 @@ describe('EditPartnershipInfoModal', () => {
     const currencyInput = getByLabelText('Currency');
 
     userEvent.click(currencyInput);
-    await waitFor(() => userEvent.click(getByText('CDF (CDF)')));
+    userEvent.click(getByText('CDF (CDF)'));
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(

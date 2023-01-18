@@ -11,6 +11,7 @@ interface Props {
   accountListId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
+  onSelectContact: (contactId: string) => void;
   title: string;
 }
 
@@ -18,6 +19,7 @@ export const DonationsReport: React.FC<Props> = ({
   accountListId,
   isNavListOpen,
   onNavListToggle,
+  onSelectContact,
   title,
 }) => {
   const [time, setTime] = useState(DateTime.now().startOf('month'));
@@ -49,6 +51,7 @@ export const DonationsReport: React.FC<Props> = ({
         />
         <DonationsReportTable
           accountListId={accountListId}
+          onSelectContact={onSelectContact}
           time={time}
           setTime={setTime}
         />

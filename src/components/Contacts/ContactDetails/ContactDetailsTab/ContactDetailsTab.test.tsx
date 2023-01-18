@@ -11,7 +11,7 @@ import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking'
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsTab } from './ContactDetailsTab';
 import { ContactDetailsTabQuery } from './ContactDetailsTab.generated';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = '111';
 const contactId = 'contact-1';
@@ -88,7 +88,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -96,7 +96,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -113,7 +113,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -121,7 +121,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -141,7 +141,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -149,7 +149,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -166,7 +166,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -174,7 +174,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -194,7 +194,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -202,7 +202,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -222,7 +222,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery>>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -230,7 +230,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -248,7 +248,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -256,7 +256,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -273,7 +273,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -281,7 +281,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -301,7 +301,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -309,7 +309,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -326,7 +326,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -334,7 +334,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -354,7 +354,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -362,7 +362,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -379,7 +379,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -387,7 +387,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>
@@ -404,7 +404,7 @@ describe('ContactDetailTab', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
-                <ContactsPageProvider>
+                <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
                       accountListId={accountListId}
@@ -412,7 +412,7 @@ describe('ContactDetailTab', () => {
                       onContactSelected={onContactSelected}
                     />
                   </ContactDetailProvider>
-                </ContactsPageProvider>
+                </ContactsPage>
               </GqlMockedProvider>
             </ThemeProvider>
           </LocalizationProvider>

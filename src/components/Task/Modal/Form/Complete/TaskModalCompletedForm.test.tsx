@@ -17,6 +17,7 @@ import {
   completeSimpleTaskMutationMock,
 } from './TaskModalCompleteForm.mock';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
+import { CompleteTaskDocument } from './CompleteTask.generated';
 
 jest.mock('../../../../../hooks/useTaskModal');
 
@@ -51,7 +52,7 @@ describe('TaskModalCompleteForm', () => {
     notificationTimeUnit: NotificationTimeUnitEnum.Hours,
   };
 
-  it.skip('default', async () => {
+  it('default', async () => {
     const { getAllByRole } = render(
       <TestWrapper
         mocks={[
@@ -98,14 +99,38 @@ describe('TaskModalCompleteForm', () => {
     expect(openTaskModal).not.toHaveBeenCalled();
   });
 
-  it.skip('saves complex', async () => {
+  it('saves complex', async () => {
     const onClose = jest.fn();
+    const completedAt = DateTime.local(2015, 1, 5, 1, 2).toISO();
+    const taskAttributes = {
+      id: task.id,
+      completedAt,
+      result: ResultEnum.Completed,
+      nextAction: ActivityTypeEnum.Appointment,
+      tagList: [],
+    };
     const { getByRole, getByText } = render(
       <TestWrapper
         mocks={[
           getDataForTaskModalMock(accountListId),
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
+          {
+            request: {
+              query: CompleteTaskDocument,
+              variables: {
+                accountListId,
+                attributes: taskAttributes,
+              },
+            },
+            result: {
+              data: {
+                updateTask: {
+                  task: taskAttributes,
+                },
+              },
+            },
+          },
         ]}
       >
         <TaskModalCompleteForm
@@ -114,7 +139,7 @@ describe('TaskModalCompleteForm', () => {
           task={{
             ...task,
             activityType: ActivityTypeEnum.Call,
-            completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+            completedAt,
             tagList: [],
           }}
         />
@@ -123,29 +148,27 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(getByRole('button', { hidden: true, name: 'Result' }));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Result' })).getByText(
-        'COMPLETED',
+        'Completed',
       ),
     );
     userEvent.click(getByRole('button', { hidden: true, name: 'Next Action' }));
     userEvent.click(
       within(
         getByRole('listbox', { hidden: true, name: 'Next Action' }),
-      ).getByText('APPOINTMENT'),
+      ).getByText('Appointment'),
     );
 
     userEvent.click(getByText('Save'));
-    expect(openTaskModal).toHaveBeenCalledWith({
-      defaultValues: {
-        activityType: ActivityTypeEnum.Appointment,
-        contacts: {
-          nodes: [
-            { id: 'contact-1', name: 'Anderson, Robert' },
-            { id: 'contact-2', name: 'Smith, John' },
-          ],
+    await waitFor(() =>
+      expect(openTaskModal).toHaveBeenCalledWith({
+        defaultValues: {
+          activityType: ActivityTypeEnum.Appointment,
+          contactIds: ['contact-1', 'contact-2'],
+          userId: 'user-1',
+          tagList: [],
         },
-        user: { id: 'user-1', firstName: 'Anderson', lastName: 'Robert' },
-      },
-    });
+      }),
+    );
   });
 
   const getOptions = (

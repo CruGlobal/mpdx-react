@@ -9,7 +9,7 @@ import {
   GetContactDetailsHeaderDocument,
   GetContactDetailsHeaderQuery,
 } from './ContactDetailsHeader.generated';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'accountList-1';
 const contactId = 'contact-1';
@@ -21,7 +21,7 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <ContactsPageProvider>
+    <ContactsPage>
       <ContactDetailProvider>
         <GqlMockedProvider<GetContactDetailsHeaderQuery>>
           <ContactDetailsHeader
@@ -31,13 +31,13 @@ export const Default = (): ReactElement => {
           />
         </GqlMockedProvider>
       </ContactDetailProvider>
-    </ContactsPageProvider>
+    </ContactsPage>
   );
 };
 
 export const Loading = (): ReactElement => {
   return (
-    <ContactsPageProvider>
+    <ContactsPage>
       <ContactDetailProvider>
         <MockedProvider
           mocks={[
@@ -61,6 +61,6 @@ export const Loading = (): ReactElement => {
           />
         </MockedProvider>
       </ContactDetailProvider>
-    </ContactsPageProvider>
+    </ContactsPage>
   );
 };

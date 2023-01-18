@@ -46,6 +46,7 @@ const AppealDrawerList = ({ appeal }: Props): ReactElement => {
   const { appealState } = useAppealContext();
 
   const testFunc = (): void => {
+    // eslint-disable-next-line no-console
     console.log(appealState);
   };
 

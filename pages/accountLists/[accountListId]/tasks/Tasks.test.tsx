@@ -68,7 +68,7 @@ jest.mock('react-virtuoso', () => ({
   },
 }));
 
-it.skip('should render list of tasks', async () => {
+it('should render list of tasks', async () => {
   const { getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
@@ -91,7 +91,7 @@ it.skip('should render list of tasks', async () => {
   await waitFor(() => expect(getByText('Test Subject')).toBeInTheDocument());
 });
 
-it.skip('should render contact detail panel', async () => {
+it('should render contact detail panel', async () => {
   const { findAllByRole, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
@@ -120,7 +120,7 @@ it.skip('should render contact detail panel', async () => {
   expect(detailsTabList).toBeInTheDocument();
 });
 
-it.skip('should open add task panel', async () => {
+it('should open add task panel', async () => {
   const { getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
@@ -141,7 +141,7 @@ it.skip('should open add task panel', async () => {
   );
   await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   await waitFor(() => expect(getByText('Test Subject')).toBeInTheDocument());
-  await waitFor(() => userEvent.click(getByText('Add Task')));
+  userEvent.click(getByText('Add Task'));
   await waitFor(() => expect(openTaskModal).toHaveBeenCalled());
 });
 
@@ -167,8 +167,8 @@ it('should show Completed', async () => {
 
   await waitFor(() => expect(getByText('Historic')).toBeInTheDocument());
   await waitFor(() => expect(getByText('Current')).toBeInTheDocument());
-  await waitFor(() => userEvent.click(getByText('Historic')));
-  await waitFor(() => userEvent.click(getByText('Current')));
+  userEvent.click(getByText('Historic'));
+  userEvent.click(getByText('Current'));
   await waitFor(() =>
     expect(router).toMatchInlineSnapshot(`
       Object {

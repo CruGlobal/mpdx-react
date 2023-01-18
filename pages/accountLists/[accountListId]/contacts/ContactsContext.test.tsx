@@ -12,12 +12,12 @@ import {
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
 import {
-  ContactsPageContext,
-  ContactsPageProvider,
-  ContactsPageType,
+  ContactsContext,
+  ContactsType,
   getRedirectPathname,
-} from './ContactsPageContext';
+} from './ContactsContext';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { ContactsPage } from './ContactsPage';
 
 const accountListId = 'account-list-1';
 const push = jest.fn();
@@ -47,8 +47,8 @@ jest.mock('notistack', () => ({
 
 const TestRender: React.FC = () => {
   const { viewMode, handleViewModeChange, userOptionsLoading } = useContext(
-    ContactsPageContext,
-  ) as ContactsPageType;
+    ContactsContext,
+  ) as ContactsType;
   return (
     <Box>
       {!userOptionsLoading ? (
@@ -84,12 +84,13 @@ const TestRender: React.FC = () => {
 };
 
 describe('ContactsPageContext', () => {
-  it.skip('has a contact id', async () => {
+  it('has a contact id', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
             query: { accountListId, contactId: ['list', 'abc'] },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
             isReady,
             push,
           }}
@@ -107,16 +108,16 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPageProvider>
+            <ContactsPage>
               <TestRender />
-            </ContactsPageProvider>
+            </ContactsPage>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
     );
     expect(getByText('Loading')).toBeInTheDocument();
     await waitFor(() => expect(getByText('Flows Button')).toBeInTheDocument());
-    await waitFor(() => userEvent.click(getByText('Flows Button')));
+    userEvent.click(getByText('Flows Button'));
     await waitFor(() => expect(getByText('flows')).toBeInTheDocument());
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({
@@ -126,12 +127,13 @@ describe('ContactsPageContext', () => {
     );
   });
 
-  it.skip('has a contact id and switches twice', async () => {
+  it('has a contact id and switches twice', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
             query: { accountListId, contactId: ['list', 'abc'] },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
             isReady,
             push,
           }}
@@ -149,9 +151,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPageProvider>
+            <ContactsPage>
               <TestRender />
-            </ContactsPageProvider>
+            </ContactsPage>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -176,12 +178,13 @@ describe('ContactsPageContext', () => {
     );
   });
 
-  it.skip('does not have a contact id and changes to map', async () => {
+  it('does not have a contact id and changes to map', async () => {
     const { getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
             query: { accountListId },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
             isReady,
             push,
           }}
@@ -199,9 +202,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPageProvider>
+            <ContactsPage>
               <TestRender />
-            </ContactsPageProvider>
+            </ContactsPage>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -229,6 +232,15 @@ describe('ContactsPageContext', () => {
       );
 
       expect(pathname).toBe('/accountLists/account-list-1/tasks');
+    });
+
+    it('should return the donations report URL when user is on the partner donations report page', async () => {
+      const pathname = getRedirectPathname(
+        '/accountLists/[accountListId]/reports/donations/[[...contactId]]',
+        accountListId,
+      );
+
+      expect(pathname).toBe('/accountLists/account-list-1/reports/donations');
     });
 
     it('should return the partner giving analysis URL when user is on the partner giving analysis page', async () => {

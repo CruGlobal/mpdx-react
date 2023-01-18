@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { Trans, useTranslation } from 'react-i18next';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
@@ -71,6 +72,7 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGetContactDuplicatesQuery({
     variables: { accountListId },
   });
+  const { appName } = useGetAppSettings();
 
   const updateActions = (id1: string, id2: string, action: string): void => {
     if (action === 'cancel') {
@@ -92,9 +94,11 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
     for (const [id, action] of Object.entries(actions)) {
       switch (action.action) {
         case 'merge':
+          // eslint-disable-next-line no-console
           console.log(`Merging ${id} with ${action.mergeId}`);
           break;
         case 'delete':
+          // eslint-disable-next-line no-console
           console.log(`Deleting ${id}`);
           break;
         default:
@@ -123,8 +127,11 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                   <Box className={classes.descriptionBox}>
                     <Typography>
                       {t(
-                        'You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into MPDX. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
-                        { amount: data?.contactDuplicates.nodes.length },
+                        'You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
+                        {
+                          amount: data?.contactDuplicates.nodes.length,
+                          appName,
+                        },
                       )}
                     </Typography>
                     <Typography>

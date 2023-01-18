@@ -2,9 +2,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import React from 'react';
-import Link from 'next/link';
 import { CoachedPersonFragment } from '../LoadCoachingList.generated';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
+import HandoffLink from 'src/components/HandoffLink';
 
 interface Props {
   coachingAccount: CoachedPersonFragment;
@@ -20,12 +20,10 @@ const CoachingRowWrapper = styled(Box)(({ theme }) => ({
 
 const CoachingNameText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(2),
+  cursor: 'pointer',
 }));
 
-export const CoachingRow: React.FC<Props> = ({
-  coachingAccount,
-  accountListId,
-}) => {
+export const CoachingRow: React.FC<Props> = ({ coachingAccount }) => {
   const {
     id,
     monthlyGoal,
@@ -43,13 +41,7 @@ export const CoachingRow: React.FC<Props> = ({
     : 'USD';
 
   return (
-    <Link
-      href={{
-        pathname: '/accountLists/[accountListId]/coaching/[coachingId]',
-        query: { accountListId: accountListId, coachingId: id },
-      }}
-      passHref
-    >
+    <HandoffLink path={`/coaches/${id}`}>
       <CoachingRowWrapper role="listitem">
         <CoachingNameText variant="h6" color="primary">
           {name}
@@ -69,6 +61,6 @@ export const CoachingRow: React.FC<Props> = ({
           isPrimary={true}
         />
       </CoachingRowWrapper>
-    </Link>
+    </HandoffLink>
   );
 };

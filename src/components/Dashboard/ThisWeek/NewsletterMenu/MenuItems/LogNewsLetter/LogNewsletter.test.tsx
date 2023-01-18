@@ -113,7 +113,7 @@ describe('LogNewsletter', () => {
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
     });
 
-    it.skip('Logs Newsletter with completedAt date', async () => {
+    it('Logs Newsletter with completedAt date', async () => {
       const { getByLabelText, getByText, findByText } = render(
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>

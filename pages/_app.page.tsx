@@ -4,6 +4,7 @@ import { ErrorBoundary, Provider } from '@rollbar/react';
 import type { AppProps } from 'next/app';
 import StyledEngineProvider from '@mui/material/StyledEngineProvider';
 import { ThemeProvider } from '@mui/material/styles';
+import { Box } from '@mui/material';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
 import { Session } from 'next-auth';
@@ -26,6 +27,7 @@ import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
 import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
 import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -61,6 +63,7 @@ const App = ({
       },
     },
   };
+
   // useEffect(() => {
   //     // Remove the server-side injected CSS.
   //     const jssStyles = document.querySelector('#jss-server-side');
@@ -105,48 +108,56 @@ const App = ({
       </Head>
       <Provider config={rollbarConfig}>
         <ErrorBoundary>
-          <ApolloProvider client={client}>
-            <SessionProvider session={session}>
-              <UserPreferenceProvider>
-                <I18nextProvider i18n={i18n}>
-                  <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={theme}>
-                      <LocalizationProvider
-                        dateAdapter={AdapterLuxon}
-                        localeText={{
-                          cancelButtonLabel: `${t('Cancel')}`,
-                          clearButtonLabel: `${t('Clear')}`,
-                          okButtonLabel: `${t('OK')}`,
-                          todayButtonLabel: `${t('Today')}`,
-                        }}
-                      >
-                        <SnackbarProvider maxSnack={3}>
-                          <GlobalStyles />
-                          <AnimatePresence
-                            mode="wait"
-                            onExitComplete={handleExitComplete}
-                          >
-                            <RouterGuard>
-                              <TaskModalProvider>
-                                <Layout>
-                                  <SnackbarUtilsConfigurator />
-                                  <Component
-                                    {...pageProps}
-                                    key={router.route}
-                                  />
-                                </Layout>
-                              </TaskModalProvider>
-                            </RouterGuard>
-                          </AnimatePresence>
-                          <Loading />
-                        </SnackbarProvider>
-                      </LocalizationProvider>
-                    </ThemeProvider>
-                  </StyledEngineProvider>
-                </I18nextProvider>
-              </UserPreferenceProvider>
-            </SessionProvider>
-          </ApolloProvider>
+          <AppSettingsProvider>
+            <ApolloProvider client={client}>
+              <SessionProvider session={session}>
+                <UserPreferenceProvider>
+                  <I18nextProvider i18n={i18n}>
+                    <StyledEngineProvider injectFirst>
+                      <ThemeProvider theme={theme}>
+                        <LocalizationProvider
+                          dateAdapter={AdapterLuxon}
+                          localeText={{
+                            cancelButtonLabel: `${t('Cancel')}`,
+                            clearButtonLabel: `${t('Clear')}`,
+                            okButtonLabel: `${t('OK')}`,
+                            todayButtonLabel: `${t('Today')}`,
+                          }}
+                        >
+                          <SnackbarProvider maxSnack={3}>
+                            <GlobalStyles />
+                            <AnimatePresence
+                              mode="wait"
+                              onExitComplete={handleExitComplete}
+                            >
+                              <RouterGuard>
+                                <TaskModalProvider>
+                                  <Layout>
+                                    <SnackbarUtilsConfigurator />
+                                    <Box
+                                      sx={(theme) => ({
+                                        fontFamily: theme.typography.fontFamily,
+                                      })}
+                                    >
+                                      <Component
+                                        {...pageProps}
+                                        key={router.route}
+                                      />
+                                    </Box>
+                                  </Layout>
+                                </TaskModalProvider>
+                              </RouterGuard>
+                            </AnimatePresence>
+                            <Loading />
+                          </SnackbarProvider>
+                        </LocalizationProvider>
+                      </ThemeProvider>
+                    </StyledEngineProvider>
+                  </I18nextProvider>
+                </UserPreferenceProvider>
+              </SessionProvider>
+            </ApolloProvider>
+          </AppSettingsProvider>
           <HelpscoutBeacon />
         </ErrorBoundary>
       </Provider>

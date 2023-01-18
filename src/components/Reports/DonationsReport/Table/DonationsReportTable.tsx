@@ -30,6 +30,7 @@ import {
 
 interface Props {
   accountListId: string;
+  onSelectContact: (contactId: string) => void;
   time: DateTime;
   setTime: (time: DateTime) => void;
 }
@@ -84,6 +85,7 @@ interface Donation {
 
 export const DonationsReportTable: React.FC<Props> = ({
   accountListId,
+  onSelectContact,
   time,
   setTime,
 }) => {
@@ -132,14 +134,14 @@ export const DonationsReportTable: React.FC<Props> = ({
     const donation = params.row as Donation;
 
     return (
-      <Typography>
-        {donation.contactId ? (
-          <Link href={`../../${accountListId}/contacts/${donation.contactId}`}>
-            {donation.partner}
-          </Link>
-        ) : (
-          donation.partner
-        )}
+      <Typography sx={{ cursor: 'pointer' }}>
+        <Link
+          onClick={() =>
+            donation.contactId && onSelectContact(donation.contactId)
+          }
+        >
+          {donation.partner}
+        </Link>
       </Typography>
     );
   };
@@ -179,13 +181,11 @@ export const DonationsReportTable: React.FC<Props> = ({
         width={'100%'}
         display="flex"
         alignItems="center"
-        justifyContent="end"
+        justifyContent="space-between"
       >
-        {donation.appeal?.name && (
-          <Typography data-testid="appeal-name">
-            {donation.appeal?.name}
-          </Typography>
-        )}
+        <Typography data-testid="appeal-name">
+          {donation.appeal?.name}
+        </Typography>
         <IconButton color="primary">
           <EditIcon />
         </IconButton>
@@ -198,24 +198,24 @@ export const DonationsReportTable: React.FC<Props> = ({
       field: 'date',
       headerName: t('Date'),
       type: 'date',
-      width: 140,
+      width: 100,
     },
     {
       field: 'partner',
       headerName: t('Partner'),
-      width: 260,
+      width: 360,
       renderCell: link,
     },
     {
       field: 'convertedAmount',
       headerName: t('Amount'),
-      width: 150,
+      width: 120,
       renderCell: amount,
     },
     {
       field: 'foreignAmount',
       headerName: t('Foreign Amount'),
-      width: 180,
+      width: 120,
       renderCell: foreignAmount,
     },
     {
@@ -227,7 +227,7 @@ export const DonationsReportTable: React.FC<Props> = ({
     {
       field: 'method',
       headerName: t('Method'),
-      width: 155,
+      width: 100,
     },
     {
       field: 'appeal',
@@ -240,14 +240,14 @@ export const DonationsReportTable: React.FC<Props> = ({
   // Remove foreign amount column if both of these conditions are met:
   // 1.) There only one type of currency.
   // 2.) The type of currency is the same as the account currency.
-  const currencyList = [
-    ...new Set(donations.map((donation) => donation.foreignCurrency)),
-  ];
+  const currencyList = new Set(
+    donations.map((donation) => donation.foreignCurrency),
+  );
 
-  if (currencyList.length === 1 && currencyList.includes(accountCurrency)) {
+  if (currencyList.size === 1 && currencyList.has(accountCurrency)) {
     columns.splice(3, 1);
     columns.forEach(
-      (column) => (column.width = column.width ? column.width + 36 : 0),
+      (column) => (column.width = column.width ? column.width + 20 : 0),
     );
   }
 
@@ -293,7 +293,13 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   return (
     <>
-      <Box style={{ display: 'flex', margin: 8 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          margin: 1,
+          gap: 2,
+        }}
+      >
         <Typography variant="h6">{title}</Typography>
         <Button
           style={{ marginLeft: 'auto', maxHeight: 35 }}

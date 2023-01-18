@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import Modal from 'src/components/common/Modal/Modal';
 
 interface MoreActionHideContactProps {
@@ -20,6 +21,7 @@ export const MoreActionHideContactModal: React.FC<
   MoreActionHideContactProps
 > = ({ open, setOpen, hiding, hideContact }) => {
   const { t } = useTranslation();
+  const { appName } = useGetAppSettings();
 
   return (
     <Modal
@@ -30,7 +32,8 @@ export const MoreActionHideContactModal: React.FC<
       <DialogContent dividers>
         <DialogContentText>
           {t(
-            'Are you sure you wish to hide the selected contact? Hiding a contact in MPDX actually sets the contact status to "Never Ask".',
+            'Are you sure you wish to hide the selected contact? Hiding a contact in {{appName}} actually sets the contact status to "Never Ask".',
+            { appName },
           )}
         </DialogContentText>
       </DialogContent>

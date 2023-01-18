@@ -47,7 +47,7 @@ describe('NewsletterMenu', () => {
         },
       };
     };
-    it.skip('Shows most recent date out of two valid dates | Electronic', async () => {
+    it('Shows most recent date out of two valid dates | Electronic', async () => {
       const { getByTestId } = render(
         <GqlMockedProvider<GetTaskAnalyticsQuery>
           mocks={createDateMock('2021-10-27T16:20:06Z', '2020-11-11T19:42:03Z')}
@@ -56,14 +56,13 @@ describe('NewsletterMenu', () => {
         </GqlMockedProvider>,
       );
       await waitFor(() =>
-        expect(getByTestId('NewsletterMenuButton').textContent).not.toBeNull(),
-      );
-      expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
-        'NewsletterLatest: 10/27/2021',
+        expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
+          'NewsletterLatest: 10/27/2021',
+        ),
       );
     });
 
-    it.skip('Shows most recent date out of two valid dates | Physical', async () => {
+    it('Shows most recent date out of two valid dates | Physical', async () => {
       const { getByTestId } = render(
         <GqlMockedProvider<GetTaskAnalyticsQuery>
           mocks={createDateMock('2020-10-27T16:20:06Z', '2020-11-11T19:42:03Z')}
@@ -72,14 +71,13 @@ describe('NewsletterMenu', () => {
         </GqlMockedProvider>,
       );
       await waitFor(() =>
-        expect(getByTestId('NewsletterMenuButton').textContent).not.toBeNull(),
-      );
-      expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
-        'NewsletterLatest: 11/11/2020',
+        expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
+          'NewsletterLatest: 11/11/2020',
+        ),
       );
     });
 
-    it.skip('Shows most recent date | Electronic', async () => {
+    it('Shows most recent date | Electronic', async () => {
       const { getByTestId } = render(
         <GqlMockedProvider<GetTaskAnalyticsQuery>
           mocks={createDateMock('2021-10-27T16:20:06Z', null)}
@@ -88,14 +86,13 @@ describe('NewsletterMenu', () => {
         </GqlMockedProvider>,
       );
       await waitFor(() =>
-        expect(getByTestId('NewsletterMenuButton').textContent).not.toBeNull(),
-      );
-      expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
-        'NewsletterLatest: 10/27/2021',
+        expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
+          'NewsletterLatest: 10/27/2021',
+        ),
       );
     });
 
-    it.skip('Shows most recent date | Physical', async () => {
+    it('Shows most recent date | Physical', async () => {
       const { getByTestId } = render(
         <GqlMockedProvider<GetTaskAnalyticsQuery>
           mocks={createDateMock(null, '2020-11-11T19:42:03Z')}
@@ -104,14 +101,13 @@ describe('NewsletterMenu', () => {
         </GqlMockedProvider>,
       );
       await waitFor(() =>
-        expect(getByTestId('NewsletterMenuButton').textContent).not.toBeNull(),
-      );
-      expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
-        'NewsletterLatest: 11/11/2020',
+        expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
+          'NewsletterLatest: 11/11/2020',
+        ),
       );
     });
 
-    it.skip('Shows "never" if no date data', async () => {
+    it('Shows "never" if no date data', async () => {
       const { getByTestId } = render(
         <GqlMockedProvider<GetTaskAnalyticsQuery>
           mocks={createDateMock(null, null)}
@@ -120,11 +116,9 @@ describe('NewsletterMenu', () => {
         </GqlMockedProvider>,
       );
       await waitFor(() =>
-        expect(getByTestId('NewsletterMenuButton').textContent).not.toBeNull(),
-      );
-
-      expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
-        'NewsletterLatest: never',
+        expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
+          'NewsletterLatest: never',
+        ),
       );
     });
   });

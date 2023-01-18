@@ -1,12 +1,11 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import {
   gqlMock,
   GqlMockedProvider,
 } from '../../../../__tests__/util/graphqlMocking';
-import { ContactsPageProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import { GetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -16,6 +15,7 @@ import {
   ContactRowFragmentDoc,
 } from './ContactRow.generated';
 import theme from 'src/theme';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'account-list-1';
 
@@ -74,9 +74,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider<GetUserOptionsQuery>>
           <ThemeProvider theme={theme}>
-            <ContactsPageProvider>
+            <ContactsPage>
               <ContactRow contact={contact} />
-            </ContactsPageProvider>
+            </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -99,9 +99,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider<GetUserOptionsQuery>>
           <ThemeProvider theme={theme}>
-            <ContactsPageProvider>
+            <ContactsPage>
               <ContactRow contact={contact} />
-            </ContactsPageProvider>
+            </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -109,7 +109,7 @@ describe('ContactsRow', () => {
 
     const checkbox = getByRole('checkbox');
     expect(checkbox).not.toBeChecked();
-    await waitFor(() => userEvent.click(checkbox));
+    userEvent.click(checkbox);
     // TODO: Find a way to check that click event was pressed.
   });
 
@@ -118,16 +118,16 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider<GetUserOptionsQuery>>
           <ThemeProvider theme={theme}>
-            <ContactsPageProvider>
+            <ContactsPage>
               <ContactRow contact={contact} />
-            </ContactsPageProvider>
+            </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
     );
 
     const taskButton = getByTitle('Log Task');
-    await waitFor(() => userEvent.click(taskButton));
+    userEvent.click(taskButton);
     // TODO: Find a way to check that click event was pressed.
     expect(openTaskModal).toHaveBeenCalledWith({
       view: 'log',
@@ -142,9 +142,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider<GetUserOptionsQuery>>
           <ThemeProvider theme={theme}>
-            <ContactsPageProvider>
+            <ContactsPage>
               <ContactRow contact={contact} />
-            </ContactsPageProvider>
+            </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,

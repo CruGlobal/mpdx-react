@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
+import useGetAppSettings from '../../src/hooks/useGetAppSettings';
 import Dashboard from '../../src/components/Dashboard';
 import { ssrClient } from '../../src/lib/client';
 import {
@@ -16,10 +17,13 @@ interface Props {
 }
 
 const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
+  const { appName } = useGetAppSettings();
   return (
     <>
       <Head>
-        <title>MPDX | {data.accountList.name}</title>
+        <title>
+          {appName} | {data.accountList.name}
+        </title>
       </Head>
       <Dashboard data={data} accountListId={accountListId} />
     </>

@@ -23,13 +23,14 @@ import NullState from '../../../../src/components/Shared/Filters/NullState/NullS
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
-import { ContactsPageProvider } from '../contacts/ContactsPageContext';
+import { ContactsProvider } from '../contacts/ContactsContext';
 import {
   TasksDocument,
   useTaskFiltersQuery,
   useTasksQuery,
 } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
@@ -72,6 +73,7 @@ const TasksPage: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { query, push, replace, isReady, pathname } = useRouter();
   const { openTaskModal } = useTaskModal();
+  const { appName } = useGetAppSettings();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
@@ -318,7 +320,9 @@ const TasksPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Tasks')}</title>
+        <title>
+          {appName} | {t('Tasks')}
+        </title>
       </Head>
       {accountListId ? (
         <WhiteBackground>
@@ -501,11 +505,21 @@ const TasksPage: React.FC = () => {
             }
             rightPanel={
               contactDetailsId ? (
-                <ContactsPageProvider>
+                <ContactsProvider
+                  urlFilters={urlFilters}
+                  activeFilters={activeFilters}
+                  setActiveFilters={setActiveFilters}
+                  starredFilter={starredFilter}
+                  setStarredFilter={setStarredFilter}
+                  filterPanelOpen={filterPanelOpen}
+                  setFilterPanelOpen={setFilterPanelOpen}
+                  contactId={contactId}
+                  searchTerm={searchTerm}
+                >
                   <ContactsRightPanel
                     onClose={() => setContactFocus(undefined)}
                   />
-                </ContactsPageProvider>
+                </ContactsProvider>
               ) : (
                 <></>
               )

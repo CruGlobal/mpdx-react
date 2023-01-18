@@ -38,7 +38,7 @@ export const AddMenuPanel = (): ReactElement => {
       },
     },
     {
-      text: 'Multiple Contacts',
+      text: 'Add Multiple Contacts',
       icon: PeopleIcon,
       onClick: () => {
         changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);
@@ -63,6 +63,7 @@ export const AddMenuPanel = (): ReactElement => {
     {
       text: 'Log Task',
       icon: EditIcon,
+      // eslint-disable-next-line no-console
       onClick: () => console.log('log task'),
     },
   ];

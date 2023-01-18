@@ -7,7 +7,6 @@ import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocki
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPageProvider } from '../../../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import { ContactDetailsPartnerAccounts } from './ContactDetailsPartnerAccounts';
 import { DeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
 import { UpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
@@ -80,11 +79,9 @@ describe('ContactDetailsPartnerAccounts', () => {
         <TestRouter router={router}>
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
-              <ContactsPageProvider>
-                <ContactDetailProvider>
-                  <ContactDetailsPartnerAccounts contact={contact} />
-                </ContactDetailProvider>
-              </ContactsPageProvider>
+              <ContactDetailProvider>
+                <ContactDetailsPartnerAccounts contact={contact} />
+              </ContactDetailProvider>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>
@@ -101,11 +98,9 @@ describe('ContactDetailsPartnerAccounts', () => {
         <TestRouter router={router}>
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
-              <ContactsPageProvider>
-                <ContactDetailProvider>
-                  <ContactDetailsPartnerAccounts contact={contact} />
-                </ContactDetailProvider>
-              </ContactsPageProvider>
+              <ContactDetailProvider>
+                <ContactDetailsPartnerAccounts contact={contact} />
+              </ContactDetailProvider>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>
@@ -128,11 +123,9 @@ describe('ContactDetailsPartnerAccounts', () => {
         <TestRouter router={router}>
           <GqlMockedProvider<UpdateContactOtherMutation> onCall={mutationSpy}>
             <ThemeProvider theme={theme}>
-              <ContactsPageProvider>
-                <ContactDetailProvider>
-                  <ContactDetailsPartnerAccounts contact={contact} />
-                </ContactDetailProvider>
-              </ContactsPageProvider>
+              <ContactDetailProvider>
+                <ContactDetailsPartnerAccounts contact={contact} />
+              </ContactDetailProvider>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>
@@ -187,11 +180,9 @@ describe('ContactDetailsPartnerAccounts', () => {
         <TestRouter router={router}>
           <GqlMockedProvider<DeleteDonorAccountMutation> onCall={mutationSpy}>
             <ThemeProvider theme={theme}>
-              <ContactsPageProvider>
-                <ContactDetailProvider>
-                  <ContactDetailsPartnerAccounts contact={contact} />
-                </ContactDetailProvider>
-              </ContactsPageProvider>
+              <ContactDetailProvider>
+                <ContactDetailsPartnerAccounts contact={contact} />
+              </ContactDetailProvider>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>
