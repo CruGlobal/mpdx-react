@@ -24,11 +24,11 @@ jest.mock('next/router', () => ({
   },
 }));
 
-describe.skip('NotificationMenuItem', () => {
+describe('NotificationMenuItem', () => {
   const id = 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b';
   const itemWithoutDonation = (
     type: NotificationTypeTypeEnum,
-    occurredAt = '2020-05-25T20:00:00-04:00',
+    occurredAt = '2020-05-25T20:00:00',
   ): GetNotificationsQuery['userNotifications']['nodes'][0] => {
     return {
       id,
@@ -55,7 +55,7 @@ describe.skip('NotificationMenuItem', () => {
       id,
       read: false,
       notification: {
-        occurredAt: '2020-05-25T20:00:00-04:00',
+        occurredAt: '2020-05-25T20:00:00',
         contact: {
           id: '942ea954-c251-44d6-8166-7a1879ecdbc7',
           name: 'Smith, Roger',
@@ -438,6 +438,10 @@ describe.skip('NotificationMenuItem', () => {
   });
 
   describe('onClick', () => {
+    beforeEach(() => {
+      window.open = jest.fn();
+    });
+
     it('calls function', async () => {
       const cache = new InMemoryCache({ addTypename: false });
       jest.spyOn(cache, 'writeQuery');

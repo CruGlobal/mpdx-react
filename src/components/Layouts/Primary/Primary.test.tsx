@@ -25,7 +25,7 @@ describe('Primary', () => {
     }));
   });
 
-  it.skip('has correct defaults', () => {
+  it('has correct defaults', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper mocks={mocks}>
