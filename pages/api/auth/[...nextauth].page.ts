@@ -24,30 +24,37 @@ declare module 'next-auth' {
   }
 }
 
-if (!process.env.OKTA_CLIENT_ID || !process.env.OKTA_CLIENT_SECRET) {
+if (
+  process.env.USE_OKTA_OAUTH === 'true' &&
+  (!process.env.OKTA_CLIENT_ID || !process.env.OKTA_CLIENT_SECRET)
+) {
   throw new Error('OKTA_CLIENT_ID or OKTA_CLIENT_SECRET envs not defined');
 }
-
-// if (!process.env.API_OAUTH_CLIENT_ID || !process.env.API_OAUTH_CLIENT_SECRET) {
-//   throw new Error('API_OAUTH_CLIENT_ID or API_OAUTH_CLIENT_SECRET envs not defined');
-// }
+if (
+  process.env.USE_API_OAUTH === 'true' &&
+  (!process.env.API_OAUTH_CLIENT_ID || !process.env.API_OAUTH_CLIENT_SECRET)
+) {
+  throw new Error(
+    'API_OAUTH_CLIENT_ID or API_OAUTH_CLIENT_SECRET envs not defined',
+  );
+}
 
 const options: NextAuthOptions = {
   providers: [
     OktaProvider({
-      clientId: process.env.OKTA_CLIENT_ID,
-      clientSecret: process.env.OKTA_CLIENT_SECRET,
-      issuer: process.env.OKTA_ISSUER,
+      clientId: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
+      clientSecret: process.env.OKTA_CLIENT_SECRET ?? '',
+      issuer: process.env.OKTA_ISSUER ?? '',
       authorization: { params: { scope: 'openid email profile' } },
       token: { params: { scope: 'openid email profile' } },
       userinfo: { params: { scope: 'openid email profile' } },
     }),
     {
       id: 'apioauth',
-      name: process.env.API_OAUTH_VISIBLE_NAME,
+      name: process.env.API_OAUTH_VISIBLE_NAME ?? 'SSO',
       type: 'oauth',
-      clientId: process.env.API_OAUTH_CLIENT_ID,
-      clientSecret: process.env.API_OAUTH_CLIENT_SECRET,
+      clientId: process.env.API_OAUTH_CLIENT_ID ?? '',
+      clientSecret: process.env.API_OAUTH_CLIENT_SECRET ?? '',
       authorization: {
         url: `${process.env.API_OAUTH_ISSUER}/oauth/authorize`,
         params: { scope: 'read write', response_type: 'code' },
