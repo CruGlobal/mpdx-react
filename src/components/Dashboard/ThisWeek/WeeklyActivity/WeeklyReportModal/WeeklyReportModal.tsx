@@ -329,7 +329,6 @@ export const WeeklyReportModal = ({
               )}
               {questions.length > 0 && activeStep === questions.length + 1 && (
                 <Alert severity="success">
-                  {/* TODO: Translate success message */}
                   Your report was successfully submitted. View it on your
                   coaching reports page.
                 </Alert>
