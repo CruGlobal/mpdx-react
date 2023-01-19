@@ -8,7 +8,17 @@ import useGetAppSettings from '../src/hooks/useGetAppSettings';
 import Welcome from '../src/components/Welcome';
 import BaseLayout from '../src/components/Layouts/Basic';
 
-const IndexPage = (): ReactElement => {
+interface IndexPageProps {
+  useOktaOauth?: boolean;
+  useApiOauth?: boolean;
+  apiOauthVisibleName?: string;
+}
+
+const IndexPage = ({
+  useOktaOauth,
+  useApiOauth,
+  apiOauthVisibleName,
+}: IndexPageProps): ReactElement => {
   const { appName } = useGetAppSettings();
 
   return (
@@ -28,14 +38,29 @@ const IndexPage = (): ReactElement => {
         subtitle={`${appName} is fundraising software from Cru that helps you grow and maintain your ministry
   partners in a quick and easy way.`}
       >
-        <Button
-          size="large"
-          variant="contained"
-          onClick={() => signIn('okta')}
-          color="inherit"
-        >
-          Sign In
-        </Button>
+        {useOktaOauth && (
+          <Button
+            size="large"
+            variant="contained"
+            onClick={() => signIn('okta')}
+            color="inherit"
+          >
+            Sign In
+          </Button>
+        )}
+
+        {useApiOauth && (
+          <Button
+            size="large"
+            variant="contained"
+            onClick={() => signIn('apioauth')}
+            color="inherit"
+            style={{ marginLeft: useOktaOauth ? '10px' : '' }}
+          >
+            Sign In with {apiOauthVisibleName}
+          </Button>
+        )}
+
         <Button
           size="large"
           startIcon={<SubjectIcon />}
@@ -55,6 +80,9 @@ IndexPage.layout = BaseLayout;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
+  const useOktaOauth = process.env.USE_OKTA_OAUTH === 'true';
+  const useApiOauth = process.env.USE_API_OAUTH === 'true';
+  const apiOauthVisibleName = process.env.API_OAUTH_VISIBLE_NAME;
 
   if (context.res && session) {
     return {
@@ -65,7 +93,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  return { props: {} };
+  return {
+    props: {
+      useOktaOauth,
+      useApiOauth,
+      apiOauthVisibleName,
+    },
+  };
 };
 
 export default IndexPage;
