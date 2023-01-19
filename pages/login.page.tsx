@@ -7,7 +7,6 @@ import Head from 'next/head';
 import useGetAppSettings from '../src/hooks/useGetAppSettings';
 import Welcome from '../src/components/Welcome';
 import BaseLayout from '../src/components/Layouts/Basic';
-import logo from '../src/images/logo.svg';
 
 const IndexPage = (): ReactElement => {
   const { appName } = useGetAppSettings();
@@ -18,7 +17,14 @@ const IndexPage = (): ReactElement => {
         <title>{appName} | Home</title>
       </Head>
       <Welcome
-        title={<img src={logo} alt="logo" height={50} />}
+        title={
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
+            alt="logo"
+            height={50}
+          />
+        }
         subtitle={`${appName} is fundraising software from Cru that helps you grow and maintain your ministry
   partners in a quick and easy way.`}
       >
