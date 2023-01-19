@@ -48,7 +48,7 @@ interface WeeklyReportProgressProps {
   activeStep: number;
 }
 
-const WeeklyReportProgress = ({
+export const WeeklyReportProgress = ({
   totalSteps,
   activeStep,
 }: WeeklyReportProgressProps) => (
@@ -59,6 +59,7 @@ const WeeklyReportProgress = ({
       justifyContent: 'space-between',
     }}
     mb={1}
+    data-testid="WeeklyReportModalStepCounterBox"
   >
     <Box sx={{ width: '100%', mr: 1 }}>
       <LinearProgress
@@ -70,6 +71,7 @@ const WeeklyReportProgress = ({
       <Typography
         variant="body2"
         color="text.secondary"
+        data-testid="WeeklyReportModalStepCounterCount"
       >{`${activeStep}/${totalSteps}`}</Typography>
     </Box>
   </Box>
