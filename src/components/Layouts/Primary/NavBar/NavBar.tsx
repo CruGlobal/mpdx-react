@@ -11,7 +11,6 @@ import {
 } from '../TopBar/Items/NavMenu/NavMenu';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
-import logo from 'src/images/logo.svg';
 import { ToolsList } from 'src/components/Tool/Home/ToolList';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
@@ -166,7 +165,11 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       <Hidden lgUp>
         <Box p={2} display="flex" justifyContent="center">
           <NextLink href="/">
-            <img src={logo} alt="logo" style={{ cursor: 'pointer' }} />
+            <img
+              src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
+              alt="logo"
+              style={{ cursor: 'pointer' }}
+            />
           </NextLink>
         </Box>
       </Hidden>

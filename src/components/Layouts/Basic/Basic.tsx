@@ -1,5 +1,4 @@
 import React, { ReactElement, ReactNode } from 'react';
-import logo from '../../../images/logo.svg';
 import TopBar from './TopBar';
 
 interface Props {
@@ -10,7 +9,7 @@ const Basic = ({ children }: Props): ReactElement => {
   return (
     <>
       <TopBar>
-        <img src={logo} alt="logo" />
+        <img src={process.env.NEXT_PUBLIC_MEDIA_LOGO} alt="logo" />
       </TopBar>
       {children}
     </>
