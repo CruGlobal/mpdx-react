@@ -77,6 +77,42 @@ export const WeeklyReportProgress = ({
   </Box>
 );
 
+interface WeeklyReportAlertsProps {
+  questionsLength: number;
+  activeStep: number;
+  onClose: () => void;
+}
+
+export const WeeklyReportAlerts = ({
+  questionsLength,
+  activeStep,
+  onClose,
+}: WeeklyReportAlertsProps) => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <DialogContent dividers data-testid="WeeklyReportModalAlerts">
+        {questionsLength === 0 && (
+          <Alert severity="warning">
+            {t(
+              'Weekly report questions have not been setup for your organization.',
+            )}
+          </Alert>
+        )}
+        {questionsLength > 0 && activeStep === questionsLength + 1 && (
+          <Alert severity="success">
+            Your report was successfully submitted. View it on your coaching
+            reports page.
+          </Alert>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <CancelButton onClick={onClose}>{t('Close')}</CancelButton>
+      </DialogActions>
+    </>
+  );
+};
+
 interface WeeklyReportModalProps {
   accountListId: string;
   open: boolean;
@@ -318,26 +354,11 @@ export const WeeklyReportModal = ({
           );
         })}
         {(questions.length === 0 || activeStep === questions.length + 1) && (
-          <>
-            <DialogContent dividers>
-              {questions.length === 0 && (
-                <Alert severity="warning">
-                  {t(
-                    'Weekly report questions have not been setup for your organization.',
-                  )}
-                </Alert>
-              )}
-              {questions.length > 0 && activeStep === questions.length + 1 && (
-                <Alert severity="success">
-                  Your report was successfully submitted. View it on your
-                  coaching reports page.
-                </Alert>
-              )}
-            </DialogContent>
-            <DialogActions>
-              <CancelButton onClick={localOnClose}>{t('Close')}</CancelButton>
-            </DialogActions>
-          </>
+          <WeeklyReportAlerts
+            questionsLength={questions.length}
+            activeStep={activeStep}
+            onClose={localOnClose}
+          />
         )}
       </>
     </Modal>

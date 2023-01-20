@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { WeeklyReportProgress } from './WeeklyReportModal';
+import { WeeklyReportAlerts, WeeklyReportProgress } from './WeeklyReportModal';
 
 describe('Weekly Report Modal', () => {
   it('checks for the progress bar', () => {
@@ -13,5 +13,19 @@ describe('Weekly Report Modal', () => {
     expect(
       getByTestId('WeeklyReportModalStepCounterCount').textContent,
     ).toEqual('1/8');
+  });
+  it('checks form submission success alert', async () => {
+    const { getByTestId } = render(
+      <WeeklyReportAlerts
+        questionsLength={8}
+        activeStep={9}
+        onClose={() => {}}
+      />,
+    );
+    expect(
+      getByTestId('WeeklyReportModalAlerts').children[0].className,
+    ).toContain('MuiAlert-root');
+
+    expect(2).toEqual(2);
   });
 });
