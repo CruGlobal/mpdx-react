@@ -14,7 +14,7 @@ describe('Weekly Report Modal', () => {
       getByTestId('WeeklyReportModalStepCounterCount').textContent,
     ).toEqual('1/8');
   });
-  it('checks form submission success alert', async () => {
+  it('checks for form submission success alert', async () => {
     const { getByTestId } = render(
       <WeeklyReportAlerts
         questionsLength={8}
@@ -24,8 +24,18 @@ describe('Weekly Report Modal', () => {
     );
     expect(
       getByTestId('WeeklyReportModalAlerts').children[0].className,
-    ).toContain('MuiAlert-root');
-
-    expect(2).toEqual(2);
+    ).toContain('MuiAlert-standardSuccess');
+  });
+  it('checks for form no questions alert', async () => {
+    const { getByTestId } = render(
+      <WeeklyReportAlerts
+        questionsLength={0}
+        activeStep={1}
+        onClose={() => {}}
+      />,
+    );
+    expect(
+      getByTestId('WeeklyReportModalAlerts').children[0].className,
+    ).toContain('MuiAlert-standardWarning');
   });
 });
