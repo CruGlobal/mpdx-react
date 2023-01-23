@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
+import { Provider } from 'next-auth/providers';
 import OktaProvider from 'next-auth/providers/okta';
 import client from '../../../src/lib/client';
 import {
@@ -39,8 +40,10 @@ if (
   );
 }
 
-const options: NextAuthOptions = {
-  providers: [
+const providersArray: Provider[] = [];
+
+if (process.env.USE_OKTA_OAUTH === 'true') {
+  providersArray.push(
     OktaProvider({
       clientId: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
       clientSecret: process.env.OKTA_CLIENT_SECRET ?? '',
@@ -49,45 +52,52 @@ const options: NextAuthOptions = {
       token: { params: { scope: 'openid email profile' } },
       userinfo: { params: { scope: 'openid email profile' } },
     }),
-    {
-      id: 'apioauth',
-      name: process.env.API_OAUTH_VISIBLE_NAME ?? 'SSO',
-      type: 'oauth',
-      clientId: process.env.API_OAUTH_CLIENT_ID ?? '',
-      clientSecret: process.env.API_OAUTH_CLIENT_SECRET ?? '',
-      authorization: {
-        url: `${process.env.API_OAUTH_ISSUER}/oauth/authorize`,
-        params: { scope: 'read write', response_type: 'code' },
-      },
-      token: {
-        url: `${process.env.API_OAUTH_ISSUER}/oauth/token`,
-        params: { scope: 'read write', response_type: 'code' },
-      },
-      userinfo: {
-        async request() {
-          // Our API doesn't use the auth/userInfo endpoint,  but NextAuth requires it to get the access token.
-          // Since we pass the access_token to our API, which returns a JWT, user and authenicates via Graph QL
-          // We can just return a object with hardcoded info, as it doesn't get used anywhere.
-          return {
-            sub: '83692',
-            name: 'Alice Adams',
-            given_name: 'Alice',
-            family_name: 'Adams',
-            email: 'alice.adams@gmail.cpm',
-            picture: 'https://example.com/83692/photo.jpg',
-          };
-        },
-      },
-      idToken: false,
-      profile(profile) {
+  );
+}
+
+if (process.env.USE_API_OAUTH === 'true') {
+  providersArray.push({
+    id: 'apioauth',
+    name: process.env.API_OAUTH_VISIBLE_NAME ?? 'SSO',
+    type: 'oauth',
+    clientId: process.env.API_OAUTH_CLIENT_ID ?? '',
+    clientSecret: process.env.API_OAUTH_CLIENT_SECRET ?? '',
+    authorization: {
+      url: `${process.env.API_OAUTH_ISSUER}/oauth/authorize`,
+      params: { scope: 'read write', response_type: 'code' },
+    },
+    token: {
+      url: `${process.env.API_OAUTH_ISSUER}/oauth/token`,
+      params: { scope: 'read write', response_type: 'code' },
+    },
+    userinfo: {
+      async request() {
+        // Our API doesn't use the auth/userInfo endpoint,  but NextAuth requires it to get the access token.
+        // Since we pass the access_token to our API, which returns a JWT, user and authenicates via Graph QL
+        // We can just return a object with hardcoded info, as it doesn't get used anywhere.
         return {
-          id: profile?.sub,
-          email: profile?.email,
+          sub: '83692',
+          name: 'Alice Adams',
+          given_name: 'Alice',
+          family_name: 'Adams',
+          email: 'alice.adams@gmail.cpm',
+          picture: 'https://example.com/83692/photo.jpg',
         };
       },
-      checks: ['pkce', 'state'],
     },
-  ],
+    idToken: false,
+    profile(profile) {
+      return {
+        id: profile?.sub,
+        email: profile?.email,
+      };
+    },
+    checks: ['pkce', 'state'],
+  });
+}
+
+const options: NextAuthOptions = {
+  providers: providersArray,
   secret: process.env.JWT_SECRET,
   callbacks: {
     signIn: async ({ user, account }) => {
