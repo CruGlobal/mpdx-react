@@ -43,6 +43,10 @@ const labelStyles = {
   whiteSpace: 'unset',
 };
 
+type Question = ElementOf<
+  CurrentCoachingAnswerSetQuery['currentCoachingAnswerSet']['questions']
+>;
+
 interface WeeklyReportProgressProps {
   totalSteps: number;
   activeStep: number;
@@ -76,6 +80,52 @@ export const WeeklyReportProgress = ({
     </Box>
   </Box>
 );
+
+interface WeeklyReportActionsProps {
+  questionsLength: number;
+  activeStep: number;
+  prevQuestion: () => void;
+  save: () => void;
+  value: string;
+  isValid: boolean;
+}
+
+export const WeeklyReportActions = ({
+  questionsLength,
+  activeStep,
+  prevQuestion,
+  save,
+  value,
+  isValid,
+}: WeeklyReportActionsProps) => {
+  const { t } = useTranslation();
+  return (
+    <DialogActions
+      sx={{
+        justifyContent:
+          activeStep === 1 || activeStep === questionsLength + 1
+            ? 'flex-end'
+            : 'space-between',
+      }}
+    >
+      {activeStep > 1 && activeStep <= questionsLength && (
+        <CancelButton
+          onClick={() => {
+            prevQuestion();
+            if (value !== '') {
+              save();
+            }
+          }}
+        >
+          {t('Back')}
+        </CancelButton>
+      )}
+      <SubmitButton disabled={!isValid || (isValid && value === '')}>
+        {activeStep < questionsLength ? t('Next') : t('Submit')}
+      </SubmitButton>
+    </DialogActions>
+  );
+};
 
 interface WeeklyReportAlertsProps {
   questionsLength: number;
@@ -155,9 +205,7 @@ export const WeeklyReportModal = ({
 
   const saveAnswer = async (
     answerId: string | null,
-    question: ElementOf<
-      CurrentCoachingAnswerSetQuery['currentCoachingAnswerSet']['questions']
-    >,
+    question: Question,
     response: string,
   ) => {
     if (!data) {
@@ -309,42 +357,16 @@ export const WeeklyReportModal = ({
                             />
                           )}
                         </DialogContent>
-                        <DialogActions
-                          sx={{
-                            justifyContent:
-                              activeStep === 1 ||
-                              activeStep === questions.length + 1
-                                ? 'flex-end'
-                                : 'space-between',
+                        <WeeklyReportActions
+                          questionsLength={questions.length}
+                          activeStep={activeStep}
+                          prevQuestion={handleWeeklyReportPrev}
+                          save={() => {
+                            saveAnswer(answerId, question, values[question.id]);
                           }}
-                        >
-                          {activeStep > 1 && activeStep <= questions.length && (
-                            <CancelButton
-                              onClick={() => {
-                                handleWeeklyReportPrev();
-                                if (values[question.id] !== '') {
-                                  saveAnswer(
-                                    answerId,
-                                    question,
-                                    values[question.id],
-                                  );
-                                }
-                              }}
-                            >
-                              {t('Back')}
-                            </CancelButton>
-                          )}
-                          <SubmitButton
-                            disabled={
-                              !isValid ||
-                              (isValid && values[question.id] === '')
-                            }
-                          >
-                            {activeStep < questions.length
-                              ? t('Next')
-                              : t('Submit')}
-                          </SubmitButton>
-                        </DialogActions>
+                          value={values[question.id]}
+                          isValid={isValid}
+                        />
                       </form>
                     )}
                   </Formik>
