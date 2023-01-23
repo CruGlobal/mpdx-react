@@ -1,27 +1,19 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Alert,
   Box,
-  DialogActions,
   DialogContent,
   FormControl,
   FormControlLabel,
   FormLabel,
-  LinearProgress,
   Radio,
   RadioGroup,
   TextField,
-  Typography,
 } from '@mui/material';
 import { Formik } from 'formik';
 import { ElementOf } from 'ts-essentials';
 import * as yup from 'yup';
 import Modal from '../../../../common/Modal/Modal';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import theme from '../../../../../theme';
 import {
   CurrentCoachingAnswerSetDocument,
@@ -30,6 +22,9 @@ import {
   useSaveCoachingAnswerMutation,
 } from './WeeklyReportModal.generated';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
+import { WeeklyReportActions } from './WeeklyReportModalActions';
+import { WeeklyReportAlerts } from './WeeklyReportModalAlerts';
+import { WeeklyReportProgress } from './WeeklyReportModalProgress';
 
 const labelStyles = {
   fontSize: '1.5rem',
@@ -46,122 +41,6 @@ const labelStyles = {
 type Question = ElementOf<
   CurrentCoachingAnswerSetQuery['currentCoachingAnswerSet']['questions']
 >;
-
-interface WeeklyReportProgressProps {
-  totalSteps: number;
-  activeStep: number;
-}
-
-export const WeeklyReportProgress = ({
-  totalSteps,
-  activeStep,
-}: WeeklyReportProgressProps) => (
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    }}
-    mb={1}
-    data-testid="WeeklyReportModalStepCounterBox"
-  >
-    <Box sx={{ width: '100%', mr: 1 }}>
-      <LinearProgress
-        variant="determinate"
-        value={(activeStep / totalSteps) * 100}
-      />
-    </Box>
-    <Box>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        data-testid="WeeklyReportModalStepCounterCount"
-      >{`${activeStep}/${totalSteps}`}</Typography>
-    </Box>
-  </Box>
-);
-
-interface WeeklyReportActionsProps {
-  questionsLength: number;
-  activeStep: number;
-  prevQuestion: () => void;
-  save: () => void;
-  value: string;
-  isValid: boolean;
-}
-
-export const WeeklyReportActions = ({
-  questionsLength,
-  activeStep,
-  prevQuestion,
-  save,
-  value,
-  isValid,
-}: WeeklyReportActionsProps) => {
-  const { t } = useTranslation();
-  return (
-    <DialogActions
-      sx={{
-        justifyContent:
-          activeStep === 1 || activeStep === questionsLength + 1
-            ? 'flex-end'
-            : 'space-between',
-      }}
-    >
-      {activeStep > 1 && activeStep <= questionsLength && (
-        <CancelButton
-          onClick={() => {
-            prevQuestion();
-            if (value !== '') {
-              save();
-            }
-          }}
-        >
-          {t('Back')}
-        </CancelButton>
-      )}
-      <SubmitButton disabled={!isValid || (isValid && value === '')}>
-        {activeStep < questionsLength ? t('Next') : t('Submit')}
-      </SubmitButton>
-    </DialogActions>
-  );
-};
-
-interface WeeklyReportAlertsProps {
-  questionsLength: number;
-  activeStep: number;
-  onClose: () => void;
-}
-
-export const WeeklyReportAlerts = ({
-  questionsLength,
-  activeStep,
-  onClose,
-}: WeeklyReportAlertsProps) => {
-  const { t } = useTranslation();
-  return (
-    <>
-      <DialogContent dividers data-testid="WeeklyReportModalAlerts">
-        {questionsLength === 0 && (
-          <Alert severity="warning">
-            {t(
-              'Weekly report questions have not been setup for your organization.',
-            )}
-          </Alert>
-        )}
-        {questionsLength > 0 && activeStep === questionsLength + 1 && (
-          <Alert severity="success">
-            Your report was successfully submitted. View it on your coaching
-            reports page.
-          </Alert>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <CancelButton onClick={onClose}>{t('Close')}</CancelButton>
-      </DialogActions>
-    </>
-  );
-};
 
 interface WeeklyReportModalProps {
   accountListId: string;
