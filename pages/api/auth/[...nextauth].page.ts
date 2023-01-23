@@ -26,17 +26,32 @@ declare module 'next-auth' {
 }
 
 if (
-  process.env.USE_OKTA_OAUTH === 'true' &&
-  (!process.env.OKTA_CLIENT_ID || !process.env.OKTA_CLIENT_SECRET)
+  process.env.USE_OKTA_OAUTH !== 'true' &&
+  process.env.USE_API_OAUTH !== 'true'
 ) {
-  throw new Error('OKTA_CLIENT_ID or OKTA_CLIENT_SECRET envs not defined');
+  throw new Error(
+    'Please configure Okta or API OAuth login. USE_OKTA_OAUTH && USE_API_OAUTH envs not defined',
+  );
+}
+
+if (
+  process.env.USE_OKTA_OAUTH === 'true' &&
+  (!process.env.OKTA_CLIENT_ID ||
+    !process.env.OKTA_CLIENT_SECRET ||
+    !process.env.OKTA_ISSUER)
+) {
+  throw new Error(
+    'OKTA_CLIENT_ID, OKTA_CLIENT_SECRET or OKTA_ISSUER envs not defined',
+  );
 }
 if (
   process.env.USE_API_OAUTH === 'true' &&
-  (!process.env.API_OAUTH_CLIENT_ID || !process.env.API_OAUTH_CLIENT_SECRET)
+  (!process.env.API_OAUTH_CLIENT_ID ||
+    !process.env.API_OAUTH_CLIENT_SECRET ||
+    !process.env.API_OAUTH_ISSUER)
 ) {
   throw new Error(
-    'API_OAUTH_CLIENT_ID or API_OAUTH_CLIENT_SECRET envs not defined',
+    'API_OAUTH_CLIENT_ID, API_OAUTH_CLIENT_SECRET or API_OAUTH_ISSUER envs not defined',
   );
 }
 
