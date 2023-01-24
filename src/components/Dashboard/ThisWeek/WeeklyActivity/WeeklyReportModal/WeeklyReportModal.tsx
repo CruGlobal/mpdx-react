@@ -95,10 +95,12 @@ export const WeeklyReportModal = ({
       variables: {
         answerSetId: data.currentCoachingAnswerSet.id,
         answerId,
-        response: response,
+        response,
         questionId: question.id,
       },
       update: (cache, { data: saveAnswerData }) => {
+        // When a new answer was created, add it to the cached answer set
+        // When an answer is updated, Apollo will automatically update the cache, so no action is required
         if (answerId || !saveAnswerData) {
           return;
         }
