@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { map, unionBy } from 'lodash';
 import { ReactElement } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useGetDonorAccountsLazyQuery } from './DonorAccountAutocomplete.generated';
 
 export interface DonorAccountAutocompleteProps {

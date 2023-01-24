@@ -18356,7 +18356,6 @@ __metadata:
     tss-react: ^4.1.3
     typescript: ^4.8.3
     url-loader: ^4.1.1
-    use-debounce: ^8.0.4
     uuid: ^9.0.0
     yup: ^0.32.11
   languageName: unknown
@@ -24641,15 +24640,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 7913df383a5a6fcb399212eedefaac2e0c6f843555202d4e3010bac3848afe38ecaa3d0d6500ad1d936fbeffd637e6c517e68edb024af5e6beca7f27f3ce7b21
-  languageName: node
-  linkType: hard
-
-"use-debounce@npm:^8.0.4":
-  version: 8.0.4
-  resolution: "use-debounce@npm:8.0.4"
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: 0f8b9e571f68a4694033ec00690bf73d781ac890140ae9ed4b330f71f7adb3f7d7df5cdaa32923c4d03fdc9de8a11be0f84301175ae4f66208af52ad03c55504
   languageName: node
   linkType: hard
 

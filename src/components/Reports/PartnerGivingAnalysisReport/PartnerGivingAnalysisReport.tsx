@@ -5,7 +5,7 @@ import {
 import React, { useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'use-debounce';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import type { Order } from '../Reports.type';
 import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
@@ -41,7 +41,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
   const [query, setQuery] = useState<string>('');
-  const [search] = useDebounce(query, 500);
+  const search = useDebouncedValue(query, 500);
 
   const contactFilters: ReportContactFilterSetInput = {
     ...filters,
