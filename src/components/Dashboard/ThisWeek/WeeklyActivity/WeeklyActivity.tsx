@@ -23,6 +23,7 @@ import AnimatedCard from '../../../AnimatedCard';
 import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
+import { WeeklyReportModal } from './WeeklyReportModal/WeeklyReportModal';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -104,6 +105,17 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
       endOfWeek: interval.end.toISO(),
     });
   }, [interval]);
+
+  const [openWeeklyReportModal, setOpenWeeklyReportModal] =
+    useState<boolean>(false);
+
+  const onWeeklyReportOpen = () => {
+    setOpenWeeklyReportModal(true);
+  };
+
+  const onWeeklyReportClose = () => {
+    setOpenWeeklyReportModal(false);
+  };
 
   return (
     <AnimatedCard className={classes.card}>
@@ -233,12 +245,20 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
             </TableBody>
           </Table>
         </TableContainer>
-        <CardActions>
+        <CardActions sx={{ justifyContent: 'space-between' }}>
           <HandoffLink path="/reports/coaching">
             <Button size="small" color="primary">
               {t('View Activity Detail')}
             </Button>
           </HandoffLink>
+          <Button size="small" color="primary" onClick={onWeeklyReportOpen}>
+            {t('Fill out weekly report')}
+          </Button>
+          <WeeklyReportModal
+            accountListId={accountListId}
+            open={openWeeklyReportModal}
+            onClose={onWeeklyReportClose}
+          />
         </CardActions>
       </motion.div>
     </AnimatedCard>
