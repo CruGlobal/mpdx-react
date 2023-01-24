@@ -27,6 +27,7 @@ import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
 import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
 import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -83,7 +84,12 @@ const App = ({
         />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <link rel="manifest" href="/manifest.json" />
-        <link href="/favicon.png" rel="icon" type="image/png" sizes="32x32" />
+        <link
+          href={process.env.NEXT_PUBLIC_MEDIA_FAVICON}
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+        />
         <link
           rel="apple-touch-icon"
           href="/icons/apple-touch-icon-iphone-60x60.png"
@@ -107,54 +113,56 @@ const App = ({
       </Head>
       <Provider config={rollbarConfig}>
         <ErrorBoundary>
-          <ApolloProvider client={client}>
-            <SessionProvider session={session}>
-              <UserPreferenceProvider>
-                <I18nextProvider i18n={i18n}>
-                  <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={theme}>
-                      <LocalizationProvider
-                        dateAdapter={AdapterLuxon}
-                        localeText={{
-                          cancelButtonLabel: `${t('Cancel')}`,
-                          clearButtonLabel: `${t('Clear')}`,
-                          okButtonLabel: `${t('OK')}`,
-                          todayButtonLabel: `${t('Today')}`,
-                        }}
-                      >
-                        <SnackbarProvider maxSnack={3}>
-                          <GlobalStyles />
-                          <AnimatePresence
-                            mode="wait"
-                            onExitComplete={handleExitComplete}
-                          >
-                            <RouterGuard>
-                              <TaskModalProvider>
-                                <Layout>
-                                  <SnackbarUtilsConfigurator />
-                                  <Box
-                                    sx={(theme) => ({
-                                      fontFamily: theme.typography.fontFamily,
-                                    })}
-                                  >
-                                    <Component
-                                      {...pageProps}
-                                      key={router.route}
-                                    />
-                                  </Box>
-                                </Layout>
-                              </TaskModalProvider>
-                            </RouterGuard>
-                          </AnimatePresence>
-                          <Loading />
-                        </SnackbarProvider>
-                      </LocalizationProvider>
-                    </ThemeProvider>
-                  </StyledEngineProvider>
-                </I18nextProvider>
-              </UserPreferenceProvider>
-            </SessionProvider>
-          </ApolloProvider>
+          <AppSettingsProvider>
+            <ApolloProvider client={client}>
+              <SessionProvider session={session}>
+                <UserPreferenceProvider>
+                  <I18nextProvider i18n={i18n}>
+                    <StyledEngineProvider injectFirst>
+                      <ThemeProvider theme={theme}>
+                        <LocalizationProvider
+                          dateAdapter={AdapterLuxon}
+                          localeText={{
+                            cancelButtonLabel: `${t('Cancel')}`,
+                            clearButtonLabel: `${t('Clear')}`,
+                            okButtonLabel: `${t('OK')}`,
+                            todayButtonLabel: `${t('Today')}`,
+                          }}
+                        >
+                          <SnackbarProvider maxSnack={3}>
+                            <GlobalStyles />
+                            <AnimatePresence
+                              mode="wait"
+                              onExitComplete={handleExitComplete}
+                            >
+                              <RouterGuard>
+                                <TaskModalProvider>
+                                  <Layout>
+                                    <SnackbarUtilsConfigurator />
+                                    <Box
+                                      sx={(theme) => ({
+                                        fontFamily: theme.typography.fontFamily,
+                                      })}
+                                    >
+                                      <Component
+                                        {...pageProps}
+                                        key={router.route}
+                                      />
+                                    </Box>
+                                  </Layout>
+                                </TaskModalProvider>
+                              </RouterGuard>
+                            </AnimatePresence>
+                            <Loading />
+                          </SnackbarProvider>
+                        </LocalizationProvider>
+                      </ThemeProvider>
+                    </StyledEngineProvider>
+                  </I18nextProvider>
+                </UserPreferenceProvider>
+              </SessionProvider>
+            </ApolloProvider>
+          </AppSettingsProvider>
           <HelpscoutBeacon />
         </ErrorBoundary>
       </Provider>

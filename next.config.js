@@ -10,6 +10,12 @@ if (process.env.secrets) {
   process.env.OKTA_CLIENT_SECRET = JSON.parse(
     process.env.secrets,
   ).OKTA_CLIENT_SECRET;
+  process.env.API_OAUTH_CLIENT_SECRET = JSON.parse(
+    process.env.secrets,
+  ).API_OAUTH_CLIENT_SECRET;
+  process.env.ROLLBAR_SERVER_ACCESS_TOKEN = JSON.parse(
+    process.env.secrets,
+  ).ROLLBAR_SERVER_ACCESS_TOKEN;
 }
 
 const prod = process.env.NODE_ENV === 'production';
@@ -49,13 +55,24 @@ module.exports = withPlugins([
       CLIENT_SECRET: process.env.CLIENT_SECRET,
       BEACON_TOKEN:
         process.env.BEACON_TOKEN ?? '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
+      USE_OKTA_OAUTH: process.env.USE_OKTA_OAUTH ?? 'true',
       OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
       OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
       OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
+      USE_API_OAUTH: process.env.USE_API_OAUTH ?? 'false',
+      API_OAUTH_CLIENT_ID:
+        process.env.API_OAUTH_CLIENT_ID ??
+        '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',
+      API_OAUTH_CLIENT_SECRET: process.env.API_OAUTH_CLIENT_SECRET,
+      API_OAUTH_ISSUER:
+        process.env.API_OAUTH_ISSUER ?? 'https://api.stage.mpdx.org',
+      API_OAUTH_VISIBLE_NAME: process.env.API_OAUTH_VISIBLE_NAME ?? 'SSO',
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
       ONESKY_API_SECRET: process.env.ONESKY_API_SECRET,
       ONESKY_API_KEY: process.env.ONESKY_API_KEY,
+      APP_NAME: process.env.APP_NAME ?? 'MPDX',
+      ROLLBAR_SERVER_ACCESS_TOKEN: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
     },
     experimental: {
       modularizeImports: {

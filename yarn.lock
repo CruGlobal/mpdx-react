@@ -14096,7 +14096,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ergonomock@npm:^1.2.0":
+"graphql-ergonomock@npm:1.2.0":
   version: 1.2.0
   resolution: "graphql-ergonomock@npm:1.2.0"
   dependencies:
@@ -14105,6 +14105,18 @@ __metadata:
     graphql-tools: ^7.0.0
     seedrandom: ^3.0.5
   checksum: 9d06cfd24ec14a571c31aaa717060d111b1b7f734681e245f0339be92869086f6dfd0b15c60f8527c7705a57fa1d06bb203a0aabf9c9a624c31b7496b6a3a056
+  languageName: node
+  linkType: hard
+
+"graphql-ergonomock@patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::locator=mpdx-react%40workspace%3A.":
+  version: 1.2.0
+  resolution: "graphql-ergonomock@patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=84aaaf&locator=mpdx-react%40workspace%3A."
+  dependencies:
+    fast-json-stable-stringify: ^2.1.0
+    graphql: ^15.0.0
+    graphql-tools: ^7.0.0
+    seedrandom: ^3.0.5
+  checksum: 7e7c7e17197f4883e20cea45fa3aa8e2d7cc4c72e601fa9f09dc96db5c96f4cc1ecf062e40e4654b802ba27b781ed0b99216521c9603c8441d857b51fff0931f
   languageName: node
   linkType: hard
 
@@ -18346,7 +18358,6 @@ __metadata:
     react-virtuoso: 2.19.0
     recharts: 2.1.8
     rollbar: ^2.25.2
-    seedrandom: ^3.0.5
     storybook: ^6.5.12
     storybook-addon-designs: ^6.3.1
     storybook-addon-i18next: ^1.3.0

@@ -8,6 +8,7 @@ import { DonationsReport } from 'src/components/Reports/DonationsReport/Donation
 import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsPage } from '../../contacts/ContactsPage';
@@ -21,6 +22,7 @@ const DonationsReportPage: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
   const selectedContactId = getQueryParam(router.query, 'contactId');
@@ -39,7 +41,7 @@ const DonationsReportPage: React.FC = () => {
     <>
       <Head>
         <title>
-          MPDX | {t('Reports')} | {t('Donations')}
+          {appName} | {t('Reports')} | {t('Donations')}
         </title>
       </Head>
       {accountListId ? (

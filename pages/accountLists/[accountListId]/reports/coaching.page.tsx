@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { CoachingDetail } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
@@ -8,12 +9,13 @@ import { CoachingDetail } from 'src/components/Coaching/CoachingDetail/CoachingD
 const CoachingReportPage = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
 
   return (
     <>
       <Head>
         <title>
-          MPDX | {t('Reports')} | {t('Coaching')}
+          {appName} | {t('Reports')} | {t('Coaching')}
         </title>
       </Head>
       {accountListId ? (

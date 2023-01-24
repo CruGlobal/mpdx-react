@@ -38,7 +38,7 @@ export const AddMenuPanel = (): ReactElement => {
       },
     },
     {
-      text: 'Multiple Contacts',
+      text: 'Add Multiple Contacts',
       icon: PeopleIcon,
       onClick: () => {
         changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);

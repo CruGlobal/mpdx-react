@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { Trans, useTranslation } from 'react-i18next';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { useGetPersonDuplicatesQuery } from './GetPersonDuplicates.generated';
@@ -71,6 +72,7 @@ const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGetPersonDuplicatesQuery({
     variables: { accountListId },
   });
+  const { appName } = useGetAppSettings();
 
   const updateActions = (id1: string, id2: string, action: string): void => {
     if (action === 'cancel') {
@@ -125,8 +127,11 @@ const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
                   <Box className={classes.descriptionBox}>
                     <Typography>
                       {t(
-                        ' You have {{amount}} possible duplicate people. This is sometimes caused when you imported data into MPDX. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost.',
-                        { amount: data?.personDuplicates.nodes.length },
+                        'You have {{amount}} possible duplicate people. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost.',
+                        {
+                          amount: data?.personDuplicates.nodes.length,
+                          appName,
+                        },
                       )}
                     </Typography>
                     <Typography>
