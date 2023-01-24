@@ -51,6 +51,13 @@ const mocks = {
           required: true,
           responseOptions: null,
         },
+        {
+          id: 'question-2',
+          position: 2,
+          prompt: 'Radio Question',
+          required: true,
+          responseOptions: ['Option 1', 'Option 2', 'Option 3'],
+        },
       ],
     },
   },
@@ -61,6 +68,68 @@ mocksWithoutAnswers.CurrentCoachingAnswerSet.currentCoachingAnswerSet.answers =
   [];
 
 describe('Weekly Report Modal', () => {
+  it('renders textbox questions', async () => {
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider mocks={mocks}>
+            <WeeklyReportModal
+              accountListId={accountListId}
+              open={true}
+              onClose={() => {}}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(
+      await findByRole('textbox', { name: 'Question' }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders radio button questions', async () => {
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider mocks={mocks}>
+            <WeeklyReportModal
+              accountListId={accountListId}
+              open={true}
+              onClose={() => {}}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Next' }));
+    expect(await findByRole('radiogroup')).toBeInTheDocument();
+    expect(await findByRole('radio', { name: 'Option 1' })).toBeInTheDocument();
+  });
+
+  it('navigates between pages', async () => {
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider mocks={mocks}>
+            <WeeklyReportModal
+              accountListId={accountListId}
+              open={true}
+              onClose={() => {}}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Next' }));
+    userEvent.click(await findByRole('button', { name: 'Back' }));
+    expect(
+      await findByRole('textbox', { name: 'Question' }),
+    ).toBeInTheDocument();
+  });
+
   describe('getAnswer', () => {
     it('loads previously saved answers', async () => {
       const { findByRole } = render(
@@ -109,7 +178,7 @@ describe('Weekly Report Modal', () => {
       const textbox = await findByRole('textbox');
       userEvent.type(textbox, 'Answer');
       mutationSpy.mockReset();
-      userEvent.click(getByRole('button', { name: 'Submit' }));
+      userEvent.click(getByRole('button', { name: 'Next' }));
       await waitFor(() => {
         expect(mutationSpy).toHaveBeenCalledTimes(1);
         expect(mutationSpy.mock.calls[0][0]).toMatchObject({
@@ -123,7 +192,6 @@ describe('Weekly Report Modal', () => {
             },
           },
         });
-
         expect(
           cache.readQuery<CurrentCoachingAnswerSetQuery>({
             query: CurrentCoachingAnswerSetDocument,
@@ -156,7 +224,7 @@ describe('Weekly Report Modal', () => {
       userEvent.clear(textbox);
       userEvent.type(textbox, 'New Answer');
       mutationSpy.mockReset();
-      userEvent.click(getByRole('button', { name: 'Submit' }));
+      userEvent.click(getByRole('button', { name: 'Next' }));
       await waitFor(() => {
         expect(mutationSpy).toHaveBeenCalledTimes(1);
         expect(mutationSpy.mock.calls[0][0]).toMatchObject({
@@ -172,5 +240,38 @@ describe('Weekly Report Modal', () => {
         });
       });
     });
+  });
+
+  it('refreshes the weekly report one second after close', async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
+            <WeeklyReportModal
+              accountListId={accountListId}
+              open={true}
+              onClose={() => {}}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Next' }));
+    userEvent.click(await findByRole('radio', { name: 'Option 1' }));
+    userEvent.click(await findByRole('button', { name: 'Close' }));
+    mutationSpy.mockReset();
+
+    await waitFor(
+      () =>
+        expect(
+          mutationSpy.mock.calls.find(
+            (args) =>
+              args[0].operation.operationName === 'CurrentCoachingAnswerSet',
+          ),
+        ).toBeDefined(),
+      { timeout: 3000 },
+    );
   });
 });
