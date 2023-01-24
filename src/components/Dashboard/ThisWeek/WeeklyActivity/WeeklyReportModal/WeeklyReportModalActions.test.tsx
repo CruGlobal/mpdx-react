@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { WeeklyReportActions } from './WeeklyReportModalActions';
 
 describe('Weekly Report Modal Navigation', () => {
@@ -44,5 +45,20 @@ describe('Weekly Report Modal Navigation', () => {
     );
     expect(queryByText('Back')).toBeInTheDocument();
     expect(queryByText('Submit')).toBeInTheDocument();
+  });
+  it('checks for back button to run save function', async () => {
+    const save = jest.fn();
+    const { getByRole } = render(
+      <WeeklyReportActions
+        questionsLength={8}
+        activeStep={2}
+        prevQuestion={() => {}}
+        save={save}
+        value={'abc'}
+        isValid={true}
+      />,
+    );
+    userEvent.click(getByRole('button', { name: 'Back' }));
+    expect(save).toHaveBeenCalled();
   });
 });
