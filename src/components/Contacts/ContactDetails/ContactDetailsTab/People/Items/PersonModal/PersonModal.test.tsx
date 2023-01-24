@@ -1018,6 +1018,9 @@ describe('PersonModal', () => {
           id: contactId,
           name: 'Person, Test',
           tagList: ['tag1', 'tag2', 'tag3'],
+          contactDonorAccounts: {
+            nodes: [],
+          },
           contactReferralsToMe: {
             nodes: [
               {

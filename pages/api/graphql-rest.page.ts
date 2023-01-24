@@ -1,4 +1,5 @@
 import {
+  ContactDonorAccountType,
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
@@ -71,6 +72,10 @@ import {
 } from './Schema/donations/datahandler';
 import { getLocationForTask } from './Schema/Tasks/TaskLocation/datahandler';
 import { UpdateTaskLocation } from './Schema/Tasks/TaskLocation/Update/datahandler';
+import {
+  DestroyDonorAccount,
+  DestroyDonorAccountResponse,
+} from './Schema/Contacts/DonorAccounts/Destroy/datahander';
 
 function camelToSnake(str: string): string {
   return str.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
@@ -676,6 +681,50 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateTaskLocation(data);
+  }
+
+  async destroyDonorAccount(
+    contactId: string,
+    donorAccountId: string,
+    donorAccounts: ContactDonorAccountType[],
+  ) {
+    const { data }: { data: DestroyDonorAccountResponse } = await this.put(
+      `contacts/${contactId}`,
+      {
+        included: donorAccounts.map((donorAccount) => ({
+          type: 'donor_accounts',
+          id: donorAccount.id,
+          attributes: {
+            accountNumber: donorAccount.accountNumber,
+            _destroy: donorAccount.id === donorAccountId ? '1' : '0',
+          },
+          ...(donorAccount.organization && {
+            relationships: {
+              organization: {
+                data: {
+                  type: 'organization',
+                  id: donorAccount.organization.id,
+                },
+              },
+            },
+          }),
+        })),
+        data: {
+          type: 'contacts',
+          id: contactId,
+          attributes: { overwrite: true },
+          relationships: {
+            donor_accounts: {
+              data: donorAccounts.map((donorAccount) => ({
+                id: donorAccount.id,
+                type: 'donor_accounts',
+              })),
+            },
+          },
+        },
+      },
+    );
+    return DestroyDonorAccount(data);
   }
 
   async deleteTags(tagName: string, page: string) {

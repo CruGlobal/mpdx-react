@@ -1,0 +1,23 @@
+fragment ContactPartnerAccounts on Contact {
+  id
+  contactDonorAccounts {
+    nodes {
+      id
+      donorAccount {
+        id
+        displayName
+        accountNumber
+        organization {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+
+query GetAccountListSalaryOrganization($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    salaryOrganizationId
+  }
+}

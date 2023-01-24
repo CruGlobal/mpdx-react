@@ -14,6 +14,7 @@ import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
 import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
+import { ContactDetailsPartnerAccounts } from './PartnerAccounts/ContactDetailsPartnerAccounts';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -155,6 +156,26 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               onContactSelected={onContactSelected}
               handleOpen={setEditOtherModalOpen}
             />
+          )}
+        </ContactDetailSectionContainer>
+        <Divider />
+        {
+          // Patner Accounts Section
+        }
+        <ContactDetailSectionContainer>
+          <ContactDetailHeadingContainer>
+            <ContactDetailHeadingText variant="h6">
+              {t('Partner Accounts')}
+            </ContactDetailHeadingText>
+          </ContactDetailHeadingContainer>
+          {loading || !data ? (
+            <>
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+            </>
+          ) : (
+            <ContactDetailsPartnerAccounts contact={data.contact} />
           )}
         </ContactDetailSectionContainer>
         <Divider />
