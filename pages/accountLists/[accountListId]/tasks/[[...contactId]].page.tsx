@@ -441,7 +441,7 @@ const TasksPage: React.FC = () => {
                         onClick={() => setTaskTypeFilter(i.name)}
                         key={`btn-${i.name}`}
                       >
-                        {i.uiName}
+                        {i.translated ? t(i.uiName) : i.uiName}
                       </Button>
                     ))}
                   </TaskCurrentHistoryButtonGroup>
