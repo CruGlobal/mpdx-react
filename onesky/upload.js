@@ -10,7 +10,7 @@ const options = {
   language: 'en',
   secret: process.env.ONESKY_API_SECRET,
   apiKey: process.env.ONESKY_API_KEY,
-  projectId: '367075',
+  projectId: process.env.ONESKY_PROJECT_ID,
   fileName: 'translation.json',
   format: 'HIERARCHICAL_JSON',
   content: JSON.stringify(translations),

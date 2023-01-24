@@ -131,4 +131,5 @@ jobs:
         env:
           ONESKY_API_KEY: ${{ secrets.ONESKY_API_KEY }}
           ONESKY_API_SECRET: ${{ secrets.ONESKY_API_SECRET }}
+          ONESKY_PROJECT_ID: ${{ secrets.ONESKY_PROJECT_ID }}
         run: yarn onesky:upload
