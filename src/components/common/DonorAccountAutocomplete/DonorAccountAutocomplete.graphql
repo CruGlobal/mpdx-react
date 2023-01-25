@@ -1,0 +1,9 @@
+query GetDonorAccounts($accountListId: ID!, $searchTerm: String!) {
+  accountListDonorAccounts(
+    accountListId: $accountListId
+    searchTerm: $searchTerm
+  ) {
+    id
+    name: displayName
+  }
+}

@@ -22,18 +22,17 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { MobileDatePicker } from '@mui/x-date-pickers';
-import debounce from 'lodash/debounce';
 import { DonationCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
   useAddDonationMutation,
-  useGetAccountListDonorAccountsLazyQuery,
   useGetDonationModalQuery,
 } from './AddDonation.generated';
 import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 
 interface AddDonationProps {
   accountListId: string;
@@ -113,12 +112,13 @@ export const AddDonation = ({
     },
   });
 
-  const [addDonation, { loading: adding }] = useAddDonationMutation();
-
-  const [
-    searchForDonorAccounts,
-    { loading: loadingDonorAccounts, data: donorAccountData },
-  ] = useGetAccountListDonorAccountsLazyQuery();
+  const [addDonation, { loading: adding }] = useAddDonationMutation({
+    refetchQueries: [
+      'ContactDonationsList',
+      'GetContactDonations',
+      'GetDonationsTable',
+    ],
+  });
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
@@ -160,12 +160,6 @@ export const AddDonation = ({
     }
     handleClose();
   };
-
-  const handleDonorAccountSearch = debounce(
-    (searchTerm: string) =>
-      searchForDonorAccounts({ variables: { accountListId, searchTerm } }),
-    1000,
-  );
 
   if (loading) {
     return (
@@ -389,58 +383,15 @@ export const AddDonation = ({
                     <Field name="donorAccountId">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <Autocomplete
-                            {...field}
-                            id="partner-account-input"
-                            loading={loadingDonorAccounts}
-                            options={
-                              (donorAccountData?.accountListDonorAccounts &&
-                                donorAccountData.accountListDonorAccounts.map(
-                                  ({ id }) => id,
-                                )) ??
-                              []
-                            }
-                            getOptionLabel={(donorAccountId): string => {
-                              const donorAccount =
-                                donorAccountData?.accountListDonorAccounts &&
-                                donorAccountData.accountListDonorAccounts.find(
-                                  ({ id }) => donorAccountId === id,
-                                );
-
-                              return donorAccount?.displayName ?? '';
-                            }}
-                            renderInput={(params): ReactElement => (
-                              <TextField
-                                {...params}
-                                size="small"
-                                variant="outlined"
-                                onChange={(e) =>
-                                  handleDonorAccountSearch(e.target.value)
-                                }
-                                InputProps={{
-                                  ...params.InputProps,
-                                  'aria-labelledby': 'partner-account-label',
-                                  endAdornment: (
-                                    <>
-                                      {loadingDonorAccounts && (
-                                        <CircularProgress
-                                          color="primary"
-                                          size={20}
-                                        />
-                                      )}
-                                      {params.InputProps.endAdornment}
-                                    </>
-                                  ),
-                                }}
-                              />
-                            )}
-                            value={field.value}
-                            onChange={(_, donorAccountId): void =>
+                          <DonorAccountAutocomplete
+                            accountListId={accountListId}
+                            onChange={(donorAccountId) =>
                               setFieldValue('donorAccountId', donorAccountId)
                             }
-                            isOptionEqualToValue={(option, value): boolean =>
-                              option === value
-                            }
+                            value={field.value}
+                            autocompleteId="partner-account-input"
+                            labelId="partner-account-label"
+                            size="small"
                           />
                         </Box>
                       )}

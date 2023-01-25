@@ -1,5 +1,5 @@
 import { Appeal } from '../../../../../graphql/types.generated';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -27,6 +27,7 @@ import {
   ExpectedDonationDataFragment,
   useGetAccountListCurrencyQuery,
 } from '../GetDonationsTable.generated';
+import { EditDonationModal } from './Modal/EditDonationModal';
 
 interface Props {
   accountListId: string;
@@ -68,7 +69,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-interface Donation {
+export interface Donation {
   date: Date;
   contactId: string | null;
   partnerId: string;
@@ -77,7 +78,7 @@ interface Donation {
   foreignCurrency: string;
   convertedAmount: number;
   foreignAmount: number;
-  designation: string | undefined | null;
+  designationAccount: { id: string; name: string };
   method: string | null;
   id: string;
   appeal: Partial<Appeal> | undefined | null;
@@ -90,6 +91,15 @@ export const DonationsReportTable: React.FC<Props> = ({
   setTime,
 }) => {
   const { t } = useTranslation();
+  const [openEditDonationModal, setOpenEditDonationModal] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
+    null,
+  );
+
+  const handleClose = () => {
+    setOpenEditDonationModal(false);
+    setSelectedDonation(null);
+  };
 
   const startDate = time.toString();
 
@@ -105,7 +115,6 @@ export const DonationsReportTable: React.FC<Props> = ({
     });
 
   const nodes = data?.donations.nodes || [];
-  const designationNames = data?.getDesignationDisplayNames || [];
 
   const accountCurrency = accountListData?.accountList.currency || 'USD';
 
@@ -119,9 +128,10 @@ export const DonationsReportTable: React.FC<Props> = ({
       foreignCurrency: data.amount.currency,
       convertedAmount: data.amount.convertedAmount,
       foreignAmount: data.amount.amount,
-      designation: designationNames.find(
-        (designation) => designation?.id === data.id,
-      )?.displayName,
+      designationAccount: {
+        id: data.designationAccount.id,
+        name: data.designationAccount.name,
+      },
       method: data.paymentMethod || null,
       id: data.id,
       appeal: data.appeal,
@@ -171,7 +181,7 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const designation = (params: GridCellParams) => {
     const donation = params.row as Donation;
-    return <Typography>{donation.designation}</Typography>;
+    return <Typography>{donation.designationAccount?.name}</Typography>;
   };
 
   const button = (params: GridCellParams) => {
@@ -186,8 +196,14 @@ export const DonationsReportTable: React.FC<Props> = ({
         <Typography data-testid="appeal-name">
           {donation.appeal?.name}
         </Typography>
-        <IconButton color="primary">
-          <EditIcon />
+        <IconButton
+          color="primary"
+          onClick={() => {
+            setOpenEditDonationModal(true);
+            setSelectedDonation(donation);
+          }}
+        >
+          <EditIcon data-testid={`edit-${donation.id}`} />
         </IconButton>
       </Box>
     );
@@ -386,6 +402,15 @@ export const DonationsReportTable: React.FC<Props> = ({
             month: time.monthLong,
             year: time.year,
           })}
+        />
+      )}
+      {openEditDonationModal && (
+        <EditDonationModal
+          open={openEditDonationModal}
+          donation={selectedDonation}
+          handleClose={() => handleClose()}
+          startDate={startDate}
+          endDate={endDate}
         />
       )}
     </>

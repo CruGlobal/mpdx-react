@@ -8,13 +8,13 @@ import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivin
 
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
-import { useDebounce } from 'use-debounce';
 import { ContactsPage } from '../../contacts/ContactsPage';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useRouter } from 'next/router';
@@ -49,7 +49,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
 
   const [activeFilters, setActiveFilters] =
     useState<ReportContactFilterSetInput>({});
-  const [debouncedFilters] = useDebounce(activeFilters, 500);
+  const debouncedFilters = useDebouncedValue(activeFilters, 500);
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
