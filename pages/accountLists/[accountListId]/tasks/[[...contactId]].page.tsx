@@ -41,7 +41,10 @@ import {
 import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
 import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
 import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
-import { currentString, historicString } from 'src/utils/tasks/taskActivity';
+import {
+  TaskFilterTabsTypes,
+  taskFiltersTabs,
+} from '../../../../src/utils/tasks/taskFilterTabs';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -101,25 +104,19 @@ const TasksPage: React.FC = () => {
   );
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
 
-  const [isCurrent, setIsCurrent] = React.useState(!activeFilters.completed);
+  const [taskType, setTaskType] = useState<TaskFilterTabsTypes>(
+    taskFiltersTabs[0].name,
+  );
 
-  useEffect(() => {
-    setIsCurrent(!activeFilters.completed);
-  }, [activeFilters]);
+  const setTaskTypeFilter = (type: TaskFilterTabsTypes): void => {
+    setTaskType(type);
+    const typeDetails = taskFiltersTabs.find((item) => item.name === type);
 
-  function setCurrentFilter(current: boolean): void {
-    if (current) {
-      setActiveFilters({
-        ...urlFilters,
-        completed: false,
-      });
-    } else {
-      setActiveFilters({
-        ...urlFilters,
-        completed: true,
-      });
-    }
-  }
+    setActiveFilters({
+      ...urlFilters,
+      ...typeDetails?.activeFiltersOptions,
+    });
+  };
 
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
@@ -144,6 +141,19 @@ const TasksPage: React.FC = () => {
           : undefined),
       },
     });
+    if (!activeFilters.completed && !activeFilters.dateRange) {
+      setTaskType('All');
+    } else if (activeFilters.dateRange === 'overdue') {
+      setTaskType('Overdue');
+    } else if (activeFilters.completed) {
+      setTaskType('Completed');
+    } else if (activeFilters.dateRange === 'today') {
+      setTaskType('Today');
+    } else if (activeFilters.dateRange === 'upcoming') {
+      setTaskType('Upcoming');
+    } else if (activeFilters.dateRange === 'no_date') {
+      setTaskType('NoDueDate');
+    }
   }, [activeFilters]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
@@ -426,20 +436,17 @@ const TasksPage: React.FC = () => {
                 <Box>
                   <TaskCurrentHistoryButtonGroup
                     variant="outlined"
-                    size="large"
+                    size="small"
                   >
-                    <Button
-                      variant={isCurrent ? 'contained' : 'outlined'}
-                      onClick={() => setCurrentFilter(true)}
-                    >
-                      {currentString()}
-                    </Button>
-                    <Button
-                      variant={isCurrent ? 'outlined' : 'contained'}
-                      onClick={() => setCurrentFilter(false)}
-                    >
-                      {historicString()}
-                    </Button>
+                    {taskFiltersTabs.map((i) => (
+                      <Button
+                        variant={taskType === i.name ? 'contained' : 'outlined'}
+                        onClick={() => setTaskTypeFilter(i.name)}
+                        key={`btn-${i.name}`}
+                      >
+                        {i.translated ? t(i.uiName) : i.uiName}
+                      </Button>
+                    ))}
                   </TaskCurrentHistoryButtonGroup>
                   <InfiniteList
                     loading={loading}

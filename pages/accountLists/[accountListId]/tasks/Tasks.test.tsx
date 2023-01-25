@@ -165,10 +165,12 @@ it('should show Completed', async () => {
     </ThemeProvider>,
   );
 
-  await waitFor(() => expect(getByText('Historic')).toBeInTheDocument());
-  await waitFor(() => expect(getByText('Current')).toBeInTheDocument());
-  userEvent.click(getByText('Historic'));
-  userEvent.click(getByText('Current'));
+  await waitFor(() => expect(getByText('Completed')).toBeInTheDocument());
+  await waitFor(() => expect(getByText('Overdue')).toBeInTheDocument());
+  await waitFor(() => expect(getByText('Today')).toBeInTheDocument());
+  userEvent.click(getByText('Completed'));
+  userEvent.click(getByText('Overdue'));
+  userEvent.click(getByText('Today'));
   await waitFor(() =>
     expect(router).toMatchInlineSnapshot(`
       Object {
@@ -178,5 +180,44 @@ it('should show Completed', async () => {
         },
       }
     `),
+  );
+});
+
+it('should update URL which in turns updates the buttons classes.', async () => {
+  const { getByText } = render(
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <GqlMockedProvider<TasksQuery>
+          mocks={{
+            Tasks: {
+              tasks: {
+                nodes: [task],
+                pageInfo: { endCursor: 'Mg', hasNextPage: false },
+              },
+            },
+          }}
+        >
+          <Tasks />
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>,
+  );
+
+  await waitFor(() => expect(getByText('Upcoming')).toBeInTheDocument());
+  userEvent.click(getByText('Upcoming'));
+  await waitFor(() =>
+    expect(getByText('Upcoming')).toHaveClass('MuiButton-contained'),
+  );
+
+  await waitFor(() => expect(getByText('No Due Date')).toBeInTheDocument());
+  userEvent.click(getByText('No Due Date'));
+  await waitFor(() =>
+    expect(getByText('No Due Date')).toHaveClass('MuiButton-contained'),
+  );
+
+  await waitFor(() => expect(getByText('All Tasks')).toBeInTheDocument());
+  userEvent.click(getByText('All Tasks'));
+  await waitFor(() =>
+    expect(getByText('All Tasks')).toHaveClass('MuiButton-contained'),
   );
 });
