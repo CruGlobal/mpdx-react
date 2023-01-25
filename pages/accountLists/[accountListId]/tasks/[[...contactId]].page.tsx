@@ -41,7 +41,10 @@ import {
 import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
 import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
 import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
-import { TaskFilterTabsTypes, taskFiltersTabs } from './TasksTypes';
+import {
+  TaskFilterTabsTypes,
+  taskFiltersTabs,
+} from '../../../../src/utils/tasks/taskFilterTabs';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
