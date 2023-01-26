@@ -270,7 +270,7 @@ const ProfileMenu = (): ReactElement => {
           <MenuButton
             variant="outlined"
             color="inherit"
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: 'signOut' })}
           >
             {t('Sign Out')}
           </MenuButton>

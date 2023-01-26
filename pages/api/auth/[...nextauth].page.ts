@@ -25,30 +25,31 @@ declare module 'next-auth' {
   }
 }
 
-if (
-  process.env.USE_OKTA_OAUTH !== 'true' &&
-  process.env.USE_API_OAUTH !== 'true'
-) {
+const AUTH_PROVIDER = process.env.AUTH_PROVIDER,
+  OKTA_CLIENT_ID = process.env.OKTA_CLIENT_ID,
+  OKTA_CLIENT_SECRET = process.env.OKTA_CLIENT_SECRET,
+  OKTA_ISSUER = process.env.OKTA_ISSUER,
+  API_OAUTH_CLIENT_ID = process.env.API_OAUTH_CLIENT_ID,
+  API_OAUTH_CLIENT_SECRET = process.env.API_OAUTH_CLIENT_SECRET,
+  API_OAUTH_ISSUER = process.env.API_OAUTH_ISSUER;
+
+if (AUTH_PROVIDER !== 'OKTA' && AUTH_PROVIDER !== 'API_OAUTH') {
   throw new Error(
-    'Please configure Okta or API OAuth login. USE_OKTA_OAUTH && USE_API_OAUTH envs not defined',
+    'AUTH_PROVIDER environment variable needs to equal either "OKTA" or "API_OAUTH"',
   );
 }
 
 if (
-  process.env.USE_OKTA_OAUTH === 'true' &&
-  (!process.env.OKTA_CLIENT_ID ||
-    !process.env.OKTA_CLIENT_SECRET ||
-    !process.env.OKTA_ISSUER)
+  AUTH_PROVIDER === 'OKTA' &&
+  (!OKTA_CLIENT_ID || !OKTA_CLIENT_SECRET || !OKTA_ISSUER)
 ) {
   throw new Error(
     'OKTA_CLIENT_ID, OKTA_CLIENT_SECRET or OKTA_ISSUER envs not defined',
   );
 }
 if (
-  process.env.USE_API_OAUTH === 'true' &&
-  (!process.env.API_OAUTH_CLIENT_ID ||
-    !process.env.API_OAUTH_CLIENT_SECRET ||
-    !process.env.API_OAUTH_ISSUER)
+  AUTH_PROVIDER === 'API_OAUTH' &&
+  (!API_OAUTH_CLIENT_ID || !API_OAUTH_CLIENT_SECRET || !API_OAUTH_ISSUER)
 ) {
   throw new Error(
     'API_OAUTH_CLIENT_ID, API_OAUTH_CLIENT_SECRET or API_OAUTH_ISSUER envs not defined',
@@ -57,12 +58,12 @@ if (
 
 const providersArray: Provider[] = [];
 
-if (process.env.USE_OKTA_OAUTH === 'true') {
+if (AUTH_PROVIDER === 'OKTA') {
   providersArray.push(
     OktaProvider({
-      clientId: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
-      clientSecret: process.env.OKTA_CLIENT_SECRET ?? '',
-      issuer: process.env.OKTA_ISSUER ?? '',
+      clientId: OKTA_CLIENT_ID ?? '',
+      clientSecret: OKTA_CLIENT_SECRET ?? '',
+      issuer: OKTA_ISSUER ?? '',
       authorization: { params: { scope: 'openid email profile' } },
       token: { params: { scope: 'openid email profile' } },
       userinfo: { params: { scope: 'openid email profile' } },
@@ -70,19 +71,19 @@ if (process.env.USE_OKTA_OAUTH === 'true') {
   );
 }
 
-if (process.env.USE_API_OAUTH === 'true') {
+if (AUTH_PROVIDER === 'API_OAUTH') {
   providersArray.push({
     id: 'apioauth',
     name: process.env.API_OAUTH_VISIBLE_NAME ?? 'SSO',
     type: 'oauth',
-    clientId: process.env.API_OAUTH_CLIENT_ID ?? '',
-    clientSecret: process.env.API_OAUTH_CLIENT_SECRET ?? '',
+    clientId: API_OAUTH_CLIENT_ID ?? '',
+    clientSecret: API_OAUTH_CLIENT_SECRET ?? '',
     authorization: {
-      url: `${process.env.API_OAUTH_ISSUER}/oauth/authorize`,
+      url: `${API_OAUTH_ISSUER}/oauth/authorize`,
       params: { scope: 'read write', response_type: 'code' },
     },
     token: {
-      url: `${process.env.API_OAUTH_ISSUER}/oauth/token`,
+      url: `${API_OAUTH_ISSUER}/oauth/token`,
       params: { scope: 'read write', response_type: 'code' },
     },
     userinfo: {
@@ -169,6 +170,16 @@ const options: NextAuthOptions = {
         ...session,
         user: { ...session.user, apiToken: token.apiToken as string },
       };
+    },
+    redirect({ url, baseUrl }) {
+      if (url.startsWith(baseUrl)) return url;
+      if (url === 'signOut' && AUTH_PROVIDER === 'OKTA') {
+        return `https://signon.okta.com/login/signout?fromURI=${encodeURIComponent(
+          process.env.OKTA_SIGNOUT_REDIRECT_URL ?? '',
+        )}`;
+      }
+      if (url.startsWith('/')) return new URL(url, baseUrl).toString();
+      return baseUrl;
     },
   },
 };

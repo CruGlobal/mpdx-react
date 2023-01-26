@@ -55,11 +55,12 @@ module.exports = withPlugins([
       CLIENT_SECRET: process.env.CLIENT_SECRET,
       BEACON_TOKEN:
         process.env.BEACON_TOKEN ?? '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
-      USE_OKTA_OAUTH: process.env.USE_OKTA_OAUTH ?? 'true',
+      AUTH_PROVIDER: process.env.AUTH_PROVIDER ?? 'OKTA',
       OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
       OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
       OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
-      USE_API_OAUTH: process.env.USE_API_OAUTH ?? 'false',
+      OKTA_SIGNOUT_REDIRECT_URL:
+        process.env.OKTA_SIGNOUT_REDIRECT_URL ?? 'https://mpdx.org/logout',
       API_OAUTH_CLIENT_ID:
         process.env.API_OAUTH_CLIENT_ID ??
         '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',

@@ -3,21 +3,20 @@ import { signIn, getSession } from 'next-auth/react';
 import { Button } from '@mui/material';
 import SubjectIcon from '@mui/icons-material/Subject';
 import { GetServerSideProps } from 'next';
+import i18n from 'i18next';
 import Head from 'next/head';
 import useGetAppSettings from '../src/hooks/useGetAppSettings';
 import Welcome from '../src/components/Welcome';
 import BaseLayout from '../src/components/Layouts/Basic';
 
 interface IndexPageProps {
-  useOktaOauth?: boolean;
-  useApiOauth?: boolean;
-  apiOauthVisibleName?: string;
+  signInButtonText: string;
+  signInAuthProviderId: string;
 }
 
 const IndexPage = ({
-  useOktaOauth,
-  useApiOauth,
-  apiOauthVisibleName,
+  signInButtonText,
+  signInAuthProviderId,
 }: IndexPageProps): ReactElement => {
   const { appName } = useGetAppSettings();
 
@@ -38,29 +37,14 @@ const IndexPage = ({
         subtitle={`${appName} is fundraising software from Cru that helps you grow and maintain your ministry
   partners in a quick and easy way.`}
       >
-        {useOktaOauth && (
-          <Button
-            size="large"
-            variant="contained"
-            onClick={() => signIn('okta')}
-            color="inherit"
-          >
-            Sign In
-          </Button>
-        )}
-
-        {useApiOauth && (
-          <Button
-            size="large"
-            variant="contained"
-            onClick={() => signIn('apioauth')}
-            color="inherit"
-            style={{ marginLeft: useOktaOauth ? '10px' : '' }}
-          >
-            Sign In with {apiOauthVisibleName}
-          </Button>
-        )}
-
+        <Button
+          size="large"
+          variant="contained"
+          onClick={() => signIn(signInAuthProviderId)}
+          color="inherit"
+        >
+          {signInButtonText}
+        </Button>
         <Button
           size="large"
           startIcon={<SubjectIcon />}
@@ -80,9 +64,15 @@ IndexPage.layout = BaseLayout;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
-  const useOktaOauth = process.env.USE_OKTA_OAUTH === 'true';
-  const useApiOauth = process.env.USE_API_OAUTH === 'true';
-  const apiOauthVisibleName = process.env.API_OAUTH_VISIBLE_NAME;
+  const authProvider = process.env.AUTH_PROVIDER;
+
+  const signInButtonText =
+    authProvider === 'OKTA'
+      ? i18n.t('Sign In')
+      : i18n.t(`Sign In with {{authProviderName}}`, {
+          authProviderName: process.env.API_OAUTH_VISIBLE_NAME,
+        });
+  const signInAuthProviderId = authProvider?.toLowerCase()?.replace(/_/g, '');
 
   if (context.res && session) {
     return {
@@ -95,9 +85,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      useOktaOauth,
-      useApiOauth,
-      apiOauthVisibleName,
+      signInButtonText,
+      signInAuthProviderId,
     },
   };
 };
