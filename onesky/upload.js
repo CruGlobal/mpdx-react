@@ -3,9 +3,9 @@
 const fs = require('fs');
 const onesky = require('@brainly/onesky-utils');
 
-const translations = fs
-  .readFileSync('public/locales/en/translation.json', 'utf-8')
-  .toString();
+const translations = JSON.parse(
+  fs.readFileSync('public/locales/en/translation.json', 'utf-8'),
+);
 const options = {
   language: 'en',
   secret: process.env.ONESKY_API_SECRET,
