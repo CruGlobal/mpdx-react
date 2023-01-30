@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import Clear from '@mui/icons-material/Clear';
 import CreateIcon from '@mui/icons-material/Create';
 import DateRangeOutlined from '@mui/icons-material/DateRangeOutlined';
-import Delete from '@mui/icons-material/Delete';
 import FiberManualRecordOutlined from '@mui/icons-material/FiberManualRecordOutlined';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -43,11 +42,6 @@ const IconContainer = styled(Box)(({ theme }) => ({
 const PartnershipInfoContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   margin: theme.spacing(1),
-}));
-
-const AddAccountButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(2, 0),
-  color: theme.palette.text.secondary,
 }));
 
 const PartnershipTitle = styled(Typography)(({ theme }) => ({
@@ -238,29 +232,6 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           {contact?.nextAsk &&
             DateTime.fromISO(contact.nextAsk).toLocaleString()}
         </LabelsAndText>
-      </IconAndTextContainerCenter>
-      <Divider />
-      <PartnershipTitle variant="h6">{t('Partner Account')}</PartnershipTitle>
-      {contact?.contactDonorAccounts.nodes.map((donor) => {
-        return (
-          <IconAndTextContainerCenter key={donor.id}>
-            <IconContainer />
-            <LabelsAndText variant="subtitle1" color="textSecondary">
-              {t('Name Account')}
-            </LabelsAndText>
-            <LabelsAndText variant="subtitle1">
-              {donor.donorAccount.displayName}
-            </LabelsAndText>
-            <IconContainer>
-              <Delete color="disabled" style={{ flexGrow: 1 }} />
-            </IconContainer>
-          </IconAndTextContainerCenter>
-        );
-      })}
-      <IconAndTextContainerCenter>
-        <AddAccountButton variant="outlined" color="inherit">
-          {t('Add Account')}
-        </AddAccountButton>
       </IconAndTextContainerCenter>
       {contact && editPartnershipModalOpen ? (
         <EditPartnershipInfoModal
