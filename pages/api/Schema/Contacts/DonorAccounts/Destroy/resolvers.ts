@@ -4,13 +4,12 @@ export const DestroyDonorAccountResolvers: Resolvers = {
   Mutation: {
     destroyDonorAccount: (
       _source,
-      { input: { contactId, donorAccountId, donorAccounts } },
+      { input: { contactId, donorAccountId } },
       { dataSources },
     ) => {
       return dataSources.mpdxRestApi.destroyDonorAccount(
         contactId,
         donorAccountId,
-        donorAccounts,
       );
     },
   },

@@ -1,14 +1,6 @@
-mutation DeleteDonorAccount(
-  $contactId: ID!
-  $donorAccountId: ID!
-  $donorAccounts: [ContactDonorAccountType!]!
-) {
+mutation DeleteDonorAccount($contactId: ID!, $donorAccountId: ID!) {
   destroyDonorAccount(
-    input: {
-      contactId: $contactId
-      donorAccountId: $donorAccountId
-      donorAccounts: $donorAccounts
-    }
+    input: { contactId: $contactId, donorAccountId: $donorAccountId }
   ) {
     id
   }
