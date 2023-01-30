@@ -3,8 +3,9 @@
 const fs = require('fs');
 const onesky = require('@brainly/onesky-utils');
 
-const translations = JSON.parse(
-  fs.readFileSync('public/locales/en/translation.json', 'utf-8'),
+const translations = fs.readFileSync(
+  'public/locales/en/translation.json',
+  'utf-8',
 );
 const options = {
   language: 'en',
@@ -13,7 +14,7 @@ const options = {
   projectId: process.env.ONESKY_PROJECT_ID,
   fileName: 'translation.json',
   format: 'HIERARCHICAL_JSON',
-  content: JSON.stringify(translations),
+  content: translations,
   keepStrings: true,
 };
 
