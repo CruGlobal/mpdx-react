@@ -27,7 +27,6 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { useGetAppealsForMassActionQuery } from 'src/components/Contacts/MassActions/AddToAppeal/GetAppealsForMassAction.generated';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -36,6 +35,7 @@ import { GetDonationsTableDocument } from '../../GetDonationsTable.generated';
 import { Donation } from '../DonationsReportTable';
 import {
   useDeleteDonationMutation,
+  useEditDonationModalGetAppealsQuery,
   useGetDesignationAccountsQuery,
   useUpdateDonationMutation,
 } from './EditDonation.generated';
@@ -93,7 +93,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
   const { data: appeals, loading: loadingAppeals } =
-    useGetAppealsForMassActionQuery({ variables: { accountListId } });
+    useEditDonationModalGetAppealsQuery({ variables: { accountListId } });
 
   const { data: designationAccounts, loading: loadingDesignationAccounts } =
     useGetDesignationAccountsQuery({ variables: { accountListId } });
