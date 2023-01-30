@@ -91,9 +91,6 @@ it('renders with data', async () => {
               currency: 'CAD',
             },
             appeal: {
-              amount: 10,
-              amountCurrency: 'CAD',
-              createdAt: DateTime.now().minus({ month: 3 }).toISO(),
               id: 'abc',
               name: 'John',
             },

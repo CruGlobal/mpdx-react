@@ -383,7 +383,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       label={t('Appeal Amount')}
                       onChange={handleChange('appealAmount')}
                       fullWidth
-                      inputProps={{ 'aria-label': 'appealAmount' }}
                       disabled={!appeal}
                     />
                   </Grid>
@@ -394,7 +393,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     label={t('Memo')}
                     onChange={handleChange('memo')}
                     fullWidth
-                    inputProps={{ 'aria-label': 'Memo' }}
                   />
                 </Grid>
               </FormFieldsGridContainer>

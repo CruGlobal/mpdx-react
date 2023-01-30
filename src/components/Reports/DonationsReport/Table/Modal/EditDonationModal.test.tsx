@@ -23,6 +23,19 @@ const router = {
 
 const handleClose = jest.fn();
 
+const mocks = {
+  EditDonationModalGetAppeals: {
+    appeals: {
+      nodes: [
+        {
+          id: 'appeal-1',
+          name: 'End of Year Ask',
+        },
+      ],
+    },
+  },
+};
+
 const donation: Donation = {
   appeal: null,
   appealAmount: null,
@@ -37,6 +50,14 @@ const donation: Donation = {
   method: 'BRANK_TRANS',
   partner: 'partner',
   partnerId: '123',
+};
+const donationWithAppeal: Donation = {
+  ...donation,
+  appeal: {
+    id: 'appeal-1',
+    name: 'End of Year Ask',
+  },
+  appealAmount: 50,
 };
 
 const mockEnqueue = jest.fn();
@@ -112,6 +133,44 @@ describe('DonationsReportTable', () => {
     await waitFor(() =>
       expect(queryByText('Field is required')).not.toBeInTheDocument(),
     );
+  });
+
+  it('renders with appeal', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole, findByText } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <TestRouter router={router}>
+              <GqlMockedProvider<UpdateDonationMutation>
+                mocks={mocks}
+                onCall={mutationSpy}
+              >
+                <EditDonationModal
+                  donation={donationWithAppeal}
+                  open={true}
+                  handleClose={handleClose}
+                  startDate={time.toString()}
+                  endDate={time.toString()}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(await findByText('Edit Donation')).toBeInTheDocument();
+
+    expect(getByRole('textbox', { name: 'Appeal Amount' })).toHaveValue('50');
+
+    userEvent.click(getByRole('button', { name: 'Appeal' }));
+    await waitFor(() =>
+      expect(
+        getByRole('option', { name: 'End of Year Ask' }),
+      ).toBeInTheDocument(),
+    );
+    expect(getByRole('option', { name: 'None' })).toBeInTheDocument();
   });
 
   it('edits fields', async () => {

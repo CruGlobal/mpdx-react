@@ -40,9 +40,6 @@ const mocks = {
             currency: 'CAD',
           },
           appeal: {
-            amount: 10,
-            amountCurrency: 'CAD',
-            createdAt: DateTime.now().minus({ month: 3 }).toISO(),
             id: 'abc',
             name: 'Appeal Test 1',
           },
@@ -216,9 +213,6 @@ describe('DonationsReportTable', () => {
                 currency: 'CAD',
               },
               appeal: {
-                amount: 10,
-                amountCurrency: 'CAD',
-                createdAt: DateTime.now().minus({ month: 3 }).toISO(),
                 id: 'abc',
                 name: 'Appeal Test 1',
               },
