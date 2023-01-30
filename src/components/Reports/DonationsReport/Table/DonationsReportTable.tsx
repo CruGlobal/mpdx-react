@@ -82,6 +82,7 @@ export interface Donation {
   method: string | null;
   id: string;
   appeal: Partial<Appeal> | undefined | null;
+  appealAmount: number | null;
 }
 
 export const DonationsReportTable: React.FC<Props> = ({
@@ -135,6 +136,7 @@ export const DonationsReportTable: React.FC<Props> = ({
       method: data.paymentMethod || null,
       id: data.id,
       appeal: data.appeal,
+      appealAmount: (data.appeal && data.appealAmount?.amount) ?? null,
     };
   };
 

@@ -173,7 +173,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 partnerId: donation.partnerId,
                 designationAccountId: donation.designationAccount.id,
                 appeal: donation.appeal?.id ?? '',
-                appealAmount: '',
+                appealAmount: donation.appealAmount ?? '',
                 memo: '',
               }
             : initialDonation

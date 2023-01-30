@@ -25,6 +25,7 @@ const handleClose = jest.fn();
 
 const donation: Donation = {
   appeal: null,
+  appealAmount: null,
   contactId: 'contact1',
   convertedAmount: 100.0,
   currency: 'CAD',
