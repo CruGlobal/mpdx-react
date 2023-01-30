@@ -111,7 +111,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
       variables: {
         accountListId,
         attributes: {
-          appealId: fields.appeal,
+          appealId: fields.appeal ?? null,
           appealAmount: parseFloat(fields.appealAmount),
           motivation: fields.motivation,
           memo: fields.memo,
@@ -359,10 +359,15 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     <Select
                       labelId="appeal"
                       label={t('Appeal')}
-                      value={appeal ?? ''}
+                      value={appeal}
                       onChange={(e) => setFieldValue('appeal', e.target.value)}
                       endAdornment={loadingAppeals && <LoadingSpinner />}
                     >
+                      {appeal !== '' && (
+                        <MenuItem key={null} value="">
+                          <em>{t('None')}</em>
+                        </MenuItem>
+                      )}
                       {appeals?.appeals.nodes.map((appeal) => (
                         <MenuItem key={appeal.id} value={appeal.id}>
                           {appeal.name}
