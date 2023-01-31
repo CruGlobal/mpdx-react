@@ -137,7 +137,7 @@ describe('DonationsReportTable', () => {
 
   it('renders with appeal', async () => {
     const mutationSpy = jest.fn();
-    const { getByRole, findByText } = render(
+    const { getByRole, getByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
@@ -160,8 +160,7 @@ describe('DonationsReportTable', () => {
       </SnackbarProvider>,
     );
 
-    expect(await findByText('Edit Donation')).toBeInTheDocument();
-
+    expect(getByText('Edit Donation')).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Appeal Amount' })).toHaveValue('50');
 
     userEvent.click(getByRole('button', { name: 'Appeal' }));
