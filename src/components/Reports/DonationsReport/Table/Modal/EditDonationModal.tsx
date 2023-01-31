@@ -27,7 +27,6 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { useGetAppealsForMassActionQuery } from 'src/components/Contacts/MassActions/AddToAppeal/GetAppealsForMassAction.generated';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -36,6 +35,7 @@ import { GetDonationsTableDocument } from '../../GetDonationsTable.generated';
 import { Donation } from '../DonationsReportTable';
 import {
   useDeleteDonationMutation,
+  useEditDonationModalGetAppealsQuery,
   useGetDesignationAccountsQuery,
   useUpdateDonationMutation,
 } from './EditDonation.generated';
@@ -93,7 +93,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
   const { data: appeals, loading: loadingAppeals } =
-    useGetAppealsForMassActionQuery({ variables: { accountListId } });
+    useEditDonationModalGetAppealsQuery({ variables: { accountListId } });
 
   const { data: designationAccounts, loading: loadingDesignationAccounts } =
     useGetDesignationAccountsQuery({ variables: { accountListId } });
@@ -111,7 +111,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
       variables: {
         accountListId,
         attributes: {
-          appealId: fields.appeal,
+          appealId: fields.appeal ?? null,
           appealAmount: parseFloat(fields.appealAmount),
           motivation: fields.motivation,
           memo: fields.memo,
@@ -173,7 +173,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 partnerId: donation.partnerId,
                 designationAccountId: donation.designationAccount.id,
                 appeal: donation.appeal?.id ?? '',
-                appealAmount: '',
+                appealAmount: donation.appealAmount ?? '',
                 memo: '',
               }
             : initialDonation
@@ -359,10 +359,15 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     <Select
                       labelId="appeal"
                       label={t('Appeal')}
-                      value={appeal ?? ''}
+                      value={appeal}
                       onChange={(e) => setFieldValue('appeal', e.target.value)}
                       endAdornment={loadingAppeals && <LoadingSpinner />}
                     >
+                      {appeal !== '' && (
+                        <MenuItem key={null} value="">
+                          <em>{t('None')}</em>
+                        </MenuItem>
+                      )}
                       {appeals?.appeals.nodes.map((appeal) => (
                         <MenuItem key={appeal.id} value={appeal.id}>
                           {appeal.name}
@@ -378,7 +383,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       label={t('Appeal Amount')}
                       onChange={handleChange('appealAmount')}
                       fullWidth
-                      inputProps={{ 'aria-label': 'appealAmount' }}
                       disabled={!appeal}
                     />
                   </Grid>
@@ -389,7 +393,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     label={t('Memo')}
                     onChange={handleChange('memo')}
                     fullWidth
-                    inputProps={{ 'aria-label': 'Memo' }}
                   />
                 </Grid>
               </FormFieldsGridContainer>

@@ -8,6 +8,15 @@ query GetDesignationAccounts($accountListId: ID!) {
   }
 }
 
+query EditDonationModalGetAppeals($accountListId: ID!) {
+  appeals(accountListId: $accountListId) {
+    nodes {
+      id
+      name
+    }
+  }
+}
+
 mutation UpdateDonation(
   $accountListId: ID!
   $attributes: DonationUpdateInput!

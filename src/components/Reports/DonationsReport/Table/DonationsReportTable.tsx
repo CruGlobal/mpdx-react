@@ -1,4 +1,3 @@
-import { Appeal } from '../../../../../graphql/types.generated';
 import React, { useState } from 'react';
 import {
   Box,
@@ -81,7 +80,8 @@ export interface Donation {
   designationAccount: { id: string; name: string };
   method: string | null;
   id: string;
-  appeal: Partial<Appeal> | undefined | null;
+  appeal: ExpectedDonationDataFragment['appeal'];
+  appealAmount: number | null;
 }
 
 export const DonationsReportTable: React.FC<Props> = ({
@@ -135,6 +135,7 @@ export const DonationsReportTable: React.FC<Props> = ({
       method: data.paymentMethod || null,
       id: data.id,
       appeal: data.appeal,
+      appealAmount: (data.appeal && data.appealAmount?.amount) ?? null,
     };
   };
 

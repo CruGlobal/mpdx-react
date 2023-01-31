@@ -21,11 +21,11 @@ fragment ExpectedDonationData on Donation {
     currency
   }
   appeal {
-    amount
-    amountCurrency
-    createdAt
     id
     name
+  }
+  appealAmount {
+    amount
   }
   donationDate
   donorAccount {
