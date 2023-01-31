@@ -1,5 +1,4 @@
 import {
-  ContactDonorAccountType,
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
@@ -764,42 +763,30 @@ class MpdxRestApi extends RESTDataSource {
     return UpdateTaskLocation(data);
   }
 
-  async destroyDonorAccount(
-    contactId: string,
-    donorAccountId: string,
-    donorAccounts: ContactDonorAccountType[],
-  ) {
+  async destroyDonorAccount(contactId: string, donorAccountId: string) {
     const { data }: { data: DestroyDonorAccountResponse } = await this.put(
       `contacts/${contactId}`,
       {
-        included: donorAccounts.map((donorAccount) => ({
-          type: 'donor_accounts',
-          id: donorAccount.id,
-          attributes: {
-            accountNumber: donorAccount.accountNumber,
-            _destroy: donorAccount.id === donorAccountId ? '1' : '0',
-          },
-          ...(donorAccount.organization && {
-            relationships: {
-              organization: {
-                data: {
-                  type: 'organization',
-                  id: donorAccount.organization.id,
-                },
-              },
+        included: [
+          {
+            type: 'donor_accounts',
+            id: donorAccountId,
+            attributes: {
+              _destroy: '1',
             },
-          }),
-        })),
+          },
+        ],
         data: {
           type: 'contacts',
           id: contactId,
-          attributes: { overwrite: true },
           relationships: {
             donor_accounts: {
-              data: donorAccounts.map((donorAccount) => ({
-                id: donorAccount.id,
-                type: 'donor_accounts',
-              })),
+              data: [
+                {
+                  id: donorAccountId,
+                  type: 'donor_accounts',
+                },
+              ],
             },
           },
         },

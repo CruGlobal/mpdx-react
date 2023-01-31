@@ -203,20 +203,6 @@ describe('ContactDetailsPartnerAccounts', () => {
     ).toEqual({
       contactId: contact.id,
       donorAccountId: 'account1',
-      donorAccounts: [
-        {
-          accountNumber: 'donor-1',
-          id: 'account1',
-          organization: { id: 'org1', type: 'organization' },
-          type: 'donor_accounts',
-        },
-        {
-          accountNumber: 'donor-2',
-          id: 'account2',
-          organization: { id: 'org2', type: 'organization' },
-          type: 'donor_accounts',
-        },
-      ],
     });
   });
 });

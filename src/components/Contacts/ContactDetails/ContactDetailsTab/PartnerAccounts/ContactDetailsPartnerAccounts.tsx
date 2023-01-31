@@ -62,17 +62,6 @@ export const ContactDetailsPartnerAccounts: React.FC<
       variables: {
         contactId: contact.id,
         donorAccountId: id,
-        donorAccounts: contact.contactDonorAccounts.nodes.map(
-          (donorAccount) => ({
-            id: donorAccount.donorAccount.id,
-            type: 'donor_accounts',
-            accountNumber: donorAccount.donorAccount.accountNumber,
-            organization: {
-              id: donorAccount.donorAccount.organization.id,
-              type: 'organization',
-            },
-          }),
-        ),
       },
       refetchQueries: [
         {
