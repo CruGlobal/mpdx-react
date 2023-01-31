@@ -47,7 +47,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.map(({ message, extensions }) => {
       if (extensions?.code === 'AUTHENTICATION_ERROR') {
-        signOut({ redirect: true });
+        signOut({ redirect: true, callbackUrl: 'signOut' });
       }
       snackNotifications.error(message);
     });

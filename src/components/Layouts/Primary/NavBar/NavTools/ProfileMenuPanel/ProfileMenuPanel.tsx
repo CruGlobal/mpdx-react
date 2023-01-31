@@ -197,7 +197,7 @@ export const ProfileMenuPanel: React.FC = () => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: 'signOut' })}
           >
             {t('Sign Out')}
           </Button>

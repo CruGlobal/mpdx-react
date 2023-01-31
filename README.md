@@ -40,13 +40,45 @@ yarn start
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 Note: there is a test account you can use. Get this from another developer if you want to use it.
 
-#### Favicon & Logo
+### Cru specific secrets
 
-You will need to add these environment vars locally, so the logo and favicon shows.
+- `AUTH_PROVIDER` - Name of auth provider used in application. Set to `OKTA` or `API_OAUTH`
+- `ROLLBAR_ACCESS_TOKEN` - Optional token for sending error reports to Rollbar
+- `ROLLBAR_SERVER_ACCESS_TOKEN` - Optional token for sending error reports on server pages to Rollbar
+- `ONESKY_API_KEY` - Public key for uploading/downloading translations from OneSky
+- `ONESKY_API_SECRET` - Secret key for uploading/downloading translations from OneSky
+- `ONESKY_PROJECT_ID` - Project id for uploading/downloading translations from OneSky
+- `NEXT_PUBLIC_MEDIA_FAVICON` - Application favicon image url
+- `NEXT_PUBLIC_MEDIA_LOGO` - Application logo image url
 
-```NEXT_PUBLIC_MEDIA_LOGO=https://cru-mpdx-web-assets.s3.amazonaws.com/logos/mpdx_logo.svg
-NEXT_PUBLIC_MEDIA_FAVICON=https://cru-mpdx-web-assets.s3.amazonaws.com/logos/mpdx_favicon.png
+#### Auth provider
+
+MPDX has two auth providers, Okta (which is default) and our own API OAuth. You'll need to configure one.
+
 ```
+AUTH_PROVIDER=OKTA
+```
+
+AUTH_PROVIDER can be changed to the following auth providers options: `OKTA` or `API_OAUTH`.
+
+If you choose `OKTA`, you will also need to configure these environment variables.
+
+- `OKTA_CLIENT_ID` - Okta Client ID for your Okta account
+- `OKTA_CLIENT_SECRET` - Okta Client secret for your Okta account
+- `OKTA_ISSUER` - Okta issuer web address
+- `OKTA_SIGNOUT_REDIRECT_URL` - URL to send user after successful logout. Must match Default App Sign-In Custom Url on Okta's settings.
+
+If you choose `API_OAUTH`, you will need to configure these environment variables.
+
+- `API_OAUTH_CLIENT_ID` - Api OAuth Client ID
+- `API_OAUTH_CLIENT_SECRET` - Api OAuth Client Secret
+- `API_OAUTH_ISSUER` - Api OAuth issuer web address
+- `API_OAUTH_VISIBLE_NAME` - UI name for your OAuth, default is `SSO`.
+
+#### Favicon & Logo Env Vars
+
+Since we don't want accidental re-use of our logos by non-Cru organizations, the values of `NEXT_PUBLIC_MEDIA_LOGO` and `NEXT_PUBLIC_MEDIA_FAVICON` are not included in this README.
+If you need them, request a developer to send you the values to these env variables.
 
 ## GraphQL Playground
 
