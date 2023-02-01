@@ -75,6 +75,8 @@ If you choose `API_OAUTH`, you will need to configure these environment variable
 - `API_OAUTH_ISSUER` - Api OAuth issuer web address
 - `API_OAUTH_VISIBLE_NAME` - UI name for your OAuth, default is `SSO`.
 
+_Also if you're viewing the next-auth code, you'll come across this file `pages/api/auth/apiOauthSignIn.ts`. `apiOauthSignIn.ts` is a Graphql generated file, but since the apiOauthSignIn Graphql isn't added to MPDX API Prod, only to MPDX API Staging for security reasons. We've added the generated file for apiOauthSignIn and not the GraphQl file since it will cause build errors on prod._
+
 #### Favicon & Logo Env Vars
 
 Since we don't want accidental re-use of our logos by non-Cru organizations, the values of `NEXT_PUBLIC_MEDIA_LOGO` and `NEXT_PUBLIC_MEDIA_FAVICON` are not included in this README.

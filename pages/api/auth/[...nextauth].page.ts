@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
 import { Provider } from 'next-auth/providers';
 import OktaProvider from 'next-auth/providers/okta';
+import Rollbar from 'rollbar';
 import client from '../../../src/lib/client';
 import {
   OktaSignInDocument,
@@ -13,6 +14,13 @@ import {
   ApiOauthSignInMutation,
   ApiOauthSignInMutationVariables,
 } from './apiOauthSignIn';
+
+const rollbar = new Rollbar({
+  accessToken: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
+  environment: `react_${process.env.NODE_ENV}_server`,
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+});
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -180,6 +188,23 @@ const options: NextAuthOptions = {
       }
       if (url.startsWith('/')) return new URL(url, baseUrl).toString();
       return baseUrl;
+    },
+  },
+  logger: {
+    error(code, metadata) {
+      const errorMsg: Error | string =
+        metadata instanceof Error
+          ? metadata
+          : metadata?.error instanceof Error
+          ? metadata?.error
+          : code;
+      const customData = { code, ...metadata };
+      if (process.env.NODE_ENV === 'production') {
+        rollbar.error(errorMsg, customData);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error('NextAuth error :', customData);
+      }
     },
   },
 };
