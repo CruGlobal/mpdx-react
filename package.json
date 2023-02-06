@@ -174,7 +174,8 @@
     "@storybook/theming/deep-object-diff": "^1.1.9",
     "source-map-resolve/decode-uri-component": "^0.2.1",
     "openid-client/jose": "^4.9.2",
-    "package-json/got": "^11.8.5"
+    "package-json/got": "^11.8.5",
+    "http-cache-semantics": "~4.1.1"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix"
