@@ -278,14 +278,14 @@ export const EditPartnershipInfoModal: React.FC<
       <Formik
         initialValues={{
           id: contact.id,
-          status: contact.status ?? '',
-          pledgeAmount: contact.pledgeAmount ?? '',
-          pledgeFrequency: contact.pledgeFrequency ?? '',
-          pledgeReceived: contact.pledgeReceived ?? '',
-          pledgeCurrency: contact.pledgeCurrency ?? '',
-          pledgeStartDate: contact.pledgeStartDate ?? '',
-          nextAsk: contact.nextAsk ?? '',
-          noAppeals: contact.noAppeals ?? '',
+          status: contact.status,
+          pledgeAmount: contact.pledgeAmount,
+          pledgeFrequency: contact.pledgeFrequency,
+          pledgeReceived: contact.pledgeReceived,
+          pledgeCurrency: contact.pledgeCurrency,
+          pledgeStartDate: contact.pledgeStartDate,
+          nextAsk: contact.nextAsk,
+          noAppeals: contact.noAppeals,
           contactReferralsToMe: contactReferrals,
         }}
         validationSchema={contactPartnershipSchema}

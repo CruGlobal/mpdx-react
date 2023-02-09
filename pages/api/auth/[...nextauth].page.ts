@@ -125,15 +125,15 @@ const options: NextAuthOptions = {
   secret: process.env.JWT_SECRET,
   callbacks: {
     signIn: async ({ user, account }) => {
-      const { access_token } = account;
+      const access_token = account?.access_token;
 
       if (!access_token) {
         throw new Error(
-          `${account.provider} sign in failed to return an access_token`,
+          `${account?.provider} sign in failed to return an access_token`,
         );
       }
 
-      if (account.provider === 'apioauth') {
+      if (account?.provider === 'apioauth') {
         const { data } = await client.mutate<
           ApiOauthSignInMutation,
           ApiOauthSignInMutationVariables

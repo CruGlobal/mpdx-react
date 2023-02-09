@@ -107,7 +107,7 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
           id: contact.id,
           greeting: contact.greeting ?? '',
           envelopeGreeting: contact.envelopeGreeting ?? '',
-          sendNewsletter: contact.sendNewsletter ?? '',
+          sendNewsletter: contact.sendNewsletter ?? SendNewsletterEnum.None,
         }}
         validationSchema={mailingInfoSchema}
         onSubmit={onSubmit}
