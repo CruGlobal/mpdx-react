@@ -133,22 +133,20 @@ const DonationHistories = ({
   );
 
   const handleClick: CategoricalChartFunc = (period) => {
-    if (!period) {
+    if (!period?.activePayload) {
       // The click was inside the chart but wasn't on a period
       return;
     }
-    if (period?.activePayload) {
-      if (setTime) {
-        setTime(period?.activePayload[0]?.payload?.period);
-      } else {
-        push({
-          pathname: `/accountLists/${accountListId}/reports/donations`,
-          query: {
-            month: period?.activePayload[0]?.payload?.period?.toISO(),
-          },
-        });
-      }
-    } else return;
+    if (setTime) {
+      setTime(period.activePayload[0]?.payload?.period);
+    } else {
+      push({
+        pathname: `/accountLists/${accountListId}/reports/donations`,
+        query: {
+          month: period.activePayload[0]?.payload?.period?.toISO(),
+        },
+      });
+    }
   };
 
   return (
