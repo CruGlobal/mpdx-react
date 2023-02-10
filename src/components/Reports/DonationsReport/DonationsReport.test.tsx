@@ -6,6 +6,10 @@ import theme from '../../../theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { DonationsReport } from './DonationsReport';
 import TestRouter from '__tests__/util/TestRouter';
+import {
+  beforeTestResizeObserver,
+  afterTestResizeObserver,
+} from 'src/utils/tests/windowResizeObserver';
 
 const title = 'test title';
 const onNavListToggle = jest.fn();
@@ -46,87 +50,100 @@ it('renders', async () => {
   expect(queryAllByRole('button')[1]).toBeInTheDocument();
 });
 
-it('renders with data', async () => {
-  const mocks = {
-    GetDonationGraph: {
-      accountList: {
-        currency: 'CAD',
-        monthlyGoal: 100,
-        totalPledges: 10,
-      },
-      reportsDonationHistories: {
-        averageIgnoreCurrent: 10,
-        periods: [
-          {
-            startDate: DateTime.now().minus({ months: 12 }).toISO(),
-            convertedTotal: 10,
-            totals: [
-              {
-                currency: 'CAD',
-                convertedAmount: 10,
-              },
-            ],
-          },
-          {
-            startDate: DateTime.now().minus({ months: 11 }).toISO(),
-            convertedTotal: 10,
-            totals: [
-              {
-                currency: 'CAD',
-                convertedAmount: 10,
-              },
-            ],
-          },
-        ],
-      },
-    },
-    GetDonationsTable: {
-      donations: {
-        nodes: [
-          {
-            amount: {
-              amount: 10,
-              convertedAmount: 10,
-              convertedCurrency: 'CAD',
-              currency: 'CAD',
-            },
-            appeal: {
-              id: 'abc',
-              name: 'John',
-            },
-            donationDate: DateTime.now().minus({ minutes: 4 }).toISO(),
-            donorAccount: {
-              displayName: 'John',
-              id: 'abc',
-            },
-            id: 'abc',
-            paymentMethod: 'pay',
-          },
-        ],
-      },
-    },
-  };
+describe('Render Donations Report', () => {
+  beforeEach(() => {
+    beforeTestResizeObserver();
+  });
 
-  const { getByTestId, queryByRole, queryByTestId } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider mocks={mocks}>
-          <DonationsReport
-            accountListId={'abc'}
-            isNavListOpen={true}
-            onNavListToggle={onNavListToggle}
-            onSelectContact={onSelectContact}
-            title={title}
-          />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
-  );
+  afterEach(() => {
+    afterTestResizeObserver();
+  });
+  it('renders with data', async () => {
+    const mocks = {
+      GetDonationGraph: {
+        accountList: {
+          currency: 'CAD',
+          monthlyGoal: 100,
+          totalPledges: 10,
+        },
+        reportsDonationHistories: {
+          averageIgnoreCurrent: 10,
+          periods: [
+            {
+              startDate: DateTime.now().minus({ months: 12 }).toISO(),
+              convertedTotal: 10,
+              totals: [
+                {
+                  currency: 'CAD',
+                  convertedAmount: 10,
+                },
+              ],
+            },
+            {
+              startDate: DateTime.now().minus({ months: 11 }).toISO(),
+              convertedTotal: 10,
+              totals: [
+                {
+                  currency: 'CAD',
+                  convertedAmount: 10,
+                },
+              ],
+            },
+          ],
+        },
+      },
+      GetDonationsTable: {
+        donations: {
+          nodes: [
+            {
+              amount: {
+                amount: 10,
+                convertedAmount: 10,
+                convertedCurrency: 'CAD',
+                currency: 'CAD',
+              },
+              appeal: {
+                id: 'abc',
+                name: 'John',
+              },
+              donationDate: DateTime.now().minus({ minutes: 4 }).toISO(),
+              donorAccount: {
+                displayName: 'John',
+                id: 'abc',
+              },
+              id: 'abc',
+              paymentMethod: 'pay',
+            },
+          ],
+        },
+      },
+    };
 
-  await waitFor(() =>
-    expect(queryByRole('progressbar')).not.toBeInTheDocument(),
-  );
-  expect(getByTestId('DonationHistoriesTypographyAverage')).toBeInTheDocument();
-  expect(queryByTestId('DonationHistoriesGridLoading')).not.toBeInTheDocument();
-  expect(getByTestId('donationRow')).toBeInTheDocument();
+    const { getByTestId, queryByRole, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider mocks={mocks}>
+            <DonationsReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              onSelectContact={onSelectContact}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+    );
+    expect(
+      getByTestId('DonationHistoriesTypographyAverage'),
+    ).toBeInTheDocument();
+    expect(
+      queryByTestId('DonationHistoriesGridLoading'),
+    ).not.toBeInTheDocument();
+    expect(getByTestId('donationRow')).toBeInTheDocument();
+  });
 });

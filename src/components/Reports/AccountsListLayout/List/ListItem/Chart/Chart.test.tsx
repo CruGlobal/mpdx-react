@@ -3,6 +3,10 @@ import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AccountListItemChart as Chart } from './Chart';
 import theme from 'src/theme';
+import {
+  beforeTestResizeObserver,
+  afterTestResizeObserver,
+} from 'src/utils/tests/windowResizeObserver';
 
 const averageMock = 123;
 const currencyCodeMock = 'CAD';
@@ -15,6 +19,13 @@ const dataMock = [
 ];
 
 describe('AccountItemChart', () => {
+  beforeEach(() => {
+    beforeTestResizeObserver();
+  });
+
+  afterEach(() => {
+    afterTestResizeObserver();
+  });
   it('default', async () => {
     const { getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
