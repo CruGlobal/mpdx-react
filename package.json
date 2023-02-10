@@ -84,7 +84,7 @@
     "react-i18next": "^11.18.6",
     "react-to-print": "^2.14.7",
     "react-virtuoso": "2.19.0",
-    "recharts": "2.3.2",
+    "recharts": "~2.3.2",
     "rollbar": "^2.25.2",
     "storybook": "^6.5.16",
     "tslib": "^2.4.0",
