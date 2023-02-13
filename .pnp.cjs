@@ -112,7 +112,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["graphql-ergonomock", "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=84aaaf&locator=mpdx-react%40workspace%3A."],\
             ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
             ["husky", "npm:8.0.1"],\
-            ["i18next", "npm:21.9.2"],\
+            ["i18next", "npm:22.4.9"],\
             ["i18next-browser-languagedetector", "npm:6.1.5"],\
             ["i18next-http-backend", "npm:1.4.4"],\
             ["i18next-parser", "npm:6.6.0"],\
@@ -7116,6 +7116,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@babel/runtime", "npm:7.19.0"],\
             ["regenerator-runtime", "npm:0.13.9"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:7.20.13", {\
+          "packageLocation": "./.yarn/cache/@babel-runtime-npm-7.20.13-45eeb6d8ad-09b7a97a05.zip/node_modules/@babel/runtime/",\
+          "packageDependencies": [\
+            ["@babel/runtime", "npm:7.20.13"],\
+            ["regenerator-runtime", "npm:0.13.11"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -22934,11 +22942,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:21.9.2", {\
-          "packageLocation": "./.yarn/cache/i18next-npm-21.9.2-2e8a124cb7-e53b3885fa.zip/node_modules/i18next/",\
+        ["npm:22.4.9", {\
+          "packageLocation": "./.yarn/cache/i18next-npm-22.4.9-7b23bea086-8cce4aaced.zip/node_modules/i18next/",\
           "packageDependencies": [\
-            ["i18next", "npm:21.9.2"],\
-            ["@babel/runtime", "npm:7.19.0"]\
+            ["i18next", "npm:22.4.9"],\
+            ["@babel/runtime", "npm:7.20.13"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -26934,7 +26942,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["graphql-ergonomock", "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=84aaaf&locator=mpdx-react%40workspace%3A."],\
             ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
             ["husky", "npm:8.0.1"],\
-            ["i18next", "npm:21.9.2"],\
+            ["i18next", "npm:22.4.9"],\
             ["i18next-browser-languagedetector", "npm:6.1.5"],\
             ["i18next-http-backend", "npm:1.4.4"],\
             ["i18next-parser", "npm:6.6.0"],\
@@ -29828,7 +29836,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react-dom", null],\
             ["@types/react-native", null],\
             ["html-parse-stringify", "npm:3.0.1"],\
-            ["i18next", "npm:21.9.2"],\
+            ["i18next", "npm:22.4.9"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["react-native", null]\
@@ -30386,6 +30394,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["regenerator-runtime", [\
+        ["npm:0.13.11", {\
+          "packageLocation": "./.yarn/cache/regenerator-runtime-npm-0.13.11-90bf536060-27481628d2.zip/node_modules/regenerator-runtime/",\
+          "packageDependencies": [\
+            ["regenerator-runtime", "npm:0.13.11"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:0.13.9", {\
           "packageLocation": "./.yarn/cache/regenerator-runtime-npm-0.13.9-6d02340eec-65ed455fe5.zip/node_modules/regenerator-runtime/",\
           "packageDependencies": [\
@@ -32107,7 +32122,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/storybook__components", null],\
             ["@types/storybook__core-events", null],\
             ["@types/storybook__theming", null],\
-            ["i18next", "npm:21.9.2"],\
+            ["i18next", "npm:22.4.9"],\
             ["i18next-browser-languagedetector", "npm:6.1.5"],\
             ["i18next-http-backend", "npm:1.4.4"],\
             ["react", "npm:18.2.0"],\
