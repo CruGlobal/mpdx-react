@@ -105,9 +105,9 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
       <Formik
         initialValues={{
           id: contact.id,
-          greeting: contact.greeting,
-          envelopeGreeting: contact.envelopeGreeting,
-          sendNewsletter: contact.sendNewsletter,
+          greeting: contact.greeting ?? '',
+          envelopeGreeting: contact.envelopeGreeting ?? '',
+          sendNewsletter: contact.sendNewsletter ?? SendNewsletterEnum.None,
         }}
         validationSchema={mailingInfoSchema}
         onSubmit={onSubmit}

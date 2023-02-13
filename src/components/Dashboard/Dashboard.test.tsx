@@ -9,6 +9,10 @@ import theme from '../../theme';
 import useTaskModal from '../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
+import {
+  beforeTestResizeObserver,
+  afterTestResizeObserver,
+} from '../../../src/utils/tests/windowResizeObserver';
 
 jest.mock('../../hooks/useTaskModal');
 jest.mock('next/router', () => ({
@@ -120,6 +124,11 @@ const data: GetDashboardQuery = {
 describe('Dashboard', () => {
   beforeEach(() => {
     matchMediaMock({ width: '1024px' });
+    beforeTestResizeObserver();
+  });
+
+  afterEach(() => {
+    afterTestResizeObserver();
   });
 
   it('default', async () => {

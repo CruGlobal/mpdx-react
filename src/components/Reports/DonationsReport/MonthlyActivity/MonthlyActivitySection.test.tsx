@@ -7,6 +7,10 @@ import { GetDonationGraphQuery } from '../GetDonationGraph.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { MonthlyActivitySection } from './MonthlyActivitySection';
 import TestRouter from '__tests__/util/TestRouter';
+import {
+  beforeTestResizeObserver,
+  afterTestResizeObserver,
+} from 'src/utils/tests/windowResizeObserver';
 
 const setTime = jest.fn();
 
@@ -18,61 +22,72 @@ const router = {
   push,
 };
 
-it('renders with data', async () => {
-  const mocks = {
-    GetDonationGraph: {
-      accountList: {
-        currency: 'CAD',
-        monthlyGoal: 100,
-        totalPledges: 10,
-      },
-      reportsDonationHistories: {
-        averageIgnoreCurrent: 10,
-        periods: [
-          {
-            startDate: DateTime.now().minus({ months: 12 }).toISO(),
-            convertedTotal: 10,
-            totals: [
-              {
-                currency: 'CAD',
-                convertedAmount: 10,
-              },
-            ],
-          },
-          {
-            startDate: DateTime.now().minus({ months: 11 }).toISO(),
-            convertedTotal: 10,
-            totals: [
-              {
-                currency: 'CAD',
-                convertedAmount: 10,
-              },
-            ],
-          },
-        ],
-      },
-    },
-  };
-
-  const { getByTestId, queryByRole, queryByTestId } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
-          <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
-  );
-
-  await waitFor(() => {
-    expect(queryByRole('progressbar')).not.toBeInTheDocument();
-    expect(
-      getByTestId('DonationHistoriesTypographyAverage'),
-    ).toBeInTheDocument();
+describe('Render Monthly Activity Section', () => {
+  beforeEach(() => {
+    beforeTestResizeObserver();
   });
-  expect(queryByTestId('DonationHistoriesGridLoading')).not.toBeInTheDocument();
-});
 
+  afterEach(() => {
+    afterTestResizeObserver();
+  });
+
+  it('renders with data', async () => {
+    const mocks = {
+      GetDonationGraph: {
+        accountList: {
+          currency: 'CAD',
+          monthlyGoal: 100,
+          totalPledges: 10,
+        },
+        reportsDonationHistories: {
+          averageIgnoreCurrent: 10,
+          periods: [
+            {
+              startDate: DateTime.now().minus({ months: 12 }).toISO(),
+              convertedTotal: 10,
+              totals: [
+                {
+                  currency: 'CAD',
+                  convertedAmount: 10,
+                },
+              ],
+            },
+            {
+              startDate: DateTime.now().minus({ months: 11 }).toISO(),
+              convertedTotal: 10,
+              totals: [
+                {
+                  currency: 'CAD',
+                  convertedAmount: 10,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    const { getByTestId, queryByRole, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
+            <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryByRole('progressbar')).not.toBeInTheDocument();
+      expect(
+        getByTestId('DonationHistoriesTypographyAverage'),
+      ).toBeInTheDocument();
+    });
+    expect(
+      queryByTestId('DonationHistoriesGridLoading'),
+    ).not.toBeInTheDocument();
+  });
+});
 it('renders empty', async () => {
   const mocks = {
     GetDonationGraph: {

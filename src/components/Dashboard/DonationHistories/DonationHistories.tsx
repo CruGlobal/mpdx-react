@@ -1,3 +1,4 @@
+import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalChart.d';
 import React, { ReactElement } from 'react';
 import {
   CardContent,
@@ -131,16 +132,11 @@ const DonationHistories = ({
     reportsDonationHistories?.averageIgnoreCurrent ?? 0,
   );
 
-  const handleClick = (
-    period: {
-      activePayload: Array<{ payload: { period: DateTime } }>;
-    } | null,
-  ) => {
-    if (!period) {
+  const handleClick: CategoricalChartFunc = (period) => {
+    if (!period?.activePayload) {
       // The click was inside the chart but wasn't on a period
       return;
     }
-
     if (setTime) {
       setTime(period.activePayload[0].payload.period);
     } else {

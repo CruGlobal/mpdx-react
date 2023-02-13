@@ -88,8 +88,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
             render={({ push }) => (
               <>
                 {phoneNumbers?.map((phoneNumber, index) => (
-                  <>
-                    <span key={index} />
+                  <React.Fragment key={index}>
                     <PersonPhoneNumberItem
                       phoneNumber={phoneNumber}
                       index={index}
@@ -100,7 +99,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
                       handleChangePrimary={handleChangePrimary}
                       sources={sources}
                     />
-                  </>
+                  </React.Fragment>
                 ))}
                 <ModalSectionContainer>
                   <Grid container alignItems="center">

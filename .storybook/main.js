@@ -25,7 +25,7 @@ module.exports = {
     '@storybook/addon-actions',
     '@storybook/addon-viewport/register',
     '@storybook/addon-controls',
-    'storybook-addon-i18next/register',
+    'storybook-react-i18next',
     'storybook-addon-designs',
   ],
 };

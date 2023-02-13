@@ -1,29 +1,18 @@
 import React from 'react';
-import { configure } from '@storybook/react';
-import { addDecorator, addParameters } from '@storybook/react';
+import { MockedProvider } from '@apollo/client/testing';
+import { configure, addDecorator, addParameters } from '@storybook/react';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import { withI18next } from 'storybook-addon-i18next';
-import { Settings } from 'luxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
-import { MockedProvider } from '@apollo/client/testing';
 import TestRouter from '../__tests__/util/TestRouter';
 import theme from '../src/theme';
 import i18n from '../src/lib/i18n';
 
 Settings.now = () => new Date(2020, 0, 1).valueOf();
 
-addDecorator(
-  withI18next({
-    i18n,
-    languages: {
-      en: 'English',
-      de: 'German',
-    },
-  }),
-);
 addDecorator((StoryFn) => (
   <MockedProvider mocks={[]} addTypename={false}>
     <ThemeProvider theme={theme}>
@@ -39,7 +28,17 @@ addDecorator((StoryFn) => (
   </MockedProvider>
 ));
 
-addParameters({ chromatic: { diffThreshold: true } });
+addParameters({
+  chromatic: { diffThreshold: true },
+  i18n,
+  locale: 'en',
+  locales: {
+    en: 'English',
+    de: 'German',
+    ru: 'Russian',
+    tr: 'Turkish',
+  },
+});
 
 // automatically import all files ending in *.stories.tsx
 configure(

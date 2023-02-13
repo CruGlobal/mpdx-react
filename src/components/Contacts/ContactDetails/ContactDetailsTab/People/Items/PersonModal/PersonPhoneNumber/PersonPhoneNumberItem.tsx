@@ -87,7 +87,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             <ContactInputField
               label={t('Phone Number')}
               destroyed={phoneNumber.destroy ?? false}
-              value={phoneNumber.number}
+              value={phoneNumber.number ?? ''}
               onChange={(event) =>
                 setFieldValue(
                   `phoneNumbers.${index}.number`,
