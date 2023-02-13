@@ -176,7 +176,7 @@
     "openid-client/jose": "^4.9.2",
     "package-json/got": "^11.8.5",
     "http-cache-semantics": "~4.1.1",
-    "cacheable-request": "7.0.2"
+    "cacheable-request": "^10.2.7"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix"
