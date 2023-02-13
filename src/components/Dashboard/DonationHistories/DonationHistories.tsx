@@ -138,12 +138,12 @@ const DonationHistories = ({
       return;
     }
     if (setTime) {
-      setTime(period.activePayload[0]?.payload?.period);
+      setTime(period.activePayload[0].payload.period);
     } else {
       push({
         pathname: `/accountLists/${accountListId}/reports/donations`,
         query: {
-          month: period.activePayload[0]?.payload?.period?.toISO(),
+          month: period.activePayload[0].payload.period.toISO(),
         },
       });
     }
