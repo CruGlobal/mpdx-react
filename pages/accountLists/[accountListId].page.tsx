@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
@@ -10,14 +10,51 @@ import {
   GetDashboardQuery,
   GetDashboardQueryVariables,
 } from './GetDashboard.generated';
+import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import useTaskModal from '../../src/hooks/useTaskModal';
 
 interface Props {
   data: GetDashboardQuery;
   accountListId: string;
+  modal: string;
 }
 
-const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
+const AccountListIdPage = ({
+  data,
+  accountListId,
+  modal,
+}: Props): ReactElement => {
   const { appName } = useGetAppSettings();
+  const { openTaskModal } = useTaskModal();
+  const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
+  const [dialogOpen, changeDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (!modal || dialogOpen) {
+      return;
+    }
+    switch (modal) {
+      case 'AddContact':
+        changeSelectedMenuItem(0);
+        changeDialogOpen(true);
+        break;
+      case 'AddMultipleContacts':
+        changeSelectedMenuItem(1);
+        changeDialogOpen(true);
+        break;
+      case 'AddDonation':
+        changeSelectedMenuItem(2);
+        changeDialogOpen(true);
+        break;
+      case 'AddTask':
+        openTaskModal({});
+        break;
+      case 'AddLogTask':
+        openTaskModal({ view: 'log' });
+        break;
+    }
+  }, [modal]);
+
   return (
     <>
       <Head>
@@ -26,12 +63,14 @@ const AccountListIdPage = ({ data, accountListId }: Props): ReactElement => {
         </title>
       </Head>
       <Dashboard data={data} accountListId={accountListId} />
+
+      {modal && renderDialog(selectedMenuItem, dialogOpen, changeDialogOpen)}
     </>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = async ({
-  params,
+  query,
   req,
 }) => {
   const session = await getSession({ req });
@@ -53,10 +92,10 @@ export const getServerSideProps: GetServerSideProps = async ({
   >({
     query: GetDashboardDocument,
     variables: {
-      accountListId: params?.accountListId
-        ? Array.isArray(params.accountListId)
-          ? params.accountListId[0]
-          : params.accountListId
+      accountListId: query?.accountListId
+        ? Array.isArray(query.accountListId)
+          ? query.accountListId[0]
+          : query.accountListId
         : '',
       // TODO: implement these variables in query
       // endOfDay: DateTime.local().endOf('day').toISO(),
@@ -71,7 +110,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   return {
     props: {
       data: response.data,
-      accountListId: params?.accountListId?.toString(),
+      accountListId: query?.accountListId?.toString(),
+      modal: query?.modal?.toString() ?? '',
     },
   };
 };

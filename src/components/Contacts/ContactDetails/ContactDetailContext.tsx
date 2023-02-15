@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import { TabKey } from './ContactDetails';
 import { DonationTabKey } from './ContactDontationsTab/ContactDonationsTab';
 
@@ -53,13 +54,17 @@ interface Props {
 }
 
 export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
+  const router = useRouter();
+  const query = router?.query;
   const [editingAddressId, setEditingAddressId] = useState<string>();
   const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editOtherModalOpen, setEditOtherModalOpen] = useState(false);
   const [editMailingModalOpen, setEditMailingModalOpen] = useState(false);
-  const [selectedTabKey, setSelectedTabKey] = React.useState(TabKey.Tasks);
+  const [selectedTabKey, setSelectedTabKey] = React.useState(
+    query?.tab ? TabKey[query?.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
+  );
   const handleTabChange = (
     _event: React.ChangeEvent<Record<string, unknown>>,
     newKey: TabKey,

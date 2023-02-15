@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { signIn, getSession } from 'next-auth/react';
 import { Button } from '@mui/material';
 import SubjectIcon from '@mui/icons-material/Subject';
@@ -12,13 +12,21 @@ import BaseLayout from '../src/components/Layouts/Basic';
 interface IndexPageProps {
   signInButtonText: string;
   signInAuthProviderId: string;
+  immediateSignIn: boolean;
 }
 
 const IndexPage = ({
   signInButtonText,
   signInAuthProviderId,
+  immediateSignIn,
 }: IndexPageProps): ReactElement => {
   const { appName } = useGetAppSettings();
+
+  useEffect(() => {
+    if (immediateSignIn) {
+      signIn(signInAuthProviderId);
+    }
+  }, []);
 
   return (
     <>
@@ -74,10 +82,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         });
   const signInAuthProviderId = authProvider?.toLowerCase()?.replace(/_/g, '');
 
+  const redirectCookie = context.req.headers?.cookie
+    ?.split('mpdx-handoff.redirect-url=')[1]
+    ?.split(';')[0];
+  const immediateSignIn = !!redirectCookie;
+
+  if (immediateSignIn) {
+    context.res.setHeader(
+      'Set-Cookie',
+      `mpdx-handoff.redirect-url=; HttpOnly; path=/; Expires=${new Date().toUTCString()}`,
+    );
+  }
   if (context.res && session) {
     return {
       redirect: {
-        destination: '/accountLists',
+        destination: redirectCookie ?? '/accountLists',
         permanent: false,
       },
     };
@@ -87,6 +106,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       signInButtonText,
       signInAuthProviderId,
+      immediateSignIn,
     },
   };
 };
