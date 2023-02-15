@@ -109,7 +109,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       data: response.data,
       accountListId: query?.accountListId?.toString(),
-      modal: query?.modal?.toString(),
+      modal: query?.modal?.toString() ?? '',
     },
   };
 };
