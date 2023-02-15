@@ -17,10 +17,8 @@ const defineRedirectUrl = ({
   if (rest) {
     for (const [key, value] of Object.entries(rest)) {
       if (typeof value !== 'string') continue;
-      if (
-        (path.includes('/contacts') || path.includes('/reports')) &&
-        key === 'contactId'
-      ) {
+      const contactsAndReportsRegex = new RegExp('/contacts|/reports');
+      if (contactsAndReportsRegex.test(path) && key === 'contactId') {
         if (redirectUrl.includes('?')) {
           redirectUrl = [
             redirectUrl.split('?')[0],
@@ -33,7 +31,7 @@ const defineRedirectUrl = ({
         const typeDetails = taskFiltersTabs.find(
           (item) => item.name.toLowerCase() === value.toLowerCase(),
         );
-        if (typeDetails !== undefined) {
+        if (typeDetails) {
           if (!redirectUrl.includes('?')) redirectUrl += '?';
           redirectUrl += `filters=${encodeURIComponent(
             JSON.stringify(typeDetails.activeFiltersOptions),
@@ -59,15 +57,9 @@ const mpdxWebHandoff = async (
     })) as { apiToken: string } | null;
 
     const { path = '', accountListId = '', ...rest } = req.query;
-    // Convert URLs to envs
-    // Add envs to terraform
-    // Update readme docs
-    // ----
-    // Contacts flow - Can't land on flow, get redirected
-    // contacts flow - Happens on Contacts page too.
-    // Contacts tabs see if that works too on just contacts
-    // Reports isn't a page - needs creating
-    // Expected monthly -> accordian should be open by default.
+    if (!path || !accountListId) {
+      res.redirect(`${process.env.SITE_URL}`);
+    }
     const redirectUrl = defineRedirectUrl({
       accountListId: accountListId.toString(),
       path: path.toString(),
@@ -82,12 +74,9 @@ const mpdxWebHandoff = async (
       ]);
       res.redirect(`${process.env.SITE_URL}/login`);
     }
-    if (!path || !accountListId) {
-      res.redirect(`${process.env.SITE_URL}`);
-    }
     res.redirect(redirectUrl);
   } catch (err) {
-    res.redirect(`${process.env.SITE_URL}/`);
+    res.redirect(`${process.env.SITE_URL}`);
   }
 };
 

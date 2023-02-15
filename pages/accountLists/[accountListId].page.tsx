@@ -30,9 +30,7 @@ const AccountListIdPage = ({
   const [dialogOpen, changeDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (!modal || dialogOpen) {
-      return;
-    }
+    if (!modal || dialogOpen) return;
     switch (modal) {
       case 'AddContact':
         changeSelectedMenuItem(0);
@@ -111,7 +109,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     props: {
       data: response.data,
       accountListId: query?.accountListId?.toString(),
-      modal: query?.modal?.toString() ?? '',
+      modal: query?.modal?.toString(),
     },
   };
 };
