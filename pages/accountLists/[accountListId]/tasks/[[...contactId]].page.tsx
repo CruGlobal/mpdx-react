@@ -45,6 +45,7 @@ import {
   TaskFilterTabsTypes,
   taskFiltersTabs,
 } from '../../../../src/utils/tasks/taskFilterTabs';
+import { dispatch } from 'src/lib/analytics';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -298,6 +299,9 @@ const TasksPage: React.FC = () => {
           variables: { accountListId },
         },
       ],
+    });
+    ids.forEach(() => {
+      dispatch('mpdx-task-completed');
     });
     enqueueSnackbar(t('Contact(s) completed successfully'), {
       variant: 'success',

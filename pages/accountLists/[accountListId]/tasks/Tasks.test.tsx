@@ -2,12 +2,11 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import { GroupItemContent } from 'react-virtuoso';
+import { VirtuosoMockContext } from 'react-virtuoso';
+import { dispatch } from 'src/lib/analytics';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
-import { useMassSelection } from '../../../../src/hooks/useMassSelection';
-import { ListHeaderCheckBoxState } from '../../../../src/components/Shared/Header/ListHeader';
 import useTaskModal from '../../../../src/hooks/useTaskModal';
 import Tasks from './[[...contactId]].page';
 import { TasksQuery } from './Tasks.generated';
@@ -35,14 +34,7 @@ beforeEach(() => {
   });
 });
 
-jest.mock('../../../../src/hooks/useMassSelection');
-
-(useMassSelection as jest.Mock).mockReturnValue({
-  selectionType: ListHeaderCheckBoxState.unchecked,
-  isRowChecked: jest.fn(),
-  toggleSelectAll: jest.fn(),
-  toggleSelectionById: jest.fn(),
-});
+jest.mock('src/lib/analytics');
 
 const mockEnqueue = jest.fn();
 
@@ -57,35 +49,34 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('react-virtuoso', () => ({
-  // eslint-disable-next-line react/display-name
-  GroupedVirtuoso: ({
-    itemContent,
-  }: {
-    itemContent: GroupItemContent<undefined, undefined>;
-  }) => {
-    return <div>{itemContent(0, 0, undefined, undefined)}</div>;
-  },
-}));
+const MocksProviders = (props: { children: JSX.Element }) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter router={router}>
+      <GqlMockedProvider<TasksQuery>
+        mocks={{
+          Tasks: {
+            tasks: {
+              nodes: [task],
+              pageInfo: { hasNextPage: false },
+            },
+          },
+        }}
+      >
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 1000, itemHeight: 100 }}
+        >
+          {props.children}
+        </VirtuosoMockContext.Provider>
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
 
 it('should render list of tasks', async () => {
   const { getByText } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider<TasksQuery>
-          mocks={{
-            Tasks: {
-              tasks: {
-                nodes: [task],
-                pageInfo: { endCursor: 'Mg', hasNextPage: false },
-              },
-            },
-          }}
-        >
-          <Tasks />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
+    <MocksProviders>
+      <Tasks />
+    </MocksProviders>,
   );
   await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   await waitFor(() => expect(getByText('Test Subject')).toBeInTheDocument());
@@ -93,25 +84,12 @@ it('should render list of tasks', async () => {
 
 it('should render contact detail panel', async () => {
   const { findAllByRole, getByText } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider<TasksQuery>
-          mocks={{
-            Tasks: {
-              tasks: {
-                nodes: [task],
-                pageInfo: { endCursor: 'Mg', hasNextPage: false },
-              },
-            },
-          }}
-        >
-          <Tasks />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
+    <MocksProviders>
+      <Tasks />
+    </MocksProviders>,
   );
   await waitFor(() => expect(getByText('Test Subject')).toBeInTheDocument());
-  const row = await getByText('Test Person');
+  const row = getByText('Test Person');
 
   userEvent.click(row);
 
@@ -122,22 +100,9 @@ it('should render contact detail panel', async () => {
 
 it('should open add task panel', async () => {
   const { getByText } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider<TasksQuery>
-          mocks={{
-            Tasks: {
-              tasks: {
-                nodes: [task],
-                pageInfo: { endCursor: 'Mg', hasNextPage: false },
-              },
-            },
-          }}
-        >
-          <Tasks />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
+    <MocksProviders>
+      <Tasks />
+    </MocksProviders>,
   );
   await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
   await waitFor(() => expect(getByText('Test Subject')).toBeInTheDocument());
@@ -147,22 +112,9 @@ it('should open add task panel', async () => {
 
 it('should show Completed', async () => {
   const { getByText } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider<TasksQuery>
-          mocks={{
-            Tasks: {
-              tasks: {
-                nodes: [task],
-                pageInfo: { endCursor: 'Mg', hasNextPage: false },
-              },
-            },
-          }}
-        >
-          <Tasks />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
+    <MocksProviders>
+      <Tasks />
+    </MocksProviders>,
   );
 
   await waitFor(() => expect(getByText('Completed')).toBeInTheDocument());
@@ -183,24 +135,44 @@ it('should show Completed', async () => {
   );
 });
 
+it('should dispatch one analytics event per task', async () => {
+  const { getAllByTestId, getByRole } = render(
+    <MocksProviders>
+      <GqlMockedProvider<TasksQuery>
+        mocks={{
+          Tasks: {
+            tasks: {
+              nodes: [
+                { id: '1', subject: 'Task 1' },
+                { id: '2', subject: 'Task 2' },
+                { id: '3', subject: 'Task 3' },
+              ],
+              totalCount: 3,
+              pageInfo: { hasNextPage: false },
+            },
+          },
+        }}
+      >
+        <Tasks />
+      </GqlMockedProvider>
+    </MocksProviders>,
+  );
+
+  await waitFor(() => expect(getAllByTestId('task-row')).toHaveLength(3));
+  userEvent.click(getAllByTestId('task-row')[0]);
+  userEvent.click(getAllByTestId('task-row')[1]);
+  userEvent.click(getAllByTestId('task-row')[2]);
+  userEvent.click(getByRole('button', { name: 'Actions' }));
+  userEvent.click(getByRole('menuitem', { name: 'Complete Tasks' }));
+  userEvent.click(getByRole('button', { name: 'Yes' }));
+  await waitFor(() => expect(dispatch).toHaveBeenCalledTimes(3));
+});
+
 it('should update URL which in turns updates the buttons classes.', async () => {
   const { getByText } = render(
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider<TasksQuery>
-          mocks={{
-            Tasks: {
-              tasks: {
-                nodes: [task],
-                pageInfo: { endCursor: 'Mg', hasNextPage: false },
-              },
-            },
-          }}
-        >
-          <Tasks />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>,
+    <MocksProviders>
+      <Tasks />
+    </MocksProviders>,
   );
 
   await waitFor(() => expect(getByText('Upcoming')).toBeInTheDocument());

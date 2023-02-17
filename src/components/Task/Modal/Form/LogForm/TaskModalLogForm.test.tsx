@@ -7,6 +7,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
+import { dispatch } from 'src/lib/analytics';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import TaskModalLogForm from './TaskModalLogForm';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -14,6 +15,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import {
   CreateTaskMutation,
   DeleteTaskMutation,
+  GetTaskModalContactsFilteredQuery,
   UpdateTaskMutation,
 } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
@@ -26,6 +28,8 @@ const accountListId = 'abc';
 
 const mockEnqueue = jest.fn();
 jest.mock('../../../../../hooks/useTaskModal');
+
+jest.mock('src/lib/analytics');
 
 const openTaskModal = jest.fn();
 
@@ -109,10 +113,57 @@ describe('TaskModalLogForm', () => {
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
+    expect(dispatch).toHaveBeenCalledWith('mpdx-task-completed');
     const { operation } = mutationSpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
     expect(openTaskModal).not.toHaveBeenCalled();
   }, 10000);
+
+  it('dispatches multiple events for multiple contacts', async () => {
+    const mutationSpy = jest.fn();
+    const onClose = jest.fn();
+    const { findByRole, getByText, getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider<GetTaskModalContactsFilteredQuery>
+              onCall={mutationSpy}
+              mocks={{
+                GetTaskModalContactsFiltered: {
+                  contacts: {
+                    nodes: [1, 2, 3].map((id) => ({
+                      id: id.toString(),
+                      name: `Contact ${id}`,
+                    })),
+                  },
+                },
+              }}
+            >
+              <TaskModalLogForm
+                accountListId={accountListId}
+                onClose={onClose}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+
+    userEvent.type(getByRole('textbox', { name: 'Subject' }), 'Do Something');
+
+    const selectContact = async (name: string) => {
+      userEvent.click(await findByRole('combobox', { name: 'Contacts' }));
+      userEvent.click(getByRole('option', { name }));
+    };
+
+    await selectContact('Contact 1');
+    await selectContact('Contact 2');
+    await selectContact('Contact 3');
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+    expect(dispatch).toHaveBeenCalledTimes(3);
+  });
 
   it('persisted', async () => {
     const onClose = jest.fn();

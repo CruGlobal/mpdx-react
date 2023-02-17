@@ -48,6 +48,7 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `ONESKY_API_KEY` - Public key for uploading/downloading translations from OneSky
 - `ONESKY_API_SECRET` - Secret key for uploading/downloading translations from OneSky
 - `ONESKY_PROJECT_ID` - Project id for uploading/downloading translations from OneSky
+- `GOOGLE_TAG_MANAGER_CONTAINER_ID` - Optional Google Tag Manager container ID
 - `NEXT_PUBLIC_MEDIA_FAVICON` - Application favicon image url
 - `NEXT_PUBLIC_MEDIA_LOGO` - Application logo image url
 - `REWRITE_DOMAIN` - The domain which where new & old MPDX applications live. Set to `mpdx.org` for next.mpdx.org & mpdx.org.
