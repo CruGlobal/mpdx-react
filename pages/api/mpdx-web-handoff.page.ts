@@ -58,7 +58,7 @@ const mpdxWebHandoff = async (
 
     const { path = '', accountListId = '', ...rest } = req.query;
     if (!path || !accountListId) {
-      res.redirect(`${process.env.SITE_URL}`);
+      throw new Error('Path and accountListId are not defined.');
     }
     const redirectUrl = defineRedirectUrl({
       accountListId: accountListId.toString(),
@@ -73,10 +73,11 @@ const mpdxWebHandoff = async (
         `mpdx-handoff.logged-in=true; path=/; domain=${process.env.SPLIT_DOMAIN}`,
       ]);
       res.redirect(`${process.env.SITE_URL}/login`);
+      return;
     }
     res.redirect(redirectUrl);
   } catch (err) {
-    res.redirect(`${process.env.SITE_URL}`);
+    res.redirect(`${process.env.SITE_URL}/`);
   }
 };
 

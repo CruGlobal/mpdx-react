@@ -26,23 +26,23 @@ const AccountListIdPage = ({
 }: Props): ReactElement => {
   const { appName } = useGetAppSettings();
   const { openTaskModal } = useTaskModal();
-  const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
-  const [dialogOpen, changeDialogOpen] = useState(false);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(-1);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!modal || dialogOpen) return;
     switch (modal) {
       case 'AddContact':
-        changeSelectedMenuItem(0);
-        changeDialogOpen(true);
+        setSelectedMenuItem(0);
+        setDialogOpen(true);
         break;
       case 'AddMultipleContacts':
-        changeSelectedMenuItem(1);
-        changeDialogOpen(true);
+        setSelectedMenuItem(1);
+        setDialogOpen(true);
         break;
       case 'AddDonation':
-        changeSelectedMenuItem(2);
-        changeDialogOpen(true);
+        setSelectedMenuItem(2);
+        setDialogOpen(true);
         break;
       case 'AddTask':
         openTaskModal({});
@@ -62,7 +62,7 @@ const AccountListIdPage = ({
       </Head>
       <Dashboard data={data} accountListId={accountListId} />
 
-      {modal && renderDialog(selectedMenuItem, dialogOpen, changeDialogOpen)}
+      {modal && renderDialog(selectedMenuItem, dialogOpen, setDialogOpen)}
     </>
   );
 };
