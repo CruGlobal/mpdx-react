@@ -29,7 +29,7 @@ describe('/api/mpdx-web-handoff', () => {
 
   describe('Inactive session', () => {
     beforeEach(() => {
-      (getToken as jest.Mock).mockReturnValue();
+      (getToken as jest.Mock).mockReturnValue(null);
     });
     it('Redirect to login', async () => {
       const { req, res } = createMocks({
