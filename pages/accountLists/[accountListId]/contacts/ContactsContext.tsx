@@ -153,11 +153,22 @@ export const ContactsProvider: React.FC<Props> = ({
         if (contactId?.includes('list')) {
           setViewMode(TableViewModeEnum.List);
         } else {
-          setViewMode(
-            (userOptions?.userOptions.find(
-              (option) => option.key === 'contacts_view',
-            )?.value as TableViewModeEnum) || TableViewModeEnum.List,
-          );
+          if (userOptions) {
+            setViewMode(
+              (userOptions?.userOptions.find(
+                (option) => option.key === 'contacts_view',
+              )?.value as TableViewModeEnum) || TableViewModeEnum.List,
+            );
+          } else {
+            // Check if URL is flows or map
+            if (contactId) {
+              if (/flows|map|list/.test(contactId[0])) {
+                setViewMode(contactId[0] as TableViewModeEnum);
+              } else setViewMode(TableViewModeEnum.List);
+            } else {
+              setViewMode(TableViewModeEnum.List);
+            }
+          }
         }
       },
     });
@@ -303,7 +314,7 @@ export const ContactsProvider: React.FC<Props> = ({
       }
     }
 
-    const pathName = getRedirectPathname(router.pathname, accountListId);
+    const pathName = getRedirectPathname(pathname, accountListId);
 
     push(
       id

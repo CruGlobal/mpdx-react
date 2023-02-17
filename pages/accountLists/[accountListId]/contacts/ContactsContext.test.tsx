@@ -254,4 +254,113 @@ describe('ContactsPageContext', () => {
       );
     });
   });
+
+  it('Direct link to flows with no userOptions', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId, contactId: ['flows'] },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+            isReady,
+            push,
+          }}
+        >
+          <GqlMockedProvider<GetUserOptionsQuery>
+            mocks={{
+              GetUserOptions: {},
+            }}
+          >
+            <ContactsPage>
+              <TestRender />
+            </ContactsPage>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    expect(getByText('Loading')).toBeInTheDocument();
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() => expect(getByText('flows')).toBeInTheDocument());
+  });
+  it('Direct link to map with no userOptions', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId, contactId: ['map'] },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+            isReady,
+            push,
+          }}
+        >
+          <GqlMockedProvider<GetUserOptionsQuery>
+            mocks={{
+              GetUserOptions: {},
+            }}
+          >
+            <ContactsPage>
+              <TestRender />
+            </ContactsPage>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    expect(getByText('Loading')).toBeInTheDocument();
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() => expect(getByText('map')).toBeInTheDocument());
+  });
+  it('Direct link with contact ID with no userOptions', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId, contactId: ['123456'] },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+            isReady,
+            push,
+          }}
+        >
+          <GqlMockedProvider<GetUserOptionsQuery>
+            mocks={{
+              GetUserOptions: {},
+            }}
+          >
+            <ContactsPage>
+              <TestRender />
+            </ContactsPage>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    expect(getByText('Loading')).toBeInTheDocument();
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() => expect(getByText('list')).toBeInTheDocument());
+  });
+  it('Direct link with no userOptions', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+            isReady,
+            push,
+          }}
+        >
+          <GqlMockedProvider<GetUserOptionsQuery>
+            mocks={{
+              GetUserOptions: {},
+            }}
+          >
+            <ContactsPage>
+              <TestRender />
+            </ContactsPage>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    expect(getByText('Loading')).toBeInTheDocument();
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() => expect(getByText('list')).toBeInTheDocument());
+  });
 });

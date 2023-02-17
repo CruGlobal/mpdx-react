@@ -58,7 +58,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
         margin: 'auto',
       }}
     >
-      <Accordion style={{ marginLeft: 0 }}>
+      <Accordion style={{ marginLeft: 0 }} expanded={visible}>
         <AccordionSummary
           expandIcon={<ExpandMore />}
           style={{
