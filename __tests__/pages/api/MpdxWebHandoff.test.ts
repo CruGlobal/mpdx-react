@@ -5,8 +5,8 @@ import { taskFiltersTabs } from '../../../src/utils/tasks/taskFilterTabs';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
 
-const siteUrl = 'http://localhost:3000';
-const accountListsUrl = 'http://localhost:3000/accountLists';
+const siteUrl = 'http://next-stage.mpdx.org';
+const accountListsUrl = 'http://next-stage.mpdx.org/accountLists';
 
 const convertCookieStringToObject = (cookieString) => {
   return cookieString.split('; ').reduce((prev, current) => {
