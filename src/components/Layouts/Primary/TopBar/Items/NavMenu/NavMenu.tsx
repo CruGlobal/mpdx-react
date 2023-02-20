@@ -379,9 +379,7 @@ const NavMenu = (): ReactElement => {
                                           ? classes.darkText
                                           : classes.whiteText,
                                       )}
-                                      primary={t('{{toolname}}', {
-                                        toolname: tool.tool,
-                                      })}
+                                      primary={t(tool.tool)}
                                     />
                                     {!loading && needsAttention && (
                                       <Box
