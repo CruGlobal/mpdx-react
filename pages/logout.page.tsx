@@ -50,7 +50,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   context.res.setHeader(
     'Set-Cookie',
     `mpdx-handoff.logged-in=; path=/; Expires=${new Date().toUTCString()}; domain=${
-      process.env.SPLIT_DOMAIN
+      process.env.REWRITE_DOMAIN
     }`,
   );
   return {

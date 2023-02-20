@@ -70,7 +70,7 @@ const mpdxWebHandoff = async (
       expireDate.setTime(expireDate.getTime() + 5 * 60 * 1000);
       res.setHeader('Set-Cookie', [
         `mpdx-handoff.redirect-url=${redirectUrl}; HttpOnly; path=/; Expires=${expireDate.toUTCString()}`,
-        `mpdx-handoff.logged-in=true; path=/; domain=${process.env.SPLIT_DOMAIN}`,
+        `mpdx-handoff.logged-in=true; path=/; domain=${process.env.REWRITE_DOMAIN}`,
       ]);
       res.redirect(`${process.env.SITE_URL}/login`);
       return;
