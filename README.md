@@ -50,6 +50,8 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `ONESKY_PROJECT_ID` - Project id for uploading/downloading translations from OneSky
 - `NEXT_PUBLIC_MEDIA_FAVICON` - Application favicon image url
 - `NEXT_PUBLIC_MEDIA_LOGO` - Application logo image url
+- `NEXT_PUBLIC_MEDIA_LOGO` - Application logo image url
+- `SPLIT_DOMAIN` - The domain which where new & old MPDX applications live. Set to `mpdx.org` for next.mpdx.org & mpdx.org.
 
 #### Auth provider
 
