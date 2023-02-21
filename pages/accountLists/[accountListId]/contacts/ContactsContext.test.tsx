@@ -268,7 +268,7 @@ describe('ContactsPageContext', () => {
         >
           <GqlMockedProvider<GetUserOptionsQuery>
             mocks={{
-              GetUserOptions: {},
+              GetUserOptions: null,
             }}
           >
             <ContactsPage>
@@ -295,7 +295,7 @@ describe('ContactsPageContext', () => {
         >
           <GqlMockedProvider<GetUserOptionsQuery>
             mocks={{
-              GetUserOptions: {},
+              GetUserOptions: null,
             }}
           >
             <ContactsPage>
@@ -308,6 +308,33 @@ describe('ContactsPageContext', () => {
     expect(getByText('Loading')).toBeInTheDocument();
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
     await waitFor(() => expect(getByText('map')).toBeInTheDocument());
+  });
+  it('Direct link to list with no userOptions', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId, contactId: ['list'] },
+            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+            isReady,
+            push,
+          }}
+        >
+          <GqlMockedProvider<GetUserOptionsQuery>
+            mocks={{
+              GetUserOptions: {},
+            }}
+          >
+            <ContactsPage>
+              <TestRender />
+            </ContactsPage>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    expect(getByText('Loading')).toBeInTheDocument();
+    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() => expect(getByText('list')).toBeInTheDocument());
   });
   it('Direct link with contact ID with no userOptions', async () => {
     const { getByText, queryByText } = render(
