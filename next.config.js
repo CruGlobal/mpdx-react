@@ -75,6 +75,8 @@ module.exports = withPlugins([
       APP_NAME: process.env.APP_NAME ?? 'MPDX',
       ROLLBAR_SERVER_ACCESS_TOKEN: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
       REWRITE_DOMAIN: process.env.REWRITE_DOMAIN ?? 'mpdx.org',
+      DATADOG_APP_ID: process.env.DATADOG_APP_ID,
+      DATADOG_CLIENT_TOKEN: process.env.DATADOG_CLIENT_TOKEN,
     },
     experimental: {
       modularizeImports: {
