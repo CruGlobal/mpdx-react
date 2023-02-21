@@ -268,7 +268,7 @@ describe('ContactsPageContext', () => {
         >
           <GqlMockedProvider<GetUserOptionsQuery>
             mocks={{
-              GetUserOptions: null,
+              GetUserOptions: {},
             }}
           >
             <ContactsPage>
@@ -295,7 +295,7 @@ describe('ContactsPageContext', () => {
         >
           <GqlMockedProvider<GetUserOptionsQuery>
             mocks={{
-              GetUserOptions: null,
+              GetUserOptions: {},
             }}
           >
             <ContactsPage>
