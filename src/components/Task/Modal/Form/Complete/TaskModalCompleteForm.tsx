@@ -46,6 +46,7 @@ import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResult
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { TaskLocation } from '../TaskModalForm';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
+import { dispatch } from 'src/lib/analytics';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -119,6 +120,7 @@ const TaskModalCompleteForm = ({
       ],
     });
 
+    dispatch('mpdx-task-completed');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     onClose();
     if (

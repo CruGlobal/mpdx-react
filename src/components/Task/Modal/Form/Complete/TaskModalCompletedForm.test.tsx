@@ -2,6 +2,7 @@ import React from 'react';
 import { render, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import { dispatch } from 'src/lib/analytics';
 import { getDataForTaskModalMock } from '../TaskModalForm.mock';
 import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import {
@@ -28,6 +29,8 @@ beforeEach(() => {
     openTaskModal,
   });
 });
+
+jest.mock('src/lib/analytics');
 
 const accountListId = 'abc';
 const taskId = 'task-1';
@@ -96,6 +99,7 @@ describe('TaskModalCompleteForm', () => {
     );
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
+    expect(dispatch).toHaveBeenCalledWith('mpdx-task-completed');
     expect(openTaskModal).not.toHaveBeenCalled();
   });
 

@@ -29,6 +29,11 @@ class MyDocument extends Document {
                 {`!function(a,e,t,n,s){a=a[s]=a[s]||{q:[],onReady:function(e){a.q.push(e)}},(s=e.createElement(t)).async=1,s.src=n,(n=e.getElementsByTagName(t)[0]).parentNode.insertBefore(s,n)}(window,document,"script","https://www.datadoghq-browser-agent.com/datadog-rum-v4.js","DD_RUM"),DD_RUM.onReady(function(){DD_RUM.init({clientToken:"${process.env.DATADOG_CLIENT_TOKEN}",applicationId:"${process.env.DATADOG_APP_ID}",site:"datadoghq.com",service:"mpdx-web-react",sessionSampleRate:100,sessionReplaySampleRate:20,trackUserInteractions:!0,trackResources:!0,trackLongTasks:!0,defaultPrivacyLevel:"mask-user-input"}),DD_RUM.startSessionReplayRecording()});`}
               </Script>
             )}
+          {process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID && (
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID}');`}
+            </Script>
+          )}
         </Head>
         <body>
           <Main />

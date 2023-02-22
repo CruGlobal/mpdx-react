@@ -11,6 +11,7 @@ import fetch from 'isomorphic-fetch';
 import { signOut } from 'next-auth/react';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
 import snackNotifications from '../components/Snackbar/Snackbar';
+import { dispatch } from './analytics';
 import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
 
 const ignoredkeyArgsForPagination = ['before', 'after', 'first', 'last'];
@@ -53,7 +54,10 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
     });
   }
 
-  if (networkError) snackNotifications.error(networkError.message);
+  if (networkError) {
+    dispatch('mpdx-api-error');
+    snackNotifications.error(networkError.message);
+  }
 });
 
 if (process.browser && process.env.NODE_ENV === 'production') {

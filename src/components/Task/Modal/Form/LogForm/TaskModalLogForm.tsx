@@ -64,6 +64,7 @@ import { possibleResults } from '../PossibleResults';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { TaskLocation } from '../TaskModalForm';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
+import { dispatch } from 'src/lib/analytics';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -239,6 +240,13 @@ const TaskModalLogForm = ({
         },
       ],
     });
+    if (attributes.contactIds && attributes.contactIds.length > 1) {
+      attributes.contactIds.forEach(() => {
+        dispatch('mpdx-task-completed');
+      });
+    } else {
+      dispatch('mpdx-task-completed');
+    }
     enqueueSnackbar(t('Task logged successfully'), { variant: 'success' });
     onClose();
     if (
