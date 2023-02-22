@@ -8,6 +8,7 @@ import Head from 'next/head';
 import useGetAppSettings from '../src/hooks/useGetAppSettings';
 import Welcome from '../src/components/Welcome';
 import BaseLayout from '../src/components/Layouts/Basic';
+import Loading from '../src/components/Loading';
 
 interface IndexPageProps {
   signInButtonText: string;
@@ -31,6 +32,7 @@ const IndexPage = ({
       <Head>
         <title>{appName} | Home</title>
       </Head>
+      {immediateSignIn && <Loading loading={true} />}
       <Welcome
         title={
           // eslint-disable-next-line @next/next/no-img-element
