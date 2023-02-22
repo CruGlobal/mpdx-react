@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { useTranslation } from 'react-i18next';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { clearDataDogUser } from 'src/hooks/useDataDog';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
@@ -25,7 +26,9 @@ const LogoutPage = ({}): ReactElement => {
   const { appName } = useGetAppSettings();
 
   useEffect(() => {
-    signOut({ callbackUrl: 'signOut' });
+    signOut({ callbackUrl: 'signOut' }).then(() => {
+      clearDataDogUser();
+    });
   }, []);
 
   return (

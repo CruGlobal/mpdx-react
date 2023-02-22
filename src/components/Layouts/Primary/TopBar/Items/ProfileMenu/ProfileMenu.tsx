@@ -22,6 +22,7 @@ import { signOut } from 'next-auth/react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import { clearDataDogUser } from 'src/hooks/useDataDog';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
 import theme from '../../../../../../theme';
@@ -270,7 +271,11 @@ const ProfileMenu = (): ReactElement => {
           <MenuButton
             variant="outlined"
             color="inherit"
-            onClick={() => signOut({ callbackUrl: 'signOut' })}
+            onClick={() => {
+              signOut({ callbackUrl: 'signOut' }).then(() => {
+                clearDataDogUser();
+              });
+            }}
           >
             {t('Sign Out')}
           </MenuButton>

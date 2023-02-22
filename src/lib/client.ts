@@ -9,6 +9,7 @@ import { onError } from '@apollo/client/link/error';
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
 import { signOut } from 'next-auth/react';
+import { clearDataDogUser } from 'src/hooks/useDataDog';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
 import snackNotifications from '../components/Snackbar/Snackbar';
 import { dispatch } from './analytics';
@@ -48,7 +49,9 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.map(({ message, extensions }) => {
       if (extensions?.code === 'AUTHENTICATION_ERROR') {
-        signOut({ redirect: true, callbackUrl: 'signOut' });
+        signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
+          clearDataDogUser();
+        });
       }
       snackNotifications.error(message);
     });
