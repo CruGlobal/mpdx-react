@@ -138,24 +138,21 @@ export const ContactFlow: React.FC<Props> = ({
             <Box
               display="grid"
               minWidth="100%"
-              gridTemplateColumns={`repeat(${flowOptions.length}, ${
-                flowOptions.length > 5
-                  ? '1fr'
-                  : 'minmax(0, 1fr)); minmax(0, 1fr)'
-              }`}
+              gridTemplateColumns={`repeat(${flowOptions.length}, minmax(300px, 1fr)); minmax(300px, 1fr)`}
               gridAutoFlow="column"
               gap={theme.spacing(1)}
               overflow="auto"
               style={{ overflowX: 'auto' }}
+              gridAutoColumns="300px"
+              data-testid="contactsFlow"
             >
               {flowOptions.map((column) => (
                 <Box
                   width={'100%'}
-                  // If there are more than five columns give them a fixed width
-                  // otherwise fit them equally into the screen
-                  minWidth={flowOptions.length > 5 ? 360 : '100%'}
+                  minWidth={300}
                   p={2}
                   key={column.name}
+                  data-testid={`contactsFlow${column.name}`}
                 >
                   <ContactFlowColumn
                     accountListId={accountListId}

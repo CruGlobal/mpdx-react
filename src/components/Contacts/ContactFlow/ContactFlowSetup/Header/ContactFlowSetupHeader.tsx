@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Add from '@mui/icons-material/Add';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import NextLink from 'next/link';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from '../../../../../../src/hooks/useAccountListId';
 
@@ -22,13 +23,16 @@ const BackButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
 }));
 
-const AddColumnButton = styled(Button)(({ theme }) => ({
+const AddColumnLoadingButton = styled(LoadingButton)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxBlue.main,
   color: theme.palette.common.white,
   textTransform: 'none',
   paddingRight: theme.spacing(1.5),
   '&:hover': {
     backgroundColor: theme.palette.info.dark,
+  },
+  '&.Mui-disabled': {
+    color: theme.palette.common.white,
   },
 }));
 
@@ -41,6 +45,14 @@ export const ContactFlowSetupHeader: React.FC<Props> = ({
 }: Props) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const [addingColumn, setAddingColumn] = useState(false);
+
+  const handleAddColumnButtonClick = async () => {
+    setAddingColumn(true);
+    await addColumn();
+    setAddingColumn(false);
+  };
+
   return (
     <HeaderWrap>
       <NextLink href={`/accountLists/${accountListId}/contacts`}>
@@ -49,10 +61,14 @@ export const ContactFlowSetupHeader: React.FC<Props> = ({
           {t('Contacts')}
         </BackButton>
       </NextLink>
-      <AddColumnButton onClick={addColumn}>
-        <Add />
+      <AddColumnLoadingButton
+        loading={addingColumn}
+        loadingPosition="start"
+        startIcon={<Add />}
+        onClick={handleAddColumnButtonClick}
+      >
         {t('Add Column')}
-      </AddColumnButton>
+      </AddColumnLoadingButton>
     </HeaderWrap>
   );
 };
