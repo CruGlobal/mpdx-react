@@ -212,6 +212,7 @@ const TasksPage: React.FC = () => {
     ids,
     selectionType,
     isRowChecked,
+    deselectAll,
     toggleSelectAll,
     toggleSelectionById,
   } = useMassSelection(
@@ -307,6 +308,7 @@ const TasksPage: React.FC = () => {
       variant: 'success',
     });
     setCompleteTasksModalOpen(false);
+    deselectAll();
   };
 
   const deleteTasks = async () => {
@@ -326,6 +328,7 @@ const TasksPage: React.FC = () => {
       variant: 'success',
     });
     setDeleteTasksModalOpen(false);
+    deselectAll();
   };
 
   //#endregion
