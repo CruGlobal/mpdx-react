@@ -1,11 +1,11 @@
 import _, { debounce } from 'lodash';
-import { DateTime } from 'luxon';
 import { NextRouter, useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -26,6 +26,7 @@ import {
 } from './Contacts.generated';
 import { Coordinates } from './map/map';
 import { useGetIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { coordinatesFromContacts, getRedirectPathname } from './helpers';
 
 export type ContactsType = {
   accountListId: string | undefined;
@@ -52,14 +53,11 @@ export type ContactsType = {
     event: React.MouseEvent<HTMLElement>,
     view: string,
   ) => void;
-  selected: Coordinates | null | undefined;
-  setSelected: Dispatch<SetStateAction<Coordinates | null | undefined>>;
-  mapRef: React.MutableRefObject<any>;
-  panTo: (coords: {
-    lat: number | null | undefined;
-    lng: number | null | undefined;
-  }) => void;
-  mapData: (Coordinates | undefined)[] | undefined;
+  selected: Coordinates | null;
+  setSelected: Dispatch<SetStateAction<Coordinates | null>>;
+  mapRef: React.MutableRefObject<google.maps.Map | null>;
+  panTo: (coords: { lat: number; lng: number }) => void;
+  mapData: Coordinates[] | undefined;
   activeFilters: ContactFilterSetInput;
   setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
   starredFilter: ContactFilterSetInput;
@@ -79,33 +77,6 @@ export type ContactsType = {
 };
 
 export const ContactsContext = React.createContext<ContactsType | null>(null);
-
-export const getRedirectPathname = (
-  routerPathname: string,
-  accountListId: string,
-): string => {
-  if (
-    routerPathname === '/accountLists/[accountListId]/contacts/[[...contactId]]'
-  ) {
-    return `/accountLists/${accountListId}/contacts`;
-  } else if (
-    routerPathname === '/accountLists/[accountListId]/tasks/[[...contactId]]'
-  ) {
-    return `/accountLists/${accountListId}/tasks`;
-  } else if (
-    routerPathname ===
-    '/accountLists/[accountListId]/reports/partnerGivingAnalysis/[[...contactId]]'
-  ) {
-    return `/accountLists/${accountListId}/reports/partnerGivingAnalysis`;
-  } else if (
-    routerPathname ===
-    '/accountLists/[accountListId]/reports/donations/[[...contactId]]'
-  ) {
-    return `/accountLists/${accountListId}/reports/donations`;
-  } else {
-    return '';
-  }
-};
 
 interface Props {
   children?: React.ReactNode;
@@ -138,8 +109,8 @@ export const ContactsProvider: React.FC<Props> = ({
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
-  const [viewMode, setViewMode] = useState<TableViewModeEnum | undefined>(
-    undefined,
+  const [viewMode, setViewMode] = useState<TableViewModeEnum>(
+    TableViewModeEnum.List,
   );
 
   if (contactId !== undefined && !Array.isArray(contactId)) {
@@ -147,20 +118,18 @@ export const ContactsProvider: React.FC<Props> = ({
   }
 
   //User options for display view
-  const { data: userOptions, loading: userOptionsLoading } =
-    useGetUserOptionsQuery({
-      onCompleted: () => {
-        if (contactId?.includes('list')) {
-          setViewMode(TableViewModeEnum.List);
-        } else {
-          setViewMode(
-            (userOptions?.userOptions.find(
-              (option) => option.key === 'contacts_view',
-            )?.value as TableViewModeEnum) || TableViewModeEnum.List,
-          );
-        }
-      },
-    });
+  const { loading: userOptionsLoading } = useGetUserOptionsQuery({
+    onCompleted: ({ userOptions }) => {
+      if (contactId?.includes('list')) {
+        setViewMode(TableViewModeEnum.List);
+      } else {
+        setViewMode(
+          (userOptions.find((option) => option.key === 'contacts_view')
+            ?.value as TableViewModeEnum) || TableViewModeEnum.List,
+        );
+      }
+    },
+  });
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
@@ -303,31 +272,16 @@ export const ContactsProvider: React.FC<Props> = ({
       }
     }
 
-    const pathName = getRedirectPathname(router.pathname, accountListId);
-
-    push(
-      id
-        ? {
-            pathname: `${pathName}${
-              viewMode === TableViewModeEnum.List
-                ? ''
-                : viewMode === TableViewModeEnum.Flows
-                ? '/flows'
-                : '/map'
-            }/${id}`,
-            query: filteredQuery,
-          }
-        : {
-            pathname: `${pathName}/${
-              viewMode === TableViewModeEnum.List
-                ? ''
-                : viewMode === TableViewModeEnum.Flows
-                ? '/flows'
-                : '/map'
-            }`,
-            query: filteredQuery,
-          },
-    );
+    const pathname = getRedirectPathname({
+      routerPathname: router.pathname,
+      accountListId,
+      contactId: id,
+      viewMode,
+    });
+    push({
+      pathname,
+      query: filteredQuery,
+    });
     if (openDetails) {
       id && setContactDetailsId(id);
       setContactDetailsOpen(!!id);
@@ -381,48 +335,25 @@ export const ContactsProvider: React.FC<Props> = ({
   };
 
   // map states and functions
-  const [selected, setSelected] = useState<Coordinates | null | undefined>(
-    null,
-  );
+  const [selected, setSelected] = useState<Coordinates | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mapRef = useRef<any>({});
+  const mapRef = useRef<google.maps.Map | null>(null);
 
-  const panTo = React.useCallback(({ lat, lng }) => {
-    if (mapRef) {
-      mapRef?.current?.panTo({ lat, lng });
-      mapRef?.current?.setZoom(14);
-    }
-  }, []);
+  const panTo = useCallback(
+    ({ lat, lng }) => {
+      if (mapRef.current) {
+        mapRef.current.panTo({ lat, lng });
+        mapRef.current.setZoom(14);
+      }
+    },
+    [mapRef.current],
+  );
 
-  const mapData = data?.contacts?.nodes.map((contact) => {
-    if (!contact.primaryAddress?.geo) {
-      return {
-        id: contact.id,
-        name: contact.name,
-        avatar: contact.avatar,
-      };
-    }
-    const coords = contact.primaryAddress?.geo?.split(',');
-    const [lat, lng] = coords;
-    return {
-      id: contact.id,
-      name: contact.name,
-      avatar: contact.avatar,
-      status: contact.status,
-      lat: Number(lat),
-      lng: Number(lng),
-      street: contact.primaryAddress.street,
-      city: contact.primaryAddress.city,
-      state: contact.primaryAddress.state,
-      country: contact.primaryAddress.country,
-      postal: contact.primaryAddress.postalCode,
-      source: contact.primaryAddress.source,
-      date: `(${DateTime.fromISO(
-        contact.primaryAddress.updatedAt,
-      ).toLocaleString(DateTime.DATE_SHORT)})`,
-    };
-  });
+  const mapData = useMemo(
+    () => data && coordinatesFromContacts(data.contacts),
+    [data],
+  );
 
   return (
     <ContactsContext.Provider

@@ -7063,6 +7063,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/seedrandom@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@types/seedrandom@npm:3.0.5"
+  checksum: d63d56ebc609203cf8cbe2ab7e7934237446bc2463ade664be130dcd4a3d74915d529909de2e1b18141cfabc9e42784998b7e5ff30c016919ac5b83911a700f0
+  languageName: node
+  linkType: hard
+
 "@types/source-list-map@npm:*":
   version: 0.1.2
   resolution: "@types/source-list-map@npm:0.1.2"
@@ -18047,6 +18054,7 @@ __metadata:
     "@types/luxon": ^3.1.0
     "@types/node": ^18.7.18
     "@types/react": ^18.0.21
+    "@types/seedrandom": ^3.0.5
     "@types/testing-library__jest-dom": ^5.14.5
     "@typescript-eslint/eslint-plugin": ^5.38.0
     "@typescript-eslint/parser": ^5.38.0
@@ -18110,6 +18118,7 @@ __metadata:
     react-virtuoso: 2.19.0
     recharts: 2.3.2
     rollbar: ^2.25.2
+    seedrandom: ^3.0.5
     storybook: ^6.5.16
     storybook-addon-designs: ^6.3.1
     storybook-react-i18next: ^1.1.2
