@@ -11,11 +11,7 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
-import {
-  ContactsContext,
-  ContactsType,
-  getRedirectPathname,
-} from './ContactsContext';
+import { ContactsContext, ContactsType } from './ContactsContext';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { ContactsPage } from './ContactsPage';
 
@@ -216,42 +212,9 @@ describe('ContactsPageContext', () => {
     await waitFor(() => expect(getByText('map')).toBeInTheDocument());
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({
-        pathname: '/accountLists/account-list-1/contacts//map',
+        pathname: '/accountLists/account-list-1/contacts/map',
         query: {},
       }),
     );
-  });
-
-  describe('getRedirectPathname', () => {
-    it('should return the tasks URL when user is on the tasks page', async () => {
-      // I tried to test this through rendering the component,
-      // I couldn't work it out so I'm just testing the function instead.
-      const pathname = getRedirectPathname(
-        '/accountLists/[accountListId]/tasks/[[...contactId]]',
-        accountListId,
-      );
-
-      expect(pathname).toBe('/accountLists/account-list-1/tasks');
-    });
-
-    it('should return the donations report URL when user is on the partner donations report page', async () => {
-      const pathname = getRedirectPathname(
-        '/accountLists/[accountListId]/reports/donations/[[...contactId]]',
-        accountListId,
-      );
-
-      expect(pathname).toBe('/accountLists/account-list-1/reports/donations');
-    });
-
-    it('should return the partner giving analysis URL when user is on the partner giving analysis page', async () => {
-      const pathname = getRedirectPathname(
-        '/accountLists/[accountListId]/reports/partnerGivingAnalysis/[[...contactId]]',
-        accountListId,
-      );
-
-      expect(pathname).toBe(
-        '/accountLists/account-list-1/reports/partnerGivingAnalysis',
-      );
-    });
   });
 });

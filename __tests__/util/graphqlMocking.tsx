@@ -17,8 +17,12 @@ import {
 } from 'graphql-ergonomock';
 import { mergeSchemas } from '@graphql-tools/schema';
 import { gql } from 'graphql-tag';
+import seedrandom from 'seedrandom';
 import { DeepPartial } from 'ts-essentials';
 import schema from '../../graphql/schema.graphql';
+
+const seed = 'seed';
+const rng = seedrandom(seed);
 
 export const GqlMockedProvider = <TData,>({
   children,
@@ -33,6 +37,14 @@ export const GqlMockedProvider = <TData,>({
     {...props}
     mocks={mocks as unknown as ApolloErgonoMockMap}
     schema={schema}
+    resolvers={{
+      ISO8601DateTime: () =>
+        // Time in 2022
+        new Date(
+          1641016800000 /* Jan 1, 2022 */ +
+            Math.floor(rng() * 365 * 86400) * 1000,
+        ).toISOString(),
+    }}
   >
     {children}
   </ErgonoMockedProvider>
@@ -98,7 +110,7 @@ const ergonomockFragment = <TData,>(
       ({
         ...options,
         mocks: { [fieldName]: options.mocks },
-        seed: 'seed',
+        seed,
       } as ErgonomockOptions),
   ) as ExecutionResult;
 
@@ -118,7 +130,7 @@ const ergonomockQuery = <TData,>(
 ): TData => {
   const res = ergonomock(schema, query, {
     ...options,
-    seed: 'seed',
+    seed,
   }) as ExecutionResult;
 
   if (res.errors && res.errors.length) {

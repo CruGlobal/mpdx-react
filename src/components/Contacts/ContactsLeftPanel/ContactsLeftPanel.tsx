@@ -23,29 +23,21 @@ export const ContactsLeftPanel: React.FC = () => {
     viewMode,
   } = React.useContext(ContactsContext) as ContactsType;
 
-  return (
-    <>
-      {viewMode !== TableViewModeEnum.Map ? (
-        filterData && !filtersLoading ? (
-          <FilterPanel
-            filters={filterData?.accountList?.contactFilterGroups}
-            savedFilters={savedFilters}
-            selectedFilters={activeFilters}
-            onClose={toggleFilterPanel}
-            onSelectedFiltersChanged={setActiveFilters}
-          />
-        ) : (
-          <></>
-        )
-      ) : (
-        <ContactsMapPanel
-          data={mapData}
-          panTo={panTo}
-          selected={selected}
-          setSelected={setSelected}
-          onClose={toggleFilterPanel}
-        />
-      )}
-    </>
-  );
+  return viewMode === TableViewModeEnum.Map ? (
+    <ContactsMapPanel
+      data={mapData}
+      panTo={panTo}
+      selected={selected}
+      setSelected={setSelected}
+      onClose={toggleFilterPanel}
+    />
+  ) : filterData && !filtersLoading ? (
+    <FilterPanel
+      filters={filterData?.accountList?.contactFilterGroups}
+      savedFilters={savedFilters}
+      selectedFilters={activeFilters}
+      onClose={toggleFilterPanel}
+      onSelectedFiltersChanged={setActiveFilters}
+    />
+  ) : null;
 };
