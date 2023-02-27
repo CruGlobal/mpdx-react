@@ -43,8 +43,12 @@ const ColoredCircle = styled(FiberManualRecord)(
     height: size,
     width: size,
     '&:hover': {
-      height: !selected ? `calc(${size} + ${theme.spacing(1)})` : 'initial',
-      width: !selected ? `calc(${size} + ${theme.spacing(1)})` : 'initial',
+      height: !selected
+        ? `calc(${size} + ${theme.spacing(1)})`
+        : theme.spacing(4),
+      width: !selected
+        ? `calc(${size} + ${theme.spacing(1)})`
+        : theme.spacing(4),
     },
   }),
 );
@@ -75,6 +79,12 @@ interface Props {
   setColumnWidth: Dispatch<SetStateAction<number>>;
   moveColumns: (dragIndex: number, hoverIndex: number) => void;
   updateColumns: () => void;
+  flowOptions: {
+    name: string;
+    statuses: string[];
+    color: string;
+    id: string;
+  }[];
 }
 
 interface DragItem {
@@ -97,6 +107,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
   columnWidth,
   setColumnWidth,
   updateColumns,
+  flowOptions,
 }: Props) => {
   const CardContentRef = useRef<HTMLDivElement>();
   const [localTitle, setLocalTitle] = useState(title);
@@ -105,12 +116,11 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
     setLocalTitle(event.target.value);
     onTitleChange(event, index);
   };
-
   const onTitleChange = useCallback(
     debounce(200, (event, index) => {
       changeTitle(event, index);
     }),
-    [],
+    [flowOptions],
   );
 
   useLayoutEffect(() => {
@@ -283,6 +293,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
               <ContactFlowSetupDropZone
                 columnIndex={index}
                 moveStatus={moveStatus}
+                flowOptions={flowOptions}
               />
             )}
           </Box>
