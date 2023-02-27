@@ -28,6 +28,7 @@ import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
 import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
+import DataDog from 'src/components/DataDog/DataDog';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -160,6 +161,7 @@ const App = ({
                     </StyledEngineProvider>
                   </I18nextProvider>
                 </UserPreferenceProvider>
+                <DataDog />
               </SessionProvider>
             </ApolloProvider>
           </AppSettingsProvider>

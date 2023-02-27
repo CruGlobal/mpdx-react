@@ -11,7 +11,7 @@ import { ProfileMenuPanel } from './ProfileMenuPanel';
 
 jest.mock('next-auth/react', () => {
   return {
-    signOut: jest.fn(),
+    signOut: jest.fn().mockImplementation(() => Promise.resolve()),
   };
 });
 
