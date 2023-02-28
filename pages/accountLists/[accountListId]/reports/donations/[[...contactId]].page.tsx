@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReports
 import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsPage } from '../../contacts/ContactsPage';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { suggestArticles } from 'src/lib/helpScout';
 
 const DonationsReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -24,6 +25,10 @@ const DonationsReportPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    suggestArticles('HS_REPORTS_SUGGESTIONS');
+  }, []);
 
   const selectedContactId = getQueryParam(router.query, 'contactId');
 

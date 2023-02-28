@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
@@ -19,6 +19,7 @@ import { ContactsPage } from '../../contacts/ContactsPage';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useRouter } from 'next/router';
 import { getQueryParam } from 'src/utils/queryParam';
+import { suggestArticles } from 'src/lib/helpScout';
 
 const PartnerGivingAnalysisReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -75,6 +76,10 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     };
     return [reportFilterGroup, ...groups];
   }, [filterData]);
+
+  useEffect(() => {
+    suggestArticles('HS_REPORTS_SUGGESTIONS');
+  }, []);
 
   const handleSelectContact = (contactId: string) => {
     router.push(

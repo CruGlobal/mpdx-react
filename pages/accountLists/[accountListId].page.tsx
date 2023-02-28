@@ -12,6 +12,7 @@ import {
 } from './GetDashboard.generated';
 import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import useTaskModal from '../../src/hooks/useTaskModal';
+import { suggestArticles } from 'src/lib/helpScout';
 
 interface Props {
   data: GetDashboardQuery;
@@ -28,6 +29,10 @@ const AccountListIdPage = ({
   const { openTaskModal } = useTaskModal();
   const [selectedMenuItem, setSelectedMenuItem] = useState(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => {
+    suggestArticles('HS_HOME_SUGGESTIONS');
+  }, []);
 
   useEffect(() => {
     if (!modal || dialogOpen) return;

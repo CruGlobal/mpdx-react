@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { useRouter } from 'next/router';
 import { ContactsProvider } from './ContactsContext';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
+import { suggestArticles } from 'src/lib/helpScout';
 
 interface Props {
   children?: React.ReactNode;
@@ -34,6 +35,12 @@ export const ContactsPage: React.FC<Props> = ({ children }) => {
       },
     });
   }, [activeFilters]);
+
+  useEffect(() => {
+    suggestArticles(
+      contactId ? 'HS_CONTACTS_CONTACT_SUGGESTIONS' : 'HS_CONTACTS_SUGGESTIONS',
+    );
+  }, [contactId]);
 
   return (
     <ContactsProvider
