@@ -12,6 +12,7 @@ export const useMassSelection = (
   ids: string[];
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
+  deselectAll: () => void;
   toggleSelectAll: () => void;
   toggleSelectionById: (id: string) => void;
 } => {
@@ -62,6 +63,11 @@ export const useMassSelection = (
     }
   };
 
+  const deselectAll = () => {
+    setSelectionType(ListHeaderCheckBoxState.unchecked);
+    setIds([]);
+  };
+
   const toggleSelectAll = () => {
     if (selectionType === ListHeaderCheckBoxState.checked) {
       setSelectionType(ListHeaderCheckBoxState.unchecked);
@@ -95,6 +101,7 @@ export const useMassSelection = (
     ids,
     selectionType,
     isRowChecked,
+    deselectAll,
     toggleSelectAll,
     toggleSelectionById,
   };
