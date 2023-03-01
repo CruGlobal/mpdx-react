@@ -288,7 +288,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'state':
               case 'timezone':
               case 'userIds':
-                return { ...acc, [key]: value.split(',') };
+                const splitValue = value.split(',');
+                return {
+                  ...acc,
+                  [key]: splitValue?.length > 1 ? splitValue : value,
+                };
               // Newsletter
               case 'newsletter':
                 switch (value) {
