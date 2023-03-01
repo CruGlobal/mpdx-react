@@ -163,9 +163,9 @@ const App = ({
                 </UserPreferenceProvider>
                 <DataDog />
               </SessionProvider>
+              <HelpscoutBeacon />
             </ApolloProvider>
           </AppSettingsProvider>
-          <HelpscoutBeacon />
         </ErrorBoundary>
       </Provider>
     </>

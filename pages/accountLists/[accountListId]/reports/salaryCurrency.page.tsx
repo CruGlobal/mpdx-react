@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
@@ -10,6 +10,7 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+import { suggestArticles } from 'src/lib/helpScout';
 
 const SalaryCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -20,6 +21,10 @@ const SalaryCurrencyReportPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    suggestArticles('HS_REPORTS_SUGGESTIONS');
+  }, []);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);

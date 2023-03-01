@@ -54,6 +54,12 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `REWRITE_DOMAIN` - The domain which where new & old MPDX applications live. Set to `mpdx.org` for next.mpdx.org & mpdx.org.
 - `DATADOG_APP_ID` - Datadog tracking application ID.
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
+- `BEACON_TOKEN` - HelpScout beacon token
+- `HS_CONTACTS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contacts page
+- `HS_CONTACTS_CONTACT_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contact page
+- `HS_HOME_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the dashboard page
+- `HS_REPORTS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the reports pages
+- `HS_TASKS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the tasks page
 
 #### Auth provider
 

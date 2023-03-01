@@ -46,6 +46,7 @@ import {
   taskFiltersTabs,
 } from '../../../../src/utils/tasks/taskFilterTabs';
 import { dispatch } from 'src/lib/analytics';
+import { suggestArticles } from 'src/lib/helpScout';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -94,6 +95,10 @@ const TasksPage: React.FC = () => {
       setContactDetailsOpen(true);
     }
   }, [isReady, contactId]);
+
+  useEffect(() => {
+    suggestArticles('HS_TASKS_SUGGESTIONS');
+  }, []);
 
   //#region Filters
   const urlFilters =
