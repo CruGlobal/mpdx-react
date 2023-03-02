@@ -8,9 +8,12 @@ export const useUser = (): GetUserQuery['user'] | undefined => {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    getSession().then((session) => {
-      setSession(session);
-    });
+    (async () => {
+      try {
+        const session = await getSession();
+        setSession(session);
+      } catch {}
+    })();
   }, []);
 
   const { data } = useGetUserQuery({
