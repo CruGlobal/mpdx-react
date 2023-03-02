@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   Typography,
@@ -84,6 +84,8 @@ export interface Donation {
   appealAmount: number | null;
 }
 
+const pageSize = 25;
+
 export const DonationsReportTable: React.FC<Props> = ({
   accountListId,
   onSelectContact,
@@ -91,22 +93,30 @@ export const DonationsReportTable: React.FC<Props> = ({
   setTime,
 }) => {
   const { t } = useTranslation();
-  const [openEditDonationModal, setOpenEditDonationModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
     null,
   );
 
   const handleClose = () => {
-    setOpenEditDonationModal(false);
     setSelectedDonation(null);
   };
 
-  const startDate = time.toString();
+  const startDate = time.toString().slice(0, 10);
+  const endDate = time
+    .plus({ months: 1 })
+    .minus({ days: 1 })
+    .toString()
+    .slice(0, 10);
 
-  const endDate = time.plus({ months: 1 }).toString();
+  const { data, loading, fetchMore } = useGetDonationsTableQuery({
+    variables: { accountListId, pageSize, startDate, endDate },
 
-  const { data, loading } = useGetDonationsTableQuery({
-    variables: { accountListId, startDate, endDate },
+    // Load the rest of the pages asynchronously so that we can calculate the total donations
+    onCompleted: ({ donations }) => {
+      if (donations.pageInfo.hasNextPage) {
+        fetchMore({ variables: { cursor: donations.pageInfo.endCursor } });
+      }
+    },
   });
 
   const { data: accountListData, loading: loadingAccountListData } =
@@ -139,7 +149,7 @@ export const DonationsReportTable: React.FC<Props> = ({
     };
   };
 
-  const donations = nodes.map(createData);
+  const donations = useMemo(() => nodes.map(createData), [nodes]);
 
   const link = (params: GridCellParams) => {
     const donation = params.row as Donation;
@@ -200,7 +210,6 @@ export const DonationsReportTable: React.FC<Props> = ({
         <IconButton
           color="primary"
           onClick={() => {
-            setOpenEditDonationModal(true);
             setSelectedDonation(donation);
           }}
         >
@@ -288,9 +297,7 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const totalForeignDonations = donations.reduce(
     (
-      acc: {
-        [key: string]: { convertedTotal: number; foreignTotal: number };
-      },
+      acc: Record<string, { convertedTotal: number; foreignTotal: number }>,
       donation,
     ) => {
       const { foreignCurrency, foreignAmount, convertedAmount } = donation;
@@ -343,55 +350,65 @@ export const DonationsReportTable: React.FC<Props> = ({
         <DataTable>
           <DataGrid
             rows={donations}
+            rowCount={data?.donations.totalCount}
             columns={columns}
+            pageSize={pageSize}
+            rowsPerPageOptions={[pageSize]}
+            pagination
             autoHeight
             disableSelectionOnClick
-            hideFooter
             disableVirtualization
           />
-          <Table>
-            <TableHead>
-              {Object.entries(totalForeignDonations).map(
-                ([currency, total]) => (
-                  <TableRow data-testid="donationRow" key={currency}>
-                    <TableCell style={{ width: 395 }}>
-                      <Typography
-                        style={{ float: 'right', fontWeight: 'bold' }}
-                      >
-                        {t('Total {{currency}} Donations:', { currency })}
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{ width: 150 }}>
-                      <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                        {Math.round(total.convertedTotal * 100) / 100}{' '}
-                        {accountCurrency}
-                      </Typography>
-                    </TableCell>
-                    <TableCell style={{}}>
-                      <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                        {Math.round(total.foreignTotal * 100) / 100} {currency}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ),
-              )}
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>
-                  <Typography style={{ float: 'right', fontWeight: 'bold' }}>
-                    {t('Total Donations: ')}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {Math.round(totalDonations * 100) / 100}
-                  </Typography>
-                </TableCell>
-                <TableCell />
-              </TableRow>
-            </TableBody>
-          </Table>
+          {!data?.donations.pageInfo.hasNextPage && (
+            <Table>
+              <TableHead>
+                {Object.entries(totalForeignDonations).map(
+                  ([currency, total]) => (
+                    <TableRow data-testid="donationRow" key={currency}>
+                      <TableCell style={{ width: 395 }}>
+                        <Typography
+                          style={{ float: 'right', fontWeight: 'bold' }}
+                        >
+                          {t('Total {{currency}} Donations:', { currency })}
+                        </Typography>
+                      </TableCell>
+                      <TableCell style={{ width: 150 }}>
+                        <Typography
+                          style={{ float: 'left', fontWeight: 'bold' }}
+                        >
+                          {Math.round(total.convertedTotal * 100) / 100}{' '}
+                          {accountCurrency}
+                        </Typography>
+                      </TableCell>
+                      <TableCell style={{}}>
+                        <Typography
+                          style={{ float: 'left', fontWeight: 'bold' }}
+                        >
+                          {Math.round(total.foreignTotal * 100) / 100}{' '}
+                          {currency}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ),
+                )}
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>
+                    <Typography style={{ float: 'right', fontWeight: 'bold' }}>
+                      {t('Total Donations: ')}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography style={{ float: 'left', fontWeight: 'bold' }}>
+                      {Math.round(totalDonations * 100) / 100}
+                    </Typography>
+                  </TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableBody>
+            </Table>
+          )}
         </DataTable>
       ) : loading || loadingAccountListData ? (
         <LoadingBox>
@@ -405,13 +422,11 @@ export const DonationsReportTable: React.FC<Props> = ({
           })}
         />
       )}
-      {openEditDonationModal && (
+      {selectedDonation && (
         <EditDonationModal
-          open={openEditDonationModal}
+          open
           donation={selectedDonation}
           handleClose={() => handleClose()}
-          startDate={startDate}
-          endDate={endDate}
         />
       )}
     </>
