@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import { AddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import Modal from '../Modal/Modal';
 
 interface Props {
   title: string;
@@ -27,14 +30,14 @@ const StyledLocalAtmIcon = styled(LocalAtmIcon)(({ theme }) => ({
 
 export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
 
   const connectServices = () => {
     //TODO: Open screen to connect services
   };
 
-  const addNewDonation = () => {
-    //TODO: open modal for creating donation
-  };
+  const [addDonationOpen, setAddDonationOpen] = useState(false);
+  const handleCloseAddDonation = () => setAddDonationOpen(false);
 
   return (
     <BoxWrapper boxShadow={3}>
@@ -49,10 +52,26 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
         <Button variant="contained" onClick={connectServices}>
           Connect Services
         </Button>
-        <Button variant="contained" color="primary" onClick={addNewDonation}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setAddDonationOpen(true)}
+        >
           Add New Donation
         </Button>
       </Box>
+      <Modal
+        isOpen={addDonationOpen}
+        handleClose={handleCloseAddDonation}
+        title="Add Donation"
+        fullWidth
+        size="sm"
+      >
+        <AddDonation
+          accountListId={accountListId ?? ''}
+          handleClose={handleCloseAddDonation}
+        />
+      </Modal>
     </BoxWrapper>
   );
 };
