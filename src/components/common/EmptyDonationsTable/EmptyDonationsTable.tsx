@@ -57,13 +57,13 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
           color="primary"
           onClick={() => setAddDonationOpen(true)}
         >
-          Add New Donation
+          {t('Add New Donation')}
         </Button>
       </Box>
       <Modal
         isOpen={addDonationOpen}
         handleClose={handleCloseAddDonation}
-        title="Add Donation"
+        title={t('Add Donation')}
         fullWidth
         size="sm"
       >
