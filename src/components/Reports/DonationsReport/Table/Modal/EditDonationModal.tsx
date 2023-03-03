@@ -31,7 +31,6 @@ import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Containe
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import * as yup from 'yup';
-import { GetDonationsTableDocument } from '../../GetDonationsTable.generated';
 import { Donation } from '../DonationsReportTable';
 import {
   useDeleteDonationMutation,
@@ -42,10 +41,8 @@ import {
 
 interface EditDonationModalProps {
   open: boolean;
-  donation?: Donation | null | undefined;
+  donation: Donation;
   handleClose: () => void;
-  startDate: string;
-  endDate: string;
 }
 
 const donationSchema = yup.object({
@@ -61,19 +58,6 @@ const donationSchema = yup.object({
   memo: yup.string().nullable(),
 });
 
-const initialDonation = {
-  convertedAmount: '',
-  currency: '',
-  date: '',
-  motivation: '',
-  giftId: '',
-  partnerId: '',
-  designationAccountId: '',
-  appeal: '',
-  appealAmount: '',
-  memo: '',
-};
-
 const LoadingSpinner: React.FC = () => (
   <CircularProgress color="primary" size={20} sx={{ marginRight: 3 }} />
 );
@@ -82,8 +66,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   open,
   donation,
   handleClose,
-  startDate,
-  endDate,
 }) => {
   const { t } = useTranslation();
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
@@ -112,10 +94,10 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
         accountListId,
         attributes: {
           appealId: fields.appeal ?? null,
-          appealAmount: parseFloat(fields.appealAmount),
+          appealAmount: parseFloat(fields.appealAmount) || 0,
           motivation: fields.motivation,
           memo: fields.memo,
-          id: donation?.id ?? '',
+          id: donation.id,
           amount: parseFloat(fields.convertedAmount),
           currency: fields.currency,
           donationDate: fields.date,
@@ -123,12 +105,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
           donorAccountId: fields.partnerId,
         },
       },
-      refetchQueries: [
-        {
-          query: GetDonationsTableDocument,
-          variables: { accountListId, startDate, endDate },
-        },
-      ],
+      refetchQueries: ['GetDonationsTable'],
       onCompleted: () => {
         enqueueSnackbar(t('Donation updated!'), {
           variant: 'success',
@@ -142,14 +119,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
     await deleteDonation({
       variables: {
         accountListId,
-        id: donation?.id ?? '',
+        id: donation.id,
       },
-      refetchQueries: [
-        {
-          query: GetDonationsTableDocument,
-          variables: { accountListId, startDate, endDate },
-        },
-      ],
+      update: (cache) => {
+        cache.evict({ id: `Donation:${donation.id}` });
+      },
       onCompleted: () => {
         enqueueSnackbar(t('Donation deleted!'), {
           variant: 'success',
@@ -162,22 +136,18 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   return (
     <Modal title={t('Edit Donation')} isOpen={open} handleClose={handleClose}>
       <Formik
-        initialValues={
-          donation
-            ? {
-                convertedAmount: donation.convertedAmount,
-                currency: donation.currency,
-                date: donation.date,
-                motivation: '',
-                giftId: '',
-                partnerId: donation.partnerId,
-                designationAccountId: donation.designationAccount.id,
-                appeal: donation.appeal?.id ?? '',
-                appealAmount: donation.appealAmount ?? '',
-                memo: '',
-              }
-            : initialDonation
-        }
+        initialValues={{
+          convertedAmount: donation.convertedAmount,
+          currency: donation.currency,
+          date: donation.date,
+          motivation: '',
+          giftId: '',
+          partnerId: donation.partnerId,
+          designationAccountId: donation.designationAccount.id,
+          appeal: donation.appeal?.id ?? '',
+          appealAmount: donation.appealAmount ?? '',
+          memo: '',
+        }}
         validationSchema={donationSchema}
         onSubmit={onSubmit}
       >
@@ -313,11 +283,9 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   <DonorAccountAutocomplete
                     accountListId={accountListId}
                     value={partnerId}
-                    preloadedDonors={
-                      donation?.partnerId
-                        ? [{ id: donation.partnerId, name: donation.partner }]
-                        : undefined
-                    }
+                    preloadedDonors={[
+                      { id: donation.partnerId, name: donation.partner },
+                    ]}
                     onChange={(donorAccountId) =>
                       setFieldValue('partnerId', donorAccountId)
                     }

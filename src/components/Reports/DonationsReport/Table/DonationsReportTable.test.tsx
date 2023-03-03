@@ -74,6 +74,9 @@ const mocks = {
           paymentMethod: 'pay',
         },
       ],
+      pageInfo: {
+        hasNextPage: false,
+      },
     },
   },
 };

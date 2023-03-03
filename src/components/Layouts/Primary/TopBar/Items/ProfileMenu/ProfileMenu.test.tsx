@@ -46,8 +46,6 @@ const routerNoAccountListId = {
 };
 
 describe('ProfileMenu', () => {
-  // (getSession as jest.Mock).mockResolvedValue(session);
-
   it('default', async () => {
     const { getByTestId, queryByText, getByText } = render(
       <ThemeProvider theme={theme}>

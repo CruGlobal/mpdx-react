@@ -86,8 +86,6 @@ describe('DonationsReportTable', () => {
                   donation={donation}
                   open={true}
                   handleClose={handleClose}
-                  startDate={time.toString()}
-                  endDate={time.toString()}
                 />
               </GqlMockedProvider>
             </TestRouter>
@@ -98,41 +96,6 @@ describe('DonationsReportTable', () => {
     await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Amount' })).toHaveValue('100');
-  });
-
-  it('renders with no donation', async () => {
-    const mutationSpy = jest.fn();
-    const { getByText, getByRole, queryByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <TestRouter router={router}>
-              <GqlMockedProvider<UpdateDonationMutation> onCall={mutationSpy}>
-                <EditDonationModal
-                  open={true}
-                  handleClose={handleClose}
-                  startDate={time.toString()}
-                  endDate={time.toString()}
-                />
-              </GqlMockedProvider>
-            </TestRouter>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
-    await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
-    expect(getByRole('textbox', { name: 'Amount' })).toHaveValue('');
-    expect(queryByText('Field is required')).not.toBeInTheDocument();
-    userEvent.click(getByRole('button', { name: 'Save' }));
-    await waitFor(() =>
-      expect(getByText('Field is required')).toBeInTheDocument(),
-    );
-    userEvent.type(getByRole('textbox', { name: 'Amount' }), '123');
-    expect(getByRole('textbox', { name: 'Amount' })).toHaveValue('123');
-    userEvent.click(getByRole('button', { name: 'Save' }));
-    await waitFor(() =>
-      expect(queryByText('Field is required')).not.toBeInTheDocument(),
-    );
   });
 
   it('renders with appeal', async () => {
@@ -150,8 +113,6 @@ describe('DonationsReportTable', () => {
                   donation={donationWithAppeal}
                   open={true}
                   handleClose={handleClose}
-                  startDate={time.toString()}
-                  endDate={time.toString()}
                 />
               </GqlMockedProvider>
             </TestRouter>
@@ -184,8 +145,6 @@ describe('DonationsReportTable', () => {
                   donation={donation}
                   open={true}
                   handleClose={handleClose}
-                  startDate={time.toString()}
-                  endDate={time.toString()}
                 />
               </GqlMockedProvider>
             </TestRouter>
@@ -212,6 +171,53 @@ describe('DonationsReportTable', () => {
     expect(dateButton).toHaveValue('Mar 27, 2021');
   });
 
+  it('saves edits', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <TestRouter router={router}>
+              <GqlMockedProvider<UpdateDonationMutation>
+                mocks={mocks}
+                onCall={mutationSpy}
+              >
+                <EditDonationModal
+                  donation={donation}
+                  open={true}
+                  handleClose={handleClose}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
+    const amountTextbox = getByRole('textbox', { name: 'Amount' });
+    userEvent.type(amountTextbox, '0');
+    mutationSpy.mockReset();
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(handleClose).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Donation updated!', {
+        variant: 'success',
+      }),
+    );
+    expect(mutationSpy).toHaveBeenCalledTimes(1);
+    expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+      operation: {
+        operationName: 'UpdateDonation',
+        variables: {
+          attributes: {
+            amount: 1000,
+          },
+        },
+      },
+    });
+  });
+
   it('clicks close button', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
@@ -224,8 +230,6 @@ describe('DonationsReportTable', () => {
                   donation={donation}
                   open={true}
                   handleClose={handleClose}
-                  startDate={time.toString()}
-                  endDate={time.toString()}
                 />
               </GqlMockedProvider>
             </TestRouter>
@@ -252,8 +256,6 @@ describe('DonationsReportTable', () => {
                   donation={donation}
                   open={true}
                   handleClose={handleClose}
-                  startDate={time.toString()}
-                  endDate={time.toString()}
                 />
               </GqlMockedProvider>
             </TestRouter>
@@ -290,8 +292,6 @@ describe('DonationsReportTable', () => {
                     donation={donation}
                     open={true}
                     handleClose={handleClose}
-                    startDate={time.toString()}
-                    endDate={time.toString()}
                   />
                 </GqlMockedProvider>
               </TestRouter>
