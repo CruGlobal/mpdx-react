@@ -15,7 +15,6 @@ import CompassIcon from '@mui/icons-material/Explore';
 import PersonIcon from '@mui/icons-material/Person';
 import PeopleIcon from '@mui/icons-material/People';
 import AddIcon from '@mui/icons-material/Add';
-import { createFilterOptions } from '@mui/material/Autocomplete';
 import debounce from 'lodash/debounce';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -98,8 +97,6 @@ const SearchMenu = (): ReactElement => {
     setIsOpen(false);
     setWildcardSearch('');
   };
-
-  const filter = createFilterOptions<Option>({ limit: 5 });
 
   const defaultOptions: Option[] = [
     {
@@ -320,13 +317,12 @@ const SearchMenu = (): ReactElement => {
             }}
             options={wildcardSearch !== '' ? options : []}
             filterOptions={(options, params) => {
-              const filtered = filter(options, params);
               if (params.inputValue !== '') {
                 if (
                   data?.contacts.totalCount &&
                   data?.contacts.totalCount > data.contacts.nodes.length
                 ) {
-                  filtered.splice(5, 0, {
+                  options.splice(5, 0, {
                     name: t(
                       `And ${
                         data?.contacts.totalCount - data.contacts.nodes.length
@@ -336,14 +332,14 @@ const SearchMenu = (): ReactElement => {
                     link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
                   });
                 }
-                filtered.push({
+                options.push({
                   name: t(`Create a new contact for "${params.inputValue}"`),
                   icon: <AddIcon />,
                   link: 'createContact',
                 });
               }
 
-              return filtered;
+              return options;
             }}
             renderInput={(params): ReactElement => (
               <TextField
