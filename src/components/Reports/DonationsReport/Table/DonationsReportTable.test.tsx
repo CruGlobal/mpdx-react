@@ -164,6 +164,9 @@ describe('DonationsReportTable', () => {
       GetDonationsTable: {
         donations: {
           nodes: [],
+          pageInfo: {
+            hasNextPage: false,
+          },
         },
       },
     };

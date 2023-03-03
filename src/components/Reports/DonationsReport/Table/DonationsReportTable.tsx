@@ -11,6 +11,7 @@ import {
   CircularProgress,
   TableHead,
   TableBody,
+  LinearProgress,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
@@ -18,7 +19,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useTranslation } from 'react-i18next';
-import { DataGrid, GridColDef, GridCellParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridCellParams,
+  GridSortModel,
+} from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
 import {
@@ -68,6 +74,16 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
+const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
+  flex: 0.25,
+  height: '0.5rem',
+  borderRadius: theme.shape.borderRadius,
+  ['& .MuiLinearProgress-bar']: {
+    borderRadius: theme.shape.borderRadius,
+  },
+  alignSelf: 'center',
+}));
+
 export interface Donation {
   date: Date;
   contactId: string | null;
@@ -83,8 +99,6 @@ export interface Donation {
   appeal: ExpectedDonationDataFragment['appeal'];
   appealAmount: number | null;
 }
-
-const pageSize = 25;
 
 export const DonationsReportTable: React.FC<Props> = ({
   accountListId,
@@ -108,13 +122,28 @@ export const DonationsReportTable: React.FC<Props> = ({
     .toString()
     .slice(0, 10);
 
+  const [pageSize, setPageSize] = useState(25);
+
+  // pageSize is intentionally omitted from the dependencies array so that the query isn't rerun when the page size changes
+  // If all the pages have loaded and the user changes the page size, there's no reason to reload all the pages
+  // TODO: sort donations on the server after https://jira.cru.org/browse/MPDX-7634 is implemented
+  const variables = useMemo(
+    () => ({ accountListId, pageSize, startDate, endDate }),
+    [accountListId, startDate, endDate],
+  );
   const { data, loading, fetchMore } = useGetDonationsTableQuery({
-    variables: { accountListId, pageSize, startDate, endDate },
+    variables,
+
+    // When they user comes back to a month that they have loaded before, use the cached data because it will have all
+    // the pages of data instead of just the first one if we load from the network
+    fetchPolicy: 'cache-first',
 
     // Load the rest of the pages asynchronously so that we can calculate the total donations
     onCompleted: ({ donations }) => {
       if (donations.pageInfo.hasNextPage) {
-        fetchMore({ variables: { cursor: donations.pageInfo.endCursor } });
+        fetchMore({
+          variables: { pageSize, cursor: donations.pageInfo.endCursor },
+        });
       }
     },
   });
@@ -263,6 +292,10 @@ export const DonationsReportTable: React.FC<Props> = ({
     },
   ];
 
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    { field: 'date', sort: 'desc' },
+  ]);
+
   // Remove foreign amount column if both of these conditions are met:
   // 1.) There only one type of currency.
   // 2.) The type of currency is the same as the account currency.
@@ -277,7 +310,7 @@ export const DonationsReportTable: React.FC<Props> = ({
     );
   }
 
-  const isEmpty = nodes?.length === 0;
+  const isEmpty = nodes.length === 0;
 
   const title = `${time.monthLong} ${time.year}`;
 
@@ -315,6 +348,10 @@ export const DonationsReportTable: React.FC<Props> = ({
     {},
   );
 
+  const loadingProgress = data
+    ? (data.donations.nodes.length / (data?.donations.totalCount || 1)) * 100
+    : 0;
+
   return (
     <>
       <Box
@@ -325,6 +362,9 @@ export const DonationsReportTable: React.FC<Props> = ({
         }}
       >
         <Typography variant="h6">{title}</Typography>
+        {data?.donations.pageInfo.hasNextPage && (
+          <LoadingProgressBar variant="determinate" value={loadingProgress} />
+        )}
         <Button
           style={{ marginLeft: 'auto', maxHeight: 35 }}
           variant="contained"
@@ -353,8 +393,11 @@ export const DonationsReportTable: React.FC<Props> = ({
             rowCount={data?.donations.totalCount}
             columns={columns}
             pageSize={pageSize}
-            rowsPerPageOptions={[pageSize]}
+            onPageSizeChange={(pageSize) => setPageSize(pageSize)}
+            rowsPerPageOptions={[25, 50, 100]}
             pagination
+            sortModel={sortModel}
+            onSortModelChange={(sortModel) => setSortModel(sortModel)}
             autoHeight
             disableSelectionOnClick
             disableVirtualization
