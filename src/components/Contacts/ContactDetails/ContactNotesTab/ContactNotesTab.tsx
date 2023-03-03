@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -36,6 +36,7 @@ export const ContactNotesTab: React.FC<Props> = ({
   const { notes, setNotes } = React.useContext(
     ContactDetailContext,
   ) as ContactDetailsType;
+  const [localNotes, setLocalNotes] = useState<string>(notes);
 
   React.useEffect(() => {
     setNotes(data?.contact.notes ?? '');
@@ -52,8 +53,9 @@ export const ContactNotesTab: React.FC<Props> = ({
       });
       enqueueSnackbar(t('Notes successfully saved.'), {
         variant: 'success',
+        preventDuplicate: true,
       });
-    }, 500),
+    }, 1000),
     [],
   );
 
@@ -67,8 +69,11 @@ export const ContactNotesTab: React.FC<Props> = ({
   return (
     <>
       <TextField
-        value={notes}
-        onChange={(event) => handleChange(event.target.value)}
+        value={localNotes}
+        onChange={(event) => {
+          setLocalNotes(event.target.value);
+          handleChange(event.target.value);
+        }}
         fullWidth
         multiline
         placeholder={t('Add contact notes')}
@@ -76,7 +81,7 @@ export const ContactNotesTab: React.FC<Props> = ({
         variant="outlined"
       />
       <p style={{ textAlign: 'right' }}>
-        {t('Last updated ')}
+        {t('Last saved ')}
         {data?.contact.notesSavedAt &&
           DateTime.fromISO(data.contact.notesSavedAt).toRelative()}
       </p>
