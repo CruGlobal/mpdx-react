@@ -6,6 +6,7 @@ import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import { AddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import Modal from '../Modal/Modal';
+import HandoffLink from 'src/components/HandoffLink';
 
 interface Props {
   title: string;
@@ -32,10 +33,6 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
-  const connectServices = () => {
-    //TODO: Open screen to connect services
-  };
-
   const [addDonationOpen, setAddDonationOpen] = useState(false);
   const handleCloseAddDonation = () => setAddDonationOpen(false);
 
@@ -49,9 +46,9 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
         )}
       </Typography>
       <Box sx={{ padding: 1, display: 'flex', gap: 2 }}>
-        <Button variant="contained" onClick={connectServices}>
-          Connect Services
-        </Button>
+        <HandoffLink path="/preferences/integrations">
+          <Button variant="contained">{t('Connect Services')}</Button>
+        </HandoffLink>
         <Button
           variant="contained"
           color="primary"
