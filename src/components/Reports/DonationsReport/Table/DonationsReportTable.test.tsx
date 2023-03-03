@@ -170,14 +170,16 @@ describe('DonationsReportTable', () => {
 
     const { queryByTestId, queryAllByRole, queryByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
-          <DonationsReportTable
-            accountListId={'abc'}
-            onSelectContact={onSelectContact}
-            time={time}
-            setTime={setTime}
-          />
-        </GqlMockedProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+            <DonationsReportTable
+              accountListId={'abc'}
+              onSelectContact={onSelectContact}
+              time={time}
+              setTime={setTime}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
 

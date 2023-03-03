@@ -5,6 +5,12 @@ import theme from '../../../theme';
 import { GetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
+import TestRouter from '__tests__/util/TestRouter';
+
+const router = {
+  query: { accountListId: 'aaa' },
+  isReady: true,
+};
 
 it('renders with data', async () => {
   const { getAllByTestId, queryByRole, queryAllByRole } = render(
@@ -43,9 +49,11 @@ it('renders empty', async () => {
 
   const { getByText, queryByRole } = render(
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider<GetExpectedMonthlyTotalsQuery> mocks={mocks}>
-        <ExpectedMonthlyTotalReport accountListId={'abc'} />
-      </GqlMockedProvider>
+      <TestRouter router={router}>
+        <GqlMockedProvider<GetExpectedMonthlyTotalsQuery> mocks={mocks}>
+          <ExpectedMonthlyTotalReport accountListId={'abc'} />
+        </GqlMockedProvider>
+      </TestRouter>
     </ThemeProvider>,
   );
 
