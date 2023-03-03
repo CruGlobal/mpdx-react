@@ -43,7 +43,7 @@ const mocks = {
             id: 'abc',
             name: 'Appeal Test 1',
           },
-          donationDate: DateTime.now().minus({ minutes: 4 }).toISO(),
+          donationDate: '2023-03-01',
           donorAccount: {
             contacts: {
               nodes: [{ id: 'contact1' }],
@@ -83,19 +83,24 @@ const mocks = {
 
 describe('DonationsReportTable', () => {
   it('renders with data', async () => {
-    const { getAllByTestId, queryAllByRole, queryByRole, queryAllByText } =
-      render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
-            <DonationsReportTable
-              accountListId={'abc'}
-              onSelectContact={onSelectContact}
-              time={time}
-              setTime={setTime}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
-      );
+    const {
+      getAllByTestId,
+      queryAllByRole,
+      queryByRole,
+      getByText,
+      queryAllByText,
+    } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+          <DonationsReportTable
+            accountListId={'abc'}
+            onSelectContact={onSelectContact}
+            time={time}
+            setTime={setTime}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
 
     await waitFor(() =>
       expect(queryByRole('progressbar')).not.toBeInTheDocument(),
@@ -112,6 +117,8 @@ describe('DonationsReportTable', () => {
     expect(getAllByTestId('appeal-name')).toHaveLength(2);
 
     expect(getAllByTestId('appeal-name')[1]).toHaveTextContent('');
+
+    expect(getByText('3/1/2023')).toBeInTheDocument();
   });
 
   it('opens and closes the edit donation modal', async () => {
