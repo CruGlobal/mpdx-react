@@ -130,7 +130,7 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const createData = (data: ExpectedDonationDataFragment): Donation => {
     return {
-      date: new Date(data.donationDate),
+      date: new Date(`${data.donationDate}T00:00:00`),
       contactId: data.donorAccount.contacts.nodes[0]?.id ?? null,
       partnerId: data.donorAccount.id,
       partner: data.donorAccount.displayName,
