@@ -120,7 +120,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           )}
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
-          {t('Commitment Recieved ')}
+          {t('Commitment Received ')}
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.pledgeReceived ? t('Yes') : t('No')}
