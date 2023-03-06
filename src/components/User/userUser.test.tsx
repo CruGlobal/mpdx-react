@@ -17,7 +17,7 @@ const session = {
 
 describe('useUser', () => {
   it('gets user', async () => {
-    (getSession as jest.Mock).mockReturnValue(session);
+    (getSession as jest.Mock).mockResolvedValue(session);
 
     const { result, waitForNextUpdate } = renderHook(() => useUser(), {
       wrapper: GqlMockedProvider,

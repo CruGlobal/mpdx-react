@@ -9,9 +9,20 @@ import theme from '../../../../../../theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
 
+const session = {
+  expires: '2021-10-28T14:48:20.897Z',
+  user: {
+    email: 'Chair Library Bed',
+    image: null,
+    name: 'Dung Tapestry',
+    token: 'superLongJwtString',
+  },
+};
+
 jest.mock('next-auth/react', () => {
   return {
     signOut: jest.fn().mockImplementation(() => Promise.resolve()),
+    getSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
   };
 });
 
