@@ -8,12 +8,14 @@ export const useUser = (): GetUserQuery['user'] | undefined => {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const session = await getSession();
+    getSession()
+      .then((session) => {
         setSession(session);
-      } catch {}
-    })();
+      })
+      .catch(() => {
+        // eslint-disable-next-line no-console
+        console.log('Error with getSession');
+      });
   }, []);
 
   const { data } = useGetUserQuery({

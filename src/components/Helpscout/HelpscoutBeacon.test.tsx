@@ -25,7 +25,7 @@ jest.mock('src/lib/helpScout', () => ({
 }));
 
 describe('HelpscoutBeacon', () => {
-  (getSession as jest.Mock).mockReturnValue(session);
+  (getSession as jest.Mock).mockResolvedValue(session);
 
   it('identifies the current user', async () => {
     render(
