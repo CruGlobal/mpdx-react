@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -6,13 +6,10 @@ import { DateTime } from 'luxon';
 import debounce from 'lodash/debounce';
 import { useSnackbar } from 'notistack';
 import {
-  ContactDetailContext,
-  ContactDetailsType,
-} from '../ContactDetailContext';
-import {
-  useGetContactNotesQuery,
+  GetContactNotesDocument,
   useUpdateContactNotesMutation,
 } from './ContactNotesTab.generated';
+import ApolloClient from '../../../../lib/client';
 
 interface Props {
   accountListId: string;
@@ -26,21 +23,24 @@ export const ContactNotesTab: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
+  const [notes, setNotes] = useState<string>('');
+  const [notesSavedAt, setNotesSavedAt] = useState<string>('');
 
-  const { data } = useGetContactNotesQuery({
-    variables: {
-      contactId,
-      accountListId,
-    },
-  });
-  const { notes, setNotes } = React.useContext(
-    ContactDetailContext,
-  ) as ContactDetailsType;
-  const [localNotes, setLocalNotes] = useState<string>(notes);
+  useEffect(() => {
+    (async () => {
+      const fetchData = await ApolloClient.query({
+        query: GetContactNotesDocument,
+        variables: {
+          contactId,
+          accountListId,
+        },
+      });
 
-  React.useEffect(() => {
-    setNotes(data?.contact.notes ?? '');
-  }, [data?.contact.notes]);
+      const { notes, notesSavedAt } = fetchData?.data?.contact;
+      setNotes(notes ?? '');
+      setNotesSavedAt(notesSavedAt ?? '');
+    })();
+  }, [contactId, accountListId]);
 
   const handleSetNotes = useCallback(
     debounce(async (notes) => {
@@ -55,8 +55,9 @@ export const ContactNotesTab: React.FC<Props> = ({
         variant: 'success',
         preventDuplicate: true,
       });
+      setNotesSavedAt(new Date().toISOString());
     }, 1000),
-    [],
+    [contactId, accountListId],
   );
 
   const handleChange = (notes: string) => {
@@ -69,11 +70,8 @@ export const ContactNotesTab: React.FC<Props> = ({
   return (
     <>
       <TextField
-        value={localNotes}
-        onChange={(event) => {
-          setLocalNotes(event.target.value);
-          handleChange(event.target.value);
-        }}
+        value={notes}
+        onChange={(event) => handleChange(event.target.value)}
         fullWidth
         multiline
         placeholder={t('Add contact notes')}
@@ -82,8 +80,7 @@ export const ContactNotesTab: React.FC<Props> = ({
       />
       <p style={{ textAlign: 'right' }}>
         {t('Last saved ')}
-        {data?.contact.notesSavedAt &&
-          DateTime.fromISO(data.contact.notesSavedAt).toRelative()}
+        {notesSavedAt && DateTime.fromISO(notesSavedAt).toRelative()}
       </p>
     </>
   );

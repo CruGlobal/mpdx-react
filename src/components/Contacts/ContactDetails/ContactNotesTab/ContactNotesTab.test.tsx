@@ -50,12 +50,12 @@ describe('ContactNotesTab', () => {
     expect(input).toBeVisible();
     input && userEvent.type(input, note);
     await waitFor(() => expect(getByText(note)).toBeVisible());
+    await new Promise((resolve) => setTimeout(resolve, 1200));
     const { operation } = mutationSpy.mock.calls[0][0];
-
     await waitFor(() =>
       expect(operation.variables.accountListId).toEqual('123'),
     );
-
+    await waitFor(() => expect(operation.variables.notes).toEqual(note));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Notes successfully saved.', {
         variant: 'success',

@@ -34,8 +34,6 @@ export type ContactDetailsType = {
   setSelectedDonationTabKey: React.Dispatch<
     React.SetStateAction<DonationTabKey>
   >;
-  notes: string;
-  setNotes: React.Dispatch<React.SetStateAction<string>>;
   referralsModalOpen: boolean;
   setReferralsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   deleteModalOpen: boolean;
@@ -81,8 +79,6 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [selectedDonationTabKey, setSelectedDonationTabKey] = React.useState(
     DonationTabKey.Donations,
   );
-  const [notes, setNotes] = useState('');
-
   const [referralsModalOpen, setReferralsModalOpen] = useState(false);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -115,8 +111,6 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
         setCreatePersonModalOpen: setCreatePersonModalOpen,
         selectedDonationTabKey: selectedDonationTabKey,
         setSelectedDonationTabKey: setSelectedDonationTabKey,
-        notes: notes,
-        setNotes: setNotes,
         referralsModalOpen: referralsModalOpen,
         setReferralsModalOpen: setReferralsModalOpen,
         deleteModalOpen: deleteModalOpen,
