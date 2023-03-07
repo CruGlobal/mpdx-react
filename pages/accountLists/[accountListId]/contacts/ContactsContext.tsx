@@ -91,6 +91,30 @@ interface Props {
   searchTerm: string | string[] | undefined;
 }
 
+export const ContactsContextSavedFilters = (
+  filterData: ContactFiltersQuery | undefined,
+  accountListId: string | undefined,
+): UserOptionFragment[] => {
+  return (
+    filterData?.userOptions.filter((option) => {
+      let parsedJson: Record<string, string>;
+      try {
+        parsedJson = JSON.parse(option.value ?? '');
+      } catch (e) {
+        parsedJson = {};
+      }
+      return (
+        (option.key?.includes('saved_contacts_filter_') ||
+          option.key?.includes('graphql_saved_contacts_filter_')) &&
+        ((parsedJson.account_list_id === accountListId &&
+          !parsedJson.accountListId) ||
+          (parsedJson.accountListId === accountListId &&
+            !parsedJson.account_list_id))
+      );
+    }) ?? []
+  );
+};
+
 export const ContactsProvider: React.FC<Props> = ({
   children,
   urlFilters,
@@ -237,14 +261,10 @@ export const ContactsProvider: React.FC<Props> = ({
     setFilterPanelOpen(!filterPanelOpen);
   };
 
-  const savedFilters: UserOptionFragment[] =
-    filterData?.userOptions.filter(
-      (option) =>
-        (option.key?.includes('saved_contacts_filter_') ||
-          option.key?.includes('graphql_saved_contacts_filter_')) &&
-        (JSON.parse(option.value ?? '').account_list_id === accountListId ||
-          JSON.parse(option.value ?? '').accountListId === accountListId),
-    ) ?? [];
+  const savedFilters: UserOptionFragment[] = ContactsContextSavedFilters(
+    filterData,
+    accountListId,
+  );
 
   const isFiltered =
     Object.keys(urlFilters ?? {}).length > 0 ||

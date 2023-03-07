@@ -64,9 +64,30 @@ const savedFiltersMock = gqlMock<UserOptionFragment>(UserOptionFragmentDoc, {
     id: '123',
     key: 'saved_contacts_filter_My_Cool_Filter',
     value:
-      '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"status":"active,hidden,null,Never Contacted,Ask in Future,Cultivate Relationship,Contact for Appointment,Appointment Scheduled,Call for Decision,Partner - Financial,Partner - Special,Partner - Pray,Not Interested,Unresponsive,Never Ask,Research Abandoned,Expired Referral","pledge_received":"true","pledge_amount":"35.0,40.0","pledge_currency":"USD","pledge_frequency":"0.46153846153846,1.0","pledge_late_by":"30_60","newsletter":"no_value","referrer":"d5b1dab5-e3ae-417d-8f49-2abdd915515b","city":"Evansville,Woodstock","state":"FL","country":"United States","metro_area":"Cool","region":"Orange County","contact_info_email":"Yes","contact_info_phone":"No","contact_info_mobile":"No","contact_info_work_phone":"No","contact_info_addr":"Yes","contact_info_facebook":"No","opt_out":"No","church":"Cool Church II","appeal":"851769ba-b55d-45f3-b784-c4eca7ae99fd,77491693-df83-46ec-b40b-39d07333f47e","timezone":"America/Vancouver","locale":"English","donation":"first","donation_date":"2021-12-23..2021-12-23","next_ask":"2021-11-30..2021-12-22","user_ids":"787f286e-fe38-4055-b9fc-0177a0f55947","reverse_appeal":true, "contact_types": "person"},"tags":null,"exclude_tags":null,"wildcard_search":""}',
+      '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"status":"active,hidden,null,Never Contacted,Ask in Future,Cultivate Relationship,Contact for Appointment,Appointment Scheduled,Call for Decision,Partner - Financial,Partner - Special,Partner - Pray,Not Interested,Unresponsive,Never Ask,Research Abandoned,Expired Referral","pledgeReceived": "true", "pledge_received":"true","pledge_amount":"35.0,40.0","reverse_alma_mater": "false","pledge_currency":"USD","pledge_frequency":"0.46153846153846,1.0","pledge_late_by":"30_60","newsletter":"no_value","referrer":"d5b1dab5-e3ae-417d-8f49-2abdd915515b","city":"Evansville,Woodstock","state":"FL","country":"United States","metro_area":"Cool","region":"Orange County","contact_info_email":"Yes","contact_info_phone":"No","contact_info_mobile":"No","contact_info_work_phone":"No","contact_info_addr":"Yes","contact_info_facebook":"No","opt_out":"No","church":"Cool Church II","appeal":"851769ba-b55d-45f3-b784-c4eca7ae99fd,77491693-df83-46ec-b40b-39d07333f47e","timezone":"America/Vancouver","locale":"English", "notes":{"wildcard_note_search": "note1"},"donation":"first","donation_date":"2021-12-23..2021-12-23","next_ask":"2021-11-30..2021-12-22","user_ids":"787f286e-fe38-4055-b9fc-0177a0f55947","reverse_appeal":true,"contact_types": "person"},"tags":null,"exclude_tags":null,"wildcard_search":""}',
   },
 });
+
+const savedFiltersMockTwo = gqlMock<UserOptionFragment>(UserOptionFragmentDoc, {
+  mocks: {
+    id: '123',
+    key: 'saved_contacts_filter_My_Cool_Filter',
+    value:
+      '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"pledgeReceived": "false"},"tags":null,"exclude_tags":null,"wildcard_search":""}',
+  },
+});
+
+const savedFiltersMockThree = gqlMock<UserOptionFragment>(
+  UserOptionFragmentDoc,
+  {
+    mocks: {
+      id: '123',
+      key: 'saved_contacts_filter_My_Cool_Filter',
+      value:
+        '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"pledgeReceived": "default"},"tags":null,"exclude_tags":null,"wildcard_search":""}',
+    },
+  },
+);
 
 const savedGraphQLContactMock = gqlMock<UserOptionFragment>(
   UserOptionFragmentDoc,
@@ -314,14 +335,16 @@ describe('FilterPanel', () => {
           max: '2021-12-22',
           min: '2021-11-30',
         },
+        notes: 'note1',
         optOut: 'No',
         pledgeAmount: ['35.0', '40.0'],
         pledgeCurrency: 'USD',
         pledgeFrequency: ['0.46153846153846', '1.0'],
         pledgeLateBy: '30_60',
-        pledgeReceived: true,
+        pledgeReceived: 'RECEIVED',
         referrer: 'd5b1dab5-e3ae-417d-8f49-2abdd915515b',
         region: 'Orange County',
+        reverseAlmaMater: false,
         reverseAppeal: false,
         state: 'FL',
         status: [
@@ -346,6 +369,85 @@ describe('FilterPanel', () => {
         tags: null,
         timezone: 'America/Vancouver',
         userIds: '787f286e-fe38-4055-b9fc-0177a0f55947',
+        wildcardSearch: '',
+      });
+      expect(getByText('Filter')).toBeVisible();
+    });
+
+    it('opens and selects a saved filter Two', async () => {
+      const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
+        render(
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<SaveFilterMutation>>
+                <FilterPanel
+                  filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                  savedFilters={[savedFiltersMockTwo, savedGraphQLContactMock]}
+                  selectedFilters={{}}
+                  onClose={onClose}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>,
+        );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      expect(queryByTestId('LoadingState')).toBeNull();
+      expect(queryByTestId('ErrorState')).toBeNull();
+
+      expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+      userEvent.click(getByText('Saved Filters'));
+      expect(getByText('My Cool Filter')).toBeVisible();
+      expect(getByText('GraphQL Contact Filter')).toBeVisible();
+      userEvent.click(getByText('My Cool Filter'));
+      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
+        anyTags: false,
+        excludeTags: null,
+        pledgeReceived: 'NOT_RECEIVED',
+        tags: null,
+        wildcardSearch: '',
+      });
+      expect(getByText('Filter')).toBeVisible();
+    });
+
+    it('opens and selects a saved filter Three', async () => {
+      const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
+        render(
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<SaveFilterMutation>>
+                <FilterPanel
+                  filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                  savedFilters={[
+                    savedFiltersMockThree,
+                    savedGraphQLContactMock,
+                  ]}
+                  selectedFilters={{}}
+                  onClose={onClose}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>,
+        );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      expect(queryByTestId('LoadingState')).toBeNull();
+      expect(queryByTestId('ErrorState')).toBeNull();
+
+      expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+      userEvent.click(getByText('Saved Filters'));
+      expect(getByText('My Cool Filter')).toBeVisible();
+      expect(getByText('GraphQL Contact Filter')).toBeVisible();
+      userEvent.click(getByText('My Cool Filter'));
+      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
+        anyTags: false,
+        excludeTags: null,
+        pledgeReceived: 'ANY',
+        tags: null,
         wildcardSearch: '',
       });
       expect(getByText('Filter')).toBeVisible();
