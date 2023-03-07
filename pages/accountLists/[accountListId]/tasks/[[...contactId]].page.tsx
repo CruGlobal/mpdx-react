@@ -9,6 +9,8 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
+import { dispatch } from 'src/lib/analytics';
+import { suggestArticles } from 'src/lib/helpScout';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
@@ -28,6 +30,7 @@ import {
   TasksDocument,
   useTaskFiltersQuery,
   useTasksQuery,
+  TaskFiltersQuery,
 } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -45,8 +48,6 @@ import {
   TaskFilterTabsTypes,
   taskFiltersTabs,
 } from '../../../../src/utils/tasks/taskFilterTabs';
-import { dispatch } from 'src/lib/analytics';
-import { suggestArticles } from 'src/lib/helpScout';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -71,6 +72,30 @@ const TaskCheckIcon = styled(CheckCircleOutlineIcon)(({ theme }) => ({
 const TaskAddIcon = styled(AddIcon)(({ theme }) => ({
   color: theme.palette.info.main,
 }));
+
+export const tasksSavedFilters = (
+  filterData: TaskFiltersQuery | undefined,
+  accountListId: string | undefined,
+): UserOptionFragment[] => {
+  return (
+    filterData?.userOptions.filter((option) => {
+      let parsedJson: Record<string, string>;
+      try {
+        parsedJson = JSON.parse(option.value ?? '');
+      } catch (e) {
+        parsedJson = {};
+      }
+      return (
+        (option.key?.includes('saved_tasks_filter_') ||
+          option.key?.includes('graphql_saved_tasks_filter_')) &&
+        ((parsedJson.account_list_id === accountListId &&
+          !parsedJson.accountListId) ||
+          (parsedJson.accountListId === accountListId &&
+            !parsedJson.account_list_id))
+      );
+    }) ?? []
+  );
+};
 
 const TasksPage: React.FC = () => {
   const { t } = useTranslation();
@@ -177,14 +202,7 @@ const TasksPage: React.FC = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
 
-  const savedFilters: UserOptionFragment[] =
-    filterData?.userOptions.filter(
-      (option) =>
-        (option.key?.includes('saved_tasks_filter_') ||
-          option.key?.includes('graphql_saved_tasks_filter_')) &&
-        (JSON.parse(option.value ?? '').account_list_id === accountListId ||
-          JSON.parse(option.value ?? '').accountListId === accountListId),
-    ) ?? [];
+  const savedFilters = tasksSavedFilters(filterData, accountListId);
   //#endregion
 
   //#region Mass Actions
