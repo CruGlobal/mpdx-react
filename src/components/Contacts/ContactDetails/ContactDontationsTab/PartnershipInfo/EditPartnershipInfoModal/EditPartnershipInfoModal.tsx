@@ -321,7 +321,7 @@ export const EditPartnershipInfoModal: React.FC<
         }) => (
           <form onSubmit={handleSubmit} noValidate>
             {errors.pledgeFrequency}
-            <DialogContent dividers>
+            <DialogContent dividers sx={{ maxHeight: '60vh' }}>
               <ContactInputWrapper>
                 <FormControl fullWidth>
                   <InputLabel id="status-select-label">
