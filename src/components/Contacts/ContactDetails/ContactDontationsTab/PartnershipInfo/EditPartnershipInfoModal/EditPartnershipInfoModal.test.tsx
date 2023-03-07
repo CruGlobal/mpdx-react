@@ -234,7 +234,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it('should handle editing commitment recieved', async () => {
+  it('should handle editing commitment received', async () => {
     const { getByLabelText, getByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -249,12 +249,12 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const commitmentRecievedInput = getByLabelText('Commitment Recieved');
+    const commitmentReceivedInput = getByLabelText('Commitment Received');
 
-    expect(commitmentRecievedInput).not.toBeChecked();
-    userEvent.click(commitmentRecievedInput);
+    expect(commitmentReceivedInput).not.toBeChecked();
+    userEvent.click(commitmentReceivedInput);
 
-    expect(commitmentRecievedInput).toBeChecked();
+    expect(commitmentReceivedInput).toBeChecked();
 
     userEvent.click(getByText('Save'));
 

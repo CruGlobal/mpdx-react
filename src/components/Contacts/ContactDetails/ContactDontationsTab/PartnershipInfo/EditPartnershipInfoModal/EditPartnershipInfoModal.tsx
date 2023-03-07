@@ -606,7 +606,7 @@ export const EditPartnershipInfoModal: React.FC<
                       color="secondary"
                     />
                   }
-                  label={t('Commitment Recieved')}
+                  label={t('Commitment Received')}
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
