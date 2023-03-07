@@ -1,5 +1,5 @@
 query FinancialAccounts($accountListId: ID!) {
-  financialAccounts(accountListId: $accountListId) {
+  financialAccounts(accountListId: $accountListId, first: 25) {
     nodes {
       active
       balance {

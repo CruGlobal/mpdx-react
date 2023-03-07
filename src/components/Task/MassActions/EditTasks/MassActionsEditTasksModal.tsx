@@ -33,9 +33,11 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];
+  selectedIdCount: number;
   accountListId: string;
   handleClose: () => void;
 }
@@ -60,7 +62,7 @@ const MassActionsEditTasksSchema = yup.object({
 
 export const MassActionsEditTasksModal: React.FC<
   MassActionsEditTasksModalProps
-> = ({ handleClose, accountListId, ids }) => {
+> = ({ handleClose, accountListId, ids, selectedIdCount }) => {
   const { t } = useTranslation();
 
   const [updateTasks] = useMassActionsUpdateTasksMutation();
@@ -147,6 +149,10 @@ export const MassActionsEditTasksModal: React.FC<
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogContent dividers>
+              <IncompleteWarning
+                selectedIdCount={selectedIdCount}
+                idCount={ids.length}
+              />
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <FormControl fullWidth>

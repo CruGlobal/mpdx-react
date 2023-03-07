@@ -19,6 +19,7 @@ import Add from '@mui/icons-material/Add';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0),
@@ -60,11 +61,15 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   contactId,
   onContactSelected,
 }) => {
-  const { data, loading } = useContactReferralTabQuery({
+  const { data, fetchMore } = useContactReferralTabQuery({
     variables: {
       accountListId: accountListId,
       contactId: contactId,
     },
+  });
+  useFetchAllPages({
+    fetchMore,
+    pageInfo: data?.contact.contactReferralsByMe.pageInfo,
   });
 
   const { t } = useTranslation();
@@ -81,7 +86,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
 
   return (
     <ContactReferralContainer>
-      {loading ? (
+      {!data ? (
         <>
           <ContactReferralLoadingPlaceHolder />
           <ContactReferralLoadingPlaceHolder />
@@ -140,14 +145,12 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
             fullWidth
             size={'xl'} // TODO: Expand logic as more menu modals are added
           >
-            {
-              <CreateMultipleContacts
-                accountListId={accountListId ?? ''}
-                handleClose={handleModalClose}
-                referrals
-                contactId={contactId}
-              />
-            }
+            <CreateMultipleContacts
+              accountListId={accountListId ?? ''}
+              handleClose={handleModalClose}
+              referrals
+              contactId={contactId}
+            />
           </Modal>
         </>
       )}

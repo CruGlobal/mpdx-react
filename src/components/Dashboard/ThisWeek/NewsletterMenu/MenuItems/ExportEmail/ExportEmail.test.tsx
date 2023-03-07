@@ -50,6 +50,9 @@ describe('LogNewsletter', () => {
               primaryPerson: null,
             },
           ],
+          pageInfo: {
+            hasNextPage: false,
+          },
         },
       },
     };
@@ -97,6 +100,9 @@ describe('LogNewsletter', () => {
               primaryPerson: null,
             },
           ],
+          pageInfo: {
+            hasNextPage: false,
+          },
         },
       },
     };

@@ -17,7 +17,7 @@ query Tasks(
       hasNextPage
     }
   }
-  allTasks: tasks(accountListId: $accountListId, after: $after) {
+  allTasks: tasks(accountListId: $accountListId) {
     totalCount
   }
 }

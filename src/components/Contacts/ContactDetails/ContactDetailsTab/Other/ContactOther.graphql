@@ -6,7 +6,7 @@ fragment ContactOther on Contact {
   timezone
   churchName
   website
-  contactReferralsToMe {
+  contactReferralsToMe(first: 10) {
     nodes {
       id
       referredBy {

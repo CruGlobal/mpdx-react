@@ -15,7 +15,7 @@ import snackNotifications from '../components/Snackbar/Snackbar';
 import { dispatch } from './analytics';
 import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
 
-const ignoredkeyArgsForPagination = ['before', 'after', 'first', 'last'];
+const ignoredkeyArgsForPagination = ['before', 'after'];
 const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
   args
     ? Object.keys(args).filter(
@@ -27,6 +27,11 @@ const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
 export const cache = new InMemoryCache({
   possibleTypes: generatedIntrospection.possibleTypes,
   typePolicies: {
+    Contact: {
+      fields: {
+        contactReferralsByMe: paginationFieldPolicy,
+      },
+    },
     Query: {
       fields: {
         contacts: paginationFieldPolicy,

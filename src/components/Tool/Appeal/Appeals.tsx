@@ -10,6 +10,7 @@ import {
 import Appeal from '../../../../src/components/Tool/Appeal/Appeal';
 import NoAppeals from '../../../../src/components/Tool/Appeal/NoAppeals';
 import { useChangePrimaryAppealMutation } from './ChangePrimaryAppeal.generated';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -24,8 +25,12 @@ const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const [changePrimaryAppeal, { loading: updating }] =
     useChangePrimaryAppealMutation();
-  const { data, loading } = useGetAppealsQuery({
+  const { data, fetchMore } = useGetAppealsQuery({
     variables: { accountListId },
+  });
+  const { loading } = useFetchAllPages({
+    fetchMore,
+    pageInfo: data?.regularAppeals.pageInfo,
   });
 
   const changePrimary = async (newPrimaryId: string): Promise<void> => {

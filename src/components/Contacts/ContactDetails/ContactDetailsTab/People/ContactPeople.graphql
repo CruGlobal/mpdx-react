@@ -4,7 +4,7 @@ fragment ContactPeople on Contact {
   primaryPerson {
     ...ContactPerson
   }
-  people {
+  people(first: 25) {
     nodes {
       ...ContactPerson
     }
@@ -21,7 +21,7 @@ fragment ContactPerson on Person {
   birthdayMonth
   birthdayYear
   deceased
-  emailAddresses {
+  emailAddresses(first: 25) {
     nodes {
       id
       email
@@ -31,7 +31,7 @@ fragment ContactPerson on Person {
     }
   }
   employer
-  facebookAccounts {
+  facebookAccounts(first: 25) {
     nodes {
       id
       username
@@ -41,7 +41,7 @@ fragment ContactPerson on Person {
   gender
   lastName
   legalFirstName
-  linkedinAccounts {
+  linkedinAccounts(first: 25) {
     nodes {
       id
       publicUrl
@@ -50,7 +50,7 @@ fragment ContactPerson on Person {
   maritalStatus
   occupation
   optoutEnewsletter
-  phoneNumbers {
+  phoneNumbers(first: 25) {
     nodes {
       id
       number
@@ -75,7 +75,7 @@ fragment ContactPerson on Person {
   }
   suffix
   title
-  twitterAccounts {
+  twitterAccounts(first: 25) {
     nodes {
       id
       screenName

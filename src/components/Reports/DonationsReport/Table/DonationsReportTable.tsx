@@ -27,6 +27,7 @@ import {
   useGetAccountListCurrencyQuery,
 } from '../GetDonationsTable.generated';
 import { EditDonationModal } from './Modal/EditDonationModal';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
 interface Props {
   accountListId: string;
@@ -110,13 +111,11 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const { data, loading, fetchMore } = useGetDonationsTableQuery({
     variables: { accountListId, pageSize, startDate, endDate },
-
-    // Load the rest of the pages asynchronously so that we can calculate the total donations
-    onCompleted: ({ donations }) => {
-      if (donations.pageInfo.hasNextPage) {
-        fetchMore({ variables: { cursor: donations.pageInfo.endCursor } });
-      }
-    },
+  });
+  // Load the rest of the pages asynchronously so that we can calculate the total donations
+  useFetchAllPages({
+    fetchMore,
+    pageInfo: data?.donations.pageInfo,
   });
 
   const { data: accountListData, loading: loadingAccountListData } =

@@ -96,6 +96,96 @@ If you need them, request a developer to send you the values to these env variab
 
 The GraphQL playground can be a useful tool/interface for testing out queries and mutations. It can accessed locally during development via [http://localhost:3000/api/graphql](http://localhost:3000/api/graphql).
 
+## Project Guidelines
+
+### Pagination
+
+When loading GraphQL queries that contain lists of items supporting pagination, e.g. tasks or donations, the server will only respond with 25 items by default for performance reasons. Any field where you query `nodes` supports pagination and has this default page size of 25, for example:
+
+```gql
+query ContactNames($accountListId: ID!) {
+  contacts(accountListId: $accountListId) {
+    # `nodes` means the results are paginated
+    nodes {
+      id
+      firstName
+      lastName
+    }
+  }
+}
+```
+
+Not setting an explicit page or manually paginating the results can cause situations where items more than 25 are silently discarded. To avoid this, you have two options.
+
+**Explicit Page Size**: If you are certain that there is no reasonable case where there are more than 25 results, explicitly set the page size via the `first` (or `last`) filter. For example:
+
+```gql
+query ContactEmails($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    primaryPerson {
+      # Here we make clear our assumption that no person will have more than 10 email addresses
+      emailAddresses(first: 10) {
+        nodes {
+          id
+          email
+        }
+      }
+    }
+  }
+}
+```
+
+**Pagination**: If there might be a large number of results, you will need to use pagination:
+
+```gql
+query ContactNames($accountListId: ID!, $after: String) {
+  contacts(accountListId: $accountListId, after: $after) {
+    # `nodes` means the results are paginated
+    nodes {
+      id
+      firstName
+      lastName
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+```
+
+If you want to use infinite scrolling or have a load more button, use the `fetchMore` function to load the next page.
+
+```ts
+const { data, fetchMore } = useContactNamesQuery({
+  variables: { accountListId },
+});
+
+const handleLoadMore = () => {
+  if (!data?.contacts.pageInfo.hasNextPage) {
+    fetchMore({
+      variables: {
+        after: data?.contacts.pageInfo.endCursor,
+      },
+    });
+  }
+};
+```
+
+If you want to load all the pages, use the `useFetchAllPages` hook. As long as your query accepts an `after` variable, this hook will load all the pages into `data`, and set `loading` to `false` once all pages have loaded. For this, the field you are querying needs to have its field policy set to `paginationFieldPolicy` in `src/lib/client.ts` so that Apollo will know to merge the results from the additional pages back into the result from the initial query. Consult the Apollo docs for more information.
+
+```ts
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+
+const { data } = useContactNamesQuery({
+  variables: { accountListId },
+});
+const { loading } = useFetchAllPages({
+  pageInfo: data?.contacts.pageInfo,
+  fetchMore,
+});
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

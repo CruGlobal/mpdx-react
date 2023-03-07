@@ -37,11 +37,14 @@ export const MassActionsExportEmailsModal: React.FC<
   const [showOutlookFormat, setShowOutlookFormat] = useState(false);
 
   const { data: contactData, loading } = useGetEmailsForExportingQuery({
+    // This query is affecting the cache of the Contacts query, so prevent it from reading from or writing to the Apollo cache
+    // It's possibly a bug in our "nodes" logic in src/lib/relayStylePaginationWithNodes.tsx
+    fetchPolicy: 'no-cache',
+
     variables: {
       accountListId,
-      contactsFilters: {
-        ids,
-      },
+      contactIds: ids,
+      numContactIds: ids.length,
     },
   });
 

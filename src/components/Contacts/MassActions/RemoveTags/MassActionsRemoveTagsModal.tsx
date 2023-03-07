@@ -70,9 +70,8 @@ export const MassActionsRemoveTagsModal: React.FC<
   const { data: contactsForTags } = useGetContactsForTagsQuery({
     variables: {
       accountListId,
-      contactsFilters: {
-        ids,
-      },
+      contactIds: ids,
+      numContactIds: ids.length,
     },
   });
 

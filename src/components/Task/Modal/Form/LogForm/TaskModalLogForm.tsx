@@ -272,7 +272,8 @@ const TaskModalLogForm = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
-        contactsFilters: { wildcardSearch: searchTerm as string },
+        first: 10,
+        contactsFilters: { wildcardSearch: searchTerm },
       },
     });
 
@@ -280,6 +281,7 @@ const TaskModalLogForm = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
+        first: selectedIds.length,
         contactsFilters: { ids: selectedIds },
       },
     });

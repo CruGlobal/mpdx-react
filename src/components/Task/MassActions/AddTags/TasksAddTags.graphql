@@ -10,12 +10,23 @@ mutation TasksAddTags($accountListId: ID!, $attributes: [TaskUpdateInput!]!) {
 
 query GetTasksForAddingTags(
   $accountListId: ID!
-  $tasksFilters: TaskFilterSetInput
+  $taskIds: [ID!]!
+  $numTaskIds: Int!
+  $after: String
 ) {
-  tasks(accountListId: $accountListId, tasksFilter: $tasksFilters) {
+  tasks(
+    accountListId: $accountListId
+    tasksFilter: { ids: $taskIds }
+    first: $numTaskIds
+    after: $after
+  ) {
     nodes {
       id
       tagList
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }

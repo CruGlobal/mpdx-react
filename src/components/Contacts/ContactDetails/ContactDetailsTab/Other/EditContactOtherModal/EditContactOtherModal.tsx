@@ -101,6 +101,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
+        first: 10,
         contactsFilters: searchTerm ? { wildcardSearch: searchTerm } : {},
       },
     });
@@ -109,8 +110,10 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
+        first: 1,
         contactsFilters: selectedId ? { ids: [selectedId] } : {},
       },
+      skip: !selectedId,
     });
 
   const mergedContacts =

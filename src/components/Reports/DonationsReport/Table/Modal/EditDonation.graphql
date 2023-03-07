@@ -8,11 +8,15 @@ query GetDesignationAccounts($accountListId: ID!) {
   }
 }
 
-query EditDonationModalGetAppeals($accountListId: ID!) {
-  appeals(accountListId: $accountListId) {
+query EditDonationModalGetAppeals($accountListId: ID!, $after: String) {
+  appeals(accountListId: $accountListId, first: 50, after: $after) {
     nodes {
       id
       name
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }

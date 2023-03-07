@@ -12,7 +12,7 @@ query GetUser {
     preferences {
       locale
     }
-    administrativeOrganizations {
+    administrativeOrganizations(first: 25) {
       nodes {
         id
       }

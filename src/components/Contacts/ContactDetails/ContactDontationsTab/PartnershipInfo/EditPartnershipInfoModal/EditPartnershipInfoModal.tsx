@@ -599,7 +599,7 @@ export const EditPartnershipInfoModal: React.FC<
                 <CheckboxLabel
                   control={
                     <Checkbox
-                      checked={pledgeReceived}
+                      checked={Boolean(pledgeReceived)}
                       onChange={() =>
                         setFieldValue('pledgeReceived', !pledgeReceived)
                       }

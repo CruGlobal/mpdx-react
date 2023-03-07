@@ -25,7 +25,7 @@ import {
   useContactsQuery,
 } from './Contacts.generated';
 import { Coordinates } from './map/map';
-import { useGetIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { coordinatesFromContacts, getRedirectPathname } from './helpers';
 
 export type ContactsType = {
@@ -131,29 +131,41 @@ export const ContactsProvider: React.FC<Props> = ({
     },
   });
 
+  const contactsFilters = useMemo(
+    () => ({
+      ...activeFilters,
+      ...starredFilter,
+      wildcardSearch: searchTerm as string,
+      ids:
+        viewMode === TableViewModeEnum.Map && urlFilters ? urlFilters.ids : [],
+    }),
+    [activeFilters, starredFilter, searchTerm],
+  );
+
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
-      contactsFilters: {
-        ...activeFilters,
-        wildcardSearch: searchTerm as string,
-        ...starredFilter,
-        ids:
-          viewMode === TableViewModeEnum.Map && urlFilters
-            ? urlFilters.ids
-            : [],
-      },
+      contactsFilters,
       first: contactId?.includes('map') ? 20000 : 25,
     },
     skip: !accountListId,
   });
 
   //#region Mass Actions
-  const [getContactIds, { data: contactIds, loading: loadingContactIds }] =
-    useGetIdsForMassSelectionLazyQuery();
 
-  // Only query when the filters or total count change and store data in state
-  const [allContactIds, setAllContactIds] = useState<string[]>([]);
+  const contactCount = data?.contacts.totalCount ?? 0;
+  const { data: allContacts } = useGetIdsForMassSelectionQuery({
+    variables: {
+      accountListId,
+      first: contactCount,
+      contactsFilters,
+    },
+    skip: contactCount === 0,
+  });
+  const allContactIds = useMemo(
+    () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
+    [allContacts],
+  );
 
   const {
     ids,
@@ -169,25 +181,6 @@ export const ContactsProvider: React.FC<Props> = ({
     starredFilter,
   );
   //#endregion
-
-  useEffect(() => {
-    if (!loadingContactIds && contactIds?.contacts.nodes) {
-      setAllContactIds(contactIds?.contacts.nodes.map((contact) => contact.id));
-    }
-  }, [loadingContactIds]);
-
-  useEffect(() => {
-    const contactCount = data?.contacts?.totalCount ?? 0;
-    if (contactCount > 0) {
-      getContactIds({
-        variables: {
-          accountListId,
-          first: contactCount,
-          contactsFilters: activeFilters,
-        },
-      });
-    }
-  }, [activeFilters, searchTerm, starredFilter, data]);
 
   useEffect(() => {
     if (isReady && contactId) {

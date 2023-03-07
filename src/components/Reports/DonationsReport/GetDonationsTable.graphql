@@ -1,7 +1,7 @@
 query GetDonationsTable(
   $accountListId: ID!
   $pageSize: Int!
-  $cursor: String
+  $after: String
   $startDate: ISO8601Date
   $endDate: ISO8601Date
 ) {
@@ -9,7 +9,7 @@ query GetDonationsTable(
     accountListId: $accountListId
     donationDate: { max: $endDate, min: $startDate }
     first: $pageSize
-    after: $cursor
+    after: $after
   ) {
     nodes {
       ...ExpectedDonationData
@@ -38,7 +38,7 @@ fragment ExpectedDonationData on Donation {
   }
   donationDate
   donorAccount {
-    contacts {
+    contacts(first: 25) {
       nodes {
         id
       }

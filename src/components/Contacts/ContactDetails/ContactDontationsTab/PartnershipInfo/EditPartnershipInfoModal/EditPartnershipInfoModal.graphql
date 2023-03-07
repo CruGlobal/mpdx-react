@@ -15,7 +15,7 @@ mutation UpdateContactPartnership(
       nextAsk
       noAppeals
       sendNewsletter
-      contactReferralsToMe {
+      contactReferralsToMe(first: 10) {
         nodes {
           id
           referredBy {
@@ -32,7 +32,11 @@ query GetDataForPartnershipInfoModal(
   $accountListId: ID!
   $contactsFilter: ContactFilterSetInput
 ) {
-  contacts(accountListId: $accountListId, contactsFilter: $contactsFilter) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: $contactsFilter
+    first: 10
+  ) {
     nodes {
       id
       name

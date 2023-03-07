@@ -1,7 +1,7 @@
 fragment ContactMailing on Contact {
   id
   name
-  addresses {
+  addresses(first: 25) {
     nodes {
       city
       country
