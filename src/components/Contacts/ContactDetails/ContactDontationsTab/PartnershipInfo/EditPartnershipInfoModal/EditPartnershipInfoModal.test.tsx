@@ -7,6 +7,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import {
   PledgeFrequencyEnum,
+  SendNewsletterEnum,
   StatusEnum,
 } from '../../../../../../../graphql/types.generated';
 import {
@@ -33,6 +34,7 @@ const contactMock = gqlMock<ContactDonorAccountsFragment>(
       pledgeFrequency: PledgeFrequencyEnum.Every_2Months,
       pledgeAmount: 50,
       pledgeReceived: false,
+      sendNewsletter: SendNewsletterEnum.Email,
       noAppeals: true,
       lastDonation: {
         donationDate: '2021-09-07T16:38:20.242-04:00',
@@ -408,6 +410,52 @@ describe('EditPartnershipInfoModal', () => {
       ),
     );
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing newsletter', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<UpdateContactPartnershipMutation>
+              onCall={mutationSpy}
+            >
+              <EditPartnershipInfoModal
+                contact={contactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    mutationSpy.mockClear();
+
+    userEvent.click(getByRole('button', { name: 'Email' }));
+    userEvent.click(getByRole('option', { name: 'Physical' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+    expect(mutationSpy.mock.lastCall).toMatchObject([
+      {
+        operation: {
+          operationName: 'UpdateContactPartnership',
+          variables: {
+            attributes: {
+              sendNewsletter: 'PHYSICAL',
+            },
+          },
+        },
+      },
+    ]);
   });
 
   it('should handle editing the referred by | Delete', async () => {

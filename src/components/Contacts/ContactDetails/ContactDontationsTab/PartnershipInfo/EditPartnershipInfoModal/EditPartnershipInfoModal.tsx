@@ -32,6 +32,7 @@ import {
   ContactReferralToMeInput,
   ContactUpdateInput,
   PledgeFrequencyEnum,
+  SendNewsletterEnum,
   StatusEnum,
 } from '../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
@@ -45,6 +46,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -104,6 +106,7 @@ export const EditPartnershipInfoModal: React.FC<
       | 'pledgeStartDate'
       | 'nextAsk'
       | 'noAppeals'
+      | 'sendNewsletter'
       | 'contactReferralsToMe'
     >
   > = yup.object({
@@ -115,6 +118,10 @@ export const EditPartnershipInfoModal: React.FC<
     pledgeCurrency: yup.string().nullable(),
     nextAsk: yup.string().nullable(),
     noAppeals: yup.boolean().default(false).nullable(),
+    sendNewsletter: yup
+      .mixed<SendNewsletterEnum>()
+      .oneOf(Object.values(SendNewsletterEnum))
+      .nullable(),
     pledgeFrequency: yup.mixed<PledgeFrequencyEnum>().nullable(),
     contactReferralsToMe: yup
       .array()
@@ -286,6 +293,7 @@ export const EditPartnershipInfoModal: React.FC<
           pledgeStartDate: contact.pledgeStartDate,
           nextAsk: contact.nextAsk,
           noAppeals: contact.noAppeals,
+          sendNewsletter: contact.sendNewsletter,
           contactReferralsToMe: contactReferrals,
         }}
         validationSchema={contactPartnershipSchema}
@@ -301,6 +309,7 @@ export const EditPartnershipInfoModal: React.FC<
             pledgeStartDate,
             nextAsk,
             noAppeals,
+            sendNewsletter,
             contactReferralsToMe,
           },
           handleSubmit,
@@ -312,7 +321,7 @@ export const EditPartnershipInfoModal: React.FC<
         }) => (
           <form onSubmit={handleSubmit} noValidate>
             {errors.pledgeFrequency}
-            <DialogContent dividers>
+            <DialogContent dividers sx={{ maxHeight: '60vh' }}>
               <ContactInputWrapper>
                 <FormControl fullWidth>
                   <InputLabel id="status-select-label">
@@ -493,6 +502,27 @@ export const EditPartnershipInfoModal: React.FC<
                   inputFormat="MM/dd/yyyy"
                   label={t('Start Date')}
                 />
+              </ContactInputWrapper>
+              <ContactInputWrapper>
+                <FormControl fullWidth>
+                  <InputLabel>{t('Newsletter')}</InputLabel>
+                  <Select
+                    label={t('Newsletter')}
+                    value={sendNewsletter}
+                    onChange={(e) =>
+                      setFieldValue(
+                        'sendNewsletter',
+                        e.target.value as SendNewsletterEnum,
+                      )
+                    }
+                  >
+                    {Object.values(SendNewsletterEnum).map((value) => (
+                      <MenuItem key={value} value={value}>
+                        {getLocalizedSendNewsletter(t, value)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
                 <Autocomplete

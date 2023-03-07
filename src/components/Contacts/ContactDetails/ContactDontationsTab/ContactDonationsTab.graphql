@@ -47,6 +47,7 @@ fragment ContactDonorAccounts on Contact {
   pledgeFrequency
   totalDonations
   noAppeals
+  sendNewsletter
   status
   source
   lastDonation {
