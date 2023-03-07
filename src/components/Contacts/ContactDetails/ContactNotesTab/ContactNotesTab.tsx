@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -37,7 +37,7 @@ export const ContactNotesTab: React.FC<Props> = ({
     ContactDetailContext,
   ) as ContactDetailsType;
 
-  React.useEffect(() => {
+  useEffect(() => {
     setNotes(data?.contact.notes ?? '');
   }, [data?.contact.notes]);
 
@@ -52,9 +52,10 @@ export const ContactNotesTab: React.FC<Props> = ({
       });
       enqueueSnackbar(t('Notes successfully saved.'), {
         variant: 'success',
+        preventDuplicate: true,
       });
     }, 500),
-    [],
+    [contactId, accountListId],
   );
 
   const handleChange = (notes: string) => {

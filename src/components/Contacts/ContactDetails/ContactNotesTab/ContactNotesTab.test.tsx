@@ -59,6 +59,7 @@ describe('ContactNotesTab', () => {
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Notes successfully saved.', {
         variant: 'success',
+        preventDuplicate: true,
       }),
     );
   });
