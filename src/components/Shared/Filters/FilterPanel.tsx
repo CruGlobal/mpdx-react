@@ -20,6 +20,7 @@ import Close from '@mui/icons-material/Close';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { filter } from 'lodash';
 import {
+  ActivityTypeEnum,
   ContactFilterNewsletterEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
@@ -27,6 +28,7 @@ import {
   FilterGroup,
   MultiselectFilter,
   ReportContactFilterSetInput,
+  ResultEnum,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import {
@@ -209,9 +211,31 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               // Boolean
               case 'addressHistoric':
               case 'addressValid':
+              case 'completed':
               case 'noAppeals':
+              case 'overdue':
               case 'reverseAlmaMater':
               case 'reverseAppeal':
+              case 'reverseActivityType':
+              case 'reverseContactAppeal':
+              case 'reverseContactChurch':
+              case 'reverseContactCity':
+              case 'reverseContactCountry':
+              case 'reverseContactDesignationAccountId':
+              case 'reverseContactIds':
+              case 'reverseContactLikely':
+              case 'reverseContactMetroArea':
+              case 'reverseContactPledgeFrequency':
+              case 'reverseContactReferrer':
+              case 'reverseContactRegion':
+              case 'reverseContactState':
+              case 'reverseContactStatus':
+              case 'reverseContactTimezone':
+              case 'reverseContactType':
+              case 'reverseNextAction':
+              case 'reverseResult':
+              case 'reverseTags':
+              case 'reverseUserIds':
               case 'reverseChurch':
               case 'reverseCity':
               case 'reverseCountry':
@@ -246,12 +270,15 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               // DateRangeInput
               case 'donationDate':
               case 'createdAt':
+              case 'completedAt':
               case 'anniversary':
               case 'birthday':
+              case 'dateRange':
               case 'gaveMoreThanPledgedRange':
               case 'lateAt':
               case 'nextAsk':
               case 'pledgeAmountIncreasedRange':
+              case 'startAt':
               case 'startedGivingRange':
               case 'stoppedGivingRange':
               case 'taskDueDate':
@@ -268,27 +295,39 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'almaMater':
               case 'appeal':
               case 'church':
+              case 'contactChurch':
               case 'city':
+              case 'contactCity':
               case 'country':
+              case 'contactCountry':
               case 'designationAccountId':
+              case 'contactDesignationAccountId':
               case 'donation':
               case 'donationAmount':
               case 'ids':
               case 'likely':
+              case 'contactLikely':
               case 'locale':
               case 'metroArea':
+              case 'contactMetroArea':
               case 'organizationId':
               case 'pledgeAmount':
               case 'pledgeCurrency':
               case 'pledgeFrequency':
+              case 'contactPledgeFrequency':
               case 'primaryAddress':
               case 'referrer':
+              case 'contactReferrer':
               case 'referrerIds':
               case 'region':
+              case 'contactRegion':
+              case 'contactRegion':
               case 'relatedTaskAction':
               case 'source':
               case 'state':
+              case 'contactState':
               case 'timezone':
+              case 'contactTimezone':
               case 'userIds':
                 const splitValue = value.split(',');
                 return {
@@ -297,6 +336,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 };
               // Newsletter
               case 'newsletter':
+              case 'contactNewsletter':
                 switch (value) {
                   case 'all':
                     return { ...acc, [key]: ContactFilterNewsletterEnum.All };
@@ -359,6 +399,13 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 }
               // Status
               case 'status':
+              case 'contactStatus':
+                if (value.includes('--any--')) {
+                  return {
+                    ...acc,
+                    [key]: Object.values(ContactFilterStatusEnum),
+                  };
+                }
                 return {
                   ...acc,
                   [key]: value.split(',').map((enumValue) => {
@@ -403,10 +450,130 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                     }
                   }),
                 };
+              // Activity Type
+              case 'activityType':
+                if (value.includes('--any--')) {
+                  return { ...acc, [key]: Object.values(ActivityTypeEnum) };
+                }
+                return {
+                  ...acc,
+                  [key]: value.split(',').map((enumValue) => {
+                    // --any--,none
+                    switch (enumValue) {
+                      case 'Appointment':
+                        return ActivityTypeEnum.Appointment;
+                      case 'Call':
+                        return ActivityTypeEnum.Call;
+                      case 'Email':
+                        return ActivityTypeEnum.Email;
+                      case 'Facebook Message':
+                        return ActivityTypeEnum.FacebookMessage;
+                      case 'Prayer Request':
+                        return ActivityTypeEnum.PrayerRequest;
+                      case 'Talk to In Person':
+                        return ActivityTypeEnum.TalkToInPerson;
+                      case 'Text Message':
+                        return ActivityTypeEnum.TextMessage;
+                      case 'Thank':
+                        return ActivityTypeEnum.Thank;
+                      case 'None':
+                        return ActivityTypeEnum.None;
+                      case 'Letter':
+                        return ActivityTypeEnum.Letter;
+                      case 'Newsletter - Physical':
+                        return ActivityTypeEnum.NewsletterPhysical;
+                      case 'Newsletter - Email':
+                        return ActivityTypeEnum.NewsletterEmail;
+                      case 'Pre Call Letter':
+                        return ActivityTypeEnum.PreCallLetter;
+                      case 'Reminder Letter':
+                        return ActivityTypeEnum.ReminderLetter;
+                      case 'Support Letter':
+                        return ActivityTypeEnum.SupportLetter;
+                      case 'To Do':
+                        return ActivityTypeEnum.ToDo;
+                      default:
+                        return ActivityTypeEnum.None;
+                    }
+                  }),
+                };
+
+              // Next Action
+              case 'nextAction':
+                if (value.includes('--any--')) {
+                  return {
+                    ...acc,
+                    [key]: [
+                      ActivityTypeEnum.Appointment,
+                      ActivityTypeEnum.Call,
+                      ActivityTypeEnum.Email,
+                      ActivityTypeEnum.FacebookMessage,
+                      ActivityTypeEnum.PrayerRequest,
+                      ActivityTypeEnum.TalkToInPerson,
+                      ActivityTypeEnum.TextMessage,
+                      ActivityTypeEnum.Thank,
+                      ActivityTypeEnum.None,
+                    ],
+                  };
+                }
+                return {
+                  ...acc,
+                  [key]: value.split(',').map((enumValue) => {
+                    switch (enumValue) {
+                      case 'Appointment':
+                        return ActivityTypeEnum.Appointment;
+                      case 'Call':
+                        return ActivityTypeEnum.Call;
+                      case 'Email':
+                        return ActivityTypeEnum.Email;
+                      case 'Facebook Message':
+                        return ActivityTypeEnum.FacebookMessage;
+                      case 'Prayer Request':
+                        return ActivityTypeEnum.PrayerRequest;
+                      case 'Talk to In Person':
+                        return ActivityTypeEnum.TalkToInPerson;
+                      case 'Text Message':
+                        return ActivityTypeEnum.TextMessage;
+                      case 'Thank':
+                        return ActivityTypeEnum.Thank;
+                      case 'None':
+                        return ActivityTypeEnum.None;
+                      default:
+                        return ActivityTypeEnum.None;
+                    }
+                  }),
+                };
+              // Result
+              case 'result':
+                if (value.includes('--any--')) {
+                  return { ...acc, [key]: Object.values(ResultEnum) };
+                }
+                return {
+                  ...acc,
+                  [key]: value.split(',').map((enumValue) => {
+                    switch (enumValue) {
+                      case 'Attempted':
+                        return ResultEnum.Attempted;
+                      case 'Attempted - Left Message':
+                        return ResultEnum.AttemptedLeftMessage;
+                      case 'Completed':
+                        return ResultEnum.Completed;
+                      case 'Done':
+                        return ResultEnum.Done;
+                      case 'None':
+                        return ResultEnum.None;
+                      case 'Received':
+                        return ResultEnum.Received;
+                      default:
+                        return ResultEnum.None;
+                    }
+                  }),
+                };
 
               // NumericRangeInput & String
               case 'addressLatLng':
               case 'appealStatus':
+              case 'contactAppeal':
               case 'contactInfoAddr':
               case 'contactInfoEmail':
               case 'contactInfoFacebook':
