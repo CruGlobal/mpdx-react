@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
+import Link from 'next/link';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -17,7 +18,6 @@ import {
   dateFormat,
   monthYearFormat,
 } from '../../../../../../../lib/intlFormat/intlFormat';
-import HandoffLink from '../../../../../../HandoffLink';
 import { NotificationTypeTypeEnum } from '../../../../../../../../graphql/types.generated';
 import {
   GetNotificationsDocument,
@@ -217,7 +217,9 @@ const NotificationMenuItem = ({
             )}
           </ListSubheader>
         )}
-      <HandoffLink path={`/contacts/${item.notification.contact.id}`}>
+      <Link
+        href={`/accountLists/${accountListId}/contacts/${item.notification.contact.id}`}
+      >
         <ListItem
           alignItems="flex-start"
           role="button"
@@ -254,7 +256,7 @@ const NotificationMenuItem = ({
             }
           />
         </ListItem>
-      </HandoffLink>
+      </Link>
       {!last && <Divider variant="inset" />}
     </Box>
   );
