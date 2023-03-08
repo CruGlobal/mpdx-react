@@ -24,6 +24,7 @@ import {
   ContactFilterNewsletterEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
+  ContactFilterPledgeReceivedEnum,
   FilterGroup,
   MultiselectFilter,
   ReportContactFilterSetInput,
@@ -213,7 +214,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'completed':
               case 'noAppeals':
               case 'overdue':
-              case 'pledgeReceived':
               case 'reverseAlmaMater':
               case 'reverseAppeal':
               case 'reverseActivityType':
@@ -264,6 +264,8 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'starred':
               case 'statusValid':
               case 'tasksAllCompleted':
+              case 'reverseContactType':
+              case 'reverseTags':
                 return { ...acc, [key]: value === 'true' };
               // DateRangeInput
               case 'donationDate':
@@ -375,6 +377,25 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                     };
                   default:
                     return { ...acc };
+                }
+              // Pledge Received
+              case 'pledgeReceived':
+                switch (value) {
+                  case 'true':
+                    return {
+                      ...acc,
+                      [key]: ContactFilterPledgeReceivedEnum.Received,
+                    };
+                  case 'false':
+                    return {
+                      ...acc,
+                      [key]: ContactFilterPledgeReceivedEnum.NotReceived,
+                    };
+                  default:
+                    return {
+                      ...acc,
+                      [key]: ContactFilterPledgeReceivedEnum.Any,
+                    };
                 }
               // Status
               case 'status':
@@ -571,6 +592,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'pledge':
               case 'pledgeLateBy':
               case 'wildcardSearch':
+                if (key === 'notes') {
+                  value = value['wildcard_note_search'];
+                }
                 return { ...acc, [key]: value };
               default:
                 return { ...acc };
