@@ -11,9 +11,14 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
-import { ContactsContext, ContactsType } from './ContactsContext';
+import {
+  ContactsContext,
+  ContactsType,
+  ContactsContextSavedFilters,
+} from './ContactsContext';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { ContactsPage } from './ContactsPage';
+import { ContactFiltersQuery } from './Contacts.generated';
 
 const accountListId = 'account-list-1';
 const push = jest.fn();
@@ -74,6 +79,18 @@ const TestRender: React.FC = () => {
         </>
       ) : (
         <>Loading</>
+      )}
+    </Box>
+  );
+};
+
+const TestRenderContactsFilters: React.FC = () => {
+  const { filterData } = useContext(ContactsContext) as ContactsType;
+  const savedFilters = ContactsContextSavedFilters(filterData, accountListId);
+  return (
+    <Box>
+      {savedFilters.length && (
+        <div data-testid="savedfilters-testid">{savedFilters[0]?.value}</div>
       )}
     </Box>
   );
@@ -215,6 +232,78 @@ describe('ContactsPageContext', () => {
         pathname: '/accountLists/account-list-1/contacts/map',
         query: {},
       }),
+    );
+  });
+
+  it('Saved Filters with correct JSON', async () => {
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId },
+            pathname: '/accountLists/[accountListId]/contacts',
+            isReady,
+            push,
+          }}
+        >
+          <GqlMockedProvider<ContactFiltersQuery>
+            mocks={{
+              ContactFilters: {
+                userOptions: [
+                  {
+                    id: '123',
+                    key: 'saved_contacts_filter_My_Cool_Filter',
+                    value: `{"any_tags":false,"account_list_id":"${accountListId}","params":{"status": "true"},"tags":null,"exclude_tags":null,"wildcard_search":""}`,
+                  },
+                ],
+              },
+            }}
+          >
+            <ContactsPage>
+              <TestRenderContactsFilters />
+            </ContactsPage>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(queryByTestId('savedfilters-testid')).toBeInTheDocument(),
+    );
+  });
+
+  it('Saved Filters with incorrect JSON', async () => {
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            query: { accountListId },
+            pathname: '/accountLists/[accountListId]/contacts',
+            isReady,
+            push,
+          }}
+        >
+          <GqlMockedProvider<ContactFiltersQuery>
+            mocks={{
+              ContactFilters: {
+                userOptions: [
+                  {
+                    id: '123',
+                    key: 'saved_contacts_filter_My_Cool_Filter',
+                    value: `{"any_tags":false,"account_list_id":"${accountListId}","params":{"status" error },"tags":null,"exclude_tags":null,"wildcard_search":""}`,
+                  },
+                ],
+              },
+            }}
+          >
+            <ContactsPage>
+              <TestRenderContactsFilters />
+            </ContactsPage>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(queryByTestId('savedfilters-testid')).not.toBeInTheDocument(),
     );
   });
 });
