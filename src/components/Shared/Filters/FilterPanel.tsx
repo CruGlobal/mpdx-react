@@ -595,6 +595,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 if (key === 'notes') {
                   value = value['wildcard_note_search'];
                 }
+                if (key === 'donationAmountRange') {
+                  value['min'] = Number(value['min']);
+                  value['max'] = Number(value['max']);
+                }
                 return { ...acc, [key]: value };
               default:
                 return { ...acc };

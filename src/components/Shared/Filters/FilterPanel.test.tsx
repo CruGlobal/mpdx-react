@@ -84,7 +84,7 @@ const savedFiltersMockThree = gqlMock<UserOptionFragment>(
       id: '123',
       key: 'saved_contacts_filter_My_Cool_Filter',
       value:
-        '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"pledgeReceived": "default", "addressLatLng": "test1", "appealStatus": "test1", "contactAppeal": "test1", "newsletter": "none", "contactNewsletter": "physical"},"tags":null,"exclude_tags":null,"wildcard_search":""}',
+        '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"pledgeReceived": "default", "addressLatLng": "test1", "appealStatus": "test1", "contactAppeal": "test1", "newsletter": "none", "contactNewsletter": "physical", "donation_amount_range": {"min": "0", "max": "2000.45"}},"tags":null,"exclude_tags":null,"wildcard_search":""}',
     },
   },
 );
@@ -581,6 +581,10 @@ describe('FilterPanel', () => {
         addressLatLng: 'test1',
         appealStatus: 'test1',
         contactAppeal: 'test1',
+        donationAmountRange: {
+          min: 0,
+          max: 2000.45,
+        },
         newsletter: 'NONE',
         contactNewsletter: 'PHYSICAL',
         pledgeReceived: 'ANY',
