@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
+import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
 import { CreateTaskMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
@@ -150,8 +151,11 @@ describe('LogNewsletter', () => {
         <ThemeProvider theme={theme}>
           <TestWrapper
             mocks={[
-              createNewsletterTaskMutationMock(),
-              createNewsLetterTaskCommentMutation(),
+              createNewsletterTaskMutationMock(
+                'task-1',
+                ActivityTypeEnum.NewsletterPhysical,
+              ),
+              createNewsLetterTaskCommentMutation('task-1'),
             ]}
           >
             <LogNewsletter
@@ -175,5 +179,41 @@ describe('LogNewsletter', () => {
 
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
     });
+  });
+
+  it('Logs Both with Comment', async () => {
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper
+          mocks={[
+            createNewsletterTaskMutationMock(
+              'task-1',
+              ActivityTypeEnum.NewsletterPhysical,
+            ),
+            createNewsletterTaskMutationMock(
+              'task-2',
+              ActivityTypeEnum.NewsletterEmail,
+            ),
+            createNewsLetterTaskCommentMutation('task-1'),
+            createNewsLetterTaskCommentMutation('task-2'),
+          ]}
+        >
+          <LogNewsletter
+            accountListId={accountListId}
+            handleClose={handleClose}
+          />
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+    expect(
+      getByRole('heading', { name: 'Log Newsletter' }),
+    ).toBeInTheDocument();
+
+    userEvent.type(getByRole('textbox', { name: 'Subject' }), 'abc');
+    userEvent.click(getByRole('radio', { name: 'Both' }));
+    userEvent.type(getByRole('textbox', { name: 'Comment' }), 'comment');
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(handleClose).toHaveBeenCalled());
   });
 });

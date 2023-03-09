@@ -1,5 +1,5 @@
-import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import React, { useState } from 'react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { DateTime } from 'luxon';
@@ -56,8 +56,8 @@ const mocks = {
         },
         {
           amount: {
-            amount: 10,
-            convertedAmount: 10,
+            amount: 100,
+            convertedAmount: 100,
             convertedCurrency: 'CAD',
             currency: 'CAD',
           },
@@ -164,6 +164,9 @@ describe('DonationsReportTable', () => {
       GetDonationsTable: {
         donations: {
           nodes: [],
+          pageInfo: {
+            hasNextPage: false,
+          },
         },
       },
     };
@@ -301,5 +304,86 @@ describe('DonationsReportTable', () => {
 
     await waitFor(() => expect(getByLabelText('Partner')).toBeInTheDocument());
     expect(getByLabelText('Foreign Amount')).toBeInTheDocument();
+  });
+
+  it('updates the sort order', async () => {
+    const mutationSpy = jest.fn();
+    const { findByRole, getAllByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <DonationsReportTable
+            accountListId={'abc'}
+            onSelectContact={onSelectContact}
+            time={time}
+            setTime={setTime}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    const dateHeader = await findByRole('columnheader', { name: 'Date' });
+    expect(
+      within(dateHeader).getByTestId('ArrowDownwardIcon'),
+    ).toBeInTheDocument();
+
+    userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
+    const cellsAsc = getAllByRole('cell', { name: /CAD/ });
+    expect(cellsAsc[0]).toHaveTextContent('10 CAD');
+    expect(cellsAsc[1]).toHaveTextContent('100 CAD');
+
+    userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
+    const cellsDesc = getAllByRole('cell', { name: /CAD/ });
+    expect(cellsDesc[0]).toHaveTextContent('100 CAD');
+    expect(cellsDesc[1]).toHaveTextContent('10 CAD');
+  });
+
+  it('updates the page size without rerendering until the month changes', async () => {
+    const DonationsReportTableWrapper: React.FC = () => {
+      const [time, setTime] = useState(DateTime.now());
+
+      return (
+        <DonationsReportTable
+          accountListId={'abc'}
+          onSelectContact={onSelectContact}
+          time={time}
+          setTime={setTime}
+        />
+      );
+    };
+
+    const mutationSpy = jest.fn();
+    const { findByRole, getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <DonationsReportTableWrapper />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Rows per page: 25' }));
+    mutationSpy.mockClear();
+    userEvent.click(getByRole('option', { name: '50' }));
+
+    expect(mutationSpy).not.toHaveBeenCalled();
+
+    userEvent.click(getByRole('button', { name: 'Previous Month' }));
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledTimes(1);
+      expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+        operation: {
+          operationName: 'GetDonationsTable',
+          variables: {
+            pageSize: 50,
+          },
+        },
+      });
+    });
   });
 });

@@ -14,25 +14,19 @@ import {
   TaskMutationResponseFragment,
 } from '../../../../../Task/Modal/Form/TaskModal.generated';
 
-export const createNewsletterTaskMutationMock = (): MockedResponse => {
+export const createNewsletterTaskMutationMock = (
+  id: string,
+  activityType: ActivityTypeEnum,
+): MockedResponse => {
   const task: TaskCreateInput = {
-    activityType: ActivityTypeEnum.NewsletterPhysical,
+    activityType,
     completedAt: null,
-    contactIds: [],
-    id: null,
-    nextAction: null,
-    notificationTimeBefore: null,
-    notificationTimeUnit: null,
-    notificationType: null,
-    result: null,
     startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
     subject: 'abc',
-    tagList: [],
-    userId: null,
   };
   const data: CreateTaskMutation = {
     createTask: {
-      task: { ...task, id: 'task-1' } as TaskMutationResponseFragment,
+      task: { ...task, id } as TaskMutationResponseFragment,
     },
   };
 
@@ -48,7 +42,9 @@ export const createNewsletterTaskMutationMock = (): MockedResponse => {
   };
 };
 
-export const createNewsLetterTaskCommentMutation = (): MockedResponse => {
+export const createNewsLetterTaskCommentMutation = (
+  taskId: string,
+): MockedResponse => {
   const data: CreateTaskCommentMutation = {
     createTaskComment: {
       comment: {
@@ -70,7 +66,7 @@ export const createNewsLetterTaskCommentMutation = (): MockedResponse => {
       query: CreateTaskCommentDocument,
       variables: {
         accountListId: 'abc',
-        taskId: 'task-1',
+        taskId,
         attributes: {
           id: 'comment-0',
           body: 'comment',
