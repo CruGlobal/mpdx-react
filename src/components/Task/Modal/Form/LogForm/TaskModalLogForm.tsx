@@ -284,6 +284,7 @@ const TaskModalLogForm = ({
         first: selectedIds.length,
         contactsFilters: { ids: selectedIds },
       },
+      skip: selectedIds.length === 0,
     });
 
   const mergedContacts =
