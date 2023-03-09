@@ -242,8 +242,9 @@ describe('TaskModalLogForm', () => {
     const tagsElement = getByLabelText('Tags');
     userEvent.click(tagsElement);
 
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(queryByTestId('loading')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(queryByTestId('loading')).not.toBeInTheDocument(),
+    );
     await waitFor(() => expect(getByText('tag-1')).toBeInTheDocument());
     await waitFor(() => expect(getByText('tag-2')).toBeInTheDocument());
     userEvent.click(
