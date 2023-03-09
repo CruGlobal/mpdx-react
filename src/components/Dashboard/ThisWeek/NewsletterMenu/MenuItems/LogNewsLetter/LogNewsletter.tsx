@@ -151,7 +151,9 @@ const LogNewsletter = ({
       }),
     );
 
-    enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    enqueueSnackbar(t('Newsletter logged successfully'), {
+      variant: 'success',
+    });
     handleClose();
   };
 
