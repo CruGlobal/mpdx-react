@@ -356,6 +356,7 @@ describe('FilterPanel', () => {
         pledgeFrequency: ['0.46153846153846', '1.0'],
         pledgeLateBy: '30_60',
         pledgeReceived: 'RECEIVED',
+        // old MPDX saved filters sometimes have primaryAddress field as this. If not accounted for will cause error.
         primaryAddress: 'primary, null',
         referrer: 'd5b1dab5-e3ae-417d-8f49-2abdd915515b',
         region: 'Orange County',
