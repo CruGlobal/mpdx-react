@@ -9,7 +9,7 @@ export interface DesignationAccountsResponse {
   attributes: {
     active: true;
     balance: string;
-    balance_updated_at: string;
+    balance_updated_at: string | null;
     converted_balance: number;
     created_at: string;
     currency: string;
