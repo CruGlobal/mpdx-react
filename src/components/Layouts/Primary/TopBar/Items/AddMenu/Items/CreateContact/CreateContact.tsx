@@ -14,8 +14,14 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
-import { ContactCreateInput } from '../../../../../../../../../graphql/types.generated';
-import { useCreateContactMutation } from './CreateContact.generated';
+import {
+  ContactCreateInput,
+  PersonCreateInput,
+} from '../../../../../../../../../graphql/types.generated';
+import {
+  useCreateContactMutation,
+  useCreatePersonMutation,
+} from './CreateContact.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -24,6 +30,11 @@ import {
 interface Props {
   accountListId: string;
   handleClose: () => void;
+}
+
+interface people {
+  firstName: string;
+  lastName: string;
 }
 
 const LogFormControl = styled(FormControl)(() => ({
@@ -67,6 +78,7 @@ const CreateContact = ({
   };
 
   const [createContact, { loading: creating }] = useCreateContactMutation();
+  const [createPerson, { loading: creatingPerson }] = useCreatePersonMutation();
 
   const onSubmit = async (attributes: ContactCreateInput) => {
     const { data } = await createContact({
@@ -75,9 +87,50 @@ const CreateContact = ({
         attributes,
       },
     });
-
     const contactId = data?.createContact?.contact.id;
+
     if (contactId) {
+      const { name } = attributes;
+      const people: people[] = [];
+      let firstAndSpouseNames = name;
+      let lastName = '';
+      if (name.includes(',')) {
+        const findLastName = name.split(/, |,/g);
+        lastName = findLastName[0];
+        firstAndSpouseNames = findLastName[1];
+      }
+      if (firstAndSpouseNames.toLocaleLowerCase().includes(' and ')) {
+        const findFirstName = firstAndSpouseNames.split(/ and (.*)/s);
+        people.push({
+          firstName: findFirstName[0],
+          lastName,
+        });
+        people.push({
+          firstName: findFirstName[1],
+          lastName,
+        });
+      } else {
+        const findFirstName = firstAndSpouseNames.split(/ (.*)/s, 2);
+        people.push({
+          firstName: findFirstName[0],
+          lastName: lastName ? lastName : findFirstName[1] ?? '',
+        });
+      }
+      await Promise.all(
+        people.map(async (person) => {
+          const personAttributes: PersonCreateInput = {
+            contactId: contactId,
+            firstName: person.firstName,
+            lastName: person.lastName,
+          };
+          await createPerson({
+            variables: {
+              accountListId,
+              attributes: personAttributes,
+            },
+          });
+        }),
+      );
       push({
         pathname: '/accountLists/[accountListId]/contacts/[contactId]',
         query: { accountListId, contactId },
@@ -131,7 +184,7 @@ const CreateContact = ({
           <DialogActions>
             <CancelButton disabled={isSubmitting} onClick={handleClose} />
             <SubmitButton disabled={!isValid || isSubmitting}>
-              {creating && <LoadingIndicator size={20} />}
+              {(creating || creatingPerson) && <LoadingIndicator size={20} />}
               {t('Save')}
             </SubmitButton>
           </DialogActions>
