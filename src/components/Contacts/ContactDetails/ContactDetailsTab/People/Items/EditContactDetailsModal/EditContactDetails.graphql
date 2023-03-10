@@ -24,12 +24,12 @@ fragment ContactDetails on Contact {
   primaryPerson {
     ...ContactPerson
   }
-  people {
+  people(first: 25) {
     nodes {
       ...ContactPerson
     }
   }
-  addresses {
+  addresses(first: 25) {
     nodes {
       city
       country

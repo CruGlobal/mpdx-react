@@ -2,12 +2,13 @@ query InvalidAddresses($accountListId: ID!) {
   contacts(
     accountListId: $accountListId
     contactsFilter: { addressValid: false }
+    first: 100
   ) {
     nodes {
       id
       name
       status
-      addresses {
+      addresses(first: 25) {
         nodes {
           ...ContactAddress
         }

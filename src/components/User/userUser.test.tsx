@@ -34,32 +34,42 @@ describe('useUser', () => {
           "nodes": Array [
             Object {
               "__typename": "Organization",
-              "id": "2807863",
+              "id": "774361",
             },
             Object {
               "__typename": "Organization",
-              "id": "2698416",
+              "id": "7939597",
             },
             Object {
               "__typename": "Organization",
-              "id": "7545127",
+              "id": "9762715",
             },
           ],
         },
         "developer": true,
-        "firstName": "Dung Tapestry",
-        "id": "8071787",
+        "firstName": "Brain Ice-cream",
+        "id": "4394961",
         "keyAccounts": Array [
           Object {
             "__typename": "KeyAccount",
-            "email": "Chair Library Bed",
-            "id": "1433814",
+            "email": "Printer Cycle Air",
+            "id": "4072203",
+          },
+          Object {
+            "__typename": "KeyAccount",
+            "email": "Signature",
+            "id": "6591416",
+          },
+          Object {
+            "__typename": "KeyAccount",
+            "email": "Software",
+            "id": "8774894",
           },
         ],
-        "lastName": "Parachute",
+        "lastName": "Eyes",
         "preferences": Object {
           "__typename": "Preference",
-          "locale": "Circus Leg Slave",
+          "locale": "Magnet",
         },
       }
     `);

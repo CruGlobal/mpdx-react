@@ -13,7 +13,7 @@ mutation UpdateContactOther(
       preferredContactMethod
       timezone
       website
-      contactReferralsToMe {
+      contactReferralsToMe(first: 10) {
         nodes {
           id
           referredBy {

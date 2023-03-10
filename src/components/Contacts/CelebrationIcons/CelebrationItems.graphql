@@ -1,5 +1,5 @@
 fragment CelebrationItems on Contact {
-  people {
+  people(first: 25) {
     nodes {
       anniversaryMonth
       anniversaryDay

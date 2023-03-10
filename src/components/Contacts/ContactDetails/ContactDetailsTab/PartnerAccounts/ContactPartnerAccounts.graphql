@@ -1,6 +1,6 @@
 fragment ContactPartnerAccounts on Contact {
   id
-  contactDonorAccounts {
+  contactDonorAccounts(first: 25) {
     nodes {
       id
       donorAccount {

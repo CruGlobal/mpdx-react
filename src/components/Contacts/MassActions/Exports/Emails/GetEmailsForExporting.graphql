@@ -1,11 +1,16 @@
 query GetEmailsForExporting(
   $accountListId: ID!
-  $contactsFilters: ContactFilterSetInput
+  $contactIds: [ID!]!
+  $numContactIds: Int!
 ) {
-  contacts(accountListId: $accountListId, contactsFilter: $contactsFilters) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { ids: $contactIds }
+    first: $numContactIds
+  ) {
     nodes {
       id
-      people {
+      people(first: 25) {
         nodes {
           primaryEmailAddress {
             id

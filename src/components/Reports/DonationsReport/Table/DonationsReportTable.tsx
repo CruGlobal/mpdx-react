@@ -33,6 +33,7 @@ import {
   useGetAccountListCurrencyQuery,
 } from '../GetDonationsTable.generated';
 import { EditDonationModal } from './Modal/EditDonationModal';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
 interface Props {
   accountListId: string;
@@ -137,15 +138,11 @@ export const DonationsReportTable: React.FC<Props> = ({
     // When they user comes back to a month that they have loaded before, use the cached data because it will have all
     // the pages of data instead of just the first one if we load from the network
     fetchPolicy: 'cache-first',
-
-    // Load the rest of the pages asynchronously so that we can calculate the total donations
-    onCompleted: ({ donations }) => {
-      if (donations.pageInfo.hasNextPage) {
-        fetchMore({
-          variables: { pageSize, cursor: donations.pageInfo.endCursor },
-        });
-      }
-    },
+  });
+  // Load the rest of the pages asynchronously so that we can calculate the total donations
+  useFetchAllPages({
+    fetchMore,
+    pageInfo: data?.donations.pageInfo,
   });
 
   const { data: accountListData, loading: loadingAccountListData } =

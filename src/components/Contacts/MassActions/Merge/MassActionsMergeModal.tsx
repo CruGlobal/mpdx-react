@@ -50,6 +50,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
     variables: {
       accountListId,
       contactIds: ids,
+      numContactIds: ids.length,
     },
   });
 

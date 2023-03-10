@@ -7,10 +7,15 @@ mutation MassActionsMerge($loserContactIds: [ID!]!, $winnerContactId: ID!) {
   )
 }
 
-query GetContactsForMerging($accountListId: ID!, $contactIds: [ID!]!) {
+query GetContactsForMerging(
+  $accountListId: ID!
+  $contactIds: [ID!]!
+  $numContactIds: Int!
+) {
   contacts(
     accountListId: $accountListId
     contactsFilter: { ids: $contactIds }
+    first: $numContactIds
   ) {
     nodes {
       id

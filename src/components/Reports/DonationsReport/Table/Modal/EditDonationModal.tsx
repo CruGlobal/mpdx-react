@@ -29,6 +29,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import theme from 'src/theme';
 import * as yup from 'yup';
 import { Donation } from '../DonationsReportTable';
@@ -74,8 +75,13 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
-  const { data: appeals, loading: loadingAppeals } =
-    useEditDonationModalGetAppealsQuery({ variables: { accountListId } });
+  const { data: appeals, fetchMore } = useEditDonationModalGetAppealsQuery({
+    variables: { accountListId },
+  });
+  const { loading: loadingAppeals } = useFetchAllPages({
+    fetchMore,
+    pageInfo: appeals?.appeals.pageInfo,
+  });
 
   const { data: designationAccounts, loading: loadingDesignationAccounts } =
     useGetDesignationAccountsQuery({ variables: { accountListId } });

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
@@ -35,7 +35,7 @@ import {
 import useTaskModal from 'src/hooks/useTaskModal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
-import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
 import {
   useMassActionsDeleteTasksMutation,
@@ -149,14 +149,19 @@ const TasksPage: React.FC = () => {
     });
   };
 
+  const tasksFilter = useMemo(
+    () => ({
+      ...activeFilters,
+      ...starredFilter,
+      wildcardSearch: searchTerm as string,
+    }),
+    [activeFilters, starredFilter, searchTerm],
+  );
+
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
       accountListId: accountListId ?? '',
-      tasksFilter: {
-        ...activeFilters,
-        ...starredFilter,
-        wildcardSearch: searchTerm as string,
-      },
+      tasksFilter,
     },
     skip: !accountListId,
   });
@@ -206,30 +211,20 @@ const TasksPage: React.FC = () => {
   //#endregion
 
   //#region Mass Actions
-  const [getTaskIds, { data: taskIds, loading: loadingTaskIds }] =
-    useGetTaskIdsForMassSelectionLazyQuery();
 
-  // Only query when the filters or total count change and store data in state
-  const [allTaskIds, setAllTaskIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!loadingTaskIds && taskIds?.tasks.nodes) {
-      setAllTaskIds(taskIds?.tasks.nodes.map((task) => task.id));
-    }
-  }, [loadingTaskIds]);
-
-  useEffect(() => {
-    const taskCount = data?.tasks?.totalCount ?? 0;
-    if (taskCount) {
-      getTaskIds({
-        variables: {
-          accountListId,
-          first: taskCount,
-          tasksFilters: activeFilters,
-        },
-      });
-    }
-  }, [activeFilters, searchTerm, starredFilter, data]);
+  const taskCount = data?.tasks.totalCount ?? 0;
+  const { data: allTasks } = useGetTaskIdsForMassSelectionQuery({
+    variables: {
+      accountListId,
+      first: taskCount,
+      tasksFilters: tasksFilter,
+    },
+    skip: taskCount === 0,
+  });
+  const allTaskIds = useMemo(
+    () => allTasks?.tasks.nodes.map((task) => task.id) ?? [],
+    [allTasks],
+  );
 
   const {
     ids,
@@ -436,6 +431,7 @@ const TasksPage: React.FC = () => {
                 {addTagsModalOpen && (
                   <MassActionsTasksAddTagsModal
                     ids={ids}
+                    selectedIdCount={data?.tasks.totalCount ?? 0}
                     accountListId={accountListId}
                     handleClose={() => setAddTagsModalOpen(false)}
                   />
@@ -452,6 +448,7 @@ const TasksPage: React.FC = () => {
                 {editTasksModalOpen && (
                   <MassActionsEditTasksModal
                     ids={ids}
+                    selectedIdCount={data?.tasks.totalCount ?? 0}
                     accountListId={accountListId}
                     handleClose={() => setEditTasksModalOpen(false)}
                   />
@@ -459,6 +456,7 @@ const TasksPage: React.FC = () => {
                 {removeTagsModalOpen && (
                   <MassActionsTasksRemoveTagsModal
                     ids={ids}
+                    selectedIdCount={data?.tasks.totalCount ?? 0}
                     accountListId={accountListId}
                     handleClose={() => setRemoveTagsModalOpen(false)}
                   />

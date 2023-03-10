@@ -31,9 +31,12 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 
 interface MassActionsTasksAddTagsModalProps {
   ids: string[];
+  selectedIdCount: number;
   accountListId: string;
   handleClose: () => void;
 }
@@ -58,20 +61,23 @@ const tagSchema = yup.object({
 
 export const MassActionsTasksAddTagsModal: React.FC<
   MassActionsTasksAddTagsModalProps
-> = ({ handleClose, accountListId, ids }) => {
+> = ({ handleClose, accountListId, ids, selectedIdCount }) => {
   const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
 
   const [tasksAddTags, { loading: updating }] = useTasksAddTagsMutation();
 
-  const { data: tasksForTags } = useGetTasksForAddingTagsQuery({
+  const { data: tasksForTags, fetchMore } = useGetTasksForAddingTagsQuery({
     variables: {
       accountListId,
-      tasksFilters: {
-        ids,
-      },
+      taskIds: ids,
+      numTaskIds: ids.length,
     },
+  });
+  const { loading: loadingTasks } = useFetchAllPages({
+    fetchMore,
+    pageInfo: tasksForTags?.tasks.pageInfo,
   });
 
   const onSubmit = async (fields: Partial<ContactUpdateInput>) => {
@@ -99,11 +105,12 @@ export const MassActionsTasksAddTagsModal: React.FC<
     handleClose();
   };
 
-  const { data: taskTagsList, loading } = useGetTaskTagListQuery({
-    variables: {
-      accountListId,
-    },
-  });
+  const { data: taskTagsList, loading: loadingTagsList } =
+    useGetTaskTagListQuery({
+      variables: {
+        accountListId,
+      },
+    });
 
   return (
     <Modal title={t('Add Tags')} isOpen={true} handleClose={handleClose}>
@@ -123,6 +130,10 @@ export const MassActionsTasksAddTagsModal: React.FC<
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogContent dividers>
+              <IncompleteWarning
+                selectedIdCount={selectedIdCount}
+                idCount={ids.length}
+              />
               <FormControl fullWidth>
                 {taskTagsList?.accountList.taskTagList && tagList ? (
                   <>
@@ -154,7 +165,7 @@ export const MassActionsTasksAddTagsModal: React.FC<
                   multiple
                   freeSolo
                   fullWidth
-                  loading={loading}
+                  loading={loadingTagsList}
                   popupIcon={<ContactTagIcon />}
                   filterSelectedOptions
                   value={tagList ?? []}
@@ -175,7 +186,12 @@ export const MassActionsTasksAddTagsModal: React.FC<
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
               <SubmitButton
-                disabled={!isValid || isSubmitting || tagList?.length === 0}
+                disabled={
+                  loadingTasks ||
+                  !isValid ||
+                  isSubmitting ||
+                  tagList?.length === 0
+                }
               >
                 {updating && <CircularProgress color="primary" size={20} />}
                 {t('Save')}

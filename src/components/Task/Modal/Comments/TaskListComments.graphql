@@ -1,7 +1,7 @@
 query GetCommentsForTaskModalCommentList($accountListId: ID!, $taskId: ID!) {
   task(accountListId: $accountListId, id: $taskId) {
     id
-    comments {
+    comments(first: 25) {
       nodes {
         id
         body

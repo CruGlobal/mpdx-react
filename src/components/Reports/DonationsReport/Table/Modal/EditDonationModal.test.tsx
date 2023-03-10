@@ -32,6 +32,9 @@ const mocks = {
           name: 'End of Year Ask',
         },
       ],
+      pageInfo: {
+        hasNextPage: false,
+      },
     },
   },
 };

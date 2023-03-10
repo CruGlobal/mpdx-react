@@ -5,6 +5,7 @@ query GetInvalidNewsletter($accountListId: ID!) {
       newsletter: NO_VALUE
       status: [PARTNER_FINANCIAL, PARTNER_SPECIAL, PARTNER_PRAY]
     }
+    first: 100
   ) {
     nodes {
       id

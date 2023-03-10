@@ -19,6 +19,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
 interface MassActionsAddToAppealModalProps {
   ids: string[];
@@ -64,12 +65,15 @@ export const MassActionsAddToAppealModal: React.FC<
     handleClose();
   };
 
-  const { data: appeals, loading: loadingAppeals } =
-    useGetAppealsForMassActionQuery({
-      variables: {
-        accountListId,
-      },
-    });
+  const { data: appeals, fetchMore } = useGetAppealsForMassActionQuery({
+    variables: {
+      accountListId,
+    },
+  });
+  const { loading: loadingAppeals } = useFetchAllPages({
+    fetchMore,
+    pageInfo: appeals?.appeals.pageInfo,
+  });
 
   return (
     <Modal title={t('Add To Appeal')} isOpen={true} handleClose={handleClose}>

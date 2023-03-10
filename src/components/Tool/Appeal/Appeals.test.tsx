@@ -28,6 +28,17 @@ const testAppeal = {
   pledgesAmountTotal: 55,
 };
 
+const mocks = {
+  GetAppeals: {
+    appeals: {
+      nodes: [testAppeal],
+      pageInfo: {
+        hasNextPage: false,
+      },
+    },
+  },
+};
+
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
@@ -63,15 +74,7 @@ describe('AppealsTest', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider<GetAppealsQuery>
-              mocks={{
-                GetAppeals: {
-                  appeals: {
-                    nodes: [testAppeal],
-                  },
-                },
-              }}
-            >
+            <GqlMockedProvider<GetAppealsQuery> mocks={mocks}>
               <Appeals accountListId={accountListId} />
             </GqlMockedProvider>
           </TestRouter>
@@ -94,15 +97,7 @@ describe('AppealsTest', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider<GetAppealsQuery>
-              mocks={{
-                GetAppeals: {
-                  appeals: {
-                    nodes: [testAppeal],
-                  },
-                },
-              }}
-            >
+            <GqlMockedProvider<GetAppealsQuery> mocks={mocks}>
               <Appeals accountListId={accountListId} />
             </GqlMockedProvider>
           </TestRouter>

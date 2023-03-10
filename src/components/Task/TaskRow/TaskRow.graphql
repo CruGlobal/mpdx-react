@@ -6,7 +6,7 @@ fragment TaskRow on Task {
   comments {
     totalCount
   }
-  contacts {
+  contacts(first: 25) {
     nodes {
       id
       name

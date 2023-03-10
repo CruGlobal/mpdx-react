@@ -115,6 +115,9 @@ describe('Render Donations Report', () => {
               paymentMethod: 'pay',
             },
           ],
+          pageInfo: {
+            hasNextPage: false,
+          },
         },
       },
     };

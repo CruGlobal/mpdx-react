@@ -8,7 +8,7 @@ query GetTaskForTaskModal($accountListId: ID!, $taskId: ID!) {
     result
     nextAction
     tagList
-    contacts {
+    contacts(first: 25) {
       nodes {
         id
         name

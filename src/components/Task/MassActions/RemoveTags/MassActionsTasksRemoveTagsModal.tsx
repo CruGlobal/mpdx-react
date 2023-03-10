@@ -29,9 +29,12 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 
 interface MassActionsTasksRemoveTagsModalProps {
   ids: string[];
+  selectedIdCount: number;
   accountListId: string;
   handleClose: () => void;
 }
@@ -61,7 +64,7 @@ const tagSchema = yup.object({
 
 export const MassActionsTasksRemoveTagsModal: React.FC<
   MassActionsTasksRemoveTagsModalProps
-> = ({ handleClose, accountListId, ids }) => {
+> = ({ handleClose, accountListId, ids, selectedIdCount }) => {
   const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -69,13 +72,16 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
   const [updateTasks, { loading: updating }] =
     useMassActionsUpdateTasksMutation();
 
-  const { data: tasksForTags } = useGetTasksForAddingTagsQuery({
+  const { data: tasksForTags, fetchMore } = useGetTasksForAddingTagsQuery({
     variables: {
       accountListId,
-      tasksFilters: {
-        ids,
-      },
+      taskIds: ids,
+      numTaskIds: ids.length,
     },
+  });
+  const { loading: loadingTasks } = useFetchAllPages({
+    fetchMore,
+    pageInfo: tasksForTags?.tasks.pageInfo,
   });
 
   const onSubmit = async (fields: Partial<ContactUpdateInput>) => {
@@ -102,11 +108,12 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
     handleClose();
   };
 
-  const { data: taskTagsList, loading } = useGetTaskTagListQuery({
-    variables: {
-      accountListId,
-    },
-  });
+  const { data: taskTagsList, loading: loadingTagsList } =
+    useGetTaskTagListQuery({
+      variables: {
+        accountListId,
+      },
+    });
 
   const tagsData = tasksForTags?.tasks.nodes.map((task) => task.tagList) ?? [];
 
@@ -130,11 +137,15 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogContent dividers>
+              <IncompleteWarning
+                selectedIdCount={selectedIdCount}
+                idCount={ids.length}
+              />
               <FormControl fullWidth>
                 {taskTagsList?.accountList.taskTagList && tagList ? (
                   <>
                     <Typography>{t('Select tags to remove:')}</Typography>
-                    {!loading ? (
+                    {!loadingTagsList ? (
                       contactsTagsList.map((tag) =>
                         !tagList.includes(String(tag)) ? (
                           <ExistingTagButton
@@ -170,7 +181,12 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
               <SubmitButton
-                disabled={!isValid || isSubmitting || tagList?.length === 0}
+                disabled={
+                  loadingTasks ||
+                  !isValid ||
+                  isSubmitting ||
+                  tagList?.length === 0
+                }
               >
                 {updating && <CircularProgress color="primary" size={20} />}
                 {t('Save')}
