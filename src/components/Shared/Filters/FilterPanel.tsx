@@ -320,7 +320,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'referrerIds':
               case 'region':
               case 'contactRegion':
-              case 'contactRegion':
               case 'relatedTaskAction':
               case 'source':
               case 'state':
