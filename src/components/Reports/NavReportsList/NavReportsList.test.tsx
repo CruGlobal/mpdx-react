@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { NavReportsList } from './NavReportsList';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 
 const accountListId = 'account-list-1';
@@ -18,11 +19,13 @@ describe('NavReportsList', () => {
     const { getByText, queryAllByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <NavReportsList
-            selectedId={selected}
-            isOpen={true}
-            onClose={() => {}}
-          />
+          <GqlMockedProvider>
+            <NavReportsList
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+            />
+          </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
     );
