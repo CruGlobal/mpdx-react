@@ -49,7 +49,7 @@ const createDesignationAccount = (
   account: DesignationAccountsResponse,
 ): DesignationAccountRest => ({
   active: account.attributes.active,
-  balanceUpdatedAt: account.attributes.balance_updated_at,
+  balanceUpdatedAt: account.attributes.balance_updated_at ?? '',
   currency: account.attributes.currency,
   designationNumber: account.attributes.designation_number,
   id: account.id,
@@ -62,8 +62,6 @@ export const createDesignationAccountsGroup = (
 ): DesignationAccountsGroup[] => {
   const preDesignationAccountsGroup = data.reduce<PreDesignationAccountsGroup>(
     (obj, item) => {
-      if (item?.attributes?.balance_updated_at === null)
-        item.attributes.balance_updated_at = '';
       return {
         ...obj,
         [item.attributes.organization_name]: [
