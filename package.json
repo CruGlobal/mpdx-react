@@ -15,6 +15,7 @@
     "storybook": "start-storybook -p 6006 -c .storybook -s ./public",
     "build-storybook": "build-storybook -c .storybook -s ./public",
     "test": "cross-env NODE_ICU_DATA=$(yarn bin node-full-icu-path) jest --silent",
+    "test:log": "yarn test --silent=false",
     "test:watch": "cross-env NODE_ICU_DATA=$(yarn bin node-full-icu-path) jest --watch",
     "localtest": "yarn test --runInBand --verbose",
     "localtest:watch": "yarn test:watch --runInBand",

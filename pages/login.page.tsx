@@ -90,7 +90,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (immediateSignIn) {
     context.res.setHeader(
       'Set-Cookie',
-      `mpdx-handoff.redirect-url=; HttpOnly; path=/; Expires=${new Date().toUTCString()}`,
+      `mpdx-handoff.redirect-url=; HttpOnly; path=/; Max-Age=0`,
     );
   }
   if (context.res && session) {

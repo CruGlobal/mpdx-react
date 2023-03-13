@@ -29,6 +29,7 @@ jest.mock('next-auth/react', () => {
   return {
     signOut: jest.fn().mockImplementation(() => Promise.resolve()),
     getSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
+    useSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
   };
 });
 
