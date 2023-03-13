@@ -9,7 +9,7 @@ export interface DesignationAccountsResponse {
   attributes: {
     active: true;
     balance: string;
-    balance_updated_at: string;
+    balance_updated_at: string | null;
     converted_balance: number;
     created_at: string;
     currency: string;
@@ -49,7 +49,7 @@ const createDesignationAccount = (
   account: DesignationAccountsResponse,
 ): DesignationAccountRest => ({
   active: account.attributes.active,
-  balanceUpdatedAt: account.attributes.balance_updated_at,
+  balanceUpdatedAt: account.attributes.balance_updated_at ?? '',
   currency: account.attributes.currency,
   designationNumber: account.attributes.designation_number,
   id: account.id,
