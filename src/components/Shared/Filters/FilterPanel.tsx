@@ -315,12 +315,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'pledgeCurrency':
               case 'pledgeFrequency':
               case 'contactPledgeFrequency':
-              case 'primaryAddress':
               case 'referrer':
               case 'contactReferrer':
               case 'referrerIds':
               case 'region':
-              case 'contactRegion':
               case 'contactRegion':
               case 'relatedTaskAction':
               case 'source':
@@ -591,6 +589,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'optOut':
               case 'pledge':
               case 'pledgeLateBy':
+              case 'primaryAddress':
               case 'wildcardSearch':
                 if (key === 'notes') {
                   value = value['wildcard_note_search'];
