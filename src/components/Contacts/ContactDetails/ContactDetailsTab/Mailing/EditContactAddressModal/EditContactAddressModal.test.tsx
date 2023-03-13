@@ -120,7 +120,7 @@ describe('EditContactAddressModal', () => {
     const newCountry = 'United States';
     const newRegion = 'New Region';
     const newMetroArea = 'New Metro';
-    const { getByText, getByLabelText } = render(
+    const { getByRole, getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation> onCall={mutationSpy}>
@@ -135,7 +135,7 @@ describe('EditContactAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByLabelText('Street'));
+    userEvent.clear(getByRole('combobox', { name: 'Street' }));
     userEvent.clear(getByLabelText('City'));
     userEvent.clear(getByLabelText('State'));
     userEvent.clear(getByLabelText('Zip'));
@@ -145,7 +145,7 @@ describe('EditContactAddressModal', () => {
     userEvent.click(getByLabelText('Location'));
     userEvent.click(getByLabelText('Mailing'));
     userEvent.click(getByLabelText('Primary'));
-    userEvent.type(getByLabelText('Street'), newStreet);
+    userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
     userEvent.type(getByLabelText('City'), newCity);
     userEvent.type(getByLabelText('State'), newState);
     userEvent.type(getByLabelText('Zip'), newPostalCode);
@@ -182,7 +182,7 @@ describe('EditContactAddressModal', () => {
   it('should edit not set primary address when it has not changed', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
-    const { getByText, getByLabelText } = render(
+    const { getByRole, getByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<UpdateContactAddressMutation> onCall={mutationSpy}>
@@ -197,8 +197,8 @@ describe('EditContactAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByLabelText('Street'));
-    userEvent.type(getByLabelText('Street'), newStreet);
+    userEvent.clear(getByRole('combobox', { name: 'Street' }));
+    userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Address updated successfully', {

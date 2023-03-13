@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 
 // Callback isn't called until `delay` milliseconds have elapsed since the last call
@@ -6,14 +6,23 @@ export const useDebouncedCallback = <Args extends unknown[], Return>(
   callback: (...args: Args) => Return,
   delay: number,
 ): ((...args: Args) => Return | undefined) => {
-  const debouncedCallback = debounce(callback, delay);
+  const callbackRef = useRef(callback);
+
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
+  const debouncedCallback = useMemo(
+    () => debounce((...args) => callbackRef.current(...args), delay),
+    [],
+  );
 
   useEffect(() => {
     // Cancel any timeouts on unmount
     return () => {
       debouncedCallback.cancel();
     };
-  });
+  }, []);
 
   return debouncedCallback;
 };
