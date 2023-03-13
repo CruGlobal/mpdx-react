@@ -199,6 +199,7 @@ describe('FourteenMonthReportTable', () => {
               mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
                 .totals
             }
+            currencyType="salary"
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -237,6 +238,7 @@ describe('FourteenMonthReportTable', () => {
               mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
                 .totals
             }
+            currencyType="salary"
           />
         </GqlMockedProvider>
       </ThemeProvider>,
