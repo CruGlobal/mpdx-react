@@ -23,6 +23,7 @@ import type { Contact, Month } from './TableHead/TableHead';
 interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[] | undefined;
+  currencyType;
   ref: React.Ref<HTMLTableElement>;
 }
 
@@ -56,6 +57,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
         onRequestSort,
         salaryCurrency,
         totals,
+        currencyType,
       },
       ref,
     ) => {
@@ -122,8 +124,15 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                   )}
                   {contact.months?.map((month: Month) => (
                     <TableCell key={month?.month} align="center">
-                      {month?.salaryCurrencyTotal &&
-                        numberFormat(Math.round(month?.salaryCurrencyTotal))}
+                      {month?.salaryCurrencyTotal && (
+                        <>
+                          {numberFormat(
+                            currencyType === 'salary'
+                              ? Math.round(month?.total)
+                              : month?.total,
+                          )}
+                        </>
+                      )}
                     </TableCell>
                   ))}
                   <TableCell align="right">
@@ -137,7 +146,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                 </TableCell>
                 {totals?.months?.map((month) => (
                   <TableCell key={month.month} align="center">
-                    <strong>{numberFormat(Math.round(month.total))}</strong>
+                    <strong>{numberFormat(month.total)}</strong>
                   </TableCell>
                 ))}
                 <TableCell align="right">

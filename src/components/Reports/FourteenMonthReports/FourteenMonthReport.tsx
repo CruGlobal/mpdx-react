@@ -251,6 +251,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
           ref={reportTableRef}
           salaryCurrency={data?.fourteenMonthReport.salaryCurrency}
           totals={data?.fourteenMonthReport.currencyGroups[0].totals}
+          currencyType={currencyType}
         />
       ) : (
         <EmptyReport

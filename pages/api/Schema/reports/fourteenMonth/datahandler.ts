@@ -73,6 +73,10 @@ export const mapFourteenMonthReport = (
   currencyType: FourteenMonthReportCurrencyType,
 ): FourteenMonthReport => {
   const isSalaryType = currencyType === FourteenMonthReportCurrencyType.Salary;
+  const roundByType = (num: string | number) => {
+    if (typeof num === 'string') num = Number(num);
+    return isSalaryType ? Math.round(num) : Math.floor(num);
+  };
   return {
     currencyType,
     salaryCurrency: data.attributes.salary_currency,
@@ -87,16 +91,20 @@ export const mapFourteenMonthReport = (
           ),
           months: currencyGroup.totals.months.map((total, index) => ({
             month: data.attributes.months[index],
-            total: Number(total),
+            total: data.attributes.currency_groups.cad.donation_infos.reduce(
+              (multiple, single) =>
+                multiple + roundByType(single.months[index].total),
+              0,
+            ),
           })),
           average: currencyGroup.donation_infos.reduce(
             (averageTotal, contactDonationInfo) =>
-              averageTotal + Number(contactDonationInfo.average),
+              averageTotal + roundByType(contactDonationInfo.average),
             0,
           ),
           minimum: currencyGroup.donation_infos.reduce(
             (minimumTotal, contactDonationInfo) =>
-              minimumTotal + Number(contactDonationInfo.minimum),
+              minimumTotal + roundByType(contactDonationInfo.minimum),
             0,
           ),
         },
@@ -108,9 +116,9 @@ export const mapFourteenMonthReport = (
             return {
               id: contactDonationInfo.contact_id,
               name: contact?.contact_name ?? '',
-              total: Number(contactDonationInfo.total),
-              average: Number(contactDonationInfo.average),
-              minimum: Number(contactDonationInfo.minimum),
+              total: roundByType(contactDonationInfo.total),
+              average: roundByType(contactDonationInfo.average),
+              minimum: roundByType(contactDonationInfo.minimum),
               months: contactDonationInfo.months.map((month, index) => {
                 const salaryCurrencyTotal = month.donations.reduce(
                   (convertedTotal, donation) =>
@@ -121,7 +129,7 @@ export const mapFourteenMonthReport = (
                   month: data.attributes.months[index],
                   total: isSalaryType
                     ? salaryCurrencyTotal
-                    : Number(month.total),
+                    : roundByType(month.total),
                   salaryCurrencyTotal,
                   donations: month.donations.map((donation) => ({
                     amount: Number(donation.amount),
