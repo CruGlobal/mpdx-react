@@ -1,5 +1,5 @@
 query GetTopBar {
-  accountLists(first: 25) {
+  accountLists(first: 50) {
     nodes {
       id
       name
