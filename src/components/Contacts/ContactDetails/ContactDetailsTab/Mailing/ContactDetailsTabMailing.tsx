@@ -4,6 +4,7 @@ import { Box, Grid, IconButton, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import LocationOn from '@mui/icons-material/LocationOn';
 import CreateIcon from '@mui/icons-material/Create';
+import { DateTime } from 'luxon';
 import {
   ContactDetailsAddButton,
   ContactDetailsAddIcon,
@@ -148,7 +149,11 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 </ContactAddressRowContainer>
                 <ContactAddressRowContainer>
                   <Typography variant="subtitle1">
-                    {t(`Source: ${sourceToStr(primaryAddress.source)}`)}
+                    {t('Source:')} {t(sourceToStr(primaryAddress.source))} (
+                    {DateTime.fromISO(
+                      primaryAddress.updatedAt,
+                    ).toLocaleString()}
+                    )
                   </Typography>
                 </ContactAddressRowContainer>
               </>
@@ -202,7 +207,8 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                       {address.country}
                     </Typography>
                     <Typography variant="subtitle1">
-                      {t(`Source: ${sourceToStr(address.source)}`)}
+                      {t('Source:')} {t(sourceToStr(address.source))} (
+                      {DateTime.fromISO(address.updatedAt).toLocaleString()})
                     </Typography>
                   </ContactDetailsMailingTextContainer>
                 ))

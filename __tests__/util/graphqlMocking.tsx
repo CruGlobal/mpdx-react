@@ -20,9 +20,18 @@ import { gql } from 'graphql-tag';
 import seedrandom from 'seedrandom';
 import { DeepPartial } from 'ts-essentials';
 import schema from '../../graphql/schema.graphql';
+import { DefaultMockResolvers } from 'graphql-ergonomock/dist/mock';
 
 const seed = 'seed';
 const rng = seedrandom(seed);
+
+const resolvers: DefaultMockResolvers = {
+  ISO8601DateTime: () =>
+    // Time in 2022
+    new Date(
+      1641016800000 /* Jan 1, 2022 */ + Math.floor(rng() * 365 * 86400) * 1000,
+    ).toISOString(),
+};
 
 export const GqlMockedProvider = <TData,>({
   children,
@@ -37,14 +46,7 @@ export const GqlMockedProvider = <TData,>({
     {...props}
     mocks={mocks as unknown as ApolloErgonoMockMap}
     schema={schema}
-    resolvers={{
-      ISO8601DateTime: () =>
-        // Time in 2022
-        new Date(
-          1641016800000 /* Jan 1, 2022 */ +
-            Math.floor(rng() * 365 * 86400) * 1000,
-        ).toISOString(),
-    }}
+    resolvers={resolvers}
   >
     {children}
   </ErgonoMockedProvider>
@@ -149,7 +151,16 @@ export const gqlMock = <TData, TVariables = never>(
     mocks?: DeepPartial<TData>;
     variables?: TVariables;
   },
-): TData =>
-  documentContainsNonFragments(query)
-    ? ergonomockQuery(query, options)
-    : ergonomockFragment(query, options);
+): TData => {
+  const optionsWithResolvers = {
+    ...options,
+    resolvers: {
+      ...options?.resolvers,
+      ...resolvers,
+    },
+  };
+
+  return documentContainsNonFragments(query)
+    ? ergonomockQuery(query, optionsWithResolvers)
+    : ergonomockFragment(query, optionsWithResolvers);
+};
