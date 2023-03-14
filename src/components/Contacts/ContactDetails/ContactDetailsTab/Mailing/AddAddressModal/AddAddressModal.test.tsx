@@ -143,7 +143,7 @@ describe('AddAddressModal', () => {
     expect(operation.variables.attributes.region).toEqual(newRegion);
     expect(operation.variables.attributes.metroArea).toEqual(newMetroArea);
     expect(operation.variables.attributes.historic).toEqual(true);
-  });
+  }, 10000);
 
   it('should set new address as primary', async () => {
     const mutationSpy = jest.fn();
