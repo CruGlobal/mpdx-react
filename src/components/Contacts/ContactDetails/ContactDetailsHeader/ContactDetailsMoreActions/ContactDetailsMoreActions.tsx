@@ -116,8 +116,6 @@ export const ContactDetailsMoreAcitions: React.FC<
   const { accountListId, searchTerm, router } = React.useContext(
     ContactsContext,
   ) as ContactsType;
-  const { query, push } = router;
-  const { ...queryWithoutContactId } = query;
 
   const {
     referralsModalOpen,
@@ -134,6 +132,8 @@ export const ContactDetailsMoreAcitions: React.FC<
 
   const [openHideModal, setOpenHideModal] = useState(false);
   const [updateHiding, setUpdateHiding] = useState(false);
+  const { query, push } = router;
+  const { contactId: _, ...queryWithoutContactId } = query;
   const hideContact = async (): Promise<void> => {
     setUpdateHiding(true);
     const attributes = {

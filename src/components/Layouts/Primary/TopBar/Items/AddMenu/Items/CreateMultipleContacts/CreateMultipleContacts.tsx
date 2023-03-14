@@ -17,7 +17,10 @@ import { useSnackbar } from 'notistack';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
+import {
+  useCreateContactMutation,
+  useCreatePersonMutation,
+} from '../CreateContact/CreateContact.generated';
 import {
   ContactReferralTabDocument,
   useUpdateContactReferralMutation,
@@ -28,6 +31,7 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import theme from '../../../../../../../../theme';
+import { PersonCreateInput } from '../../../../../../../../../graphql/types.generated';
 
 const InputRow = styled(TableRow)(() => ({
   '&:nth-child(odd)': {
@@ -50,6 +54,10 @@ const InputCell = styled(TableCell)(() => ({
 const DialogContentCustom = styled(DialogContent)(() => ({
   [theme.breakpoints.down('md')]: {
     maxHeight: '500px',
+    overflowX: 'auto',
+  },
+  [theme.breakpoints.up('md')]: {
+    maxHeight: '80vh',
     overflowX: 'auto',
   },
 }));
@@ -109,6 +117,7 @@ export const CreateMultipleContacts = ({
   const [createContact, { loading: creating }] = useCreateContactMutation();
   const [updateContact, { loading: updating }] =
     useUpdateContactReferralMutation();
+  const [createPerson, { loading: creatingPerson }] = useCreatePersonMutation();
 
   const onSubmit = async (attributes: InitialContactInterface) => {
     const filteredContacts = attributes.contacts.filter(
@@ -117,17 +126,24 @@ export const CreateMultipleContacts = ({
     if (filteredContacts.length > 0) {
       const createdContacts = await Promise.all(
         filteredContacts.map(async (contact) => {
+          const {
+            firstName = '',
+            lastName = '',
+            spouseName = '',
+            phone = '',
+            email = '',
+          } = contact;
           const { data } = await createContact({
             variables: {
               accountListId,
               attributes: {
-                name: contact.lastName
-                  ? contact.spouseName
-                    ? `${contact.lastName}, ${contact.firstName} and ${contact.spouseName}`
-                    : `${contact.lastName}, ${contact.firstName}`
-                  : contact.spouseName
-                  ? `${contact.firstName} and ${contact.spouseName}`
-                  : `${contact.firstName}`,
+                name: lastName
+                  ? spouseName
+                    ? `${lastName}, ${firstName} and ${spouseName}`
+                    : `${lastName}, ${firstName}`
+                  : spouseName
+                  ? `${firstName} and ${spouseName}`
+                  : `${firstName}`,
               },
             },
             refetchQueries: [
@@ -137,7 +153,38 @@ export const CreateMultipleContacts = ({
               },
             ],
           });
-          return data?.createContact?.contact.id;
+          if (data?.createContact?.contact?.id) {
+            const people: PersonCreateInput[] = [
+              {
+                contactId: data?.createContact?.contact?.id,
+                firstName,
+                lastName,
+              },
+            ];
+            if (phone)
+              people[0].phoneNumbers = [{ number: phone, primary: true }];
+            if (email)
+              people[0].emailAddresses = [{ email: email, primary: true }];
+
+            if (spouseName) {
+              people.push({
+                contactId: data?.createContact?.contact?.id,
+                firstName: spouseName,
+                lastName,
+              });
+            }
+            await Promise.all(
+              people.map((person) =>
+                createPerson({
+                  variables: {
+                    accountListId,
+                    attributes: person,
+                  },
+                }),
+              ),
+            );
+          }
+          return data?.createContact?.contact?.id;
         }),
       );
 
@@ -380,7 +427,7 @@ export const CreateMultipleContacts = ({
                 contacts.filter((c) => c.firstName).length <= 0
               }
             >
-              {creating || updating ? (
+              {creating || updating || creatingPerson ? (
                 <CircularProgress color="secondary" size={20} />
               ) : (
                 t('Save')
