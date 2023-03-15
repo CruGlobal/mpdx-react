@@ -30,33 +30,34 @@ export const parsePlace = (
   };
 
   place.address_components?.forEach((addressComponent) => {
+    const { long_name: longName, short_name: shortName } = addressComponent;
     switch (addressComponent.types[0]) {
       case 'subpremise':
-        updatedFields.street += addressComponent.long_name + '/';
+        updatedFields.street += longName + '/';
         break;
       case 'street_number':
-        updatedFields.street += addressComponent.long_name + ' ';
+        updatedFields.street += longName + ' ';
         break;
       case 'route':
-        updatedFields.street += addressComponent.long_name;
+        updatedFields.street += longName;
         break;
       case 'administrative_area_level_1':
-        updatedFields.state = addressComponent.short_name;
+        updatedFields.state = shortName;
         break;
       case 'administrative_area_level_2':
-        updatedFields.region = addressComponent.long_name;
+        updatedFields.region = longName;
         break;
       case 'administrative_area_level_3':
-        updatedFields.metroArea = addressComponent.long_name;
+        updatedFields.metroArea = longName;
         break;
       case 'country':
-        updatedFields.country = addressComponent.long_name;
+        updatedFields.country = longName;
         break;
       case 'postal_code':
-        updatedFields.postalCode = addressComponent.long_name;
+        updatedFields.postalCode = longName;
         break;
       case 'locality':
-        updatedFields.city = addressComponent.long_name;
+        updatedFields.city = longName;
         break;
     }
   });
