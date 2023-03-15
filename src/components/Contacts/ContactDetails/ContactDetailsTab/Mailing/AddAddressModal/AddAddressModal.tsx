@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import {
   Box,
@@ -31,6 +30,8 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useUpdateCache } from '../useUpdateCache';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
+import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
+import { createAddressSchema } from './createAddressSchema';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -77,21 +78,6 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
   const { update } = useUpdateCache(contactId);
-
-  const contactAddressSchema: yup.SchemaOf<Omit<AddressCreateInput, 'id'>> =
-    yup.object({
-      contactId: yup.string().required(),
-      city: yup.string().nullable(),
-      country: yup.string().nullable(),
-      historic: yup.boolean().nullable(),
-      location: yup.string().nullable(),
-      metroArea: yup.string().nullable(),
-      postalCode: yup.string().nullable(),
-      region: yup.string().nullable(),
-      state: yup.string().nullable(),
-      street: yup.string().required(),
-      primaryMailingAddress: yup.boolean().nullable(false),
-    });
 
   const onSubmit = async ({
     primaryMailingAddress,
@@ -164,7 +150,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           street: '',
           primaryMailingAddress: true,
         }}
-        validationSchema={contactAddressSchema}
+        validationSchema={createAddressSchema}
         onSubmit={onSubmit}
       >
         {({
@@ -177,12 +163,10 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
             postalCode,
             region,
             state,
-            street,
             primaryMailingAddress,
           },
           handleChange,
           handleSubmit,
-          setFieldValue,
           isSubmitting,
           isValid,
         }): ReactElement => (
@@ -192,14 +176,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
                     <Grid item sm={12} md={9}>
-                      <TextField
-                        label={t('Street')}
-                        value={street}
-                        required
-                        onChange={handleChange('street')}
-                        inputProps={{ 'aria-label': t('Street') }}
-                        fullWidth
-                      />
+                      <StreetAutocomplete />
                     </Grid>
                     <Grid item xs={12} md={3}>
                       <FormControl fullWidth>
@@ -207,12 +184,11 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                           {t('Location')}
                         </InputLabel>
                         <Select
+                          name="location"
                           label={t('Location')}
                           labelId="location-select-label"
                           value={location}
-                          onChange={(e) =>
-                            setFieldValue('location', e.target.value)
-                          }
+                          onChange={handleChange}
                           fullWidth
                         >
                           {Object.values(AddressLocationEnum).map((value) => (
@@ -233,27 +209,30 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                   <Grid container spacing={1}>
                     <Grid item sm={12} md={6}>
                       <TextField
+                        name="city"
                         label={t('City')}
                         value={city}
-                        onChange={handleChange('city')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('City') }}
                         fullWidth
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
                       <TextField
+                        name="state"
                         label={t('State')}
                         value={state}
-                        onChange={handleChange('state')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('State') }}
                         fullWidth
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
                       <TextField
+                        name="postalCode"
                         label={t('Zip')}
                         value={postalCode}
-                        onChange={handleChange('postalCode')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('Zip') }}
                         fullWidth
                       />
@@ -264,27 +243,30 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                   <Grid container spacing={1}>
                     <Grid item sm={12} md={6}>
                       <TextField
+                        name="country"
                         label={t('Country')}
                         value={country}
-                        onChange={handleChange('country')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('Country') }}
                         fullWidth
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
                       <TextField
+                        name="region"
                         label={t('Region')}
                         value={region}
-                        onChange={handleChange('region')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('Region') }}
                         fullWidth
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
                       <TextField
+                        name="metroArea"
                         label={t('Metro')}
                         value={metroArea}
-                        onChange={handleChange('metroArea')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('Metro') }}
                         fullWidth
                       />
@@ -295,13 +277,9 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                   <FormControlLabel
                     control={
                       <Checkbox
+                        name="primaryMailingAddress"
                         checked={primaryMailingAddress}
-                        onChange={() =>
-                          setFieldValue(
-                            'primaryMailingAddress',
-                            !primaryMailingAddress,
-                          )
-                        }
+                        onChange={handleChange}
                       />
                     }
                     label={t('Primary')}
@@ -311,8 +289,9 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                   <FormControlLabel
                     control={
                       <Checkbox
+                        name="historic"
                         checked={Boolean(historic)}
-                        onChange={() => setFieldValue('historic', !historic)}
+                        onChange={handleChange}
                         color="secondary"
                       />
                     }

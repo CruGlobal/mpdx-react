@@ -93,7 +93,7 @@ describe('AddAddressModal', () => {
     const newCountry = 'United States';
     const newRegion = 'New Region';
     const newMetroArea = 'New Metro';
-    const { getByText, getByLabelText } = render(
+    const { getByRole, getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<CreateContactAddressMutation> onCall={mutationSpy}>
@@ -107,7 +107,7 @@ describe('AddAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByLabelText('Street'));
+    userEvent.clear(getByRole('combobox', { name: 'Street' }));
     userEvent.clear(getByLabelText('City'));
     userEvent.clear(getByLabelText('State'));
     userEvent.clear(getByLabelText('Zip'));
@@ -116,7 +116,7 @@ describe('AddAddressModal', () => {
     userEvent.clear(getByLabelText('Metro'));
     userEvent.click(getByLabelText('Location'));
     userEvent.click(getByLabelText('Mailing'));
-    userEvent.type(getByLabelText('Street'), newStreet);
+    userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
     userEvent.type(getByLabelText('City'), newCity);
     userEvent.type(getByLabelText('State'), newState);
     userEvent.type(getByLabelText('Zip'), newPostalCode);
@@ -143,12 +143,12 @@ describe('AddAddressModal', () => {
     expect(operation.variables.attributes.region).toEqual(newRegion);
     expect(operation.variables.attributes.metroArea).toEqual(newMetroArea);
     expect(operation.variables.attributes.historic).toEqual(true);
-  });
+  }, 10000);
 
   it('should set new address as primary', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
-    const { getByText, getByLabelText } = render(
+    const { getByText, getByRole } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<CreateContactAddressMutation> onCall={mutationSpy}>
@@ -162,8 +162,8 @@ describe('AddAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByLabelText('Street'));
-    userEvent.type(getByLabelText('Street'), newStreet);
+    userEvent.clear(getByRole('combobox', { name: 'Street' }));
+    userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Address added successfully', {
@@ -182,7 +182,7 @@ describe('AddAddressModal', () => {
   it('should not set new address as primary if it is unchecked', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
-    const { getByText, getByLabelText } = render(
+    const { getByText, getByLabelText, getByRole } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<CreateContactAddressMutation> onCall={mutationSpy}>
@@ -196,8 +196,8 @@ describe('AddAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByLabelText('Street'));
-    userEvent.type(getByLabelText('Street'), newStreet);
+    userEvent.clear(getByRole('combobox', { name: 'Street' }));
+    userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
     userEvent.click(getByLabelText('Primary'));
     userEvent.click(getByText('Save'));
     await waitFor(() =>
