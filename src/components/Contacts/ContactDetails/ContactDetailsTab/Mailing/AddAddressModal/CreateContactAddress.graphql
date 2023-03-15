@@ -18,6 +18,7 @@ mutation CreateContactAddress(
       source
       state
       street
+      updatedAt
     }
   }
 }
