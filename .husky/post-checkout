@@ -1,0 +1,8 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+previous_hash=`cat graphql-digest.txt`
+current_hash=`cat $(find . -type f -name "*.graphql") | openssl dgst -sha256`
+if [ $previous_hash != $current_hash ]; then
+  # Only update the hash if the gql codegen succeeded
+  yarn gql && yarn gql:server && echo $current_hash > graphql-digest.txt
+fi
