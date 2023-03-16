@@ -17,14 +17,12 @@ import { useSnackbar } from 'notistack';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import {
-  useCreateContactMutation,
-  useCreatePersonMutation,
-} from '../CreateContact/CreateContact.generated';
+import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 import {
   ContactReferralTabDocument,
   useUpdateContactReferralMutation,
 } from 'src/components/Contacts/ContactDetails/ContactReferralTab/ContactReferralTab.generated';
+import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   SubmitButton,

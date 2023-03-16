@@ -18,14 +18,12 @@ import {
   ContactCreateInput,
   PersonCreateInput,
 } from '../../../../../../../../../graphql/types.generated';
-import {
-  useCreateContactMutation,
-  useCreatePersonMutation,
-} from './CreateContact.generated';
+import { useCreateContactMutation } from './CreateContact.generated';
 import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 
 interface Props {
   accountListId: string;
