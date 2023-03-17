@@ -342,7 +342,7 @@ const TasksPage: React.FC = () => {
         },
       ],
     });
-    enqueueSnackbar(t('Contact(s) deleted successfully'), {
+    enqueueSnackbar(t('Task(s) deleted successfully'), {
       variant: 'success',
     });
     setDeleteTasksModalOpen(false);

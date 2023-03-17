@@ -406,12 +406,10 @@ describe('DonationsReportTable', () => {
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<GetDonationsTableQuery>
           mocks={{
-            GetAccountListCurrency: {
-              ...mocks.GetAccountListCurrency,
-            },
+            GetAccountListCurrency: mocks.GetAccountListCurrency,
             GetDonationsTable: {
               donations: {
-                nodes: [...mocks.GetDonationsTable.donations.nodes],
+                nodes: mocks.GetDonationsTable.donations.nodes,
                 pageInfo: {
                   hasNextPage: true,
                 },
