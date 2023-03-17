@@ -360,7 +360,11 @@ export const DonationsReportTable: React.FC<Props> = ({
       >
         <Typography variant="h6">{title}</Typography>
         {data?.donations.pageInfo.hasNextPage && (
-          <LoadingProgressBar variant="determinate" value={loadingProgress} />
+          <LoadingProgressBar
+            data-testid="nextPageProcessBar"
+            variant="determinate"
+            value={loadingProgress}
+          />
         )}
         <Button
           style={{ marginLeft: 'auto', maxHeight: 35 }}

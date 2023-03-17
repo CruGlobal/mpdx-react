@@ -386,4 +386,47 @@ describe('DonationsReportTable', () => {
       });
     });
   });
+
+  it('Ensure process bar loads when loading next page', async () => {
+    const DonationsReportTableWrapper: React.FC = () => {
+      const [time, setTime] = useState(DateTime.now());
+
+      return (
+        <DonationsReportTable
+          accountListId={'abc'}
+          onSelectContact={onSelectContact}
+          time={time}
+          setTime={setTime}
+        />
+      );
+    };
+
+    const mutationSpy = jest.fn();
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery>
+          mocks={{
+            GetAccountListCurrency: {
+              ...mocks.GetAccountListCurrency,
+            },
+            GetDonationsTable: {
+              donations: {
+                nodes: [...mocks.GetDonationsTable.donations.nodes],
+                pageInfo: {
+                  hasNextPage: true,
+                },
+              },
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <DonationsReportTableWrapper />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(getByTestId('nextPageProcessBar')).toBeInTheDocument(),
+    );
+  });
 });
