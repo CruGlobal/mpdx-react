@@ -58,6 +58,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                 <TableCell>{t('Date')}</TableCell>
                 <TableCell>{t('Amount')}</TableCell>
                 <TableCell>{t('Converted Amount')}</TableCell>
+                <TableCell>{t('Method')}</TableCell>
               </TableRow>
             </TableHead>
             {data?.contact.donations.nodes ? (
@@ -78,6 +79,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                       donation.amount.convertedCurrency,
                     )}
                   </TableCell>
+                  <TableCell>{donation.paymentMethod}</TableCell>
                 </TableRow>
               ))
             ) : (
