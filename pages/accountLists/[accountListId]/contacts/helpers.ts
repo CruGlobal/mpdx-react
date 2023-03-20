@@ -76,7 +76,7 @@ export const coordinatesFromContacts = (
       country: address.country,
       postal: address.postalCode,
       source: address.source,
-      date: `(${DateTime.fromISO(address.updatedAt).toLocaleString(
+      date: `(${DateTime.fromISO(address.createdAt).toLocaleString(
         DateTime.DATE_SHORT,
       )})`,
     };

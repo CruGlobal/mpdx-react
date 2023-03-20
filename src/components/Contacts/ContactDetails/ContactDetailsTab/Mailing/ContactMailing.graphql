@@ -15,7 +15,7 @@ fragment ContactMailing on Contact {
       source
       state
       street
-      updatedAt
+      createdAt
     }
   }
   greeting

@@ -187,7 +187,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                           state: '',
                           postalCode: '',
                           source: '',
-                          updatedAt: '',
+                          createdAt: '',
                         }
                       }
                       updateFunction={updateContact}

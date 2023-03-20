@@ -1045,7 +1045,7 @@ describe('PersonModal', () => {
                 historic: false,
                 region: 'some region',
                 source: 'some source',
-                updatedAt: '2023-01-01T00:00:00.000Z',
+                createdAt: '2023-01-01T00:00:00.000Z',
               },
             ],
           },
