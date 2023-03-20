@@ -30,6 +30,13 @@ const totals = {
   year: 24613.04,
 };
 
+const noTotals = {
+  average: 0,
+  minimum: 0,
+  months: [],
+  year: 0,
+};
+
 describe('FourteenMonthReportTableHead', () => {
   it('default', async () => {
     const { queryByTestId } = render(
@@ -64,5 +71,21 @@ describe('FourteenMonthReportTableHead', () => {
 
     userEvent.click(getByText('Total'));
     expect(onRequestSort).toHaveBeenCalled();
+  });
+  it('Confirm months headers are not showing with no data', async () => {
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <FourteenMonthReportTableHead
+          isExpanded={true}
+          totals={noTotals}
+          salaryCurrency={salaryCurrency}
+          order={order}
+          orderBy={orderBy}
+          onRequestSort={onRequestSort}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(queryByTestId('tableHeaderCell')).not.toBeInTheDocument();
   });
 });
