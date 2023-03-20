@@ -35,7 +35,7 @@ const data: ContactMailingFragment = {
         source: 'MPDX',
         state: 'FL',
         street: '100 Lake Hart Dr',
-        updatedAt: new Date(2023, 0, 1).toISOString(),
+        createdAt: new Date(2023, 0, 1).toISOString(),
       },
     ],
   },

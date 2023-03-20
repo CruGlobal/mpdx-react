@@ -28,7 +28,7 @@ fragment ContactPrimaryAddress on Address {
   state
   postalCode
   source
-  updatedAt
+  createdAt
 }
 
 fragment ContactPrimaryPerson on Person {
