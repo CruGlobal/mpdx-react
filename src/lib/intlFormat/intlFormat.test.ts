@@ -1,6 +1,10 @@
 import { DateTime } from 'luxon';
 
-import { dateFormat, monthYearFormat } from './intlFormat';
+import {
+  dateFormat,
+  getDateFormatPattern,
+  monthYearFormat,
+} from './intlFormat';
 import {
   numberFormat,
   percentageFormat,
@@ -14,6 +18,16 @@ describe('intlFormat', () => {
   beforeEach(() => {
     languageMock = jest.spyOn(window.navigator, 'language', 'get');
     languageMock.mockReturnValue(undefined);
+  });
+
+  describe('getDateFormatPattern', () => {
+    it('is M/dd/yyyy for English', () => {
+      expect(getDateFormatPattern('en-US')).toBe('M/dd/yyyy');
+    });
+
+    it('is dd/M/yyyy for Spanish', () => {
+      expect(getDateFormatPattern('es')).toBe('dd/M/yyyy');
+    });
   });
 
   describe('numberFormat', () => {

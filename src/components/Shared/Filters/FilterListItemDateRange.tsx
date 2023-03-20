@@ -8,6 +8,7 @@ import {
   DaterangeFilter,
   DateRangeInput,
 } from '../../../../graphql/types.generated';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 interface Props {
   filter: DaterangeFilter;
@@ -58,7 +59,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          inputFormat="MM/dd/yyyy"
+          inputFormat={getDateFormatPattern()}
         />
         <MobileDatePicker
           renderInput={(params) => (
@@ -79,7 +80,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          inputFormat="MM/dd/yyyy"
+          inputFormat={getDateFormatPattern()}
         />
       </ListItem>
     </>

@@ -25,6 +25,7 @@ import {
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
 import { NewSocial } from '../PersonModal';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 const DeceasedLabel = styled(FormControlLabel)(() => ({
   margin: 'none',
@@ -144,7 +145,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 )
               : null
           }
-          inputFormat="MM/dd/yyyy"
+          inputFormat={getDateFormatPattern()}
           label={t('Anniversary')}
         />
       </ModalSectionContainer>

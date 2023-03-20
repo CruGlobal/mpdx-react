@@ -12,6 +12,7 @@ import {
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
 import { NewSocial } from '../PersonModal';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 interface PersonBirthdayProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
@@ -51,7 +52,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
             ? new Date(birthdayYear ?? 1900, birthdayMonth - 1, birthdayDay)
             : null
         }
-        inputFormat="MM/dd/yyyy"
+        inputFormat={getDateFormatPattern()}
         label={t('Birthday')}
       />
     </ModalSectionContainer>

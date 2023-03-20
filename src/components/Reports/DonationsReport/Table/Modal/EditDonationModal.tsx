@@ -30,6 +30,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
 import * as yup from 'yup';
 import { Donation } from '../DonationsReportTable';
@@ -257,7 +258,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                           </InputAdornment>
                         ),
                       }}
-                      inputFormat="MMM dd, yyyy"
+                      inputFormat={getDateFormatPattern()}
                       closeOnSelect
                       label={t('Date')}
                       value={date}

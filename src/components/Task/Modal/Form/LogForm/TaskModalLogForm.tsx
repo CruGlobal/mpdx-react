@@ -65,6 +65,7 @@ import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { TaskLocation } from '../TaskModalForm';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import { dispatch } from 'src/lib/analytics';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 const LoadingIndicator = styled(CircularProgress)(() => ({
   display: 'flex',
@@ -507,7 +508,7 @@ const TaskModalLogForm = ({
                             </InputAdornment>
                           ),
                         }}
-                        inputFormat="MMM dd, yyyy"
+                        inputFormat={getDateFormatPattern()}
                         closeOnSelect
                         label={t('Completed Date')}
                         value={completedAt}

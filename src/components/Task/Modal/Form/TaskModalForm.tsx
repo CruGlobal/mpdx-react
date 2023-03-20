@@ -64,6 +64,7 @@ import {
 } from 'src/utils/functions/getLocalizedNotificationStrings';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 export interface TaskLocation {
   location?: string | null | undefined;
@@ -426,7 +427,7 @@ const TaskModalForm = ({
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
-                          inputFormat="MMM dd, yyyy"
+                          inputFormat={getDateFormatPattern()}
                           closeOnSelect
                           label={t('Due Date')}
                           value={startAt}
@@ -472,7 +473,7 @@ const TaskModalForm = ({
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
-                          inputFormat="MMM dd, yyyy"
+                          inputFormat={getDateFormatPattern()}
                           closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}

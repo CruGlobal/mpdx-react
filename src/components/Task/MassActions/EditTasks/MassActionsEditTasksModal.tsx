@@ -34,6 +34,7 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];
@@ -254,7 +255,7 @@ export const MassActionsEditTasksModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      inputFormat="MMM dd, yyyy"
+                      inputFormat={getDateFormatPattern()}
                       closeOnSelect
                       label={t('Due Date')}
                       value={startAt}

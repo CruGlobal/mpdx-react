@@ -33,6 +33,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 interface Props {
   accountListId: string;
@@ -242,7 +243,7 @@ const LogNewsletter = ({
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        inputFormat="MM/dd/yyyy"
+                        inputFormat={getDateFormatPattern()}
                         closeOnSelect
                         label={t('Completed Date')}
                         InputProps={{
