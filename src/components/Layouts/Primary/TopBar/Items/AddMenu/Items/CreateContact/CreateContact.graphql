@@ -7,13 +7,3 @@ mutation CreateContact($accountListId: ID!, $attributes: ContactCreateInput!) {
     }
   }
 }
-
-mutation CreatePerson($accountListId: ID!, $attributes: PersonCreateInput!) {
-  createPerson(
-    input: { accountListId: $accountListId, attributes: $attributes }
-  ) {
-    person {
-      ...ContactPerson
-    }
-  }
-}

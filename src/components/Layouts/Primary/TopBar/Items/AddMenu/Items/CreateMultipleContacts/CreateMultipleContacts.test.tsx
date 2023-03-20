@@ -6,10 +6,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../../../../theme';
-import {
-  CreateContactMutation,
-  CreatePersonMutation,
-} from '../CreateContact/CreateContact.generated';
+import { CreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
+import { CreateContactMutation } from '../CreateContact/CreateContact.generated';
 import { CreateMultipleContacts } from './CreateMultipleContacts';
 
 const accountListId = '111';
