@@ -63,6 +63,22 @@ const CheckboxLabel = styled(FormControlLabel)({
   margin: 'none',
 });
 
+const TextFieldInteractive = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'isDisabled',
+})<{ isDisabled?: boolean }>(({ isDisabled }) => ({
+  '& input.MuiInputBase-input, & fieldset': {
+    opacity: isDisabled ? '0.4' : '1',
+  },
+}));
+
+const SelectInteractive = styled(Select, {
+  shouldForwardProp: (prop) => prop !== 'isDisabled',
+})<{ isDisabled?: boolean }>(({ isDisabled }) => ({
+  '& MuiSelect-select, & fieldset': {
+    opacity: isDisabled ? '0.4' : '1',
+  },
+}));
+
 interface EditPartnershipInfoModalProps {
   contact: ContactDonorAccountsFragment;
   handleClose: () => void;
@@ -112,7 +128,10 @@ export const EditPartnershipInfoModal: React.FC<
     >
   > = yup.object({
     id: yup.string().required(),
-    status: yup.mixed<StatusEnum>().oneOf(Object.values(StatusEnum)).nullable(),
+    status: yup
+      .mixed<StatusEnum | null>()
+      .oneOf([...Object.values(StatusEnum), null])
+      .nullable(),
     pledgeAmount: yup.number().moreThan(-1).nullable(),
     pledgeStartDate: yup.string().nullable(),
     pledgeReceived: yup.boolean().default(false).nullable(),
@@ -268,12 +287,10 @@ export const EditPartnershipInfoModal: React.FC<
     status: StatusEnum,
     setFieldValue: (name: string, value: StatusEnum | number | null) => void,
   ) => {
+    setFieldValue('status', status);
     if (status !== StatusEnum.PartnerFinancial) {
-      setFieldValue('status', status);
       setFieldValue('pledgeAmount', 0);
       setFieldValue('pledgeFrequency', null);
-    } else {
-      setFieldValue('status', status);
     }
   };
 
@@ -294,7 +311,7 @@ export const EditPartnershipInfoModal: React.FC<
           pledgeStartDate: contact.pledgeStartDate,
           nextAsk: contact.nextAsk,
           noAppeals: contact.noAppeals,
-          sendNewsletter: contact.sendNewsletter,
+          sendNewsletter: contact.sendNewsletter ?? SendNewsletterEnum.None,
           contactReferralsToMe: contactReferrals,
         }}
         validationSchema={contactPartnershipSchema}
@@ -361,8 +378,9 @@ export const EditPartnershipInfoModal: React.FC<
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <TextField
+                <TextFieldInteractive
                   label={t('Amount')}
+                  isDisabled={status !== StatusEnum.PartnerFinancial}
                   value={pledgeAmount}
                   type="number"
                   disabled={status !== StatusEnum.PartnerFinancial}
@@ -436,10 +454,11 @@ export const EditPartnershipInfoModal: React.FC<
                   <InputLabel id="frequency-select-label">
                     {t('Frequency')}
                   </InputLabel>
-                  <Select
+                  <SelectInteractive
                     label={t('Frequency')}
                     labelId="frequency-select-label"
                     value={pledgeFrequency ?? ''}
+                    isDisabled={status !== StatusEnum.PartnerFinancial}
                     disabled={status !== StatusEnum.PartnerFinancial}
                     aria-readonly={status !== StatusEnum.PartnerFinancial}
                     onChange={(e) =>
@@ -470,7 +489,7 @@ export const EditPartnershipInfoModal: React.FC<
                         {getLocalizedPledgeFrequency(t, value)}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SelectInteractive>
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
