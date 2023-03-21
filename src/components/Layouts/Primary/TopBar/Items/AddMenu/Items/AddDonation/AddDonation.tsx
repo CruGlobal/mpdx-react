@@ -33,6 +33,7 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 interface AddDonationProps {
   accountListId: string;
@@ -320,11 +321,9 @@ export const AddDonation = ({
                               !date ? null : setFieldValue('donationDate', date)
                             }
                             value={
-                              field.value
-                                ? DateTime.fromISO(field.value).toLocaleString()
-                                : null
+                              field.value ? DateTime.fromISO(field.value) : null
                             }
-                            inputFormat="MM/dd/yyyy"
+                            inputFormat={getDateFormatPattern()}
                           />
                         </Box>
                       )}

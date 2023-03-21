@@ -34,6 +34,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 interface MassActionsEditFieldsModalProps {
   ids: string[];
@@ -290,7 +291,7 @@ export const MassActionsEditFieldsModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      inputFormat="MMM dd, yyyy"
+                      inputFormat={getDateFormatPattern()}
                       closeOnSelect
                       label={t('Next Increase Ask')}
                       value={nextAsk}

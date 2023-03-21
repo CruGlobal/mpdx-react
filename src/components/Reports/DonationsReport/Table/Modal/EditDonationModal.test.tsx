@@ -168,10 +168,10 @@ describe('DonationsReportTable', () => {
     const dateButton = getByRole('textbox', {
       name: 'Choose date, selected date is Mar 25, 2021',
     });
-    expect(dateButton).toHaveValue('Mar 25, 2021');
+    expect(dateButton).toHaveValue('3/25/2021');
     userEvent.click(dateButton);
     userEvent.click(getByRole('gridcell', { name: '27' }));
-    expect(dateButton).toHaveValue('Mar 27, 2021');
+    expect(dateButton).toHaveValue('3/27/2021');
   });
 
   it('saves edits', async () => {

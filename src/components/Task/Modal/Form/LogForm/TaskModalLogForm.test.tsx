@@ -190,7 +190,7 @@ describe('TaskModalLogForm', () => {
     );
     expect(
       getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === 'Jan 05, 2016',
+        (item) => (item as HTMLInputElement).value === '1/05/2016',
       ),
     ).toBeInTheDocument();
     userEvent.click(getByLabelText('Action'));
