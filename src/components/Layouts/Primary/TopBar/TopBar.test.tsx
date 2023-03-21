@@ -17,6 +17,21 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
+const session = {
+  expires: '2021-10-28T14:48:20.897Z',
+  user: {
+    email: 'Chair Library Bed',
+    image: null,
+    name: 'Dung Tapestry',
+    token: 'superLongJwtString',
+  },
+};
+
+jest.mock('next-auth/react', () => {
+  return {
+    useSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
+  };
+});
 
 const mockEnqueue = jest.fn();
 

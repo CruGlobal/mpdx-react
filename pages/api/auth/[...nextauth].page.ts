@@ -14,6 +14,7 @@ import {
   ApiOauthSignInMutation,
   ApiOauthSignInMutationVariables,
 } from './apiOauthSignIn';
+import { setUserInfo } from './setUserInfo';
 
 const rollbar = new Rollbar({
   accessToken: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
@@ -26,10 +27,16 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       apiToken?: string;
+      userID?: string;
+      impersonating?: boolean;
+      impersonatorApiToken?: string;
     };
   }
   interface User {
     apiToken?: string;
+    userID?: string;
+    impersonating?: boolean;
+    impersonatorApiToken?: string;
   }
 }
 
@@ -120,96 +127,128 @@ if (AUTH_PROVIDER === 'API_OAUTH') {
   });
 }
 
-const options: NextAuthOptions = {
-  providers: providersArray,
-  secret: process.env.JWT_SECRET,
-  callbacks: {
-    signIn: async ({ user, account }) => {
-      const access_token = account?.access_token;
+const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+  const options: NextAuthOptions = {
+    providers: providersArray,
+    secret: process.env.JWT_SECRET,
+    callbacks: {
+      signIn: async ({ user, account }) => {
+        const access_token = account?.access_token;
 
-      if (!access_token) {
-        throw new Error(
-          `${account?.provider} sign in failed to return an access_token`,
-        );
-      }
+        if (!access_token) {
+          throw new Error(
+            `${account?.provider} sign in failed to return an access_token`,
+          );
+        }
 
-      if (account?.provider === 'apioauth') {
+        const handleSettingUserInfo = async (access_token, userId) => {
+          const { user: userInfo, cookies } = await setUserInfo(
+            access_token,
+            userId,
+            req.headers?.cookie,
+          );
+          user.apiToken = userInfo?.apiToken;
+          user.userID = userInfo?.userID;
+          user.impersonating = userInfo?.impersonating;
+          user.impersonatorApiToken = userInfo?.impersonatorApiToken;
+          if (cookies) res.setHeader('Set-Cookie', cookies);
+        };
+
+        if (account?.provider === 'apioauth') {
+          const { data } = await client.mutate<
+            ApiOauthSignInMutation,
+            ApiOauthSignInMutationVariables
+          >({
+            mutation: ApiOauthSignInDocument,
+            variables: {
+              accessToken: access_token,
+            },
+          });
+
+          if (data?.apiOauthSignIn?.token) {
+            await handleSettingUserInfo(
+              data.apiOauthSignIn.token,
+              data?.apiOauthSignIn?.user?.id,
+            );
+            return true;
+          }
+          throw new Error('ApiOauthSignIn mutation failed to return a token');
+        }
+
         const { data } = await client.mutate<
-          ApiOauthSignInMutation,
-          ApiOauthSignInMutationVariables
+          OktaSignInMutation,
+          OktaSignInMutationVariables
         >({
-          mutation: ApiOauthSignInDocument,
+          mutation: OktaSignInDocument,
           variables: {
             accessToken: access_token,
           },
         });
-
-        if (data?.apiOauthSignIn?.token) {
-          user.apiToken = data.apiOauthSignIn.token;
+        if (data?.oktaSignIn?.token) {
+          await handleSettingUserInfo(
+            data.oktaSignIn.token,
+            data?.oktaSignIn?.user?.id,
+          );
           return true;
         }
-        throw new Error('ApiOauthSignIn mutation failed to return a token');
-      }
-
-      const { data } = await client.mutate<
-        OktaSignInMutation,
-        OktaSignInMutationVariables
-      >({
-        mutation: OktaSignInDocument,
-        variables: {
-          accessToken: access_token,
-        },
-      });
-      if (data?.oktaSignIn?.token) {
-        user.apiToken = data.oktaSignIn.token;
-        return true;
-      }
-      throw new Error('oktaSignIn mutation failed to return a token');
+        throw new Error('oktaSignIn mutation failed to return a token');
+      },
+      jwt: ({ token, user }) => {
+        if (user) {
+          return {
+            ...token,
+            apiToken: user?.apiToken,
+            userID: user?.userID,
+            impersonating: user?.impersonating,
+            impersonatorApiToken: user?.impersonatorApiToken,
+          };
+        } else {
+          return token;
+        }
+      },
+      session: ({ session, token }) => {
+        const { apiToken, userID, impersonating, impersonatorApiToken } = token;
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            apiToken: apiToken as string,
+            userID: userID as string,
+            impersonating: impersonating as boolean,
+            impersonatorApiToken: impersonatorApiToken as string,
+          },
+        };
+      },
+      redirect({ url, baseUrl }) {
+        if (url.startsWith(baseUrl)) return url;
+        if (url === 'signOut' && AUTH_PROVIDER === 'OKTA') {
+          return `https://signon.okta.com/login/signout?fromURI=${encodeURIComponent(
+            process.env.OKTA_SIGNOUT_REDIRECT_URL ?? '',
+          )}`;
+        }
+        if (url.startsWith('/')) return new URL(url, baseUrl).toString();
+        return baseUrl;
+      },
     },
-    jwt: ({ token, user }) => {
-      if (user) {
-        return { ...token, apiToken: user?.apiToken };
-      } else {
-        return token;
-      }
+    logger: {
+      error(code, metadata) {
+        const errorMsg: Error | string =
+          metadata instanceof Error
+            ? metadata
+            : metadata?.error instanceof Error
+            ? metadata?.error
+            : code;
+        const customData = { code, ...metadata };
+        if (process.env.NODE_ENV === 'production') {
+          rollbar.error(errorMsg, customData);
+        } else {
+          // eslint-disable-next-line no-console
+          console.error('NextAuth error :', customData);
+        }
+      },
     },
-    session: ({ session, token }) => {
-      return {
-        ...session,
-        user: { ...session.user, apiToken: token.apiToken as string },
-      };
-    },
-    redirect({ url, baseUrl }) {
-      if (url.startsWith(baseUrl)) return url;
-      if (url === 'signOut' && AUTH_PROVIDER === 'OKTA') {
-        return `https://signon.okta.com/login/signout?fromURI=${encodeURIComponent(
-          process.env.OKTA_SIGNOUT_REDIRECT_URL ?? '',
-        )}`;
-      }
-      if (url.startsWith('/')) return new URL(url, baseUrl).toString();
-      return baseUrl;
-    },
-  },
-  logger: {
-    error(code, metadata) {
-      const errorMsg: Error | string =
-        metadata instanceof Error
-          ? metadata
-          : metadata?.error instanceof Error
-          ? metadata?.error
-          : code;
-      const customData = { code, ...metadata };
-      if (process.env.NODE_ENV === 'production') {
-        rollbar.error(errorMsg, customData);
-      } else {
-        // eslint-disable-next-line no-console
-        console.error('NextAuth error :', customData);
-      }
-    },
-  },
+  };
+  return NextAuth(req, res, options);
 };
-
-const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> =>
-  NextAuth(req, res, options);
 
 export default Auth;

@@ -88,35 +88,46 @@ export const getServerSideProps: GetServerSideProps = async ({
     };
   }
 
-  const client = await ssrClient(session?.user.apiToken);
-  const response = await client.query<
-    GetDashboardQuery,
-    GetDashboardQueryVariables
-  >({
-    query: GetDashboardDocument,
-    variables: {
-      accountListId: query?.accountListId
-        ? Array.isArray(query.accountListId)
-          ? query.accountListId[0]
-          : query.accountListId
-        : '',
-      // TODO: implement these variables in query
-      // endOfDay: DateTime.local().endOf('day').toISO(),
-      // today: DateTime.local().endOf('day').toISODate(),
-      // twoWeeksFromNow: DateTime.local()
-      //   .endOf('day')
-      //   .plus({ weeks: 2 })
-      //   .toISODate(),
-    },
-  });
+  try {
+    const client = await ssrClient(session?.user.apiToken);
+    const response = await client.query<
+      GetDashboardQuery,
+      GetDashboardQueryVariables
+    >({
+      query: GetDashboardDocument,
+      variables: {
+        accountListId: query?.accountListId
+          ? Array.isArray(query.accountListId)
+            ? query.accountListId[0]
+            : query.accountListId
+          : '',
+        // TODO: implement these variables in query
+        // endOfDay: DateTime.local().endOf('day').toISO(),
+        // today: DateTime.local().endOf('day').toISODate(),
+        // twoWeeksFromNow: DateTime.local()
+        //   .endOf('day')
+        //   .plus({ weeks: 2 })
+        //   .toISODate(),
+      },
+    });
 
-  return {
-    props: {
-      data: response.data,
-      accountListId: query?.accountListId?.toString(),
-      modal: query?.modal?.toString() ?? '',
-    },
-  };
+    if (!response) throw new Error('Undefined response');
+
+    return {
+      props: {
+        data: response?.data,
+        accountListId: query?.accountListId?.toString(),
+        modal: query?.modal?.toString() ?? '',
+      },
+    };
+  } catch {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
 };
 
 export default AccountListIdPage;

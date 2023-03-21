@@ -52,9 +52,7 @@ const LogoutPage = ({}): ReactElement => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   context.res.setHeader(
     'Set-Cookie',
-    `mpdx-handoff.logged-in=; path=/; Expires=${new Date().toUTCString()}; domain=${
-      process.env.REWRITE_DOMAIN
-    }`,
+    `mpdx-handoff.logged-in=; path=/; Max-Age=0; domain=${process.env.REWRITE_DOMAIN}`,
   );
   return {
     props: {},
