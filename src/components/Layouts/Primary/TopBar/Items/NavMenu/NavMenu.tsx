@@ -27,9 +27,7 @@ import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import HandoffLink from 'src/components/HandoffLink';
 import { ReportLink } from './ReportLink';
 
-export const filteredReportNavItems = ReportNavItems.filter(
-  (item) => item.id !== 'partnerCurrency',
-);
+export const filteredReportNavItems = ReportNavItems;
 
 const useStyles = makeStyles()(() => ({
   navListItem: {

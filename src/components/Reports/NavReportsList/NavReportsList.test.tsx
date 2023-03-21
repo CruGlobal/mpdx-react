@@ -16,7 +16,7 @@ const router = {
 
 describe('NavReportsList', () => {
   it('default', async () => {
-    const { getByText, queryAllByText } = render(
+    const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider>
@@ -31,7 +31,8 @@ describe('NavReportsList', () => {
     );
 
     expect(getByText('Donations')).toBeInTheDocument();
-    expect(queryAllByText('14 Month Report')[0]).toBeInTheDocument();
+    expect(getByText('14 Month Partner Report')).toBeInTheDocument();
+    expect(getByText('14 Month Salary Report')).toBeInTheDocument();
     expect(getByText('Designation Accounts')).toBeInTheDocument();
     expect(getByText('Responsibility Centers')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();

@@ -65,7 +65,13 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', {
         hidden: true,
-        name: '14 Month Report',
+        name: '14 Month Partner Report',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', {
+        hidden: true,
+        name: '14 Month Salary Report',
       }),
     ).toBeInTheDocument();
     expect(
@@ -123,7 +129,13 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', {
         hidden: true,
-        name: '14 Month Report',
+        name: '14 Month Partner Report',
+      }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', {
+        hidden: true,
+        name: '14 Month Salary Report',
       }),
     ).not.toBeVisible();
     expect(
