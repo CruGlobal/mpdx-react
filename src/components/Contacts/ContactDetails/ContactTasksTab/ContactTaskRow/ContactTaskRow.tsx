@@ -11,7 +11,7 @@ import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { DeleteTaskIconButton } from '../DeleteTaskIconButton/DeleteTaskIconButton';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
-import { TaskDueDate } from './TaskDueDate/TaskDueDate';
+import { TaskDate } from './TaskDate/TaskDate';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
@@ -149,13 +149,11 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
     );
   }
 
-  const { activityType, user, comments, startAt, subject } = task;
-
-  const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
-
+  const { activityType, user, comments, startAt, completedAt, subject } = task;
+  const isComplete = !!completedAt;
+  const dateToShow = completedAt ?? startAt;
+  const taskDate = (dateToShow && DateTime.fromISO(dateToShow)) || null;
   const assigneeName = user ? `${user.firstName} ${user.lastName}` : '';
-
-  const isComplete = !!task.completedAt;
 
   return (
     <>
@@ -183,8 +181,8 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
 
           <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
             <AssigneeName noWrap>{assigneeName}</AssigneeName>
-            <Box width={theme.spacing(12)}>
-              <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+            <Box width={theme.spacing(16)}>
+              <TaskDate isComplete={isComplete} taskDate={taskDate} />
             </Box>
             <TaskCommentsButton
               isComplete={isComplete}

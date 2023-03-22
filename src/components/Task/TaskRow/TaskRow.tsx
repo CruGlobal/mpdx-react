@@ -13,7 +13,7 @@ import { DateTime } from 'luxon';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { DeleteTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/DeleteTaskIconButton/DeleteTaskIconButton';
-import { TaskDueDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDueDate/TaskDueDate';
+import { TaskDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDate/TaskDate';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
@@ -114,6 +114,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
 
     starred,
     startAt,
+    completedAt,
     subject,
   } = task;
 
@@ -135,8 +136,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     });
   };
 
-  const isComplete = !!task.completedAt;
-  const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
+  const isComplete = !!completedAt;
+  const dateToShow = completedAt ?? startAt;
+  const taskDate = (dateToShow && DateTime.fromISO(dateToShow)) || null;
   const assigneeName = `${task?.user?.firstName ?? ''} ${
     task.user?.lastName ?? ''
   }`;
@@ -235,7 +237,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <Hidden xsDown>
             <ContactText>{assigneeName}</ContactText>
-            <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+            <TaskDate isComplete={isComplete} taskDate={taskDate} />
             <Box onClick={(e) => e.stopPropagation()}>
               <TaskCommentsButton
                 isComplete={isComplete}
@@ -246,7 +248,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Hidden>
           <Hidden smUp>
             <Box>
-              <TaskDueDate isComplete={isComplete} dueDate={dueDate} small />
+              <TaskDate isComplete={isComplete} taskDate={taskDate} small />
               <Box>
                 <TaskCommentsButton
                   isComplete={isComplete}

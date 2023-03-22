@@ -11,7 +11,7 @@ interface Props {
 }
 
 const StarButton = styled(IconButton)(({ theme }) => ({
-  margin: theme.spacing(1),
+  margin: `${theme.spacing(1)} 0`,
 }));
 
 export const StarTaskIconButton: React.FC<Props> = ({
