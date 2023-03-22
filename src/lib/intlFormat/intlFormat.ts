@@ -32,10 +32,13 @@ export const numberFormat = (value: number, language = getLanguage()): string =>
 export const percentageFormat = (
   value: number,
   language = getLanguage(),
-): string =>
-  new Intl.NumberFormat(language, {
+  removeSpace = false,
+): string => {
+  const percentage = new Intl.NumberFormat(language, {
     style: 'percent',
   }).format(Number.isFinite(value) ? value : 0);
+  return removeSpace ? percentage?.replace(' ', '') : percentage;
+};
 
 export const currencyFormat = (
   value: number,

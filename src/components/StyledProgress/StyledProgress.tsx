@@ -61,12 +61,12 @@ const StyledProgress = ({
       ) : (
         <>
           <Box
-            style={{ width: percentageFormat(secondary) }}
+            style={{ width: percentageFormat(secondary, undefined, true) }}
             className={[classes.progress, classes.secondary].join(' ')}
             data-testid="styledProgressSecondary"
           />
           <Box
-            style={{ width: percentageFormat(primary) }}
+            style={{ width: percentageFormat(primary, undefined, true) }}
             className={[classes.progress, classes.primary].join(' ')}
             data-testid="styledProgressPrimary"
           />
