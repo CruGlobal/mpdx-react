@@ -175,7 +175,11 @@ const TaskModalLogForm = ({
   const [showMore, setShowMore] = useState(false);
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState(
+    task?.contacts.nodes.map((contact) => contact.id) ||
+      defaultValues?.contactIds ||
+      [],
+  );
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
 
