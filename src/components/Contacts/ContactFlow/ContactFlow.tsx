@@ -81,7 +81,7 @@ export const ContactFlow: React.FC<Props> = ({
 
   const flowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
-      '{}',
+      '[]',
   );
 
   const [updateContactOther] = useUpdateContactOtherMutation();
