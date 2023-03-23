@@ -18,7 +18,7 @@ export interface DesignationAccountsResponse {
     display_name: string;
     exchange_rate: number;
     legacy_designation_number: null;
-    name: string;
+    name: string | null;
     organization_name: string;
     updated_at: string | null;
     updated_in_db_at: string | null;
@@ -53,7 +53,7 @@ const createDesignationAccount = (
   currency: account.attributes.currency,
   designationNumber: account.attributes.designation_number,
   id: account.id,
-  name: account.attributes.name,
+  name: account.attributes.name ?? '',
   convertedBalance: account.attributes.converted_balance,
 });
 
