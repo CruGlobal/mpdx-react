@@ -32,10 +32,13 @@ query GetToolNotifications($accountListId: ID!) {
   ) {
     totalCount
   }
-  mergeContacts: contactDuplicates(accountListId: $accountListId) {
+  mergeContacts: contactDuplicates(
+    accountListId: $accountListId
+    ignore: false
+  ) {
     totalCount
   }
-  mergePeople: personDuplicates(accountListId: $accountListId) {
+  mergePeople: personDuplicates(accountListId: $accountListId, ignore: false) {
     totalCount
   }
 }
