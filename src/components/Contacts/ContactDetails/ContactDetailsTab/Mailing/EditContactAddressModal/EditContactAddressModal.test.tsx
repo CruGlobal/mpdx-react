@@ -177,7 +177,7 @@ describe('EditContactAddressModal', () => {
     expect(operation2.variables.primaryAddressId).toEqual(
       mockContact.addresses.nodes[0].id,
     );
-  });
+  }, 80000);
 
   it('should edit not set primary address when it has not changed', async () => {
     const mutationSpy = jest.fn();

@@ -1,0 +1,10 @@
+query GetDefaultAccount {
+  user {
+    defaultAccountList
+  }
+  accountLists(first: 1) {
+    nodes {
+      id
+    }
+  }
+}

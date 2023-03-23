@@ -1,8 +1,10 @@
 import { createMocks } from 'node-mocks-http';
 import { getToken } from 'next-auth/jwt';
 import handoff from '../../../pages/api/handoff.page';
+import { ssrClient } from 'src/lib/client';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
+jest.mock('src/lib/client', () => ({ ssrClient: jest.fn() }));
 
 describe('/api/handoff', () => {
   it('returns 422', async () => {
@@ -13,8 +15,17 @@ describe('/api/handoff', () => {
   });
 
   describe('session', () => {
+    const defaultAccountList = 'defaultAccountList';
     beforeEach(() => {
-      (getToken as jest.Mock).mockReturnValue({ apiToken: 'accessToken' });
+      (getToken as jest.Mock).mockReturnValue({
+        apiToken: 'accessToken',
+        userID: 'sessionUserID',
+      });
+      (ssrClient as jest.Mock).mockReturnValue({
+        query: jest.fn().mockReturnValue({
+          data: { user: { defaultAccountList } },
+        }),
+      });
     });
 
     it('returns redirect', async () => {
@@ -31,6 +42,65 @@ describe('/api/handoff', () => {
       expect(res._getStatusCode()).toBe(302);
       expect(res._getRedirectUrl()).toBe(
         'https://stage.mpdx.org/handoff?accessToken=accessToken&accountListId=accountListId&userId=userId&path=path',
+      );
+    });
+
+    it('returns redirect but gets session userID', async () => {
+      const { req, res } = createMocks({
+        method: 'GET',
+        query: {
+          accountListId: 'accountListId',
+          userId: '',
+          path: 'path',
+        },
+      });
+      await handoff(req, res);
+
+      expect(res._getStatusCode()).toBe(302);
+      expect(res._getRedirectUrl()).toBe(
+        `https://stage.mpdx.org/handoff?accessToken=accessToken&accountListId=accountListId&userId=sessionUserID&path=path`,
+      );
+    });
+
+    it('returns redirect but gets defaultAccountList', async () => {
+      const { req, res } = createMocks({
+        method: 'GET',
+        query: {
+          accountListId: '',
+          userId: 'userId',
+          path: 'path',
+        },
+      });
+      await handoff(req, res);
+
+      expect(res._getStatusCode()).toBe(302);
+      expect(res._getRedirectUrl()).toBe(
+        `https://stage.mpdx.org/handoff?accessToken=accessToken&accountListId=${defaultAccountList}&userId=userId&path=path`,
+      );
+    });
+
+    it('returns redirect but gets first accountList id', async () => {
+      (ssrClient as jest.Mock).mockReturnValue({
+        query: jest.fn().mockReturnValue({
+          data: {
+            user: { defaultAccountList: '' },
+            accountLists: { nodes: [{ id: 'accountID' }] },
+          },
+        }),
+      });
+      const { req, res } = createMocks({
+        method: 'GET',
+        query: {
+          accountListId: '',
+          userId: 'userId',
+          path: 'path',
+        },
+      });
+      await handoff(req, res);
+
+      expect(res._getStatusCode()).toBe(302);
+      expect(res._getRedirectUrl()).toBe(
+        `https://stage.mpdx.org/handoff?accessToken=accessToken&accountListId=accountID&userId=userId&path=path`,
       );
     });
 
