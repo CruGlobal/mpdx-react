@@ -102,6 +102,7 @@ interface SidePanelsLayoutProps {
   rightPanel?: ReactElement;
   rightWidth?: string;
   rightOpen?: boolean;
+  headerHeight?: number;
 }
 
 export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
@@ -113,6 +114,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   rightPanel,
   rightWidth,
   rightOpen = false,
+  headerHeight,
 }) => {
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -134,7 +136,10 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
       </ExpandingContent>
       <RightPanelWrapper
         width={isMobile ? '100%' : rightWidth}
-        style={{ transform: rightOpen ? 'none' : 'translate(100%)' }}
+        style={{
+          transform: rightOpen ? 'none' : 'translate(100%)',
+          top: headerHeight,
+        }}
       >
         <ScrollBox isScrollable>{rightPanel}</ScrollBox>
       </RightPanelWrapper>

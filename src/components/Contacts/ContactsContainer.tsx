@@ -67,6 +67,7 @@ export const ContactsContainer: React.FC = ({}) => {
               }
               rightOpen={contactDetailsOpen}
               rightWidth="60%"
+              headerHeight={157}
             />
           </WhiteBackground>
         </DndProvider>

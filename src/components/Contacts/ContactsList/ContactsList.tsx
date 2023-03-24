@@ -45,7 +45,7 @@ export const ContactsList: React.FC = () => {
       loading={loading}
       data={data?.contacts?.nodes ?? []}
       totalCount={data?.contacts?.totalCount ?? 0}
-      style={{ height: 'calc(100vh - 160px)' }}
+      style={{ height: 'calc(100vh - 157px)' }}
       itemContent={(index, contact) => (
         <ContactRow
           key={contact.id}
