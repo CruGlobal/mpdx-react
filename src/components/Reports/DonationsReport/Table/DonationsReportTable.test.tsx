@@ -215,6 +215,67 @@ describe('DonationsReportTable', () => {
     expect(onSelectContact).toHaveBeenCalledWith('contact1');
   });
 
+  it('filters report by designation account', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <DonationsReportTable
+            accountListId={'abc'}
+            designationAccounts={['account-1']}
+            onSelectContact={onSelectContact}
+            time={time}
+            setTime={setTime}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+        operation: {
+          operationName: 'GetDonationsTable',
+          variables: {
+            designationAccountIds: ['account-1'],
+          },
+        },
+      }),
+    );
+  });
+
+  it('does not filter report by designation account', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<GetDonationsTableQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <DonationsReportTable
+            accountListId={'abc'}
+            onSelectContact={onSelectContact}
+            time={time}
+            setTime={setTime}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+        operation: {
+          operationName: 'GetDonationsTable',
+          variables: {
+            designationAccountIds: null,
+          },
+        },
+      }),
+    );
+  });
+
   it('is not clickable when contact is missing', async () => {
     const mocks = {
       GetDonationsTable: {

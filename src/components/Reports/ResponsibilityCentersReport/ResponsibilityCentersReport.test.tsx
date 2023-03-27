@@ -24,7 +24,7 @@ const mocks = {
     financialAccounts: {
       nodes: [
         {
-          active: false,
+          active: true,
           balance: {
             conversionDate: '2/2/2021',
             convertedAmount: 3500,
@@ -149,5 +149,66 @@ describe('ResponsibilityCentersReport', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByTestId('EmptyReport')).toBeInTheDocument();
+  });
+
+  it('filters report by designation account', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<FinancialAccountsQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <ResponsibilityCentersReport
+            accountListId={accountListId}
+            designationAccounts={['account-1']}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+        operation: {
+          operationName: 'FinancialAccounts',
+          variables: {
+            designationAccountIds: ['account-1'],
+          },
+        },
+      }),
+    );
+  });
+
+  it('does not filter report by designation account', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<FinancialAccountsQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <ResponsibilityCentersReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+        operation: {
+          operationName: 'FinancialAccounts',
+          variables: {
+            designationAccountIds: null,
+          },
+        },
+      }),
+    );
   });
 });

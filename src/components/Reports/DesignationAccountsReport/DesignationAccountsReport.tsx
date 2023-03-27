@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, CircularProgress, Divider } from '@mui/material';
+import { Box, CircularProgress, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
@@ -72,20 +72,21 @@ export const DesignationAccountsReport: React.FC<Props> = ({
       );
   }, [data?.designationAccounts]);
 
+  const balanceNode =
+    totalBalance && totalBalance > 0 ? (
+      <Typography variant="h6">{`${t('Balance')}: ${currencyFormat(
+        totalBalance,
+        data?.designationAccounts[0].designationAccounts[0].currency,
+      )}`}</Typography>
+    ) : undefined;
+
   return (
     <Box>
       <Header
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={title}
-        totalBalance={
-          totalBalance && totalBalance > 0
-            ? currencyFormat(
-                totalBalance,
-                data?.designationAccounts[0].designationAccounts[0].currency,
-              )
-            : undefined
-        }
+        rightExtra={balanceNode}
       />
       {loading ? (
         <Box
@@ -114,7 +115,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
               designationAccountGroup.designationAccounts.map((account) => ({
                 active: account.active,
                 balance: account.convertedBalance,
-                code: account.designationNumber,
+                code: account.designationNumber ?? undefined,
                 currency: account.currency,
                 id: account.id,
                 lastSyncDate: account.balanceUpdatedAt,

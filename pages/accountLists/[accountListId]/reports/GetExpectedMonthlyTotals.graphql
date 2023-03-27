@@ -1,5 +1,11 @@
-query GetExpectedMonthlyTotals($accountListId: ID!) {
-  expectedMonthlyTotalReport(accountListId: $accountListId) {
+query GetExpectedMonthlyTotals(
+  $accountListId: ID!
+  $designationAccountIds: [ID!]
+) {
+  expectedMonthlyTotalReport(
+    accountListId: $accountListId
+    designationAccountId: $designationAccountIds
+  ) {
     received {
       donations {
         ...ExpectedDonationRow

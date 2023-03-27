@@ -21,6 +21,7 @@ const PartnerCurrencyReportPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
   useEffect(() => {
     suggestArticles('HS_REPORTS_SUGGESTIONS');
@@ -46,6 +47,8 @@ const PartnerCurrencyReportPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="partnerCurrency"
                 onClose={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
               />
             }
             leftOpen={isNavListOpen}
@@ -53,6 +56,7 @@ const PartnerCurrencyReportPage: React.FC = () => {
             mainContent={
               <FourteenMonthReport
                 accountListId={accountListId}
+                designationAccounts={designationAccounts}
                 currencyType={FourteenMonthReportCurrencyType.Donor}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}

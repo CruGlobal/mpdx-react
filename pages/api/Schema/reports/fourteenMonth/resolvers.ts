@@ -4,11 +4,12 @@ const FourteenMonthReportResolvers: Resolvers = {
   Query: {
     fourteenMonthReport: (
       _source,
-      { accountListId, currencyType },
+      { accountListId, designationAccountId, currencyType },
       { dataSources },
     ) => {
       return dataSources.mpdxRestApi.getFourteenMonthReport(
         accountListId,
+        designationAccountId,
         currencyType,
       );
     },

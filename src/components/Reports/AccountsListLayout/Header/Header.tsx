@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -9,17 +9,13 @@ interface AccountsListHeaderProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
-  totalBalance?: string | undefined;
+  rightExtra?: ReactNode;
 }
 
 const StickyHeader = styled(Box)(({}) => ({
   position: 'sticky',
   top: 0,
   height: 96,
-}));
-
-const HeaderTitle = styled(Typography)(({}) => ({
-  lineHeight: 1.1,
 }));
 
 const NavListButton = styled(IconButton, {
@@ -41,26 +37,27 @@ const NavListIcon = styled(FilterList)(({ theme }) => ({
 
 export const AccountsListHeader: FC<AccountsListHeaderProps> = ({
   title,
+  rightExtra,
   isNavListOpen,
   onNavListToggle,
-  totalBalance,
 }) => {
   const { t } = useTranslation();
 
   return (
     <StickyHeader p={2} test-dataid="AccountsListHeader">
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Box display="flex" alignItems="center">
-          <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
-            <NavListIcon titleAccess={t('Toggle Filter Panel')} />
-          </NavListButton>
-          <HeaderTitle variant="h5">{title}</HeaderTitle>
-        </Box>
-        {totalBalance && (
-          <HeaderTitle variant="h6">{`${t(
-            'Balance',
-          )}: ${totalBalance}`}</HeaderTitle>
-        )}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ lineHeight: 1.1 }}
+      >
+        <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
+          <NavListIcon titleAccess={t('Toggle Filter Panel')} />
+        </NavListButton>
+        <Typography variant="h5" sx={{ flex: 1 }}>
+          {title}
+        </Typography>
+        {rightExtra}
       </Box>
     </StickyHeader>
   );

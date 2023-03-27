@@ -1,5 +1,8 @@
 extend type Query {
-  expectedMonthlyTotalReport(accountListId: ID!): ExpectedMonthlyTotalReport!
+  expectedMonthlyTotalReport(
+    accountListId: ID!
+    designationAccountId: [ID!]
+  ): ExpectedMonthlyTotalReport!
 }
 
 type ExpectedMonthlyTotalReport {

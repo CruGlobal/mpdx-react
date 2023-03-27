@@ -24,6 +24,7 @@ const DonationsReportPage: React.FC = () => {
   const router = useRouter();
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
+  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -58,6 +59,8 @@ const DonationsReportPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="donations"
                 onClose={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
               />
             }
             leftOpen={isNavListOpen}
@@ -65,6 +68,7 @@ const DonationsReportPage: React.FC = () => {
             mainContent={
               <DonationsReport
                 accountListId={accountListId}
+                designationAccounts={designationAccounts}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 onSelectContact={handleSelectContact}

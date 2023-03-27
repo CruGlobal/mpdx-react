@@ -13,7 +13,7 @@ type DesignationAccountRest {
   balanceUpdatedAt: ISO8601Date!
   convertedBalance: Float!
   currency: String!
-  designationNumber: String!
+  designationNumber: String
   id: ID!
   name: String!
 }

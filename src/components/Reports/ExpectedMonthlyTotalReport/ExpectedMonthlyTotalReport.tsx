@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { useGetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { EmptyDonationsTable } from '../../../../src/components/common/EmptyDonationsTable/EmptyDonationsTable';
 import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';
@@ -9,19 +9,28 @@ import { ExpectedMonthlyTotalReportTable } from './Table/ExpectedMonthlyTotalRep
 
 interface Props {
   accountListId: string;
+  designationAccounts?: string[];
+  isNavListOpen: boolean;
+  onNavListToggle: () => void;
+  title: string;
 }
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
   accountListId,
+  designationAccounts,
+  isNavListOpen,
+  onNavListToggle,
+  title,
 }) => {
   const { t } = useTranslation();
 
   const { data, loading } = useGetExpectedMonthlyTotalsQuery({
-    variables: { accountListId },
+    variables: {
+      accountListId,
+      designationAccountIds: designationAccounts?.length
+        ? designationAccounts
+        : null,
+    },
   });
 
   const { received, likely, unlikely, currency } =
@@ -53,16 +62,30 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
 
   return (
     <Box>
-      <ExpectedMonthlyTotalReportHeader
-        empty={isEmpty}
-        totalDonations={totalDonations}
-        totalLikely={totalLikely}
-        totalUnlikely={totalUnlikely}
-        total={totalAmount}
-        currency={totalCurrency}
+      <Header
+        isNavListOpen={isNavListOpen}
+        onNavListToggle={onNavListToggle}
+        title={title}
+        rightExtra={
+          <ExpectedMonthlyTotalReportHeader
+            empty={isEmpty}
+            totalDonations={totalDonations}
+            totalLikely={totalLikely}
+            totalUnlikely={totalUnlikely}
+            total={totalAmount}
+            currency={totalCurrency}
+          />
+        }
       />
       {loading ? (
-        <LoadingIndicator color="primary" size={20} />
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <CircularProgress />
+        </Box>
       ) : !isEmpty ? (
         <>
           <ExpectedMonthlyTotalReportTable

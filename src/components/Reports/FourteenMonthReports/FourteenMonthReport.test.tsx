@@ -358,4 +358,67 @@ describe('FourteenMonthReport', () => {
     expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
     expect(queryByTestId('ReportNavList')).toBeNull();
   });
+
+  it('filters report by designation account', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<FourteenMonthReportQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <FourteenMonthReport
+            accountListId={accountListId}
+            designationAccounts={['account-1']}
+            currencyType={FourteenMonthReportCurrencyType.Donor}
+            isNavListOpen={false}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[1][0]).toMatchObject({
+        operation: {
+          operationName: 'FourteenMonthReport',
+          variables: {
+            designationAccountIds: ['account-1'],
+          },
+        },
+      }),
+    );
+  });
+
+  it('does not filter report by designation account', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<FourteenMonthReportQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <FourteenMonthReport
+            accountListId={accountListId}
+            currencyType={FourteenMonthReportCurrencyType.Donor}
+            isNavListOpen={false}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[1][0]).toMatchObject({
+        operation: {
+          operationName: 'FourteenMonthReport',
+          variables: {
+            designationAccountIds: null,
+          },
+        },
+      }),
+    );
+  });
 });

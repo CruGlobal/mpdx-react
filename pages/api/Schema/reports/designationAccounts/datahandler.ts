@@ -14,7 +14,7 @@ export interface DesignationAccountsResponse {
     created_at: string;
     currency: string;
     currency_symbol: string;
-    designation_number: string;
+    designation_number: string | null;
     display_name: string;
     exchange_rate: number;
     legacy_designation_number: null;

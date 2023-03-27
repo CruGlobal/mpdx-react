@@ -13,11 +13,17 @@ import Close from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { Item } from './Item/Item';
 import { ReportNavItems } from './ReportNavItems';
+import { MultiselectFilter } from '../../../../graphql/types.generated';
+import { FilterListItemMultiselect } from 'src/components/Shared/Filters/FilterListItemMultiselect';
+import { useGetDesignationAccountsQuery } from '../DonationsReport/Table/Modal/EditDonation.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 interface Props {
   selectedId: string;
   isOpen: boolean;
   onClose: () => void;
+  designationAccounts: string[];
+  setDesignationAccounts: (designationAccounts: string[]) => void;
 }
 
 const useStyles = makeStyles()(() => ({
@@ -37,7 +43,7 @@ const FilterList = styled(List)(({ theme }) => ({
     minWidth: '37px',
   },
   '& .FilterListItemMultiselect-root': {
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -45,10 +51,33 @@ export const NavReportsList: React.FC<Props & BoxProps> = ({
   selectedId,
   isOpen,
   onClose,
+  designationAccounts,
+  setDesignationAccounts,
   ...BoxProps
 }) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
+
+  const { data } = useGetDesignationAccountsQuery({
+    variables: {
+      accountListId: accountListId ?? '',
+    },
+  });
+  const accounts =
+    data?.designationAccounts
+      .flatMap((group) => group.designationAccounts)
+      .map((account) => ({
+        name: account.name,
+        value: account.id,
+        placeholder: null,
+      })) ?? [];
+
+  const filter: MultiselectFilter = {
+    filterKey: 'designation_account_id',
+    title: 'Designation Account',
+    options: accounts,
+  };
 
   return (
     <Box data-testid="ReportNavList" {...BoxProps}>
@@ -68,6 +97,15 @@ export const NavReportsList: React.FC<Props & BoxProps> = ({
               </Box>
             </FilterHeader>
             <FilterList dense>
+              {data && (
+                <FilterListItemMultiselect
+                  filter={filter}
+                  selected={designationAccounts}
+                  onUpdate={(value) => {
+                    setDesignationAccounts(value ?? []);
+                  }}
+                />
+              )}
               {ReportNavItems.map((item) => (
                 <Item
                   key={item.id}
