@@ -399,7 +399,7 @@ const TasksPage: React.FC = () => {
                         variant="text"
                         startIcon={<TaskAddIcon />}
                       >
-                        <Hidden mdUp>{t('Add')}</Hidden>
+                        <Hidden smUp>{t('Add')}</Hidden>
                         <Hidden smDown>{t('Add Task')}</Hidden>
                       </TaskHeaderButton>
                       <TaskHeaderButton
@@ -407,7 +407,7 @@ const TasksPage: React.FC = () => {
                         variant="text"
                         startIcon={<TaskCheckIcon />}
                       >
-                        <Hidden mdUp>{t('Log')}</Hidden>
+                        <Hidden smUp>{t('Log')}</Hidden>
                         <Hidden smDown>{t('Log Task')}</Hidden>
                       </TaskHeaderButton>
                     </Hidden>
