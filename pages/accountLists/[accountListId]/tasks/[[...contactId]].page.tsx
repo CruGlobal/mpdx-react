@@ -20,7 +20,10 @@ import {
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
-import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
+import {
+  headerHeight,
+  ListHeader,
+} from '../../../../src/components/Shared/Header/ListHeader';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
@@ -48,6 +51,7 @@ import {
   TaskFilterTabsTypes,
   taskFiltersTabs,
 } from '../../../../src/utils/tasks/taskFilterTabs';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -561,7 +565,7 @@ const TasksPage: React.FC = () => {
             }
             rightOpen={contactDetailsOpen}
             rightWidth="60%"
-            headerHeight={157}
+            headerHeight={`calc(${navBarHeight} + ${headerHeight})`}
           />
         </WhiteBackground>
       ) : (

@@ -102,7 +102,7 @@ interface SidePanelsLayoutProps {
   rightPanel?: ReactElement;
   rightWidth?: string;
   rightOpen?: boolean;
-  headerHeight?: number;
+  headerHeight?: number | string;
 }
 
 export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({

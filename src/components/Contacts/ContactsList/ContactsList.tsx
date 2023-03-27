@@ -8,7 +8,11 @@ import {
   ContactsContext,
   ContactsType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
-import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
+import {
+  headerHeight,
+  TableViewModeEnum,
+} from 'src/components/Shared/Header/ListHeader';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 
 export const ContactsList: React.FC = () => {
   const {
@@ -45,7 +49,7 @@ export const ContactsList: React.FC = () => {
       loading={loading}
       data={data?.contacts?.nodes ?? []}
       totalCount={data?.contacts?.totalCount ?? 0}
-      style={{ height: 'calc(100vh - 157px)' }}
+      style={{ height: `calc(100vh - ${navBarHeight} - ${headerHeight})` }}
       itemContent={(index, contact) => (
         <ContactRow
           key={contact.id}
