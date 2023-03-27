@@ -123,7 +123,7 @@ describe('CreateMultipleContacts', () => {
           primary: true,
         },
       ]);
-    }, 60000);
+    }, 80000);
 
     it('creates multiple contacts - part 1', async () => {
       const { getByText, getAllByRole } = render(
@@ -187,17 +187,17 @@ describe('CreateMultipleContacts', () => {
           primary: true,
         },
       ]);
-      // Contact 1 Person 2
-      const { operation: operation3 } = mutationSpy.mock.calls[4][0];
-      expect(operation3.variables.accountListId).toEqual(accountListId);
-      expect(operation3.variables.attributes.firstName).toEqual(spouse);
-      expect(operation3.variables.attributes.lastName).toEqual(last);
-
       // Contact 2  Person 1
-      const { operation: operation4 } = mutationSpy.mock.calls[5][0];
+      const { operation: operation4 } = mutationSpy.mock.calls[4][0];
       expect(operation4.variables.accountListId).toEqual(accountListId);
       expect(operation4.variables.attributes.firstName).toEqual(first2);
       expect(operation4.variables.attributes.lastName).toEqual(last2);
+
+      // Contact 1 Person 1 - Awaiting on Contact 1 Person 1 to resolve.
+      const { operation: operation3 } = mutationSpy.mock.calls[5][0];
+      expect(operation3.variables.accountListId).toEqual(accountListId);
+      expect(operation3.variables.attributes.firstName).toEqual(spouse);
+      expect(operation3.variables.attributes.lastName).toEqual(last);
     }, 60000);
 
     it('creates multiple contacts - part 2', async () => {
@@ -242,17 +242,17 @@ describe('CreateMultipleContacts', () => {
       expect(operation2.variables.attributes.firstName).toEqual(first2);
       expect(operation2.variables.attributes.lastName).toEqual('');
 
-      // Contact 2  Person 2
-      const { operation: operation3 } = mutationSpy.mock.calls[4][0];
-      expect(operation3.variables.accountListId).toEqual(accountListId);
-      expect(operation3.variables.attributes.firstName).toEqual(spouse2);
-      expect(operation3.variables.attributes.lastName).toEqual('');
-
       // Contact 3  Person 1
-      const { operation: operation4 } = mutationSpy.mock.calls[5][0];
+      const { operation: operation4 } = mutationSpy.mock.calls[4][0];
       expect(operation4.variables.accountListId).toEqual(accountListId);
       expect(operation4.variables.attributes.firstName).toEqual(first3);
       expect(operation4.variables.attributes.lastName).toEqual('');
-    }, 60000);
+
+      // Contact 2  Person 2 - Awaiting on Contact 2 Person 1 to resolve
+      const { operation: operation3 } = mutationSpy.mock.calls[5][0];
+      expect(operation3.variables.accountListId).toEqual(accountListId);
+      expect(operation3.variables.attributes.firstName).toEqual(spouse2);
+      expect(operation3.variables.attributes.lastName).toEqual('');
+    }, 80000);
   });
 });

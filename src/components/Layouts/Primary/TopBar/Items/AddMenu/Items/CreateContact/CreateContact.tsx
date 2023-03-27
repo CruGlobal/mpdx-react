@@ -114,21 +114,21 @@ const CreateContact = ({
           lastName: lastName ? lastName : findFirstName[1] ?? '',
         });
       }
-      await Promise.all(
-        people.map(async (person) => {
-          const personAttributes: PersonCreateInput = {
-            contactId: contactId,
-            firstName: person.firstName,
-            lastName: person.lastName,
-          };
-          await createPerson({
-            variables: {
-              accountListId,
-              attributes: personAttributes,
-            },
-          });
-        }),
-      );
+
+      for (const person of people) {
+        const personAttributes: PersonCreateInput = {
+          contactId: contactId,
+          firstName: person.firstName,
+          lastName: person.lastName,
+        };
+        await createPerson({
+          variables: {
+            accountListId,
+            attributes: personAttributes,
+          },
+        });
+      }
+
       push({
         pathname: '/accountLists/[accountListId]/contacts/[contactId]',
         query: { accountListId, contactId },
