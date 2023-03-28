@@ -135,7 +135,11 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            data-testid="RemoveTagsModal"
+          >
             <DialogContent dividers>
               <IncompleteWarning
                 selectedIdCount={selectedIdCount}

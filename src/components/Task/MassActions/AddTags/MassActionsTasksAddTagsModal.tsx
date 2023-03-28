@@ -128,7 +128,7 @@ export const MassActionsTasksAddTagsModal: React.FC<
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit} noValidate data-testid="AddTagsModal">
             <DialogContent dividers>
               <IncompleteWarning
                 selectedIdCount={selectedIdCount}
