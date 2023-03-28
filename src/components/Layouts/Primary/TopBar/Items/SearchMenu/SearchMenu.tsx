@@ -34,6 +34,13 @@ const SearchDialog = styled(Dialog)(() => ({
   },
 }));
 
+const ClickableBox = styled(Box)(({ theme }) => ({
+  cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: theme.palette.cruGrayLight.main,
+  },
+}));
+
 const SearchPopper = styled(Popper)(() => ({
   '& .MuiAutocomplete-option': {
     padding: 0,
@@ -283,7 +290,7 @@ const SearchMenu = (): ReactElement => {
             renderOption={(props, option) => {
               if (option.link === 'createContact') {
                 return (
-                  <Box
+                  <ClickableBox
                     display="flex"
                     width="100%"
                     padding="6px 16px"
@@ -295,13 +302,18 @@ const SearchMenu = (): ReactElement => {
                     <Box display="flex" flexDirection="column">
                       <Typography>{option.name}</Typography>
                     </Box>
-                  </Box>
+                  </ClickableBox>
                 );
               }
 
               return (
                 <NextLink href={option.link} passHref>
-                  <Box display="flex" width="100%" padding="6px 16px">
+                  <ClickableBox
+                    display="flex"
+                    width="100%"
+                    padding="6px 16px"
+                    onClick={handleClose}
+                  >
                     <Box display="flex" marginRight={1}>
                       {option.icon}
                     </Box>
@@ -311,7 +323,7 @@ const SearchMenu = (): ReactElement => {
                         {option.status && t(option.status)}
                       </Typography>
                     </Box>
-                  </Box>
+                  </ClickableBox>
                 </NextLink>
               );
             }}

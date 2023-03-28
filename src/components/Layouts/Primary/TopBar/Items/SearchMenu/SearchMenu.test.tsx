@@ -6,6 +6,8 @@ import { StatusEnum } from '../../../../../../../graphql/types.generated';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import SearchMenu from './SearchMenu';
 import { GetSearchMenuContactsQuery } from './SearchMenu.generated';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from 'src/theme';
 
 const router = {
   pathname: '/accountLists/[accountListId]',
@@ -31,9 +33,11 @@ describe('SearchMenu', () => {
   it('default', async () => {
     const { getByRole, getByPlaceholderText } = render(
       <GqlMockedProvider<GetSearchMenuContactsQuery>>
-        <TestRouter router={router}>
-          <SearchMenu />
-        </TestRouter>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <SearchMenu />
+          </TestRouter>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
     userEvent.click(getByRole('button'));
@@ -82,9 +86,11 @@ describe('SearchMenu', () => {
           },
         }}
       >
-        <TestRouter router={router}>
-          <SearchMenu />
-        </TestRouter>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <SearchMenu />
+          </TestRouter>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 
@@ -127,9 +133,11 @@ describe('SearchMenu', () => {
           },
         }}
       >
-        <TestRouter router={router}>
-          <SearchMenu />
-        </TestRouter>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <SearchMenu />
+          </TestRouter>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 
@@ -181,9 +189,11 @@ it('handles creating a new contact', async () => {
         },
       }}
     >
-      <TestRouter router={router}>
-        <SearchMenu />
-      </TestRouter>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <SearchMenu />
+        </TestRouter>
+      </ThemeProvider>
     </GqlMockedProvider>,
   );
 
