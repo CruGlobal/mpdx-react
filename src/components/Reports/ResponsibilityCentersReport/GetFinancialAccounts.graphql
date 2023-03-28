@@ -1,5 +1,9 @@
-query FinancialAccounts($accountListId: ID!) {
-  financialAccounts(accountListId: $accountListId, first: 25) {
+query FinancialAccounts($accountListId: ID!, $designationAccountIds: [ID!]) {
+  financialAccounts(
+    accountListId: $accountListId
+    designationAccountId: $designationAccountIds
+    first: 25
+  ) {
     nodes {
       active
       balance {

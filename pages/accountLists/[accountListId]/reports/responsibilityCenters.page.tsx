@@ -20,6 +20,7 @@ const ResponsibilityCentersReportPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
   useEffect(() => {
     suggestArticles('HS_REPORTS_SUGGESTIONS');
@@ -45,6 +46,8 @@ const ResponsibilityCentersReportPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="responsibilityCenters"
                 onClose={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
               />
             }
             leftOpen={isNavListOpen}
@@ -52,6 +55,7 @@ const ResponsibilityCentersReportPage: React.FC = () => {
             mainContent={
               <ResponsibilityCentersReport
                 accountListId={accountListId}
+                designationAccounts={designationAccounts}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Responsibility Centers')}

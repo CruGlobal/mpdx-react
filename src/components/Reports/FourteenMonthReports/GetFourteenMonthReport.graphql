@@ -1,9 +1,11 @@
 query FourteenMonthReport(
   $accountListId: ID!
+  $designationAccountIds: [ID!]
   $currencyType: FourteenMonthReportCurrencyType!
 ) {
   fourteenMonthReport(
     accountListId: $accountListId
+    designationAccountId: $designationAccountIds
     currencyType: $currencyType
   ) {
     currencyType

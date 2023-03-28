@@ -89,7 +89,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                     <Typography variant="h6">{account.name}</Typography>
                     <Typography variant="body2" color="textSecondary">
                       {`${hasFinancial ? '' : t('Designation #')}${
-                        account.code
+                        account.code ?? ''
                       } · ${t('Last Synced')} ${
                         account.lastSyncDate
                           ? DateTime.fromISO(

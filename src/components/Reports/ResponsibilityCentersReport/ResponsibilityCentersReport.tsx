@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, CircularProgress, Divider } from '@mui/material';
+import { Box, CircularProgress, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
@@ -22,6 +22,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 
 interface Props {
   accountListId: string;
+  designationAccounts?: string[];
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -34,6 +35,7 @@ const ScrollBox = styled(Box)(({}) => ({
 
 export const ResponsibilityCentersReport: React.FC<Props> = ({
   accountListId,
+  designationAccounts,
   isNavListOpen,
   onNavListToggle,
   title,
@@ -43,6 +45,9 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
   const { data, loading, error } = useFinancialAccountsQuery({
     variables: {
       accountListId,
+      designationAccountIds: designationAccounts?.length
+        ? designationAccounts
+        : null,
     },
   });
 
@@ -151,21 +156,22 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
     },
   });
 
+  const balanceNode =
+    typeof totalBalance !== 'undefined' && financialAccountsGroups ? (
+      <Typography variant="h6">{`${t('Balance')}: ${currencyFormat(
+        totalBalance,
+        financialAccountsGroups[0]?.financialAccounts[0]?.balance
+          ?.convertedCurrency,
+      )}`}</Typography>
+    ) : undefined;
+
   return (
     <Box>
       <Header
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={title}
-        totalBalance={
-          totalBalance && totalBalance > 0 && financialAccountsGroups
-            ? currencyFormat(
-                totalBalance,
-                financialAccountsGroups[0].financialAccounts[0]?.balance
-                  .convertedCurrency,
-              )
-            : undefined
-        }
+        rightExtra={balanceNode}
       />
       {loading ? (
         <Box

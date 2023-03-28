@@ -26,7 +26,7 @@ const mocks = {
         organizationName: 'test org 01',
         designationAccounts: [
           {
-            active: false,
+            active: true,
             id: 'test-id-111',
             balanceUpdatedAt: '2/2/2021',
             convertedBalance: 3500,

@@ -31,12 +31,14 @@ import {
   useGetDonationsTableQuery,
   ExpectedDonationDataFragment,
   useGetAccountListCurrencyQuery,
+  GetDonationsTableQueryVariables,
 } from '../GetDonationsTable.generated';
 import { EditDonationModal } from './Modal/EditDonationModal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
-interface Props {
+interface DonationReportTableProps {
   accountListId: string;
+  designationAccounts?: string[];
   onSelectContact: (contactId: string) => void;
   time: DateTime;
   setTime: (time: DateTime) => void;
@@ -101,8 +103,9 @@ export interface Donation {
   appealAmount: number | null;
 }
 
-export const DonationsReportTable: React.FC<Props> = ({
+export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
   accountListId,
+  designationAccounts,
   onSelectContact,
   time,
   setTime,
@@ -128,9 +131,17 @@ export const DonationsReportTable: React.FC<Props> = ({
   // pageSize is intentionally omitted from the dependencies array so that the query isn't rerun when the page size changes
   // If all the pages have loaded and the user changes the page size, there's no reason to reload all the pages
   // TODO: sort donations on the server after https://jira.cru.org/browse/MPDX-7634 is implemented
-  const variables = useMemo(
-    () => ({ accountListId, pageSize, startDate, endDate }),
-    [accountListId, startDate, endDate],
+  const variables: GetDonationsTableQueryVariables = useMemo(
+    () => ({
+      accountListId,
+      pageSize,
+      startDate,
+      endDate,
+      designationAccountIds: designationAccounts?.length
+        ? designationAccounts
+        : null,
+    }),
+    [accountListId, startDate, endDate, designationAccounts],
   );
   const { data, loading, fetchMore } = useGetDonationsTableQuery({
     variables,

@@ -357,14 +357,19 @@ class MpdxRestApi extends RESTDataSource {
 
   async getFourteenMonthReport(
     accountListId: string,
+    designationAccountId: string[] | null | undefined,
     currencyType: FourteenMonthReportCurrencyType,
   ) {
+    const designationAccountFilter =
+      designationAccountId && designationAccountId.length > 0
+        ? `&filter[designation_account_id=${designationAccountId.join(',')}`
+        : '';
     const { data }: { data: FourteenMonthReportResponse } = await this.get(
       `reports/${
         currencyType === 'salary'
           ? 'salary_currency_donations'
           : 'donor_currency_donations'
-      }?filter[account_list_id]=${accountListId}&filter[month_range]=${Interval.before(
+      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${Interval.before(
         DateTime.now().endOf('month'),
         Duration.fromObject({ months: 14 }).minus({ day: 1 }),
       )
@@ -374,9 +379,16 @@ class MpdxRestApi extends RESTDataSource {
     return mapFourteenMonthReport(data, currencyType);
   }
 
-  async getExpectedMonthlyTotalReport(accountListId: string) {
+  async getExpectedMonthlyTotalReport(
+    accountListId: string,
+    designationAccountId: string[] | null | undefined,
+  ) {
+    const designationAccountFilter =
+      designationAccountId && designationAccountId.length > 0
+        ? `&filter[designation_account_id=${designationAccountId.join(',')}`
+        : '';
     const { data }: { data: ExpectedMonthlyTotalResponse } = await this.get(
-      `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}`,
+      `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}${designationAccountFilter}`,
     );
     return mapExpectedMonthlyTotalReport(data);
   }

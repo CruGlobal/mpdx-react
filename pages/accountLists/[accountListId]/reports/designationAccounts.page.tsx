@@ -20,6 +20,7 @@ const DesignationAccountsReportPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
   useEffect(() => {
     suggestArticles('HS_REPORTS_SUGGESTIONS');
@@ -45,6 +46,8 @@ const DesignationAccountsReportPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="designationAccounts"
                 onClose={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
               />
             }
             leftOpen={isNavListOpen}

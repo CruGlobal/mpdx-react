@@ -16,6 +16,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 
 interface Props {
   accountListId: string;
+  designationAccounts?: string[];
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -24,6 +25,7 @@ interface Props {
 
 export const FourteenMonthReport: React.FC<Props> = ({
   accountListId,
+  designationAccounts,
   currencyType,
   isNavListOpen,
   title,
@@ -44,6 +46,9 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const { data, loading, error } = useFourteenMonthReportQuery({
     variables: {
       accountListId,
+      designationAccountIds: designationAccounts?.length
+        ? designationAccounts
+        : null,
       currencyType,
     },
   });

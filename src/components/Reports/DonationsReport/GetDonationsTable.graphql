@@ -4,10 +4,12 @@ query GetDonationsTable(
   $after: String
   $startDate: ISO8601Date
   $endDate: ISO8601Date
+  $designationAccountIds: [ID!]
 ) {
   donations(
     accountListId: $accountListId
     donationDate: { max: $endDate, min: $startDate }
+    designationAccountId: $designationAccountIds
     first: $pageSize
     after: $after
   ) {

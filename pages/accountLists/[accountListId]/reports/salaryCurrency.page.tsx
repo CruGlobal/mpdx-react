@@ -21,6 +21,7 @@ const SalaryCurrencyReportPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
   useEffect(() => {
     suggestArticles('HS_REPORTS_SUGGESTIONS');
@@ -46,6 +47,8 @@ const SalaryCurrencyReportPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="salaryCurrency"
                 onClose={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
               />
             }
             leftOpen={isNavListOpen}
@@ -53,6 +56,7 @@ const SalaryCurrencyReportPage: React.FC = () => {
             mainContent={
               <FourteenMonthReport
                 accountListId={accountListId}
+                designationAccounts={designationAccounts}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Contributions by Salary Currency')}

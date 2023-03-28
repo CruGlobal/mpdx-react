@@ -90,8 +90,8 @@ const LinkButton = styled(Button)(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
-const FlatAccordionWrapper = styled(Box)(({ theme }) => ({
-  '& .MuiPaper-elevation1': {
+const FlatAccordion = styled(Accordion)(({ theme }) => ({
+  '&.MuiPaper-elevation1': {
     boxShadow: 'none',
     borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
   },
@@ -691,40 +691,38 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               ) : (
                 <>
                   {savedFilters.length > 0 && (
-                    <FlatAccordionWrapper>
-                      <Accordion>
-                        <AccordionSummary expandIcon={<ExpandMore />}>
-                          <Typography>{t('Saved Filters')}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <FilterList dense sx={{ paddingY: 0 }}>
-                            {savedFilters.map((filter) => {
-                              const filterName = filter?.key
-                                ?.replace(
-                                  /^(graphql_)?saved_(contacts|tasks|)_filter_/,
-                                  '',
-                                )
-                                .replaceAll('_', ' ');
+                    <FlatAccordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>{t('Saved Filters')}</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <FilterList dense sx={{ paddingY: 0 }}>
+                          {savedFilters.map((filter) => {
+                            const filterName = filter?.key
+                              ?.replace(
+                                /^(graphql_)?saved_(contacts|tasks|)_filter_/,
+                                '',
+                              )
+                              .replaceAll('_', ' ');
 
-                              return (
-                                <ListItem
-                                  key={filter.id}
-                                  button
-                                  onClick={() => setSelectedSavedFilter(filter)}
-                                >
-                                  <ListItemText
-                                    primary={filterName}
-                                    primaryTypographyProps={{
-                                      variant: 'subtitle1',
-                                    }}
-                                  />
-                                </ListItem>
-                              );
-                            })}
-                          </FilterList>
-                        </AccordionDetails>
-                      </Accordion>
-                    </FlatAccordionWrapper>
+                            return (
+                              <ListItem
+                                key={filter.id}
+                                button
+                                onClick={() => setSelectedSavedFilter(filter)}
+                              >
+                                <ListItemText
+                                  primary={filterName}
+                                  primaryTypographyProps={{
+                                    variant: 'subtitle1',
+                                  }}
+                                />
+                              </ListItem>
+                            );
+                          })}
+                        </FilterList>
+                      </AccordionDetails>
+                    </FlatAccordion>
                   )}
 
                   {filters
@@ -737,43 +735,41 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                           in={showAll || isGroupVisible(group)}
                           data-testid="FilterGroup"
                         >
-                          <FlatAccordionWrapper>
-                            <Accordion
-                              TransitionProps={{ unmountOnExit: true }}
-                              defaultExpanded={defaultExpandedFilterGroups.has(
-                                group.name,
-                              )}
-                            >
-                              <AccordionSummary expandIcon={<ExpandMore />}>
-                                <Typography>
-                                  {group.name}
-                                  {selectedOptions.length > 0
-                                    ? ` (${selectedOptions.length})`
-                                    : ''}
-                                </Typography>
-                              </AccordionSummary>
-                              <AccordionDetails>
-                                <FilterList dense>
-                                  {group.filters.map((filter) => {
-                                    const filterKey = snakeToCamel(
-                                      filter.filterKey,
-                                    ) as FilterKey;
+                          <FlatAccordion
+                            TransitionProps={{ unmountOnExit: true }}
+                            defaultExpanded={defaultExpandedFilterGroups.has(
+                              group.name,
+                            )}
+                          >
+                            <AccordionSummary expandIcon={<ExpandMore />}>
+                              <Typography>
+                                {group.name}
+                                {selectedOptions.length > 0
+                                  ? ` (${selectedOptions.length})`
+                                  : ''}
+                              </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                              <FilterList dense>
+                                {group.filters.map((filter) => {
+                                  const filterKey = snakeToCamel(
+                                    filter.filterKey,
+                                  ) as FilterKey;
 
-                                    return (
-                                      <FilterListItem
-                                        key={filterKey}
-                                        filter={filter}
-                                        value={selectedFilters[filterKey]}
-                                        onUpdate={(value) =>
-                                          updateSelectedFilter(filterKey, value)
-                                        }
-                                      />
-                                    );
-                                  })}
-                                </FilterList>
-                              </AccordionDetails>
-                            </Accordion>
-                          </FlatAccordionWrapper>
+                                  return (
+                                    <FilterListItem
+                                      key={filterKey}
+                                      filter={filter}
+                                      value={selectedFilters[filterKey]}
+                                      onUpdate={(value) =>
+                                        updateSelectedFilter(filterKey, value)
+                                      }
+                                    />
+                                  );
+                                })}
+                              </FilterList>
+                            </AccordionDetails>
+                          </FlatAccordion>
                         </Collapse>
                       );
                     })}
