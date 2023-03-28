@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { NavReportsList } from './NavReportsList';
@@ -61,10 +61,11 @@ describe('NavReportsList', () => {
     const designationAccounts = ['account-1'];
     const setDesignationAccounts = jest.fn();
 
-    const { findByRole, getAllByRole, getByRole, getByTestId } = render(
+    const mutationSpy = jest.fn();
+    const { getAllByRole, getByRole, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider mocks={mocks}>
+          <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
             <NavReportsList
               selectedId={selected}
               isOpen={true}
@@ -77,9 +78,9 @@ describe('NavReportsList', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(
-      await findByRole('combobox', { name: 'Designation Account' }),
-    );
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+    userEvent.click(getByRole('combobox', { name: 'Designation Account' }));
     expect(getAllByRole('option').map((option) => option.textContent)).toEqual([
       'Account 2',
       'Account 3',
@@ -91,5 +92,40 @@ describe('NavReportsList', () => {
     ]);
     userEvent.click(getByTestId('CancelIcon'));
     expect(setDesignationAccounts).toHaveBeenLastCalledWith([]);
+  });
+
+  it('hides designation account filter when there is only one option', async () => {
+    const mocks = {
+      GetDesignationAccounts: {
+        designationAccounts: [
+          {
+            designationAccounts: [{ id: 'account-1', name: 'Account 1' }],
+          },
+        ],
+      },
+    };
+
+    const mutationSpy = jest.fn();
+    const { queryByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
+            <NavReportsList
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={jest.fn()}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+    expect(
+      queryByRole('combobox', { name: 'Designation Account' }),
+    ).not.toBeInTheDocument();
   });
 });
