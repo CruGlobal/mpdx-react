@@ -171,16 +171,14 @@ export const CreateMultipleContacts = ({
                 lastName,
               });
             }
-            await Promise.all(
-              people.map((person) =>
-                createPerson({
-                  variables: {
-                    accountListId,
-                    attributes: person,
-                  },
-                }),
-              ),
-            );
+            for (const person of people) {
+              await createPerson({
+                variables: {
+                  accountListId,
+                  attributes: person,
+                },
+              });
+            }
           }
           return data?.createContact?.contact?.id;
         }),
