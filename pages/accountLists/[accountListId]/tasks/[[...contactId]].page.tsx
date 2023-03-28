@@ -9,6 +9,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
+import theme from 'src/theme';
 import { dispatch } from 'src/lib/analytics';
 import { suggestArticles } from 'src/lib/helpScout';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
@@ -52,6 +53,8 @@ import {
   taskFiltersTabs,
 } from '../../../../src/utils/tasks/taskFilterTabs';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+
+const buttonBarHeight = theme.spacing(6);
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -469,6 +472,10 @@ const TasksPage: React.FC = () => {
                   <TaskCurrentHistoryButtonGroup
                     variant="outlined"
                     size="small"
+                    sx={{
+                      // Subtract out one unit of margin for both the top and the bottom
+                      height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
+                    }}
                   >
                     {taskFiltersTabs.map((i) => (
                       <Button
@@ -481,10 +488,13 @@ const TasksPage: React.FC = () => {
                     ))}
                   </TaskCurrentHistoryButtonGroup>
                   <InfiniteList
+                    data-foo="bar"
                     loading={loading}
                     data={data?.tasks?.nodes}
                     totalCount={data?.tasks?.totalCount}
-                    style={{ height: 'calc(100vh - 160px)' }}
+                    style={{
+                      height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
+                    }}
                     itemContent={(index, task) => (
                       <Box key={index} flexDirection="row" width="100%">
                         <TaskRow
