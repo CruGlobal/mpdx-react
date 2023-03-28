@@ -20,7 +20,7 @@ const TaskCommentIcon = styled(CalendarToday, {
   color: isLate ? theme.palette.error.main : theme.palette.text.secondary,
 }));
 
-const DueDate = styled(Typography, {
+const DateText = styled(Typography, {
   shouldForwardProp: (prop) =>
     prop !== 'isLate' && prop !== 'isComplete' && prop !== 'small',
 })<{ isLate?: boolean; isComplete: boolean; small: boolean }>(
@@ -35,29 +35,27 @@ const DueDate = styled(Typography, {
   }),
 );
 
-interface TaskDueDateProps {
+interface TaskDateProps {
   isComplete: boolean;
-  dueDate: DateTime | null;
+  taskDate: DateTime | null;
   small?: boolean;
 }
 
-export const TaskDueDate: React.FC<TaskDueDateProps> = ({
+export const TaskDate: React.FC<TaskDateProps> = ({
   isComplete,
-  dueDate,
+  taskDate,
   small,
 }) => {
-  if (!dueDate) {
-    return null;
-  }
-
-  const isLate = dueDate < DateTime.local();
+  if (!taskDate) return null;
+  const isLate = isComplete ? false : taskDate < DateTime.local();
+  const showYear = taskDate.year !== DateTime.local().year;
 
   return (
     <TaskRowWrap>
       <TaskCommentIcon isLate={isLate} small={small || false} />
-      <DueDate isLate={isLate} isComplete={isComplete} small={small || false}>
-        {dueDate.toFormat('MMM dd')}
-      </DueDate>
+      <DateText isLate={isLate} isComplete={isComplete} small={small || false}>
+        {taskDate.toFormat(showYear ? 'MMM dd, yy' : 'MMM dd')}
+      </DateText>
     </TaskRowWrap>
   );
 };
