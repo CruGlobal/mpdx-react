@@ -49,9 +49,6 @@ export const TaskDate: React.FC<TaskDateProps> = ({
   if (!taskDate) return null;
   const isLate = isComplete ? false : taskDate < DateTime.local();
   const showYear = taskDate.year !== DateTime.local().year;
-  // const showYear =
-  //   new Date(taskDate.toString()).getFullYear() !==
-  //   new Date(DateTime.local().toString()).getFullYear();
 
   return (
     <TaskRowWrap>
