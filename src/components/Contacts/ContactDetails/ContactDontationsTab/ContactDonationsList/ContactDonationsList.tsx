@@ -82,7 +82,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                     <TableCell>{donation.paymentMethod}</TableCell>
                   </TableRow>
                 ))
-              : undefined}
+              : null}
           </Table>
           {!loading && data?.contact.donations.pageInfo.hasNextPage ? (
             <LoadMoreButton
