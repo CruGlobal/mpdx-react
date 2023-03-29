@@ -2,6 +2,7 @@ import { FC, ReactElement } from 'react';
 import { Box, Theme, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { CSSProperties } from '@mui/styles';
+import { headerHeight } from '../Shared/Header/ListHeader';
 
 interface ToolbarMixin extends CSSProperties {
   minHeight: number;
@@ -14,6 +15,23 @@ interface ToolbarMixin extends CSSProperties {
 type ScrollBoxProps = {
   isScrollable?: boolean;
 };
+
+const FullHeightRightBox = styled(Box)(({ theme }) => {
+  const toolbar = theme.mixins.toolbar as ToolbarMixin;
+  return {
+    height: `calc(100vh - ${toolbar.minHeight}px)`,
+    ['@media (min-width:0px) and (orientation: landscape)']: {
+      height: `calc(100vh - ${toolbar['@media (min-width:0px)']['@media (orientation: landscape)'].minHeight}px -
+        ${headerHeight}
+      )`,
+    },
+    ['@media (min-width:600px)']: {
+      height: `calc(100vh - ${toolbar['@media (min-width:600px)'].minHeight}px -
+        ${headerHeight}
+      )`,
+    },
+  };
+});
 
 const FullHeightBox = styled(Box)(({ theme }) => {
   const toolbar = theme.mixins.toolbar as ToolbarMixin;
@@ -28,7 +46,13 @@ const FullHeightBox = styled(Box)(({ theme }) => {
   };
 });
 
-const ScrollBox = styled(FullHeightBox, {
+const ScrollBoxLeftPanel = styled(FullHeightBox, {
+  shouldForwardProp: (prop) => prop !== 'isScrollable',
+})(({ isScrollable }: ScrollBoxProps) => ({
+  overflowY: isScrollable ? 'auto' : 'hidden',
+}));
+
+const ScrollBoxRightPanel = styled(FullHeightRightBox, {
   shouldForwardProp: (prop) => prop !== 'isScrollable',
 })(({ isScrollable }: ScrollBoxProps) => ({
   overflowY: isScrollable ? 'auto' : 'hidden',
@@ -54,7 +78,7 @@ const ExpandingContent = styled(Box)(({ open }: { open: boolean }) => ({
   zIndex: 10,
 }));
 
-const LeftPanelWrapper = styled(ScrollBox)(({ theme }) => ({
+const LeftPanelWrapper = styled(ScrollBoxLeftPanel)(({ theme }) => ({
   flexShrink: 0,
   borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
   left: 0,
@@ -67,7 +91,7 @@ const LeftPanelWrapper = styled(ScrollBox)(({ theme }) => ({
   },
 }));
 
-const RightPanelWrapper = styled(ScrollBox)(({ theme }) => {
+const RightPanelWrapper = styled(ScrollBoxRightPanel)(({ theme }) => {
   const toolbar = theme.mixins.toolbar as ToolbarMixin;
   return {
     position: 'fixed',
@@ -129,7 +153,9 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
             flexBasis={leftWidth}
             style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}
           >
-            <ScrollBox isScrollable={isScrollBox}>{leftPanel}</ScrollBox>
+            <ScrollBoxLeftPanel isScrollable={isScrollBox}>
+              {leftPanel}
+            </ScrollBoxLeftPanel>
           </LeftPanelWrapper>
           <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
         </CollapsibleWrapper>
@@ -141,7 +167,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           top: headerHeight,
         }}
       >
-        <ScrollBox isScrollable>{rightPanel}</ScrollBox>
+        <ScrollBoxRightPanel isScrollable>{rightPanel}</ScrollBoxRightPanel>
       </RightPanelWrapper>
     </OuterWrapper>
   );
