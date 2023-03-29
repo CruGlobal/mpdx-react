@@ -4,6 +4,8 @@ import TopBar from './TopBar/TopBar';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';
 
+export const navBarHeight = '64px';
+
 const RootContainer = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
   display: 'flex',
@@ -28,7 +30,7 @@ const Wrapper = styled('div')(() => ({
   display: 'flex',
   flex: '1 1 auto',
   overflow: 'hidden',
-  paddingTop: 60,
+  paddingTop: navBarHeight,
 }));
 
 interface Props {

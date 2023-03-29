@@ -25,10 +25,14 @@ import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useSnackbar } from 'notistack';
 
+export const headerHeight = theme.spacing(12);
+
 const HeaderWrap = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'contactDetailsOpen',
 })<{ contactDetailsOpen?: boolean }>(({}) => ({
-  padding: theme.spacing(3, 0.5),
+  paddingLeft: theme.spacing(0.5),
+  paddingRight: theme.spacing(0.5),
+  height: headerHeight,
   display: 'flex',
   justifyContent: 'space-between',
   borderBottom: `1px solid ${theme.palette.grey[200]}`,
