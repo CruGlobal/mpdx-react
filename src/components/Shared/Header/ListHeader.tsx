@@ -30,7 +30,8 @@ export const headerHeight = theme.spacing(12);
 const HeaderWrap = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'contactDetailsOpen',
 })<{ contactDetailsOpen?: boolean }>(({}) => ({
-  paddingX: theme.spacing(0.5),
+  paddingLeft: theme.spacing(0.5),
+  paddingRight: theme.spacing(0.5),
   height: headerHeight,
   display: 'flex',
   justifyContent: 'space-between',
