@@ -22,7 +22,7 @@ const TestWrapper = ({
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider mocks={mocks} cache={cache} addTypename={false}>
-            <>{children}</>
+            {children}
           </MockedProvider>
         </SnackbarProvider>
       </LocalizationProvider>

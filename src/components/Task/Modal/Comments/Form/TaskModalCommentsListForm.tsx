@@ -92,54 +92,49 @@ const TaskModalCommentsListForm = ({
     handleFormClose(false);
   };
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        <Box>
-          <Formik
-            initialValues={{ body: '' }}
-            validationSchema={commentSchema}
-            onSubmit={onSubmit}
-          >
-            {({
-              values: { body },
-              handleChange,
-              handleSubmit,
-              isSubmitting,
-              isValid,
-            }): ReactElement => (
-              <form onSubmit={handleSubmit} noValidate>
-                <TextField
-                  value={body}
-                  onChange={handleChange('body')}
-                  fullWidth
-                  multiline
-                  inputProps={{ 'aria-label': 'Body' }}
-                  required
-                  onKeyPress={(event): void => {
-                    if (event.key === 'Enter' && !event.shiftKey) {
-                      handleSubmit();
-                      event.preventDefault();
-                    }
-                  }}
-                />
-                <Box width="100%" display="flex" justifyContent="end">
-                  <SubmitButton
-                    size="small"
-                    disabled={!isValid || isSubmitting}
-                  >
-                    {t('Save')}
-                  </SubmitButton>
-                </Box>
-              </form>
-            )}
-          </Formik>
-        </Box>
-      </motion.div>
-    </>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.5 }}
+    >
+      <Box>
+        <Formik
+          initialValues={{ body: '' }}
+          validationSchema={commentSchema}
+          onSubmit={onSubmit}
+        >
+          {({
+            values: { body },
+            handleChange,
+            handleSubmit,
+            isSubmitting,
+            isValid,
+          }): ReactElement => (
+            <form onSubmit={handleSubmit} noValidate>
+              <TextField
+                value={body}
+                onChange={handleChange('body')}
+                fullWidth
+                multiline
+                inputProps={{ 'aria-label': 'Body' }}
+                required
+                onKeyPress={(event): void => {
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    handleSubmit();
+                    event.preventDefault();
+                  }
+                }}
+              />
+              <Box width="100%" display="flex" justifyContent="end">
+                <SubmitButton size="small" disabled={!isValid || isSubmitting}>
+                  {t('Save')}
+                </SubmitButton>
+              </Box>
+            </form>
+          )}
+        </Formik>
+      </Box>
+    </motion.div>
   );
 };
 

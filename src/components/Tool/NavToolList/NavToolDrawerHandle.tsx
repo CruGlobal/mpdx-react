@@ -23,30 +23,28 @@ const NavToolDrawerHandle = ({ open, toggle }: Props): ReactElement => {
   const { classes } = useStyles();
 
   return (
-    <>
-      <Box
-        display="flex"
-        alignItems="center"
-        style={{
-          height: '100vh',
-          position: 'fixed',
-          zIndex: 10,
-          width: '30px',
-          transition: 'left 0.25s',
-          left: open ? 290 : 0,
-          backgroundColor: theme.palette.mpdxBlue.main,
-        }}
-      >
-        <IconButton onClick={toggle} className={classes.navToggle}>
-          <DoubleArrowIcon
-            style={{
-              transform: open ? 'rotate(180deg)' : '',
-              transition: 'transform 0.5s',
-            }}
-          />
-        </IconButton>
-      </Box>
-    </>
+    <Box
+      display="flex"
+      alignItems="center"
+      style={{
+        height: '100vh',
+        position: 'fixed',
+        zIndex: 10,
+        width: '30px',
+        transition: 'left 0.25s',
+        left: open ? 290 : 0,
+        backgroundColor: theme.palette.mpdxBlue.main,
+      }}
+    >
+      <IconButton onClick={toggle} className={classes.navToggle}>
+        <DoubleArrowIcon
+          style={{
+            transform: open ? 'rotate(180deg)' : '',
+            transition: 'transform 0.5s',
+          }}
+        />
+      </IconButton>
+    </Box>
   );
 };
 

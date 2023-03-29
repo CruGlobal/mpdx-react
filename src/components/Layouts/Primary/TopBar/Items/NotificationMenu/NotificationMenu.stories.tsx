@@ -15,51 +15,42 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <>
-      <MockedProvider
-        mocks={[
-          ...getNotificationsMocks(),
-          acknowledgeAllUserNotificationsMutationMock(),
-        ]}
-        addTypename={false}
-      >
-        <AppBar>
-          <Box>
-            <NotificationMenu />
-          </Box>
-        </AppBar>
-      </MockedProvider>
-    </>
+    <MockedProvider
+      mocks={[
+        ...getNotificationsMocks(),
+        acknowledgeAllUserNotificationsMutationMock(),
+      ]}
+      addTypename={false}
+    >
+      <AppBar>
+        <Box>
+          <NotificationMenu />
+        </Box>
+      </AppBar>
+    </MockedProvider>
   );
 };
 
 export const Empty = (): ReactElement => {
   return (
-    <>
-      <MockedProvider mocks={[getNotificationsEmptyMock()]} addTypename={false}>
-        <AppBar>
-          <Box>
-            <NotificationMenu />
-          </Box>
-        </AppBar>
-      </MockedProvider>
-    </>
+    <MockedProvider mocks={[getNotificationsEmptyMock()]} addTypename={false}>
+      <AppBar>
+        <Box>
+          <NotificationMenu />
+        </Box>
+      </AppBar>
+    </MockedProvider>
   );
 };
 
 export const Loading = (): ReactElement => {
   return (
-    <>
-      <MockedProvider
-        mocks={[getNotificationsLoadingMock()]}
-        addTypename={false}
-      >
-        <AppBar>
-          <Box>
-            <NotificationMenu />
-          </Box>
-        </AppBar>
-      </MockedProvider>
-    </>
+    <MockedProvider mocks={[getNotificationsLoadingMock()]} addTypename={false}>
+      <AppBar>
+        <Box>
+          <NotificationMenu />
+        </Box>
+      </AppBar>
+    </MockedProvider>
   );
 };

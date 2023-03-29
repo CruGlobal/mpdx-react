@@ -117,26 +117,22 @@ const TaskModal = ({
     }
   };
 
-  return (
-    <>
-      {loading ? (
-        <Loading loading />
+  return loading ? (
+    <Loading loading />
+  ) : (
+    <Modal isOpen={open} title={renderTitle()} handleClose={onModalClose}>
+      {accountListId ? (
+        renderView()
       ) : (
-        <Modal isOpen={open} title={renderTitle()} handleClose={onModalClose}>
-          {accountListId ? (
-            <>{renderView()}</>
-          ) : (
-            <DialogContent dividers>
-              <Typography color="error" align="center">
-                {t(
-                  'Our apologies. It appears something has gone wrong. Please try again later and contact the administrator if this problem persists.',
-                )}
-              </Typography>
-            </DialogContent>
-          )}
-        </Modal>
+        <DialogContent dividers>
+          <Typography color="error" align="center">
+            {t(
+              'Our apologies. It appears something has gone wrong. Please try again later and contact the administrator if this problem persists.',
+            )}
+          </Typography>
+        </DialogContent>
       )}
-    </>
+    </Modal>
   );
 };
 

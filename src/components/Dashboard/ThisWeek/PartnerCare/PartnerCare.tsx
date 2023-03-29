@@ -390,90 +390,83 @@ const PartnerCare = ({
               ))}
             </CardList>
           )}
-          {!loading && (
-            <>
-              {!celebrations || (celebrations && celebrations.length === 0) ? (
-                <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
-                  <img src={illustration7} alt="No partner care celebrations" />
-                  {t('No celebrations to show.')}
-                </CardContentContainer>
-              ) : (
-                <CardList data-testid="PartnerCareCelebrationList">
-                  {celebrations?.map(
-                    (person, index) =>
-                      (person.birthdayDay || person.anniversaryDay) &&
-                      (person.birthdayMonth || person.anniversaryMonth) && (
-                        <ListItem
-                          key={person.id}
-                          button
-                          data-testid={`CelebrationItem-${index}`}
-                        >
-                          <ListItemIcon>
-                            {person.birthdayDay ? (
-                              <CakeIcon />
-                            ) : (
-                              <FavoriteIcon />
-                            )}
-                          </ListItemIcon>
-                          <ListItemText
-                            disableTypography={true}
-                            primary={
-                              <Typography variant="body1">
-                                {person.birthdayDay
-                                  ? `${person.firstName} ${person.lastName}`
-                                  : person.parentContact.name}
-                              </Typography>
-                            }
-                            secondary={
-                              <Box style={{ whiteSpace: 'nowrap' }}>
-                                <Box
-                                  component="div"
-                                  textOverflow="ellipsis"
-                                  overflow="hidden"
+          {!loading &&
+            (!celebrations || (celebrations && celebrations.length === 0) ? (
+              <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
+                <img src={illustration7} alt="No partner care celebrations" />
+                {t('No celebrations to show.')}
+              </CardContentContainer>
+            ) : (
+              <CardList data-testid="PartnerCareCelebrationList">
+                {celebrations?.map(
+                  (person, index) =>
+                    (person.birthdayDay || person.anniversaryDay) &&
+                    (person.birthdayMonth || person.anniversaryMonth) && (
+                      <ListItem
+                        key={person.id}
+                        button
+                        data-testid={`CelebrationItem-${index}`}
+                      >
+                        <ListItemIcon>
+                          {person.birthdayDay ? <CakeIcon /> : <FavoriteIcon />}
+                        </ListItemIcon>
+                        <ListItemText
+                          disableTypography={true}
+                          primary={
+                            <Typography variant="body1">
+                              {person.birthdayDay
+                                ? `${person.firstName} ${person.lastName}`
+                                : person.parentContact.name}
+                            </Typography>
+                          }
+                          secondary={
+                            <Box style={{ whiteSpace: 'nowrap' }}>
+                              <Box
+                                component="div"
+                                textOverflow="ellipsis"
+                                overflow="hidden"
+                              >
+                                <Typography
+                                  component="span"
+                                  variant="body2"
+                                  color="textSecondary"
                                 >
-                                  <Typography
-                                    component="span"
-                                    variant="body2"
-                                    color="textSecondary"
-                                  >
-                                    {person.birthdayDay
-                                      ? dayMonthFormat(
-                                          person.birthdayDay,
-                                          person.birthdayMonth || 0,
-                                        )
-                                      : dayMonthFormat(
-                                          person.anniversaryDay || 0,
-                                          person.anniversaryMonth || 0,
-                                        )}
-                                  </Typography>
-                                </Box>
+                                  {person.birthdayDay
+                                    ? dayMonthFormat(
+                                        person.birthdayDay,
+                                        person.birthdayMonth || 0,
+                                      )
+                                    : dayMonthFormat(
+                                        person.anniversaryDay || 0,
+                                        person.anniversaryMonth || 0,
+                                      )}
+                                </Typography>
                               </Box>
+                            </Box>
+                          }
+                        />
+                        <ListItemSecondaryAction>
+                          <CompleteButton
+                            role="button"
+                            aria-label="Complete Button"
+                            onClick={() =>
+                              handleCreateClick(
+                                person.birthdayDay
+                                  ? CelebrationTypeEnum.birthday
+                                  : CelebrationTypeEnum.anniversary,
+                                person,
+                              )
                             }
-                          />
-                          <ListItemSecondaryAction>
-                            <CompleteButton
-                              role="button"
-                              aria-label="Complete Button"
-                              onClick={() =>
-                                handleCreateClick(
-                                  person.birthdayDay
-                                    ? CelebrationTypeEnum.birthday
-                                    : CelebrationTypeEnum.anniversary,
-                                  person,
-                                )
-                              }
-                            >
-                              <Brightness1Outlined name="Circle Icon" />
-                              <AddHoverIcon name="Add Icon" />
-                            </CompleteButton>
-                          </ListItemSecondaryAction>
-                        </ListItem>
-                      ),
-                  )}
-                </CardList>
-              )}
-            </>
-          )}
+                          >
+                            <Brightness1Outlined name="Circle Icon" />
+                            <AddHoverIcon name="Add Icon" />
+                          </CompleteButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    ),
+                )}
+              </CardList>
+            ))}
         </MotionDiv>
       )}
     </CardContainer>

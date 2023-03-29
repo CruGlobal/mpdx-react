@@ -11,14 +11,12 @@ export default {
 export const Default = (): ReactElement => {
   const mocks = [getTopBarMock()];
   return (
-    <>
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <AppBar>
-          <Box>
-            <ProfileMenu />
-          </Box>
-        </AppBar>
-      </MockedProvider>
-    </>
+    <MockedProvider mocks={mocks} addTypename={false}>
+      <AppBar>
+        <Box>
+          <ProfileMenu />
+        </Box>
+      </AppBar>
+    </MockedProvider>
   );
 };

@@ -371,9 +371,7 @@ const TasksPage: React.FC = () => {
                   onClose={toggleFilterPanel}
                   onSelectedFiltersChanged={setActiveFilters}
                 />
-              ) : (
-                <></>
-              )
+              ) : undefined
             }
             leftOpen={filterPanelOpen}
             leftWidth="290px"
@@ -555,9 +553,7 @@ const TasksPage: React.FC = () => {
                     onClose={() => setContactFocus(undefined)}
                   />
                 </ContactsProvider>
-              ) : (
-                <></>
-              )
+              ) : undefined
             }
             rightOpen={contactDetailsOpen}
             rightWidth="60%"

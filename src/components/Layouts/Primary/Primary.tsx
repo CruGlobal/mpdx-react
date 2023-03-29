@@ -40,25 +40,23 @@ const Primary = ({ children }: Props): ReactElement => {
   const [isMobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
   return (
-    <>
-      <RootContainer>
-        <TopBar
-          onMobileNavOpen={() => setMobileNavOpen(true)}
-          accountListId={accountListId}
+    <RootContainer>
+      <TopBar
+        onMobileNavOpen={() => setMobileNavOpen(true)}
+        accountListId={accountListId}
+      />
+      {accountListId && (
+        <NavBar
+          onMobileClose={() => setMobileNavOpen(false)}
+          openMobile={isMobileNavOpen}
         />
-        {accountListId && (
-          <NavBar
-            onMobileClose={() => setMobileNavOpen(false)}
-            openMobile={isMobileNavOpen}
-          />
-        )}
-        <Wrapper>
-          <ContentContainer>
-            <Content>{children}</Content>
-          </ContentContainer>
-        </Wrapper>
-      </RootContainer>
-    </>
+      )}
+      <Wrapper>
+        <ContentContainer>
+          <Content>{children}</Content>
+        </ContentContainer>
+      </Wrapper>
+    </RootContainer>
   );
 };
 

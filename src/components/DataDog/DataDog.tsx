@@ -1,10 +1,10 @@
-import { ReactElement, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useGetUserInfoQuery } from './GetUserInfo.generated';
 import { setDataDogUser } from 'src/hooks/useDataDog';
 
-const DataDog = (): ReactElement => {
+const DataDog: React.FC = () => {
   const { query } = useRouter();
   const { data: session } = useSession();
   const { data, loading } = useGetUserInfoQuery({ skip: !session });
@@ -26,7 +26,7 @@ const DataDog = (): ReactElement => {
       });
     }
   }, [loading, data]);
-  return <></>;
+  return null;
 };
 
 export default DataDog;

@@ -80,115 +80,108 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
   };
 
   return (
-    <>
-      <ModalSectionContainer key={index}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <ContactInputField
-              label={t('Phone Number')}
+    <ModalSectionContainer key={index}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <ContactInputField
+            label={t('Phone Number')}
+            destroyed={phoneNumber.destroy ?? false}
+            value={phoneNumber.number ?? ''}
+            onChange={(event) =>
+              setFieldValue(`phoneNumbers.${index}.number`, event.target.value)
+            }
+            disabled={!!phoneNumber.destroy || locked}
+            inputProps={{ 'aria-label': t('Phone Number') }}
+            InputProps={{
+              ...(locked
+                ? {
+                    endAdornment: (
+                      <Lock titleAccess={t('Synced with Donation Services')} />
+                    ),
+                  }
+                : {}),
+            }}
+            error={getIn(errors, `phoneNumbers.${index}`)}
+            helperText={
+              getIn(errors, `phoneNumbers.${index}`) &&
+              getIn(errors, `phoneNumbers.${index}`).number
+            }
+            fullWidth
+            required
+          />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <FormControl fullWidth>
+            <InputLabel id={`phone-type-label-${index}`}>
+              {t('Type')}
+            </InputLabel>
+            <PhoneNumberSelect
+              label={t('Type')}
+              labelId={`phone-type-label-${index}`}
+              id={`phone-type-${index}`}
               destroyed={phoneNumber.destroy ?? false}
-              value={phoneNumber.number ?? ''}
+              value={phoneNumber.location ?? ''}
               onChange={(event) =>
                 setFieldValue(
-                  `phoneNumbers.${index}.number`,
+                  `phoneNumbers.${index}.location`,
                   event.target.value,
                 )
               }
               disabled={!!phoneNumber.destroy || locked}
-              inputProps={{ 'aria-label': t('Phone Number') }}
-              InputProps={{
-                ...(locked
-                  ? {
-                      endAdornment: (
-                        <Lock
-                          titleAccess={t('Synced with Donation Services')}
-                        />
-                      ),
-                    }
-                  : {}),
+              inputProps={{
+                'aria-label': t('Phone Number Type'),
               }}
-              error={getIn(errors, `phoneNumbers.${index}`)}
-              helperText={
-                getIn(errors, `phoneNumbers.${index}`) &&
-                getIn(errors, `phoneNumbers.${index}`).number
-              }
               fullWidth
-              required
-            />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id={`phone-type-label-${index}`}>
-                {t('Type')}
-              </InputLabel>
-              <PhoneNumberSelect
-                label={t('Type')}
-                labelId={`phone-type-label-${index}`}
-                id={`phone-type-${index}`}
-                destroyed={phoneNumber.destroy ?? false}
-                value={phoneNumber.location ?? ''}
-                onChange={(event) =>
-                  setFieldValue(
-                    `phoneNumbers.${index}.location`,
-                    event.target.value,
-                  )
-                }
-                disabled={!!phoneNumber.destroy || locked}
-                inputProps={{
-                  'aria-label': t('Phone Number Type'),
-                }}
-                fullWidth
-              >
-                <MenuItem selected value="">
-                  None
-                </MenuItem>
-                <MenuItem value="mobile" aria-label={t('Mobile')}>
-                  {t('Mobile')}
-                </MenuItem>
-                <MenuItem value="home" aria-label={t('Home')}>
-                  {t('Home')}
-                </MenuItem>
-                <MenuItem value="Work" aria-label={t('Work')}>
-                  {t('Work')}
-                </MenuItem>
-                <MenuItem value="other" aria-label={t('Other')}>
-                  {t('Other')}
-                </MenuItem>
-              </PhoneNumberSelect>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <PrimaryControlLabel
-              label={t('Primary')}
-              control={
-                <Checkbox
-                  value={phoneNumber.id}
-                  checked={isPrimaryChecked}
-                  onChange={handleChange}
-                  color="secondary"
-                />
-              }
-              destroyed={phoneNumber.destroy ?? false}
-            />
-          </Grid>
-          <ModalSectionDeleteIcon
-            disabled={locked}
-            handleClick={
-              phoneNumber.id
-                ? () =>
-                    setFieldValue(
-                      `phoneNumbers.${index}.destroy`,
-                      !phoneNumber.destroy,
-                    )
-                : () => {
-                    const temp = phoneNumbers;
-                    temp?.splice(index, 1);
-                    setFieldValue('phoneNumbers', temp);
-                  }
+            >
+              <MenuItem selected value="">
+                None
+              </MenuItem>
+              <MenuItem value="mobile" aria-label={t('Mobile')}>
+                {t('Mobile')}
+              </MenuItem>
+              <MenuItem value="home" aria-label={t('Home')}>
+                {t('Home')}
+              </MenuItem>
+              <MenuItem value="Work" aria-label={t('Work')}>
+                {t('Work')}
+              </MenuItem>
+              <MenuItem value="other" aria-label={t('Other')}>
+                {t('Other')}
+              </MenuItem>
+            </PhoneNumberSelect>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <PrimaryControlLabel
+            label={t('Primary')}
+            control={
+              <Checkbox
+                value={phoneNumber.id}
+                checked={isPrimaryChecked}
+                onChange={handleChange}
+                color="secondary"
+              />
             }
+            destroyed={phoneNumber.destroy ?? false}
           />
         </Grid>
-      </ModalSectionContainer>
-    </>
+        <ModalSectionDeleteIcon
+          disabled={locked}
+          handleClick={
+            phoneNumber.id
+              ? () =>
+                  setFieldValue(
+                    `phoneNumbers.${index}.destroy`,
+                    !phoneNumber.destroy,
+                  )
+              : () => {
+                  const temp = phoneNumbers;
+                  temp?.splice(index, 1);
+                  setFieldValue('phoneNumbers', temp);
+                }
+          }
+        />
+      </Grid>
+    </ModalSectionContainer>
   );
 };

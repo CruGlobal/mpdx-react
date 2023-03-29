@@ -108,81 +108,78 @@ const ReferralsTab = ({
           </CardActions>
         </>
       )}
-      {!loading && (
-        <>
-          {!referrals || referrals.nodes.length === 0 ? (
-            <CardContent
-              className={classes.cardContent}
-              data-testid={`ReferralsTab${tab}CardContentEmpty`}
+      {!loading &&
+        (!referrals || referrals.nodes.length === 0 ? (
+          <CardContent
+            className={classes.cardContent}
+            data-testid={`ReferralsTab${tab}CardContentEmpty`}
+          >
+            <img src={illustration4} className={classes.img} alt="empty" />
+            {t('No referrals to show.')}
+          </CardContent>
+        ) : (
+          <>
+            <List
+              className={classes.list}
+              data-testid={`ReferralsTab${tab}List`}
             >
-              <img src={illustration4} className={classes.img} alt="empty" />
-              {t('No referrals to show.')}
-            </CardContent>
-          ) : (
-            <>
-              <List
-                className={classes.list}
-                data-testid={`ReferralsTab${tab}List`}
-              >
-                {referrals.nodes.map((contact) => (
-                  <ListItem
-                    component="a"
-                    button
-                    data-testid={`ReferralsTab${tab}ListItem-${contact.id}`}
-                    key={contact.id}
-                    onClick={() =>
-                      push(
-                        `/accountLists/${accountListId}/contacts/list/${contact.id}`,
-                      )
-                    }
-                  >
-                    <ListItemText
-                      disableTypography={true}
-                      primary={
-                        <Typography variant="body1">{contact.name}</Typography>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
-              <CardActions>
-                <Button
-                  size="small"
-                  color="primary"
-                  href={`/accountLists/${accountListId}/contacts/list?filters=${encodeURIComponent(
-                    JSON.stringify(
-                      tab === 'Recent'
-                        ? {
-                            createdAt: {
-                              min: DateTime.local()
-                                .endOf('day')
-                                .minus({ weeks: 2 })
-                                .toISODate(),
-                              max: DateTime.local().toISODate(),
-                            },
-                            referrer: ['any'],
-                          }
-                        : {
-                            referrer: ['any'],
-                            status: [
-                              StatusEnum.NeverContacted,
-                              StatusEnum.AskInFuture,
-                              StatusEnum.CultivateRelationship,
-                              StatusEnum.ContactForAppointment,
-                            ],
-                          },
-                    ),
-                  )}`}
+              {referrals.nodes.map((contact) => (
+                <ListItem
+                  component="a"
+                  button
+                  data-testid={`ReferralsTab${tab}ListItem-${contact.id}`}
+                  key={contact.id}
+                  onClick={() =>
+                    push(
+                      `/accountLists/${accountListId}/contacts/list/${contact.id}`,
+                    )
+                  }
                 >
-                  {t('View All ({{ totalCount, number }})', {
-                    totalCount: referrals.totalCount,
-                  })}
-                </Button>
-              </CardActions>
-            </>
-          )}
-        </>
-      )}
+                  <ListItemText
+                    disableTypography={true}
+                    primary={
+                      <Typography variant="body1">{contact.name}</Typography>
+                    }
+                  />
+                </ListItem>
+              ))}
+            </List>
+            <CardActions>
+              <Button
+                size="small"
+                color="primary"
+                href={`/accountLists/${accountListId}/contacts/list?filters=${encodeURIComponent(
+                  JSON.stringify(
+                    tab === 'Recent'
+                      ? {
+                          createdAt: {
+                            min: DateTime.local()
+                              .endOf('day')
+                              .minus({ weeks: 2 })
+                              .toISODate(),
+                            max: DateTime.local().toISODate(),
+                          },
+                          referrer: ['any'],
+                        }
+                      : {
+                          referrer: ['any'],
+                          status: [
+                            StatusEnum.NeverContacted,
+                            StatusEnum.AskInFuture,
+                            StatusEnum.CultivateRelationship,
+                            StatusEnum.ContactForAppointment,
+                          ],
+                        },
+                  ),
+                )}`}
+              >
+                {t('View All ({{ totalCount, number }})', {
+                  totalCount: referrals.totalCount,
+                })}
+              </Button>
+            </CardActions>
+          </>
+        ))}
     </>
   );
 };
