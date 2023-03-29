@@ -97,7 +97,7 @@ export const NavReportsList: React.FC<Props & BoxProps> = ({
               </Box>
             </FilterHeader>
             <FilterList dense>
-              {data && (
+              {accounts.length > 1 && (
                 <FilterListItemMultiselect
                   filter={filter}
                   selected={designationAccounts}
