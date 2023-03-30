@@ -35,6 +35,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];
@@ -181,7 +182,7 @@ export const MassActionsEditTasksModal: React.FC<
                       <MenuItem value={undefined}>{t('None')}</MenuItem>
                       {Object.values(ActivityTypeEnum).map((val) => (
                         <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
+                          {getLocalizedTaskType(t, val)}
                         </MenuItem>
                       ))}
                     </Select>
