@@ -179,12 +179,14 @@ export const MassActionsEditTasksModal: React.FC<
                         setFieldValue('activityType', e.target.value)
                       }
                     >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
-                      {Object.values(ActivityTypeEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedTaskType(t, val)}
-                        </MenuItem>
-                      ))}
+                      <MenuItem value={''}>{t('None')}</MenuItem>
+                      {Object.values(ActivityTypeEnum)
+                        .filter((val) => val !== ActivityTypeEnum.None)
+                        .map((val) => (
+                          <MenuItem key={val} value={val}>
+                            {getLocalizedTaskType(t, val)}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 </Grid>
