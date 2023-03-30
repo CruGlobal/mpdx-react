@@ -59,13 +59,6 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
           clearDataDogUser();
         });
       }
-      // Redirect to homepage if user doesn't have access to view accountList,
-      if (
-        message.includes('AccountList with id=') &&
-        message.includes(' not found')
-      ) {
-        location.href = `${process.env.SITE_URL}/`;
-      }
       snackNotifications.error(message);
     });
   }
