@@ -152,7 +152,6 @@ const TaskModalLogForm = ({
         contactIds: task.contacts.nodes.map(({ id }) => id),
       }
     : {
-        id: null,
         activityType: null,
         subject: '',
         location: null,

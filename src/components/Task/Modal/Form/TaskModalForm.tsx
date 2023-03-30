@@ -112,7 +112,6 @@ const TaskModalForm = ({
         contactIds: task.contacts.nodes.map(({ id }) => id),
       }
     : {
-        id: null,
         activityType: defaultValues?.activityType || null,
         location: null,
         subject: defaultValues?.subject || '',
