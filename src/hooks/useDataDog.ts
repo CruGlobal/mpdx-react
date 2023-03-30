@@ -8,7 +8,7 @@ export const isDataDogConfigured = (): boolean => {
   if (typeof window === 'undefined') return false;
   return !!(
     process.env.DATADOG_CONFIGURED &&
-    Object.hasOwn(window?.DD_RUM ?? {}, 'getUser')
+    (window?.DD_RUM ?? {}).hasOwnProperty('getUser')
   );
 };
 
