@@ -296,7 +296,7 @@ export const MassActionsEditTasksModal: React.FC<
                       control={
                         <Checkbox checked={noDueDate} color="secondary" />
                       }
-                      label="No Due Date"
+                      label={t('No Due Date')}
                       name="noDueDate"
                       onChange={handleChange}
                     />
