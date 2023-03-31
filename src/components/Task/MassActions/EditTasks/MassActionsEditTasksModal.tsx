@@ -22,7 +22,10 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  TaskUpdateInput,
+} from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
 import theme from 'src/theme';
@@ -49,7 +52,7 @@ type EditTasksFields = {
   activityType: ActivityTypeEnum | null;
   userId: string | null;
   startAt: string | null;
-  noDueDate: boolean | null | undefined;
+  noDueDate: boolean;
   body: string | null;
 };
 
@@ -58,7 +61,7 @@ const MassActionsEditTasksSchema = yup.object({
   activityType: yup.mixed<ActivityTypeEnum>(),
   userId: yup.string().nullable(),
   startAt: yup.string().nullable(),
-  noDueDate: yup.boolean().nullable(),
+  noDueDate: yup.boolean().required(),
   body: yup.string().nullable(),
 });
 
@@ -73,21 +76,19 @@ export const MassActionsEditTasksModal: React.FC<
   const { enqueueSnackbar } = useSnackbar();
 
   const onSubmit = async (fields: EditTasksFields) => {
-    const { subject, activityType, startAt, userId, noDueDate, body } = fields;
-    const relevantFields = {
-      subject,
-      activityType,
-      startAt,
-      userId,
-    };
-    const formattedFields: { [key: string]: any } = {};
-    for (const [key, value] of Object.entries(relevantFields)) {
+    const { noDueDate, body } = fields;
+    const formattedFields: TaskUpdateInput = {};
+    ['subject', 'activityType', 'startAt', 'userId'].forEach((key) => {
+      const value = fields[key];
       if (value) {
         formattedFields[key] = value;
       }
+    });
+    if (formattedFields.activityType === ActivityTypeEnum.None) {
+      formattedFields.activityType = null;
     }
     if (noDueDate) {
-      formattedFields['startAt'] = null;
+      formattedFields.startAt = null;
     }
     const attributes = ids.map((id) => ({
       id,
@@ -135,7 +136,7 @@ export const MassActionsEditTasksModal: React.FC<
           activityType: null,
           userId: null,
           startAt: null,
-          noDueDate: undefined,
+          noDueDate: false,
           body: null,
         }}
         onSubmit={onSubmit}
@@ -179,7 +180,12 @@ export const MassActionsEditTasksModal: React.FC<
                         setFieldValue('activityType', e.target.value)
                       }
                     >
-                      <MenuItem value={''}>{t('None')}</MenuItem>
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
+                      <MenuItem value={ActivityTypeEnum.None}>
+                        {t('None')}
+                      </MenuItem>
                       {Object.values(ActivityTypeEnum)
                         .filter((val) => val !== ActivityTypeEnum.None)
                         .map((val) => (
