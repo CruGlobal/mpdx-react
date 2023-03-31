@@ -342,6 +342,12 @@ const TasksPage: React.FC = () => {
         accountListId: accountListId ?? '',
         ids,
       },
+      update: (cache) => {
+        ids.forEach((id) => {
+          cache.evict({ id: `Task:${id}` });
+        });
+        cache.gc();
+      },
       refetchQueries: [
         {
           query: TasksDocument,

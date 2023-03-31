@@ -56,6 +56,10 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
           accountListId: accountListId ?? '',
           id: taskId,
         },
+        update: (cache) => {
+          cache.evict({ id: `Task:${taskId}` });
+          cache.gc();
+        },
         refetchQueries: [
           {
             query: ContactTasksTabDocument,
