@@ -222,7 +222,7 @@ describe('TaskModalForm', () => {
 
     userEvent.type(getByLabelText('Location'), '123 Test Street');
 
-    userEvent.click(getByRole('listbox', { hidden: true, name: 'Action' }));
+    userEvent.click(getByRole('combobox', { hidden: true, name: 'Action' }));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
         'Call',

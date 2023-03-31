@@ -8,9 +8,6 @@ import {
   FormControlLabel,
   Grid,
   InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
 } from '@mui/material';
 import CalendarToday from '@mui/icons-material/CalendarToday';
@@ -36,9 +33,9 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];
@@ -171,29 +168,41 @@ export const MassActionsEditTasksModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <InputLabel id="activityType">{t('Action')}</InputLabel>
-                    <Select
-                      label={t('Action')}
-                      labelId="activityType"
-                      value={activityType}
-                      onChange={(e) =>
-                        setFieldValue('activityType', e.target.value)
+                    <Autocomplete
+                      openOnFocus
+                      value={
+                        activityType === null ||
+                        typeof activityType === 'undefined'
+                          ? ''
+                          : activityType
                       }
-                    >
-                      <MenuItem value={''}>
-                        <em>{t("Don't change")}</em>
-                      </MenuItem>
-                      <MenuItem value={ActivityTypeEnum.None}>
-                        {t('None')}
-                      </MenuItem>
-                      {Object.values(ActivityTypeEnum)
-                        .filter((val) => val !== ActivityTypeEnum.None)
-                        .map((val) => (
-                          <MenuItem key={val} value={val}>
-                            {getLocalizedTaskType(t, val)}
-                          </MenuItem>
-                        ))}
-                    </Select>
+                      // Sort None to top
+                      options={[
+                        'DONT_CHANGE',
+                        ...Object.values(ActivityTypeEnum).sort((a) =>
+                          a === ActivityTypeEnum.None ? -1 : 1,
+                        ),
+                      ]}
+                      getOptionLabel={(activity) =>
+                        activity === ActivityTypeEnum.None
+                          ? t('None')
+                          : activity === 'DONT_CHANGE'
+                          ? t("Don't change")
+                          : getLocalizedTaskType(
+                              t,
+                              activity as ActivityTypeEnum,
+                            )
+                      }
+                      renderInput={(params): ReactElement => (
+                        <TextField {...params} label={t('Action')} />
+                      )}
+                      onChange={(_, activity): void => {
+                        setFieldValue(
+                          'activityType',
+                          activity === 'DONT_CHANGE' ? '' : activity,
+                        );
+                      }}
+                    />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} lg={6}>

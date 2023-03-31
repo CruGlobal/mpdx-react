@@ -1,4 +1,10 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, {
+  ReactElement,
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+} from 'react';
 import {
   Autocomplete,
   TextField,
@@ -161,7 +167,7 @@ const TaskModalLogForm = ({
         notificationTimeBefore: null,
         notificationType: null,
         notificationTimeUnit: null,
-        result: ResultEnum.Done,
+        result: ResultEnum.Completed,
         nextAction: null,
         ...defaultValues,
       };
@@ -185,7 +191,10 @@ const TaskModalLogForm = ({
   const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const [updateTaskLocation] = useUpdateTaskLocationMutation();
-
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) (inputRef.current as HTMLInputElement).focus();
+  }, []);
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
       setSearchTerm(event.target.value);
@@ -374,27 +383,43 @@ const TaskModalLogForm = ({
                     errors.subject && touched.subject && t('Field is required')
                   }
                   required
+                  inputRef={inputRef}
                 />
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
-                  <InputLabel id="activityType">{t('Action')}</InputLabel>
-                  <NullableSelect
-                    labelId="activityType"
-                    label={t('Action')}
-                    value={activityType}
-                    onChange={(e) =>
-                      setFieldValue('activityType', e.target.value)
+                  <Autocomplete
+                    openOnFocus
+                    value={
+                      activityType === null ||
+                      typeof activityType === 'undefined'
+                        ? ''
+                        : activityType
                     }
-                  >
-                    {Object.values(ActivityTypeEnum)
-                      .filter((val) => val !== ActivityTypeEnum.None)
-                      .map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedTaskType(t, val)}
-                        </MenuItem>
-                      ))}
-                  </NullableSelect>
+                    // Sort option 'None' to top of list
+                    options={Object.values(ActivityTypeEnum).sort((a) =>
+                      a === ActivityTypeEnum.None ? -1 : 1,
+                    )}
+                    getOptionLabel={(activity) => {
+                      if (activity === ActivityTypeEnum.None) {
+                        return t('None');
+                      } else {
+                        return getLocalizedTaskType(
+                          t,
+                          activity as ActivityTypeEnum,
+                        );
+                      }
+                    }}
+                    renderInput={(params): ReactElement => (
+                      <TextField {...params} label={t('Action')} />
+                    )}
+                    onChange={(_, activity): void => {
+                      setFieldValue(
+                        'activityType',
+                        activity === ActivityTypeEnum.None ? null : activity,
+                      );
+                    }}
+                  />
                 </FormControl>
               </Grid>
               {activityType === ActivityTypeEnum.Appointment && (
@@ -481,8 +506,8 @@ const TaskModalLogForm = ({
                           </MenuItem>
                         ))
                     ) : (
-                      <MenuItem value={ResultEnum.Done}>
-                        {getLocalizedResultString(t, ResultEnum.Done)}
+                      <MenuItem value={ResultEnum.Completed}>
+                        {getLocalizedResultString(t, ResultEnum.Completed)}
                       </MenuItem>
                     )}
                   </NullableSelect>

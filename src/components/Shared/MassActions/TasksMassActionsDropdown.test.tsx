@@ -1,6 +1,6 @@
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
@@ -82,9 +82,8 @@ describe('TasksMassActionsDropdown', () => {
   });
 
   it('opens the more actions menu and clicks the edit tasks action', async () => {
-    const { queryByTestId, getByText, queryByText } = render(
-      <TaskComponents />,
-    );
+    const { queryByTestId, getByText, queryByText, getByLabelText, getByRole } =
+      render(<TaskComponents />);
 
     expect(queryByText('Edit Tasks')).not.toBeInTheDocument();
     const actionsButton = getByText('Actions') as HTMLInputElement;
@@ -94,7 +93,13 @@ describe('TasksMassActionsDropdown', () => {
     await waitFor(() =>
       expect(queryByTestId('EditTasksModal')).toBeInTheDocument(),
     );
-    userEvent.click(queryByTestId('CloseIcon') as HTMLInputElement);
+    userEvent.click(getByLabelText('Action'));
+    userEvent.click(
+      within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
+        'Appointment',
+      ),
+    );
+    userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(
         queryByTestId('EditTasksModal') as HTMLInputElement,

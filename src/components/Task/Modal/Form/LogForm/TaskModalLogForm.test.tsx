@@ -373,4 +373,81 @@ describe('TaskModalLogForm', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled());
     expect(openTaskModal).toHaveBeenCalled();
   }, 10000);
+
+  it('Select appointent, enter location, enter comment to test API calls', async () => {
+    const onClose = jest.fn();
+    const mutationSpy = jest.fn();
+    const {
+      getByRole,
+      getAllByRole,
+      getByLabelText,
+      queryByLabelText,
+      getByText,
+    } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider<UpdateTaskMutation> onCall={mutationSpy}>
+              <TaskModalLogForm
+                accountListId={accountListId}
+                onClose={onClose}
+                task={mockTask}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+    expect(
+      getAllByRole('textbox').find(
+        (item) => (item as HTMLInputElement).value === '1/5/2016',
+      ),
+    ).toBeInTheDocument();
+    userEvent.type(
+      getByLabelText('Subject'),
+      'On the Journey with the Johnson Family',
+    );
+    userEvent.click(getByLabelText('Action'));
+    userEvent.click(
+      within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
+        'Appointment',
+      ),
+    );
+    userEvent.type(getByLabelText('Location'), 'Newcastle');
+    expect(queryByLabelText('Comment')).not.toBeInTheDocument();
+    userEvent.click(getByLabelText('Show More'));
+    expect(getByLabelText('Comment')).toBeInTheDocument();
+    userEvent.type(getByLabelText('Comment'), 'Meeting place info');
+    userEvent.click(getByText('Save'));
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+
+    //  3 create Task
+    const createTaskOperation = mutationSpy.mock.calls[3][0].operation;
+    await waitFor(() =>
+      expect(createTaskOperation.operationName).toEqual('CreateTask'),
+    );
+    await waitFor(() =>
+      expect(createTaskOperation.variables.attributes.activityType).toEqual(
+        'APPOINTMENT',
+      ),
+    );
+    //  4 Create location
+    const updateTaskOperation = mutationSpy.mock.calls[4][0].operation;
+    await waitFor(() =>
+      expect(updateTaskOperation.operationName).toEqual('UpdateTaskLocation'),
+    );
+    await waitFor(() =>
+      expect(updateTaskOperation.variables.location).toEqual('Newcastle'),
+    );
+    //  5 Create comment
+    const taskCommentOperation = mutationSpy.mock.calls[5][0].operation;
+    await waitFor(() =>
+      expect(taskCommentOperation.operationName).toEqual('CreateTaskComment'),
+    );
+    await waitFor(() =>
+      expect(taskCommentOperation.variables.attributes.body).toEqual(
+        'Meeting place info',
+      ),
+    );
+  }, 25000);
 });
