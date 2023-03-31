@@ -35,7 +35,6 @@ import {
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
   TaskCreateInput,
-  TaskUpdateInput,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
 import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
@@ -72,10 +71,7 @@ const LoadingIndicator = styled(CircularProgress)(() => ({
   margin: 'auto',
 }));
 
-const taskSchema: yup.SchemaOf<
-  TaskCreateInput | TaskUpdateInput | TaskLocation
-> = yup.object({
-  id: yup.string().nullable(),
+const taskSchema: yup.SchemaOf<TaskCreateInput | TaskLocation> = yup.object({
   activityType: yup.mixed<ActivityTypeEnum>(),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
@@ -152,7 +148,6 @@ const TaskModalLogForm = ({
         contactIds: task.contacts.nodes.map(({ id }) => id),
       }
     : {
-        id: null,
         activityType: null,
         subject: '',
         location: null,
