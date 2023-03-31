@@ -24,6 +24,7 @@ import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
 import {
   headerHeight,
   ListHeader,
+  ListHeaderCheckBoxState,
 } from '../../../../src/components/Shared/Header/ListHeader';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
@@ -233,6 +234,7 @@ const TasksPage: React.FC = () => {
     [allTasks],
   );
 
+  const totalCount = data?.tasks?.totalCount ?? 0;
   const {
     ids,
     selectionType,
@@ -241,12 +243,14 @@ const TasksPage: React.FC = () => {
     toggleSelectAll,
     toggleSelectionById,
   } = useMassSelection(
-    data?.tasks?.totalCount ?? 0,
+    totalCount,
     allTaskIds,
     activeFilters,
     searchTerm as string,
     starredFilter,
   );
+  const selectedIdCount =
+    selectionType === ListHeaderCheckBoxState.checked ? totalCount : ids.length;
   //#endregion
 
   //#region User Actions
@@ -436,7 +440,7 @@ const TasksPage: React.FC = () => {
                 {addTagsModalOpen && (
                   <MassActionsTasksAddTagsModal
                     ids={ids}
-                    selectedIdCount={data?.tasks.totalCount ?? 0}
+                    selectedIdCount={selectedIdCount}
                     accountListId={accountListId}
                     handleClose={() => setAddTagsModalOpen(false)}
                   />
@@ -453,7 +457,7 @@ const TasksPage: React.FC = () => {
                 {editTasksModalOpen && (
                   <MassActionsEditTasksModal
                     ids={ids}
-                    selectedIdCount={data?.tasks.totalCount ?? 0}
+                    selectedIdCount={selectedIdCount}
                     accountListId={accountListId}
                     handleClose={() => setEditTasksModalOpen(false)}
                   />
@@ -461,7 +465,7 @@ const TasksPage: React.FC = () => {
                 {removeTagsModalOpen && (
                   <MassActionsTasksRemoveTagsModal
                     ids={ids}
-                    selectedIdCount={data?.tasks.totalCount ?? 0}
+                    selectedIdCount={selectedIdCount}
                     accountListId={accountListId}
                     handleClose={() => setRemoveTagsModalOpen(false)}
                   />
