@@ -71,61 +71,57 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
     );
   }, []);
 
-  return (
+  return phoneNumbers ? (
     <>
-      {phoneNumbers ? (
-        <>
-          {phoneNumbers.length > 0 && (
+      {phoneNumbers.length > 0 && (
+        <ModalSectionContainer>
+          <ModalSectionIcon icon={<Phone />} />
+          <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
+            {t('Phone Numbers')}
+          </ContactPrimaryPersonSelectLabel>
+        </ModalSectionContainer>
+      )}
+      <FieldArray
+        name="phoneNumbers"
+        render={({ push }) => (
+          <>
+            {phoneNumbers?.map((phoneNumber, index) => (
+              <React.Fragment key={index}>
+                <PersonPhoneNumberItem
+                  phoneNumber={phoneNumber}
+                  index={index}
+                  primaryIndex={primaryIndex}
+                  phoneNumbers={phoneNumbers}
+                  setFieldValue={setFieldValue}
+                  errors={errors}
+                  handleChangePrimary={handleChangePrimary}
+                  sources={sources}
+                />
+              </React.Fragment>
+            ))}
             <ModalSectionContainer>
-              <ModalSectionIcon icon={<Phone />} />
-              <ContactPrimaryPersonSelectLabel id="primary-phone-number-label">
-                {t('Phone Numbers')}
-              </ContactPrimaryPersonSelectLabel>
+              <Grid container alignItems="center">
+                <Button>
+                  <ContactAddIcon />
+                  <ContactAddText
+                    variant="subtitle1"
+                    aria-label={t('Add Phone Number')}
+                    onClick={() =>
+                      push({
+                        number: '',
+                        location: '',
+                        destroy: false,
+                      })
+                    }
+                  >
+                    {t('Add Phone')}
+                  </ContactAddText>
+                </Button>
+              </Grid>
             </ModalSectionContainer>
-          )}
-          <FieldArray
-            name="phoneNumbers"
-            render={({ push }) => (
-              <>
-                {phoneNumbers?.map((phoneNumber, index) => (
-                  <React.Fragment key={index}>
-                    <PersonPhoneNumberItem
-                      phoneNumber={phoneNumber}
-                      index={index}
-                      primaryIndex={primaryIndex}
-                      phoneNumbers={phoneNumbers}
-                      setFieldValue={setFieldValue}
-                      errors={errors}
-                      handleChangePrimary={handleChangePrimary}
-                      sources={sources}
-                    />
-                  </React.Fragment>
-                ))}
-                <ModalSectionContainer>
-                  <Grid container alignItems="center">
-                    <Button>
-                      <ContactAddIcon />
-                      <ContactAddText
-                        variant="subtitle1"
-                        aria-label={t('Add Phone Number')}
-                        onClick={() =>
-                          push({
-                            number: '',
-                            location: '',
-                            destroy: false,
-                          })
-                        }
-                      >
-                        {t('Add Phone')}
-                      </ContactAddText>
-                    </Button>
-                  </Grid>
-                </ModalSectionContainer>
-              </>
-            )}
-          />
-        </>
-      ) : null}
+          </>
+        )}
+      />
     </>
-  );
+  ) : null;
 };

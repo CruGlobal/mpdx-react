@@ -182,123 +182,121 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
   drag(dragRef);
   drop(preview(previewRef));
   return (
-    <>
-      <Card ref={previewRef} style={{ position: 'relative' }}>
+    <Card ref={previewRef} style={{ position: 'relative' }}>
+      <Box
+        p={2}
+        pr={1}
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        data-testid="column-header"
+        borderBottom={`5px solid ${color}`}
+        height={theme.spacing(7)}
+      >
         <Box
-          p={2}
-          pr={1}
+          {...{ ref: dragRef }}
+          data-handler-id={handlerId}
           display="flex"
           alignItems="center"
-          justifyContent="space-between"
-          data-testid="column-header"
-          borderBottom={`5px solid ${color}`}
-          height={theme.spacing(7)}
         >
-          <Box
-            {...{ ref: dragRef }}
-            data-handler-id={handlerId}
-            display="flex"
-            alignItems="center"
-          >
-            <DraggableMenuIcon />
-          </Box>
-          <TextField
-            fullWidth
-            inputProps={{
-              'data-testid': `column-title`,
-            }}
-            value={localTitle}
-            onChange={editTitle}
-            style={{
-              marginLeft: theme.spacing(1),
-              marginRight: theme.spacing(1),
-            }}
-          />
-          <DeleteColumnButton
-            onClick={() => deleteColumn(index)}
-            data-testid="delete-column-button"
-          >
-            <Clear />
-          </DeleteColumnButton>
+          <DraggableMenuIcon />
         </Box>
-        <CardContent
-          style={{
-            position: 'relative',
-            height: 'calc(100vh - 230px)',
-            padding: 0,
-            background: theme.palette.cruGrayLight.main,
-            overflowY: 'auto',
+        <TextField
+          fullWidth
+          inputProps={{
+            'data-testid': `column-title`,
           }}
+          value={localTitle}
+          onChange={editTitle}
+          style={{
+            marginLeft: theme.spacing(1),
+            marginRight: theme.spacing(1),
+          }}
+        />
+        <DeleteColumnButton
+          onClick={() => deleteColumn(index)}
+          data-testid="delete-column-button"
+        >
+          <Clear />
+        </DeleteColumnButton>
+      </Box>
+      <CardContent
+        style={{
+          position: 'relative',
+          height: 'calc(100vh - 230px)',
+          padding: 0,
+          background: theme.palette.cruGrayLight.main,
+          overflowY: 'auto',
+        }}
+      >
+        <Box
+          {...{ ref: CardContentRef }}
+          width="100%"
+          height="100%"
+          display="flex"
+          flexDirection="column"
         >
           <Box
-            {...{ ref: CardContentRef }}
             width="100%"
-            height="100%"
             display="flex"
-            flexDirection="column"
+            data-testid="color-selector-box"
+            justifyContent="center"
+            borderBottom={`1px solid ${theme.palette.cruGrayMedium.main}`}
+            style={{ backgroundColor: theme.palette.common.white }}
           >
-            <Box
-              width="100%"
-              display="flex"
-              data-testid="color-selector-box"
-              justifyContent="center"
-              borderBottom={`1px solid ${theme.palette.cruGrayMedium.main}`}
-              style={{ backgroundColor: theme.palette.common.white }}
-            >
-              {Object.entries(colorMap).map(([colorKey, colorValue]) => {
-                return (
-                  <Box
-                    key={colorKey}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    m={0.5}
-                    height={theme.spacing(4)}
-                    width={theme.spacing(4)}
+            {Object.entries(colorMap).map(([colorKey, colorValue]) => {
+              return (
+                <Box
+                  key={colorKey}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  m={0.5}
+                  height={theme.spacing(4)}
+                  width={theme.spacing(4)}
+                >
+                  <IconButton
+                    data-testid={`colorButton-${colorKey}`}
+                    onClick={() => changeColor(index, colorKey)}
+                    style={{
+                      padding: 0,
+                    }}
                   >
-                    <IconButton
-                      data-testid={`colorButton-${colorKey}`}
-                      onClick={() => changeColor(index, colorKey)}
-                      style={{
-                        padding: 0,
-                      }}
-                    >
-                      <ColoredCircle
-                        circlecolor={colorValue}
-                        selected={color === colorValue}
-                        size={
-                          color === colorValue
-                            ? theme.spacing(4)
-                            : theme.spacing(3)
-                        }
-                      />
-                    </IconButton>
-                  </Box>
-                );
-              })}
-            </Box>
-            {columnWidth > 0 && (
-              <Box style={{ backgroundColor: theme.palette.common.white }}>
-                {statuses.map((status) => (
-                  <ContactFlowSetupStatusRow
-                    key={status.id}
-                    status={status}
-                    columnWidth={columnWidth}
-                    columnIndex={index}
-                  />
-                ))}
-              </Box>
-            )}
-            {!loading && (
-              <ContactFlowSetupDropZone
-                columnIndex={index}
-                moveStatus={moveStatus}
-                flowOptions={flowOptions}
-              />
-            )}
+                    <ColoredCircle
+                      circlecolor={colorValue}
+                      selected={color === colorValue}
+                      size={
+                        color === colorValue
+                          ? theme.spacing(4)
+                          : theme.spacing(3)
+                      }
+                    />
+                  </IconButton>
+                </Box>
+              );
+            })}
           </Box>
-        </CardContent>
-      </Card>
-    </>
+          {columnWidth > 0 && (
+            <Box style={{ backgroundColor: theme.palette.common.white }}>
+              {statuses.map((status) => (
+                <ContactFlowSetupStatusRow
+                  key={status.id}
+                  status={status}
+                  columnWidth={columnWidth}
+                  columnIndex={index}
+                />
+              ))}
+            </Box>
+          )}
+          {!loading && (
+            <ContactFlowSetupDropZone
+              columnIndex={index}
+              moveStatus={moveStatus}
+              flowOptions={flowOptions}
+            />
+          )}
+        </Box>
+      </CardContent>
+    </Card>
   );
 };

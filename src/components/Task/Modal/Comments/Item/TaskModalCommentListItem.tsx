@@ -100,91 +100,75 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
     );
   };
 
-  return (
-    <>
-      {editing ? (
-        <Box>
-          <Formik
-            initialValues={{ body: body || '' }}
-            validationSchema={commentSchema}
-            onSubmit={onSubmit}
-          >
-            {({
-              values: { body },
-              handleChange,
-              handleSubmit,
-              isSubmitting,
-              isValid,
-            }): ReactElement => (
-              <form onSubmit={handleSubmit} noValidate>
-                <Box>
-                  <TextField
-                    value={body}
-                    onChange={handleChange('body')}
-                    fullWidth
-                    multiline
-                    inputProps={{ 'aria-label': 'Body' }}
-                    required
-                    onKeyPress={(event): void => {
-                      if (event.key === 'Enter' && !event.shiftKey) {
-                        handleSubmit();
-                        event.preventDefault();
-                      }
-                    }}
-                  />
-                </Box>
-                <Box
-                  width="100%"
-                  display="flex"
-                  justifyContent="space-between"
-                  mb={2}
-                >
-                  <Details />
-                  <Box>
-                    <CancelButton size="small" onClick={cancelEdit} />
-                    <SubmitButton
-                      size="small"
-                      disabled={!isValid || isSubmitting}
-                    >
-                      {t('Save')}
-                    </SubmitButton>
-                  </Box>
-                </Box>
-              </form>
-            )}
-          </Formik>
-        </Box>
-      ) : (
-        <>
-          <Box borderBottom={`1px solid ${theme.palette.cruGrayLight.main}`}>
-            <Typography>{body}</Typography>
-          </Box>
-          <Box
-            width="100%"
-            display="flex"
-            justifyContent="space-between"
-            mb={2}
-          >
-            <Details />
+  return editing ? (
+    <Box>
+      <Formik
+        initialValues={{ body: body || '' }}
+        validationSchema={commentSchema}
+        onSubmit={onSubmit}
+      >
+        {({
+          values: { body },
+          handleChange,
+          handleSubmit,
+          isSubmitting,
+          isValid,
+        }): ReactElement => (
+          <form onSubmit={handleSubmit} noValidate>
             <Box>
-              {editing ? (
-                <SubmitButton size="small" type="button">
+              <TextField
+                value={body}
+                onChange={handleChange('body')}
+                fullWidth
+                multiline
+                inputProps={{ 'aria-label': 'Body' }}
+                required
+                onKeyPress={(event): void => {
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    handleSubmit();
+                    event.preventDefault();
+                  }
+                }}
+              />
+            </Box>
+            <Box
+              width="100%"
+              display="flex"
+              justifyContent="space-between"
+              mb={2}
+            >
+              <Details />
+              <Box>
+                <CancelButton size="small" onClick={cancelEdit} />
+                <SubmitButton size="small" disabled={!isValid || isSubmitting}>
                   {t('Save')}
                 </SubmitButton>
-              ) : (
-                <SubmitButton
-                  size="small"
-                  type="button"
-                  onClick={toggleEditing}
-                >
-                  {t('Edit')}
-                </SubmitButton>
-              )}
-              <DeleteButton size="small" onClick={deleteTaskComment} />
+              </Box>
             </Box>
-          </Box>
-        </>
-      )}
+          </form>
+        )}
+      </Formik>
+    </Box>
+  ) : (
+    <>
+      <Box borderBottom={`1px solid ${theme.palette.cruGrayLight.main}`}>
+        <Typography>{body}</Typography>
+      </Box>
+      <Box width="100%" display="flex" justifyContent="space-between" mb={2}>
+        <Details />
+        <Box>
+          {editing ? (
+            <SubmitButton size="small" type="button">
+              {t('Save')}
+            </SubmitButton>
+          ) : (
+            <SubmitButton size="small" type="button" onClick={toggleEditing}>
+              {t('Edit')}
+            </SubmitButton>
+          )}
+          <DeleteButton size="small" onClick={deleteTaskComment} />
+        </Box>
+      </Box>
     </>
   );
 };

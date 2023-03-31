@@ -128,50 +128,44 @@ export const ContactFlow: React.FC<Props> = ({
     }
   };
 
-  return (
-    <>
-      {loadingUserOptions ? (
-        <Loading loading={loadingUserOptions} />
-      ) : (
-        <>
-          {flowOptions && (
-            <Box
-              display="grid"
-              minWidth="100%"
-              gridTemplateColumns={`repeat(${flowOptions.length}, minmax(300px, 1fr)); minmax(300px, 1fr)`}
-              gridAutoFlow="column"
-              gap={theme.spacing(1)}
-              overflow="auto"
-              style={{ overflowX: 'auto' }}
-              gridAutoColumns="300px"
-              data-testid="contactsFlow"
-            >
-              {flowOptions.map((column) => (
-                <Box
-                  width={'100%'}
-                  minWidth={300}
-                  p={2}
-                  key={column.name}
-                  data-testid={`contactsFlow${column.name}`}
-                >
-                  <ContactFlowColumn
-                    accountListId={accountListId}
-                    title={column.name}
-                    selectedFilters={selectedFilters}
-                    color={colorMap[column.color]}
-                    onContactSelected={onContactSelected}
-                    statuses={column.statuses.map(
-                      (status) => statusMap[status] as ContactFilterStatusEnum,
-                    )}
-                    changeContactStatus={changeContactStatus}
-                    searchTerm={searchTerm}
-                  />
-                </Box>
-              ))}
-            </Box>
-          )}
-        </>
-      )}
-    </>
+  return loadingUserOptions ? (
+    <Loading loading={loadingUserOptions} />
+  ) : (
+    flowOptions && (
+      <Box
+        display="grid"
+        minWidth="100%"
+        gridTemplateColumns={`repeat(${flowOptions.length}, minmax(300px, 1fr)); minmax(300px, 1fr)`}
+        gridAutoFlow="column"
+        gap={theme.spacing(1)}
+        overflow="auto"
+        style={{ overflowX: 'auto' }}
+        gridAutoColumns="300px"
+        data-testid="contactsFlow"
+      >
+        {flowOptions.map((column) => (
+          <Box
+            width={'100%'}
+            minWidth={300}
+            p={2}
+            key={column.name}
+            data-testid={`contactsFlow${column.name}`}
+          >
+            <ContactFlowColumn
+              accountListId={accountListId}
+              title={column.name}
+              selectedFilters={selectedFilters}
+              color={colorMap[column.color]}
+              onContactSelected={onContactSelected}
+              statuses={column.statuses.map(
+                (status) => statusMap[status] as ContactFilterStatusEnum,
+              )}
+              changeContactStatus={changeContactStatus}
+              searchTerm={searchTerm}
+            />
+          </Box>
+        ))}
+      </Box>
+    )
   );
 };

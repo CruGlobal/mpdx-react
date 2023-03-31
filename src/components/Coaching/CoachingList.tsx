@@ -64,19 +64,17 @@ export const CoachingList: React.FC<CoachingListProps> = ({
             <CoachingLoading role="listitem" />
           </>
         ) : (
-          <>
-            {coachingAccounts?.nodes.map((coachingAccount, _index) => {
-              return (
-                <span key={coachingAccount.id} role="listitem">
-                  <CoachingRow
-                    coachingAccount={coachingAccount}
-                    accountListId={accountListId}
-                  />
-                  <Divider />
-                </span>
-              );
-            })}
-          </>
+          coachingAccounts?.nodes.map((coachingAccount, _index) => {
+            return (
+              <span key={coachingAccount.id} role="listitem">
+                <CoachingRow
+                  coachingAccount={coachingAccount}
+                  accountListId={accountListId}
+                />
+                <Divider />
+              </span>
+            );
+          })
         )}
       </Box>
     </CoachingListWrapper>

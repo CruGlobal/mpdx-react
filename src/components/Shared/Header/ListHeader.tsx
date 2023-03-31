@@ -236,154 +236,150 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               openExportsModal &&
               openExportEmailsModal &&
               openMergeModal && (
-                <>
-                  <Hidden xsDown>
-                    {selectedIds?.length > 0 && (
-                      <>
-                        <ActionsButton
-                          aria-haspopup
-                          aria-expanded={open}
-                          onClick={handleClick}
-                          endIcon={<ArrowDropDown />}
-                          color="inherit"
-                        >
-                          {filterPanelOpen && contactDetailsOpen ? (
-                            <MoreHoriz />
-                          ) : (
-                            t('Actions')
-                          )}
-                        </ActionsButton>
-                        <Menu
-                          open={open}
-                          onClose={handleClose}
-                          anchorEl={anchorEl}
-                          anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'center',
+                <Hidden xsDown>
+                  {selectedIds?.length > 0 && (
+                    <>
+                      <ActionsButton
+                        aria-haspopup
+                        aria-expanded={open}
+                        onClick={handleClick}
+                        endIcon={<ArrowDropDown />}
+                        color="inherit"
+                      >
+                        {filterPanelOpen && contactDetailsOpen ? (
+                          <MoreHoriz />
+                        ) : (
+                          t('Actions')
+                        )}
+                      </ActionsButton>
+                      <Menu
+                        open={open}
+                        onClose={handleClose}
+                        anchorEl={anchorEl}
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'center',
+                        }}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            openExportsModal(true);
+                            handleClose();
                           }}
-                          transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'center',
+                        >
+                          <ListItemText>{t('Export')}</ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          divider
+                          onClick={() => {
+                            if (selectedIds.length >= 2) {
+                              openMergeModal(true);
+                            } else {
+                              enqueueSnackbar(
+                                t(
+                                  'You must select at least 2 contacts to merge.',
+                                ),
+                                {
+                                  variant: 'error',
+                                },
+                              );
+                            }
+                            handleClose();
                           }}
                         >
-                          <MenuItem
-                            onClick={() => {
-                              openExportsModal(true);
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Export')}</ListItemText>
-                          </MenuItem>
-                          <MenuItem
-                            divider
-                            onClick={() => {
-                              if (selectedIds.length >= 2) {
-                                openMergeModal(true);
-                              } else {
-                                enqueueSnackbar(
-                                  t(
-                                    'You must select at least 2 contacts to merge.',
-                                  ),
-                                  {
-                                    variant: 'error',
-                                  },
-                                );
-                              }
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Merge')}</ListItemText>
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => {
-                              openAddTagsModal(true);
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Add Tags')}</ListItemText>
-                          </MenuItem>
-                          <MenuItem
-                            divider
-                            onClick={() => {
-                              openRemoveTagsModal(true);
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Remove Tags')}</ListItemText>
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => {
-                              openTaskModal({
-                                defaultValues: { contactIds: selectedIds },
-                              });
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Add Task')}</ListItemText>
-                          </MenuItem>
-                          <MenuItem
-                            divider
-                            onClick={() => {
-                              openTaskModal({
-                                view: 'log',
-                                defaultValues: { contactIds: selectedIds },
-                              });
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Log Task')}</ListItemText>
-                          </MenuItem>
+                          <ListItemText>{t('Merge')}</ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            openAddTagsModal(true);
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText>{t('Add Tags')}</ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          divider
+                          onClick={() => {
+                            openRemoveTagsModal(true);
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText>{t('Remove Tags')}</ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            openTaskModal({
+                              defaultValues: { contactIds: selectedIds },
+                            });
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText>{t('Add Task')}</ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          divider
+                          onClick={() => {
+                            openTaskModal({
+                              view: 'log',
+                              defaultValues: { contactIds: selectedIds },
+                            });
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText>{t('Log Task')}</ListItemText>
+                        </MenuItem>
 
-                          <MenuItem
-                            onClick={() => {
-                              openEditFieldsModal(true);
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Edit Fields')}</ListItemText>
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => {
-                              openHideContactsModal(true);
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Hide Contacts')}</ListItemText>
-                          </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            openEditFieldsModal(true);
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText>{t('Edit Fields')}</ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            openHideContactsModal(true);
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText>{t('Hide Contacts')}</ListItemText>
+                        </MenuItem>
 
-                          <MenuItem
-                            onClick={() => {
-                              openAddToAppealModal(true);
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Add to Appeal')}</ListItemText>
-                          </MenuItem>
-                          <MenuItem
-                            divider
-                            onClick={() => {
-                              openCreateAppealModal(true);
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>
-                              {t('Add to New Appeal')}
-                            </ListItemText>
-                          </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            openAddToAppealModal(true);
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText>{t('Add to Appeal')}</ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          divider
+                          onClick={() => {
+                            openCreateAppealModal(true);
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText>{t('Add to New Appeal')}</ListItemText>
+                        </MenuItem>
 
-                          <MenuItem
-                            onClick={() => {
-                              openExportEmailsModal(true);
-                              handleClose();
-                            }}
-                          >
-                            <ListItemText>{t('Export Emails')}</ListItemText>
-                          </MenuItem>
-                        </Menu>
-                      </>
-                    )}
-                  </Hidden>
-                </>
+                        <MenuItem
+                          onClick={() => {
+                            openExportEmailsModal(true);
+                            handleClose();
+                          }}
+                        >
+                          <ListItemText>{t('Export Emails')}</ListItemText>
+                        </MenuItem>
+                      </Menu>
+                    </>
+                  )}
+                </Hidden>
               )}
 
             {buttonGroup}

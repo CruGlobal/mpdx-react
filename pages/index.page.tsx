@@ -1,9 +1,9 @@
-import React, { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { getSession } from 'next-auth/react';
 import { GetServerSideProps } from 'next';
 import BaseLayout from '../src/components/Layouts/Basic';
 
-const IndexPage = (): ReactElement => <></>;
+const IndexPage = (): ReactNode => null;
 
 IndexPage.layout = BaseLayout;
 

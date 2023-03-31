@@ -24,14 +24,12 @@ export const MonthlyActivitySection: React.FC<Props> = ({
   });
 
   return (
-    <>
-      <DonationHistories
-        goal={data?.accountList.monthlyGoal ?? undefined}
-        pledged={data?.accountList.totalPledges}
-        reportsDonationHistories={data?.reportsDonationHistories}
-        currencyCode={data?.accountList.currency}
-        setTime={setTime || undefined}
-      />
-    </>
+    <DonationHistories
+      goal={data?.accountList.monthlyGoal ?? undefined}
+      pledged={data?.accountList.totalPledges}
+      reportsDonationHistories={data?.reportsDonationHistories}
+      currencyCode={data?.accountList.currency}
+      setTime={setTime || undefined}
+    />
   );
 };

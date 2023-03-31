@@ -48,104 +48,102 @@ const AppealsDetailFlowColumn = ({
           <Icon path={mdiDotsVertical} size={1} />
         </Box>
       </Box>
-      {data.map((entry: TestContact) => (
-        <>
-          {type === 'default' ? (
-            <Box key={entry.name} borderBottom="1px solid gray">
-              <Grid container>
-                <Grid item xs={2}>
-                  <Box
-                    p={1}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <StarOutlineIcon />
+      {data.map((entry: TestContact) =>
+        type === 'default' ? (
+          <Box key={entry.name} borderBottom="1px solid gray">
+            <Grid container>
+              <Grid item xs={2}>
+                <Box
+                  p={1}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <StarOutlineIcon />
+                </Box>
+              </Grid>
+              <Grid item xs={10}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  style={{ padding: '8px 8px 8px 0px' }}
+                >
+                  <Typography>{entry.name}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  style={{ padding: '0px 8px 8px 8px' }}
+                >
+                  <Typography>
+                    {entry.amount?.toFixed(2)} {entry.currency}
+                  </Typography>
+                  <Box display="flex">
+                    <Typography>{entry.date}</Typography>
+                    <Icon path={mdiSquareEditOutline} size={1} />
+                    <Icon path={mdiDelete} size={1} />
                   </Box>
-                </Grid>
-                <Grid item xs={10}>
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    style={{ padding: '8px 8px 8px 0px' }}
-                  >
-                    <Typography>{entry.name}</Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    style={{ padding: '0px 8px 8px 8px' }}
-                  >
-                    <Typography>
-                      {entry.amount?.toFixed(2)} {entry.currency}
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        ) : type === 'asked' ? (
+          <Box key={entry.name} borderBottom="1px solid gray">
+            <Grid container>
+              <Grid item xs={2}>
+                <Box
+                  p={2}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <StarOutlineIcon />
+                </Box>
+              </Grid>
+              <Grid item xs={10}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  style={{ padding: '16px 8px 16px 0px' }}
+                >
+                  <Typography>{entry.name}</Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        ) : (
+          <Box key={entry.name} borderBottom="1px solid gray">
+            <Grid container>
+              <Grid item xs={2}>
+                <Box
+                  p={2}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <StarOutlineIcon />
+                </Box>
+              </Grid>
+              <Grid item xs={10}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  style={{ padding: '8px 8px 8px 0px' }}
+                >
+                  <Typography>{entry.name}</Typography>
+                  {entry.reason?.map((reason) => (
+                    <Typography variant="body2" key={reason}>
+                      - {reason}
                     </Typography>
-                    <Box display="flex">
-                      <Typography>{entry.date}</Typography>
-                      <Icon path={mdiSquareEditOutline} size={1} />
-                      <Icon path={mdiDelete} size={1} />
-                    </Box>
-                  </Box>
-                </Grid>
+                  ))}
+                </Box>
               </Grid>
-            </Box>
-          ) : type === 'asked' ? (
-            <Box key={entry.name} borderBottom="1px solid gray">
-              <Grid container>
-                <Grid item xs={2}>
-                  <Box
-                    p={2}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <StarOutlineIcon />
-                  </Box>
-                </Grid>
-                <Grid item xs={10}>
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    style={{ padding: '16px 8px 16px 0px' }}
-                  >
-                    <Typography>{entry.name}</Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          ) : (
-            <Box key={entry.name} borderBottom="1px solid gray">
-              <Grid container>
-                <Grid item xs={2}>
-                  <Box
-                    p={2}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <StarOutlineIcon />
-                  </Box>
-                </Grid>
-                <Grid item xs={10}>
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    style={{ padding: '8px 8px 8px 0px' }}
-                  >
-                    <Typography>{entry.name}</Typography>
-                    {entry.reason?.map((reason) => (
-                      <Typography variant="body2" key={reason}>
-                        - {reason}
-                      </Typography>
-                    ))}
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
-        </>
-      ))}
+            </Grid>
+          </Box>
+        ),
+      )}
     </Box>
   );
 };

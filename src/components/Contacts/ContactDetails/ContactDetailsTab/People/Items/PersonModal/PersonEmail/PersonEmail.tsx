@@ -80,81 +80,74 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
     );
   }, []);
 
-  return (
+  return emailAddresses ? (
     <>
-      {emailAddresses ? (
-        <>
-          {emailAddresses.length > 0 && primaryEmail && (
-            <ModalSectionContainer>
-              <ModalSectionIcon icon={<Mail />} />
-              <ContactPrimaryPersonSelectLabel id="primary-email-label">
-                {t('Email')}
-              </ContactPrimaryPersonSelectLabel>
-            </ModalSectionContainer>
-          )}
-          <FieldArray
-            name="emailAddresses"
-            render={({ push }) => (
+      {emailAddresses.length > 0 && primaryEmail && (
+        <ModalSectionContainer>
+          <ModalSectionIcon icon={<Mail />} />
+          <ContactPrimaryPersonSelectLabel id="primary-email-label">
+            {t('Email')}
+          </ContactPrimaryPersonSelectLabel>
+        </ModalSectionContainer>
+      )}
+      <FieldArray
+        name="emailAddresses"
+        render={({ push }) => (
+          <>
+            {emailAddresses?.map((emailAddress, index) => (
               <>
-                {emailAddresses?.map((emailAddress, index) => (
-                  <>
-                    <span key={index} />
-                    <PersonEmailItem
-                      emailAddress={emailAddress}
-                      index={index}
-                      primaryIndex={primaryIndex}
-                      emailAddresses={emailAddresses}
-                      setFieldValue={setFieldValue}
-                      errors={errors}
-                      handleChangePrimary={handleChangePrimary}
-                      sources={sources}
-                    />
-                  </>
-                ))}
-                <ModalSectionContainer>
-                  <Grid container alignItems="center">
-                    <Grid container alignItems="center" item xs={6}>
-                      <Button>
-                        <ContactAddIcon />
-                        <ContactAddText
-                          variant="subtitle1"
-                          aria-label={t('Add Email Address')}
-                          onClick={() =>
-                            push({
-                              email: '',
-                              location: '',
-                              destroy: false,
-                            })
-                          }
-                        >
-                          {t('Add Email')}
-                        </ContactAddText>
-                      </Button>
-                    </Grid>
-                    <Grid container item xs={6} alignItems="center">
-                      <OptOutENewsletterLabel
-                        control={
-                          <Checkbox
-                            color="secondary"
-                            checked={!!optoutEnewsletter}
-                            onChange={() =>
-                              setFieldValue(
-                                'optoutEnewsletter',
-                                !optoutEnewsletter,
-                              )
-                            }
-                          />
-                        }
-                        label={t('Opt-out of Email Newsletter')}
-                      />
-                    </Grid>
-                  </Grid>
-                </ModalSectionContainer>
+                <span key={index} />
+                <PersonEmailItem
+                  emailAddress={emailAddress}
+                  index={index}
+                  primaryIndex={primaryIndex}
+                  emailAddresses={emailAddresses}
+                  setFieldValue={setFieldValue}
+                  errors={errors}
+                  handleChangePrimary={handleChangePrimary}
+                  sources={sources}
+                />
               </>
-            )}
-          />
-        </>
-      ) : null}
+            ))}
+            <ModalSectionContainer>
+              <Grid container alignItems="center">
+                <Grid container alignItems="center" item xs={6}>
+                  <Button>
+                    <ContactAddIcon />
+                    <ContactAddText
+                      variant="subtitle1"
+                      aria-label={t('Add Email Address')}
+                      onClick={() =>
+                        push({
+                          email: '',
+                          location: '',
+                          destroy: false,
+                        })
+                      }
+                    >
+                      {t('Add Email')}
+                    </ContactAddText>
+                  </Button>
+                </Grid>
+                <Grid container item xs={6} alignItems="center">
+                  <OptOutENewsletterLabel
+                    control={
+                      <Checkbox
+                        color="secondary"
+                        checked={!!optoutEnewsletter}
+                        onChange={() =>
+                          setFieldValue('optoutEnewsletter', !optoutEnewsletter)
+                        }
+                      />
+                    }
+                    label={t('Opt-out of Email Newsletter')}
+                  />
+                </Grid>
+              </Grid>
+            </ModalSectionContainer>
+          </>
+        )}
+      />
     </>
-  );
+  ) : null;
 };

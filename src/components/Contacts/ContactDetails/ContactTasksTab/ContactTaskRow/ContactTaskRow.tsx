@@ -155,55 +155,48 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const taskDate = (dateToShow && DateTime.fromISO(dateToShow)) || null;
   const assigneeName = user ? `${user.firstName} ${user.lastName}` : '';
 
-  return (
-    <>
-      {!hasBeenDeleted && (
-        <TaskRowWrap isChecked={isChecked}>
-          <TaskItemWrap
-            width={theme.spacing(20)}
-            justifyContent="space-between"
-          >
-            <Checkbox
-              checked={isChecked}
-              color="secondary"
-              onChange={() => onTaskCheckToggle(task.id)}
-              value={isChecked}
-            />
-            <TaskCompleteButton
-              isComplete={isComplete}
-              onClick={handleCompleteButtonPressed}
-            />
-          </TaskItemWrap>
-          <SubjectWrap onClick={handleSubjectPressed}>
-            <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
-            <TaskDescription>{subject}</TaskDescription>
-          </SubjectWrap>
+  return !hasBeenDeleted ? (
+    <TaskRowWrap isChecked={isChecked}>
+      <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
+        <Checkbox
+          checked={isChecked}
+          color="secondary"
+          onChange={() => onTaskCheckToggle(task.id)}
+          value={isChecked}
+        />
+        <TaskCompleteButton
+          isComplete={isComplete}
+          onClick={handleCompleteButtonPressed}
+        />
+      </TaskItemWrap>
+      <SubjectWrap onClick={handleSubjectPressed}>
+        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+        <TaskDescription>{subject}</TaskDescription>
+      </SubjectWrap>
 
-          <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
-            <AssigneeName noWrap>{assigneeName}</AssigneeName>
-            <Box width={theme.spacing(16)}>
-              <TaskDate isComplete={isComplete} taskDate={taskDate} />
-            </Box>
-            <TaskCommentsButton
-              isComplete={isComplete}
-              numberOfComments={comments?.totalCount}
-              onClick={handleCommentButtonPressed}
-              detailsPage
-            />
+      <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
+        <AssigneeName noWrap>{assigneeName}</AssigneeName>
+        <Box width={theme.spacing(16)}>
+          <TaskDate isComplete={isComplete} taskDate={taskDate} />
+        </Box>
+        <TaskCommentsButton
+          isComplete={isComplete}
+          numberOfComments={comments?.totalCount}
+          onClick={handleCommentButtonPressed}
+          detailsPage
+        />
 
-            <DeleteTaskIconButton
-              accountListId={accountListId}
-              taskId={task.id}
-              onDeleteConfirm={handleDeleteConfirm}
-            />
-            <StarTaskIconButton
-              accountListId={accountListId}
-              taskId={task.id}
-              isStarred={task.starred}
-            />
-          </TaskItemWrap>
-        </TaskRowWrap>
-      )}
-    </>
-  );
+        <DeleteTaskIconButton
+          accountListId={accountListId}
+          taskId={task.id}
+          onDeleteConfirm={handleDeleteConfirm}
+        />
+        <StarTaskIconButton
+          accountListId={accountListId}
+          taskId={task.id}
+          isStarred={task.starred}
+        />
+      </TaskItemWrap>
+    </TaskRowWrap>
+  ) : null;
 };

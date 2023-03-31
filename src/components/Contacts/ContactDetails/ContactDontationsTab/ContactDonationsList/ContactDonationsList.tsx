@@ -61,30 +61,28 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                 <TableCell>{t('Method')}</TableCell>
               </TableRow>
             </TableHead>
-            {data?.contact.donations.nodes ? (
-              data?.contact.donations.nodes.map((donation) => (
-                <TableRow key={donation.id}>
-                  <TableCell>
-                    {DateTime.fromISO(donation.donationDate).toLocaleString()}
-                  </TableCell>
-                  <TableCell>
-                    {currencyFormat(
-                      donation.amount.amount,
-                      donation.amount.currency,
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {currencyFormat(
-                      donation.amount.convertedAmount,
-                      donation.amount.convertedCurrency,
-                    )}
-                  </TableCell>
-                  <TableCell>{donation.paymentMethod}</TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <></>
-            )}
+            {data?.contact.donations.nodes
+              ? data?.contact.donations.nodes.map((donation) => (
+                  <TableRow key={donation.id}>
+                    <TableCell>
+                      {DateTime.fromISO(donation.donationDate).toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      {currencyFormat(
+                        donation.amount.amount,
+                        donation.amount.currency,
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {currencyFormat(
+                        donation.amount.convertedAmount,
+                        donation.amount.convertedCurrency,
+                      )}
+                    </TableCell>
+                    <TableCell>{donation.paymentMethod}</TableCell>
+                  </TableRow>
+                ))
+              : null}
           </Table>
           {!loading && data?.contact.donations.pageInfo.hasNextPage ? (
             <LoadMoreButton

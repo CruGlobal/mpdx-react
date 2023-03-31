@@ -5,10 +5,10 @@ import { DateTime } from 'luxon';
 import { Box, CircularProgress } from '@mui/material';
 
 interface Props {
-  children?: React.ReactNode;
+  children?: React.ReactElement;
 }
 
-export const RouterGuard: React.FC<Props> = ({ children }) => {
+export const RouterGuard: React.FC<Props> = ({ children = null }) => {
   const [isAuthed, setIsAuthed] = useState(false);
   const { push, pathname, query, isReady } = useRouter();
   const getSess = async () => {
@@ -33,20 +33,16 @@ export const RouterGuard: React.FC<Props> = ({ children }) => {
     getSess();
   }, [pathname, query]);
 
-  return (
-    <>
-      {(isReady && isAuthed) || pathname === '/login' ? (
-        children
-      ) : (
-        <Box
-          height="100vh"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <CircularProgress size={100} data-testid="LoadingIndicator" />
-        </Box>
-      )}
-    </>
+  return (isReady && isAuthed) || pathname === '/login' ? (
+    children
+  ) : (
+    <Box
+      height="100vh"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <CircularProgress size={100} data-testid="LoadingIndicator" />
+    </Box>
   );
 };
