@@ -55,7 +55,7 @@ const taskSchema: yup.SchemaOf<
     'id' | 'result' | 'nextAction' | 'tagList' | 'completedAt'
   >
 > = yup.object({
-  id: yup.string(),
+  id: yup.string().required(),
   result: yup.mixed<ResultEnum>().required(),
   nextAction: yup.mixed<ActivityTypeEnum>(),
   tagList: yup.array().of(yup.string()).default([]),
