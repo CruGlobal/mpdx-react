@@ -80,111 +80,104 @@ export const PersonEmailItem: React.FC<Props> = ({
   };
 
   return (
-    <>
-      <ModalSectionContainer key={index}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <ContactInputField
-              label={t('Email Address')}
+    <ModalSectionContainer key={index}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <ContactInputField
+            label={t('Email Address')}
+            destroyed={emailAddress.destroy ?? false}
+            value={emailAddress.email}
+            onChange={(event) =>
+              setFieldValue(`emailAddresses.${index}.email`, event.target.value)
+            }
+            disabled={!!emailAddress.destroy || locked}
+            inputProps={{ 'aria-label': t('Email Address') }}
+            InputProps={{
+              ...(locked
+                ? {
+                    endAdornment: (
+                      <Lock titleAccess={t('Synced with Donation Services')} />
+                    ),
+                  }
+                : {}),
+            }}
+            error={getIn(errors, `emailAddresses.${index}`)}
+            helperText={
+              getIn(errors, `emailAddresses.${index}`) &&
+              getIn(errors, `emailAddresses.${index}`).email
+            }
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <FormControl fullWidth>
+            <InputLabel id={`email-type-label-${index}`}>
+              {t('Type')}
+            </InputLabel>
+            <EmailSelect
+              label={t('Type')}
+              labelId={`email-type-label-${index}`}
+              id={`email-type-${index}`}
               destroyed={emailAddress.destroy ?? false}
-              value={emailAddress.email}
+              value={emailAddress.location ?? ''}
               onChange={(event) =>
                 setFieldValue(
-                  `emailAddresses.${index}.email`,
+                  `emailAddresses.${index}.location`,
                   event.target.value,
                 )
               }
               disabled={!!emailAddress.destroy || locked}
-              inputProps={{ 'aria-label': t('Email Address') }}
-              InputProps={{
-                ...(locked
-                  ? {
-                      endAdornment: (
-                        <Lock
-                          titleAccess={t('Synced with Donation Services')}
-                        />
-                      ),
-                    }
-                  : {}),
+              inputProps={{
+                'aria-label': t('Email Address Type'),
               }}
-              error={getIn(errors, `emailAddresses.${index}`)}
-              helperText={
-                getIn(errors, `emailAddresses.${index}`) &&
-                getIn(errors, `emailAddresses.${index}`).email
-              }
               fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id={`email-type-label-${index}`}>
-                {t('Type')}
-              </InputLabel>
-              <EmailSelect
-                label={t('Type')}
-                labelId={`email-type-label-${index}`}
-                id={`email-type-${index}`}
-                destroyed={emailAddress.destroy ?? false}
-                value={emailAddress.location ?? ''}
-                onChange={(event) =>
-                  setFieldValue(
-                    `emailAddresses.${index}.location`,
-                    event.target.value,
-                  )
-                }
-                disabled={!!emailAddress.destroy || locked}
-                inputProps={{
-                  'aria-label': t('Email Address Type'),
-                }}
-                fullWidth
-              >
-                <MenuItem selected value="">
-                  None
-                </MenuItem>
-                <MenuItem value="work" aria-label={t('Work')}>
-                  {t('Work')}
-                </MenuItem>
-                <MenuItem value="Personal" aria-label={t('Personal')}>
-                  {t('Personal')}
-                </MenuItem>
-                <MenuItem value="other" aria-label={t('Other')}>
-                  {t('Other')}
-                </MenuItem>
-              </EmailSelect>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <PrimaryControlLabel
-              label={t('Primary')}
-              control={
-                <Checkbox
-                  value={emailAddress.id}
-                  checked={isEmailPrimaryChecked}
-                  onChange={handleChange}
-                  color="secondary"
-                />
-              }
-              destroyed={emailAddress.destroy ?? false}
-            />
-          </Grid>
-          <ModalSectionDeleteIcon
-            disabled={locked}
-            handleClick={
-              emailAddress.id
-                ? () =>
-                    setFieldValue(
-                      `emailAddresses.${index}.destroy`,
-                      !emailAddress.destroy,
-                    )
-                : () => {
-                    const temp = emailAddresses;
-                    temp?.splice(index, 1);
-                    setFieldValue('emailAddresses', temp);
-                  }
+            >
+              <MenuItem selected value="">
+                None
+              </MenuItem>
+              <MenuItem value="work" aria-label={t('Work')}>
+                {t('Work')}
+              </MenuItem>
+              <MenuItem value="Personal" aria-label={t('Personal')}>
+                {t('Personal')}
+              </MenuItem>
+              <MenuItem value="other" aria-label={t('Other')}>
+                {t('Other')}
+              </MenuItem>
+            </EmailSelect>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <PrimaryControlLabel
+            label={t('Primary')}
+            control={
+              <Checkbox
+                value={emailAddress.id}
+                checked={isEmailPrimaryChecked}
+                onChange={handleChange}
+                color="secondary"
+              />
             }
+            destroyed={emailAddress.destroy ?? false}
           />
         </Grid>
-      </ModalSectionContainer>
-    </>
+        <ModalSectionDeleteIcon
+          disabled={locked}
+          handleClick={
+            emailAddress.id
+              ? () =>
+                  setFieldValue(
+                    `emailAddresses.${index}.destroy`,
+                    !emailAddress.destroy,
+                  )
+              : () => {
+                  const temp = emailAddresses;
+                  temp?.splice(index, 1);
+                  setFieldValue('emailAddresses', temp);
+                }
+          }
+        />
+      </Grid>
+    </ModalSectionContainer>
   );
 };

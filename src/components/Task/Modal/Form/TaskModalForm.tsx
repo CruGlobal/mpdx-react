@@ -71,9 +71,8 @@ export interface TaskLocation {
 }
 
 const taskSchema: yup.SchemaOf<
-  TaskCreateInput | TaskUpdateInput | TaskLocation
+  TaskCreateInput | Omit<TaskUpdateInput, 'id'> | TaskLocation
 > = yup.object({
-  id: yup.string().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>(),
   subject: yup.string().required(),
   starred: yup.boolean().nullable(),
@@ -105,14 +104,14 @@ const TaskModalForm = ({
   defaultValues,
   view,
 }: Props): ReactElement => {
-  const initialTask: (TaskCreateInput | TaskUpdateInput) & TaskLocation = task
+  const initialTask: (TaskCreateInput | Omit<TaskUpdateInput, 'id'>) &
+    TaskLocation = task
     ? {
         ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
         userId: task.user?.id,
         contactIds: task.contacts.nodes.map(({ id }) => id),
       }
     : {
-        id: null,
         activityType: defaultValues?.activityType || null,
         location: null,
         subject: defaultValues?.subject || '',
@@ -201,18 +200,24 @@ const TaskModalForm = ({
     : [];
 
   const onSubmit = async (
-    attributes: (TaskCreateInput | TaskUpdateInput) & TaskLocation,
+    attributes: (TaskCreateInput | Omit<TaskUpdateInput, 'id'>) & TaskLocation,
   ): Promise<void> => {
     const isUpdate = (
-      attributes: TaskCreateInput | TaskUpdateInput,
-    ): attributes is TaskUpdateInput => !!task;
+      attributes: TaskCreateInput | Omit<TaskUpdateInput, 'id'>,
+    ): attributes is Omit<TaskUpdateInput, 'id'> => !!task;
     const body = commentBody.trim();
     //TODO: Delete all location related stuff when field gets added to rails schema
     const location = attributes.location;
     delete attributes.location;
     if (isUpdate(attributes)) {
       await updateTask({
-        variables: { accountListId, attributes },
+        variables: {
+          accountListId,
+          attributes: {
+            ...attributes,
+            id: (task as GetTaskForTaskModalQuery['task']).id,
+          },
+        },
         update: (_cache, { data }) => {
           if (data?.updateTask?.task.id && location) {
             updateTaskLocation({
@@ -297,7 +302,7 @@ const TaskModalForm = ({
 
   return (
     <Formik
-      initialValues={_.omit(initialTask, '__typename')}
+      initialValues={_.omit(initialTask, ['__typename', 'id'])}
       validationSchema={taskSchema}
       onSubmit={onSubmit}
     >

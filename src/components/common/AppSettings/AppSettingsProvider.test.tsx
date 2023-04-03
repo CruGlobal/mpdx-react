@@ -4,11 +4,7 @@ import { AppSettingsContext, AppSettingsProvider } from './AppSettingsProvider';
 
 const TestingComponent = () => {
   const { appName } = useContext(AppSettingsContext);
-  return (
-    <>
-      <p data-testid="app-name">{appName}</p>
-    </>
-  );
+  return <p data-testid="app-name">{appName}</p>;
 };
 
 describe('<AuthProvider />', () => {

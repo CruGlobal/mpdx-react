@@ -101,113 +101,109 @@ const ExportPhysical: React.FC<Props> = ({
         </CloseButton>
       </ExportPhysicalTitle>
       <DialogContent dividers>
-        <>
-          <Grid container alignItems="center" justifyContent="space-between">
-            {isExportingPdf ? (
-              <>
-                <Grid item xs={12}>
-                  <SelectInputLabel id="label-template-label">
-                    {t('Label Template')}
-                  </SelectInputLabel>
-                  <ExportSelect
-                    data-testid="label-template-select"
-                    labelId="label-template-label"
-                    value={labelType}
-                    onChange={(event) =>
-                      changeLabelType(event.target.value as ExportLabelTypeEnum)
-                    }
+        <Grid container alignItems="center" justifyContent="space-between">
+          {isExportingPdf ? (
+            <Grid item xs={12}>
+              <SelectInputLabel id="label-template-label">
+                {t('Label Template')}
+              </SelectInputLabel>
+              <ExportSelect
+                data-testid="label-template-select"
+                labelId="label-template-label"
+                value={labelType}
+                onChange={(event) =>
+                  changeLabelType(event.target.value as ExportLabelTypeEnum)
+                }
+              >
+                <MenuItem value={ExportLabelTypeEnum.Avery5160}>
+                  {t('Avery 5160')}
+                </MenuItem>
+                <MenuItem value={ExportLabelTypeEnum.Avery7160}>
+                  {t('Avery 7160')}
+                </MenuItem>
+              </ExportSelect>
+              <SelectInputLabel id="sort-by-label">
+                {t('Sort By')}
+              </SelectInputLabel>
+              <ExportSelect
+                data-testid="sort-by-select"
+                labelId="sort-by-label"
+                value={sort}
+                onChange={(event) =>
+                  changeSort(event.target.value as ExportSortEnum)
+                }
+              >
+                <MenuItem value={ExportSortEnum.Name}>
+                  {t('Contact Name')}
+                </MenuItem>
+                <MenuItem value={ExportSortEnum.Zip}>{t('Zip')}</MenuItem>
+              </ExportSelect>
+            </Grid>
+          ) : (
+            <>
+              <Grid container alignItems="flex-start">
+                <ButtonContainer container item xs={12} md={6}>
+                  <LabelButton
+                    variant="contained"
+                    color="primary"
+                    onClick={() => changeIsExportingPdf(true)}
                   >
-                    <MenuItem value={ExportLabelTypeEnum.Avery5160}>
-                      {t('Avery 5160')}
-                    </MenuItem>
-                    <MenuItem value={ExportLabelTypeEnum.Avery7160}>
-                      {t('Avery 7160')}
-                    </MenuItem>
-                  </ExportSelect>
-                  <SelectInputLabel id="sort-by-label">
-                    {t('Sort By')}
-                  </SelectInputLabel>
-                  <ExportSelect
-                    data-testid="sort-by-select"
-                    labelId="sort-by-label"
-                    value={sort}
-                    onChange={(event) =>
-                      changeSort(event.target.value as ExportSortEnum)
-                    }
+                    {t('PDF of Mail Merged Labels')}
+                  </LabelButton>
+                  <DialogContentText>
+                    {t(
+                      'Addresses will be formatted based on country. (Experimental)',
+                    )}
+                  </DialogContentText>
+                </ButtonContainer>
+                <ButtonContainer container item xs={12} md={6}>
+                  <LabelButton
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleOnClick(ExportFormatEnum.Csv, true)}
                   >
-                    <MenuItem value={ExportSortEnum.Name}>
-                      {t('Contact Name')}
-                    </MenuItem>
-                    <MenuItem value={ExportSortEnum.Zip}>{t('Zip')}</MenuItem>
-                  </ExportSelect>
-                </Grid>
-              </>
-            ) : (
-              <>
-                <Grid container alignItems="flex-start">
-                  <ButtonContainer container item xs={12} md={6}>
-                    <LabelButton
-                      variant="contained"
-                      color="primary"
-                      onClick={() => changeIsExportingPdf(true)}
-                    >
-                      {t('PDF of Mail Merged Labels')}
-                    </LabelButton>
-                    <DialogContentText>
-                      {t(
-                        'Addresses will be formatted based on country. (Experimental)',
-                      )}
-                    </DialogContentText>
-                  </ButtonContainer>
-                  <ButtonContainer container item xs={12} md={6}>
-                    <LabelButton
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleOnClick(ExportFormatEnum.Csv, true)}
-                    >
-                      {t('CSV for Mail Merge')}
-                    </LabelButton>
-                    <DialogContentText>
-                      {t(
-                        'Best for making mailing labels. Addresses will be formatted based on country.',
-                      )}
-                    </DialogContentText>
-                  </ButtonContainer>
-                </Grid>
-                <Grid container alignItems="flex-start">
-                  <ButtonContainer container item xs={12} md={6}>
-                    <LabelButton
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleOnClick(ExportFormatEnum.Csv)}
-                    >
-                      {t('Advanced CSV')}
-                    </LabelButton>
-                    <DialogContentText>
-                      {t(
-                        'All of the information for your contacts, best for advanced sorting/filtering and importing into other software.',
-                      )}
-                    </DialogContentText>
-                  </ButtonContainer>
-                  <ButtonContainer container item xs={12} md={6}>
-                    <LabelButton
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleOnClick(ExportFormatEnum.Xlsx)}
-                    >
-                      {t('Advanced Excel (XLSX)')}
-                    </LabelButton>
-                    <DialogContentText>
-                      {t(
-                        "All of the information for your contacts in Excel's default XLSX format.",
-                      )}
-                    </DialogContentText>
-                  </ButtonContainer>
-                </Grid>
-              </>
-            )}
-          </Grid>
-        </>
+                    {t('CSV for Mail Merge')}
+                  </LabelButton>
+                  <DialogContentText>
+                    {t(
+                      'Best for making mailing labels. Addresses will be formatted based on country.',
+                    )}
+                  </DialogContentText>
+                </ButtonContainer>
+              </Grid>
+              <Grid container alignItems="flex-start">
+                <ButtonContainer container item xs={12} md={6}>
+                  <LabelButton
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleOnClick(ExportFormatEnum.Csv)}
+                  >
+                    {t('Advanced CSV')}
+                  </LabelButton>
+                  <DialogContentText>
+                    {t(
+                      'All of the information for your contacts, best for advanced sorting/filtering and importing into other software.',
+                    )}
+                  </DialogContentText>
+                </ButtonContainer>
+                <ButtonContainer container item xs={12} md={6}>
+                  <LabelButton
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleOnClick(ExportFormatEnum.Xlsx)}
+                  >
+                    {t('Advanced Excel (XLSX)')}
+                  </LabelButton>
+                  <DialogContentText>
+                    {t(
+                      "All of the information for your contacts in Excel's default XLSX format.",
+                    )}
+                  </DialogContentText>
+                </ButtonContainer>
+              </Grid>
+            </>
+          )}
+        </Grid>
       </DialogContent>
       <DialogActions>
         {isExportingPdf ? (

@@ -101,7 +101,6 @@ export const getDataForTaskModalEmptyMock = (
 
 export const createTaskMutationMock = (): MockedResponse => {
   const task: TaskCreateInput = {
-    id: null,
     activityType: null,
     subject: 'abc',
     startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),

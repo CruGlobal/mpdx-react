@@ -68,7 +68,7 @@ const GroupLabel = styled(Typography)(({ theme }) => ({
 
 interface InfiniteListProps<T, C> {
   loading: boolean;
-  EmptyPlaceholder: ReactElement;
+  EmptyPlaceholder?: ReactElement | null;
   itemContent: ItemContent<T, C>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: any;
@@ -80,7 +80,7 @@ export const InfiniteList = <T, C>({
   loading,
   data = [],
   totalCount = data?.length ?? 0,
-  EmptyPlaceholder,
+  EmptyPlaceholder = null,
   context,
   groupBy,
   ...props

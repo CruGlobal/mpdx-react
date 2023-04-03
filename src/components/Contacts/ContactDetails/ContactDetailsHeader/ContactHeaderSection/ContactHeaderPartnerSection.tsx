@@ -52,7 +52,7 @@ export const ContactHeaderPartnerSection: React.FC<Props> = ({
         </ContactHeaderSection>
       );
     } else {
-      return <></>;
+      return null;
     }
   }
 };

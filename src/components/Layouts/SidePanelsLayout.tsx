@@ -119,7 +119,7 @@ const RightPanelWrapper = styled(ScrollBoxRightPanel)(({ theme }) => {
 
 interface SidePanelsLayoutProps {
   isScrollBox?: boolean;
-  leftPanel: ReactElement;
+  leftPanel?: ReactElement;
   leftWidth: string;
   leftOpen: boolean;
   mainContent: ReactElement;

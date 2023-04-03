@@ -121,102 +121,100 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   };
 
   return (
-    <>
-      <Box className={classes.outer} data-testid="Home">
-        {!loading && !updating && data ? (
-          <Grid container className={classes.container}>
-            <Grid item xs={12}>
-              <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
-              <Divider className={classes.divider} />
-            </Grid>
-            {data?.contacts.nodes.length > 0 ? (
-              <>
-                <Grid item xs={12}>
-                  <Box className={classes.descriptionBox}>
-                    <Typography>
-                      <strong>
-                        {t(
-                          'You have {{amount}} newsletter statuses to confirm.',
-                          {
-                            amount: data?.contacts.nodes.length,
-                          },
-                        )}
-                      </strong>
-                    </Typography>
-                    <Typography>
-                      {t(
-                        'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
-                      )}
-                    </Typography>
-                    <Button variant="contained" className={classes.buttonBlue}>
-                      <Icon
-                        path={mdiCheckboxMarkedCircle}
-                        size={0.8}
-                        className={classes.buttonIcon}
-                      />
-                      <Trans
-                        defaults="Cofirm {{value}}"
-                        values={{
-                          value: data?.contacts.nodes.length,
-                        }}
-                      />
-                    </Button>
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  {data.contacts.nodes.map((contact) => (
-                    <Contact
-                      id={contact.id}
-                      name={contact.name}
-                      // need to fix this after changes to fix commitment info get merged
-                      status={contact.status || ''}
-                      primaryPerson={
-                        contact.primaryPerson || {
-                          firstName: '',
-                          lastName: '',
-                          primaryEmailAddress: {
-                            email: '',
-                          },
-                        }
-                      }
-                      key={contact.id}
-                      primaryAddress={
-                        contact.primaryAddress || {
-                          street: '',
-                          city: '',
-                          state: '',
-                          postalCode: '',
-                          source: '',
-                          createdAt: '',
-                        }
-                      }
-                      updateFunction={updateContact}
-                    />
-                  ))}
-                </Grid>
-                <Grid item xs={12}>
-                  <Box className={classes.footer}>
-                    <Typography>
-                      <Trans
-                        defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                        values={{
-                          value: data?.contacts.nodes.length,
-                        }}
-                        components={{ bold: <strong /> }}
-                      />
-                    </Typography>
-                  </Box>
-                </Grid>
-              </>
-            ) : (
-              <NoData tool="fixSendNewsletter" />
-            )}
+    <Box className={classes.outer} data-testid="Home">
+      {!loading && !updating && data ? (
+        <Grid container className={classes.container}>
+          <Grid item xs={12}>
+            <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
+            <Divider className={classes.divider} />
           </Grid>
-        ) : (
-          <CircularProgress style={{ marginTop: theme.spacing(3) }} />
-        )}
-      </Box>
-    </>
+          {data?.contacts.nodes.length > 0 ? (
+            <>
+              <Grid item xs={12}>
+                <Box className={classes.descriptionBox}>
+                  <Typography>
+                    <strong>
+                      {t(
+                        'You have {{amount}} newsletter statuses to confirm.',
+                        {
+                          amount: data?.contacts.nodes.length,
+                        },
+                      )}
+                    </strong>
+                  </Typography>
+                  <Typography>
+                    {t(
+                      'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
+                    )}
+                  </Typography>
+                  <Button variant="contained" className={classes.buttonBlue}>
+                    <Icon
+                      path={mdiCheckboxMarkedCircle}
+                      size={0.8}
+                      className={classes.buttonIcon}
+                    />
+                    <Trans
+                      defaults="Cofirm {{value}}"
+                      values={{
+                        value: data?.contacts.nodes.length,
+                      }}
+                    />
+                  </Button>
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                {data.contacts.nodes.map((contact) => (
+                  <Contact
+                    id={contact.id}
+                    name={contact.name}
+                    // need to fix this after changes to fix commitment info get merged
+                    status={contact.status || ''}
+                    primaryPerson={
+                      contact.primaryPerson || {
+                        firstName: '',
+                        lastName: '',
+                        primaryEmailAddress: {
+                          email: '',
+                        },
+                      }
+                    }
+                    key={contact.id}
+                    primaryAddress={
+                      contact.primaryAddress || {
+                        street: '',
+                        city: '',
+                        state: '',
+                        postalCode: '',
+                        source: '',
+                        createdAt: '',
+                      }
+                    }
+                    updateFunction={updateContact}
+                  />
+                ))}
+              </Grid>
+              <Grid item xs={12}>
+                <Box className={classes.footer}>
+                  <Typography>
+                    <Trans
+                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      values={{
+                        value: data?.contacts.nodes.length,
+                      }}
+                      components={{ bold: <strong /> }}
+                    />
+                  </Typography>
+                </Box>
+              </Grid>
+            </>
+          ) : (
+            <NoData tool="fixSendNewsletter" />
+          )}
+        </Grid>
+      ) : (
+        <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+      )}
+    </Box>
   );
 };
 

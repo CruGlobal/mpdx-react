@@ -181,15 +181,13 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         <Divider />
       </ContactDetailsTabContainer>
       {loading || !data ? null : (
-        <>
-          <EditContactOtherModal
-            accountListId={accountListId}
-            contact={data.contact}
-            isOpen={editOtherModalOpen}
-            referral={data.contact.contactReferralsToMe?.nodes[0]}
-            handleClose={() => setEditOtherModalOpen(false)}
-          />
-        </>
+        <EditContactOtherModal
+          accountListId={accountListId}
+          contact={data.contact}
+          isOpen={editOtherModalOpen}
+          referral={data.contact.contactReferralsToMe?.nodes[0]}
+          handleClose={() => setEditOtherModalOpen(false)}
+        />
       )}
     </>
   );

@@ -28,6 +28,7 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
+    'react/jsx-no-useless-fragment': 'error',
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
   },

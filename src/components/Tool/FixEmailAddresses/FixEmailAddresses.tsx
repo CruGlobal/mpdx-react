@@ -240,98 +240,96 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   };
 
   return (
-    <>
-      <Container>
-        {!loading && data && dataState ? (
-          <FixEmailAddressesWrapper container>
-            <Grid item xs={12}>
-              <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
-              <ContentDivider />
-              <Box mb={2}>
-                {data.people.nodes.length > 0 && (
-                  <>
-                    <Typography>
-                      <strong>
-                        {t('You have {{amount}} email addresses to confirm.', {
-                          amount: data.people.nodes.length,
-                        })}
-                      </strong>
-                    </Typography>
-                    <Typography>
-                      {t(
-                        'Choose below which email address will be set as primary.',
-                      )}
-                    </Typography>
-                    <DefaultSourceWrapper>
-                      <Typography>{t('Default Primary Source:')}</Typography>
+    <Container>
+      {!loading && data && dataState ? (
+        <FixEmailAddressesWrapper container>
+          <Grid item xs={12}>
+            <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
+            <ContentDivider />
+            <Box mb={2}>
+              {data.people.nodes.length > 0 && (
+                <>
+                  <Typography>
+                    <strong>
+                      {t('You have {{amount}} email addresses to confirm.', {
+                        amount: data.people.nodes.length,
+                      })}
+                    </strong>
+                  </Typography>
+                  <Typography>
+                    {t(
+                      'Choose below which email address will be set as primary.',
+                    )}
+                  </Typography>
+                  <DefaultSourceWrapper>
+                    <Typography>{t('Default Primary Source:')}</Typography>
 
-                      <SourceSelect
-                        input={<StyledInput />}
-                        value={defaultSource}
-                        onChange={(
-                          event: React.ChangeEvent<HTMLSelectElement>,
-                        ) => handleSourceChange(event)}
-                      >
-                        <option value="MPDX">MPDX</option>
-                        <option value="DataServer">DataServer</option>
-                      </SourceSelect>
-                      <ConfirmButton>
-                        <ConfirmButtonIcon
-                          path={mdiCheckboxMarkedCircle}
-                          size={0.8}
-                        />
-                        {t('Confirm {{amount}} as {{source}}', {
-                          amount: data.people.nodes.length,
-                          source: defaultSource,
-                        })}
-                      </ConfirmButton>
-                    </DefaultSourceWrapper>
-                  </>
-                )}
-              </Box>
-            </Grid>
-            {data.people.nodes.length > 0 ? (
-              <>
-                <Grid item xs={12}>
-                  {data?.people.nodes.map((person) => (
-                    <FixEmailAddressPerson
-                      name={`${person.firstName} ${person.lastName}`}
-                      key={person.id}
-                      personId={person.id}
-                      emails={dataState[person.id]?.emailAddresses || []}
-                      toDelete={dataState[person.id]?.toDelete}
-                      handleChange={handleChange}
-                      handleDelete={handleDeleteModalOpen}
-                      handleAdd={handleAdd}
-                      handleChangePrimary={handleChangePrimary}
-                    />
-                  ))}
-                </Grid>
-                <Grid item xs={12}>
-                  <Box width="100%" display="flex" justifyContent="center">
-                    <Typography>
-                      <Trans
-                        defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                        values={{ value: data.people.nodes.length }}
-                        components={{ bold: <strong /> }}
+                    <SourceSelect
+                      input={<StyledInput />}
+                      value={defaultSource}
+                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                        handleSourceChange(event)
+                      }
+                    >
+                      <option value="MPDX">MPDX</option>
+                      <option value="DataServer">DataServer</option>
+                    </SourceSelect>
+                    <ConfirmButton>
+                      <ConfirmButtonIcon
+                        path={mdiCheckboxMarkedCircle}
+                        size={0.8}
                       />
-                    </Typography>
-                  </Box>
-                </Grid>
-              </>
-            ) : (
-              <NoData tool="fixEmailAddresses" />
-            )}
-          </FixEmailAddressesWrapper>
-        ) : (
-          <CircularProgress style={{ marginTop: theme.spacing(3) }} />
-        )}
-        <DeleteModal
-          modalState={deleteModalState}
-          handleClose={handleDeleteModalClose}
-          handleDelete={handleDelete}
-        />
-      </Container>
-    </>
+                      {t('Confirm {{amount}} as {{source}}', {
+                        amount: data.people.nodes.length,
+                        source: defaultSource,
+                      })}
+                    </ConfirmButton>
+                  </DefaultSourceWrapper>
+                </>
+              )}
+            </Box>
+          </Grid>
+          {data.people.nodes.length > 0 ? (
+            <>
+              <Grid item xs={12}>
+                {data?.people.nodes.map((person) => (
+                  <FixEmailAddressPerson
+                    name={`${person.firstName} ${person.lastName}`}
+                    key={person.id}
+                    personId={person.id}
+                    emails={dataState[person.id]?.emailAddresses || []}
+                    toDelete={dataState[person.id]?.toDelete}
+                    handleChange={handleChange}
+                    handleDelete={handleDeleteModalOpen}
+                    handleAdd={handleAdd}
+                    handleChangePrimary={handleChangePrimary}
+                  />
+                ))}
+              </Grid>
+              <Grid item xs={12}>
+                <Box width="100%" display="flex" justifyContent="center">
+                  <Typography>
+                    <Trans
+                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      values={{ value: data.people.nodes.length }}
+                      components={{ bold: <strong /> }}
+                    />
+                  </Typography>
+                </Box>
+              </Grid>
+            </>
+          ) : (
+            <NoData tool="fixEmailAddresses" />
+          )}
+        </FixEmailAddressesWrapper>
+      ) : (
+        <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+      )}
+      <DeleteModal
+        modalState={deleteModalState}
+        handleClose={handleDeleteModalClose}
+        handleDelete={handleDelete}
+      />
+    </Container>
   );
 };
