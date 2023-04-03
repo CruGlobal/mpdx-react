@@ -77,7 +77,7 @@ export const MassActionsEditTasksModal: React.FC<
 
   const onSubmit = async (fields: EditTasksFields) => {
     const { noDueDate, body } = fields;
-    const formattedFields: TaskUpdateInput = {};
+    const formattedFields: Partial<TaskUpdateInput> = {};
     ['subject', 'activityType', 'startAt', 'userId'].forEach((key) => {
       const value = fields[key];
       if (value) {
