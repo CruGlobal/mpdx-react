@@ -8,21 +8,24 @@ const getLanguage = (): string => {
 
 // Return the current locale's date format (i.e. patterns like MM/dd/yyyy, dd.MM.yyyy, yyyy.MM.dd)
 export const getDateFormatPattern = (language = getLanguage()): string =>
-  new Intl.DateTimeFormat(language).formatToParts().reduce((pattern, part) => {
-    switch (part.type) {
-      case 'day':
-        return pattern + 'd'.repeat(part.value.length);
-      case 'month':
-        return pattern + 'M'.repeat(part.value.length);
-      case 'year':
-        return pattern + 'y'.repeat(part.value.length);
-      case 'literal':
-        return pattern + part.value;
-      default:
-        /* istanbul ignore next */
-        return pattern;
-    }
-  }, '');
+  new Intl.DateTimeFormat(language)
+    // Use January 1st so that the month and day of month are both one-digit numbers
+    .formatToParts(new Date(2023, 0, 1))
+    .reduce((pattern, part) => {
+      switch (part.type) {
+        case 'day':
+          return pattern + 'd'.repeat(part.value.length);
+        case 'month':
+          return pattern + 'M'.repeat(part.value.length);
+        case 'year':
+          return pattern + 'y'.repeat(part.value.length);
+        case 'literal':
+          return pattern + part.value;
+        default:
+          /* istanbul ignore next */
+          return pattern;
+      }
+    }, '');
 
 export const numberFormat = (value: number, language = getLanguage()): string =>
   new Intl.NumberFormat(language, {
