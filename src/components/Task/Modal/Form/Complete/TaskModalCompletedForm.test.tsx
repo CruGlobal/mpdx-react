@@ -73,7 +73,7 @@ describe('TaskModalCompleteForm', () => {
     );
     expect(
       getAllByRole('textbox').find((item) => item.id === ':r0:'),
-    ).toHaveValue('1/01/2020');
+    ).toHaveValue('1/1/2020');
   });
 
   it('saves simple', async () => {

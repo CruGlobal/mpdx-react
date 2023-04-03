@@ -107,10 +107,10 @@ describe('FilterListItem', () => {
   it('DateRangeFilter filled', () => {
     const dateRange: DateRangeInput = { min: '2021-08-01', max: '2021-08-30' };
     const convertedMinDate = DateTime.fromISO(dateRange.min || '').toFormat(
-      'M/dd/yyyy',
+      'M/d/yyyy',
     );
     const convertedMaxDate = DateTime.fromISO(dateRange.max || '').toFormat(
-      'M/dd/yyyy',
+      'M/d/yyyy',
     );
 
     const { getByText, getAllByRole } = render(

@@ -21,12 +21,12 @@ describe('intlFormat', () => {
   });
 
   describe('getDateFormatPattern', () => {
-    it('is M/dd/yyyy for English', () => {
-      expect(getDateFormatPattern('en-US')).toBe('M/dd/yyyy');
+    it('is M/d/yyyy for English', () => {
+      expect(getDateFormatPattern('en-US')).toBe('M/d/yyyy');
     });
 
-    it('is dd/M/yyyy for Spanish', () => {
-      expect(getDateFormatPattern('es')).toBe('dd/M/yyyy');
+    it('is d/M/yyyy for Spanish', () => {
+      expect(getDateFormatPattern('es')).toBe('d/M/yyyy');
     });
   });
 

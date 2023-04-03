@@ -313,7 +313,7 @@ describe('TaskModalForm', () => {
       );
     expect(
       getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === '1/05/2016',
+        (item) => (item as HTMLInputElement).value === '1/5/2016',
       ),
     ).toBeInTheDocument();
     expect(queryByText('Notifications')).not.toBeInTheDocument();
