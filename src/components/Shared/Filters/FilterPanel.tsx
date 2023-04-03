@@ -67,6 +67,50 @@ export const snakeToCamel = (inputKey: string): string => {
   }, '');
 };
 
+const ReverseFiltersOptions = {
+  alma_mater: 'reverseAlmaMater',
+  appeal: 'reverseAppeal',
+  church: 'reverseChurch',
+  city: 'reverseCity',
+  contact_type: 'reverseContactType',
+  country: 'reverseCountry',
+  designation_account_id: 'reverseDesignationAccountId',
+  donation: 'reverseDonation',
+  likely: 'reverseLikely',
+  locale: 'reverseLocale',
+  metro_area: 'reverseMetroArea',
+  pledge_amount: 'reversePledgeAmount',
+  pledge_currency: 'reversePledgeCurrency',
+  pledge_frequency: 'reversePledgeFrequency',
+  referrer: 'reverseReferrer',
+  region: 'reverseRegion',
+  related_task_action: 'reverseRelatedTaskAction',
+  source: 'reverseSource',
+  state: 'reverseState',
+  status: 'reverseStatus',
+  activity_type: 'reverseActivityType',
+  contact_appeal: 'reverseContactAppeal',
+  contact_church: 'reverseContactChurch',
+  contact_city: 'reverseContactCity',
+  contact_country: 'reverseContactCountry',
+  contact_designation_account_id: 'reverseContactDesignationAccountId',
+  contact_ids: 'reverseContactIds',
+  contact_likely: 'reverseContactLikely',
+  contact_metro_area: 'reverseContactMetroArea',
+  contact_pledge_frequency: 'reverseContactPledgeFrequency',
+  contact_referrer: 'reverseContactReferrer',
+  contact_region: 'reverseContactRegion',
+  contact_state: 'reverseContactState',
+  contact_status: 'reverseContactStatus',
+  contact_timezone: 'reverseContactTimezone',
+  next_action: 'reverseNextAction',
+  result: 'reverseResult',
+  timezone: 'reverseTimezone',
+  donation_amount: 'reverseDonationAmount',
+  user_ids: 'reverseUserIds',
+};
+export const ReverseFiltersMap = new Map(Object.entries(ReverseFiltersOptions));
+
 const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   borderBottom: '1px solid',
@@ -260,13 +304,12 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'reverseState':
               case 'reverseStatus':
               case 'reverseTimezone':
-              case 'reverseUserIds':
               case 'starred':
               case 'statusValid':
               case 'tasksAllCompleted':
               case 'reverseContactType':
               case 'reverseTags':
-                return { ...acc, [key]: value === 'true' };
+                return { ...acc, [key]: value.toString() === 'true' };
               // DateRangeInput
               case 'donationDate':
               case 'createdAt':
@@ -327,10 +370,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'timezone':
               case 'contactTimezone':
               case 'userIds':
-                const splitValue = value.split(',');
                 return {
                   ...acc,
-                  [key]: splitValue?.length > 1 ? splitValue : value,
+                  [key]: typeof value === 'string' ? value.split(',') : value,
                 };
               // Newsletter
               case 'newsletter':
@@ -752,17 +794,35 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                             <AccordionDetails>
                               <FilterList dense>
                                 {group.filters.map((filter) => {
-                                  const filterKey = snakeToCamel(
-                                    filter.filterKey,
+                                  const { filterKey } = filter;
+                                  const filterKeyCamel = snakeToCamel(
+                                    filterKey,
                                   ) as FilterKey;
+
+                                  const reverseFitersKey =
+                                    ReverseFiltersMap.get(
+                                      filterKey,
+                                    ) as FilterKey;
 
                                   return (
                                     <FilterListItem
-                                      key={filterKey}
+                                      key={filterKeyCamel}
                                       filter={filter}
-                                      value={selectedFilters[filterKey]}
+                                      value={selectedFilters[filterKeyCamel]}
                                       onUpdate={(value) =>
-                                        updateSelectedFilter(filterKey, value)
+                                        updateSelectedFilter(
+                                          filterKeyCamel,
+                                          value,
+                                        )
+                                      }
+                                      reverseSelected={
+                                        !!selectedFilters[reverseFitersKey]
+                                      }
+                                      onReverseFilter={() =>
+                                        updateSelectedFilter(
+                                          reverseFitersKey,
+                                          !!!selectedFilters[reverseFitersKey],
+                                        )
                                       }
                                     />
                                   );
