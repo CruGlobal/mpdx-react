@@ -171,7 +171,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               <TaskButtonText>{t('log task')}</TaskButtonText>
             </TaskButton>
             <TasksMassActionsDropdown
-              buttonGroup={<></>}
+              buttonGroup={null}
               selectedIds={ids}
               massDeselectAll={deselectAll}
               totalItems={taskCount}
