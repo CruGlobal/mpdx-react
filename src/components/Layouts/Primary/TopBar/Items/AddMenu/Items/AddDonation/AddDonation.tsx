@@ -433,7 +433,9 @@ export const AddDonation = ({
                                 data?.designationAccounts[0]?.designationAccounts.find(
                                   ({ id }) => id === accountId,
                                 );
-                              return account?.name ?? '';
+                              return account
+                                ? `${account?.name} (${account?.id}) `
+                                : '';
                             }}
                             renderInput={(params): ReactElement => (
                               <TextField
