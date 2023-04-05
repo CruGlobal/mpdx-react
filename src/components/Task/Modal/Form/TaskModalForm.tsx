@@ -1,4 +1,10 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, {
+  ReactElement,
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+} from 'react';
 import {
   TextField,
   Select,
@@ -145,6 +151,10 @@ const TaskModalForm = ({
   const [updateTaskLocation] = useUpdateTaskLocationMutation();
 
   const [searchTerm, setSearchTerm] = useState('');
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) (inputRef.current as HTMLInputElement).focus();
+  }, []);
 
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
@@ -346,27 +356,43 @@ const TaskModalForm = ({
                     errors.subject && touched.subject && t('Field is required')
                   }
                   required
+                  inputRef={inputRef}
                 />
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
-                  <InputLabel id="activityType">{t('Action')}</InputLabel>
-                  <NullableSelect
-                    labelId="activityType"
-                    value={activityType}
-                    onChange={(e) =>
-                      setFieldValue('activityType', e.target.value)
+                  <Autocomplete
+                    openOnFocus
+                    value={
+                      activityType === null ||
+                      typeof activityType === 'undefined'
+                        ? ''
+                        : activityType
                     }
-                    label={t('Action')}
-                  >
-                    {Object.values(ActivityTypeEnum)
-                      .filter((val) => val !== ActivityTypeEnum.None)
-                      .map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedTaskType(t, val)}
-                        </MenuItem>
-                      ))}
-                  </NullableSelect>
+                    // Sort none to top
+                    options={Object.values(ActivityTypeEnum).sort((a) =>
+                      a === ActivityTypeEnum.None ? -1 : 1,
+                    )}
+                    getOptionLabel={(activity) => {
+                      if (activity === ActivityTypeEnum.None) {
+                        return t('None');
+                      } else {
+                        return getLocalizedTaskType(
+                          t,
+                          activity as ActivityTypeEnum,
+                        );
+                      }
+                    }}
+                    renderInput={(params): ReactElement => (
+                      <TextField {...params} label={t('Action')} />
+                    )}
+                    onChange={(_, activity): void => {
+                      setFieldValue(
+                        'activityType',
+                        activity === ActivityTypeEnum.None ? null : activity,
+                      );
+                    }}
+                  />
                 </FormControl>
               </Grid>
               {activityType === ActivityTypeEnum.Appointment && (
