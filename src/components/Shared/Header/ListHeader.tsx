@@ -1,20 +1,9 @@
-import React, { ReactElement, useState } from 'react';
-import {
-  Box,
-  Button,
-  Checkbox,
-  Hidden,
-  IconButton,
-  ListItemText,
-  Menu,
-  MenuItem,
-} from '@mui/material';
+import React, { ReactElement } from 'react';
+import { Box, Checkbox, Hidden, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
 import FilterList from '@mui/icons-material/FilterList';
 import { useTranslation } from 'react-i18next';
-import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
-import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import ViewList from '@mui/icons-material/ViewList';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import {
@@ -22,8 +11,8 @@ import {
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
-import useTaskModal from 'src/hooks/useTaskModal';
-import { useSnackbar } from 'notistack';
+import { ContactsMassActionsDropdown } from '../MassActions/ContactsMassActionsDropdown';
+import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
 
 export const headerHeight = theme.spacing(12);
 
@@ -77,18 +66,6 @@ const ItemsShowingText = styled('p')(({ theme }) => ({
   fontFamily: theme.typography.fontFamily,
 }));
 
-const ActionsButton = styled(Button)(({ theme }) => ({
-  width: 114,
-  height: 48,
-  border: '1px solid #383F43',
-  backgroundColor: theme.palette.mpdxBlue.main,
-  color: theme.palette.common.white,
-  borderWidth: '0 !important',
-  '&:hover': {
-    backgroundColor: '#006193',
-  },
-}));
-
 export enum TableViewModeEnum {
   List = 'list',
   Flows = 'flows',
@@ -99,6 +76,11 @@ export enum ListHeaderCheckBoxState {
   'unchecked',
   'checked',
   'partial',
+}
+
+export enum PageEnum {
+  Contact = 'contact',
+  Task = 'task',
 }
 
 interface ListHeaderProps {
@@ -119,20 +101,7 @@ interface ListHeaderProps {
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
-  openRemoveTagsModal?: (open: boolean) => void;
-  openAddTagsModal?: (open: boolean) => void;
-  openAddToAppealModal?: (open: boolean) => void;
-  openCreateAppealModal?: (open: boolean) => void;
-  openEditFieldsModal?: (open: boolean) => void;
-  openHideContactsModal?: (open: boolean) => void;
-  openExportEmailsModal?: (open: boolean) => void;
-  openCompleteTasksModal?: (open: boolean) => void;
-  openDeleteTasksModal?: (open: boolean) => void;
-  openEditTasksModal?: (open: boolean) => void;
-  openTasksRemoveTagsModal?: (open: boolean) => void;
-  openTasksAddTagsModal?: (open: boolean) => void;
-  openExportsModal?: (open: boolean) => void;
-  openMergeModal?: (open: boolean) => void;
+  massDeselectAll?: () => void;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -151,35 +120,9 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   toggleStarredFilter,
   contactsView,
   selectedIds,
-  openRemoveTagsModal,
-  openAddTagsModal,
-  openAddToAppealModal,
-  openCreateAppealModal,
-  openEditFieldsModal,
-  openHideContactsModal,
-  openCompleteTasksModal,
-  openExportEmailsModal,
-  openDeleteTasksModal,
-  openEditTasksModal,
-  openTasksRemoveTagsModal,
-  openTasksAddTagsModal,
-  openExportsModal,
-  openMergeModal,
+  massDeselectAll,
 }) => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const { openTaskModal } = useTaskModal();
 
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
@@ -224,246 +167,26 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </Hidden>
       </HeaderWrapInner>
       <HeaderWrapInner style={{ marginLeft: 8 }}>
-        {page === 'contact' ? (
-          <>
-            {contactsView !== TableViewModeEnum.Map &&
-              openEditFieldsModal &&
-              openHideContactsModal &&
-              openAddToAppealModal &&
-              openCreateAppealModal &&
-              openAddTagsModal &&
-              openRemoveTagsModal &&
-              openExportsModal &&
-              openExportEmailsModal &&
-              openMergeModal && (
-                <Hidden xsDown>
-                  {selectedIds?.length > 0 && (
-                    <>
-                      <ActionsButton
-                        aria-haspopup
-                        aria-expanded={open}
-                        onClick={handleClick}
-                        endIcon={<ArrowDropDown />}
-                        color="inherit"
-                      >
-                        {filterPanelOpen && contactDetailsOpen ? (
-                          <MoreHoriz />
-                        ) : (
-                          t('Actions')
-                        )}
-                      </ActionsButton>
-                      <Menu
-                        open={open}
-                        onClose={handleClose}
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'center',
-                        }}
-                      >
-                        <MenuItem
-                          onClick={() => {
-                            openExportsModal(true);
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Export')}</ListItemText>
-                        </MenuItem>
-                        <MenuItem
-                          divider
-                          onClick={() => {
-                            if (selectedIds.length >= 2) {
-                              openMergeModal(true);
-                            } else {
-                              enqueueSnackbar(
-                                t(
-                                  'You must select at least 2 contacts to merge.',
-                                ),
-                                {
-                                  variant: 'error',
-                                },
-                              );
-                            }
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Merge')}</ListItemText>
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            openAddTagsModal(true);
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Add Tags')}</ListItemText>
-                        </MenuItem>
-                        <MenuItem
-                          divider
-                          onClick={() => {
-                            openRemoveTagsModal(true);
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Remove Tags')}</ListItemText>
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            openTaskModal({
-                              defaultValues: { contactIds: selectedIds },
-                            });
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Add Task')}</ListItemText>
-                        </MenuItem>
-                        <MenuItem
-                          divider
-                          onClick={() => {
-                            openTaskModal({
-                              view: 'log',
-                              defaultValues: { contactIds: selectedIds },
-                            });
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Log Task')}</ListItemText>
-                        </MenuItem>
-
-                        <MenuItem
-                          onClick={() => {
-                            openEditFieldsModal(true);
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Edit Fields')}</ListItemText>
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            openHideContactsModal(true);
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Hide Contacts')}</ListItemText>
-                        </MenuItem>
-
-                        <MenuItem
-                          onClick={() => {
-                            openAddToAppealModal(true);
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Add to Appeal')}</ListItemText>
-                        </MenuItem>
-                        <MenuItem
-                          divider
-                          onClick={() => {
-                            openCreateAppealModal(true);
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Add to New Appeal')}</ListItemText>
-                        </MenuItem>
-
-                        <MenuItem
-                          onClick={() => {
-                            openExportEmailsModal(true);
-                            handleClose();
-                          }}
-                        >
-                          <ListItemText>{t('Export Emails')}</ListItemText>
-                        </MenuItem>
-                      </Menu>
-                    </>
-                  )}
-                </Hidden>
-              )}
-
-            {buttonGroup}
-          </>
-        ) : (
-          <>
-            {buttonGroup}
-            <Hidden xsDown>
-              {selectedIds?.length > 0 && (
-                <>
-                  <ActionsButton
-                    aria-haspopup
-                    aria-expanded={open}
-                    onClick={handleClick}
-                    endIcon={<ArrowDropDown />}
-                    disabled={selectedIds.length === 0}
-                    color="inherit"
-                  >
-                    {t('Actions')}
-                  </ActionsButton>
-                  <Menu
-                    open={open}
-                    onClose={handleClose}
-                    anchorEl={anchorEl}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                    transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-                  >
-                    {openCompleteTasksModal && (
-                      <MenuItem
-                        onClick={() => {
-                          openCompleteTasksModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Complete Tasks')}</ListItemText>
-                      </MenuItem>
-                    )}
-                    {openEditTasksModal && (
-                      <MenuItem
-                        divider
-                        onClick={() => {
-                          openEditTasksModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Edit Tasks')}</ListItemText>
-                      </MenuItem>
-                    )}
-                    {openTasksAddTagsModal && (
-                      <MenuItem
-                        onClick={() => {
-                          openTasksAddTagsModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Add Tag(s)')}</ListItemText>
-                      </MenuItem>
-                    )}
-                    {openTasksRemoveTagsModal && (
-                      <MenuItem
-                        divider
-                        onClick={() => {
-                          openTasksRemoveTagsModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Remove Tag(s)')}</ListItemText>
-                      </MenuItem>
-                    )}
-                    {openDeleteTasksModal && (
-                      <MenuItem
-                        onClick={() => {
-                          openDeleteTasksModal(true);
-                          handleClose();
-                        }}
-                      >
-                        <ListItemText>{t('Delete Tasks')}</ListItemText>
-                      </MenuItem>
-                    )}
-                  </Menu>
-                </>
-              )}
-            </Hidden>
-          </>
+        {page === 'contact' && (
+          <ContactsMassActionsDropdown
+            filterPanelOpen={filterPanelOpen}
+            contactDetailsOpen={contactDetailsOpen}
+            buttonGroup={buttonGroup}
+            contactsView={contactsView}
+            selectedIds={selectedIds}
+          />
+        )}
+        {page === 'task' && (
+          <TasksMassActionsDropdown
+            buttonGroup={buttonGroup}
+            selectedIds={selectedIds}
+            massDeselectAll={massDeselectAll}
+            selectedIdCount={
+              headerCheckboxState === ListHeaderCheckBoxState.checked
+                ? totalItems ?? 0
+                : selectedIds.length
+            }
+          />
         )}
 
         {/* This hidden doesn't remove from document */}

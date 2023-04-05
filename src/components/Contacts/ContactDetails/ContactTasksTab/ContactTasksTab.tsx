@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Box, Button, Checkbox, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Add from '@mui/icons-material/Add';
@@ -14,6 +14,8 @@ import { ContactTasksTabNullState } from './NullState/ContactTasksTabNullState';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
+import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
+import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -105,9 +107,36 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     },
   });
 
+  const tasksFilter = useMemo(
+    () => ({
+      contactIds: [contactId],
+      ...starredFilter,
+      wildcardSearch: searchTerm as string,
+    }),
+    [starredFilter, searchTerm],
+  );
+  const taskCount = data?.tasks.totalCount ?? 0;
+  const { data: allTasks } = useGetTaskIdsForMassSelectionQuery({
+    variables: {
+      accountListId,
+      first: taskCount,
+      tasksFilters: tasksFilter,
+    },
+    skip: taskCount === 0,
+  });
+  const allTaskIds = useMemo(
+    () => allTasks?.tasks.nodes.map((task) => task.id) ?? [],
+    [allTasks],
+  );
   //#region Mass Actions
-  const { selectionType, isRowChecked, toggleSelectAll, toggleSelectionById } =
-    useMassSelection(data?.tasks?.totalCount ?? 0, []);
+  const {
+    ids,
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+    deselectAll,
+  } = useMassSelection(data?.tasks?.totalCount ?? 0, allTaskIds);
 
   const { openTaskModal } = useTaskModal();
 
@@ -141,6 +170,16 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               <LogTaskButtonIcon />
               <TaskButtonText>{t('log task')}</TaskButtonText>
             </TaskButton>
+            <TasksMassActionsDropdown
+              buttonGroup={null}
+              selectedIds={ids}
+              massDeselectAll={deselectAll}
+              selectedIdCount={
+                selectionType === ListHeaderCheckBoxState.checked
+                  ? taskCount
+                  : ids.length
+              }
+            />
           </HeaderItemsWrap>
         </HeaderRow>
         <HeaderRow mb={2}>
