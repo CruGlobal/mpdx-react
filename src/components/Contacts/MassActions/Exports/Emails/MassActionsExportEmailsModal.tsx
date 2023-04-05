@@ -60,7 +60,7 @@ export const MassActionsExportEmailsModal: React.FC<
 
   return (
     <Modal title={t('Export Emails')} isOpen={true} handleClose={handleClose}>
-      <ContentWrapper>
+      <ContentWrapper data-testid="ExportEmailsModal">
         <HelperText variant="body2">
           {t(
             'This is the primary email for every person in the selected contacts. If they are marked as "Opted out of Email Newsletter", they are not included in this list.',

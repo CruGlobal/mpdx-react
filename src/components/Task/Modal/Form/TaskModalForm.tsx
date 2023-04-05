@@ -1,4 +1,10 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, {
+  ReactElement,
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+} from 'react';
 import {
   TextField,
   Select,
@@ -71,9 +77,8 @@ export interface TaskLocation {
 }
 
 const taskSchema: yup.SchemaOf<
-  TaskCreateInput | TaskUpdateInput | TaskLocation
+  TaskCreateInput | Omit<TaskUpdateInput, 'id'> | TaskLocation
 > = yup.object({
-  id: yup.string().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>(),
   subject: yup.string().required(),
   starred: yup.boolean().nullable(),
@@ -105,7 +110,8 @@ const TaskModalForm = ({
   defaultValues,
   view,
 }: Props): ReactElement => {
-  const initialTask: (TaskCreateInput | TaskUpdateInput) & TaskLocation = task
+  const initialTask: (TaskCreateInput | Omit<TaskUpdateInput, 'id'>) &
+    TaskLocation = task
     ? {
         ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
         userId: task.user?.id,
@@ -145,6 +151,10 @@ const TaskModalForm = ({
   const [updateTaskLocation] = useUpdateTaskLocationMutation();
 
   const [searchTerm, setSearchTerm] = useState('');
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) (inputRef.current as HTMLInputElement).focus();
+  }, []);
 
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
@@ -200,18 +210,24 @@ const TaskModalForm = ({
     : [];
 
   const onSubmit = async (
-    attributes: (TaskCreateInput | TaskUpdateInput) & TaskLocation,
+    attributes: (TaskCreateInput | Omit<TaskUpdateInput, 'id'>) & TaskLocation,
   ): Promise<void> => {
     const isUpdate = (
-      attributes: TaskCreateInput | TaskUpdateInput,
-    ): attributes is TaskUpdateInput => !!task;
+      attributes: TaskCreateInput | Omit<TaskUpdateInput, 'id'>,
+    ): attributes is Omit<TaskUpdateInput, 'id'> => !!task;
     const body = commentBody.trim();
     //TODO: Delete all location related stuff when field gets added to rails schema
     const location = attributes.location;
     delete attributes.location;
     if (isUpdate(attributes)) {
       await updateTask({
-        variables: { accountListId, attributes },
+        variables: {
+          accountListId,
+          attributes: {
+            ...attributes,
+            id: (task as GetTaskForTaskModalQuery['task']).id,
+          },
+        },
         update: (_cache, { data }) => {
           if (data?.updateTask?.task.id && location) {
             updateTaskLocation({
@@ -296,7 +312,7 @@ const TaskModalForm = ({
 
   return (
     <Formik
-      initialValues={_.omit(initialTask, '__typename')}
+      initialValues={_.omit(initialTask, ['__typename', 'id'])}
       validationSchema={taskSchema}
       onSubmit={onSubmit}
     >
@@ -340,27 +356,43 @@ const TaskModalForm = ({
                     errors.subject && touched.subject && t('Field is required')
                   }
                   required
+                  inputRef={inputRef}
                 />
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
-                  <InputLabel id="activityType">{t('Action')}</InputLabel>
-                  <NullableSelect
-                    labelId="activityType"
-                    value={activityType}
-                    onChange={(e) =>
-                      setFieldValue('activityType', e.target.value)
+                  <Autocomplete
+                    openOnFocus
+                    value={
+                      activityType === null ||
+                      typeof activityType === 'undefined'
+                        ? ''
+                        : activityType
                     }
-                    label={t('Action')}
-                  >
-                    {Object.values(ActivityTypeEnum)
-                      .filter((val) => val !== ActivityTypeEnum.None)
-                      .map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedTaskType(t, val)}
-                        </MenuItem>
-                      ))}
-                  </NullableSelect>
+                    // Sort none to top
+                    options={Object.values(ActivityTypeEnum).sort((a) =>
+                      a === ActivityTypeEnum.None ? -1 : 1,
+                    )}
+                    getOptionLabel={(activity) => {
+                      if (activity === ActivityTypeEnum.None) {
+                        return t('None');
+                      } else {
+                        return getLocalizedTaskType(
+                          t,
+                          activity as ActivityTypeEnum,
+                        );
+                      }
+                    }}
+                    renderInput={(params): ReactElement => (
+                      <TextField {...params} label={t('Action')} />
+                    )}
+                    onChange={(_, activity): void => {
+                      setFieldValue(
+                        'activityType',
+                        activity === ActivityTypeEnum.None ? null : activity,
+                      );
+                    }}
+                  />
                 </FormControl>
               </Grid>
               {activityType === ActivityTypeEnum.Appointment && (

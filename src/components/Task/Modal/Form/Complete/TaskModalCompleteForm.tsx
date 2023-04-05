@@ -45,7 +45,6 @@ import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { TaskLocation } from '../TaskModalForm';
-import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
@@ -55,7 +54,7 @@ const taskSchema: yup.SchemaOf<
     'id' | 'result' | 'nextAction' | 'tagList' | 'completedAt'
   >
 > = yup.object({
-  id: yup.string(),
+  id: yup.string().required(),
   result: yup.mixed<ResultEnum>().required(),
   nextAction: yup.mixed<ActivityTypeEnum>(),
   tagList: yup.array().of(yup.string()).default([]),
@@ -253,23 +252,37 @@ const TaskModalCompleteForm = ({
               {availableNextActions.length > 0 && (
                 <Grid item>
                   <FormControl fullWidth>
-                    <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
-                    <NullableSelect
-                      label={t('Next Action')}
-                      labelId="nextAction"
-                      value={nextAction}
-                      onChange={(e) =>
-                        setFieldValue('nextAction', e.target.value)
+                    <Autocomplete
+                      openOnFocus
+                      value={
+                        nextAction === null || typeof nextAction === 'undefined'
+                          ? ''
+                          : nextAction
                       }
-                    >
-                      {availableNextActions
-                        .filter((val) => val !== ActivityTypeEnum.None)
-                        .map((val) => (
-                          <MenuItem key={val} value={val}>
-                            {getLocalizedTaskType(t, val)}
-                          </MenuItem>
-                        ))}
-                    </NullableSelect>
+                      // Sort none to top
+                      options={availableNextActions.sort((a) =>
+                        a === ActivityTypeEnum.None ? -1 : 1,
+                      )}
+                      getOptionLabel={(activity) => {
+                        if (activity === ActivityTypeEnum.None) {
+                          return t('None');
+                        } else {
+                          return getLocalizedTaskType(
+                            t,
+                            activity as ActivityTypeEnum,
+                          );
+                        }
+                      }}
+                      renderInput={(params): ReactElement => (
+                        <TextField {...params} label={t('Next Action')} />
+                      )}
+                      onChange={(_, activity): void => {
+                        setFieldValue(
+                          'nextAction',
+                          activity === ActivityTypeEnum.None ? null : activity,
+                        );
+                      }}
+                    />
                   </FormControl>
                 </Grid>
               )}

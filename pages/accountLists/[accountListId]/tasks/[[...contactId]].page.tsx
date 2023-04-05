@@ -8,18 +8,13 @@ import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
 import theme from 'src/theme';
-import { dispatch } from 'src/lib/analytics';
 import { suggestArticles } from 'src/lib/helpScout';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import {
-  ResultEnum,
-  TaskFilterSetInput,
-} from '../../../../graphql/types.generated';
+import { TaskFilterSetInput } from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
 import {
   headerHeight,
@@ -31,7 +26,6 @@ import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import { ContactsProvider } from '../contacts/ContactsContext';
 import {
-  TasksDocument,
   useTaskFiltersQuery,
   useTasksQuery,
   TaskFiltersQuery,
@@ -40,14 +34,6 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
-import {
-  useMassActionsDeleteTasksMutation,
-  useMassActionsUpdateTasksMutation,
-} from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
-import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
-import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
-import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
 import {
   TaskFilterTabsTypes,
   taskFiltersTabs,
@@ -107,7 +93,6 @@ export const tasksSavedFilters = (
 const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
-  const { enqueueSnackbar } = useSnackbar();
   const { query, push, replace, isReady, pathname } = useRouter();
   const { openTaskModal } = useTaskModal();
   const { appName } = useGetAppSettings();
@@ -297,73 +282,6 @@ const TasksPage: React.FC = () => {
   );
   //#endregion
 
-  //#region mass actions
-
-  const [completeTasksModalOpen, setCompleteTasksModalOpen] = useState(false);
-  const [addTagsModalOpen, setAddTagsModalOpen] = useState(false);
-  const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
-  const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
-  const [removeTagsModalOpen, setRemoveTagsModalOpen] = useState(false);
-
-  const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
-  const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
-
-  const completeTasks = async () => {
-    const completedAt = DateTime.local().toISO();
-    await updateTasksMutation({
-      variables: {
-        accountListId: accountListId ?? '',
-        attributes: ids.map((id) => ({
-          id,
-          completedAt,
-          result: ResultEnum.Done,
-        })),
-      },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
-    });
-    ids.forEach(() => {
-      dispatch('mpdx-task-completed');
-    });
-    enqueueSnackbar(t('Contact(s) completed successfully'), {
-      variant: 'success',
-    });
-    setCompleteTasksModalOpen(false);
-    deselectAll();
-  };
-
-  const deleteTasks = async () => {
-    await deleteTasksMutation({
-      variables: {
-        accountListId: accountListId ?? '',
-        ids,
-      },
-      update: (cache) => {
-        ids.forEach((id) => {
-          cache.evict({ id: `Task:${id}` });
-        });
-        cache.gc();
-      },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
-    });
-    enqueueSnackbar(t('Task(s) deleted successfully'), {
-      variant: 'success',
-    });
-    setDeleteTasksModalOpen(false);
-    deselectAll();
-  };
-
-  //#endregion
-
   //#region JSX
   return (
     <>
@@ -403,6 +321,8 @@ const TasksPage: React.FC = () => {
                   starredFilter={starredFilter}
                   toggleStarredFilter={setStarredFilter}
                   headerCheckboxState={selectionType}
+                  massDeselectAll={deselectAll}
+                  selectedIds={ids}
                   buttonGroup={
                     <Hidden xsDown>
                       <TaskHeaderButton
@@ -423,55 +343,7 @@ const TasksPage: React.FC = () => {
                       </TaskHeaderButton>
                     </Hidden>
                   }
-                  selectedIds={ids}
-                  openCompleteTasksModal={setCompleteTasksModalOpen}
-                  openDeleteTasksModal={setDeleteTasksModalOpen}
-                  openEditTasksModal={setEditTasksModalOpen}
-                  openTasksRemoveTagsModal={setRemoveTagsModalOpen}
-                  openTasksAddTagsModal={setAddTagsModalOpen}
                 />
-                {completeTasksModalOpen && (
-                  <MassActionsTasksConfirmationModal
-                    open={completeTasksModalOpen}
-                    action="complete"
-                    idsCount={ids.length}
-                    setOpen={setCompleteTasksModalOpen}
-                    onConfirm={completeTasks}
-                  />
-                )}
-                {addTagsModalOpen && (
-                  <MassActionsTasksAddTagsModal
-                    ids={ids}
-                    selectedIdCount={data?.tasks.totalCount ?? 0}
-                    accountListId={accountListId}
-                    handleClose={() => setAddTagsModalOpen(false)}
-                  />
-                )}
-                {deleteTasksModalOpen && (
-                  <MassActionsTasksConfirmationModal
-                    open={deleteTasksModalOpen}
-                    action="delete"
-                    idsCount={ids.length}
-                    setOpen={setDeleteTasksModalOpen}
-                    onConfirm={deleteTasks}
-                  />
-                )}
-                {editTasksModalOpen && (
-                  <MassActionsEditTasksModal
-                    ids={ids}
-                    selectedIdCount={data?.tasks.totalCount ?? 0}
-                    accountListId={accountListId}
-                    handleClose={() => setEditTasksModalOpen(false)}
-                  />
-                )}
-                {removeTagsModalOpen && (
-                  <MassActionsTasksRemoveTagsModal
-                    ids={ids}
-                    selectedIdCount={data?.tasks.totalCount ?? 0}
-                    accountListId={accountListId}
-                    handleClose={() => setRemoveTagsModalOpen(false)}
-                  />
-                )}
                 <Box>
                   <TaskCurrentHistoryButtonGroup
                     variant="outlined"

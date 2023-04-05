@@ -8,9 +8,6 @@ import {
   FormControlLabel,
   Grid,
   InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
 } from '@mui/material';
 import CalendarToday from '@mui/icons-material/CalendarToday';
@@ -22,7 +19,10 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  TaskUpdateInput,
+} from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
 import theme from 'src/theme';
@@ -33,6 +33,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
@@ -48,7 +49,7 @@ type EditTasksFields = {
   activityType: ActivityTypeEnum | null;
   userId: string | null;
   startAt: string | null;
-  noDueDate: boolean | null | undefined;
+  noDueDate: boolean;
   body: string | null;
 };
 
@@ -57,7 +58,7 @@ const MassActionsEditTasksSchema = yup.object({
   activityType: yup.mixed<ActivityTypeEnum>(),
   userId: yup.string().nullable(),
   startAt: yup.string().nullable(),
-  noDueDate: yup.boolean().nullable(),
+  noDueDate: yup.boolean().required(),
   body: yup.string().nullable(),
 });
 
@@ -72,21 +73,19 @@ export const MassActionsEditTasksModal: React.FC<
   const { enqueueSnackbar } = useSnackbar();
 
   const onSubmit = async (fields: EditTasksFields) => {
-    const { subject, activityType, startAt, userId, noDueDate, body } = fields;
-    const relevantFields = {
-      subject,
-      activityType,
-      startAt,
-      userId,
-    };
-    const formattedFields: { [key: string]: any } = {};
-    for (const [key, value] of Object.entries(relevantFields)) {
+    const { noDueDate, body } = fields;
+    const formattedFields: Partial<TaskUpdateInput> = {};
+    ['subject', 'activityType', 'startAt', 'userId'].forEach((key) => {
+      const value = fields[key];
       if (value) {
         formattedFields[key] = value;
       }
+    });
+    if (formattedFields.activityType === ActivityTypeEnum.None) {
+      formattedFields.activityType = null;
     }
     if (noDueDate) {
-      formattedFields['startAt'] = null;
+      formattedFields.startAt = null;
     }
     const attributes = ids.map((id) => ({
       id,
@@ -130,12 +129,12 @@ export const MassActionsEditTasksModal: React.FC<
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
       <Formik
         initialValues={{
-          subject: null,
+          subject: '',
           activityType: null,
           userId: null,
           startAt: null,
-          noDueDate: undefined,
-          body: null,
+          noDueDate: false,
+          body: '',
         }}
         onSubmit={onSubmit}
         validationSchema={MassActionsEditTasksSchema}
@@ -148,7 +147,7 @@ export const MassActionsEditTasksModal: React.FC<
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit} noValidate data-testid="EditTasksModal">
             <DialogContent dividers>
               <IncompleteWarning
                 selectedIdCount={selectedIdCount}
@@ -169,22 +168,41 @@ export const MassActionsEditTasksModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <InputLabel id="activityType">{t('Action')}</InputLabel>
-                    <Select
-                      label={t('Action')}
-                      labelId="activityType"
-                      value={activityType}
-                      onChange={(e) =>
-                        setFieldValue('activityType', e.target.value)
+                    <Autocomplete
+                      openOnFocus
+                      value={
+                        activityType === null ||
+                        typeof activityType === 'undefined'
+                          ? ''
+                          : activityType
                       }
-                    >
-                      <MenuItem value={undefined}>{t('None')}</MenuItem>
-                      {Object.values(ActivityTypeEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      // Sort None to top
+                      options={[
+                        'DONT_CHANGE',
+                        ...Object.values(ActivityTypeEnum).sort((a) =>
+                          a === ActivityTypeEnum.None ? -1 : 1,
+                        ),
+                      ]}
+                      getOptionLabel={(activity) =>
+                        activity === ActivityTypeEnum.None
+                          ? t('None')
+                          : activity === 'DONT_CHANGE'
+                          ? t("Don't change")
+                          : getLocalizedTaskType(
+                              t,
+                              activity as ActivityTypeEnum,
+                            )
+                      }
+                      renderInput={(params): ReactElement => (
+                        <TextField {...params} label={t('Action')} />
+                      )}
+                      onChange={(_, activity): void => {
+                        setFieldValue(
+                          'activityType',
+                          activity === 'DONT_CHANGE' ? '' : activity,
+                        );
+                      }}
+                    />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} lg={6}>
@@ -293,7 +311,7 @@ export const MassActionsEditTasksModal: React.FC<
                       control={
                         <Checkbox checked={noDueDate} color="secondary" />
                       }
-                      label="No Due Date"
+                      label={t('No Due Date')}
                       name="noDueDate"
                       onChange={handleChange}
                     />

@@ -222,7 +222,7 @@ describe('TaskModalForm', () => {
 
     userEvent.type(getByLabelText('Location'), '123 Test Street');
 
-    userEvent.click(getByRole('listbox', { hidden: true, name: 'Action' }));
+    userEvent.click(getByRole('combobox', { hidden: true, name: 'Action' }));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
         'Call',
@@ -313,7 +313,7 @@ describe('TaskModalForm', () => {
       );
     expect(
       getAllByRole('textbox').find(
-        (item) => (item as HTMLInputElement).value === '1/05/2016',
+        (item) => (item as HTMLInputElement).value === '1/5/2016',
       ),
     ).toBeInTheDocument();
     expect(queryByText('Notifications')).not.toBeInTheDocument();

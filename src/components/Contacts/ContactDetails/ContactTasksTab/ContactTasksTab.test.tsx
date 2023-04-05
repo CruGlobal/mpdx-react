@@ -4,18 +4,26 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import useTaskModal from '../../../../hooks/useTaskModal';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../../theme';
 import { ContactTasksTab } from './ContactTasksTab';
 import { ContactTasksTabQuery } from './ContactTasksTab.generated';
 
 jest.mock('../../../../hooks/useTaskModal');
+jest.mock('../../../../hooks/useAccountListId');
 
 const openTaskModal = jest.fn();
-
+const push = jest.fn();
+const router = {
+  query: { accountListId: '123' },
+  isReady: true,
+  push,
+};
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
   });
+  (useAccountListId as jest.Mock).mockReturnValue(router);
 });
 
 const mockEnqueue = jest.fn();
