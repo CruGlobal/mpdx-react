@@ -84,6 +84,12 @@ export const TasksMassActionsDropdown: React.FC<
         accountListId: accountListId ?? '',
         ids: selectedIds,
       },
+      update: (cache) => {
+        selectedIds.forEach((id) => {
+          cache.evict({ id: `Task:${id}` });
+        });
+        cache.gc();
+      },
       refetchQueries: [
         {
           query: TasksDocument,
