@@ -61,13 +61,18 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
   const [openFilterTagDeleteModal, setOpenFilterTagDeleteModal] =
     useState(false);
 
+  const appliedTags =
+    (selectedFilters?.tags?.length || 0) +
+    (selectedFilters?.excludeTags?.length || 0);
   return (
     <TagsAccordionWrapper>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMore />}>
           <Box display="flex">
             <LocalOffer />
-            <Typography style={{ marginLeft: 8 }}>{t('Tags')}</Typography>
+            <Typography style={{ marginLeft: 8 }}>
+              {t('Tags')} {appliedTags ? ` (${appliedTags})` : ''}
+            </Typography>
           </Box>
         </AccordionSummary>
         <AccordionDetails>

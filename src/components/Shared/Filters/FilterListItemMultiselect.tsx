@@ -1,3 +1,5 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Autocomplete,
   Checkbox,
@@ -6,20 +8,28 @@ import {
   ListItemText,
   TextField,
 } from '@mui/material';
-import React from 'react';
+import IconButton from '@mui/material/IconButton';
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
+import Tooltip from '@mui/material/Tooltip';
 import { MultiselectFilter } from '../../../../graphql/types.generated';
+import { ReverseFiltersMap } from './FilterPanel';
 
 interface Props {
   filter: MultiselectFilter;
   selected?: Array<string>;
   onUpdate: (value?: Array<string>) => void;
+  onReverseFilter?: () => void;
+  reverseSelected?: boolean;
 }
 
 export const FilterListItemMultiselect: React.FC<Props> = ({
   filter,
   selected,
   onUpdate,
+  onReverseFilter,
+  reverseSelected,
 }: Props) => {
+  const { t } = useTranslation();
   const toggleValue = (value?: string[]) => {
     onUpdate(value);
   };
@@ -37,7 +47,24 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
 
   return (
     <div className="FilterListItemMultiselect-root">
-      <ListItem>
+      <ListItem
+        secondaryAction={
+          ReverseFiltersMap.get(filter.filterKey) &&
+          onReverseFilter && (
+            <Tooltip title={t('Reverse Filter')}>
+              <IconButton
+                edge="end"
+                aria-label={t('Reverse Filter')}
+                color={reverseSelected ? 'error' : 'default'}
+                disabled={!selected}
+                onClick={onReverseFilter}
+              >
+                <SyncAltIcon />
+              </IconButton>
+            </Tooltip>
+          )
+        }
+      >
         <ListItemText
           primary={filter.title}
           primaryTypographyProps={{ variant: 'subtitle1' }}
@@ -55,6 +82,12 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
                 ({ value }) => String(value) === String(option),
               )?.name ?? ''
             }
+            ChipProps={{
+              color: reverseSelected ? 'error' : 'default',
+              style: {
+                background: reverseSelected ? '#d32f2f' : '#ffffff',
+              },
+            }}
             filterSelectedOptions
             fullWidth
             renderInput={(params) => (
