@@ -54,7 +54,7 @@ const TaskComponents = () => (
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TasksMassActionsDropdown
-            totalItems={selectedIds?.length}
+            selectedIdCount={selectedIds?.length ?? 0}
             selectedIds={selectedIds}
             massDeselectAll={massDeselectAll}
           />
@@ -160,7 +160,7 @@ describe('TasksMassActionsDropdown', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <TasksMassActionsDropdown
-                totalItems={selectedIds?.length}
+                selectedIdCount={selectedIds?.length ?? 0}
                 selectedIds={selectedIds}
                 massDeselectAll={massDeselectAll}
               />
@@ -207,7 +207,7 @@ describe('TasksMassActionsDropdown', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <TasksMassActionsDropdown
-                totalItems={selectedIds?.length}
+                selectedIdCount={selectedIds?.length ?? 0}
                 selectedIds={selectedIds}
                 massDeselectAll={massDeselectAll}
               />

@@ -174,7 +174,11 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               buttonGroup={null}
               selectedIds={ids}
               massDeselectAll={deselectAll}
-              totalItems={taskCount}
+              selectedIdCount={
+                selectionType === ListHeaderCheckBoxState.checked
+                  ? taskCount
+                  : ids.length
+              }
             />
           </HeaderItemsWrap>
         </HeaderRow>

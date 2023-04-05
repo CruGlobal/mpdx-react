@@ -8,6 +8,7 @@ import theme from '../../../theme';
 import TestRouter from '__tests__/util/TestRouter';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { TasksMassActionsDropdown } from '../../Shared/MassActions/TasksMassActionsDropdown';
 import {
   ListHeader,
   ListHeaderCheckBoxState,
@@ -38,6 +39,13 @@ jest.mock('notistack', () => ({
       enqueueSnackbar: mockEnqueue,
     };
   },
+}));
+
+jest.mock('../../Shared/MassActions/TasksMassActionsDropdown', () => ({
+  TasksMassActionsDropdown: jest.fn(
+    jest.requireActual('../../Shared/MassActions/TasksMassActionsDropdown')
+      .TasksMassActionsDropdown,
+  ),
 }));
 
 const MocksProviders = (props: { children: JSX.Element }) => (
@@ -505,5 +513,31 @@ describe('ListHeader', () => {
       </MocksProviders>,
     );
     expect(queryByText('Showing {{count}}')).not.toBeInTheDocument();
+  });
+
+  it('counts total tasks when all are selected', async () => {
+    render(
+      <MocksProviders>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="task"
+          activeFilters={true}
+          headerCheckboxState={ListHeaderCheckBoxState.checked}
+          starredFilter={{ starred: true }}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          contactsView={TableViewModeEnum.List}
+          totalItems={100}
+          {...mockedProps}
+        />
+      </MocksProviders>,
+    );
+    expect(
+      (
+        TasksMassActionsDropdown as jest.MockedFn<
+          typeof TasksMassActionsDropdown
+        >
+      ).mock.lastCall?.[0].selectedIdCount,
+    ).toBe(100);
   });
 });

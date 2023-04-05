@@ -181,7 +181,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             buttonGroup={buttonGroup}
             selectedIds={selectedIds}
             massDeselectAll={massDeselectAll}
-            totalItems={totalItems}
+            selectedIdCount={
+              headerCheckboxState === ListHeaderCheckBoxState.checked
+                ? totalItems ?? 0
+                : selectedIds.length
+            }
           />
         )}
 

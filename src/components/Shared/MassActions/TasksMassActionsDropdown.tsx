@@ -19,14 +19,14 @@ import { MassActionsDropdown } from './MassActionsDropdown';
 
 interface TasksMassActionsDropdownProps {
   buttonGroup?: ReactElement | null;
-  totalItems?: number;
+  selectedIdCount: number;
   massDeselectAll?: () => void;
   selectedIds: string[];
 }
 
 export const TasksMassActionsDropdown: React.FC<
   TasksMassActionsDropdownProps
-> = ({ buttonGroup, totalItems, massDeselectAll, selectedIds }) => {
+> = ({ buttonGroup, selectedIdCount, massDeselectAll, selectedIds }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() ?? '';
@@ -180,7 +180,7 @@ export const TasksMassActionsDropdown: React.FC<
       {addTagsModalOpen && (
         <MassActionsTasksAddTagsModal
           ids={selectedIds}
-          selectedIdCount={totalItems ?? 0}
+          selectedIdCount={selectedIdCount}
           accountListId={accountListId}
           handleClose={() => setAddTagsModalOpen(false)}
         />
@@ -197,7 +197,7 @@ export const TasksMassActionsDropdown: React.FC<
       {editTasksModalOpen && (
         <MassActionsEditTasksModal
           ids={selectedIds}
-          selectedIdCount={totalItems ?? 0}
+          selectedIdCount={selectedIdCount}
           accountListId={accountListId}
           handleClose={() => setEditTasksModalOpen(false)}
         />
@@ -205,7 +205,7 @@ export const TasksMassActionsDropdown: React.FC<
       {removeTagsModalOpen && (
         <MassActionsTasksRemoveTagsModal
           ids={selectedIds}
-          selectedIdCount={totalItems ?? 0}
+          selectedIdCount={selectedIdCount}
           accountListId={accountListId}
           handleClose={() => setRemoveTagsModalOpen(false)}
         />
