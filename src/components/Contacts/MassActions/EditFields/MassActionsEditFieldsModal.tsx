@@ -159,7 +159,11 @@ export const MassActionsEditFieldsModal: React.FC<
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            data-testid={'EditFieldsModal'}
+          >
             <DialogContent dividers>
               <Grid container spacing={2}>
                 <Grid item xs={12} lg={6}>

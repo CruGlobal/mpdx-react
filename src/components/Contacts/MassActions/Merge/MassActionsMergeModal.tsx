@@ -77,7 +77,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
 
   return (
     <Modal title={t('Merge Contacts')} isOpen={true} handleClose={handleClose}>
-      <DialogContent>
+      <DialogContent data-testid="MergeModal">
         <Alert
           severity="warning"
           sx={(theme) => ({

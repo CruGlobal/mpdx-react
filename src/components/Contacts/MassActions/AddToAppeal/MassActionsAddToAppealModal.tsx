@@ -91,7 +91,11 @@ export const MassActionsAddToAppealModal: React.FC<
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            data-testid="AddToAppealModal"
+          >
             <DialogContent dividers>
               <FormControl fullWidth>
                 <Autocomplete
@@ -118,6 +122,7 @@ export const MassActionsAddToAppealModal: React.FC<
                     <TextField
                       {...params}
                       label={t('Appeal')}
+                      data-testid="appealTextInput"
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (

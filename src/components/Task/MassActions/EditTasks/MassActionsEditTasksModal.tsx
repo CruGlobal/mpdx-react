@@ -132,12 +132,12 @@ export const MassActionsEditTasksModal: React.FC<
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
       <Formik
         initialValues={{
-          subject: null,
+          subject: '',
           activityType: null,
           userId: null,
           startAt: null,
           noDueDate: false,
-          body: null,
+          body: '',
         }}
         onSubmit={onSubmit}
         validationSchema={MassActionsEditTasksSchema}
@@ -150,7 +150,7 @@ export const MassActionsEditTasksModal: React.FC<
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit} noValidate data-testid="EditTasksModal">
             <DialogContent dividers>
               <IncompleteWarning
                 selectedIdCount={selectedIdCount}

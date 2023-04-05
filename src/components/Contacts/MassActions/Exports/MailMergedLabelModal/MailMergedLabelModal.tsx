@@ -71,7 +71,11 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            data-testid="MailMergedLabel"
+          >
             <DialogContent>
               <Grid container>
                 <Grid item xs={12}>
