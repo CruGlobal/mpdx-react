@@ -218,7 +218,6 @@ const TasksPage: React.FC = () => {
     [allTasks],
   );
 
-  const totalCount = data?.tasks?.totalCount ?? 0;
   const {
     ids,
     selectionType,
@@ -227,7 +226,7 @@ const TasksPage: React.FC = () => {
     toggleSelectAll,
     toggleSelectionById,
   } = useMassSelection(
-    totalCount,
+    data?.tasks?.totalCount ?? 0,
     allTaskIds,
     activeFilters,
     searchTerm as string,
