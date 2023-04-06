@@ -21,11 +21,11 @@ query GetDataForTaskModal($accountListId: ID!) {
   }
 }
 
-mutation CreateTask($accountListId: ID!, $attributes: TaskCreateInput!) {
-  createTask(
+mutation CreateTasks($accountListId: ID!, $attributes: TaskCreateInput!) {
+  createTasks(
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
-    task {
+    tasks {
       ...TaskMutationResponse
     }
   }
@@ -41,12 +41,6 @@ mutation UpdateTask($accountListId: ID!, $attributes: TaskUpdateInput!) {
   }
 }
 
-mutation UpdateTaskLocation($taskId: ID!, $location: String!) {
-  updateTaskLocation(input: { taskId: $taskId, location: $location }) {
-    id
-  }
-}
-
 mutation DeleteTask($accountListId: ID!, $id: ID!) {
   deleteTask(input: { accountListId: $accountListId, id: $id }) {
     id
@@ -57,6 +51,7 @@ fragment TaskMutationResponse on Task {
   id
   activityType
   subject
+  location
   startAt
   completedAt
   result

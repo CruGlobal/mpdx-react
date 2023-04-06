@@ -190,6 +190,7 @@ describe('ContactsMassActionsDropdown', () => {
     expect(getByText('Add Task')).toBeInTheDocument();
     userEvent.click(getByText('Add Task'));
     expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'add',
       defaultValues: { contactIds: selectedIds },
     });
   });

@@ -5,12 +5,8 @@ import {
   TaskCreateInput,
 } from '../../../../../../../graphql/types.generated';
 import {
-  CreateTaskCommentDocument,
-  CreateTaskCommentMutation,
-} from '../../../../../Task/Modal/Comments/Form/CreateTaskComment.generated';
-import {
-  CreateTaskDocument,
-  CreateTaskMutation,
+  CreateTasksDocument,
+  CreateTasksMutation,
   TaskMutationResponseFragment,
 } from '../../../../../Task/Modal/Form/TaskModal.generated';
 
@@ -23,58 +19,22 @@ export const createNewsletterTaskMutationMock = (
     completedAt: null,
     startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
     subject: 'abc',
+    comment: 'comment',
   };
-  const data: CreateTaskMutation = {
-    createTask: {
-      task: { ...task, id } as TaskMutationResponseFragment,
+  const data: CreateTasksMutation = {
+    createTasks: {
+      tasks: [{ ...task, id } as TaskMutationResponseFragment],
     },
   };
 
   return {
     request: {
-      query: CreateTaskDocument,
+      query: CreateTasksDocument,
       variables: {
         accountListId: 'abc',
         attributes: task,
       },
     },
     result: { data },
-  };
-};
-
-export const createNewsLetterTaskCommentMutation = (
-  taskId: string,
-): MockedResponse => {
-  const data: CreateTaskCommentMutation = {
-    createTaskComment: {
-      comment: {
-        id: 'comment-0',
-        body: 'comment',
-        createdAt: DateTime.local().toISO(),
-        me: true,
-        person: {
-          id: 'user-1',
-          firstName: 'John',
-          lastName: 'Smith',
-        },
-      },
-    },
-  };
-
-  return {
-    request: {
-      query: CreateTaskCommentDocument,
-      variables: {
-        accountListId: 'abc',
-        taskId,
-        attributes: {
-          id: 'comment-0',
-          body: 'comment',
-        },
-      },
-    },
-    result: {
-      data,
-    },
   };
 };

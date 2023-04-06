@@ -165,6 +165,7 @@ const PartnerCare = ({
       GetThisWeekQuery['reportsPeopleWithBirthdays']['periods'][0]['people'][0],
   ) => {
     openTaskModal({
+      view: 'add',
       defaultValues: {
         contactIds: [person.parentContact.id],
         subject:

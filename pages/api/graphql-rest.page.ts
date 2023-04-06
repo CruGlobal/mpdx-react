@@ -70,8 +70,6 @@ import {
   DonationReponseIncluded,
   getDesignationDisplayNames,
 } from './Schema/donations/datahandler';
-import { getLocationForTask } from './Schema/Tasks/TaskLocation/datahandler';
-import { UpdateTaskLocation } from './Schema/Tasks/TaskLocation/Update/datahandler';
 import {
   DestroyDonorAccount,
   DestroyDonorAccountResponse,
@@ -753,26 +751,6 @@ class MpdxRestApi extends RESTDataSource {
         )}&include=designation_account&per_page=10000`,
       );
     return getDesignationDisplayNames(data, included);
-  }
-
-  async getTaskLocation(_accountListId: string, taskId: string) {
-    const { data } = await this.get(`tasks/${taskId}`);
-    return getLocationForTask(data);
-  }
-
-  async updateTaskLocation(taskId: string, location: string) {
-    const { data }: { data: UpdateCommentResponse } = await this.put(
-      `tasks/${taskId}`,
-      {
-        data: {
-          type: 'tasks',
-          attributes: {
-            location,
-          },
-        },
-      },
-    );
-    return UpdateTaskLocation(data);
   }
 
   async destroyDonorAccount(contactId: string, donorAccountId: string) {
