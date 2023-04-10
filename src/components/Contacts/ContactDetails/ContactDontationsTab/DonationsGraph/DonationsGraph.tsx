@@ -16,6 +16,7 @@ import {
 } from 'recharts';
 import theme from '../../../../../theme';
 import { useGetDonationsGraphQuery } from './DonationsGraph.generated';
+import { currencyFormat } from 'src/lib/intlFormat';
 
 const LegendText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(3, 0),
@@ -73,37 +74,60 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   );
 
   return (
-    <GraphContainer fontFamily={theme.typography.fontFamily}>
-      {loading ? (
-        <Box style={{ width: '100%' }} role="alert">
-          <GraphLoadingPlaceHolder />
-          <GraphLoadingPlaceHolder />
-          <GraphLoadingPlaceHolder />
-        </Box>
-      ) : (
-        <>
-          <LegendText variant="body1" role="textbox">{`${t(
-            'Amount',
-          )} (${convertedCurrency})`}</LegendText>
-          <BarChart width={600} height={300} data={months}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar
-              name={t('Last Year')}
-              dataKey="lastYear"
-              fill={theme.palette.secondary.dark}
-            />
-            <Bar
-              name={t('This Year')}
-              dataKey="thisYear"
-              fill={theme.palette.secondary.main}
-            />
-          </BarChart>
-        </>
+    <>
+      {data && (
+        <Typography
+          variant="h6"
+          align="center"
+          sx={(theme) => ({ paddingBottom: theme.spacing(1) })}
+        >
+          {t('Average: {{average}}', {
+            average: currencyFormat(
+              data.reportsDonationHistories.averageIgnoreCurrent,
+              data.accountList.currency,
+            ),
+          })}
+          {' | '}
+          {t('Gift Average: {{average}}', {
+            average: currencyFormat(
+              data.reportsDonationHistories.averageIgnoreCurrentAndZero,
+              data.accountList.currency,
+            ),
+          })}
+        </Typography>
       )}
-    </GraphContainer>
+      <GraphContainer fontFamily={theme.typography.fontFamily}>
+        {loading ? (
+          <Box style={{ width: '100%' }} role="alert">
+            <GraphLoadingPlaceHolder />
+            <GraphLoadingPlaceHolder />
+            <GraphLoadingPlaceHolder />
+          </Box>
+        ) : (
+          <>
+            <LegendText variant="body1" role="textbox">{`${t(
+              'Amount',
+            )} (${convertedCurrency})`}</LegendText>
+            <BarChart width={600} height={300} data={months}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar
+                name={t('Last Year')}
+                dataKey="lastYear"
+                fill={theme.palette.secondary.dark}
+              />
+              <Bar
+                name={t('This Year')}
+                dataKey="thisYear"
+                fill={theme.palette.secondary.main}
+              />
+            </BarChart>
+          </>
+        )}
+      </GraphContainer>
+    </>
   );
 };
