@@ -195,7 +195,7 @@ const TaskModalLogForm = ({
     } else {
       dispatch('mpdx-task-completed');
     }
-    enqueueSnackbar(t('Task logged successfully'), { variant: 'success' });
+    enqueueSnackbar(t('Task(s) logged successfully'), { variant: 'success' });
     onClose();
     if (
       attributes.nextAction &&

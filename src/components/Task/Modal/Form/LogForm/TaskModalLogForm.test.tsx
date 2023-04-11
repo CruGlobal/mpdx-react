@@ -308,9 +308,11 @@ describe('TaskModalLogForm', () => {
     await waitFor(() => {
       const createTaskOperation = mutationSpy.mock.calls[2][0].operation;
       expect(createTaskOperation.operationName).toEqual('CreateTasks');
-      expect(createTaskOperation.variables.attributes.activityType).toEqual(
-        'APPOINTMENT',
-      );
+      expect(createTaskOperation.variables.attributes).toMatchObject({
+        activityType: 'APPOINTMENT',
+        location: 'Newcastle',
+        comment: 'Meeting place info',
+      });
     });
   }, 25000);
 });

@@ -260,7 +260,7 @@ const TaskModalForm = ({
         ],
       });
     }
-    enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    enqueueSnackbar(t('Task(s) saved successfully'), { variant: 'success' });
     onClose();
     if (
       attributes.nextAction &&
