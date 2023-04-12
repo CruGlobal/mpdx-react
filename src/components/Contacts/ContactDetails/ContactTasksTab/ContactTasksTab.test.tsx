@@ -116,6 +116,7 @@ describe('ContactTasksTab', () => {
 
     userEvent.click(getByText('add task'));
     expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'add',
       defaultValues: {
         contactIds: [contactId],
       },

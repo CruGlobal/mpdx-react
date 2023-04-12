@@ -161,6 +161,7 @@ export const ContactsMassActionsDropdown: React.FC<
                 <MenuItem
                   onClick={() => {
                     openTaskModal({
+                      view: 'add',
                       defaultValues: { contactIds: selectedIds },
                     });
                     handleClose();

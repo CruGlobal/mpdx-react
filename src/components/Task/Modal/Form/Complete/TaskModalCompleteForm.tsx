@@ -44,7 +44,6 @@ import {
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
-import { TaskLocation } from '../TaskModalForm';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
@@ -63,7 +62,7 @@ const taskSchema: yup.SchemaOf<
 
 interface Props {
   accountListId: string;
-  task: GetTaskForTaskModalQuery['task'] & TaskLocation;
+  task: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
 }
 
@@ -128,6 +127,7 @@ const TaskModalCompleteForm = ({
       attributes.nextAction !== ActivityTypeEnum.None
     ) {
       openTaskModal({
+        view: 'add',
         defaultValues: {
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded

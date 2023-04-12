@@ -41,10 +41,6 @@ import ReportsPledgeHistoriesTyeDefs from './reports/pledgeHistories/pledgeHisto
 import { ReportsPledgeHistoriesResolvers } from './reports/pledgeHistories/resolvers';
 import DesginationDisplayNamesTypeDefs from './donations/getDesignationDisplayNames.graphql';
 import { DesginationDisplayNamesResolvers } from './donations/resolvers';
-import TaskLocationTypeDefs from './Tasks/TaskLocation/taskLocation.graphql';
-import { TaskLocationResolvers } from './Tasks/TaskLocation/resolvers';
-import UpdateTaskLocationTypeDefs from './Tasks/TaskLocation/Update/updateTaskLocation.graphql';
-import { UpdateTaskLocationResolvers } from './Tasks/TaskLocation/Update/resolvers';
 import DestroyDonorAccountTypeDefs from './Contacts/DonorAccounts/Destroy/destroyDonorAccount.graphql';
 import { DestroyDonorAccountResolvers } from './Contacts/DonorAccounts/Destroy/resolvers';
 import DeleteTagsTypeDefs from './Tags/Delete/deleteTags.graphql';
@@ -122,14 +118,6 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: DesginationDisplayNamesTypeDefs,
     resolvers: DesginationDisplayNamesResolvers,
-  },
-  {
-    typeDefs: TaskLocationTypeDefs,
-    resolvers: TaskLocationResolvers,
-  },
-  {
-    typeDefs: UpdateTaskLocationTypeDefs,
-    resolvers: UpdateTaskLocationResolvers,
   },
   {
     typeDefs: DestroyDonorAccountTypeDefs,

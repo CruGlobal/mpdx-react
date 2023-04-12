@@ -326,7 +326,7 @@ const TasksPage: React.FC = () => {
                   buttonGroup={
                     <Hidden xsDown>
                       <TaskHeaderButton
-                        onClick={() => openTaskModal({})}
+                        onClick={() => openTaskModal({ view: 'add' })}
                         variant="text"
                         startIcon={<TaskAddIcon />}
                       >

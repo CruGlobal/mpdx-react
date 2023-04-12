@@ -110,7 +110,9 @@ describe('NullState', () => {
     ).toBeInTheDocument();
     expect(getByTestId('task-null-state')).toBeInTheDocument();
     userEvent.click(getByText('Add new task'));
-    await waitFor(() => expect(openTaskModal).toHaveBeenCalledWith({}));
+    await waitFor(() =>
+      expect(openTaskModal).toHaveBeenCalledWith({ view: 'add' }),
+    );
   });
 
   it('render text filtered tasks', async () => {
@@ -140,6 +142,8 @@ describe('NullState', () => {
     userEvent.click(getByText('Reset All Search Filters'));
     expect(changeFilters).toHaveBeenCalled();
     userEvent.click(getByText('Add new task'));
-    await waitFor(() => expect(openTaskModal).toHaveBeenCalledWith({}));
+    await waitFor(() =>
+      expect(openTaskModal).toHaveBeenCalledWith({ view: 'add' }),
+    );
   });
 });

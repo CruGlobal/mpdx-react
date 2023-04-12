@@ -50,7 +50,7 @@ const AccountListIdPage = ({
         setDialogOpen(true);
         break;
       case 'AddTask':
-        openTaskModal({});
+        openTaskModal({ view: 'add' });
         break;
       case 'AddLogTask':
         openTaskModal({ view: 'log' });
