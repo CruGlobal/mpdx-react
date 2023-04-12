@@ -150,7 +150,10 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           <HeaderItemsWrap>
             <TaskButton
               onClick={() =>
-                openTaskModal({ defaultValues: { contactIds: [contactId] } })
+                openTaskModal({
+                  view: 'add',
+                  defaultValues: { contactIds: [contactId] },
+                })
               }
             >
               <AddTaskButtonIcon />

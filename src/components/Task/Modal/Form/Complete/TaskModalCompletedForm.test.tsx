@@ -167,6 +167,7 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({
+        view: 'add',
         defaultValues: {
           activityType: ActivityTypeEnum.Appointment,
           contactIds: ['contact-1', 'contact-2'],

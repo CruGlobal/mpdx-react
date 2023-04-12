@@ -99,6 +99,8 @@ describe('AddMenu', () => {
     userEvent.click(getByRole('button', { hidden: true, name: 'Add Button' }));
     await waitFor(() => expect(getByText('Add Task')).toBeInTheDocument());
     userEvent.click(getByText('Add Task'));
-    await waitFor(() => expect(openTaskModal).toHaveBeenCalledWith({}));
+    await waitFor(() =>
+      expect(openTaskModal).toHaveBeenCalledWith({ view: 'add' }),
+    );
   });
 });

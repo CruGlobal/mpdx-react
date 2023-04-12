@@ -102,6 +102,7 @@ describe('ContactDetailsMoreActions', () => {
     await waitFor(() => expect(getByText('Add Task')).toBeInTheDocument());
     userEvent.click(getByText('Add Task'));
     expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'add',
       defaultValues: {
         contactIds: [contactId],
       },

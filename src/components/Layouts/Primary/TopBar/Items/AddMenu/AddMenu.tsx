@@ -206,7 +206,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       text: 'Add Task',
       icon: <ListIcon />,
       onClick: () => {
-        openTaskModal({});
+        openTaskModal({ view: 'add' });
         setAnchorEl(undefined);
       },
     },
