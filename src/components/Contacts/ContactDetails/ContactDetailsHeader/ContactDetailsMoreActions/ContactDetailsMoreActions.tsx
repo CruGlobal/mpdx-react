@@ -218,7 +218,10 @@ export const ContactDetailsMoreAcitions: React.FC<
       text: 'Add Task',
       icon: <ListIcon />,
       onClick: () => {
-        openTaskModal({ defaultValues: { contactIds: [contactId] } });
+        openTaskModal({
+          view: 'add',
+          defaultValues: { contactIds: [contactId] },
+        });
         setAnchorEl(undefined);
       },
     },

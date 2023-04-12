@@ -93,7 +93,7 @@ const TasksDueThisWeek = ({
   const handleClick = ({
     id: taskId,
   }: GetThisWeekQuery['dueTasks']['nodes'][0]): void => {
-    openTaskModal({ taskId });
+    openTaskModal({ taskId, view: 'edit' });
   };
 
   return (

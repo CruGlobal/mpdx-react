@@ -57,7 +57,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: 'Add Task',
       icon: ListIcon,
       onClick: () => {
-        openTaskModal({});
+        openTaskModal({ view: 'add' });
       },
     },
     {

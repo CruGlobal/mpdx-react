@@ -134,7 +134,10 @@ describe('TasksDueThisWeek', () => {
         'Smith, Roger — the quick brown fox jumps over the lazy dog',
       );
       userEvent.click(task1Element);
-      expect(openTaskModal).toHaveBeenCalledWith({ taskId: 'task_1' });
+      expect(openTaskModal).toHaveBeenCalledWith({
+        view: 'edit',
+        taskId: 'task_1',
+      });
       expect(
         getByTestId('TasksDueThisWeekListItem-task_2').textContent,
       ).toEqual('Smith, Sarah — the quick brown fox jumps over the lazy dog');

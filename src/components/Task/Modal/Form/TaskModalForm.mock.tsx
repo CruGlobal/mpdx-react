@@ -9,8 +9,8 @@ import {
 } from '../../../../../graphql/types.generated';
 import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
 import {
-  CreateTaskDocument,
-  CreateTaskMutation,
+  CreateTasksDocument,
+  CreateTasksMutation,
   DeleteTaskDocument,
   DeleteTaskMutation,
   TaskMutationResponseFragment,
@@ -99,7 +99,7 @@ export const getDataForTaskModalEmptyMock = (
   };
 };
 
-export const createTaskMutationMock = (): MockedResponse => {
+export const createTasksMutationMock = (): MockedResponse => {
   const task: TaskCreateInput = {
     activityType: null,
     subject: 'abc',
@@ -113,16 +113,18 @@ export const createTaskMutationMock = (): MockedResponse => {
     notificationTimeUnit: null,
     result: null,
     nextAction: null,
+    comment: 'test comment',
+    location: '',
   };
-  const data: CreateTaskMutation = {
-    createTask: {
-      task: { ...task, id: 'task-1' } as TaskMutationResponseFragment,
+  const data: CreateTasksMutation = {
+    createTasks: {
+      tasks: [{ ...task, id: 'task-1' } as TaskMutationResponseFragment],
     },
   };
 
   return {
     request: {
-      query: CreateTaskDocument,
+      query: CreateTasksDocument,
       variables: {
         accountListId: 'abc',
         attributes: task,

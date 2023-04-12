@@ -38,7 +38,10 @@ export const ContactTasksTabNullState: React.FC<
       <AddTaskButton
         variant="contained"
         onClick={() =>
-          openTaskModal({ defaultValues: { contactIds: [contactId] } })
+          openTaskModal({
+            view: 'add',
+            defaultValues: { contactIds: [contactId] },
+          })
         }
       >
         {t('Add New Task')}
