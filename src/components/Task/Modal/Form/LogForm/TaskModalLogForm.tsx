@@ -4,6 +4,7 @@ import React, {
   useState,
   useRef,
   useEffect,
+  ChangeEventHandler,
 } from 'react';
 import {
   Autocomplete,
@@ -15,16 +16,12 @@ import {
   Chip,
   Grid,
   CircularProgress,
-  DialogTitle,
   DialogActions,
   DialogContent,
-  DialogContentText,
-  Dialog,
   InputAdornment,
   FormControlLabel,
   Switch,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
 import { useTranslation } from 'react-i18next';
@@ -33,26 +30,19 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { v4 as uuidv4 } from 'uuid';
 import { AnimatePresence, motion } from 'framer-motion';
 import { debounce } from 'lodash/fp';
 import {
   ActivityTypeEnum,
-  NotificationTimeUnitEnum,
-  NotificationTypeEnum,
   TaskCreateInput,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
   useGetDataForTaskModalQuery,
-  useCreateTaskMutation,
-  useDeleteTaskMutation,
+  useCreateTasksMutation,
   useGetTaskModalContactsFilteredQuery,
-  useUpdateTaskLocationMutation,
 } from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
@@ -60,43 +50,33 @@ import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.ge
 import {
   SubmitButton,
   CancelButton,
-  DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
-import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
-import { TaskLocation } from '../TaskModalForm';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
-const LoadingIndicator = styled(CircularProgress)(() => ({
-  display: 'flex',
-  margin: 'auto',
-}));
-
-const taskSchema: yup.SchemaOf<TaskCreateInput | TaskLocation> = yup.object({
-  activityType: yup.mixed<ActivityTypeEnum>(),
+const taskSchema = yup.object({
+  activityType: yup.mixed<ActivityTypeEnum>().nullable(),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
-  starred: yup.boolean().nullable(),
-  startAt: yup.string().nullable(),
   completedAt: yup.string().nullable(),
   userId: yup.string().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
-  notificationTimeBefore: yup.number().nullable(),
-  notificationType: yup.mixed<NotificationTypeEnum>(),
   result: yup.mixed<ResultEnum>(),
-  nextAction: yup.mixed<ActivityTypeEnum>(),
-  notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
-  location: yup.string().nullable(),
+  nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
+  // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
+  // when those fields fields are blank for some reason, and we need to allow blank values
+  location: yup.string(),
+  comment: yup.string(),
 });
+type Attributes = yup.InferType<typeof taskSchema>;
 
 interface Props {
   accountListId: string;
-  task?: (GetTaskForTaskModalQuery['task'] & TaskLocation) | null;
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
 }
@@ -144,92 +124,51 @@ const NextActionsSection: React.FC<NextActionsSectionProps> = ({
 
 const TaskModalLogForm = ({
   accountListId,
-  task,
   onClose,
   defaultValues,
 }: Props): ReactElement => {
-  const initialTask: TaskCreateInput & TaskLocation = task
-    ? {
-        ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
-        contactIds: task.contacts.nodes.map(({ id }) => id),
-      }
-    : {
-        activityType: null,
-        subject: '',
-        location: null,
-        startAt: null,
-        completedAt: DateTime.local()
-          .plus({ hours: 1 })
-          .startOf('hour')
-          .toISO(),
-        tagList: [],
-        contactIds: [],
-        notificationTimeBefore: null,
-        notificationType: null,
-        notificationTimeUnit: null,
-        result: ResultEnum.Completed,
-        nextAction: null,
-        ...defaultValues,
-      };
+  const initialTask: Attributes = {
+    activityType: defaultValues?.activityType ?? null,
+    subject: defaultValues?.subject ?? '',
+    contactIds: defaultValues?.contactIds ?? [],
+    completedAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
+    userId: defaultValues?.userId ?? null,
+    tagList: defaultValues?.tagList ?? [],
+    result: defaultValues?.result ?? ResultEnum.Completed,
+    nextAction: defaultValues?.nextAction ?? null,
+    location: '',
+    comment: '',
+  };
+
   const { t } = useTranslation();
-  const [commentBody, setCommentBody] = useState('');
   const [showMore, setShowMore] = useState(false);
-  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedIds, setSelectedIds] = useState(
-    task?.contacts.nodes.map((contact) => contact.id) ||
-      defaultValues?.contactIds ||
-      [],
-  );
+  const [selectedIds, setSelectedIds] = useState(initialTask.contactIds);
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
 
   const { data, loading } = useGetDataForTaskModalQuery({
     variables: { accountListId },
   });
-  const [createTask, { loading: creating }] = useCreateTaskMutation();
-  const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
-  const [createTaskComment] = useCreateTaskCommentMutation();
-  const [updateTaskLocation] = useUpdateTaskLocationMutation();
+  const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const inputRef = useRef(null);
   useEffect(() => {
     if (inputRef.current) (inputRef.current as HTMLInputElement).focus();
   }, []);
-  const handleSearchTermChange = useCallback(
+  const handleSearchTermChange = useCallback<
+    ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  >(
     debounce(500, (event) => {
       setSearchTerm(event.target.value);
     }),
     [],
   );
 
-  const onSubmit = async (
-    attributes: TaskCreateInput & TaskLocation,
-  ): Promise<void> => {
-    const body = commentBody.trim();
-    //TODO: Delete all location related stuff when field gets added to rails schema
-    const location = attributes.location;
-    delete attributes.location;
-    const { data } = await createTask({
-      variables: { accountListId, attributes },
-      update: (_cache, { data }) => {
-        if (data?.createTask?.task.id && location) {
-          updateTaskLocation({
-            variables: {
-              taskId: data?.createTask?.task.id,
-              location,
-            },
-          });
-        }
-        if (data?.createTask?.task.id && body !== '') {
-          const id = uuidv4();
-          createTaskComment({
-            variables: {
-              accountListId,
-              taskId: data.createTask.task.id,
-              attributes: { id, body },
-            },
-          });
-        }
+  const onSubmit = async (attributes: Attributes): Promise<void> => {
+    await createTasks({
+      variables: {
+        accountListId,
+        attributes: { ...attributes, comment: attributes.comment?.trim() },
       },
       refetchQueries: [
         {
@@ -256,22 +195,20 @@ const TaskModalLogForm = ({
     } else {
       dispatch('mpdx-task-completed');
     }
-    enqueueSnackbar(t('Task logged successfully'), { variant: 'success' });
+    enqueueSnackbar(t('Task(s) logged successfully'), { variant: 'success' });
     onClose();
     if (
       attributes.nextAction &&
       attributes.nextAction !== ActivityTypeEnum.None
     ) {
       openTaskModal({
+        view: 'add',
         defaultValues: {
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
-          contactIds:
-            data?.createTask?.task?.contacts?.nodes.map(
-              (contact) => contact.id,
-            ) || [],
-          userId: data?.createTask?.task.user?.id,
-          tagList: data?.createTask?.task.tagList,
+          contactIds: attributes.contactIds,
+          userId: attributes.userId ?? undefined,
+          tagList: attributes.tagList,
         },
       });
     }
@@ -298,8 +235,8 @@ const TaskModalLogForm = ({
 
   const mergedContacts =
     dataFilteredByName && dataFilteredById
-      ? dataFilteredByName?.contacts.nodes
-          .concat(dataFilteredById?.contacts.nodes)
+      ? dataFilteredByName.contacts.nodes
+          .concat(dataFilteredById.contacts.nodes)
           .filter(
             (contact1, index, self) =>
               self.findIndex((contact2) => contact2.id === contact1.id) ===
@@ -309,33 +246,6 @@ const TaskModalLogForm = ({
         dataFilteredByName?.contacts.nodes ||
         data?.contacts.nodes ||
         [];
-
-  const onDeleteTask = async (): Promise<void> => {
-    if (task) {
-      const endOfDay = DateTime.local().endOf('day');
-      await deleteTask({
-        variables: {
-          accountListId,
-          id: task.id,
-        },
-        refetchQueries: [
-          {
-            query: GetThisWeekDocument,
-            variables: {
-              accountListId,
-              endOfDay: endOfDay.toISO(),
-              today: endOfDay.toISODate(),
-              threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
-              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
-            },
-          },
-        ],
-      });
-      enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
-      setRemoveDialogOpen(false);
-      onClose();
-    }
-  };
 
   const handleShowMoreChange = (): void => {
     setShowMore((prevState) => !prevState);
@@ -358,6 +268,7 @@ const TaskModalLogForm = ({
           result,
           nextAction,
           location,
+          comment,
         },
         setFieldValue,
         handleChange,
@@ -582,7 +493,7 @@ const TaskModalLogForm = ({
                   {showMore && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 193, opacity: 1 }}
+                      animate={{ height: 216, opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                     >
                       <Grid
@@ -594,10 +505,8 @@ const TaskModalLogForm = ({
                         <Grid item xs={12}>
                           <TextField
                             label={t('Comment')}
-                            value={commentBody}
-                            onChange={(event) =>
-                              setCommentBody(event.target.value)
-                            }
+                            value={comment}
+                            onChange={handleChange('comment')}
                             fullWidth
                             multiline
                             inputProps={{ 'aria-label': 'Comment' }}
@@ -688,9 +597,6 @@ const TaskModalLogForm = ({
             </FormFieldsGridContainer>
           </DialogContent>
           <DialogActions>
-            {task?.id ? (
-              <DeleteButton onClick={() => setRemoveDialogOpen(true)} />
-            ) : null}
             <CancelButton disabled={isSubmitting} onClick={onClose} />
             <SubmitButton disabled={!isValid || isSubmitting}>
               {creating && (
@@ -701,32 +607,6 @@ const TaskModalLogForm = ({
               )}
               {t('Save')}
             </SubmitButton>
-
-            <Dialog
-              open={removeDialogOpen}
-              aria-labelledby={t('Remove task confirmation')}
-              fullWidth
-              maxWidth="sm"
-            >
-              <DialogTitle>{t('Confirm')}</DialogTitle>
-              <DialogContent dividers>
-                {deleting ? (
-                  <LoadingIndicator color="primary" size={50} />
-                ) : (
-                  <DialogContentText>
-                    {t('Are you sure you wish to delete the selected task?')}
-                  </DialogContentText>
-                )}
-              </DialogContent>
-              <DialogActions>
-                <CancelButton onClick={() => setRemoveDialogOpen(false)}>
-                  {t('No')}
-                </CancelButton>
-                <SubmitButton type="button" onClick={onDeleteTask}>
-                  {t('Yes')}
-                </SubmitButton>
-              </DialogActions>
-            </Dialog>
           </DialogActions>
         </form>
       )}

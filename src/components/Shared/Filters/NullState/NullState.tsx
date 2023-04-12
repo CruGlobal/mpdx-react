@@ -58,7 +58,7 @@ const NullState: React.FC<Props> = ({
               variant="contained"
               onClick={
                 page === 'task'
-                  ? () => openTaskModal({})
+                  ? () => openTaskModal({ view: 'add' })
                   : () => changeDialogOpen(true)
               }
               style={{
@@ -93,7 +93,7 @@ const NullState: React.FC<Props> = ({
               variant="contained"
               onClick={
                 page === 'task'
-                  ? () => openTaskModal({})
+                  ? () => openTaskModal({ view: 'add' })
                   : () => changeDialogOpen(true)
               }
               style={{
