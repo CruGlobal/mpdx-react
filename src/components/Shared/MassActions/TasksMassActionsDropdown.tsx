@@ -60,7 +60,7 @@ export const TasksMassActionsDropdown: React.FC<
           result: ResultEnum.Done,
         })),
       },
-      refetchQueries: ['Tasks'],
+      refetchQueries: ['Tasks', 'ContactTasksTab'],
     });
     selectedIds.forEach(() => {
       dispatch('mpdx-task-completed');

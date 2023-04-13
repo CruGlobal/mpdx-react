@@ -105,7 +105,7 @@ export const MassActionsEditTasksModal: React.FC<
           }
         }
       },
-      refetchQueries: ['Tasks'],
+      refetchQueries: ['Tasks', 'ContactTasksTab'],
     });
     enqueueSnackbar(t('Tasks updated!'), {
       variant: 'success',

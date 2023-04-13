@@ -107,6 +107,7 @@ const TaskModalCompleteForm = ({
       },
       refetchQueries: [
         'Tasks',
+        'ContactTasksTab',
         {
           query: GetThisWeekDocument,
           variables: {
