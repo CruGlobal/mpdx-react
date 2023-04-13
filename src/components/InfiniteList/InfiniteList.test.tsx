@@ -60,7 +60,7 @@ describe('InfiniteList', () => {
             loading={false}
             data={['item 1', 'item 2']}
             initialItemCount={2}
-            groupBy={(item) => item[0].toUpperCase()}
+            groupBy={(item) => ({ label: item[0].toUpperCase() })}
             itemContent={(index, item) => <div>{item}</div>}
             endReached={endReached}
             EmptyPlaceholder={<div>No items</div>}

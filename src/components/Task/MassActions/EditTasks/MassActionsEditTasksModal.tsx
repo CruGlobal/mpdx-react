@@ -28,7 +28,6 @@ import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments
 import theme from 'src/theme';
 import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
-import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -106,12 +105,7 @@ export const MassActionsEditTasksModal: React.FC<
           }
         }
       },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
+      refetchQueries: ['Tasks'],
     });
     enqueueSnackbar(t('Tasks updated!'), {
       variant: 'success',

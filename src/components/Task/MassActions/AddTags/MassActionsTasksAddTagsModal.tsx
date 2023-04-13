@@ -93,6 +93,7 @@ export const MassActionsTasksAddTagsModal: React.FC<
         attributes,
       },
       refetchQueries: [
+        'Tasks',
         {
           query: ContactsDocument,
           variables: { accountListId },

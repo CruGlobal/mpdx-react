@@ -6,7 +6,6 @@ import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
 import { dispatch } from 'src/lib/analytics';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { ResultEnum } from '../../../../graphql/types.generated';
-import { TasksDocument } from '../../../../pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
 import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
 import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
@@ -61,12 +60,7 @@ export const TasksMassActionsDropdown: React.FC<
           result: ResultEnum.Done,
         })),
       },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
+      refetchQueries: ['Tasks'],
     });
     selectedIds.forEach(() => {
       dispatch('mpdx-task-completed');
@@ -90,12 +84,6 @@ export const TasksMassActionsDropdown: React.FC<
         });
         cache.gc();
       },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
     });
     enqueueSnackbar(t('Task(s) deleted successfully'), {
       variant: 'success',

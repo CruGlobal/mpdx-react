@@ -49,8 +49,6 @@ import {
 } from '../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../src/theme';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
-import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
-import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
   SubmitButton,
@@ -224,16 +222,7 @@ const TaskModalForm = ({
           accountListId,
           attributes: { ...sharedAttributes, id },
         },
-        refetchQueries: [
-          {
-            query: TasksDocument,
-            variables: { accountListId },
-          },
-          {
-            query: ContactTasksTabDocument,
-            variables: { accountListId },
-          },
-        ],
+        refetchQueries: ['Tasks', 'ContactTasksTab'],
       });
     } else {
       await createTasks({
@@ -241,23 +230,7 @@ const TaskModalForm = ({
           accountListId,
           attributes: { ...sharedAttributes, comment: comment?.trim() },
         },
-        refetchQueries: [
-          {
-            query: TasksDocument,
-            variables: { accountListId },
-          },
-          {
-            query: ContactTasksTabDocument,
-            variables: {
-              accountListId,
-              tasksFilter: {
-                contactIds: defaultValues?.contactIds?.[0]
-                  ? [defaultValues.contactIds[0]]
-                  : [],
-              },
-            },
-          },
-        ],
+        refetchQueries: ['Tasks', 'ContactTasksTab'],
       });
     }
     enqueueSnackbar(t('Task(s) saved successfully'), { variant: 'success' });

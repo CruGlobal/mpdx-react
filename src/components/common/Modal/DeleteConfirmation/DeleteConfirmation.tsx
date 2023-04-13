@@ -13,7 +13,6 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useDeleteTaskMutation } from '../../../Task/Modal/Form/TaskModal.generated';
 import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
-import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -61,10 +60,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
           cache.gc();
         },
         refetchQueries: [
-          {
-            query: ContactTasksTabDocument,
-            variables: { accountListId },
-          },
+          'ContactTasksTab',
           {
             query: GetThisWeekDocument,
             variables: {

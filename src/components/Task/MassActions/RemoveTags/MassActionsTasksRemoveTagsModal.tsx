@@ -24,7 +24,6 @@ import {
 } from '../AddTags/TasksAddTags.generated';
 import { useMassActionsUpdateTasksMutation } from '../MassActionsUpdateTasks.generated';
 import theme from 'src/theme';
-import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -95,12 +94,7 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
         accountListId,
         attributes,
       },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
+      refetchQueries: ['Tasks'],
     });
     enqueueSnackbar(t('Tags removed from task(s)!'), {
       variant: 'success',

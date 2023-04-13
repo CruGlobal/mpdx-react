@@ -366,8 +366,7 @@ const TasksPage: React.FC = () => {
                   <InfiniteList
                     data-foo="bar"
                     loading={loading}
-                    data={data?.tasks?.nodes}
-                    totalCount={data?.tasks?.totalCount}
+                    data={data?.tasks.nodes}
                     style={{
                       height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
                     }}
@@ -385,28 +384,28 @@ const TasksPage: React.FC = () => {
                     )}
                     groupBy={(item) => {
                       if (item.completedAt) {
-                        return t('Completed');
+                        return { order: 5, label: t('Completed') };
                       } else if (!item.startAt) {
-                        return t('No Due Date');
+                        return { order: 1, label: t('No Due Date') };
                       } else if (
                         DateTime.fromISO(item.startAt).hasSame(
                           DateTime.now(),
                           'day',
                         )
                       ) {
-                        return t('Today');
+                        return { order: 2, label: t('Today') };
                       } else if (
                         DateTime.now().startOf('day') >
                         DateTime.fromISO(item.startAt).startOf('day')
                       ) {
-                        return t('Overdue');
+                        return { order: 1, label: t('Overdue') };
                       } else if (
                         DateTime.now().startOf('day') <
                         DateTime.fromISO(item.startAt).startOf('day')
                       ) {
-                        return t('Upcoming');
+                        return { order: 3, label: t('Upcoming') };
                       }
-                      return t('No Due Date');
+                      return { order: 4, label: t('No Due Date') };
                     }}
                     endReached={() =>
                       data?.tasks?.pageInfo.hasNextPage &&

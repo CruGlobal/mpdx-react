@@ -45,8 +45,6 @@ import {
 import theme from '../../../../../../src/theme';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
-import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -170,23 +168,7 @@ const TaskModalLogForm = ({
         accountListId,
         attributes: { ...attributes, comment: attributes.comment?.trim() },
       },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-        {
-          query: ContactTasksTabDocument,
-          variables: {
-            accountListId,
-            tasksFilter: {
-              contactIds: [
-                defaultValues?.contactIds ? defaultValues.contactIds[0] : '',
-              ],
-            },
-          },
-        },
-      ],
+      refetchQueries: ['Tasks', 'ContactTasksTab'],
     });
     if (attributes.contactIds && attributes.contactIds.length > 1) {
       attributes.contactIds.forEach(() => {

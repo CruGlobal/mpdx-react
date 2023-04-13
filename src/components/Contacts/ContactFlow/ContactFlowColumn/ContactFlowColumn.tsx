@@ -76,7 +76,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
       constants?.constant.statuses?.find((constant) => constant.id === status),
     ) || [];
 
-  const CardContentRef = useRef<HTMLDivElement>();
+  const cardContentRef = useRef<HTMLDivElement>();
 
   const [{ canDrop }, drop] = useDrop(() => ({
     accept: 'contact',
@@ -141,11 +141,10 @@ export const ContactFlowColumn: React.FC<Props> = ({
             />
           ))}
         </Box>
-        <Box {...{ ref: CardContentRef }} width="100%" height="100%">
+        <Box ref={cardContentRef} width="100%" height="100%">
           <InfiniteList
             loading={loading}
             data={data?.contacts.nodes}
-            totalCount={data?.contacts.totalCount}
             itemContent={(_index, contact) => (
               <ContactFlowRow
                 accountListId={accountListId}
@@ -158,7 +157,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
                 }
                 starred={contact.starred}
                 onContactSelected={onContactSelected}
-                columnWidth={CardContentRef.current?.offsetWidth}
+                columnWidth={cardContentRef.current?.offsetWidth}
                 avatar={contact.avatar}
               />
             )}

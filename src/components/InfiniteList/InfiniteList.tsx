@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { List, ListItem, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
@@ -8,8 +8,11 @@ import {
   GroupedVirtuoso,
   GroupedVirtuosoProps,
   ItemContent,
+  Virtuoso,
+  VirtuosoProps,
 } from 'react-virtuoso';
 import Skeleton from '@mui/material/Skeleton';
+import { groupItems } from './groupItems';
 
 const height = 72;
 const padding = 0;
@@ -66,65 +69,69 @@ const GroupLabel = styled(Typography)(({ theme }) => ({
   padding: theme.spacing(0, 2),
 }));
 
-interface InfiniteListProps<T, C> {
+export interface InfiniteListProps<T, C> {
   loading: boolean;
   EmptyPlaceholder?: ReactElement | null;
   itemContent: ItemContent<T, C>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: any;
-  totalCount?: number;
-  groupBy?: (item: T) => string;
+  groupBy?: (item: T) => { label: string; order?: number };
 }
 
 export const InfiniteList = <T, C>({
   loading,
   data = [],
-  totalCount = data?.length ?? 0,
   EmptyPlaceholder = null,
   context,
   groupBy,
+  itemContent,
   ...props
 }: Omit<GroupedVirtuosoProps<T, C>, 'groupCounts' | 'itemContent'> &
   InfiniteListProps<T, C>): ReactElement => {
-  const groups =
-    data?.length > 0
-      ? groupBy
-        ? data.reduce<{ [groupLabel: string]: number }>((acc, item) => {
-            const label = groupBy(item);
-            return {
-              ...acc,
-              [label]: acc[label] ? acc[label] + 1 : 1,
-            };
-          }, {})
-        : { '': totalCount }
-      : {};
-
-  return (
-    <GroupedVirtuoso
-      groupCounts={Object.values(groups)}
-      {...props}
-      itemContent={(index) =>
-        data[index] && props.itemContent(index, data[index], context)
-      }
-      groupContent={(index) => {
-        const groupLabel = Object.keys(groups)[index];
-        return groupLabel ? (
-          <GroupLabel variant="h5">{groupLabel}</GroupLabel>
-        ) : null;
-      }}
-      components={{
-        Footer: loading ? Loading : undefined,
-        EmptyPlaceholder: loading ? undefined : () => EmptyPlaceholder,
-        List: ListContainer,
-        Item,
-        ScrollSeekPlaceholder: SkeletonItem,
-        ...props.components,
-      }}
-      scrollSeekConfiguration={{
-        enter: (velocity) => Math.abs(velocity) > 200,
-        exit: (velocity) => Math.abs(velocity) < 10,
-        ...props.scrollSeekConfiguration,
-      }}
-    />
+  const { groupCounts, groupLabels, items } = useMemo(
+    () => groupItems(data, groupBy),
+    [data, groupBy],
   );
+
+  const commonProps: Omit<VirtuosoProps<T, C>, 'itemContent'> = {
+    ...props,
+    components: {
+      Footer: loading ? Loading : undefined,
+      EmptyPlaceholder: loading ? undefined : () => EmptyPlaceholder,
+      List: ListContainer,
+      Item,
+      ScrollSeekPlaceholder: SkeletonItem,
+      ...props.components,
+    },
+    scrollSeekConfiguration: {
+      enter: (velocity) => Math.abs(velocity) > 200,
+      exit: (velocity) => Math.abs(velocity) < 10,
+      ...props.scrollSeekConfiguration,
+    },
+  };
+
+  if (groupCounts.length > 0) {
+    return (
+      <GroupedVirtuoso
+        groupCounts={groupCounts}
+        groupContent={(index) => (
+          <GroupLabel variant="h5">{groupLabels[index]}</GroupLabel>
+        )}
+        itemContent={(index) =>
+          items[index] && itemContent(index, items[index], context)
+        }
+        {...commonProps}
+      />
+    );
+  } else {
+    return (
+      <Virtuoso
+        data={items}
+        itemContent={(index) =>
+          items[index] && itemContent(index, items[index], context)
+        }
+        {...commonProps}
+      />
+    );
+  }
 };
