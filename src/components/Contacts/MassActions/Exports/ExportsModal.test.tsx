@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
@@ -62,27 +62,55 @@ describe('ExportsModals', () => {
     exportRest as jest.Mock;
     massDeselectAll.mockClear();
   });
+
   it('Clicks CSV export', async () => {
-    const { getByText } = render(<ContactComponents />);
-    const exportType = getByText('CSV for Mail Merge') as HTMLInputElement;
-    await waitFor(() => expect(exportType).toBeInTheDocument());
-    userEvent.click(exportType);
-    await waitFor(() => expect(exportRest).toHaveBeenCalled());
+    const { getByRole } = render(<ContactComponents />);
+
+    expect(exportRest).not.toHaveBeenCalled();
+    userEvent.click(getByRole('button', { name: 'CSV for Mail Merge' }));
+    expect(exportRest).toHaveBeenCalled();
+
+    expect(
+      getByRole('button', { name: 'PDF of Mail Merged Labels' }),
+    ).toBeDisabled();
+    expect(getByRole('button', { name: 'CSV for Mail Merge' })).toBeDisabled();
+    expect(getByRole('button', { name: 'Advanced CSV' })).toBeDisabled();
+    expect(
+      getByRole('button', { name: 'Advanced Excel (XLSX)' }),
+    ).toBeDisabled();
   });
+
   it('Clicks Advanced CSV export', async () => {
-    await waitFor(() => expect(exportRest).not.toHaveBeenCalled());
-    const { getByText } = render(<ContactComponents />);
-    const exportType = getByText('Advanced CSV') as HTMLInputElement;
-    await waitFor(() => expect(exportType).toBeInTheDocument());
-    userEvent.click(exportType);
-    await waitFor(() => expect(exportRest).toHaveBeenCalled());
+    const { getByRole } = render(<ContactComponents />);
+
+    expect(exportRest).not.toHaveBeenCalled();
+    userEvent.click(getByRole('button', { name: 'Advanced CSV' }));
+    expect(exportRest).toHaveBeenCalled();
+
+    expect(
+      getByRole('button', { name: 'PDF of Mail Merged Labels' }),
+    ).toBeDisabled();
+    expect(getByRole('button', { name: 'CSV for Mail Merge' })).toBeDisabled();
+    expect(getByRole('button', { name: 'Advanced CSV' })).toBeDisabled();
+    expect(
+      getByRole('button', { name: 'Advanced Excel (XLSX)' }),
+    ).toBeDisabled();
   });
+
   it('Clicks Advanced Excel', async () => {
-    await waitFor(() => expect(exportRest).not.toHaveBeenCalled());
-    const { getByText } = render(<ContactComponents />);
-    const exportType = getByText('Advanced Excel (XLSX)') as HTMLInputElement;
-    await waitFor(() => expect(exportType).toBeInTheDocument());
-    userEvent.click(exportType);
-    await waitFor(() => expect(exportRest).toHaveBeenCalled());
+    const { getByRole } = render(<ContactComponents />);
+
+    expect(exportRest).not.toHaveBeenCalled();
+    userEvent.click(getByRole('button', { name: 'Advanced Excel (XLSX)' }));
+    expect(exportRest).toHaveBeenCalled();
+
+    expect(
+      getByRole('button', { name: 'PDF of Mail Merged Labels' }),
+    ).toBeDisabled();
+    expect(getByRole('button', { name: 'CSV for Mail Merge' })).toBeDisabled();
+    expect(getByRole('button', { name: 'Advanced CSV' })).toBeDisabled();
+    expect(
+      getByRole('button', { name: 'Advanced Excel (XLSX)' }),
+    ).toBeDisabled();
   });
 });

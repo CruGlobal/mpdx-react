@@ -7,6 +7,7 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import React, { ReactElement } from 'react';
@@ -41,7 +42,7 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
 
   const onSubmit = async ({ template, sort }) => {
     try {
-      exportRest(accountListId, ids, token, 'pdf', true, template, sort);
+      await exportRest(accountListId, ids, token, 'pdf', true, template, sort);
     } catch (err) {
       enqueueSnackbar(JSON.stringify(err), {
         variant: 'error',
@@ -90,17 +91,15 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
                       }
                       style={{ marginBottom: theme.spacing(2) }}
                     >
-                      {[
-                        <MenuItem key="" value={undefined}>
-                          {t('None')}
-                        </MenuItem>,
-                        <MenuItem key="Avery5160" value={'Avery5160'}>
-                          {t('Avery 5160')}
-                        </MenuItem>,
-                        <MenuItem key="Avery7160" value={'Avery7160'}>
-                          {t('Avery 7160')}
-                        </MenuItem>,
-                      ]}
+                      <MenuItem key="" value={undefined}>
+                        {t('None')}
+                      </MenuItem>
+                      <MenuItem key="Avery5160" value={'Avery5160'}>
+                        {t('Avery 5160')}
+                      </MenuItem>
+                      <MenuItem key="Avery7160" value={'Avery7160'}>
+                        {t('Avery 7160')}
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -114,14 +113,12 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
                       onChange={(e) => setFieldValue('sort', e.target.value)}
                       style={{ marginBottom: theme.spacing(2) }}
                     >
-                      {[
-                        <MenuItem key="Contact Name" value={'Contact Name'}>
-                          {t('Contact Name')}
-                        </MenuItem>,
-                        <MenuItem key="Zip" value={'zip'}>
-                          {t('Zip')}
-                        </MenuItem>,
-                      ]}
+                      <MenuItem key="Contact Name" value={'Contact Name'}>
+                        {t('Contact Name')}
+                      </MenuItem>
+                      <MenuItem key="Zip" value={'zip'}>
+                        {t('Zip')}
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -135,14 +132,16 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
               >
                 {t('Cancel')}
               </ActionButton>
-              <ActionButton
+              <LoadingButton
                 color="primary"
                 type="submit"
                 variant="contained"
+                sx={{ fontWeight: 700 }}
                 disabled={!isValid || isSubmitting}
+                loading={isSubmitting}
               >
                 {t('Export')}
-              </ActionButton>
+              </LoadingButton>
             </DialogActions>
           </form>
         )}
