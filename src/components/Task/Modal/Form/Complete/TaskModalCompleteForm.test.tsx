@@ -16,6 +16,7 @@ import useTaskModal from '../../../../../hooks/useTaskModal';
 import {
   completeTaskMutationMock,
   completeSimpleTaskMutationMock,
+  addTaskMutationMock,
 } from './TaskModalCompleteForm.mock';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 import { CompleteTaskDocument } from './CompleteTask.generated';
@@ -31,6 +32,10 @@ beforeEach(() => {
 });
 
 jest.mock('src/lib/analytics');
+
+jest.mock('uuid', () => ({
+  v4: (): string => 'comment-1',
+}));
 
 const accountListId = 'abc';
 const taskId = 'task-1';
@@ -176,6 +181,36 @@ describe('TaskModalCompleteForm', () => {
         },
       }),
     );
+  });
+
+  it('saves comment', async () => {
+    const onClose = jest.fn();
+    const { getByRole } = render(
+      <TestWrapper
+        mocks={[
+          getDataForTaskModalMock(accountListId),
+          completeSimpleTaskMutationMock(accountListId, taskId),
+          addTaskMutationMock(accountListId, taskId),
+          GetThisWeekDefaultMocks()[0],
+        ]}
+      >
+        <TaskModalCompleteForm
+          accountListId={accountListId}
+          onClose={onClose}
+          task={{
+            ...task,
+            activityType: null,
+            completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+          }}
+        />
+      </TestWrapper>,
+    );
+    userEvent.type(
+      getByRole('textbox', { name: 'Add New Comment' }),
+      'Comment',
+    );
+    userEvent.click(getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
   const getOptions = (

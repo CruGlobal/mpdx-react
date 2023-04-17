@@ -92,32 +92,36 @@ const TaskModalCompleteForm = ({
   const onSubmit = async (attributes: TaskUpdateInput): Promise<void> => {
     const body = commentBody.trim();
     const endOfDay = DateTime.local().endOf('day');
-    const { data } = await updateTask({
-      variables: { accountListId, attributes },
-      refetchQueries: [
-        'ContactTasksTab',
-        {
-          query: GetThisWeekDocument,
+    const mutations = [
+      updateTask({
+        variables: { accountListId, attributes },
+        refetchQueries: [
+          'ContactTasksTab',
+          {
+            query: GetThisWeekDocument,
+            variables: {
+              accountListId,
+              endOfDay: endOfDay.toISO(),
+              today: endOfDay.toISODate(),
+              threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
+              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
+            },
+          },
+        ],
+      }),
+    ];
+    if (body !== '') {
+      mutations.push(
+        createTaskComment({
           variables: {
             accountListId,
-            endOfDay: endOfDay.toISO(),
-            today: endOfDay.toISODate(),
-            threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
-            twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
+            taskId: task.id,
+            attributes: { id: uuidv4(), body },
           },
-        },
-      ],
-    });
-    if (data?.updateTask?.task.id && body !== '') {
-      const id = uuidv4();
-      await createTaskComment({
-        variables: {
-          accountListId,
-          taskId: data.updateTask.task.id,
-          attributes: { id, body },
-        },
-      });
+        }),
+      );
     }
+    await Promise.all(mutations);
     update();
 
     dispatch('mpdx-task-completed');

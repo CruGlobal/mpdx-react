@@ -92,16 +92,15 @@ export const MassActionsEditTasksModal: React.FC<
       id,
       ...formattedFields,
     }));
-    await updateTasks({
+    const updateMutation = updateTasks({
       variables: {
         accountListId,
         attributes,
       },
       refetchQueries: ['ContactTasksTab'],
     });
-    if (body) {
-      await Promise.all(
-        ids.map((taskId) =>
+    const commentMutations = body
+      ? ids.map((taskId) =>
           createTaskComment({
             variables: {
               accountListId,
@@ -109,9 +108,9 @@ export const MassActionsEditTasksModal: React.FC<
               attributes: { id: uuidv4(), body },
             },
           }),
-        ),
-      );
-    }
+        )
+      : [];
+    await Promise.all([updateMutation, ...commentMutations]);
     update();
     enqueueSnackbar(t('Tasks updated!'), {
       variant: 'success',

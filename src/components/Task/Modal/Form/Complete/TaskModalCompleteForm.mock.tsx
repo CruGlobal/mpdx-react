@@ -15,6 +15,10 @@ import {
   GetTaskForTaskModalDocument,
   GetTaskForTaskModalQuery,
 } from '../../TaskModalTask.generated';
+import {
+  CreateTaskCommentDocument,
+  CreateTaskCommentMutation,
+} from '../../Comments/Form/CreateTaskComment.generated';
 
 export const getCompleteTaskForTaskModalMock = (
   accountListId: string,
@@ -115,6 +119,37 @@ export const completeTaskMutationMock = (
       variables: {
         accountListId,
         attributes,
+      },
+    },
+    result: { data },
+  };
+};
+export const addTaskMutationMock = (
+  accountListId: string,
+  taskId: string,
+): MockedResponse => {
+  const data: CreateTaskCommentMutation = {
+    createTaskComment: {
+      comment: {
+        id: 'comment-1',
+        body: 'Comment',
+        createdAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+        me: true,
+        person: {
+          id: 'person-1',
+          firstName: 'John',
+          lastName: 'Doe',
+        },
+      },
+    },
+  };
+  return {
+    request: {
+      query: CreateTaskCommentDocument,
+      variables: {
+        accountListId,
+        taskId,
+        attributes: { id: 'comment-1', body: 'Comment' },
       },
     },
     result: { data },
