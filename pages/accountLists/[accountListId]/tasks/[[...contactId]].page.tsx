@@ -449,7 +449,7 @@ const TasksPage: React.FC = () => {
             }
             rightOpen={contactDetailsOpen}
             rightWidth="60%"
-            headerHeight={`calc(${navBarHeight} + ${headerHeight})`}
+            headerHeight={headerHeight}
           />
         </WhiteBackground>
       ) : (
