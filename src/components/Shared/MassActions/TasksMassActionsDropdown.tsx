@@ -15,6 +15,7 @@ import {
   useMassActionsUpdateTasksMutation,
 } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { MassActionsDropdown } from './MassActionsDropdown';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 interface TasksMassActionsDropdownProps {
   buttonGroup?: ReactElement | null;
@@ -48,6 +49,7 @@ export const TasksMassActionsDropdown: React.FC<
 
   const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
   const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
+  const { update } = useUpdateTasksQueries();
 
   const completeTasks = async () => {
     const completedAt = DateTime.local().toISO();
@@ -60,8 +62,9 @@ export const TasksMassActionsDropdown: React.FC<
           result: ResultEnum.Done,
         })),
       },
-      refetchQueries: ['Tasks', 'ContactTasksTab'],
+      refetchQueries: ['ContactTasksTab'],
     });
+    update();
     selectedIds.forEach(() => {
       dispatch('mpdx-task-completed');
     });

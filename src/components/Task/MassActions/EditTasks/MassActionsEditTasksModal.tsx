@@ -35,6 +35,7 @@ import {
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];
@@ -68,6 +69,7 @@ export const MassActionsEditTasksModal: React.FC<
 
   const [updateTasks] = useMassActionsUpdateTasksMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
+  const { update } = useUpdateTasksQueries();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -95,18 +97,22 @@ export const MassActionsEditTasksModal: React.FC<
         accountListId,
         attributes,
       },
-      update: () => {
-        if (body) {
-          for (const taskId of ids) {
-            const id = uuidv4();
-            createTaskComment({
-              variables: { accountListId, taskId, attributes: { id, body } },
-            });
-          }
-        }
-      },
-      refetchQueries: ['Tasks', 'ContactTasksTab'],
+      refetchQueries: ['ContactTasksTab'],
     });
+    if (body) {
+      await Promise.all(
+        ids.map((taskId) =>
+          createTaskComment({
+            variables: {
+              accountListId,
+              taskId,
+              attributes: { id: uuidv4(), body },
+            },
+          }),
+        ),
+      );
+    }
+    update();
     enqueueSnackbar(t('Tasks updated!'), {
       variant: 'success',
     });

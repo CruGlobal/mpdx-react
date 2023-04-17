@@ -209,7 +209,7 @@ const TasksPage: React.FC = () => {
     variables: {
       accountListId,
       first: taskCount,
-      tasksFilters: tasksFilter,
+      tasksFilter,
     },
     skip: taskCount === 0,
   });

@@ -26,7 +26,7 @@ mutation CreateTasks($accountListId: ID!, $attributes: TaskCreateInput!) {
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
     tasks {
-      ...TaskMutationResponse
+      ...TaskRow
     }
   }
 }
@@ -36,7 +36,7 @@ mutation UpdateTask($accountListId: ID!, $attributes: TaskUpdateInput!) {
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
     task {
-      ...TaskMutationResponse
+      ...TaskRow
     }
   }
 }
@@ -45,32 +45,6 @@ mutation DeleteTask($accountListId: ID!, $id: ID!) {
   deleteTask(input: { accountListId: $accountListId, id: $id }) {
     id
   }
-}
-
-fragment TaskMutationResponse on Task {
-  id
-  activityType
-  subject
-  location
-  startAt
-  completedAt
-  result
-  nextAction
-  tagList
-  contacts(first: 25) {
-    nodes {
-      id
-      name
-    }
-  }
-  user {
-    id
-    firstName
-    lastName
-  }
-  notificationTimeBefore
-  notificationType
-  notificationTimeUnit
 }
 
 query GetTaskModalContactsFiltered(

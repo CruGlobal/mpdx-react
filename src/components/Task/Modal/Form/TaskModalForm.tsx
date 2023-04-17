@@ -67,6 +67,7 @@ import {
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 const taskSchema = yup.object({
   id: yup.string().nullable(),
@@ -152,6 +153,7 @@ const TaskModalForm = ({
       defaultValues?.contactIds ||
       [],
   );
+  const { update } = useUpdateTasksQueries();
 
   const [searchTerm, setSearchTerm] = useState('');
   const inputRef = useRef(null);
@@ -222,7 +224,7 @@ const TaskModalForm = ({
           accountListId,
           attributes: { ...sharedAttributes, id },
         },
-        refetchQueries: ['Tasks', 'ContactTasksTab'],
+        refetchQueries: ['ContactTasksTab'],
       });
     } else {
       await createTasks({
@@ -230,9 +232,10 @@ const TaskModalForm = ({
           accountListId,
           attributes: { ...sharedAttributes, comment: comment?.trim() },
         },
-        refetchQueries: ['Tasks', 'ContactTasksTab'],
+        refetchQueries: ['ContactTasksTab'],
       });
     }
+    update();
     enqueueSnackbar(t('Task(s) saved successfully'), { variant: 'success' });
     onClose();
     if (

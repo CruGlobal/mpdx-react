@@ -1,5 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
+import { TaskRowFragment } from 'src/components/Task/TaskRow/TaskRow.generated';
 import {
   ActivityTypeEnum,
   TaskCreateInput,
@@ -7,7 +8,6 @@ import {
 import {
   CreateTasksDocument,
   CreateTasksMutation,
-  TaskMutationResponseFragment,
 } from '../../../../../Task/Modal/Form/TaskModal.generated';
 
 export const createNewsletterTaskMutationMock = (
@@ -23,7 +23,7 @@ export const createNewsletterTaskMutationMock = (
   };
   const data: CreateTasksMutation = {
     createTasks: {
-      tasks: [{ ...task, id } as TaskMutationResponseFragment],
+      tasks: [{ ...task, id } as TaskRowFragment],
     },
   };
 

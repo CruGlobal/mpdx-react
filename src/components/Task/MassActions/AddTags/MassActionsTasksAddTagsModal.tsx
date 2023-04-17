@@ -33,6 +33,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 interface MassActionsTasksAddTagsModalProps {
   ids: string[];
@@ -67,6 +68,7 @@ export const MassActionsTasksAddTagsModal: React.FC<
   const { enqueueSnackbar } = useSnackbar();
 
   const [tasksAddTags, { loading: updating }] = useTasksAddTagsMutation();
+  const { update } = useUpdateTasksQueries();
 
   const { data: tasksForTags, fetchMore } = useGetTasksForAddingTagsQuery({
     variables: {
@@ -93,13 +95,13 @@ export const MassActionsTasksAddTagsModal: React.FC<
         attributes,
       },
       refetchQueries: [
-        'Tasks',
         {
           query: ContactsDocument,
           variables: { accountListId },
         },
       ],
     });
+    update();
     enqueueSnackbar(t('Tags added to tasks!'), {
       variant: 'success',
     });

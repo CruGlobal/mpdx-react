@@ -46,6 +46,7 @@ import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResult
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -87,26 +88,13 @@ const TaskModalCompleteForm = ({
   });
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
+  const { update } = useUpdateTasksQueries();
   const onSubmit = async (attributes: TaskUpdateInput): Promise<void> => {
     const body = commentBody.trim();
     const endOfDay = DateTime.local().endOf('day');
-    await updateTask({
+    const { data } = await updateTask({
       variables: { accountListId, attributes },
-      update: (_cache, { data }) => {
-        if (data?.updateTask?.task.id && body !== '') {
-          const id = uuidv4();
-
-          createTaskComment({
-            variables: {
-              accountListId,
-              taskId: data.updateTask.task.id,
-              attributes: { id, body },
-            },
-          });
-        }
-      },
       refetchQueries: [
-        'Tasks',
         'ContactTasksTab',
         {
           query: GetThisWeekDocument,
@@ -120,6 +108,17 @@ const TaskModalCompleteForm = ({
         },
       ],
     });
+    if (data?.updateTask?.task.id && body !== '') {
+      const id = uuidv4();
+      await createTaskComment({
+        variables: {
+          accountListId,
+          taskId: data.updateTask.task.id,
+          attributes: { id, body },
+        },
+      });
+    }
+    update();
 
     dispatch('mpdx-task-completed');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });

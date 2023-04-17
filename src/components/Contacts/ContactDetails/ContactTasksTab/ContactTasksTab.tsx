@@ -120,7 +120,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     variables: {
       accountListId,
       first: taskCount,
-      tasksFilters: tasksFilter,
+      tasksFilter,
     },
     skip: taskCount === 0,
   });
