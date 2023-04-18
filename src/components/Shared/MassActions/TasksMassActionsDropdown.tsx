@@ -68,7 +68,7 @@ export const TasksMassActionsDropdown: React.FC<
     selectedIds.forEach(() => {
       dispatch('mpdx-task-completed');
     });
-    enqueueSnackbar(t('Contact(s) completed successfully'), {
+    enqueueSnackbar(t('Task(s) completed successfully'), {
       variant: 'success',
     });
     setCompleteTasksModalOpen(false);
