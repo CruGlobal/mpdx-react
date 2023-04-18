@@ -434,7 +434,7 @@ export const AddDonation = ({
                                   ({ id }) => id === accountId,
                                 );
                               return account
-                                ? `${account?.name} (${account?.id}) `
+                                ? `${account?.name} (${account.id}) `
                                 : '';
                             }}
                             renderInput={(params): ReactElement => (
