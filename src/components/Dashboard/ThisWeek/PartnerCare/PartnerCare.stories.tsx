@@ -4,7 +4,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import {
-  createTaskMutationMock,
+  createTasksMutationMock,
   updateTaskMutationMock,
 } from '../../../Task/Modal/Form/TaskModalForm.mock';
 import PartnerCare from './PartnerCare';
@@ -75,7 +75,7 @@ export const Default = (): ReactElement => {
   return (
     <Box m={2}>
       <MockedProvider
-        mocks={[createTaskMutationMock(), updateTaskMutationMock()]}
+        mocks={[createTasksMutationMock(), updateTaskMutationMock()]}
         addTypename={false}
       >
         <PartnerCare

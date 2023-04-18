@@ -10,17 +10,14 @@ import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import {
   getDataForTaskModalMock,
-  createTaskMutationMock,
+  createTasksMutationMock,
   updateTaskMutationMock,
   deleteTaskMutationMock,
 } from './TaskModalForm.mock';
 import TaskModalForm from './TaskModalForm';
-import { debug } from 'console';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 
 const accountListId = 'abc';
-
-debug(undefined, Infinity);
 
 describe('TaskModalForm', () => {
   const mockFilter = {
@@ -67,48 +64,35 @@ describe('TaskModalForm', () => {
 
   it('default', async () => {
     const onClose = jest.fn();
-    const { getByText, findByText, queryByText, getByLabelText, getByRole } =
-      render(
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <SnackbarProvider>
-            <MockedProvider
-              mocks={[
-                getDataForTaskModalMock(accountListId),
-                createTaskMutationMock(),
-              ]}
-              addTypename={false}
-            >
-              <TaskModalForm accountListId={accountListId} onClose={onClose} />
-            </MockedProvider>
-          </SnackbarProvider>
-        </LocalizationProvider>,
-      );
+    const { getByText, getByRole, findByText, queryByText } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              getDataForTaskModalMock(accountListId),
+              createTasksMutationMock(),
+            ]}
+            addTypename={false}
+          >
+            <TaskModalForm accountListId={accountListId} onClose={onClose} />
+          </MockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
     userEvent.click(getByText('Cancel'));
     expect(onClose).toHaveBeenCalled();
     onClose.mockClear();
     userEvent.click(getByText('Save'));
     expect(await findByText('Field is required')).toBeInTheDocument();
-    expect(await queryByText('Delete')).not.toBeInTheDocument();
-    userEvent.type(getByLabelText('Subject'), accountListId);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const contactsElement = getByRole('combobox', {
-      hidden: true,
-      name: 'Contacts',
-    });
+    expect(queryByText('Delete')).not.toBeInTheDocument();
 
-    userEvent.type(contactsElement, 'Smith');
+    userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
+    userEvent.type(getByRole('combobox', { name: 'Contacts' }), 'Smith');
+    userEvent.type(getByRole('textbox', { name: 'Comment' }), 'test comment');
 
-    const commentsBox = getByRole('textbox', {
-      hidden: true,
-      name: 'Comment',
-    });
-
-    expect(queryByText('test comment')).not.toBeInTheDocument();
-    userEvent.type(commentsBox, 'test comment');
-    expect(getByText('test comment')).toBeInTheDocument();
-
-    await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
-    userEvent.click(getByText('Save'));
+    const saveButton = getByRole('button', { name: 'Save' });
+    await waitFor(() => expect(saveButton).not.toBeDisabled());
+    userEvent.click(saveButton);
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   }, 10000);
 
@@ -222,7 +206,7 @@ describe('TaskModalForm', () => {
 
     userEvent.type(getByLabelText('Location'), '123 Test Street');
 
-    userEvent.click(getByRole('listbox', { hidden: true, name: 'Action' }));
+    userEvent.click(getByRole('combobox', { hidden: true, name: 'Action' }));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
         'Call',

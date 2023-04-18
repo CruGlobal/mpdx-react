@@ -1,11 +1,12 @@
-import { Button, Grid, Typography, Box } from '@mui/material';
+import { Button, Grid, Typography, Box, CircularProgress } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { exportRest } from './exportRest';
 import Modal from '../../../common/Modal/Modal';
 import styled from '@mui/system/styled';
+import theme from 'src/theme';
 
 interface ExportsModalProps {
   ids: string[];
@@ -13,6 +14,13 @@ interface ExportsModalProps {
   handleClose: () => void;
   openMailMergedLabelModal: () => void;
 }
+
+const ExportingSpinner: React.FC = () => (
+  <CircularProgress
+    sx={{ marginLeft: '1em', color: theme.palette.common.white }}
+    size={20}
+  />
+);
 
 const ExportActionButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxBlue.main,
@@ -34,14 +42,24 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
   const { data: sessionData } = useSession();
   const token = sessionData?.user?.apiToken ?? '';
   const { enqueueSnackbar } = useSnackbar();
+  const [exporting, setExporting] = useState<
+    'mail_merge' | 'advanced_csv' | 'advanced_xlsx' | null
+  >(null);
 
   const restHandler = async (fileType: 'csv' | 'xlsx', mailing = false) => {
     try {
-      exportRest(accountListId, ids, token, fileType, mailing);
+      if (fileType === 'csv') {
+        setExporting(mailing ? 'mail_merge' : 'advanced_csv');
+      } else {
+        setExporting('advanced_xlsx');
+      }
+      await exportRest(accountListId, ids, token, fileType, mailing);
     } catch (err) {
       enqueueSnackbar(JSON.stringify(err), {
         variant: 'error',
       });
+    } finally {
+      setExporting(null);
     }
     handleClose();
   };
@@ -56,6 +74,7 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
                 openMailMergedLabelModal();
                 handleClose();
               }}
+              disabled={exporting !== null}
             >
               {t('PDF of Mail Merged Labels')}
             </ExportActionButton>
@@ -68,8 +87,12 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
         </Grid>
         <Grid item xs={12} md={6}>
           <Box display="flex" flexDirection="column" alignItems="center" p={2}>
-            <ExportActionButton onClick={() => restHandler('csv', true)}>
+            <ExportActionButton
+              onClick={() => restHandler('csv', true)}
+              disabled={exporting !== null}
+            >
               {t('CSV for Mail Merge')}
+              {exporting === 'mail_merge' && <ExportingSpinner />}
             </ExportActionButton>
             <Typography>
               {t(
@@ -80,8 +103,12 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
         </Grid>
         <Grid item xs={12} md={6}>
           <Box display="flex" flexDirection="column" alignItems="center" p={2}>
-            <ExportActionButton onClick={() => restHandler('csv')}>
+            <ExportActionButton
+              onClick={() => restHandler('csv')}
+              disabled={exporting !== null}
+            >
               {t('Advanced CSV')}
+              {exporting === 'advanced_csv' && <ExportingSpinner />}
             </ExportActionButton>
             <Typography>
               {t(
@@ -92,8 +119,12 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
         </Grid>
         <Grid item xs={12} md={6}>
           <Box display="flex" flexDirection="column" alignItems="center" p={2}>
-            <ExportActionButton onClick={() => restHandler('xlsx')}>
+            <ExportActionButton
+              onClick={() => restHandler('xlsx')}
+              disabled={exporting !== null}
+            >
               {t('Advanced Excel (XLSX)')}
+              {exporting === 'advanced_xlsx' && <ExportingSpinner />}
             </ExportActionButton>
             <Typography>
               {t(

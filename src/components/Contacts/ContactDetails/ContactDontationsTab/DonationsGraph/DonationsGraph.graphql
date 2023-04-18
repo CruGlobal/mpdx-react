@@ -1,10 +1,15 @@
 query GetDonationsGraph($accountListId: ID!, $donorAccountIds: [ID!]) {
+  accountList(id: $accountListId) {
+    currency
+  }
   reportsDonationHistories(
     accountListId: $accountListId
     donorAccountId: $donorAccountIds
     range: "24m"
   ) {
     average
+    averageIgnoreCurrent
+    averageIgnoreCurrentAndZero
     periods {
       totals {
         amount

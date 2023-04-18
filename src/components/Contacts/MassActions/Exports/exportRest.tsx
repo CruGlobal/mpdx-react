@@ -23,7 +23,7 @@ export const exportRest = (
   mailing = false,
   template = null,
   sort = null,
-): void => {
+): Promise<void> => {
   const exportPath = `contacts/exports${mailing ? '/mailing' : ''}`;
   const contentType =
     fileType === 'csv'
@@ -50,7 +50,7 @@ export const exportRest = (
     fields.attributes.params.sort = sort;
   }
 
-  fetch(`${process.env.REST_API_URL}${exportPath}`, {
+  return fetch(`${process.env.REST_API_URL}${exportPath}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/vnd.api+json',
@@ -60,10 +60,8 @@ export const exportRest = (
       data: fields,
     }),
   })
-    .then((res) => {
-      return res.json();
-    })
-    .then((res) => {
+    .then((res) => res.json())
+    .then((res) =>
       fetch(
         `${process.env.REST_API_URL}${exportPath}/${res.data.id}.${fileType}?access_token=${token}`,
         {
@@ -72,20 +70,20 @@ export const exportRest = (
             'Content-Type': contentType,
           },
         },
-      )
-        .then((response) => response.blob())
-        .then((blob) => URL.createObjectURL(blob))
-        .then((url) => {
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `contacts-${DateTime.now().toLocaleString({
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          })}`;
-          a.click();
-          URL.revokeObjectURL(url);
-          a.remove();
-        });
+      ),
+    )
+    .then((response) => response.blob())
+    .then((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contacts-${DateTime.now().toLocaleString({
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })}.${fileType}`;
+      a.click();
+      URL.revokeObjectURL(url);
+      a.remove();
     });
 };

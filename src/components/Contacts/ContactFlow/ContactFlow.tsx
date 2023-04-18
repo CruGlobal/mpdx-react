@@ -120,6 +120,7 @@ export const ContactFlow: React.FC<Props> = ({
     });
     if (status.id && taskStatuses[status.id]) {
       openTaskModal({
+        view: 'add',
         defaultValues: {
           activityType: taskStatuses[status.id],
           contactIds: [id],

@@ -155,7 +155,9 @@ describe('TaskModalCompleteForm', () => {
         'Completed',
       ),
     );
-    userEvent.click(getByRole('button', { hidden: true, name: 'Next Action' }));
+    userEvent.click(
+      getByRole('combobox', { hidden: true, name: 'Next Action' }),
+    );
     userEvent.click(
       within(
         getByRole('listbox', { hidden: true, name: 'Next Action' }),
@@ -165,6 +167,7 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({
+        view: 'add',
         defaultValues: {
           activityType: ActivityTypeEnum.Appointment,
           contactIds: ['contact-1', 'contact-2'],
@@ -200,15 +203,13 @@ describe('TaskModalCompleteForm', () => {
       userEvent.click(getByRole('option', { hidden: true, name: 'None' }));
     }
     let nextActions: ActivityTypeEnum[] = [];
-    if (queryByRole('button', { hidden: true, name: 'Next Action' })) {
+    if (queryByRole('combobox', { hidden: true, name: /next action/i })) {
       userEvent.click(
-        getByRole('button', { hidden: true, name: 'Next Action' }),
+        getByRole('combobox', { hidden: true, name: /next action/i }),
       );
-      nextActions = within(
-        getByRole('listbox', { hidden: true, name: 'Next Action' }),
-      )
+      nextActions = within(getByRole('listbox'))
         .getAllByRole('option')
-        .map((option) => option.textContent)
+        .map((option) => option[Object.keys(option)[0]]?.key)
         .filter(Boolean) as ActivityTypeEnum[];
     }
     return { results, nextActions };

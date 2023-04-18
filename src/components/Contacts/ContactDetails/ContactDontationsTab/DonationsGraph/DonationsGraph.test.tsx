@@ -76,4 +76,35 @@ describe('Donations Graph', () => {
       }
     `);
   });
+
+  it('renders gift averages', async () => {
+    const { findByRole } = render(
+      <GqlMockedProvider<GetDonationsGraphQuery>
+        mocks={{
+          GetDonationsGraph: {
+            accountList: {
+              currency: 'CAD',
+            },
+            reportsDonationHistories: {
+              averageIgnoreCurrent: 100,
+              averageIgnoreCurrentAndZero: 200,
+              periods: [],
+            },
+          },
+        }}
+      >
+        <DonationsGraph
+          accountListId="accountListID"
+          donorAccountIds={['donorAccountId']}
+          convertedCurrency="USD"
+        />
+      </GqlMockedProvider>,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Average: CA$100 | Gift Average: CA$200',
+      }),
+    ).toBeInTheDocument();
+  });
 });

@@ -24,11 +24,9 @@ import ClockIcon from '@mui/icons-material/AccessTime';
 import CalendarIcon from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { v4 as uuidv4 } from 'uuid';
 import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
 
-import { useCreateTaskMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
-import { useCreateTaskCommentMutation } from '../../../../../Task/Modal/Comments/Form/CreateTaskComment.generated';
+import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -102,8 +100,7 @@ const LogNewsletter = ({
 
   const [commentBody, changeCommentBody] = useState('');
 
-  const [createTask, { loading: creating }] = useCreateTaskMutation();
-  const [createTaskComment] = useCreateTaskCommentMutation();
+  const [createTasks, { loading: creating }] = useCreateTasksMutation();
 
   const initialTask: yup.InferType<typeof taskSchema> = {
     activityType: ActivityTypeEnum.NewsletterPhysical,
@@ -123,8 +120,8 @@ const LogNewsletter = ({
           ]
         : [attributes.activityType];
     await Promise.all(
-      taskTypes.map(async (activityType) => {
-        const { data } = await createTask({
+      taskTypes.map((activityType) =>
+        createTasks({
           variables: {
             accountListId,
             attributes: {
@@ -134,22 +131,11 @@ const LogNewsletter = ({
                 .plus({ hours: 1 })
                 .startOf('hour')
                 .toISO(),
+              comment: body.length > 1 ? body : undefined,
             },
           },
-        });
-
-        if (data?.createTask?.task.id && body !== '') {
-          const id = uuidv4();
-
-          await createTaskComment({
-            variables: {
-              accountListId,
-              taskId: data.createTask.task.id,
-              attributes: { id, body },
-            },
-          });
-        }
-      }),
+        }),
+      ),
     );
 
     enqueueSnackbar(t('Newsletter logged successfully'), {

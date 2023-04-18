@@ -8,9 +8,17 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../../theme';
 import { ContactTasksTab } from './ContactTasksTab';
 import { ContactTasksTabQuery } from './ContactTasksTab.generated';
+import { TasksMassActionsDropdown } from '../../../Shared/MassActions/TasksMassActionsDropdown';
 
 jest.mock('../../../../hooks/useTaskModal');
 jest.mock('../../../../hooks/useAccountListId');
+
+jest.mock('../../../Shared/MassActions/TasksMassActionsDropdown', () => ({
+  TasksMassActionsDropdown: jest.fn(
+    jest.requireActual('../../../Shared/MassActions/TasksMassActionsDropdown')
+      .TasksMassActionsDropdown,
+  ),
+}));
 
 const openTaskModal = jest.fn();
 const push = jest.fn();
@@ -108,6 +116,7 @@ describe('ContactTasksTab', () => {
 
     userEvent.click(getByText('add task'));
     expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'add',
       defaultValues: {
         contactIds: [contactId],
       },
@@ -172,5 +181,40 @@ describe('ContactTasksTab', () => {
     expect(
       getByText('No tasks can be found for this contact'),
     ).toBeInTheDocument();
+  });
+
+  it('counts total tasks when all are selected', async () => {
+    const { getAllByRole, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<ContactTasksTabQuery>
+          mocks={{
+            ContactTasksTab: {
+              tasks: {
+                nodes: [],
+                totalCount: 100,
+              },
+            },
+          }}
+        >
+          <ContactTasksTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(queryByTestId('loadingRow')).not.toBeInTheDocument(),
+    );
+
+    userEvent.click(getAllByRole('checkbox')[0]);
+
+    expect(
+      (
+        TasksMassActionsDropdown as jest.MockedFn<
+          typeof TasksMassActionsDropdown
+        >
+      ).mock.lastCall?.[0].selectedIdCount,
+    ).toBe(100);
   });
 });

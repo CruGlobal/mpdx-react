@@ -17,7 +17,6 @@ import { ContactsMainPanel } from './ContactsMainPanel/ContactsMainPanel';
 import { ContactsLeftPanel } from './ContactsLeftPanel/ContactsLeftPanel';
 import { ContactsRightPanel } from './ContactsRightPanel/ContactsRightPanel';
 import { ContactFlowDragLayer } from './ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
-import { navBarHeight } from '../Layouts/Primary/Primary';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -68,7 +67,7 @@ export const ContactsContainer: React.FC = ({}) => {
               }
               rightOpen={contactDetailsOpen}
               rightWidth="60%"
-              headerHeight={`calc(${navBarHeight} + ${headerHeight})`}
+              headerHeight={headerHeight}
             />
           </WhiteBackground>
         </DndProvider>

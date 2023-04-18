@@ -150,7 +150,10 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           <HeaderItemsWrap>
             <TaskButton
               onClick={() =>
-                openTaskModal({ defaultValues: { contactIds: [contactId] } })
+                openTaskModal({
+                  view: 'add',
+                  defaultValues: { contactIds: [contactId] },
+                })
               }
             >
               <AddTaskButtonIcon />
@@ -174,7 +177,11 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               buttonGroup={null}
               selectedIds={ids}
               massDeselectAll={deselectAll}
-              totalItems={taskCount}
+              selectedIdCount={
+                selectionType === ListHeaderCheckBoxState.checked
+                  ? taskCount
+                  : ids.length
+              }
             />
           </HeaderItemsWrap>
         </HeaderRow>

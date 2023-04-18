@@ -27,10 +27,6 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayDark.main,
 }));
 
-const StyledToolbar = styled(Toolbar)(() => ({
-  minHeight: 60,
-}));
-
 const TopBar = ({
   accountListId,
   onMobileNavOpen,
@@ -42,7 +38,7 @@ const TopBar = ({
 
   return (
     <StyledAppBar elevation={trigger ? 3 : 0} data-testid="TopBar">
-      <StyledToolbar>
+      <Toolbar>
         {accountListId && (
           <Hidden lgUp>
             <IconButton color="inherit" onClick={onMobileNavOpen}>
@@ -72,7 +68,7 @@ const TopBar = ({
             <ProfileMenu />
           </Box>
         </Hidden>
-      </StyledToolbar>
+      </Toolbar>
     </StyledAppBar>
   );
 };

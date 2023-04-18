@@ -32,12 +32,16 @@ interface Props {
   filter: FilterItem;
   value?: FilterValue;
   onUpdate: (value?: FilterValue) => void;
+  onReverseFilter?: () => void;
+  reverseSelected?: boolean;
 }
 
 export const FilterListItem: React.FC<Props> = ({
   filter,
   value,
   onUpdate,
+  onReverseFilter,
+  reverseSelected,
 }: Props) => {
   switch (filter.__typename) {
     case 'TextFilter':
@@ -62,6 +66,8 @@ export const FilterListItem: React.FC<Props> = ({
           filter={filter}
           selected={Array.isArray(value) ? value : undefined}
           onUpdate={onUpdate}
+          onReverseFilter={onReverseFilter}
+          reverseSelected={reverseSelected}
         />
       );
     case 'DaterangeFilter':

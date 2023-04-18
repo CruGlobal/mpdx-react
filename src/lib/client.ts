@@ -27,6 +27,9 @@ const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
 export const cache = new InMemoryCache({
   possibleTypes: generatedIntrospection.possibleTypes,
   typePolicies: {
+    AccountList: {
+      merge: true,
+    },
     Contact: {
       fields: {
         contactReferralsByMe: paginationFieldPolicy,

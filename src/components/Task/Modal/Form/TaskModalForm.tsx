@@ -1,4 +1,11 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, {
+  ReactElement,
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+  ChangeEventHandler,
+} from 'react';
 import {
   TextField,
   Select,
@@ -36,13 +43,11 @@ import {
 } from '../../../../../graphql/types.generated';
 import {
   useGetDataForTaskModalQuery,
-  useCreateTaskMutation,
+  useCreateTasksMutation,
   useUpdateTaskMutation,
   useGetTaskModalContactsFilteredQuery,
-  useUpdateTaskLocationMutation,
 } from '../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../Modal/Comments/Form/CreateTaskComment.generated';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
@@ -56,7 +61,6 @@ import { possibleResults } from './PossibleResults';
 import { possibleNextActions } from './PossibleNextActions';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import { v4 as uuidv4 } from 'uuid';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import {
   getLocalizedNotificationTimeUnit,
@@ -66,32 +70,30 @@ import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
-export interface TaskLocation {
-  location?: string | null | undefined;
-}
-
-const taskSchema: yup.SchemaOf<
-  TaskCreateInput | Omit<TaskUpdateInput, 'id'> | TaskLocation
-> = yup.object({
-  activityType: yup.mixed<ActivityTypeEnum>(),
+const taskSchema = yup.object({
+  id: yup.string().nullable(),
+  activityType: yup.mixed<ActivityTypeEnum>().nullable(),
   subject: yup.string().required(),
-  starred: yup.boolean().nullable(),
   startAt: yup.string().nullable(),
   completedAt: yup.string().nullable(),
-  result: yup.mixed<ResultEnum>(),
-  nextAction: yup.mixed<ActivityTypeEnum>(),
+  result: yup.mixed<ResultEnum>().nullable(),
+  nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
   contactIds: yup.array().of(yup.string()).default([]),
   userId: yup.string().nullable(),
   notificationTimeBefore: yup.number().nullable(),
-  notificationType: yup.mixed<NotificationTypeEnum>(),
-  notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
-  location: yup.string().nullable(),
+  notificationType: yup.mixed<NotificationTypeEnum>().nullable(),
+  notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>().nullable(),
+  // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
+  // when those fields fields are blank for some reason, and we need to allow blank values
+  location: yup.string(),
+  comment: yup.string(),
 });
+type Attributes = yup.InferType<typeof taskSchema>;
 
 interface Props {
   accountListId: string;
-  task?: (GetTaskForTaskModalQuery['task'] & TaskLocation) | null;
+  task?: GetTaskForTaskModalQuery['task'] | null;
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
@@ -104,49 +106,64 @@ const TaskModalForm = ({
   defaultValues,
   view,
 }: Props): ReactElement => {
-  const initialTask: (TaskCreateInput | Omit<TaskUpdateInput, 'id'>) &
-    TaskLocation = task
+  const initialTask: Attributes = task
     ? {
-        ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
-        userId: task.user?.id,
+        id: task.id,
+        activityType: task.activityType ?? null,
+        location: task.location ?? '',
+        subject: task.subject ?? '',
+        startAt: task.startAt ?? null,
+        completedAt: task.completedAt ?? null,
+        result: task.result ?? null,
+        nextAction: task.nextAction ?? null,
+        tagList: task.tagList ?? [],
         contactIds: task.contacts.nodes.map(({ id }) => id),
-      }
-    : {
-        activityType: defaultValues?.activityType || null,
-        location: null,
-        subject: defaultValues?.subject || '',
-        startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
-        completedAt: null,
-        result: defaultValues?.result || null,
-        nextAction: defaultValues?.nextAction || null,
-        tagList: defaultValues?.tagList || [],
-        contactIds: defaultValues?.contactIds || [],
-        userId: defaultValues?.userId || null,
+        userId: task.user?.id ?? null,
         notificationTimeBefore: null,
         notificationType: null,
         notificationTimeUnit: null,
+        comment: '',
+      }
+    : {
+        id: null,
+        activityType: defaultValues?.activityType ?? null,
+        location: '',
+        subject: defaultValues?.subject ?? '',
+        startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
+        completedAt: null,
+        result: defaultValues?.result ?? null,
+        nextAction: defaultValues?.nextAction ?? null,
+        tagList: defaultValues?.tagList ?? [],
+        contactIds: defaultValues?.contactIds ?? [],
+        userId: defaultValues?.userId ?? null,
+        notificationTimeBefore: null,
+        notificationType: null,
+        notificationTimeUnit: null,
+        comment: '',
       };
 
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const [commentBody, changeCommentBody] = useState('');
 
-  const [createTask, { loading: creating }] = useCreateTaskMutation();
+  const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
-  const [createTaskComment] = useCreateTaskCommentMutation();
   const [selectedIds, setSelectedIds] = useState(
     task?.contacts.nodes.map((contact) => contact.id) ||
       defaultValues?.contactIds ||
       [],
   );
 
-  const [updateTaskLocation] = useUpdateTaskLocationMutation();
-
   const [searchTerm, setSearchTerm] = useState('');
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) (inputRef.current as HTMLInputElement).focus();
+  }, []);
 
-  const handleSearchTermChange = useCallback(
+  const handleSearchTermChange = useCallback<
+    ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  >(
     debounce(500, (event) => {
       setSearchTerm(event.target.value);
     }),
@@ -199,34 +216,13 @@ const TaskModalForm = ({
     ? possibleNextActions(task.activityType)
     : [];
 
-  const onSubmit = async (
-    attributes: (TaskCreateInput | Omit<TaskUpdateInput, 'id'>) & TaskLocation,
-  ): Promise<void> => {
-    const isUpdate = (
-      attributes: TaskCreateInput | Omit<TaskUpdateInput, 'id'>,
-    ): attributes is Omit<TaskUpdateInput, 'id'> => !!task;
-    const body = commentBody.trim();
-    //TODO: Delete all location related stuff when field gets added to rails schema
-    const location = attributes.location;
-    delete attributes.location;
-    if (isUpdate(attributes)) {
+  const onSubmit = async (attributes: Attributes): Promise<void> => {
+    const { id, comment, ...sharedAttributes } = attributes;
+    if (id) {
       await updateTask({
         variables: {
           accountListId,
-          attributes: {
-            ...attributes,
-            id: (task as GetTaskForTaskModalQuery['task']).id,
-          },
-        },
-        update: (_cache, { data }) => {
-          if (data?.updateTask?.task.id && location) {
-            updateTaskLocation({
-              variables: {
-                taskId: data?.updateTask?.task.id,
-                location,
-              },
-            });
-          }
+          attributes: { ...sharedAttributes, id },
         },
         refetchQueries: [
           {
@@ -240,28 +236,10 @@ const TaskModalForm = ({
         ],
       });
     } else {
-      await createTask({
-        variables: { accountListId, attributes },
-        update: (_cache, { data }) => {
-          if (data?.createTask?.task.id && location) {
-            updateTaskLocation({
-              variables: {
-                taskId: data.createTask.task.id,
-                location,
-              },
-            });
-          }
-          if (data?.createTask?.task.id && body !== '') {
-            const id = uuidv4();
-
-            createTaskComment({
-              variables: {
-                accountListId,
-                taskId: data.createTask.task.id,
-                attributes: { id, body },
-              },
-            });
-          }
+      await createTasks({
+        variables: {
+          accountListId,
+          attributes: { ...sharedAttributes, comment: comment?.trim() },
         },
         refetchQueries: [
           {
@@ -282,7 +260,7 @@ const TaskModalForm = ({
         ],
       });
     }
-    enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    enqueueSnackbar(t('Task(s) saved successfully'), { variant: 'success' });
     onClose();
     if (
       attributes.nextAction &&
@@ -290,6 +268,7 @@ const TaskModalForm = ({
       attributes.nextAction !== task?.nextAction
     ) {
       openTaskModal({
+        view: 'add',
         defaultValues: {
           activityType: attributes.nextAction,
           contactIds: attributes.contactIds,
@@ -302,7 +281,7 @@ const TaskModalForm = ({
 
   return (
     <Formik
-      initialValues={_.omit(initialTask, ['__typename', 'id'])}
+      initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={onSubmit}
     >
@@ -321,6 +300,7 @@ const TaskModalForm = ({
           notificationType,
           notificationTimeUnit,
           location,
+          comment,
         },
         setFieldValue,
         handleChange,
@@ -346,27 +326,43 @@ const TaskModalForm = ({
                     errors.subject && touched.subject && t('Field is required')
                   }
                   required
+                  inputRef={inputRef}
                 />
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
-                  <InputLabel id="activityType">{t('Action')}</InputLabel>
-                  <NullableSelect
-                    labelId="activityType"
-                    value={activityType}
-                    onChange={(e) =>
-                      setFieldValue('activityType', e.target.value)
+                  <Autocomplete
+                    openOnFocus
+                    value={
+                      activityType === null ||
+                      typeof activityType === 'undefined'
+                        ? ''
+                        : activityType
                     }
-                    label={t('Action')}
-                  >
-                    {Object.values(ActivityTypeEnum)
-                      .filter((val) => val !== ActivityTypeEnum.None)
-                      .map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedTaskType(t, val)}
-                        </MenuItem>
-                      ))}
-                  </NullableSelect>
+                    // Sort none to top
+                    options={Object.values(ActivityTypeEnum).sort((a) =>
+                      a === ActivityTypeEnum.None ? -1 : 1,
+                    )}
+                    getOptionLabel={(activity) => {
+                      if (activity === ActivityTypeEnum.None) {
+                        return t('None');
+                      } else {
+                        return getLocalizedTaskType(
+                          t,
+                          activity as ActivityTypeEnum,
+                        );
+                      }
+                    }}
+                    renderInput={(params): ReactElement => (
+                      <TextField {...params} label={t('Action')} />
+                    )}
+                    onChange={(_, activity): void => {
+                      setFieldValue(
+                        'activityType',
+                        activity === ActivityTypeEnum.None ? null : activity,
+                      );
+                    }}
+                  />
                 </FormControl>
               </Grid>
               {activityType === ActivityTypeEnum.Appointment && (
@@ -385,11 +381,9 @@ const TaskModalForm = ({
                 {!loading ? (
                   <Autocomplete
                     options={
-                      (data?.accountListUsers?.nodes &&
-                        data.accountListUsers.nodes.map(
-                          ({ user }) => user.id,
-                        )) ||
-                      []
+                      data?.accountListUsers?.nodes?.map(
+                        ({ user }) => user.id,
+                      ) ?? []
                     }
                     getOptionLabel={(userId): string => {
                       const user = data?.accountListUsers?.nodes.find(
@@ -746,8 +740,10 @@ const TaskModalForm = ({
                 <Grid item>
                   <TextField
                     label={t('Comment')}
-                    value={commentBody}
-                    onChange={(event) => changeCommentBody(event.target.value)}
+                    value={comment}
+                    onChange={(event) =>
+                      setFieldValue('comment', event.target.value)
+                    }
                     fullWidth
                     multiline
                     inputProps={{ 'aria-label': 'Comment' }}
