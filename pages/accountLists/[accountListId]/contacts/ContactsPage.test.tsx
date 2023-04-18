@@ -1,62 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { ThemeProvider } from '@mui/material/styles';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import {
-  gqlMock,
-  GqlMockedProvider,
-} from '../../../../__tests__/util/graphqlMocking';
-import {
-  mockDateRangeFilter,
-  mockMultiselectFilter,
-  mockTextFilter,
+  filterPanelDefaultMock,
+  filterPanelFeaturedMock,
+  filterPanelTagsMock,
+  savedFiltersMock,
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
-import {
-  FilterPanelGroupFragment,
-  FilterPanelGroupFragmentDoc,
-  UserOptionFragment,
-  UserOptionFragmentDoc,
-} from 'src/components/Shared/Filters/FilterPanel.generated';
 import { SaveFilterMutation } from 'src/components/Shared/Filters/SaveFilterModal/SaveFilterModal.generated';
 import theme from 'src/theme';
 import { ContactsPage } from './ContactsPage';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
+import { ContactsContext, ContactsType } from './ContactsContext';
 
 const onSelectedFiltersChanged = jest.fn();
 const onClose = jest.fn();
-
-const filterPanelDefaultMock = gqlMock<FilterPanelGroupFragment>(
-  FilterPanelGroupFragmentDoc,
-  {
-    mocks: {
-      name: 'Group 1',
-      featured: false,
-      filters: [mockTextFilter, mockMultiselectFilter],
-    },
-  },
-);
-const filterPanelFeaturedMock = gqlMock<FilterPanelGroupFragment>(
-  FilterPanelGroupFragmentDoc,
-  {
-    mocks: {
-      name: 'Group 2',
-      featured: true,
-      filters: [mockMultiselectFilter, mockDateRangeFilter],
-    },
-  },
-);
-
-const savedFiltersMock = gqlMock<UserOptionFragment>(UserOptionFragmentDoc, {
-  mocks: {
-    id: '123',
-    key: 'saved_contacts_filter_My_Cool_Filter',
-    value:
-      '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"status":"active,hidden,null,Never Contacted,Ask in Future,Cultivate Relationship,Contact for Appointment,Appointment Scheduled,Call for Decision,Partner - Financial,Partner - Special,Partner - Pray,Not Interested,Unresponsive,Never Ask,Research Abandoned,Expired Referral","pledge_received":"true","pledge_amount":"35.0,40.0","pledge_currency":"USD","pledge_frequency":"0.46153846153846,1.0","pledge_late_by":"30_60","newsletter":"no_value","referrer":"d5b1dab5-e3ae-417d-8f49-2abdd915515b","city":"Evansville","state":"FL","country":"United States","metro_area":"Cool","region":"Orange County","contact_info_email":"Yes","contact_info_phone":"No","contact_info_mobile":"No","contact_info_work_phone":"No","contact_info_addr":"Yes","contact_info_facebook":"No","opt_out":"No","church":"Cool Church II","appeal":"851769ba-b55d-45f3-b784-c4eca7ae99fd,77491693-df83-46ec-b40b-39d07333f47e","timezone":"America/Vancouver","locale":"English","donation":"first","donation_date":"2021-12-23..2021-12-23","next_ask":"2021-11-30..2021-12-22","user_ids":"787f286e-fe38-4055-b9fc-0177a0f55947","reverse_appeal":true, "contact_types": "person"},"tags":null,"exclude_tags":null,"wildcard_search":""}',
-  },
-});
 
 const mockEnqueue = jest.fn();
 
@@ -81,7 +44,7 @@ describe('Contacts', () => {
     useRouter.mockReturnValue({
       route: '/contacts',
       query: {
-        accountListI: 'account-list-1',
+        accountListId: 'account-list-1',
         filters: '%7B%22status%22:%5B%22ASK_IN_FUTURE%22%5D%7D',
       },
       replace: routeReplace,
@@ -148,5 +111,77 @@ describe('Contacts', () => {
     });
     userEvent.click(getByText('Saved Filters'));
     expect(routeReplace).toHaveBeenCalled();
+  });
+
+  it('tags any/all toggle does not update the URL if no tags are selected', () => {
+    const routeReplace = jest.fn();
+    const routePush = jest.fn();
+    useRouter.mockReturnValue({
+      route: '/contacts',
+      query: {
+        accountListId: 'account-list-1',
+        filters: '%7B%7D',
+      },
+      replace: routeReplace,
+      push: routePush,
+    });
+
+    const ComponentWrapper: React.FC = () => {
+      const { activeFilters, setActiveFilters } = useContext(
+        ContactsContext,
+      ) as ContactsType;
+
+      return (
+        <FilterPanel
+          filters={[filterPanelTagsMock]}
+          savedFilters={[savedFiltersMock]}
+          selectedFilters={activeFilters}
+          onClose={onClose}
+          onSelectedFiltersChanged={setActiveFilters}
+        />
+      );
+    };
+
+    const { getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<SaveFilterMutation>>
+            <ContactsPage>
+              <ComponentWrapper />
+            </ContactsPage>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </LocalizationProvider>,
+    );
+
+    userEvent.click(
+      within(getByRole('button', { name: /^Tags/ })).getByTestId(
+        'ExpandMoreIcon',
+      ),
+    );
+
+    userEvent.click(getByRole('button', { name: 'Any' }));
+    expect(routeReplace).toHaveBeenLastCalledWith({
+      pathname: undefined,
+      query: { accountListId: 'account-list-1' },
+    });
+
+    userEvent.click(getByRole('button', { name: 'Tag 1' }));
+    expect(routeReplace).toHaveBeenLastCalledWith({
+      pathname: undefined,
+      query: {
+        accountListId: 'account-list-1',
+        filters: '%7B%22tags%22:%5B%22Tag%201%22%5D,%22anyTags%22:true%7D',
+      },
+    });
+
+    userEvent.click(getByRole('button', { name: 'All' }));
+    expect(routeReplace).toHaveBeenLastCalledWith({
+      pathname: undefined,
+      query: {
+        accountListId: 'account-list-1',
+        filters: '%7B%22tags%22:%5B%22Tag%201%22%5D,%22anyTags%22:false%7D',
+      },
+    });
   });
 });

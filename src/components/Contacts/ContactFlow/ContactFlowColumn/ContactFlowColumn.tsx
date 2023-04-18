@@ -13,6 +13,10 @@ import {
   ContactFilterStatusEnum,
   IdValue,
 } from '../../../../../graphql/types.generated';
+import {
+  ContactsContext,
+  ContactsType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { useContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
@@ -51,7 +55,6 @@ const nullStatus = { id: 'NULL', value: '' };
 
 export const ContactFlowColumn: React.FC<Props> = ({
   statuses,
-  selectedFilters,
   title,
   color,
   accountListId,
@@ -59,11 +62,15 @@ export const ContactFlowColumn: React.FC<Props> = ({
   onContactSelected,
   changeContactStatus,
 }: Props) => {
+  const { sanitizedFilters } = React.useContext(
+    ContactsContext,
+  ) as ContactsType;
+
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
-        ...selectedFilters,
+        ...sanitizedFilters,
         status: statuses,
         wildcardSearch: searchTerm as string,
       },

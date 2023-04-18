@@ -45,7 +45,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
 
   const {
     accountListId,
-    activeFilters,
+    sanitizedFilters,
     contactId,
     toggleFilterPanel,
     toggleSelectAll,
@@ -66,7 +66,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
-        ...activeFilters,
+        ...sanitizedFilters,
         wildcardSearch: searchTerm as string,
         ...starredFilter,
         ids:
@@ -83,7 +83,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
   return (
     <ListHeader
       page="contact"
-      activeFilters={Object.keys(activeFilters).length > 0}
+      activeFilters={Object.keys(sanitizedFilters).length > 0}
       filterPanelOpen={filterPanelOpen}
       toggleFilterPanel={toggleFilterPanel}
       contactDetailsOpen={contactDetailsOpen}

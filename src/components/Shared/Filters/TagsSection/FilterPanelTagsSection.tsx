@@ -4,6 +4,8 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Button,
+  ButtonGroup,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -20,7 +22,7 @@ import { FilterTagChip } from './Chip/FilterTagChip';
 import theme from 'src/theme';
 import { FilterTagDeleteModal } from './FilterTagDeleteModal';
 
-interface FilterPanelTagsSectionProps {
+export interface FilterPanelTagsSectionProps {
   filterOptions: FilterOption[];
   selectedFilters: ContactFilterSetInput & TaskFilterSetInput;
   onSelectedFiltersChanged: (
@@ -61,6 +63,10 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
   const [openFilterTagDeleteModal, setOpenFilterTagDeleteModal] =
     useState(false);
 
+  const setAnyTags = (anyTags: boolean) => {
+    onSelectedFiltersChanged({ ...selectedFilters, anyTags });
+  };
+
   const appliedTags =
     (selectedFilters?.tags?.length || 0) +
     (selectedFilters?.excludeTags?.length || 0);
@@ -68,11 +74,37 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
     <TagsAccordionWrapper>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMore />}>
-          <Box display="flex">
+          <Box display="flex" sx={{ width: '100%' }}>
             <LocalOffer />
             <Typography style={{ marginLeft: 8 }}>
               {t('Tags')} {appliedTags ? ` (${appliedTags})` : ''}
             </Typography>
+            <ButtonGroup
+              variant="outlined"
+              size="small"
+              aria-label={t('Tags any or all filter')}
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              sx={(theme) => ({
+                marginRight: theme.spacing(1),
+                flex: 1,
+                justifyContent: 'right',
+              })}
+            >
+              <Button
+                onClick={() => setAnyTags(true)}
+                variant={selectedFilters.anyTags ? 'contained' : 'text'}
+              >
+                {t('Any')}
+              </Button>
+              <Button
+                onClick={() => setAnyTags(false)}
+                variant={!selectedFilters.anyTags ? 'contained' : 'text'}
+              >
+                {t('All')}
+              </Button>
+            </ButtonGroup>
           </Box>
         </AccordionSummary>
         <AccordionDetails>

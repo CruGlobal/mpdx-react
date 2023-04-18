@@ -39,6 +39,7 @@ import { FilterListItemShowAll } from './FilterListItemShowAll';
 import { FilterListItem } from './FilterListItem';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
@@ -149,7 +150,7 @@ type FilterInput = ContactFilterSetInput &
   TaskFilterSetInput &
   ReportContactFilterSetInput;
 
-interface FilterPanelProps {
+export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
   defaultExpandedFilterGroups?: Set<string>;
   savedFilters: UserOptionFragment[];
@@ -674,9 +675,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const tagsFilters =
     (
-      filters?.find((filter) => filter.name === 'Tags')
+      filters.find((filter) => filter.name === 'Tags')
         ?.filters[0] as MultiselectFilter
     )?.options ?? [];
+  const noSelectedFilters =
+    Object.keys(sanitizeFilters(selectedFilters)).length === 0;
 
   return (
     <Box {...boxProps}>
@@ -702,20 +705,20 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               </Box>
               <LinkButton
                 style={{ marginInlineStart: theme.spacing(-1) }}
-                disabled={Object.keys(selectedFilters).length === 0}
+                disabled={noSelectedFilters}
                 onClick={() => setSaveFilterModalOpen(true)}
               >
                 {t('Save')}
               </LinkButton>
               <LinkButton
                 style={{ marginInlineStart: theme.spacing(2) }}
-                disabled={Object.keys(selectedFilters).length === 0}
+                disabled={noSelectedFilters}
                 onClick={clearSelectedFilter}
               >
                 {t('Clear All')}
               </LinkButton>
             </FilterHeader>
-            {tagsFilters && (
+            {tagsFilters.some((filter) => filter.value !== '--any--') && (
               <FilterPanelTagsSection
                 filterOptions={tagsFilters}
                 selectedFilters={selectedFilters}
@@ -799,7 +802,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                     filterKey,
                                   ) as FilterKey;
 
-                                  const reverseFitersKey =
+                                  const reverseFiltersKey =
                                     ReverseFiltersMap.get(
                                       filterKey,
                                     ) as FilterKey;
@@ -816,12 +819,12 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                         )
                                       }
                                       reverseSelected={
-                                        !!selectedFilters[reverseFitersKey]
+                                        !!selectedFilters[reverseFiltersKey]
                                       }
                                       onReverseFilter={() =>
                                         updateSelectedFilter(
-                                          reverseFitersKey,
-                                          !!!selectedFilters[reverseFitersKey],
+                                          reverseFiltersKey,
+                                          !selectedFilters[reverseFiltersKey],
                                         )
                                       }
                                     />

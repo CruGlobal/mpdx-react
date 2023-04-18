@@ -18,7 +18,7 @@ export const ContactsList: React.FC = () => {
   const {
     contactId,
     accountListId,
-    activeFilters,
+    sanitizedFilters,
     searchTerm,
     starredFilter,
     viewMode,
@@ -31,7 +31,7 @@ export const ContactsList: React.FC = () => {
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
-        ...activeFilters,
+        ...sanitizedFilters,
         wildcardSearch: searchTerm as string,
         ...starredFilter,
         ids:

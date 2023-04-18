@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
 import { ContactsProvider } from './ContactsContext';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { suggestArticles } from 'src/lib/helpScout';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 interface Props {
   children?: React.ReactNode;
@@ -20,6 +21,10 @@ export const ContactsPage: React.FC<Props> = ({ children }) => {
   );
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
+  const sanitizedFilters = useMemo(
+    () => sanitizeFilters(activeFilters),
+    [activeFilters],
+  );
 
   const { contactId, searchTerm } = query;
 
@@ -29,12 +34,12 @@ export const ContactsPage: React.FC<Props> = ({ children }) => {
       pathname,
       query: {
         ...oldQuery,
-        ...(Object.keys(activeFilters).length > 0
-          ? { filters: encodeURI(JSON.stringify(activeFilters)) }
+        ...(Object.keys(sanitizedFilters).length > 0
+          ? { filters: encodeURI(JSON.stringify(sanitizedFilters)) }
           : undefined),
       },
     });
-  }, [activeFilters]);
+  }, [sanitizedFilters]);
 
   useEffect(() => {
     suggestArticles(
