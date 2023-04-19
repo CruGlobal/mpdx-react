@@ -40,7 +40,7 @@ describe('FilterPanelTagsSection', () => {
     expect(onSelectedFiltersChanged).toHaveBeenCalledWith({ anyTags: true });
 
     userEvent.click(getByRole('button', { name: 'All' }));
-    expect(onSelectedFiltersChanged).toHaveBeenCalledWith({ anyTags: false });
+    expect(onSelectedFiltersChanged).toHaveBeenCalledWith({});
   });
 
   it('activates any button based on anyTags filter', () => {

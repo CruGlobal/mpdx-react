@@ -63,7 +63,7 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
   const [openFilterTagDeleteModal, setOpenFilterTagDeleteModal] =
     useState(false);
 
-  const setAnyTags = (anyTags: boolean) => {
+  const setAnyTags = (anyTags: true | undefined) => {
     onSelectedFiltersChanged({ ...selectedFilters, anyTags });
   };
 
@@ -99,7 +99,7 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
                 {t('Any')}
               </Button>
               <Button
-                onClick={() => setAnyTags(false)}
+                onClick={() => setAnyTags(undefined)}
                 variant={!selectedFilters.anyTags ? 'contained' : 'text'}
               >
                 {t('All')}

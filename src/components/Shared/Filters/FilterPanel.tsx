@@ -256,6 +256,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               // Boolean
               case 'addressHistoric':
               case 'addressValid':
+              case 'anyTags':
               case 'completed':
               case 'noAppeals':
               case 'overdue':

@@ -180,7 +180,7 @@ describe('Contacts', () => {
       pathname: undefined,
       query: {
         accountListId: 'account-list-1',
-        filters: '%7B%22tags%22:%5B%22Tag%201%22%5D,%22anyTags%22:false%7D',
+        filters: '%7B%22tags%22:%5B%22Tag%201%22%5D%7D',
       },
     });
   });
