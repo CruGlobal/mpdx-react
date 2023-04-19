@@ -34,7 +34,7 @@ export const ContactsPage: React.FC<Props> = ({ children }) => {
       pathname,
       query: {
         ...oldQuery,
-        ...(Object.keys(sanitizedFilters).length > 0
+        ...(Object.keys(sanitizedFilters).length
           ? { filters: encodeURI(JSON.stringify(sanitizedFilters)) }
           : undefined),
       },

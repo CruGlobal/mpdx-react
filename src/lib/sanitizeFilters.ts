@@ -5,7 +5,7 @@ export const sanitizeFilters = ({
   anyTags,
   ...filters
 }: TaskFilterSetInput): TaskFilterSetInput => {
-  if (filters.tags && filters.tags.length > 0) {
+  if (filters.tags?.length) {
     return { ...filters, anyTags };
   }
   return filters;

@@ -169,7 +169,7 @@ const TasksPage: React.FC = () => {
       pathname,
       query: {
         ...oldQuery,
-        ...(Object.keys(sanitizedFilters).length > 0
+        ...(Object.keys(sanitizedFilters).length
           ? { filters: encodeURI(JSON.stringify(sanitizedFilters)) }
           : undefined),
       },
