@@ -2,6 +2,7 @@ import { useApolloClient } from '@apollo/client';
 import {
   TasksQueryVariables,
   TasksQuery,
+  TasksDocument,
 } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import {
   TaskRowFragment,
@@ -67,7 +68,7 @@ export const useUpdateTasksQueries = (): {
 
         client.cache.updateQuery<TasksQuery, TasksQueryVariables>(
           {
-            query: observableQuery.query,
+            query: TasksDocument,
             variables,
           },
           (data) => {
