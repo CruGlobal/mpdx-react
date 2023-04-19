@@ -72,15 +72,17 @@ describe('AddDonation', () => {
                       },
                     ],
                   },
-                  designationAccounts: {
-                    designationAccounts: [
-                      {
-                        id: '321',
-                        name: 'Cool Designation Account',
-                        active: true,
-                      },
-                    ],
-                  },
+                  designationAccounts: [
+                    {
+                      designationAccounts: [
+                        {
+                          id: '321',
+                          name: 'Cool Designation Account',
+                          active: true,
+                        },
+                      ],
+                    },
+                  ],
                 },
                 GetAccountListDonorAccounts: {
                   accountListDonorAccounts: [
@@ -124,9 +126,9 @@ describe('AddDonation', () => {
       getByRole('combobox', { hidden: true, name: 'Designation Account' }),
       'Cool',
     );
-    // await waitFor(() =>
-    //   expect(getByText('Cool Designation Account')).toBeVisible(),
-    // );
+    await waitFor(() =>
+      expect(queryByText('Cool Designation Account (321)')).toBeInTheDocument(),
+    );
     userEvent.type(
       getByRole('combobox', { hidden: true, name: 'Appeal' }),
       'Cool',
