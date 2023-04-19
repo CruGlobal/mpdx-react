@@ -22,13 +22,21 @@ query GetToolNotifications($accountListId: ID!) {
   }
   fixEmailAddresses: people(
     accountListId: $accountListId
-    peopleFilter: { emailAddressValid: false }
+    peopleFilter: {
+      emailAddressValid: false
+      deceased: false
+      contactStatus: [ACTIVE]
+    }
   ) {
     totalCount
   }
   fixPhoneNumbers: people(
     accountListId: $accountListId
-    peopleFilter: { phoneNumberValid: false }
+    peopleFilter: {
+      phoneNumberValid: false
+      deceased: false
+      contactStatus: [ACTIVE]
+    }
   ) {
     totalCount
   }
