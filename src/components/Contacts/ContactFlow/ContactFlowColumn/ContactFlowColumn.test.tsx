@@ -5,6 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import { ContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../src/theme';
@@ -48,19 +49,21 @@ describe('ContactFlowColumn', () => {
                   },
                 }}
               >
-                <VirtuosoMockContext.Provider
-                  value={{ viewportHeight: 300, itemHeight: 100 }}
-                >
-                  <ContactFlowColumn
-                    accountListId={accountListId}
-                    selectedFilters={{}}
-                    color={theme.palette.mpdxBlue.main}
-                    title={title}
-                    onContactSelected={onContactSelected}
-                    changeContactStatus={changeContactStatus}
-                    statuses={[ContactFilterStatusEnum.PartnerFinancial]}
-                  />
-                </VirtuosoMockContext.Provider>
+                <ContactsPage>
+                  <VirtuosoMockContext.Provider
+                    value={{ viewportHeight: 300, itemHeight: 100 }}
+                  >
+                    <ContactFlowColumn
+                      accountListId={accountListId}
+                      selectedFilters={{}}
+                      color={theme.palette.mpdxBlue.main}
+                      title={title}
+                      onContactSelected={onContactSelected}
+                      changeContactStatus={changeContactStatus}
+                      statuses={[ContactFilterStatusEnum.PartnerFinancial]}
+                    />
+                  </VirtuosoMockContext.Provider>
+                </ContactsPage>
               </GqlMockedProvider>
             </TestRouter>
           </ThemeProvider>

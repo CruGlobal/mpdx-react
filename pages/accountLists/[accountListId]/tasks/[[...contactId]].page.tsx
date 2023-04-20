@@ -39,6 +39,7 @@ import {
   taskFiltersTabs,
 } from '../../../../src/utils/tasks/taskFilterTabs';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 const buttonBarHeight = theme.spacing(6);
 
@@ -126,6 +127,10 @@ const TasksPage: React.FC = () => {
     urlFilters ?? {},
   );
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
+  const sanitizedFilters = useMemo(
+    () => sanitizeFilters(activeFilters),
+    [activeFilters],
+  );
 
   const [taskType, setTaskType] = useState<TaskFilterTabsTypes>(
     taskFiltersTabs[0].name,
@@ -143,11 +148,11 @@ const TasksPage: React.FC = () => {
 
   const tasksFilter = useMemo(
     () => ({
-      ...activeFilters,
+      ...sanitizedFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
     }),
-    [activeFilters, starredFilter, searchTerm],
+    [sanitizedFilters, starredFilter, searchTerm],
   );
 
   const { data, loading, fetchMore } = useTasksQuery({
@@ -164,36 +169,32 @@ const TasksPage: React.FC = () => {
       pathname,
       query: {
         ...oldQuery,
-        ...(Object.keys(activeFilters).length > 0
-          ? { filters: encodeURI(JSON.stringify(activeFilters)) }
+        ...(Object.keys(sanitizedFilters).length
+          ? { filters: encodeURI(JSON.stringify(sanitizedFilters)) }
           : undefined),
       },
     });
-    if (!activeFilters.completed && !activeFilters.dateRange) {
+    if (!sanitizedFilters.completed && !sanitizedFilters.dateRange) {
       setTaskType('All');
-    } else if (activeFilters.dateRange === 'overdue') {
+    } else if (sanitizedFilters.dateRange === 'overdue') {
       setTaskType('Overdue');
-    } else if (activeFilters.completed) {
+    } else if (sanitizedFilters.completed) {
       setTaskType('Completed');
-    } else if (activeFilters.dateRange === 'today') {
+    } else if (sanitizedFilters.dateRange === 'today') {
       setTaskType('Today');
-    } else if (activeFilters.dateRange === 'upcoming') {
+    } else if (sanitizedFilters.dateRange === 'upcoming') {
       setTaskType('Upcoming');
-    } else if (activeFilters.dateRange === 'no_date') {
+    } else if (sanitizedFilters.dateRange === 'no_date') {
       setTaskType('NoDueDate');
     }
-  }, [activeFilters]);
+  }, [sanitizedFilters]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
 
-  const isFiltered =
-    Object.keys(activeFilters).length > 0 ||
-    Object.values(activeFilters).some(
-      (filter) => filter !== ([] as Array<string>),
-    );
+  const isFiltered = Object.keys(sanitizedFilters).length > 0;
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
@@ -310,7 +311,7 @@ const TasksPage: React.FC = () => {
               <>
                 <ListHeader
                   page="task"
-                  activeFilters={Object.keys(activeFilters).length > 0}
+                  activeFilters={isFiltered}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
                   contactDetailsOpen={contactDetailsOpen}
@@ -448,7 +449,7 @@ const TasksPage: React.FC = () => {
             }
             rightOpen={contactDetailsOpen}
             rightWidth="60%"
-            headerHeight={`calc(${navBarHeight} + ${headerHeight})`}
+            headerHeight={headerHeight}
           />
         </WhiteBackground>
       ) : (

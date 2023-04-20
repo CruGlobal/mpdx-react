@@ -14,6 +14,7 @@ import { PartnerGivingAnalysisReportActions as Actions } from './Actions/Actions
 // import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 interface Props {
   accountListId: string;
@@ -44,12 +45,10 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const search = useDebouncedValue(query, 500);
 
   const contactFilters: ReportContactFilterSetInput = {
-    ...filters,
-    ...(search.length > 0
-      ? {
-          nameLike: `%${search}%`,
-        }
-      : {}),
+    ...(filters && sanitizeFilters(filters)),
+    ...(search.length > 0 && {
+      nameLike: `%${search}%`,
+    }),
   };
 
   const { data, loading } = useGetPartnerGivingAnalysisReportQuery({
