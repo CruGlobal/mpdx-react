@@ -114,10 +114,14 @@ describe('CreateMultipleContacts', () => {
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
 
       const { operation } = mutationSpy.mock.calls[0][0];
-      expect(operation.variables.accountListId).toEqual(accountListId);
-      expect(operation.variables.attributes.name).toEqual(
-        `${last}, ${first} and ${spouse}`,
-      );
+      expect(operation.variables).toMatchObject({
+        accountListId,
+        attributes: {
+          name: `${last}, ${first} and ${spouse}`,
+          contactReferralsToMe: undefined,
+        },
+      });
+
       const { operation: personOperation } = mutationSpy.mock.calls[2][0];
       expect(personOperation.variables.accountListId).toEqual(accountListId);
       expect(personOperation.variables.attributes.firstName).toEqual(first);
@@ -146,6 +150,51 @@ describe('CreateMultipleContacts', () => {
         },
       });
     }, 80000);
+
+    it('creates one referral', async () => {
+      const { getByRole, getAllByRole } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider<CreateContactMutation & CreatePersonMutation>
+                onCall={mutationSpy}
+                mocks={{
+                  CreateContact: {
+                    createContact: {
+                      contact: {
+                        id: 'contact-1',
+                      },
+                    },
+                  },
+                }}
+              >
+                <CreateMultipleContacts
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  referredById={'referrer-1'}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      userEvent.type(getAllByRole('textbox', { name: 'First' })[0], first);
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+      const { operation } = mutationSpy.mock.calls[0][0];
+      expect(operation).toMatchObject({
+        operationName: 'CreateContact',
+        variables: {
+          accountListId,
+          attributes: {
+            contactReferralsToMe: [{ referredById: 'referrer-1' }],
+          },
+        },
+      });
+    });
 
     it('creates multiple contacts - part 1', async () => {
       const { getByText, getAllByRole } = render(
