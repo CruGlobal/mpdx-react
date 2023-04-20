@@ -27,6 +27,7 @@ import {
 import { Coordinates } from './map/map';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { coordinatesFromContacts, getRedirectPathname } from './helpers';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 export type ContactsType = {
   accountListId: string | undefined;
@@ -59,6 +60,7 @@ export type ContactsType = {
   panTo: (coords: { lat: number; lng: number }) => void;
   mapData: Coordinates[] | undefined;
   activeFilters: ContactFilterSetInput;
+  sanitizedFilters: ContactFilterSetInput;
   setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
   starredFilter: ContactFilterSetInput;
   setStarredFilter: (filter: ContactFilterSetInput) => void;
@@ -136,6 +138,10 @@ export const ContactsProvider: React.FC<Props> = ({
   const [viewMode, setViewMode] = useState<TableViewModeEnum>(
     TableViewModeEnum.List,
   );
+  const sanitizedFilters = useMemo(
+    () => sanitizeFilters(activeFilters),
+    [activeFilters],
+  );
 
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
@@ -157,13 +163,13 @@ export const ContactsProvider: React.FC<Props> = ({
 
   const contactsFilters = useMemo(
     () => ({
-      ...activeFilters,
+      ...sanitizedFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
       ids:
         viewMode === TableViewModeEnum.Map && urlFilters ? urlFilters.ids : [],
     }),
-    [activeFilters, starredFilter, searchTerm],
+    [sanitizedFilters, starredFilter, searchTerm],
   );
 
   const { data, loading, fetchMore } = useContactsQuery({
@@ -393,6 +399,7 @@ export const ContactsProvider: React.FC<Props> = ({
         mapData: mapData,
         panTo: panTo,
         activeFilters: activeFilters,
+        sanitizedFilters,
         setActiveFilters: setActiveFilters,
         starredFilter: starredFilter,
         setStarredFilter: setStarredFilter,
