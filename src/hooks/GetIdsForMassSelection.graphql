@@ -17,12 +17,12 @@ query GetIdsForMassSelection(
 query GetTaskIdsForMassSelection(
   $accountListId: ID!
   $first: Int!
-  $tasksFilters: TaskFilterSetInput
+  $tasksFilter: TaskFilterSetInput
 ) {
   tasks(
     accountListId: $accountListId
     first: $first
-    tasksFilter: $tasksFilters
+    tasksFilter: $tasksFilter
   ) {
     nodes {
       id

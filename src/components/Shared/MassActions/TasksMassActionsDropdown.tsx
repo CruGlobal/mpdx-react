@@ -6,7 +6,6 @@ import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
 import { dispatch } from 'src/lib/analytics';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { ResultEnum } from '../../../../graphql/types.generated';
-import { TasksDocument } from '../../../../pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
 import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
 import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
@@ -16,6 +15,7 @@ import {
   useMassActionsUpdateTasksMutation,
 } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { MassActionsDropdown } from './MassActionsDropdown';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 interface TasksMassActionsDropdownProps {
   buttonGroup?: ReactElement | null;
@@ -49,6 +49,7 @@ export const TasksMassActionsDropdown: React.FC<
 
   const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
   const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
+  const { update } = useUpdateTasksQueries();
 
   const completeTasks = async () => {
     const completedAt = DateTime.local().toISO();
@@ -61,17 +62,13 @@ export const TasksMassActionsDropdown: React.FC<
           result: ResultEnum.Done,
         })),
       },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
+      refetchQueries: ['ContactTasksTab'],
     });
+    update();
     selectedIds.forEach(() => {
       dispatch('mpdx-task-completed');
     });
-    enqueueSnackbar(t('Contact(s) completed successfully'), {
+    enqueueSnackbar(t('Task(s) completed successfully'), {
       variant: 'success',
     });
     setCompleteTasksModalOpen(false);
@@ -90,12 +87,6 @@ export const TasksMassActionsDropdown: React.FC<
         });
         cache.gc();
       },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
     });
     enqueueSnackbar(t('Task(s) deleted successfully'), {
       variant: 'success',

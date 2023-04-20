@@ -24,13 +24,13 @@ import {
 } from '../AddTags/TasksAddTags.generated';
 import { useMassActionsUpdateTasksMutation } from '../MassActionsUpdateTasks.generated';
 import theme from 'src/theme';
-import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 interface MassActionsTasksRemoveTagsModalProps {
   ids: string[];
@@ -71,6 +71,7 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
 
   const [updateTasks, { loading: updating }] =
     useMassActionsUpdateTasksMutation();
+  const { update } = useUpdateTasksQueries();
 
   const { data: tasksForTags, fetchMore } = useGetTasksForAddingTagsQuery({
     variables: {
@@ -95,13 +96,8 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
         accountListId,
         attributes,
       },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
     });
+    update();
     enqueueSnackbar(t('Tags removed from task(s)!'), {
       variant: 'success',
     });

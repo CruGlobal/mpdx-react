@@ -45,8 +45,6 @@ import {
 import theme from '../../../../../../src/theme';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
-import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -58,6 +56,7 @@ import { possibleResults } from '../PossibleResults';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 const taskSchema = yup.object({
   activityType: yup.mixed<ActivityTypeEnum>().nullable(),
@@ -151,6 +150,7 @@ const TaskModalLogForm = ({
     variables: { accountListId },
   });
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
+  const { update } = useUpdateTasksQueries();
   const inputRef = useRef(null);
   useEffect(() => {
     if (inputRef.current) (inputRef.current as HTMLInputElement).focus();
@@ -170,24 +170,9 @@ const TaskModalLogForm = ({
         accountListId,
         attributes: { ...attributes, comment: attributes.comment?.trim() },
       },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-        {
-          query: ContactTasksTabDocument,
-          variables: {
-            accountListId,
-            tasksFilter: {
-              contactIds: [
-                defaultValues?.contactIds ? defaultValues.contactIds[0] : '',
-              ],
-            },
-          },
-        },
-      ],
+      refetchQueries: ['ContactTasksTab'],
     });
+    update();
     if (attributes.contactIds && attributes.contactIds.length > 1) {
       attributes.contactIds.forEach(() => {
         dispatch('mpdx-task-completed');

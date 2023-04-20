@@ -49,8 +49,6 @@ import {
 } from '../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../src/theme';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
-import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
-import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
 import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
   SubmitButton,
@@ -69,6 +67,7 @@ import {
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 const taskSchema = yup.object({
   id: yup.string().nullable(),
@@ -154,6 +153,7 @@ const TaskModalForm = ({
       defaultValues?.contactIds ||
       [],
   );
+  const { update } = useUpdateTasksQueries();
 
   const [searchTerm, setSearchTerm] = useState('');
   const inputRef = useRef(null);
@@ -224,16 +224,7 @@ const TaskModalForm = ({
           accountListId,
           attributes: { ...sharedAttributes, id },
         },
-        refetchQueries: [
-          {
-            query: TasksDocument,
-            variables: { accountListId },
-          },
-          {
-            query: ContactTasksTabDocument,
-            variables: { accountListId },
-          },
-        ],
+        refetchQueries: ['ContactTasksTab'],
       });
     } else {
       await createTasks({
@@ -241,25 +232,10 @@ const TaskModalForm = ({
           accountListId,
           attributes: { ...sharedAttributes, comment: comment?.trim() },
         },
-        refetchQueries: [
-          {
-            query: TasksDocument,
-            variables: { accountListId },
-          },
-          {
-            query: ContactTasksTabDocument,
-            variables: {
-              accountListId,
-              tasksFilter: {
-                contactIds: defaultValues?.contactIds?.[0]
-                  ? [defaultValues.contactIds[0]]
-                  : [],
-              },
-            },
-          },
-        ],
+        refetchQueries: ['ContactTasksTab'],
       });
     }
+    update();
     enqueueSnackbar(t('Task(s) saved successfully'), { variant: 'success' });
     onClose();
     if (

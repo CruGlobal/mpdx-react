@@ -13,12 +13,12 @@ import {
   CreateTasksMutation,
   DeleteTaskDocument,
   DeleteTaskMutation,
-  TaskMutationResponseFragment,
   UpdateTaskDocument,
   UpdateTaskMutation,
   GetDataForTaskModalDocument,
   GetDataForTaskModalQuery,
 } from '../../Modal/Form/TaskModal.generated';
+import { TaskRowFragment } from '../../TaskRow/TaskRow.generated';
 
 export const getDataForTaskModalMock = (
   accountListId: string,
@@ -118,7 +118,7 @@ export const createTasksMutationMock = (): MockedResponse => {
   };
   const data: CreateTasksMutation = {
     createTasks: {
-      tasks: [{ ...task, id: 'task-1' } as TaskMutationResponseFragment],
+      tasks: [{ ...task, id: 'task-1' } as TaskRowFragment],
     },
   };
 
@@ -147,7 +147,7 @@ export const updateTaskMutationMock = (): MockedResponse => {
   };
   const data: UpdateTaskMutation = {
     updateTask: {
-      task: task as TaskMutationResponseFragment,
+      task: task as TaskRowFragment,
     },
   };
   return {

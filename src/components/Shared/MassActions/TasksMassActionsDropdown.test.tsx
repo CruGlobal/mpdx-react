@@ -70,15 +70,24 @@ beforeEach(() => {
 });
 
 describe('TasksMassActionsDropdown', () => {
-  it('opens the more actions menu and clicks the complete tasks action', () => {
-    const { getByTestId, getByText, queryByText } = render(<TaskComponents />);
+  it('opens the more actions menu and clicks the complete tasks action', async () => {
+    const { getByRole, getByTestId, getByText, queryByTestId, queryByText } =
+      render(<TaskComponents />);
 
     expect(queryByText('Complete Tasks')).not.toBeInTheDocument();
-    const actionsButton = getByText('Actions');
-    userEvent.click(actionsButton);
-    expect(getByText('Complete Tasks')).toBeInTheDocument();
+    userEvent.click(getByText('Actions'));
     userEvent.click(getByText('Complete Tasks'));
     expect(getByTestId('CompleteAndDeleteTasksModal')).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+    await waitFor(() =>
+      expect(
+        queryByTestId('CompleteAndDeleteTasksModal'),
+      ).not.toBeInTheDocument(),
+    );
+    expect(mockEnqueue).toHaveBeenCalledWith('Task(s) completed successfully', {
+      variant: 'success',
+    });
   });
 
   it('opens the more actions menu and clicks the edit tasks action', async () => {

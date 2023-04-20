@@ -46,6 +46,7 @@ import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResult
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -87,37 +88,41 @@ const TaskModalCompleteForm = ({
   });
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
+  const { update } = useUpdateTasksQueries();
   const onSubmit = async (attributes: TaskUpdateInput): Promise<void> => {
     const body = commentBody.trim();
     const endOfDay = DateTime.local().endOf('day');
-    await updateTask({
-      variables: { accountListId, attributes },
-      update: (_cache, { data }) => {
-        if (data?.updateTask?.task.id && body !== '') {
-          const id = uuidv4();
-
-          createTaskComment({
+    const mutations = [
+      updateTask({
+        variables: { accountListId, attributes },
+        refetchQueries: [
+          'ContactTasksTab',
+          {
+            query: GetThisWeekDocument,
             variables: {
               accountListId,
-              taskId: data.updateTask.task.id,
-              attributes: { id, body },
+              endOfDay: endOfDay.toISO(),
+              today: endOfDay.toISODate(),
+              threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
+              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
             },
-          });
-        }
-      },
-      refetchQueries: [
-        {
-          query: GetThisWeekDocument,
+          },
+        ],
+      }),
+    ];
+    if (body !== '') {
+      mutations.push(
+        createTaskComment({
           variables: {
             accountListId,
-            endOfDay: endOfDay.toISO(),
-            today: endOfDay.toISODate(),
-            threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
-            twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
+            taskId: task.id,
+            attributes: { id: uuidv4(), body },
           },
-        },
-      ],
-    });
+        }),
+      );
+    }
+    await Promise.all(mutations);
+    update();
 
     dispatch('mpdx-task-completed');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });

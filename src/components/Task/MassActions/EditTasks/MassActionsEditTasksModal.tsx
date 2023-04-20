@@ -28,7 +28,6 @@ import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments
 import theme from 'src/theme';
 import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
-import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -36,6 +35,7 @@ import {
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];
@@ -69,6 +69,7 @@ export const MassActionsEditTasksModal: React.FC<
 
   const [updateTasks] = useMassActionsUpdateTasksMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
+  const { update } = useUpdateTasksQueries();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -91,28 +92,26 @@ export const MassActionsEditTasksModal: React.FC<
       id,
       ...formattedFields,
     }));
-    await updateTasks({
+    const updateMutation = updateTasks({
       variables: {
         accountListId,
         attributes,
       },
-      update: () => {
-        if (body) {
-          for (const taskId of ids) {
-            const id = uuidv4();
-            createTaskComment({
-              variables: { accountListId, taskId, attributes: { id, body } },
-            });
-          }
-        }
-      },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
+      refetchQueries: ['ContactTasksTab'],
     });
+    const commentMutations = body
+      ? ids.map((taskId) =>
+          createTaskComment({
+            variables: {
+              accountListId,
+              taskId,
+              attributes: { id: uuidv4(), body },
+            },
+          }),
+        )
+      : [];
+    await Promise.all([updateMutation, ...commentMutations]);
+    update();
     enqueueSnackbar(t('Tasks updated!'), {
       variant: 'success',
     });

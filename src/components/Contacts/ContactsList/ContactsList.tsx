@@ -48,7 +48,6 @@ export const ContactsList: React.FC = () => {
     <InfiniteList
       loading={loading}
       data={data?.contacts?.nodes ?? []}
-      totalCount={data?.contacts?.totalCount ?? 0}
       style={{ height: `calc(100vh - ${navBarHeight} - ${headerHeight})` }}
       itemContent={(index, contact) => (
         <ContactRow
@@ -57,7 +56,7 @@ export const ContactsList: React.FC = () => {
           useTopMargin={index === 0}
         />
       )}
-      groupBy={(item) => item.name[0].toUpperCase()}
+      groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
       endReached={() =>
         data?.contacts?.pageInfo.hasNextPage &&
         fetchMore({

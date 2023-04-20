@@ -1,5 +1,5 @@
 query ContactTasksTab($accountListId: ID!, $tasksFilter: TaskFilterSetInput) {
-  tasks(accountListId: $accountListId, tasksFilter: $tasksFilter) {
+  tasks(accountListId: $accountListId, tasksFilter: $tasksFilter, first: 50) {
     nodes {
       ...TaskRow
     }
