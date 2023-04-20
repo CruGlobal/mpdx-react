@@ -293,8 +293,7 @@ export const ContactDetailsMoreAcitions: React.FC<
           <CreateMultipleContacts
             accountListId={accountListId ?? ''}
             handleClose={handleModalClose}
-            referrals
-            contactId={contactId}
+            referredById={contactId}
           />
         }
       </Modal>

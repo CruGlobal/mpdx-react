@@ -66,6 +66,7 @@ describe('CreateMultipleContacts', () => {
     const first = 'Christian';
     const last = 'Huffman';
     const spouse = 'Kaylee';
+    const address = '123 Main Street';
     const phone = '+1 (111) 222-3344';
     const email = 'christian.huffman@cru.org';
 
@@ -82,6 +83,15 @@ describe('CreateMultipleContacts', () => {
             <TestRouter router={router}>
               <GqlMockedProvider<CreateContactMutation & CreatePersonMutation>
                 onCall={mutationSpy}
+                mocks={{
+                  CreateContact: {
+                    createContact: {
+                      contact: {
+                        id: 'contact-1',
+                      },
+                    },
+                  },
+                }}
               >
                 <CreateMultipleContacts
                   accountListId={accountListId}
@@ -96,6 +106,7 @@ describe('CreateMultipleContacts', () => {
       userEvent.type(getAllByRole('textbox', { name: 'First' })[0], first);
       userEvent.type(getAllByRole('textbox', { name: 'Last' })[0], last);
       userEvent.type(getAllByRole('textbox', { name: 'Spouse' })[0], spouse);
+      userEvent.type(getAllByRole('combobox')[0], address);
       userEvent.type(getAllByRole('textbox', { name: 'Phone' })[0], phone);
       userEvent.type(getAllByRole('textbox', { name: 'Email' })[0], email);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
@@ -123,6 +134,17 @@ describe('CreateMultipleContacts', () => {
           primary: true,
         },
       ]);
+
+      expect(mutationSpy.mock.calls[4][0].operation).toMatchObject({
+        operationName: 'CreateContactAddress',
+        variables: {
+          accountListId,
+          attributes: {
+            contactId: 'contact-1',
+            street: address,
+          },
+        },
+      });
     }, 80000);
 
     it('creates multiple contacts - part 1', async () => {

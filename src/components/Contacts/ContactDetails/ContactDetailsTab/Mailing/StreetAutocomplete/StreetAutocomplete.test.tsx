@@ -1,6 +1,5 @@
 import { act, render } from '@testing-library/react';
 import { useJsApiLoader } from '@react-google-maps/api';
-import { Field, Formik } from 'formik';
 import { parsePlace, StreetAutocomplete } from './StreetAutocomplete';
 import { useEffect, useState } from 'react';
 import userEvent from '@testing-library/user-event';
@@ -64,26 +63,28 @@ const place = {
 
 jest.useFakeTimers();
 
-const onSubmit = jest.fn();
+const onStreetChange = jest.fn();
+const onPredictionChosen = jest.fn();
 
-const ComponentWithMocks = () => (
-  <Formik
-    initialValues={{
-      street: '',
-      city: '',
-    }}
-    onSubmit={onSubmit}
-  >
-    {() => (
-      <form>
-        <StreetAutocomplete />
+const ComponentWithMocks = () => {
+  const [street, setStreet] = useState('');
 
-        <label htmlFor="city">City</label>
-        <Field id="city" name="city" type="text" />
-      </form>
-    )}
-  </Formik>
-);
+  return (
+    <div data-testid="container">
+      <StreetAutocomplete
+        streetValue={street}
+        onStreetChange={(street) => {
+          setStreet(street);
+          onStreetChange(street);
+        }}
+        onPredictionChosen={onPredictionChosen}
+        TextFieldProps={{
+          label: 'Street',
+        }}
+      />
+    </div>
+  );
+};
 
 describe('StreetAutocomplete', () => {
   const placePromise = Promise.resolve({
@@ -190,10 +191,15 @@ describe('StreetAutocomplete', () => {
       getByRole('option', { name: '100 Lake Hart Dr, Orlando, FL 32832, USA' }),
     );
     expect(getDetails).toHaveBeenCalled();
-    expect(getByRole('textbox', { name: 'City' })).toHaveValue('Orlando');
-    expect(getByRole('combobox', { name: 'Street' })).toHaveValue(
-      'A/100 Lake Hart Drive',
-    );
+    expect(onPredictionChosen).toHaveBeenLastCalledWith({
+      city: 'Orlando',
+      country: 'United States',
+      metroArea: 'Orlando',
+      postalCode: '32832',
+      region: 'Orange County',
+      state: 'FL',
+      street: 'A/100 Lake Hart Drive',
+    });
   });
 
   it('does not query for predictions when the street is empty', async () => {
@@ -216,14 +222,16 @@ describe('StreetAutocomplete', () => {
   });
 
   it('changing the focus cancels loading predictions', () => {
-    const { getByRole, queryByTestId } = render(<ComponentWithMocks />);
+    const { getByRole, getByTestId, queryByTestId } = render(
+      <ComponentWithMocks />,
+    );
 
     // Let Google Maps initialize
     jest.runOnlyPendingTimers();
 
     userEvent.type(getByRole('combobox', { name: 'Street' }), '100 Lake Hart');
     jest.advanceTimersByTime(100);
-    userEvent.click(getByRole('textbox', { name: 'City' }));
+    userEvent.click(getByTestId('container'));
 
     expect(queryByTestId('LoadingPredictions')).not.toBeInTheDocument();
   });
