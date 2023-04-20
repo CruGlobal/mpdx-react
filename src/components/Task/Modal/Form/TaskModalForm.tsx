@@ -118,9 +118,9 @@ const TaskModalForm = ({
         tagList: task.tagList ?? [],
         contactIds: task.contacts.nodes.map(({ id }) => id),
         userId: task.user?.id ?? null,
-        notificationTimeBefore: null,
-        notificationType: null,
-        notificationTimeUnit: null,
+        notificationTimeBefore: task.notificationTimeBefore,
+        notificationType: task.notificationType,
+        notificationTimeUnit: task.notificationTimeUnit,
         comment: '',
       }
     : {
