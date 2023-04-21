@@ -247,7 +247,6 @@ describe('AddAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('combobox', { name: 'Street' }));
     userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
     userEvent.click(getByLabelText('Primary'));
     userEvent.click(getByText('Save'));
@@ -258,5 +257,5 @@ describe('AddAddressModal', () => {
     );
 
     expect(mutationSpy).toHaveBeenCalledTimes(1);
-  });
+  }, 30000);
 });

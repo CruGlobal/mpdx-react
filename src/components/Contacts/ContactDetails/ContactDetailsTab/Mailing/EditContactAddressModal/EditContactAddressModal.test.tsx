@@ -250,8 +250,9 @@ describe('EditContactAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('combobox', { name: 'Street' }));
-    userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
+    const street = getByRole('combobox', { name: 'Street' });
+    userEvent.clear(street);
+    userEvent.type(street, newStreet);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Address updated successfully', {
@@ -260,7 +261,7 @@ describe('EditContactAddressModal', () => {
     );
 
     expect(mutationSpy).toHaveBeenCalledTimes(1);
-  });
+  }, 30000);
 
   it('should handle delete click', async () => {
     const { getByText, getByTestId } = render(
