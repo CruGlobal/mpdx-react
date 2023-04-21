@@ -1,67 +1,17 @@
 import { act, render } from '@testing-library/react';
-import { useJsApiLoader } from '@react-google-maps/api';
 import { parsePlace, StreetAutocomplete } from './StreetAutocomplete';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
+import {
+  getPlacePredictions,
+  getDetails,
+  placePromise,
+  place,
+  setupMocks,
+  useJsApiLoaderMock,
+} from '__tests__/util/googlePlacesMock';
 
 jest.mock('@react-google-maps/api');
-
-const place = {
-  address_components: [
-    {
-      long_name: 'A',
-      short_name: 'A',
-      types: ['subpremise'],
-    },
-    {
-      long_name: '100',
-      short_name: '100',
-      types: ['street_number'],
-    },
-    {
-      long_name: 'Lake Hart Drive',
-      short_name: 'Lake Hart Dr',
-      types: ['route'],
-    },
-    {
-      long_name: 'Orlando',
-      short_name: 'Orlando',
-      types: ['locality', 'political'],
-    },
-    {
-      long_name: 'Orlando',
-      short_name: 'Orlando',
-      types: ['administrative_area_level_3', 'political'],
-    },
-    {
-      long_name: 'Orange County',
-      short_name: 'Orange County',
-      types: ['administrative_area_level_2', 'political'],
-    },
-    {
-      long_name: 'Florida',
-      short_name: 'FL',
-      types: ['administrative_area_level_1', 'political'],
-    },
-    {
-      long_name: 'United States',
-      short_name: 'US',
-      types: ['country', 'political'],
-    },
-    {
-      long_name: '32832',
-      short_name: '32832',
-      types: ['postal_code'],
-    },
-    {
-      long_name: '0100',
-      short_name: '0100',
-      types: ['postal_code_suffix'],
-    },
-  ],
-};
-
-jest.useFakeTimers();
 
 const onStreetChange = jest.fn();
 const onPredictionChosen = jest.fn();
@@ -87,60 +37,9 @@ const ComponentWithMocks = () => {
 };
 
 describe('StreetAutocomplete', () => {
-  const placePromise = Promise.resolve({
-    predictions: [
-      { description: '100 Lake Hart Dr, Orlando, FL 32832, USA' },
-      { description: '100 Lake Hart Dr, New York City, NY 20000, USA' },
-      { description: '100 Lake Hart Dr, Los Angeles, CA 30000, USA' },
-    ] as google.maps.places.AutocompletePrediction[],
-  });
-
-  const getPlacePredictions = jest.fn().mockReturnValue(placePromise);
-
-  const getDetails = jest.fn().mockImplementation((_place, callback) => {
-    callback(place, 'OK');
-  });
-
-  const google = {
-    maps: {
-      places: {
-        AutocompleteService: jest.fn().mockReturnValue({
-          getPlacePredictions,
-        }),
-        PlacesService: jest.fn().mockReturnValue({
-          getDetails,
-        }),
-        AutocompleteSessionToken: jest.fn(),
-      },
-    },
-  } as unknown as typeof window.google;
-
   beforeEach(() => {
     jest.useFakeTimers();
-
-    // Pretend to load Google Maps asynchronously
-    (useJsApiLoader as jest.MockedFn<typeof useJsApiLoader>).mockImplementation(
-      () => {
-        const [loaded, setLoaded] = useState(false);
-
-        useEffect(() => {
-          const timeoutId = setTimeout(() => {
-            window.google = google;
-
-            act(() => {
-              setLoaded(true);
-            });
-          }, 0);
-
-          return () => clearTimeout(timeoutId);
-        }, []);
-
-        return {
-          isLoaded: loaded,
-          loadError: undefined,
-        };
-      },
-    );
+    setupMocks();
   });
 
   it('renders', () => {
@@ -151,12 +50,10 @@ describe('StreetAutocomplete', () => {
 
   it('succeeds when Google Maps API has not loaded yet', () => {
     // Make Google Maps API never load
-    (useJsApiLoader as jest.MockedFn<typeof useJsApiLoader>)
-      .mockReset()
-      .mockImplementation(() => ({
-        isLoaded: false,
-        loadError: undefined,
-      }));
+    useJsApiLoaderMock.mockReset().mockImplementation(() => ({
+      isLoaded: false,
+      loadError: undefined,
+    }));
 
     const { getByRole } = render(<ComponentWithMocks />);
 
@@ -165,7 +62,7 @@ describe('StreetAutocomplete', () => {
       '123 Main Street',
     );
 
-    expect(useJsApiLoader).toHaveBeenCalled();
+    expect(useJsApiLoaderMock).toHaveBeenCalled();
     expect(window.google).toBeUndefined();
   });
 

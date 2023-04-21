@@ -1,8 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import { AddAddressModal } from './AddAddressModal';
@@ -25,7 +26,13 @@ jest.mock('notistack', () => ({
   },
 }));
 
+jest.mock('@react-google-maps/api');
+
 describe('AddAddressModal', () => {
+  beforeEach(() => {
+    setupMocks();
+  });
+
   it('should render edit contact address modal', async () => {
     const { getByText } = render(
       <SnackbarProvider>
@@ -144,6 +151,50 @@ describe('AddAddressModal', () => {
     expect(operation.variables.attributes.metroArea).toEqual(newMetroArea);
     expect(operation.variables.attributes.historic).toEqual(true);
   }, 10000);
+
+  it('handles chosen address predictions', async () => {
+    jest.useFakeTimers();
+
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    // Let Google Maps initialize
+    jest.runOnlyPendingTimers();
+
+    const addressAutocomplete = getByRole('combobox', { name: 'Street' });
+    userEvent.type(addressAutocomplete, '100 Lake Hart');
+
+    jest.advanceTimersByTime(2000);
+    await act(async () => {
+      await placePromise;
+    });
+
+    userEvent.click(
+      getByRole('option', { name: '100 Lake Hart Dr, Orlando, FL 32832, USA' }),
+    );
+    expect(addressAutocomplete).toHaveValue('A/100 Lake Hart Drive');
+    expect(getByRole('textbox', { name: 'City' })).toHaveValue('Orlando');
+    expect(getByRole('textbox', { name: 'State' })).toHaveValue('FL');
+    expect(getByRole('textbox', { name: 'Zip' })).toHaveValue('32832');
+    expect(getByRole('textbox', { name: 'Country' })).toHaveValue(
+      'United States',
+    );
+    expect(getByRole('textbox', { name: 'Region' })).toHaveValue(
+      'Orange County',
+    );
+    expect(getByRole('textbox', { name: 'Metro' })).toHaveValue('Orlando');
+  });
 
   it('should set new address as primary', async () => {
     const mutationSpy = jest.fn();

@@ -1,14 +1,17 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
+import { setupMocks, placePromise } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../../../../theme';
 import { CreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 import { CreateContactMutation } from '../CreateContact/CreateContact.generated';
 import { CreateMultipleContacts } from './CreateMultipleContacts';
+
+jest.mock('@react-google-maps/api');
 
 const accountListId = '111';
 const handleClose = jest.fn();
@@ -18,6 +21,10 @@ const router = {
 };
 
 describe('CreateMultipleContacts', () => {
+  beforeEach(() => {
+    setupMocks();
+  });
+
   it('default', () => {
     const { queryByText } = render(
       <ThemeProvider theme={theme}>
@@ -325,5 +332,61 @@ describe('CreateMultipleContacts', () => {
       expect(operation3.variables.attributes.firstName).toEqual(spouse2);
       expect(operation3.variables.attributes.lastName).toEqual('');
     }, 80000);
+
+    it('handles chosen address predictions', async () => {
+      jest.useFakeTimers();
+
+      const { getAllByRole, getByRole } = render(
+        <SnackbarProvider>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <CreateMultipleContacts
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </SnackbarProvider>,
+      );
+
+      // Let Google Maps initialize
+      jest.runOnlyPendingTimers();
+
+      userEvent.type(getAllByRole('textbox', { name: 'First' })[0], first);
+      const addressAutocomplete = getAllByRole('combobox')[0];
+      userEvent.type(addressAutocomplete, '100 Lake Hart');
+
+      jest.advanceTimersByTime(2000);
+      await act(async () => {
+        await placePromise;
+      });
+
+      userEvent.click(
+        getByRole('option', {
+          name: '100 Lake Hart Dr, Orlando, FL 32832, USA',
+        }),
+      );
+      expect(addressAutocomplete).toHaveValue('A/100 Lake Hart Drive');
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+      const { operation } = mutationSpy.mock.calls[3][0];
+      expect(operation).toMatchObject({
+        operationName: 'CreateContactAddress',
+        variables: {
+          accountListId,
+          attributes: {
+            street: 'A/100 Lake Hart Drive',
+            city: 'Orlando',
+            region: 'Orange County',
+            metroArea: 'Orlando',
+            state: 'FL',
+            country: 'United States',
+            postalCode: '32832',
+          },
+        },
+      });
+    });
   });
 });
