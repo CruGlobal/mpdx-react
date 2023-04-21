@@ -98,6 +98,13 @@ describe('CreateMultipleContacts', () => {
                       },
                     },
                   },
+                  CreateContactAddress: {
+                    createAddress: {
+                      address: {
+                        id: 'address-1',
+                      },
+                    },
+                  },
                 }}
               >
                 <CreateMultipleContacts
@@ -154,6 +161,13 @@ describe('CreateMultipleContacts', () => {
             contactId: 'contact-1',
             street: address,
           },
+        },
+      });
+      expect(mutationSpy.mock.calls[5][0].operation).toMatchObject({
+        operationName: 'SetContactPrimaryAddress',
+        variables: {
+          contactId: 'contact-1',
+          primaryAddressId: 'address-1',
         },
       });
     }, 80000);

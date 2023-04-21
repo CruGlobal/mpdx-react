@@ -31,6 +31,7 @@ import {
   AddressFields,
   StreetAutocomplete,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/StreetAutocomplete/StreetAutocomplete';
+import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 
 const InputRow = styled(TableRow)(() => ({
   display: 'flex',
@@ -123,6 +124,7 @@ export const CreateMultipleContacts = ({
   const [createContact] = useCreateContactMutation();
   const [createPerson] = useCreatePersonMutation();
   const [createAddress] = useCreateContactAddressMutation();
+  const [setPrimaryAddress] = useSetContactPrimaryAddressMutation();
 
   const onSubmit = async (attributes: ContactTable) => {
     const filteredContacts = attributes.contacts.filter(
@@ -197,7 +199,7 @@ export const CreateMultipleContacts = ({
             }
 
             if (address.street) {
-              await createAddress({
+              const { data } = await createAddress({
                 variables: {
                   accountListId,
                   attributes: {
@@ -206,6 +208,15 @@ export const CreateMultipleContacts = ({
                   },
                 },
               });
+              const addressId = data?.createAddress?.address.id;
+              if (addressId) {
+                await setPrimaryAddress({
+                  variables: {
+                    contactId,
+                    primaryAddressId: addressId,
+                  },
+                });
+              }
             }
           }
           return contactId;
