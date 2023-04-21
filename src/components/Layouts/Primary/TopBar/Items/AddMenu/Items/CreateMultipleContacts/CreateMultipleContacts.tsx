@@ -353,19 +353,14 @@ export const CreateMultipleContacts = ({
                                   }}
                                   streetValue={contact.address.street}
                                   onStreetChange={(street) =>
-                                    setFieldValue(
-                                      `contacts.${index}.address.street`,
+                                    setFieldValue(`contacts.${index}.address`, {
                                       street,
-                                    )
+                                    })
                                   }
                                   onPredictionChosen={(fields) => {
-                                    Object.entries(fields).forEach(
-                                      ([field, value]) => {
-                                        setFieldValue(
-                                          `contacts.${index}.address.${field}`,
-                                          value,
-                                        );
-                                      },
+                                    setFieldValue(
+                                      `contacts.${index}.address`,
+                                      fields,
                                     );
                                   }}
                                 />
