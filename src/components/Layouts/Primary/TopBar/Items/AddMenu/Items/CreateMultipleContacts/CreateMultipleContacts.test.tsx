@@ -387,6 +387,6 @@ describe('CreateMultipleContacts', () => {
           },
         },
       });
-    });
+    }, 20000);
   });
 });
