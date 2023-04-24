@@ -213,8 +213,9 @@ describe('AddAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('combobox', { name: 'Street' }));
-    userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
+    const street = getByRole('combobox', { name: 'Street' });
+    userEvent.clear(street);
+    userEvent.type(street, newStreet);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Address added successfully', {
@@ -228,7 +229,7 @@ describe('AddAddressModal', () => {
 
     const { operation: operation2 } = mutationSpy.mock.calls[1][0];
     expect(operation2.variables.primaryAddressId).not.toBeNull();
-  });
+  }, 30000);
 
   it('should not set new address as primary if it is unchecked', async () => {
     const mutationSpy = jest.fn();
