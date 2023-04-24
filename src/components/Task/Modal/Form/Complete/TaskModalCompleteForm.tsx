@@ -28,7 +28,6 @@ import {
   ResultEnum,
   TaskUpdateInput,
 } from '../../../../../../graphql/types.generated';
-import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import { useGetDataForTaskModalQuery } from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
@@ -75,7 +74,7 @@ const TaskModalCompleteForm = ({
   const initialTask: TaskUpdateInput = {
     id: task.id,
     completedAt: task.completedAt || DateTime.local().toISO(),
-    result: ResultEnum.None,
+    result: ResultEnum.Completed,
     tagList: task.tagList,
   };
   const { t } = useTranslation();
@@ -91,23 +90,10 @@ const TaskModalCompleteForm = ({
   const { update } = useUpdateTasksQueries();
   const onSubmit = async (attributes: TaskUpdateInput): Promise<void> => {
     const body = commentBody.trim();
-    const endOfDay = DateTime.local().endOf('day');
     const mutations = [
       updateTask({
         variables: { accountListId, attributes },
-        refetchQueries: [
-          'ContactTasksTab',
-          {
-            query: GetThisWeekDocument,
-            variables: {
-              accountListId,
-              endOfDay: endOfDay.toISO(),
-              today: endOfDay.toISODate(),
-              threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
-              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
-            },
-          },
-        ],
+        refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
       }),
     ];
     if (body !== '') {
@@ -165,7 +151,7 @@ const TaskModalCompleteForm = ({
         isValid,
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
-          <DialogContent dividers>
+          <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">

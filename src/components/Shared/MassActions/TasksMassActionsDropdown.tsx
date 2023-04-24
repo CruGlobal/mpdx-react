@@ -62,7 +62,7 @@ export const TasksMassActionsDropdown: React.FC<
           result: ResultEnum.Done,
         })),
       },
-      refetchQueries: ['ContactTasksTab'],
+      refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
     });
     update();
     selectedIds.forEach(() => {
@@ -87,6 +87,7 @@ export const TasksMassActionsDropdown: React.FC<
         });
         cache.gc();
       },
+      refetchQueries: ['GetWeeklyActivity', 'GetThisWeek'],
     });
     enqueueSnackbar(t('Task(s) deleted successfully'), {
       variant: 'success',

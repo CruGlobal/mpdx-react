@@ -6,7 +6,7 @@ import {
 export const possibleResults = (
   activityType: ActivityTypeEnum,
 ): ResultEnum[] => {
-  const common = [ResultEnum.None, ResultEnum.Completed];
+  const common = [ResultEnum.Completed];
   switch (activityType) {
     case ActivityTypeEnum.Call:
       return [
