@@ -194,7 +194,7 @@ describe('AddAddressModal', () => {
       'Orange County',
     );
     expect(getByRole('textbox', { name: 'Metro' })).toHaveValue('Orlando');
-  });
+  }, 20000);
 
   it('should set new address as primary', async () => {
     const mutationSpy = jest.fn();

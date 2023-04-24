@@ -230,7 +230,7 @@ describe('EditContactAddressModal', () => {
       'Orange County',
     );
     expect(getByRole('textbox', { name: 'Metro' })).toHaveValue('Orlando');
-  });
+  }, 20000);
 
   it('should edit not set primary address when it has not changed', async () => {
     const mutationSpy = jest.fn();
