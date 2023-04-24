@@ -1,16 +1,14 @@
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
-import { useMemo, useRef, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useFormikContext } from 'formik';
+import { useRef, useEffect, useState } from 'react';
 import {
   Autocomplete,
   CircularProgress,
   TextField,
+  TextFieldProps,
   Typography,
 } from '@mui/material';
 import { useJsApiLoader } from '@react-google-maps/api';
-import { CreateAddressSchema } from '../AddAddressModal/createAddressSchema';
-import { UpdateAddressSchema } from '../EditContactAddressModal/updateAddressSchema';
+import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
 
 interface MapsApi {
   autocompleteService: google.maps.places.AutocompleteService;
@@ -18,13 +16,22 @@ interface MapsApi {
   sessionToken: google.maps.places.AutocompleteSessionToken;
 }
 
-type FormSchema = CreateAddressSchema | UpdateAddressSchema;
+export type AddressFields = Pick<
+  AddressCreateInput,
+  | 'city'
+  | 'country'
+  | 'metroArea'
+  | 'postalCode'
+  | 'region'
+  | 'state'
+  | 'street'
+>;
 
 // Convert a Google Maps place into its constituent form field values
 export const parsePlace = (
   place: google.maps.places.PlaceResult,
-): Partial<FormSchema> => {
-  const updatedFields: Partial<FormSchema> = {
+): AddressFields => {
+  const updatedFields: AddressFields = {
     street: '',
     metroArea: '',
   };
@@ -65,15 +72,24 @@ export const parsePlace = (
   return updatedFields;
 };
 
-export const StreetAutocomplete: React.FC = () => {
-  const { t } = useTranslation();
+export interface StreetAutocompleteProps {
+  streetValue: string;
+  onStreetChange: (street: string) => void;
+  onPredictionChosen: (fields: AddressFields) => void;
+  TextFieldProps?: TextFieldProps;
+}
+
+export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
+  streetValue,
+  onStreetChange,
+  onPredictionChosen,
+  TextFieldProps,
+}) => {
   const googleAttributionRef = useRef<HTMLDivElement | null>(null);
 
-  const { values, handleChange, setFieldValue } =
-    useFormikContext<CreateAddressSchema>();
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
-    libraries: useMemo(() => ['places'], []),
+    libraries: useRef(['places' as const]).current,
   });
 
   const mapsApi = useRef<MapsApi>();
@@ -104,7 +120,7 @@ export const StreetAutocomplete: React.FC = () => {
         sessionToken,
       });
       // Ignore stale predictions (i.e. the street we loaded predictions for is now different from the current street)
-      if (street === values.street) {
+      if (street === streetValue) {
         setPredictions(predictions);
         setLoadingPredictions(false);
       }
@@ -131,13 +147,7 @@ export const StreetAutocomplete: React.FC = () => {
       },
       (result, status) => {
         if (result && status === 'OK') {
-          Object.entries(parsePlace(result)).forEach(([field, value]) => {
-            setFieldValue(field, value);
-          });
-
-          if (!values.location) {
-            setFieldValue('location', 'Home');
-          }
+          onPredictionChosen(parsePlace(result));
         }
       },
     );
@@ -152,10 +162,10 @@ export const StreetAutocomplete: React.FC = () => {
           typeof option === 'string' ? option : option.description
         }
         options={predictions}
-        value={values.street}
+        value={streetValue}
         onChange={(_event, newValue) => {
           if (typeof newValue === 'string') {
-            setFieldValue('street', newValue);
+            onStreetChange(newValue);
           } else {
             handlePlaceChosen(newValue);
           }
@@ -163,13 +173,10 @@ export const StreetAutocomplete: React.FC = () => {
         renderInput={(params) => (
           <TextField
             {...params}
-            name="street"
-            label={t('Street')}
-            required
+            {...TextFieldProps}
             onChange={(event) => {
-              handleChange(event);
-
               const street = event.target.value;
+              onStreetChange(street);
               if (mapsApi.current && street) {
                 setLoadingPredictions(true);
                 loadPredictions(mapsApi.current, street);
@@ -192,7 +199,6 @@ export const StreetAutocomplete: React.FC = () => {
                 />
               ) : null,
             }}
-            fullWidth
           />
         )}
       />

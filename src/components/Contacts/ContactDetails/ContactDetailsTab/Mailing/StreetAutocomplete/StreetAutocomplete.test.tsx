@@ -1,145 +1,45 @@
 import { act, render } from '@testing-library/react';
-import { useJsApiLoader } from '@react-google-maps/api';
-import { Field, Formik } from 'formik';
 import { parsePlace, StreetAutocomplete } from './StreetAutocomplete';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
+import {
+  getPlacePredictions,
+  getDetails,
+  placePromise,
+  place,
+  setupMocks,
+  useJsApiLoaderMock,
+} from '__tests__/util/googlePlacesMock';
 
 jest.mock('@react-google-maps/api');
 
-const place = {
-  address_components: [
-    {
-      long_name: 'A',
-      short_name: 'A',
-      types: ['subpremise'],
-    },
-    {
-      long_name: '100',
-      short_name: '100',
-      types: ['street_number'],
-    },
-    {
-      long_name: 'Lake Hart Drive',
-      short_name: 'Lake Hart Dr',
-      types: ['route'],
-    },
-    {
-      long_name: 'Orlando',
-      short_name: 'Orlando',
-      types: ['locality', 'political'],
-    },
-    {
-      long_name: 'Orlando',
-      short_name: 'Orlando',
-      types: ['administrative_area_level_3', 'political'],
-    },
-    {
-      long_name: 'Orange County',
-      short_name: 'Orange County',
-      types: ['administrative_area_level_2', 'political'],
-    },
-    {
-      long_name: 'Florida',
-      short_name: 'FL',
-      types: ['administrative_area_level_1', 'political'],
-    },
-    {
-      long_name: 'United States',
-      short_name: 'US',
-      types: ['country', 'political'],
-    },
-    {
-      long_name: '32832',
-      short_name: '32832',
-      types: ['postal_code'],
-    },
-    {
-      long_name: '0100',
-      short_name: '0100',
-      types: ['postal_code_suffix'],
-    },
-  ],
+const onStreetChange = jest.fn();
+const onPredictionChosen = jest.fn();
+
+const ComponentWithMocks = () => {
+  const [street, setStreet] = useState('');
+
+  return (
+    <div data-testid="container">
+      <StreetAutocomplete
+        streetValue={street}
+        onStreetChange={(street) => {
+          setStreet(street);
+          onStreetChange(street);
+        }}
+        onPredictionChosen={onPredictionChosen}
+        TextFieldProps={{
+          label: 'Street',
+        }}
+      />
+    </div>
+  );
 };
 
-jest.useFakeTimers();
-
-const onSubmit = jest.fn();
-
-const ComponentWithMocks = () => (
-  <Formik
-    initialValues={{
-      street: '',
-      city: '',
-    }}
-    onSubmit={onSubmit}
-  >
-    {() => (
-      <form>
-        <StreetAutocomplete />
-
-        <label htmlFor="city">City</label>
-        <Field id="city" name="city" type="text" />
-      </form>
-    )}
-  </Formik>
-);
-
 describe('StreetAutocomplete', () => {
-  const placePromise = Promise.resolve({
-    predictions: [
-      { description: '100 Lake Hart Dr, Orlando, FL 32832, USA' },
-      { description: '100 Lake Hart Dr, New York City, NY 20000, USA' },
-      { description: '100 Lake Hart Dr, Los Angeles, CA 30000, USA' },
-    ] as google.maps.places.AutocompletePrediction[],
-  });
-
-  const getPlacePredictions = jest.fn().mockReturnValue(placePromise);
-
-  const getDetails = jest.fn().mockImplementation((_place, callback) => {
-    callback(place, 'OK');
-  });
-
-  const google = {
-    maps: {
-      places: {
-        AutocompleteService: jest.fn().mockReturnValue({
-          getPlacePredictions,
-        }),
-        PlacesService: jest.fn().mockReturnValue({
-          getDetails,
-        }),
-        AutocompleteSessionToken: jest.fn(),
-      },
-    },
-  } as unknown as typeof window.google;
-
   beforeEach(() => {
     jest.useFakeTimers();
-
-    // Pretend to load Google Maps asynchronously
-    (useJsApiLoader as jest.MockedFn<typeof useJsApiLoader>).mockImplementation(
-      () => {
-        const [loaded, setLoaded] = useState(false);
-
-        useEffect(() => {
-          const timeoutId = setTimeout(() => {
-            window.google = google;
-
-            act(() => {
-              setLoaded(true);
-            });
-          }, 0);
-
-          return () => clearTimeout(timeoutId);
-        }, []);
-
-        return {
-          isLoaded: loaded,
-          loadError: undefined,
-        };
-      },
-    );
+    setupMocks();
   });
 
   it('renders', () => {
@@ -150,12 +50,10 @@ describe('StreetAutocomplete', () => {
 
   it('succeeds when Google Maps API has not loaded yet', () => {
     // Make Google Maps API never load
-    (useJsApiLoader as jest.MockedFn<typeof useJsApiLoader>)
-      .mockReset()
-      .mockImplementation(() => ({
-        isLoaded: false,
-        loadError: undefined,
-      }));
+    useJsApiLoaderMock.mockReset().mockImplementation(() => ({
+      isLoaded: false,
+      loadError: undefined,
+    }));
 
     const { getByRole } = render(<ComponentWithMocks />);
 
@@ -164,7 +62,7 @@ describe('StreetAutocomplete', () => {
       '123 Main Street',
     );
 
-    expect(useJsApiLoader).toHaveBeenCalled();
+    expect(useJsApiLoaderMock).toHaveBeenCalled();
     expect(window.google).toBeUndefined();
   });
 
@@ -190,10 +88,15 @@ describe('StreetAutocomplete', () => {
       getByRole('option', { name: '100 Lake Hart Dr, Orlando, FL 32832, USA' }),
     );
     expect(getDetails).toHaveBeenCalled();
-    expect(getByRole('textbox', { name: 'City' })).toHaveValue('Orlando');
-    expect(getByRole('combobox', { name: 'Street' })).toHaveValue(
-      'A/100 Lake Hart Drive',
-    );
+    expect(onPredictionChosen).toHaveBeenLastCalledWith({
+      city: 'Orlando',
+      country: 'United States',
+      metroArea: 'Orlando',
+      postalCode: '32832',
+      region: 'Orange County',
+      state: 'FL',
+      street: 'A/100 Lake Hart Drive',
+    });
   });
 
   it('does not query for predictions when the street is empty', async () => {
@@ -216,14 +119,16 @@ describe('StreetAutocomplete', () => {
   });
 
   it('changing the focus cancels loading predictions', () => {
-    const { getByRole, queryByTestId } = render(<ComponentWithMocks />);
+    const { getByRole, getByTestId, queryByTestId } = render(
+      <ComponentWithMocks />,
+    );
 
     // Let Google Maps initialize
     jest.runOnlyPendingTimers();
 
     userEvent.type(getByRole('combobox', { name: 'Street' }), '100 Lake Hart');
     jest.advanceTimersByTime(100);
-    userEvent.click(getByRole('textbox', { name: 'City' }));
+    userEvent.click(getByTestId('container'));
 
     expect(queryByTestId('LoadingPredictions')).not.toBeInTheDocument();
   });

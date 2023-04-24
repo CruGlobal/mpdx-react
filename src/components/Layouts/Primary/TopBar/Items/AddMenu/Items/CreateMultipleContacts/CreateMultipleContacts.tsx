@@ -1,5 +1,4 @@
 import {
-  Box,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -18,10 +17,7 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
-import {
-  ContactReferralTabDocument,
-  useUpdateContactReferralMutation,
-} from 'src/components/Contacts/ContactDetails/ContactReferralTab/ContactReferralTab.generated';
+import { ContactReferralTabDocument } from 'src/components/Contacts/ContactDetails/ContactReferralTab/ContactReferralTab.generated';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
@@ -30,8 +26,15 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import theme from '../../../../../../../../theme';
 import { PersonCreateInput } from '../../../../../../../../../graphql/types.generated';
+import { useCreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
+import {
+  AddressFields,
+  StreetAutocomplete,
+} from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/StreetAutocomplete/StreetAutocomplete';
+import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 
 const InputRow = styled(TableRow)(() => ({
+  display: 'flex',
   '&:nth-child(odd)': {
     backgroundColor: '#f9f9f9',
   },
@@ -41,6 +44,7 @@ const InputRow = styled(TableRow)(() => ({
 }));
 
 const InputCell = styled(TableCell)(() => ({
+  flex: 1,
   [theme.breakpoints.down('lg')]: {
     minWidth: '150px',
   },
@@ -50,34 +54,27 @@ const InputCell = styled(TableCell)(() => ({
 }));
 
 const DialogContentCustom = styled(DialogContent)(() => ({
-  [theme.breakpoints.down('md')]: {
-    maxHeight: '500px',
-    overflowX: 'auto',
-  },
-  [theme.breakpoints.up('md')]: {
-    maxHeight: '80vh',
-    overflowX: 'auto',
-  },
+  maxHeight: 'calc(100vh - 200px)',
+  overflowX: 'auto',
 }));
 
 interface Props {
   accountListId: string;
   handleClose: () => void;
-  referrals?: boolean;
-  contactId?: string;
+  referredById?: string;
 }
 
-interface ContactInputInterface {
-  firstName?: string;
-  spouseName?: string;
-  lastName?: string;
-  address?: string;
-  phone?: string;
-  email?: string;
+interface ContactRow {
+  firstName: string;
+  spouseName: string;
+  lastName: string;
+  address: AddressFields;
+  phone: string;
+  email: string;
 }
 
-interface InitialContactInterface {
-  contacts: ContactInputInterface[];
+interface ContactTable {
+  contacts: ContactRow[];
 }
 
 const contactsSchema = yup.object().shape({
@@ -86,51 +83,58 @@ const contactsSchema = yup.object().shape({
       firstName: yup.string(),
       spouseName: yup.string(),
       lastName: yup.string(),
-      address: yup.string(),
+      address: yup.object({
+        city: yup.string(),
+        country: yup.string(),
+        location: yup.string(),
+        metroArea: yup.string(),
+        postalCode: yup.string(),
+        region: yup.string(),
+        state: yup.string(),
+        street: yup.string(),
+      }),
       phone: yup.string(),
       email: yup.string(),
     }),
   ),
 });
 
+const defaultContact: ContactRow = {
+  firstName: '',
+  spouseName: '',
+  lastName: '',
+  address: {
+    street: '',
+  },
+  phone: '',
+  email: '',
+};
+
 export const CreateMultipleContacts = ({
   accountListId,
   handleClose,
-  referrals,
-  contactId,
+  referredById,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const initialContacts: InitialContactInterface = {
-    contacts: new Array(10).fill({
-      firstName: '',
-      spouseName: '',
-      lastName: '',
-      address: '',
-      phone: '',
-      email: '',
-    }),
+  const initialContacts: ContactTable = {
+    contacts: new Array(10).fill(defaultContact),
   };
 
-  const [createContact, { loading: creating }] = useCreateContactMutation();
-  const [updateContact, { loading: updating }] =
-    useUpdateContactReferralMutation();
-  const [createPerson, { loading: creatingPerson }] = useCreatePersonMutation();
+  const [createContact] = useCreateContactMutation();
+  const [createPerson] = useCreatePersonMutation();
+  const [createAddress] = useCreateContactAddressMutation();
+  const [setPrimaryAddress] = useSetContactPrimaryAddressMutation();
 
-  const onSubmit = async (attributes: InitialContactInterface) => {
+  const onSubmit = async (attributes: ContactTable) => {
     const filteredContacts = attributes.contacts.filter(
       (contact) => contact.firstName,
     );
     if (filteredContacts.length > 0) {
       const createdContacts = await Promise.all(
         filteredContacts.map(async (contact) => {
-          const {
-            firstName = '',
-            lastName = '',
-            spouseName = '',
-            phone = '',
-            email = '',
-          } = contact;
+          const { firstName, lastName, spouseName, address, phone, email } =
+            contact;
           const { data } = await createContact({
             variables: {
               accountListId,
@@ -142,6 +146,9 @@ export const CreateMultipleContacts = ({
                   : spouseName
                   ? `${firstName} and ${spouseName}`
                   : `${firstName}`,
+                contactReferralsToMe: referredById
+                  ? [{ referredById }]
+                  : undefined,
               },
             },
             refetchQueries: [
@@ -149,24 +156,35 @@ export const CreateMultipleContacts = ({
                 query: ContactsDocument,
                 variables: { accountListId },
               },
+              ...(referredById
+                ? [
+                    {
+                      query: ContactReferralTabDocument,
+                      variables: { accountListId, contactId: referredById },
+                    },
+                  ]
+                : []),
             ],
           });
-          if (data?.createContact?.contact?.id) {
+          const contactId = data?.createContact?.contact?.id;
+          if (contactId) {
             const people: PersonCreateInput[] = [
               {
-                contactId: data?.createContact?.contact?.id,
+                contactId,
                 firstName,
                 lastName,
+                phoneNumbers: phone
+                  ? [{ number: phone, primary: true }]
+                  : undefined,
+                emailAddresses: email
+                  ? [{ email: email, primary: true }]
+                  : undefined,
               },
             ];
-            if (phone)
-              people[0].phoneNumbers = [{ number: phone, primary: true }];
-            if (email)
-              people[0].emailAddresses = [{ email: email, primary: true }];
 
             if (spouseName) {
               people.push({
-                contactId: data?.createContact?.contact?.id,
+                contactId,
                 firstName: spouseName,
                 lastName,
               });
@@ -179,42 +197,42 @@ export const CreateMultipleContacts = ({
                 },
               });
             }
-          }
-          return data?.createContact?.contact?.id;
-        }),
-      );
 
-      if (createdContacts.length > 0) {
-        if (referrals && contactId) {
-          await Promise.all(
-            createdContacts.map(async (contact) => {
-              await updateContact({
+            if (address.street) {
+              const { data } = await createAddress({
                 variables: {
                   accountListId,
                   attributes: {
-                    id: contactId,
-                    contactReferralsByMe: [{ referredToId: contact }],
+                    contactId,
+                    ...address,
                   },
                 },
-                refetchQueries: [
-                  {
-                    query: ContactReferralTabDocument,
-                    variables: { accountListId, contactId },
-                  },
-                ],
               });
-            }),
-          );
-        }
-        enqueueSnackbar(
-          createdContacts.length > 1
-            ? t(`${createdContacts.length} Contacts successfully created`)
-            : t('Contact successfully created'),
-          {
-            variant: 'success',
-          },
-        );
-      }
+              const addressId = data?.createAddress?.address.id;
+              if (addressId) {
+                await setPrimaryAddress({
+                  variables: {
+                    contactId,
+                    primaryAddressId: addressId,
+                  },
+                });
+              }
+            }
+          }
+          return contactId;
+        }),
+      );
+
+      enqueueSnackbar(
+        createdContacts.length > 1
+          ? t('{{count}} contacts successfully created', {
+              count: createdContacts.length,
+            })
+          : t('Contact successfully created'),
+        {
+          variant: 'success',
+        },
+      );
     }
 
     handleClose();
@@ -238,7 +256,7 @@ export const CreateMultipleContacts = ({
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow>
+                  <TableRow sx={{ display: 'flex' }}>
                     <InputCell align="left">{t('First')}</InputCell>
                     <InputCell align="left">{t('Spouse')}</InputCell>
                     <InputCell align="left">{t('Last')}</InputCell>
@@ -250,165 +268,154 @@ export const CreateMultipleContacts = ({
                 <TableBody>
                   <FieldArray
                     name="contacts"
-                    render={() => (
-                      <>
-                        {contacts.map((contact, index) => (
-                          <InputRow key={index}>
-                            <InputCell>
-                              <Field name="firstName">
-                                {({ field }: FieldProps) => (
-                                  <Box width="100%">
-                                    <TextField
-                                      {...field}
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      type="text"
-                                      inputProps={{
-                                        'aria-label': t('First'),
-                                      }}
-                                      value={contact.firstName}
-                                      onChange={(e) =>
-                                        setFieldValue(
-                                          `contacts.${index}.firstName`,
-                                          e.target.value,
-                                        )
-                                      }
-                                    />
-                                  </Box>
-                                )}
-                              </Field>
-                            </InputCell>
-                            <InputCell>
-                              <Field name="spouseName">
-                                {({ field }: FieldProps) => (
-                                  <Box width="100%">
-                                    <TextField
-                                      {...field}
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      type="text"
-                                      inputProps={{
-                                        'aria-label': t('Spouse'),
-                                      }}
-                                      value={contact.spouseName}
-                                      onChange={(e) =>
-                                        setFieldValue(
-                                          `contacts.${index}.spouseName`,
-                                          e.target.value,
-                                        )
-                                      }
-                                    />
-                                  </Box>
-                                )}
-                              </Field>
-                            </InputCell>
-                            <InputCell>
-                              <Field name="lastName">
-                                {({ field }: FieldProps) => (
-                                  <Box width="100%">
-                                    <TextField
-                                      {...field}
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      type="text"
-                                      inputProps={{
-                                        'aria-label': t('Last'),
-                                      }}
-                                      value={contact.lastName}
-                                      onChange={(e) =>
-                                        setFieldValue(
-                                          `contacts.${index}.lastName`,
-                                          e.target.value,
-                                        )
-                                      }
-                                    />
-                                  </Box>
-                                )}
-                              </Field>
-                            </InputCell>
-                            <InputCell>
-                              {/* TODO: Connect to Google Autocomplete? */}
-                              <Field name="address">
-                                {({ field }: FieldProps) => (
-                                  <Box width="100%">
-                                    <TextField
-                                      {...field}
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      type="text"
-                                      inputProps={{
-                                        'aria-label': t('Address'),
-                                      }}
-                                      value={contact.address}
-                                      onChange={(e) =>
-                                        setFieldValue(
-                                          `contacts.${index}.address`,
-                                          e.target.value,
-                                        )
-                                      }
-                                    />
-                                  </Box>
-                                )}
-                              </Field>
-                            </InputCell>
-                            <InputCell>
-                              <Field name="phone">
-                                {({ field }: FieldProps) => (
-                                  <Box width="100%">
-                                    <TextField
-                                      {...field}
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      type="text"
-                                      inputProps={{
-                                        'aria-label': t('Phone'),
-                                      }}
-                                      value={contact.phone}
-                                      onChange={(e) =>
-                                        setFieldValue(
-                                          `contacts.${index}.phone`,
-                                          e.target.value,
-                                        )
-                                      }
-                                    />
-                                  </Box>
-                                )}
-                              </Field>
-                            </InputCell>
-                            <InputCell>
-                              <Field name="email">
-                                {({ field }: FieldProps) => (
-                                  <Box width="100%">
-                                    <TextField
-                                      {...field}
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      type="text"
-                                      inputProps={{
-                                        'aria-label': t('Email'),
-                                      }}
-                                      value={contact.email}
-                                      onChange={(e) =>
-                                        setFieldValue(
-                                          `contacts.${index}.email`,
-                                          e.target.value,
-                                        )
-                                      }
-                                    />
-                                  </Box>
-                                )}
-                              </Field>
-                            </InputCell>
-                          </InputRow>
-                        ))}
-                      </>
-                    )}
+                    render={() =>
+                      contacts.map((contact, index) => (
+                        <InputRow key={index}>
+                          <InputCell>
+                            <Field name="firstName">
+                              {({ field }: FieldProps) => (
+                                <TextField
+                                  {...field}
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                  type="text"
+                                  inputProps={{
+                                    'aria-label': t('First'),
+                                  }}
+                                  value={contact.firstName}
+                                  onChange={(e) =>
+                                    setFieldValue(
+                                      `contacts.${index}.firstName`,
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                              )}
+                            </Field>
+                          </InputCell>
+                          <InputCell>
+                            <Field name="spouseName">
+                              {({ field }: FieldProps) => (
+                                <TextField
+                                  {...field}
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                  type="text"
+                                  inputProps={{
+                                    'aria-label': t('Spouse'),
+                                  }}
+                                  value={contact.spouseName}
+                                  onChange={(e) =>
+                                    setFieldValue(
+                                      `contacts.${index}.spouseName`,
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                              )}
+                            </Field>
+                          </InputCell>
+                          <InputCell>
+                            <Field name="lastName">
+                              {({ field }: FieldProps) => (
+                                <TextField
+                                  {...field}
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                  type="text"
+                                  inputProps={{
+                                    'aria-label': t('Last'),
+                                  }}
+                                  value={contact.lastName}
+                                  onChange={(e) =>
+                                    setFieldValue(
+                                      `contacts.${index}.lastName`,
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                              )}
+                            </Field>
+                          </InputCell>
+                          <InputCell>
+                            <Field name="address">
+                              {({ field }: FieldProps) => (
+                                <StreetAutocomplete
+                                  TextFieldProps={{
+                                    variant: 'outlined',
+                                    size: 'small',
+                                    fullWidth: true,
+                                    'aria-label': t('Address'),
+                                    ...field,
+                                  }}
+                                  streetValue={contact.address.street}
+                                  onStreetChange={(street) =>
+                                    setFieldValue(`contacts.${index}.address`, {
+                                      street,
+                                    })
+                                  }
+                                  onPredictionChosen={(fields) => {
+                                    setFieldValue(
+                                      `contacts.${index}.address`,
+                                      fields,
+                                    );
+                                  }}
+                                />
+                              )}
+                            </Field>
+                          </InputCell>
+                          <InputCell>
+                            <Field name="phone">
+                              {({ field }: FieldProps) => (
+                                <TextField
+                                  {...field}
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                  type="text"
+                                  inputProps={{
+                                    'aria-label': t('Phone'),
+                                  }}
+                                  value={contact.phone}
+                                  onChange={(e) =>
+                                    setFieldValue(
+                                      `contacts.${index}.phone`,
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                              )}
+                            </Field>
+                          </InputCell>
+                          <InputCell>
+                            <Field name="email">
+                              {({ field }: FieldProps) => (
+                                <TextField
+                                  {...field}
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                  type="text"
+                                  inputProps={{
+                                    'aria-label': t('Email'),
+                                  }}
+                                  value={contact.email}
+                                  onChange={(e) =>
+                                    setFieldValue(
+                                      `contacts.${index}.email`,
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                              )}
+                            </Field>
+                          </InputCell>
+                        </InputRow>
+                      ))
+                    }
                   />
                 </TableBody>
               </Table>
@@ -423,7 +430,7 @@ export const CreateMultipleContacts = ({
                 contacts.filter((c) => c.firstName).length <= 0
               }
             >
-              {creating || updating || creatingPerson ? (
+              {isSubmitting ? (
                 <CircularProgress color="secondary" size={20} />
               ) : (
                 t('Save')

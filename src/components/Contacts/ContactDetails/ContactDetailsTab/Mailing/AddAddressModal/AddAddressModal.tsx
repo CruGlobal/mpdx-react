@@ -163,12 +163,14 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
             postalCode,
             region,
             state,
+            street,
             primaryMailingAddress,
           },
           handleChange,
           handleSubmit,
           isSubmitting,
           isValid,
+          setFieldValue,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogContent dividers>
@@ -176,7 +178,26 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
                     <Grid item sm={12} md={9}>
-                      <StreetAutocomplete />
+                      <StreetAutocomplete
+                        streetValue={street}
+                        onStreetChange={(street) =>
+                          setFieldValue('street', street)
+                        }
+                        onPredictionChosen={(fields) => {
+                          Object.entries(fields).forEach(([field, value]) => {
+                            setFieldValue(field, value);
+                          });
+                          if (!location) {
+                            setFieldValue('location', 'Home');
+                          }
+                        }}
+                        TextFieldProps={{
+                          name: 'street',
+                          label: t('Street'),
+                          required: true,
+                          fullWidth: true,
+                        }}
+                      />
                     </Grid>
                     <Grid item xs={12} md={3}>
                       <FormControl fullWidth>

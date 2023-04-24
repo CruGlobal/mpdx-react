@@ -1,8 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import {
   gqlMock,
   GqlMockedProvider,
@@ -33,6 +34,8 @@ jest.mock('notistack', () => ({
   },
 }));
 
+jest.mock('@react-google-maps/api');
+
 const mockContact: ContactMailingFragment = {
   id: '123',
   name: mock.name,
@@ -50,6 +53,10 @@ const mockContact: ContactMailingFragment = {
 };
 
 describe('EditContactAddressModal', () => {
+  beforeEach(() => {
+    setupMocks();
+  });
+
   it('should render edit contact address modal', async () => {
     const { getByText } = render(
       <SnackbarProvider>
@@ -179,6 +186,52 @@ describe('EditContactAddressModal', () => {
     );
   }, 80000);
 
+  it('handles chosen address predictions', async () => {
+    jest.useFakeTimers();
+
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <EditContactAddressModal
+              contactId={contactId}
+              accountListId={accountListId}
+              handleClose={handleClose}
+              address={mockContact.addresses.nodes[0]}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    // Let Google Maps initialize
+    jest.runOnlyPendingTimers();
+
+    const addressAutocomplete = getByRole('combobox', { name: 'Street' });
+    userEvent.clear(addressAutocomplete);
+    userEvent.type(addressAutocomplete, '100 Lake Hart');
+
+    jest.advanceTimersByTime(2000);
+    await act(async () => {
+      await placePromise;
+    });
+
+    userEvent.click(
+      getByRole('option', { name: '100 Lake Hart Dr, Orlando, FL 32832, USA' }),
+    );
+    expect(addressAutocomplete).toHaveValue('A/100 Lake Hart Drive');
+    expect(getByRole('textbox', { name: 'City' })).toHaveValue('Orlando');
+    expect(getByRole('textbox', { name: 'State' })).toHaveValue('FL');
+    expect(getByRole('textbox', { name: 'Zip' })).toHaveValue('32832');
+    expect(getByRole('textbox', { name: 'Country' })).toHaveValue(
+      'United States',
+    );
+    expect(getByRole('textbox', { name: 'Region' })).toHaveValue(
+      'Orange County',
+    );
+    expect(getByRole('textbox', { name: 'Metro' })).toHaveValue('Orlando');
+  }, 20000);
+
   it('should edit not set primary address when it has not changed', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
@@ -197,8 +250,9 @@ describe('EditContactAddressModal', () => {
       </SnackbarProvider>,
     );
 
-    userEvent.clear(getByRole('combobox', { name: 'Street' }));
-    userEvent.type(getByRole('combobox', { name: 'Street' }), newStreet);
+    const street = getByRole('combobox', { name: 'Street' });
+    userEvent.clear(street);
+    userEvent.type(street, newStreet);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Address updated successfully', {
@@ -207,7 +261,7 @@ describe('EditContactAddressModal', () => {
     );
 
     expect(mutationSpy).toHaveBeenCalledTimes(1);
-  });
+  }, 30000);
 
   it('should handle delete click', async () => {
     const { getByText, getByTestId } = render(

@@ -97,7 +97,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
           <Box width="100%" mb={2} justifyContent="end" display="flex">
             <AddButton onClick={handleModalOpen}>
               <Add />
-              Add Referral
+              {t('Add Referrals')}
             </AddButton>
           </Box>
           <TableContainer component={Paper}>
@@ -148,8 +148,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
             <CreateMultipleContacts
               accountListId={accountListId ?? ''}
               handleClose={handleModalClose}
-              referrals
-              contactId={contactId}
+              referredById={contactId}
             />
           </Modal>
         </>
