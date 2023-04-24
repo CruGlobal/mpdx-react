@@ -109,7 +109,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={2}>
           <FormControl fullWidth>
             <InputLabel id={`email-type-label-${index}`}>
               {t('Type')}
@@ -147,7 +147,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             </EmailSelect>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={2}>
           <PrimaryControlLabel
             label={t('Primary')}
             control={
@@ -155,6 +155,24 @@ export const PersonEmailItem: React.FC<Props> = ({
                 value={emailAddress.id}
                 checked={isEmailPrimaryChecked}
                 onChange={handleChange}
+                color="secondary"
+              />
+            }
+            destroyed={emailAddress.destroy ?? false}
+          />
+        </Grid>
+        <Grid item xs={12} md={2}>
+          <PrimaryControlLabel
+            label={t('Invalid')}
+            control={
+              <Checkbox
+                checked={emailAddress.historic === true}
+                onChange={(event) =>
+                  setFieldValue(
+                    `emailAddresses.${index}.historic`,
+                    event.target.checked,
+                  )
+                }
                 color="secondary"
               />
             }

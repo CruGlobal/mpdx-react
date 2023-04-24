@@ -110,7 +110,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             required
           />
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={2}>
           <FormControl fullWidth>
             <InputLabel id={`phone-type-label-${index}`}>
               {t('Type')}
@@ -151,7 +151,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             </PhoneNumberSelect>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={2}>
           <PrimaryControlLabel
             label={t('Primary')}
             control={
@@ -159,6 +159,24 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
                 value={phoneNumber.id}
                 checked={isPrimaryChecked}
                 onChange={handleChange}
+                color="secondary"
+              />
+            }
+            destroyed={phoneNumber.destroy ?? false}
+          />
+        </Grid>
+        <Grid item xs={12} md={2}>
+          <PrimaryControlLabel
+            label={t('Invalid')}
+            control={
+              <Checkbox
+                checked={phoneNumber.historic === true}
+                onChange={(event) =>
+                  setFieldValue(
+                    `phoneNumbers.${index}.historic`,
+                    event.target.checked,
+                  )
+                }
                 color="secondary"
               />
             }

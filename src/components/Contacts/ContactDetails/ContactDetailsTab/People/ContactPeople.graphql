@@ -25,6 +25,7 @@ fragment ContactPerson on Person {
     nodes {
       id
       email
+      historic
       primary
       location
       source
@@ -53,6 +54,7 @@ fragment ContactPerson on Person {
   phoneNumbers(first: 25) {
     nodes {
       id
+      historic
       number
       primary
       location
