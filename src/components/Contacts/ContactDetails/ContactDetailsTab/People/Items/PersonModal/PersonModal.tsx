@@ -449,7 +449,10 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       >
         {(formikProps): ReactElement => (
           <form onSubmit={formikProps.handleSubmit} noValidate>
-            <DialogContent dividers style={{ maxHeight: '80vh' }}>
+            <DialogContent
+              dividers
+              style={{ maxHeight: 'calc(100vh - 200px)' }}
+            >
               <ContactEditContainer>
                 <ContactPersonContainer>
                   {/* Name Section */}
