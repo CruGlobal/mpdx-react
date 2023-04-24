@@ -145,10 +145,6 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
   );
   const { data, loading, fetchMore } = useGetDonationsTableQuery({
     variables,
-
-    // When they user comes back to a month that they have loaded before, use the cached data because it will have all
-    // the pages of data instead of just the first one if we load from the network
-    fetchPolicy: 'cache-first',
   });
   // Load the rest of the pages asynchronously so that we can calculate the total donations
   useFetchAllPages({
