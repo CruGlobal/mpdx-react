@@ -36,6 +36,7 @@ const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
               {
                 email: 'test1234@test.com',
                 primary: true,
+                historic: false,
                 location: 'Work',
                 source: 'MPDX',
               },
@@ -43,6 +44,7 @@ const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
                 email: 'secondemail@test.com',
                 location: 'Personal',
                 primary: false,
+                historic: false,
                 source: 'MPDX',
               },
             ],
@@ -53,12 +55,14 @@ const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
                 number: '777-777-7777',
                 location: 'Mobile',
                 primary: true,
+                historic: false,
                 source: 'MPDX',
               },
               {
                 number: '999-999-9999',
                 location: 'Work',
                 primary: false,
+                historic: false,
                 source: 'MPDX',
               },
             ],
@@ -404,6 +408,37 @@ describe('PersonModal', () => {
       );
     });
 
+    it('handles marking a phone number as invalid', async () => {
+      const mutationSpy = jest.fn();
+      const { getByRole, getAllByRole } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      userEvent.click(getAllByRole('checkbox', { name: 'Invalid' })[0]);
+      userEvent.click(getByRole('button', { name: 'Save' }));
+      await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+      const { phoneNumbers } =
+        mutationSpy.mock.calls[0][0].operation.variables.attributes;
+      expect(phoneNumbers[0].historic).toBe(true);
+      expect(phoneNumbers[1].historic).toBe(false);
+    });
+
     it('handles deleting a phone number', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(
@@ -530,6 +565,37 @@ describe('PersonModal', () => {
         false,
       );
       expect(operation.variables.attributes.optoutEnewsletter).toEqual(true);
+    });
+
+    it('handles marking an email address as invalid', async () => {
+      const mutationSpy = jest.fn();
+      const { getByRole, getAllByRole } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      userEvent.click(getAllByRole('checkbox', { name: 'Invalid' })[2]);
+      userEvent.click(getByRole('button', { name: 'Save' }));
+      await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+      const { emailAddresses } =
+        mutationSpy.mock.calls[0][0].operation.variables.attributes;
+      expect(emailAddresses[0].historic).toBe(true);
+      expect(emailAddresses[1].historic).toBe(false);
     });
 
     it('handles deleting an email address', async () => {
