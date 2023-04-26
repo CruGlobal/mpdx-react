@@ -59,7 +59,7 @@ export const TasksMassActionsDropdown: React.FC<
         attributes: selectedIds.map((id) => ({
           id,
           completedAt,
-          result: ResultEnum.Done,
+          result: ResultEnum.Completed,
         })),
       },
       refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],

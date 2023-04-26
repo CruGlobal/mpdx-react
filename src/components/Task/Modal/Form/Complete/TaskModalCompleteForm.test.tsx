@@ -116,7 +116,7 @@ describe('TaskModalCompleteForm', () => {
       completedAt,
       result: ResultEnum.Completed,
       nextAction: ActivityTypeEnum.Appointment,
-      tagList: [],
+      tagList: ['tag-1', 'tag-2'],
     };
     const { getByRole, getByText } = render(
       <TestWrapper
@@ -149,25 +149,15 @@ describe('TaskModalCompleteForm', () => {
             ...task,
             activityType: ActivityTypeEnum.Call,
             completedAt,
-            tagList: [],
+            tagList: ['tag-1', 'tag-2'],
           }}
         />
       </TestWrapper>,
     );
-    userEvent.click(getByRole('button', { hidden: true, name: 'Result' }));
-    userEvent.click(
-      within(getByRole('listbox', { hidden: true, name: 'Result' })).getByText(
-        'Completed',
-      ),
-    );
-    userEvent.click(
-      getByRole('combobox', { hidden: true, name: 'Next Action' }),
-    );
-    userEvent.click(
-      within(
-        getByRole('listbox', { hidden: true, name: 'Next Action' }),
-      ).getByText('Appointment'),
-    );
+    userEvent.click(getByRole('button', { name: 'Result' }));
+    userEvent.click(getByRole('option', { name: 'Received' }));
+    userEvent.click(getByRole('combobox', { name: 'Next Action' }));
+    userEvent.click(getByRole('option', { name: 'Appointment' }));
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -177,7 +167,7 @@ describe('TaskModalCompleteForm', () => {
           activityType: ActivityTypeEnum.Appointment,
           contactIds: ['contact-1', 'contact-2'],
           userId: 'user-1',
-          tagList: [],
+          tagList: ['tag-1', 'tag-2'],
         },
       }),
     );

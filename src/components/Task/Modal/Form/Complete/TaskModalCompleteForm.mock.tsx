@@ -98,14 +98,14 @@ export const completeTaskMutationMock = (
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.Completed,
+    result: ResultEnum.Received,
     nextAction: ActivityTypeEnum.Appointment,
   };
   const attributes: TaskUpdateInput = {
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.Completed,
+    result: ResultEnum.Received,
     nextAction: ActivityTypeEnum.Appointment,
   };
   const data: CompleteTaskMutation = {
