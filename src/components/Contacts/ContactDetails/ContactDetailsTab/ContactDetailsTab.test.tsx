@@ -36,6 +36,7 @@ const mocks = {
             postalCode: '10001',
             country: 'USA',
             primaryMailingAddress: true,
+            historic: true,
           },
           {
             id: '321',
@@ -45,6 +46,7 @@ const mocks = {
             postalCode: '10001',
             country: 'USA',
             primaryMailingAddress: false,
+            historic: false,
           },
         ],
       },
