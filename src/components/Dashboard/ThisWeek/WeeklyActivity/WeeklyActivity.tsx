@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   Theme,
   CardHeader,
@@ -75,7 +75,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     ),
   );
 
-  const { data, loading, refetch } = useGetWeeklyActivityQuery({
+  const { data, loading } = useGetWeeklyActivityQuery({
     variables: {
       accountListId,
       startOfWeek: interval.start.toISO(),
@@ -97,14 +97,6 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     date
       .setLocale(i18n.language)
       .toLocaleString({ day: 'numeric', month: 'short' });
-
-  useEffect(() => {
-    refetch({
-      accountListId,
-      startOfWeek: interval.start.toISO(),
-      endOfWeek: interval.end.toISO(),
-    });
-  }, [interval]);
 
   const [openWeeklyReportModal, setOpenWeeklyReportModal] =
     useState<boolean>(false);

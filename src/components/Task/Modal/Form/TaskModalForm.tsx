@@ -224,7 +224,7 @@ const TaskModalForm = ({
           accountListId,
           attributes: { ...sharedAttributes, id },
         },
-        refetchQueries: ['ContactTasksTab'],
+        refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
       });
     } else {
       await createTasks({
@@ -232,7 +232,7 @@ const TaskModalForm = ({
           accountListId,
           attributes: { ...sharedAttributes, comment: comment?.trim() },
         },
-        refetchQueries: ['ContactTasksTab'],
+        refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
       });
     }
     update();
@@ -287,7 +287,7 @@ const TaskModalForm = ({
         touched,
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
-          <DialogContent dividers>
+          <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
                 <TextField

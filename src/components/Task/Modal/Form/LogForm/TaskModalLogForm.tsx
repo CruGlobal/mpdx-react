@@ -53,7 +53,6 @@ import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
-import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
@@ -170,7 +169,7 @@ const TaskModalLogForm = ({
         accountListId,
         attributes: { ...attributes, comment: attributes.comment?.trim() },
       },
-      refetchQueries: ['ContactTasksTab'],
+      refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity'],
     });
     update();
     if (attributes.contactIds && attributes.contactIds.length > 1) {
@@ -264,7 +263,7 @@ const TaskModalLogForm = ({
         touched,
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
-          <DialogContent dividers>
+          <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
                 <TextField
@@ -387,26 +386,24 @@ const TaskModalLogForm = ({
               <Grid item>
                 <FormControl fullWidth>
                   <InputLabel id="result">{t('Result')}</InputLabel>
-                  <NullableSelect
+                  <Select
                     labelId="result"
                     label={t('Result')}
                     value={result}
                     onChange={(e) => setFieldValue('result', e.target.value)}
                   >
                     {activityType ? (
-                      possibleResults(activityType)
-                        .filter((val) => val !== ResultEnum.None)
-                        .map((val) => (
-                          <MenuItem key={val} value={val}>
-                            {getLocalizedResultString(t, val)}
-                          </MenuItem>
-                        ))
+                      possibleResults(activityType).map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {getLocalizedResultString(t, val)}
+                        </MenuItem>
+                      ))
                     ) : (
                       <MenuItem value={ResultEnum.Completed}>
                         {getLocalizedResultString(t, ResultEnum.Completed)}
                       </MenuItem>
                     )}
-                  </NullableSelect>
+                  </Select>
                 </FormControl>
               </Grid>
               <Grid item>

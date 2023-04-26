@@ -9,10 +9,8 @@ import {
 import { styled } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useDeleteTaskMutation } from '../../../Task/Modal/Form/TaskModal.generated';
-import { GetThisWeekDocument } from '../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
   SubmitButton,
   CancelButton,
@@ -49,7 +47,6 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
 
   const onDeleteTask = async (): Promise<void> => {
     if (taskId) {
-      const endOfDay = DateTime.local().endOf('day');
       await deleteTask({
         variables: {
           accountListId: accountListId ?? '',
@@ -59,19 +56,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
           cache.evict({ id: `Task:${taskId}` });
           cache.gc();
         },
-        refetchQueries: [
-          'ContactTasksTab',
-          {
-            query: GetThisWeekDocument,
-            variables: {
-              accountListId,
-              endOfDay: endOfDay.toISO(),
-              today: endOfDay.toISODate(),
-              threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
-              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
-            },
-          },
-        ],
+        refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
       });
       enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
       onClickDecline(false);

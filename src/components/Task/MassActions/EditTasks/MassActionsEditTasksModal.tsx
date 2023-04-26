@@ -97,7 +97,7 @@ export const MassActionsEditTasksModal: React.FC<
         accountListId,
         attributes,
       },
-      refetchQueries: ['ContactTasksTab'],
+      refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
     });
     const commentMutations = body
       ? ids.map((taskId) =>

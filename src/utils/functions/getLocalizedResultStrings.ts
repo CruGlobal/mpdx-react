@@ -19,9 +19,12 @@ export const getLocalizedResultString = (
     case ResultEnum.Completed:
       return t('Completed');
 
+    // The Done and None branches should never be hit but are left for completeness
+    /* istanbul ignore next */
     case ResultEnum.Done:
       return t('Done');
 
+    /* istanbul ignore next */
     case ResultEnum.None:
       return t('None');
 
