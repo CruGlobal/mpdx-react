@@ -134,6 +134,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         number: yup.string().required(t('This field is required')),
         destroy: yup.boolean().default(false),
         primary: yup.boolean().default(false),
+        historic: yup.boolean().default(false),
       }),
     ),
     emailAddresses: yup.array().of(
@@ -145,6 +146,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
           .required(t('This field is required')),
         destroy: yup.boolean().default(false),
         primary: yup.boolean().default(false),
+        historic: yup.boolean().default(false),
       }),
     ),
     facebookAccounts: yup.array().of(
@@ -220,6 +222,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       id: phoneNumber.id,
       primary: phoneNumber.primary,
       number: phoneNumber.number,
+      historic: phoneNumber.historic,
       location: phoneNumber.location,
       destroy: false,
     };
@@ -230,6 +233,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       id: emailAddress.id,
       primary: emailAddress.primary,
       email: emailAddress.email,
+      historic: emailAddress.historic,
       location: emailAddress.location,
       destroy: false,
     };
@@ -440,6 +444,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     <Modal
       isOpen={true}
       title={person ? t('Edit Person') : t('Create Person')}
+      size="md"
       handleClose={handleClose}
     >
       <Formik
