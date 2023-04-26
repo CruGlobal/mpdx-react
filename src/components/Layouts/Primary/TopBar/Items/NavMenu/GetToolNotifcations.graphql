@@ -25,7 +25,17 @@ query GetToolNotifications($accountListId: ID!) {
     peopleFilter: {
       emailAddressValid: false
       deceased: false
-      contactStatus: [ACTIVE]
+      contactStatus: [
+        NEVER_CONTACTED
+        ASK_IN_FUTURE
+        CULTIVATE_RELATIONSHIP
+        CONTACT_FOR_APPOINTMENT
+        APPOINTMENT_SCHEDULED
+        CALL_FOR_DECISION
+        PARTNER_FINANCIAL
+        PARTNER_SPECIAL
+        PARTNER_PRAY
+      ]
     }
   ) {
     totalCount
@@ -35,7 +45,17 @@ query GetToolNotifications($accountListId: ID!) {
     peopleFilter: {
       phoneNumberValid: false
       deceased: false
-      contactStatus: [ACTIVE]
+      contactStatus: [
+        NEVER_CONTACTED
+        ASK_IN_FUTURE
+        CULTIVATE_RELATIONSHIP
+        CONTACT_FOR_APPOINTMENT
+        APPOINTMENT_SCHEDULED
+        CALL_FOR_DECISION
+        PARTNER_FINANCIAL
+        PARTNER_SPECIAL
+        PARTNER_PRAY
+      ]
     }
   ) {
     totalCount
