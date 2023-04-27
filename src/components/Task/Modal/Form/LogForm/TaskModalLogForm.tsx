@@ -285,6 +285,7 @@ const TaskModalLogForm = ({
                 <FormControl fullWidth>
                   <Autocomplete
                     openOnFocus
+                    autoHighlight
                     value={
                       activityType === null ||
                       typeof activityType === 'undefined'
@@ -335,6 +336,7 @@ const TaskModalLogForm = ({
                 ) : (
                   <Autocomplete
                     multiple
+                    autoHighlight
                     options={
                       (
                         mergedContacts &&
@@ -497,6 +499,7 @@ const TaskModalLogForm = ({
                         <Grid item xs={12}>
                           <Autocomplete
                             multiple
+                            autoHighlight
                             freeSolo
                             renderTags={(value, getTagProps): ReactElement[] =>
                               value.map((option, index) => (
@@ -522,6 +525,7 @@ const TaskModalLogForm = ({
                         <Grid item xs={12}>
                           <Autocomplete
                             loading={loading}
+                            autoHighlight
                             options={
                               (data?.accountListUsers?.nodes &&
                                 data.accountListUsers.nodes.map(

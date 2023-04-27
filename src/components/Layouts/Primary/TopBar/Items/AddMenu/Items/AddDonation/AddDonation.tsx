@@ -420,6 +420,7 @@ export const AddDonation = ({
                             {...field}
                             id="designation-account-input"
                             loading={loading}
+                            autoHighlight
                             options={
                               (data?.designationAccounts &&
                                 data?.designationAccounts[0]?.designationAccounts.map(
@@ -495,6 +496,7 @@ export const AddDonation = ({
                             {...field}
                             id="appeal-input"
                             loading={loading}
+                            autoHighlight
                             options={
                               (data?.accountList.appeals &&
                                 data.accountList.appeals.map(({ id }) => id)) ??

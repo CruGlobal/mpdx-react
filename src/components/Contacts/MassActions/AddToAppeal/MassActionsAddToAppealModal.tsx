@@ -101,6 +101,7 @@ export const MassActionsAddToAppealModal: React.FC<
                 <Autocomplete
                   id="appeal"
                   value={appeal}
+                  autoHighlight
                   options={
                     (appeals?.appeals.nodes &&
                       appeals?.appeals.nodes.map((appeal) => appeal.id)) ||

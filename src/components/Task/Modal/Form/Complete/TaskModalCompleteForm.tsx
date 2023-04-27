@@ -245,6 +245,7 @@ const TaskModalCompleteForm = ({
                   <FormControl fullWidth>
                     <Autocomplete
                       openOnFocus
+                      autoHighlight
                       value={
                         nextAction === null || typeof nextAction === 'undefined'
                           ? ''
@@ -281,6 +282,7 @@ const TaskModalCompleteForm = ({
               <Grid item>
                 <Autocomplete
                   multiple
+                  autoHighlight
                   freeSolo
                   renderTags={(value, getTagProps): ReactElement[] =>
                     value.map((option, index) => (
