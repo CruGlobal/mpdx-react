@@ -435,6 +435,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         ],
       });
     }
+    handleRemoveDialogOpen(false);
     enqueueSnackbar(t('Person deleted successfully'), {
       variant: 'success',
     });
