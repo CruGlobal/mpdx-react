@@ -49,7 +49,7 @@ describe('ContactTags', () => {
   });
 
   it('should add a tag', async () => {
-    const { getByPlaceholderText } = render(
+    const { getByPlaceholderText, getByText } = render(
       <SnackbarProvider>
         <GqlMockedProvider<UpdateContactTagsMutation>
           mocks={{
@@ -79,6 +79,8 @@ describe('ContactTags', () => {
       expect(getByPlaceholderText('add tag')).toHaveValue(''),
     );
     userEvent.type(getByPlaceholderText('add tag'), '{enter}');
+
+    userEvent.click(getByText('save'));
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Tag successfully added', {
