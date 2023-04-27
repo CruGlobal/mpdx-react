@@ -174,6 +174,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
               <Autocomplete
                 multiple
                 freeSolo
+                autoHighlight
                 fullWidth
                 loading={loading}
                 popupIcon={<ContactTagIcon />}

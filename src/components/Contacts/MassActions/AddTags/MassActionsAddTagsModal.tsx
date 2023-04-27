@@ -151,6 +151,7 @@ export const MassActionsAddTagsModal: React.FC<
                 </NewTagInstructions>
                 <Autocomplete
                   multiple
+                  autoHighlight
                   freeSolo
                   fullWidth
                   loading={loading}
