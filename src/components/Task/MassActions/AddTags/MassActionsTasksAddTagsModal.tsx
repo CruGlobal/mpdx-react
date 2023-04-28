@@ -166,6 +166,7 @@ export const MassActionsTasksAddTagsModal: React.FC<
                 </NewTagInstructions>
                 <Autocomplete
                   multiple
+                  autoSelect
                   autoHighlight
                   freeSolo
                   fullWidth

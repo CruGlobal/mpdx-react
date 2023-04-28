@@ -74,6 +74,7 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
         <ListItem>
           <Autocomplete
             multiple
+            autoSelect
             autoHighlight
             value={selected || []}
             onChange={(_, value) => toggleValue(value)}

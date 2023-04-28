@@ -259,6 +259,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                   <Grid item>
                     <Autocomplete
                       loading={loadingFilteredById || loadingFilteredByName}
+                      autoSelect
                       autoHighlight
                       options={
                         (

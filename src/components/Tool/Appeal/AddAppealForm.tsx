@@ -378,6 +378,7 @@ const AddAppealForm = (): ReactElement => {
 
                     <Autocomplete
                       multiple
+                      autoSelect
                       autoHighlight
                       id="tags-standard"
                       options={contactStatuses.filter(
@@ -417,6 +418,7 @@ const AddAppealForm = (): ReactElement => {
                     </Typography>
                     <Autocomplete
                       multiple
+                      autoSelect
                       autoHighlight
                       id="tags-standard"
                       options={contactTagsList.filter(
@@ -445,6 +447,7 @@ const AddAppealForm = (): ReactElement => {
                   </Typography>
                   <Autocomplete
                     multiple
+                    autoSelect
                     autoHighlight
                     id="tags-standard"
                     options={contactExclusions.filter(
