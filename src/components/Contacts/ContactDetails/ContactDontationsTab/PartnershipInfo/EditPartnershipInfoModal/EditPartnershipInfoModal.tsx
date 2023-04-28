@@ -546,6 +546,7 @@ export const EditPartnershipInfoModal: React.FC<
                 <Autocomplete
                   multiple
                   filterSelectedOptions
+                  autoSelect
                   autoHighlight
                   options={
                     (filteredContacts &&

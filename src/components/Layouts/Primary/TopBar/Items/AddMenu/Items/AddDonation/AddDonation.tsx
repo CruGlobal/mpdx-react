@@ -420,6 +420,7 @@ export const AddDonation = ({
                             {...field}
                             id="designation-account-input"
                             loading={loading}
+                            autoSelect
                             autoHighlight
                             options={
                               (data?.designationAccounts &&
@@ -496,6 +497,7 @@ export const AddDonation = ({
                             {...field}
                             id="appeal-input"
                             loading={loading}
+                            autoSelect
                             autoHighlight
                             options={
                               (data?.accountList.appeals &&

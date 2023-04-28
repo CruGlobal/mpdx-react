@@ -158,6 +158,7 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
       <Autocomplete
         freeSolo
         disableClearable
+        autoSelect
         autoHighlight
         getOptionLabel={(option) =>
           typeof option === 'string' ? option : option.description

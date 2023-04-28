@@ -285,6 +285,7 @@ const TaskModalLogForm = ({
                 <FormControl fullWidth>
                   <Autocomplete
                     openOnFocus
+                    autoSelect
                     autoHighlight
                     value={
                       activityType === null ||
@@ -336,6 +337,7 @@ const TaskModalLogForm = ({
                 ) : (
                   <Autocomplete
                     multiple
+                    autoSelect
                     autoHighlight
                     options={
                       (
@@ -499,6 +501,7 @@ const TaskModalLogForm = ({
                         <Grid item xs={12}>
                           <Autocomplete
                             multiple
+                            autoSelect
                             autoHighlight
                             freeSolo
                             renderTags={(value, getTagProps): ReactElement[] =>
@@ -525,6 +528,7 @@ const TaskModalLogForm = ({
                         <Grid item xs={12}>
                           <Autocomplete
                             loading={loading}
+                            autoSelect
                             autoHighlight
                             options={
                               (data?.accountListUsers?.nodes &&

@@ -169,6 +169,7 @@ export const MassActionsEditTasksModal: React.FC<
                   <FormControl fullWidth>
                     <Autocomplete
                       openOnFocus
+                      autoSelect
                       autoHighlight
                       value={
                         activityType === null ||
@@ -210,6 +211,7 @@ export const MassActionsEditTasksModal: React.FC<
                     {!loading ? (
                       <Autocomplete
                         loading={loading}
+                        autoSelect
                         autoHighlight
                         options={
                           (data?.accountListUsers?.nodes &&

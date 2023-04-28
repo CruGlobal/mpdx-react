@@ -54,6 +54,7 @@ export const DonorAccountAutocomplete: React.FC<
   return (
     <Autocomplete
       id={autocompleteId}
+      autoSelect
       autoHighlight
       loading={loading}
       options={map(donors, 'id')}
