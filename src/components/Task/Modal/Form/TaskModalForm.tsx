@@ -311,6 +311,7 @@ const TaskModalForm = ({
                     openOnFocus
                     autoSelect
                     autoHighlight
+                    isOptionEqualToValue={(option, value) => option === value}
                     value={
                       activityType === null ||
                       typeof activityType === 'undefined'
@@ -575,6 +576,9 @@ const TaskModalForm = ({
                   multiple
                   autoSelect
                   autoHighlight
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
                   freeSolo
                   renderTags={(value, getTagProps): ReactElement[] =>
                     value.map((option, index) => (

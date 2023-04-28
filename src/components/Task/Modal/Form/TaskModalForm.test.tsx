@@ -62,9 +62,9 @@ describe('TaskModalForm', () => {
     user: null,
   };
 
-  it('default', async () => {
+  it('Modal will not save if invalid data', async () => {
     const onClose = jest.fn();
-    const { getByText, getByRole, findByText, queryByText } = render(
+    const { getByText, findByText } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
@@ -84,10 +84,30 @@ describe('TaskModalForm', () => {
     onClose.mockClear();
     userEvent.click(getByText('Save'));
     expect(await findByText('Field is required')).toBeInTheDocument();
+    await waitFor(() => expect(onClose).not.toHaveBeenCalled());
+  });
+
+  it('Modal save data', async () => {
+    const onClose = jest.fn();
+    const { getByRole, queryByText } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              getDataForTaskModalMock(accountListId),
+              createTasksMutationMock(),
+            ]}
+            addTypename={false}
+          >
+            <TaskModalForm accountListId={accountListId} onClose={onClose} />
+          </MockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
     expect(queryByText('Delete')).not.toBeInTheDocument();
 
     userEvent.type(getByRole('textbox', { name: 'Subject' }), accountListId);
-    userEvent.type(getByRole('combobox', { name: 'Contacts' }), 'Smith');
+    userEvent.type(getByRole('combobox', { name: 'Contacts' }), 'Smith{enter}');
     userEvent.type(getByRole('textbox', { name: 'Comment' }), 'test comment');
 
     const saveButton = getByRole('button', { name: 'Save' });
