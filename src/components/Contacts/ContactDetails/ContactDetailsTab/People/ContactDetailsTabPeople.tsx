@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import React from 'react';
 import {
   Avatar,
@@ -25,6 +26,7 @@ import {
   ContactPersonFragment,
 } from './ContactPeople.generated';
 import { PersonModal } from './Items/PersonModal/PersonModal';
+import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
 
 const ContactPersonAvatar = styled(Avatar)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -89,6 +91,22 @@ const ContactEditIconContainer = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(0, 1),
 }));
 
+const dateFromParts = (
+  year: number | null | undefined,
+  month: number | null | undefined,
+  day: number | null | undefined,
+): string | null => {
+  if (typeof month !== 'number' || typeof day !== 'number') {
+    return null;
+  }
+
+  if (typeof year === 'number') {
+    return dateFormat(DateTime.local(year, month, day));
+  } else {
+    return dayMonthFormat(day, month);
+  }
+};
+
 interface ContactDetailsPeopleProp {
   data: ContactPeopleFragment;
   accountListId: string;
@@ -110,6 +128,17 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   const { primaryPerson, people, id } = data;
 
   const personView = (person: ContactPersonFragment) => {
+    const birthday = dateFromParts(
+      person.birthdayYear,
+      person.birthdayMonth,
+      person.birthdayDay,
+    );
+    const anniversary = dateFromParts(
+      person.anniversaryYear,
+      person.anniversaryMonth,
+      person.anniversaryDay,
+    );
+
     return (
       <ContactPersonContainer key={person.id}>
         {/* TODO - add avatar link */}
@@ -167,33 +196,23 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             </ContactPersonRowContainer>
           ) : null}
           {/* Birthday Section */}
-          {person.birthdayDay !== null && person.birthdayMonth ? (
+          {birthday && (
             <ContactPersonRowContainer>
               <ContactPersonIconContainer>
                 <Cake color="disabled" />
               </ContactPersonIconContainer>
-              {/* TODO: Change to local format for different countries */}
-              <Typography variant="subtitle1">
-                {person.birthdayYear
-                  ? `${person.birthdayMonth}/${person.birthdayDay}/${person.birthdayYear}`
-                  : `${person.birthdayMonth}/${person.birthdayDay}/1900`}
-              </Typography>
+              <Typography variant="subtitle1">{birthday}</Typography>
             </ContactPersonRowContainer>
-          ) : null}
+          )}
           {/* Anniversary Section */}
-          {person.anniversaryDay !== null && person.anniversaryMonth ? (
+          {anniversary && (
             <ContactPersonRowContainer>
               <ContactPersonIconContainer>
                 <RingIcon color="disabled" />
               </ContactPersonIconContainer>
-              {/* TODO: Change to local format for different countries */}
-              <Typography variant="subtitle1">
-                {person.anniversaryYear
-                  ? `${person.anniversaryMonth}/${person.anniversaryDay}/${person.anniversaryYear}`
-                  : `${person.anniversaryMonth}/${person.anniversaryDay}/1900`}
-              </Typography>
+              <Typography variant="subtitle1">{anniversary}</Typography>
             </ContactPersonRowContainer>
-          ) : null}
+          )}
         </ContactPersonTextContainer>
         {editPersonModalOpen === person.id ? (
           <PersonModal
