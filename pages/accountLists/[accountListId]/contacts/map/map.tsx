@@ -105,14 +105,11 @@ export const ContactsMap: React.FC = ({}) => {
 
   useEffect(() => {
     // Add styles to HelpScout Beacon to move left of Google zoom buttons.
-    const beacon = document.querySelectorAll(
+    const beacon = document.querySelector(
       '#beacon-container .BeaconFabButtonFrame',
-    )[0];
+    ) as HTMLElement;
     if (!beacon) return;
-    const beaconStyles = beacon.getAttribute('style') || '';
-    if (!beaconStyles.includes('right: 60px')) {
-      beacon.setAttribute('style', beaconStyles + ' right: 60px !important;');
-    }
+    beacon.style.setProperty('right', '60px', 'important');
   }, []);
 
   useEffect(() => {
