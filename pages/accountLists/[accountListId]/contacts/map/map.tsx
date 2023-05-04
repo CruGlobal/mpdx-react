@@ -110,6 +110,7 @@ export const ContactsMap: React.FC = ({}) => {
     ) as HTMLElement;
     if (!beacon) return;
     beacon.style.setProperty('right', '60px', 'important');
+    return () => beacon.style.setProperty('right', '20px');
   }, []);
 
   useEffect(() => {
