@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   GoogleMap,
-  useLoadScript,
   Marker,
   MarkerClusterer,
   InfoWindow,
+  useJsApiLoader,
 } from '@react-google-maps/api';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -99,8 +99,9 @@ export const ContactsMap: React.FC = ({}) => {
     mapRef.current = map;
   }, []);
 
-  const { isLoaded, loadError } = useLoadScript({
+  const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+    libraries: useRef(['places' as const]).current,
   });
 
   useEffect(() => {
