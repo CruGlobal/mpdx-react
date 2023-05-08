@@ -132,7 +132,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           renderInput={(params) => (
             <TextField
               fullWidth
-              helperText="mm/dd/yyyy"
+              helperText={getDateFormatPattern(language).toLowerCase()}
               inputProps={{ 'aria-label': t('Anniversary') }}
               {...params}
             />

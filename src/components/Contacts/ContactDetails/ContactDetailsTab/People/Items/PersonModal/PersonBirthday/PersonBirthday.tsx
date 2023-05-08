@@ -43,7 +43,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
         renderInput={(params) => (
           <TextField
             fullWidth
-            helperText="mm/dd/yyyy"
+            helperText={getDateFormatPattern(language).toLowerCase()}
             inputProps={{ 'aria-label': t('Birthday') }}
             {...params}
           />
