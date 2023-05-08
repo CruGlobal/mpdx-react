@@ -12,6 +12,7 @@ import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/C
 import { currencyFormat } from 'src/lib/intlFormat';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface ContactPartnershipStatusProps {
   lateAt: ContactRowFragment['lateAt'];
@@ -35,6 +36,7 @@ export const ContactPartnershipStatus: React.FC<
   status,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const lateStatusEnum: number | undefined = useMemo(() => {
     if (lateAt) {
       const diff = DateTime.now().diff(DateTime.fromISO(lateAt), 'days')?.days;
@@ -67,7 +69,7 @@ export const ContactPartnershipStatus: React.FC<
           {status && <ContactPartnershipStatusLabel status={status} />}
           <Typography component="span">
             {pledgeAmount && pledgeCurrency
-              ? currencyFormat(pledgeAmount, pledgeCurrency)
+              ? currencyFormat(pledgeAmount, pledgeCurrency, language)
               : pledgeAmount}{' '}
             {pledgeFrequency && getLocalizedPledgeFrequency(t, pledgeFrequency)}{' '}
             {status === ContactPartnershipStatusEnum.PartnerFinancial &&

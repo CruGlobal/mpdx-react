@@ -13,6 +13,7 @@ import {
 } from '../../../../../../../../../graphql/types.generated';
 import { NewSocial } from '../PersonModal';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface PersonBirthdayProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
@@ -22,6 +23,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
   formikProps,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
 
   const {
     values: { birthdayDay, birthdayMonth, birthdayYear },
@@ -52,7 +54,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
             ? new Date(birthdayYear ?? 1900, birthdayMonth - 1, birthdayDay)
             : null
         }
-        inputFormat={getDateFormatPattern()}
+        inputFormat={getDateFormatPattern(language)}
         label={t('Birthday')}
       />
     </ModalSectionContainer>

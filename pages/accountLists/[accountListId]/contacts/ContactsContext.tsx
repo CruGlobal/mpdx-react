@@ -28,6 +28,7 @@ import { Coordinates } from './map/map';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { coordinatesFromContacts, getRedirectPathname } from './helpers';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 export type ContactsType = {
   accountListId: string | undefined;
@@ -129,6 +130,7 @@ export const ContactsProvider: React.FC<Props> = ({
   contactId,
   searchTerm,
 }) => {
+  const language = useLanguage();
   const accountListId = useAccountListId() ?? '';
   const router = useRouter();
   const { query, push, replace, isReady, pathname } = router;
@@ -370,7 +372,7 @@ export const ContactsProvider: React.FC<Props> = ({
   );
 
   const mapData = useMemo(
-    () => data && coordinatesFromContacts(data.contacts),
+    () => data && coordinatesFromContacts(data.contacts, language),
     [data],
   );
 

@@ -30,6 +30,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useLanguage } from 'src/hooks/useLanguage';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
 import * as yup from 'yup';
@@ -70,6 +71,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   handleClose,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const accountListId = useAccountListId() ?? '';
   const constants = useApiConstants();
@@ -258,7 +260,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                           </InputAdornment>
                         ),
                       }}
-                      inputFormat={getDateFormatPattern()}
+                      inputFormat={getDateFormatPattern(language)}
                       closeOnSelect
                       label={t('Date')}
                       value={date}

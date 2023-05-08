@@ -20,6 +20,7 @@ import { DateTime } from 'luxon';
 import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { PhoneNumberData } from './FixPhoneNumbers';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   left: {
@@ -121,6 +122,7 @@ const Contact: React.FC<Props> = ({
   handleChangePrimary,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const { classes } = useStyles();
   const [newPhoneNumber, setNewPhoneNumber] = useState<string>('');
   //TODO: Add button functionality
@@ -205,7 +207,9 @@ const Contact: React.FC<Props> = ({
                             <Typography display="inline">
                               {`${phoneNumber.source} (${DateTime.fromISO(
                                 phoneNumber.updatedAt,
-                              ).toLocaleString(DateTime.DATE_SHORT)})`}
+                              ).toLocaleString(DateTime.DATE_SHORT, {
+                                locale: language,
+                              })})`}
                             </Typography>
                           </Box>
                           <Typography>

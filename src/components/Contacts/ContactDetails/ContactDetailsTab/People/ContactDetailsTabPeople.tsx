@@ -27,6 +27,7 @@ import {
 } from './ContactPeople.generated';
 import { PersonModal } from './Items/PersonModal/PersonModal';
 import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 const ContactPersonAvatar = styled(Avatar)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -91,22 +92,6 @@ const ContactEditIconContainer = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(0, 1),
 }));
 
-const dateFromParts = (
-  year: number | null | undefined,
-  month: number | null | undefined,
-  day: number | null | undefined,
-): string | null => {
-  if (typeof month !== 'number' || typeof day !== 'number') {
-    return null;
-  }
-
-  if (typeof year === 'number') {
-    return dateFormat(DateTime.local(year, month, day));
-  } else {
-    return dayMonthFormat(day, month);
-  }
-};
-
 interface ContactDetailsPeopleProp {
   data: ContactPeopleFragment;
   accountListId: string;
@@ -117,6 +102,23 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
+
+  const dateFromParts = (
+    year: number | null | undefined,
+    month: number | null | undefined,
+    day: number | null | undefined,
+  ): string | null => {
+    if (typeof month !== 'number' || typeof day !== 'number') {
+      return null;
+    }
+
+    if (typeof year === 'number') {
+      return dateFormat(DateTime.local(year, month, day), language);
+    } else {
+      return dayMonthFormat(day, month, language);
+    }
+  };
 
   const {
     editPersonModalOpen,

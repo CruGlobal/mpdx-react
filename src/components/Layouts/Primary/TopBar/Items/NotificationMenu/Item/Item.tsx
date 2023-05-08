@@ -25,6 +25,7 @@ import {
 } from '../GetNotificationsQuery.generated';
 import { useAccountListId } from '../../../../../../../hooks/useAccountListId';
 import { useAcknowledgeUserNotificationMutation } from './AcknowledgeUserNotification.generated';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface Props {
   item?: GetNotificationsQuery['userNotifications']['nodes'][0];
@@ -40,6 +41,7 @@ const NotificationMenuItem = ({
   onClick,
 }: Props): ReactElement => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const accountListId = useAccountListId();
 
   if (!item) {
@@ -214,6 +216,7 @@ const NotificationMenuItem = ({
             {monthYearFormat(
               DateTime.fromISO(item.notification.occurredAt).month,
               DateTime.fromISO(item.notification.occurredAt).year,
+              language,
             )}
           </ListSubheader>
         )}
@@ -246,7 +249,10 @@ const NotificationMenuItem = ({
                   variant="body2"
                   color="textPrimary"
                 >
-                  {dateFormat(DateTime.fromISO(item.notification.occurredAt))}
+                  {dateFormat(
+                    DateTime.fromISO(item.notification.occurredAt),
+                    language,
+                  )}
                 </Typography>{' '}
                 —{' '}
                 <Typography component="span" variant="body2">

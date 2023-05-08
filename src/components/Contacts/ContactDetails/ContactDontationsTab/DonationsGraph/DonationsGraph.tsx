@@ -17,6 +17,7 @@ import {
 import theme from '../../../../../theme';
 import { useGetDonationsGraphQuery } from './DonationsGraph.generated';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 const LegendText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(3, 0),
@@ -47,6 +48,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   convertedCurrency,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const { data, loading } = useGetDonationsGraphQuery({
     variables: {
       accountListId: accountListId,
@@ -85,6 +87,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
             average: currencyFormat(
               data.reportsDonationHistories.averageIgnoreCurrent,
               data.accountList.currency,
+              language,
             ),
           })}
           {' | '}
@@ -92,6 +95,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
             average: currencyFormat(
               data.reportsDonationHistories.averageIgnoreCurrentAndZero,
               data.accountList.currency,
+              language,
             ),
           })}
         </Typography>

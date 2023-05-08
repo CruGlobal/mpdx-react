@@ -21,6 +21,8 @@ import { EditMailingInfoModal } from './EditMailingInfoModal/EditMailingInfoModa
 import { ContactDetailEditIcon } from '../ContactDetailsTab';
 import { sourceToStr } from 'src/utils/sourceToStr';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
+import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -81,6 +83,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const { addresses, greeting, envelopeGreeting, sendNewsletter, id } = data;
   const {
     editingAddressId,
@@ -150,9 +153,10 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 <ContactAddressRowContainer>
                   <Typography variant="subtitle1">
                     {t('Source:')} {t(sourceToStr(primaryAddress.source))} (
-                    {DateTime.fromISO(
-                      primaryAddress.createdAt,
-                    ).toLocaleString()}
+                    {dateFormat(
+                      DateTime.fromISO(primaryAddress.createdAt),
+                      language,
+                    )}
                     )
                   </Typography>
                 </ContactAddressRowContainer>
@@ -208,7 +212,11 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                     </Typography>
                     <Typography variant="subtitle1">
                       {t('Source:')} {t(sourceToStr(address.source))} (
-                      {DateTime.fromISO(address.createdAt).toLocaleString()})
+                      {dateFormat(
+                        DateTime.fromISO(address.createdAt),
+                        language,
+                      )}
+                      )
                     </Typography>
                   </ContactDetailsMailingTextContainer>
                 ))

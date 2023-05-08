@@ -123,6 +123,7 @@ const App = ({
                       <ThemeProvider theme={theme}>
                         <LocalizationProvider
                           dateAdapter={AdapterLuxon}
+                          adapterLocale={i18n.language}
                           localeText={{
                             cancelButtonLabel: `${t('Cancel')}`,
                             clearButtonLabel: `${t('Clear')}`,

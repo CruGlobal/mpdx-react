@@ -14,12 +14,12 @@ i18next
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
-      format: (value, format): string => {
+      format: (value, format, language = 'en-US'): string => {
         switch (format) {
           case 'number':
-            return numberFormat(value);
+            return numberFormat(value, language);
           case 'currency':
-            return currencyFormat(value.amount, value.currency);
+            return currencyFormat(value.amount, value.currency, language);
           default:
             return value;
         }

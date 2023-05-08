@@ -26,6 +26,7 @@ import {
 } from '../../../../../../../../../graphql/types.generated';
 import { NewSocial } from '../PersonModal';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 const DeceasedLabel = styled(FormControlLabel)(() => ({
   margin: 'none',
@@ -39,6 +40,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
   formikProps,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
 
   const {
     values: {
@@ -145,7 +147,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 )
               : null
           }
-          inputFormat={getDateFormatPattern()}
+          inputFormat={getDateFormatPattern(language)}
           label={t('Anniversary')}
         />
       </ModalSectionContainer>

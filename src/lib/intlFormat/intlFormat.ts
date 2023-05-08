@@ -1,13 +1,7 @@
 import { DateTime } from 'luxon';
 
-const getLanguage = (): string => {
-  const language =
-    (typeof window !== 'undefined' && window.navigator.language) || 'en-US';
-  return language;
-};
-
 // Return the current locale's date format (i.e. patterns like MM/dd/yyyy, dd.MM.yyyy, yyyy.MM.dd)
-export const getDateFormatPattern = (language = getLanguage()): string =>
+export const getDateFormatPattern = (language: string): string =>
   new Intl.DateTimeFormat(language)
     // Use January 1st so that the month and day of month are both one-digit numbers
     .formatToParts(new Date(2023, 0, 1))
@@ -27,42 +21,31 @@ export const getDateFormatPattern = (language = getLanguage()): string =>
       }
     }, '');
 
-export const numberFormat = (value: number, language = getLanguage()): string =>
+export const numberFormat = (value: number, language: string): string =>
   new Intl.NumberFormat(language, {
     style: 'decimal',
   }).format(Number.isFinite(value) ? value : 0);
 
-export const percentageFormat = (
-  value: number,
-  language = getLanguage(),
-  removeSpace = false,
-): string => {
-  const percentage = new Intl.NumberFormat(language, {
+export const percentageFormat = (value: number, language: string): string =>
+  new Intl.NumberFormat(language, {
     style: 'percent',
   }).format(Number.isFinite(value) ? value : 0);
-  return removeSpace ? percentage?.replace(' ', '') : percentage;
-};
 
 export const currencyFormat = (
   value: number,
-  currency = 'USD',
-  minimumFractionDigits = 0,
-  language = getLanguage(),
+  currency: string | null | undefined,
+  language: string,
 ): string =>
   new Intl.NumberFormat(language, {
     style: 'currency',
-    currency,
-    minimumFractionDigits,
-  }).format(
-    Number.isFinite(value)
-      ? parseFloat(value.toFixed(minimumFractionDigits))
-      : 0,
-  );
+    currency: currency ?? 'USD',
+    maximumFractionDigits: 0,
+  }).format(Number.isFinite(value) ? value : 0);
 
 export const dayMonthFormat = (
   day: number,
   month: number,
-  language = getLanguage(),
+  language: string,
 ): string =>
   new Intl.DateTimeFormat(language, {
     day: 'numeric',
@@ -72,17 +55,14 @@ export const dayMonthFormat = (
 export const monthYearFormat = (
   month: number,
   year: number,
-  language = getLanguage(),
+  language: string,
 ): string =>
   new Intl.DateTimeFormat(language, {
     month: 'short',
     year: 'numeric',
   }).format(DateTime.local(year, month, 1).toJSDate());
 
-export const dateFormat = (
-  date: DateTime,
-  language = getLanguage(),
-): string => {
+export const dateFormat = (date: DateTime | null, language: string): string => {
   if (date === null) {
     return '';
   }

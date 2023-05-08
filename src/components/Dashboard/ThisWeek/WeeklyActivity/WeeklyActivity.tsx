@@ -24,6 +24,7 @@ import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
 import { WeeklyReportModal } from './WeeklyReportModal/WeeklyReportModal';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -66,7 +67,8 @@ const StyledTableCell = withStyles(TableCell, () => ({
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   const { classes } = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const language = useLanguage();
 
   const [interval, setInterval] = useState(
     Interval.fromDateTimes(
@@ -94,9 +96,10 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     );
 
   const intlDateFormat = (date: DateTime): string =>
-    date
-      .setLocale(i18n.language)
-      .toLocaleString({ day: 'numeric', month: 'short' });
+    date.toLocaleString(
+      { day: 'numeric', month: 'short' },
+      { locale: language },
+    );
 
   const [openWeeklyReportModal, setOpenWeeklyReportModal] =
     useState<boolean>(false);
@@ -167,7 +170,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                       data-testid="WeeklyActivitySkeletonLoading"
                     />
                   ) : (
-                    numberFormat(data.completedCalls.totalCount)
+                    numberFormat(data.completedCalls.totalCount, language)
                   )}
                 </StyledTableCell>
                 <StyledTableCell
@@ -177,7 +180,10 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
-                    numberFormat(data.callsThatProducedAppointments.totalCount)
+                    numberFormat(
+                      data.callsThatProducedAppointments.totalCount,
+                      language,
+                    )
                   )}
                 </StyledTableCell>
               </TableRow>
@@ -190,7 +196,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
-                    numberFormat(data.completedMessages.totalCount)
+                    numberFormat(data.completedMessages.totalCount, language)
                   )}
                 </StyledTableCell>
                 <StyledTableCell
@@ -202,6 +208,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(
                       data.messagesThatProducedAppointments.totalCount,
+                      language,
                     )
                   )}
                 </StyledTableCell>
@@ -215,7 +222,10 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
-                    numberFormat(data.completedAppointments.totalCount)
+                    numberFormat(
+                      data.completedAppointments.totalCount,
+                      language,
+                    )
                   )}
                 </StyledTableCell>
                 <StyledTableCell></StyledTableCell>
@@ -229,7 +239,10 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
-                    numberFormat(data.completedCorrespondence.totalCount)
+                    numberFormat(
+                      data.completedCorrespondence.totalCount,
+                      language,
+                    )
                   )}
                 </StyledTableCell>
                 <StyledTableCell></StyledTableCell>

@@ -14,6 +14,7 @@ import { styled } from '@mui/material/styles';
 import type { Contact } from '../PartnerGivingAnalysisReport';
 import type { Order } from '../../Reports.type';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface PartnerGivingAnalysisReportTableProps {
   onClick: (contactId: string) => void;
@@ -54,16 +55,6 @@ const ContactName = styled(Typography)(({ theme }) => ({
   },
 }));
 
-function formatCurrency(amount: number, currency: string): string {
-  // Force to 2 decimal places and add commas between thousands
-  return (
-    Intl.NumberFormat([], {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount) + ` ${currency}`
-  );
-}
-
 export const PartnerGivingAnalysisReportTable: FC<
   PartnerGivingAnalysisReportTableProps
 > = ({
@@ -77,6 +68,14 @@ export const PartnerGivingAnalysisReportTable: FC<
   selectedContacts,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
+
+  const formatCurrency = (amount: number, currency: string): string =>
+    // Force to 2 decimal places and add separators between thousands
+    Intl.NumberFormat(language, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount) + ` ${currency}`;
 
   const isSelectedSome =
     selectedContacts.length > 0 && selectedContacts.length < contacts.length;
@@ -175,7 +174,7 @@ export const PartnerGivingAnalysisReportTable: FC<
                   {DateTime.fromFormat(
                     contact.lastDonationDate,
                     'yyyy-MM-dd',
-                  ).toLocaleString(DateTime.DATE_SHORT)}
+                  ).toLocaleString(DateTime.DATE_SHORT, { locale: language })}
                 </TableCell>
                 <TableCell align="center">
                   {formatCurrency(

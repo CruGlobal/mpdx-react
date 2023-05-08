@@ -16,6 +16,7 @@ import PageHeading from '../PageHeading';
 import AnimatedCard from '../AnimatedCard';
 import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
 import { GetAccountListsQuery } from '../../../pages/GetAccountLists.generated';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface Props {
   data: GetAccountListsQuery;
@@ -57,6 +58,7 @@ const variants = {
 const AccountLists = ({ data }: Props): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const language = useLanguage();
 
   return (
     <Box className={classes.box}>
@@ -103,7 +105,11 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                     {t('Goal')}
                                   </Typography>
                                   <Typography variant="h6">
-                                    {currencyFormat(monthlyGoal, currency)}
+                                    {currencyFormat(
+                                      monthlyGoal,
+                                      currency,
+                                      language,
+                                    )}
                                   </Typography>
                                 </Grid>
                               )}
@@ -116,7 +122,10 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 </Typography>
                                 <Typography variant="h6">
                                   {Number.isFinite(receivedPercentage)
-                                    ? percentageFormat(receivedPercentage)
+                                    ? percentageFormat(
+                                        receivedPercentage,
+                                        language,
+                                      )
                                     : '-'}
                                 </Typography>
                               </Grid>
@@ -129,7 +138,10 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 </Typography>
                                 <Typography variant="h6">
                                   {Number.isFinite(totalPercentage)
-                                    ? percentageFormat(totalPercentage)
+                                    ? percentageFormat(
+                                        totalPercentage,
+                                        language,
+                                      )
                                     : '-'}
                                 </Typography>
                               </Grid>

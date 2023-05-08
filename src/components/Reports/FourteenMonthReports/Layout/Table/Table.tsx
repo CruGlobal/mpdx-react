@@ -19,6 +19,7 @@ import {
   FourteenMonthReportTableHeadProps as TableHeadProps,
 } from './TableHead/TableHead';
 import type { Contact, Month } from './TableHead/TableHead';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
@@ -60,6 +61,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
       ref,
     ) => {
       const { t } = useTranslation();
+      const language = useLanguage();
       const apiConstants = useApiConstants();
 
       return (
@@ -104,30 +106,36 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                       <TableCell>{contact.status}</TableCell>
                       <TableCell>
                         {contact.pledgeAmount &&
-                          `${numberFormat(Math.round(contact.pledgeAmount))} ${
-                            contact.pledgeCurrency
-                          } ${
+                          `${numberFormat(
+                            Math.round(contact.pledgeAmount),
+                            language,
+                          )} ${contact.pledgeCurrency} ${
                             apiConstants?.pledgeFrequencies?.find(
                               ({ key }) => key === contact.pledgeFrequency,
                             )?.value ?? ''
                           }`}
                       </TableCell>
                       <TableCell>
-                        {numberFormat(Math.round(contact.average))}
+                        {numberFormat(Math.round(contact.average), language)}
                       </TableCell>
                       <TableCell>
-                        {numberFormat(Math.round(contact.minimum))}
+                        {numberFormat(Math.round(contact.minimum), language)}
                       </TableCell>
                     </React.Fragment>
                   )}
                   {contact.months?.map((month: Month) => (
                     <TableCell key={month?.month} align="center">
                       {month?.salaryCurrencyTotal &&
-                        numberFormat(Math.round(month?.salaryCurrencyTotal))}
+                        numberFormat(
+                          Math.round(month?.salaryCurrencyTotal),
+                          language,
+                        )}
                     </TableCell>
                   ))}
                   <TableCell align="right">
-                    <strong>{numberFormat(Math.round(contact.total))}</strong>
+                    <strong>
+                      {numberFormat(Math.round(contact.total), language)}
+                    </strong>
                   </TableCell>
                 </TableRow>
               ))}
@@ -137,7 +145,9 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                 </TableCell>
                 {totals?.months?.map((month) => (
                   <TableCell key={month.month} align="center">
-                    <strong>{numberFormat(Math.round(month.total))}</strong>
+                    <strong>
+                      {numberFormat(Math.round(month.total), language)}
+                    </strong>
                   </TableCell>
                 ))}
                 <TableCell align="right">
@@ -149,6 +159,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                           0,
                         ) ?? 0,
                       ),
+                      language,
                     )}
                   </strong>
                 </TableCell>

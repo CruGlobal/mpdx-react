@@ -20,6 +20,8 @@ import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0),
@@ -73,6 +75,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   });
 
   const { t } = useTranslation();
+  const language = useLanguage();
   const [modalContactReferralOpen, setModalContactReferralOpen] =
     useState(false);
 
@@ -123,7 +126,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                         </TableCell>
                         <TableCell>
                           <Typography>
-                            {DateTime.fromISO(createdAt).toLocaleString()}
+                            {dateFormat(DateTime.fromISO(createdAt), language)}
                           </Typography>
                         </TableCell>
                       </TableRow>

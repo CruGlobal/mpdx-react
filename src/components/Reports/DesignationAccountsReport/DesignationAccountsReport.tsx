@@ -10,6 +10,7 @@ import { useSetActiveDesignationAccountMutation } from './SetActiveDesignationAc
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface Props {
   accountListId: string;
@@ -30,6 +31,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
   title,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
 
   const { data, loading, error } = useDesignationAccountsQuery({
     variables: {
@@ -77,6 +79,7 @@ export const DesignationAccountsReport: React.FC<Props> = ({
       <Typography variant="h6">{`${t('Balance')}: ${currencyFormat(
         totalBalance,
         data?.designationAccounts[0].designationAccounts[0].currency,
+        language,
       )}`}</Typography>
     ) : undefined;
 

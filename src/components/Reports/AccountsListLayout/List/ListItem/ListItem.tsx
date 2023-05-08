@@ -16,6 +16,8 @@ import { AccountListItemChart as Chart } from './Chart/Chart';
 import { currencyFormat } from 'src/lib/intlFormat';
 import HandoffLink from 'src/components/HandoffLink';
 import { EntryHistoriesQuery } from 'src/components/Reports/ResponsibilityCentersReport/GetEntryHistories.generated';
+import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 type EntryHistoriesGroup = Unarray<EntryHistoriesQuery['entryHistories']>;
 type EntryHistory = Unarray<NonNullable<EntryHistoriesGroup>['entryHistories']>;
@@ -46,6 +48,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
   onCheckToggle,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
 
   const average = useMemo(() => {
     if (account?.entryHistories) {
@@ -92,9 +95,10 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                         account.code ?? ''
                       } · ${t('Last Synced')} ${
                         account.lastSyncDate
-                          ? DateTime.fromISO(
-                              account.lastSyncDate,
-                            ).toLocaleString()
+                          ? dateFormat(
+                              DateTime.fromISO(account.lastSyncDate),
+                              language,
+                            )
                           : ''
                       }`}
                     </Typography>
@@ -115,7 +119,11 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                     )}
                   </Box>
                   <Typography>
-                    {currencyFormat(account.balance ?? 0, account.currency)}
+                    {currencyFormat(
+                      account.balance ?? 0,
+                      account.currency,
+                      language,
+                    )}
                   </Typography>
                 </Box>
                 <Checkbox

@@ -36,6 +36,7 @@ import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-i
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import theme from 'src/theme';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',
@@ -143,6 +144,7 @@ const PartnerCare = ({
   reportsPeopleWithAnniversaries,
 }: Props): ReactElement => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const [value, setValue] = useState(0);
   const { openTaskModal } = useTaskModal();
 
@@ -436,10 +438,12 @@ const PartnerCare = ({
                                     ? dayMonthFormat(
                                         person.birthdayDay,
                                         person.birthdayMonth || 0,
+                                        language,
                                       )
                                     : dayMonthFormat(
                                         person.anniversaryDay || 0,
                                         person.anniversaryMonth || 0,
+                                        language,
                                       )}
                                 </Typography>
                               </Box>

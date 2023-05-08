@@ -11,8 +11,12 @@ import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { currencyFormat } from '../../../../../lib/intlFormat/intlFormat';
+import {
+  currencyFormat,
+  dateFormat,
+} from '../../../../../lib/intlFormat/intlFormat';
 import { useContactDonationsListQuery } from './ContactDonationsList.generated';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface ContactDonationsListProp {
   accountListId: string;
@@ -41,6 +45,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
   });
 
   const { t } = useTranslation();
+  const language = useLanguage();
 
   return (
     <Box>
@@ -65,18 +70,23 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
               ? data?.contact.donations.nodes.map((donation) => (
                   <TableRow key={donation.id}>
                     <TableCell>
-                      {DateTime.fromISO(donation.donationDate).toLocaleString()}
+                      {dateFormat(
+                        DateTime.fromISO(donation.donationDate),
+                        language,
+                      )}
                     </TableCell>
                     <TableCell>
                       {currencyFormat(
                         donation.amount.amount,
                         donation.amount.currency,
+                        language,
                       )}
                     </TableCell>
                     <TableCell>
                       {currencyFormat(
                         donation.amount.convertedAmount,
                         donation.amount.convertedCurrency,
+                        language,
                       )}
                     </TableCell>
                     <TableCell>{donation.paymentMethod}</TableCell>

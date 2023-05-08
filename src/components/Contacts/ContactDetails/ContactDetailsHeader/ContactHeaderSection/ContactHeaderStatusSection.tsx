@@ -19,6 +19,7 @@ import { HandshakeIcon } from './HandshakeIcon';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface Props {
   loading: boolean;
@@ -37,6 +38,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   contact,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const status = contact?.status;
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
@@ -95,6 +97,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                             ? currencyFormat(
                                 contact.pledgeAmount,
                                 contact.pledgeCurrency,
+                                language,
                               )
                             : contact.pledgeAmount
                         } ${`- ${getLocalizedPledgeFrequency(

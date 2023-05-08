@@ -13,6 +13,7 @@ import { FourteenMonthReportTable as Table } from './Layout/Table/Table';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 interface Props {
   accountListId: string;
@@ -36,6 +37,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const [orderBy, setOrderBy] = useState<OrderBy | number | null>(null);
   const reportTableRef = useRef(null);
   const { t } = useTranslation();
+  const language = useLanguage();
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -156,12 +158,18 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
         const inHandDateRange =
           inHandMonths && inHandMonthlyEquivalent
-            ? `${DateTime.fromISO(inHandMonths[0].month).toLocaleString({
-                month: 'numeric',
-                year: '2-digit',
-              })} - ${DateTime.fromISO(
+            ? `${DateTime.fromISO(inHandMonths[0].month).toLocaleString(
+                {
+                  month: 'numeric',
+                  year: '2-digit',
+                },
+                { locale: language },
+              )} - ${DateTime.fromISO(
                 inHandMonths[inHandMonths.length - 1].month,
-              ).toLocaleString({ month: 'numeric', year: '2-digit' })}`
+              ).toLocaleString(
+                { month: 'numeric', year: '2-digit' },
+                { locale: language },
+              )}`
             : '';
 
         return [

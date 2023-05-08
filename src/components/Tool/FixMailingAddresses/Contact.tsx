@@ -11,6 +11,7 @@ import { DateTime } from 'luxon';
 import theme from '../../../theme';
 import { emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 const useStyles = makeStyles()(() => ({
   left: {
@@ -112,6 +113,7 @@ const Contact: React.FC<Props> = ({
   openFunction,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const { classes } = useStyles();
   const newAddress = { ...emptyAddress, newAddress: true };
   //TODO: Add button functionality
@@ -187,7 +189,9 @@ const Contact: React.FC<Props> = ({
                             <Typography display="inline">
                               {DateTime.fromISO(
                                 address.createdAt,
-                              ).toLocaleString(DateTime.DATE_SHORT)}
+                              ).toLocaleString(DateTime.DATE_SHORT, {
+                                locale: language,
+                              })}
                             </Typography>
                           </Box>
                           <Typography>

@@ -14,6 +14,8 @@ import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
+import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const IconAndTextContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0, 4),
@@ -66,6 +68,7 @@ interface PartnershipInfoProp {
 
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const { data } = useLoadConstantsQuery();
   const constants = data?.constant;
   const [status, setStatus] = React.useState(
@@ -102,7 +105,8 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           <LabelsAndText variant="subtitle1">
             {`${currencyFormat(
               contact?.pledgeAmount ?? 0,
-              contact?.pledgeCurrency ?? 'USD',
+              contact?.pledgeCurrency,
+              language,
             )} - ${
               getLocalizedPledgeFrequency(t, contact?.pledgeFrequency) ??
               t('No Frequency Set')
@@ -135,7 +139,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.pledgeStartDate
-            ? DateTime.fromISO(contact?.pledgeStartDate).toLocaleString()
+            ? dateFormat(DateTime.fromISO(contact?.pledgeStartDate), language)
             : t('No Date Available')}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -148,9 +152,10 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.lastDonation?.donationDate
-            ? DateTime.fromISO(
-                contact?.lastDonation.donationDate,
-              ).toLocaleString()
+            ? dateFormat(
+                DateTime.fromISO(contact.lastDonation.donationDate),
+                language,
+              )
             : t('No Date Available')}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -167,6 +172,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
             currencyFormat(
               contact.lastDonation.amount.amount,
               contact.lastDonation.amount.currency,
+              language,
             )}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -191,7 +197,8 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         <LabelsAndText variant="subtitle1">
           {currencyFormat(
             contact?.totalDonations ?? 0,
-            contact?.pledgeCurrency ?? 'USD',
+            contact?.pledgeCurrency,
+            language,
           )}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -204,10 +211,12 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.contactReferralsToMe.nodes
-            .map((referral) => {
-              return referral.referredBy.name;
-            })
-            .toLocaleString()}
+            .map((referral) => referral.referredBy.name)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            // TypeScript incorrectly declares this method as having zero args
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toLocaleString#syntax
+            .toLocaleString(language)}
         </LabelsAndText>
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
@@ -230,7 +239,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1" role="textbox">
           {contact?.nextAsk &&
-            DateTime.fromISO(contact.nextAsk).toLocaleString()}
+            dateFormat(DateTime.fromISO(contact.nextAsk), language)}
         </LabelsAndText>
       </IconAndTextContainerCenter>
       {contact && editPartnershipModalOpen ? (

@@ -20,10 +20,10 @@ export const UserPreferenceProvider: React.FC<Props> = ({ children }) => {
   const { data: user, loading } = useGetUserQuery({ skip: !session });
 
   useEffect(() => {
-    if (!loading) {
-      i18next.changeLanguage(user?.user.preferences?.locale ?? 'en');
+    if (user) {
+      i18next.changeLanguage(user.user.preferences?.locale ?? 'en');
     }
-  }, [loading]);
+  }, [user]);
 
   return (
     <UserPreferenceContext.Provider value={{}}>

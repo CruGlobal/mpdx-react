@@ -21,6 +21,7 @@ import { DateTime } from 'luxon';
 import theme from '../../../theme';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -86,6 +87,7 @@ interface Props {
 const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
+  const language = useLanguage();
   const { classes } = useStyles();
   //TODO: Add button functionality
   //TODO: Make contact title a link to contact page
@@ -177,7 +179,9 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                       {t('On: {{when}}', {
                         when: DateTime.fromISO(
                           contact1.createdAt,
-                        ).toLocaleString(DateTime.DATE_SHORT),
+                        ).toLocaleString(DateTime.DATE_SHORT, {
+                          locale: language,
+                        }),
                       })}
                     </Typography>
                   </Box>
@@ -318,7 +322,9 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                       {t('On: {{when}}', {
                         when: DateTime.fromISO(
                           contact2.createdAt,
-                        ).toLocaleString(DateTime.DATE_SHORT),
+                        ).toLocaleString(DateTime.DATE_SHORT, {
+                          locale: language,
+                        }),
                       })}
                     </Typography>
                   </Box>

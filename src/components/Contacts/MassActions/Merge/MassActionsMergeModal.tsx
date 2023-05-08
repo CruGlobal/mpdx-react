@@ -23,6 +23,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useLanguage } from 'src/hooks/useLanguage';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -40,6 +41,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
   ids,
 }) => {
   const { t } = useTranslation();
+  const language = useLanguage();
   const { enqueueSnackbar } = useSnackbar();
 
   const [primaryContactId, setPrimaryContactId] = useState(ids[0]);
@@ -142,6 +144,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
                 {t('On')}:{' '}
                 {DateTime.fromISO(contact.createdAt).toLocaleString(
                   DateTime.DATE_SHORT,
+                  { locale: language },
                 )}
               </Typography>
             </Box>
