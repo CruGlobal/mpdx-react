@@ -173,10 +173,10 @@ export const PartnerGivingAnalysisReportTable: FC<
                   )}
                 </TableCell>
                 <TableCell align="center">
-                  {DateTime.fromFormat(
-                    contact.lastDonationDate,
-                    'yyyy-MM-dd',
-                  ).toLocaleString(DateTime.DATE_SHORT, { locale: language })}
+                  {DateTime.fromISO(contact.lastDonationDate).toLocaleString(
+                    DateTime.DATE_SHORT,
+                    { locale: language },
+                  )}
                 </TableCell>
                 <TableCell align="center">
                   {formatCurrency(
