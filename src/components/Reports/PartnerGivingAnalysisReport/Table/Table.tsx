@@ -15,6 +15,7 @@ import type { Contact } from '../PartnerGivingAnalysisReport';
 import type { Order } from '../../Reports.type';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
 import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 interface PartnerGivingAnalysisReportTableProps {
   onClick: (contactId: string) => void;
@@ -173,9 +174,9 @@ export const PartnerGivingAnalysisReportTable: FC<
                   )}
                 </TableCell>
                 <TableCell align="center">
-                  {DateTime.fromISO(contact.lastDonationDate).toLocaleString(
-                    DateTime.DATE_SHORT,
-                    { locale: language },
+                  {dateFormatShort(
+                    DateTime.fromISO(contact.lastDonationDate),
+                    language,
                   )}
                 </TableCell>
                 <TableCell align="center">

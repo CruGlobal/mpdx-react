@@ -24,6 +24,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -142,10 +143,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
                   </>
                 )}
                 {t('On')}:{' '}
-                {DateTime.fromISO(contact.createdAt).toLocaleString(
-                  DateTime.DATE_SHORT,
-                  { locale: language },
-                )}
+                {dateFormatShort(DateTime.fromISO(contact.createdAt), language)}
               </Typography>
             </Box>
             {primaryContactId === contact.id && (

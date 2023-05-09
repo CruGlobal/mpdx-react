@@ -12,6 +12,7 @@ import theme from '../../../theme';
 import { emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const useStyles = makeStyles()(() => ({
   left: {
@@ -187,11 +188,10 @@ const Contact: React.FC<Props> = ({
                               {address.source}{' '}
                             </Typography>
                             <Typography display="inline">
-                              {DateTime.fromISO(
-                                address.createdAt,
-                              ).toLocaleString(DateTime.DATE_SHORT, {
-                                locale: language,
-                              })}
+                              {dateFormatShort(
+                                DateTime.fromISO(address.createdAt),
+                                language,
+                              )}
                             </Typography>
                           </Box>
                           <Typography>

@@ -101,6 +101,12 @@ export const FourteenMonthReport: React.FC<Props> = ({
     setOrderBy(property);
   };
 
+  const formatMonth = (month: string) =>
+    DateTime.fromISO(month).toJSDate().toLocaleString(language, {
+      month: 'numeric',
+      year: '2-digit',
+    });
+
   const csvData = useMemo(() => {
     if (!contacts) return [];
 
@@ -158,17 +164,8 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
         const inHandDateRange =
           inHandMonths && inHandMonthlyEquivalent
-            ? `${DateTime.fromISO(inHandMonths[0].month).toLocaleString(
-                {
-                  month: 'numeric',
-                  year: '2-digit',
-                },
-                { locale: language },
-              )} - ${DateTime.fromISO(
+            ? `${formatMonth(inHandMonths[0].month)} - ${formatMonth(
                 inHandMonths[inHandMonths.length - 1].month,
-              ).toLocaleString(
-                { month: 'numeric', year: '2-digit' },
-                { locale: language },
               )}`
             : '';
 

@@ -73,6 +73,13 @@ export const dateFormat = (date: DateTime | null, language: string): string => {
   }).format(date.toJSDate());
 };
 
+export const dateFormatShort = (date: DateTime, language: string): string =>
+  new Intl.DateTimeFormat(language, {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+  }).format(date.toJSDate());
+
 const intlFormat = {
   numberFormat,
   percentageFormat,

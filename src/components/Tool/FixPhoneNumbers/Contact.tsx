@@ -21,6 +21,7 @@ import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { PhoneNumberData } from './FixPhoneNumbers';
 import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   left: {
@@ -205,11 +206,10 @@ const Contact: React.FC<Props> = ({
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {`${phoneNumber.source} (${DateTime.fromISO(
-                                phoneNumber.updatedAt,
-                              ).toLocaleString(DateTime.DATE_SHORT, {
-                                locale: language,
-                              })})`}
+                              {`${phoneNumber.source} (${dateFormatShort(
+                                DateTime.fromISO(phoneNumber.updatedAt),
+                                language,
+                              )})`}
                             </Typography>
                           </Box>
                           <Typography>

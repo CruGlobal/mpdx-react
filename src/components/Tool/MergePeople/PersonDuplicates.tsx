@@ -21,6 +21,7 @@ import { DateTime } from 'luxon';
 import theme from '../../../theme';
 import { PersonInfoFragment } from './GetPersonDuplicates.generated';
 import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -181,11 +182,10 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                     )}
                     <Typography>
                       {t('On: {{when}}', {
-                        when: DateTime.fromISO(
-                          person1.createdAt,
-                        ).toLocaleString(DateTime.DATE_SHORT, {
-                          locale: language,
-                        }),
+                        when: dateFormatShort(
+                          DateTime.fromISO(person1.createdAt),
+                          language,
+                        ),
                       })}
                     </Typography>
                   </Box>
@@ -329,11 +329,10 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                     )}
                     <Typography>
                       {t('On: {{when}}', {
-                        when: DateTime.fromISO(
-                          person2.createdAt,
-                        ).toLocaleString(DateTime.DATE_SHORT, {
-                          locale: language,
-                        }),
+                        when: dateFormatShort(
+                          DateTime.fromISO(person2.createdAt),
+                          language,
+                        ),
                       })}
                     </Typography>
                   </Box>

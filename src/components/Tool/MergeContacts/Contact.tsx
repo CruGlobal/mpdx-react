@@ -22,6 +22,7 @@ import theme from '../../../theme';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -177,11 +178,10 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     </Typography>
                     <Typography>
                       {t('On: {{when}}', {
-                        when: DateTime.fromISO(
-                          contact1.createdAt,
-                        ).toLocaleString(DateTime.DATE_SHORT, {
-                          locale: language,
-                        }),
+                        when: dateFormatShort(
+                          DateTime.fromISO(contact1.createdAt),
+                          language,
+                        ),
                       })}
                     </Typography>
                   </Box>
@@ -320,11 +320,10 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     </Typography>
                     <Typography>
                       {t('On: {{when}}', {
-                        when: DateTime.fromISO(
-                          contact2.createdAt,
-                        ).toLocaleString(DateTime.DATE_SHORT, {
-                          locale: language,
-                        }),
+                        when: dateFormatShort(
+                          DateTime.fromISO(contact2.createdAt),
+                          language,
+                        ),
                       })}
                     </Typography>
                   </Box>

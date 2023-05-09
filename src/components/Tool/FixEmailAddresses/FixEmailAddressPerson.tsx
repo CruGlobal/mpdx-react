@@ -26,6 +26,7 @@ import { PersonEmailAddressInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon, EmailAddressData } from './FixEmailAddresses';
 import { useLanguage } from 'src/hooks/useLanguage';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -201,11 +202,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {`${email.source} (${DateTime.fromISO(
-                                email.updatedAt,
-                              ).toLocaleString(DateTime.DATE_SHORT, {
-                                locale: language,
-                              })})`}
+                              {`${email.source} (${dateFormatShort(
+                                DateTime.fromISO(email.updatedAt),
+                                language,
+                              )})`}
                             </Typography>
                           </Box>
                           <Typography>
