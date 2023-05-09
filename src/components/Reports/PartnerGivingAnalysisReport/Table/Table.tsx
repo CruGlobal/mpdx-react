@@ -73,9 +73,11 @@ export const PartnerGivingAnalysisReportTable: FC<
   const formatCurrency = (amount: number, currency: string): string =>
     // Force to 2 decimal places and add separators between thousands
     Intl.NumberFormat(language, {
+      style: 'currency',
+      currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount) + ` ${currency}`;
+    }).format(amount);
 
   const isSelectedSome =
     selectedContacts.length > 0 && selectedContacts.length < contacts.length;

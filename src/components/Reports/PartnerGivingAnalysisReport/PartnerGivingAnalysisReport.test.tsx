@@ -401,12 +401,12 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     // Test that it adds commas
-    expect(getByText('15,218.42 CAD')).toBeInTheDocument();
+    expect(getByText('CA$15,218.42')).toBeInTheDocument();
 
     // Test that it adds two decimal points
-    expect(getByText('150.00 CAD')).toBeInTheDocument();
+    expect(getByText('CA$150.00')).toBeInTheDocument();
 
     // Test that it rounds to two decimal points
-    expect(getByText('86.47 CAD')).toBeInTheDocument();
+    expect(getByText('CA$86.47')).toBeInTheDocument();
   });
 });
