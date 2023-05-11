@@ -11,7 +11,11 @@ import {
 import { makeStyles } from 'tss-react/mui';
 import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
-import { currencyFormat, percentageFormat } from '../../../lib/intlFormat';
+import {
+  currencyFormat,
+  numberFormat,
+  percentageFormat,
+} from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import StyledProgress from '../../StyledProgress';
@@ -19,7 +23,7 @@ import {
   ContactFilterPledgeReceivedEnum,
   StatusEnum,
 } from '../../../../graphql/types.generated';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((_theme: Theme) => ({
   received: {
@@ -62,7 +66,7 @@ const MonthlyGoal = ({
 }: Props): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
   const receivedPercentage = received / goal;
   const pledgedPercentage = pledged / goal;
   const belowGoal = goal - pledged;
@@ -83,13 +87,16 @@ const MonthlyGoal = ({
                   }),
                 )}`}
               >
-                {t('GIFTS NOT STARTED ({{ totalGiftsNotStarted, number }})', {
-                  totalGiftsNotStarted,
+                {t('GIFTS NOT STARTED ({{totalGiftsNotStarted}})', {
+                  totalGiftsNotStarted: numberFormat(
+                    totalGiftsNotStarted ?? 0,
+                    locale,
+                  ),
                 })}
               </Button>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
-                  {!loading && currencyFormat(goal, currencyCode, language)}
+                  {!loading && currencyFormat(goal, currencyCode, locale)}
                 </Box>
               </Hidden>
             </Box>
@@ -119,7 +126,7 @@ const MonthlyGoal = ({
                   {loading ? (
                     <Skeleton variant="text" />
                   ) : (
-                    currencyFormat(goal, currencyCode, language)
+                    currencyFormat(goal, currencyCode, locale)
                   )}
                 </Typography>
               </Grid>
@@ -140,7 +147,7 @@ const MonthlyGoal = ({
                 ) : isNaN(receivedPercentage) ? (
                   '-'
                 ) : (
-                  percentageFormat(receivedPercentage, language)
+                  percentageFormat(receivedPercentage, locale)
                 )}
               </Typography>
               <Typography
@@ -150,7 +157,7 @@ const MonthlyGoal = ({
                 {loading ? (
                   <Skeleton variant="text" />
                 ) : (
-                  currencyFormat(received, currencyCode, language)
+                  currencyFormat(received, currencyCode, locale)
                 )}
               </Typography>
             </Grid>
@@ -170,7 +177,7 @@ const MonthlyGoal = ({
                 ) : isNaN(pledgedPercentage) ? (
                   '-'
                 ) : (
-                  percentageFormat(pledgedPercentage, language)
+                  percentageFormat(pledgedPercentage, locale)
                 )}
               </Typography>
               <Typography
@@ -180,7 +187,7 @@ const MonthlyGoal = ({
                 {loading ? (
                   <Skeleton variant="text" />
                 ) : (
-                  currencyFormat(pledged, currencyCode, language)
+                  currencyFormat(pledged, currencyCode, locale)
                 )}
               </Typography>
             </Grid>
@@ -194,13 +201,13 @@ const MonthlyGoal = ({
                     variant="h5"
                     data-testid="MonthlyGoalTypographyBelowGoalPercentage"
                   >
-                    {percentageFormat(belowGoalPercentage, language)}
+                    {percentageFormat(belowGoalPercentage, locale)}
                   </Typography>
                   <Typography
                     component="small"
                     data-testid="MonthlyGoalTypographyBelowGoal"
                   >
-                    {currencyFormat(belowGoal, currencyCode, language)}
+                    {currencyFormat(belowGoal, currencyCode, locale)}
                   </Typography>
                 </Grid>
               ) : (
@@ -217,7 +224,7 @@ const MonthlyGoal = ({
                     ) : isNaN(belowGoalPercentage) ? (
                       '-'
                     ) : (
-                      percentageFormat(-belowGoalPercentage, language)
+                      percentageFormat(-belowGoalPercentage, locale)
                     )}
                   </Typography>
                   <Typography
@@ -227,7 +234,7 @@ const MonthlyGoal = ({
                     {loading ? (
                       <Skeleton variant="text" />
                     ) : (
-                      currencyFormat(-belowGoal, currencyCode, language)
+                      currencyFormat(-belowGoal, currencyCode, locale)
                     )}
                   </Typography>
                 </Grid>

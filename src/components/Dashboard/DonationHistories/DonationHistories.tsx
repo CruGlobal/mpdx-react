@@ -30,7 +30,7 @@ import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   cardHeader: {
@@ -100,7 +100,7 @@ const DonationHistories = ({
   const { classes } = useStyles();
   const { push } = useRouter();
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
   const accountListId = useAccountListId();
   const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
   const currencies: { dataKey: string; fill: string }[] = [];
@@ -181,7 +181,7 @@ const DonationHistories = ({
                             data-testid="DonationHistoriesTypographyGoal"
                           >
                             <strong>{t('Goal')}</strong>{' '}
-                            {currencyFormat(goal, currencyCode, language)}
+                            {currencyFormat(goal, currencyCode, locale)}
                           </Typography>
                         </Grid>
                         <Grid item>|</Grid>
@@ -210,7 +210,7 @@ const DonationHistories = ({
                           currencyFormat(
                             reportsDonationHistories.averageIgnoreCurrent,
                             currencyCode,
-                            language,
+                            locale,
                           )
                         )}
                       </Typography>
@@ -231,7 +231,7 @@ const DonationHistories = ({
                             data-testid="DonationHistoriesTypographyPledged"
                           >
                             <strong>{t('Committed')}</strong>{' '}
-                            {currencyFormat(pledged, currencyCode, language)}
+                            {currencyFormat(pledged, currencyCode, locale)}
                           </Typography>
                         </Grid>
                       </>

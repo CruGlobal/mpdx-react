@@ -174,9 +174,7 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(queryByRole('table')).not.toBeInTheDocument();
-    expect(
-      queryByText('You have {{contacts}} total contacts', { exact: false }),
-    ).toBeInTheDocument();
+    expect(queryByText('You have 300 total contacts')).toBeInTheDocument();
   });
 
   it('fields are sortable', async () => {

@@ -142,7 +142,7 @@ describe('ContactsMassActionsDropdown', () => {
     await waitFor(() =>
       expect(
         getByText(
-          'Are you sure you wish to hide the selected contact? Hiding a contact in {{appName}} actually sets the contact status to "Never Ask".',
+          'Are you sure you wish to hide the selected contact? Hiding a contact in actually sets the contact status to "Never Ask".',
         ),
       ).toBeInTheDocument(),
     );
@@ -156,7 +156,7 @@ describe('ContactsMassActionsDropdown', () => {
     await waitFor(() =>
       expect(
         queryByText(
-          'Are you sure you wish to hide the selected contact? Hiding a contact in {{appName}} actually sets the contact status to "Never Ask".',
+          'Are you sure you wish to hide the selected contact? Hiding a contact in actually sets the contact status to "Never Ask".',
         ),
       ).not.toBeInTheDocument(),
     );

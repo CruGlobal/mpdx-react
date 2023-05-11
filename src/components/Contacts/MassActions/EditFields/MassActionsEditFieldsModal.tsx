@@ -35,7 +35,7 @@ import {
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface MassActionsEditFieldsModalProps {
   ids: string[];
@@ -76,7 +76,7 @@ export const MassActionsEditFieldsModal: React.FC<
   MassActionsEditFieldsModalProps
 > = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const userLocale = useLocale();
 
   const [updateContacts] = useMassActionsUpdateContactFieldsMutation();
 
@@ -297,7 +297,7 @@ export const MassActionsEditFieldsModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      inputFormat={getDateFormatPattern(language)}
+                      inputFormat={getDateFormatPattern(userLocale)}
                       closeOnSelect
                       label={t('Next Increase Ask')}
                       value={nextAsk}

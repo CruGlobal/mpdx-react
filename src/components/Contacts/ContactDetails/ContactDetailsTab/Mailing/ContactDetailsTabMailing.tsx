@@ -21,7 +21,7 @@ import { EditMailingInfoModal } from './EditMailingInfoModal/EditMailingInfoModa
 import { ContactDetailEditIcon } from '../ContactDetailsTab';
 import { sourceToStr } from 'src/utils/sourceToStr';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
@@ -83,7 +83,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
   const { addresses, greeting, envelopeGreeting, sendNewsletter, id } = data;
   const {
     editingAddressId,
@@ -155,7 +155,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                     {t('Source:')} {t(sourceToStr(primaryAddress.source))} (
                     {dateFormat(
                       DateTime.fromISO(primaryAddress.createdAt),
-                      language,
+                      locale,
                     )}
                     )
                   </Typography>
@@ -212,11 +212,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                     </Typography>
                     <Typography variant="subtitle1">
                       {t('Source:')} {t(sourceToStr(address.source))} (
-                      {dateFormat(
-                        DateTime.fromISO(address.createdAt),
-                        language,
-                      )}
-                      )
+                      {dateFormat(DateTime.fromISO(address.createdAt), locale)})
                     </Typography>
                   </ContactDetailsMailingTextContainer>
                 ))

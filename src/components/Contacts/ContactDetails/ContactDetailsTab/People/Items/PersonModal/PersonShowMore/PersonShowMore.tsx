@@ -26,7 +26,7 @@ import {
 } from '../../../../../../../../../graphql/types.generated';
 import { NewSocial } from '../PersonModal';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 const DeceasedLabel = styled(FormControlLabel)(() => ({
   margin: 'none',
@@ -40,7 +40,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
   formikProps,
 }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   const {
     values: {
@@ -132,7 +132,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           renderInput={(params) => (
             <TextField
               fullWidth
-              helperText={getDateFormatPattern(language).toLowerCase()}
+              helperText={getDateFormatPattern(locale).toLowerCase()}
               inputProps={{ 'aria-label': t('Anniversary') }}
               {...params}
             />
@@ -147,7 +147,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                 )
               : null
           }
-          inputFormat={getDateFormatPattern(language)}
+          inputFormat={getDateFormatPattern(locale)}
           label={t('Anniversary')}
         />
       </ModalSectionContainer>

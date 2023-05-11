@@ -19,7 +19,7 @@ import { useGetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated
 import AnimatedCard from 'src/components/AnimatedCard';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface MonthlyCommitmentProps {
   coachingId: string;
@@ -32,7 +32,7 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
   currencyCode = 'USD',
 }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   const { data, loading } = useGetReportsPledgeHistoriesQuery({
     variables: { coachingId },
@@ -71,11 +71,11 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
             <Typography>
               {t('Monthly Commitment Average') + ' '}
               <strong style={{ color: theme.palette.progressBarOrange.main }}>
-                {currencyFormat(averageCommitments, currencyCode, language)}
+                {currencyFormat(averageCommitments, currencyCode, locale)}
               </strong>
               {' | ' + t('Monthly Commitment Goal') + ': '}
               <strong style={{ color: theme.palette.mpdxBlue.main }}>
-                {currencyFormat(goal, currencyCode, language)}
+                {currencyFormat(goal, currencyCode, locale)}
               </strong>
             </Typography>
           </Box>

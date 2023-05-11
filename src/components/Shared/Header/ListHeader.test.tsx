@@ -489,11 +489,12 @@ describe('ListHeader', () => {
           filterPanelOpen={false}
           contactDetailsOpen={false}
           contactsView={TableViewModeEnum.List}
+          totalItems={100}
           {...mockedProps}
         />
       </MocksProviders>,
     );
-    expect(getByText('Showing {{count}}')).toBeInTheDocument();
+    expect(getByText('Showing 100')).toBeInTheDocument();
   });
 
   it('does not renders the total count', async () => {
@@ -508,11 +509,12 @@ describe('ListHeader', () => {
           starredFilter={{ starred: true }}
           filterPanelOpen={false}
           contactDetailsOpen={false}
+          totalItems={100}
           {...mockedProps}
         />
       </MocksProviders>,
     );
-    expect(queryByText('Showing {{count}}')).not.toBeInTheDocument();
+    expect(queryByText('Showing', { exact: false })).not.toBeInTheDocument();
   });
 
   it('counts total tasks when all are selected', async () => {

@@ -19,7 +19,7 @@ import { useEntryHistoriesQuery } from './GetEntryHistories.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   accountListId: string;
@@ -42,7 +42,7 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
   title,
 }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   const { data, loading, error } = useFinancialAccountsQuery({
     variables: {
@@ -164,7 +164,7 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
         totalBalance,
         financialAccountsGroups[0]?.financialAccounts[0]?.balance
           ?.convertedCurrency,
-        language,
+        locale,
       )}`}</Typography>
     ) : undefined;
 

@@ -16,7 +16,7 @@ import PageHeading from '../PageHeading';
 import AnimatedCard from '../AnimatedCard';
 import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
 import { GetAccountListsQuery } from '../../../pages/GetAccountLists.generated';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   data: GetAccountListsQuery;
@@ -58,7 +58,7 @@ const variants = {
 const AccountLists = ({ data }: Props): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   return (
     <Box className={classes.box}>
@@ -108,7 +108,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                     {currencyFormat(
                                       monthlyGoal,
                                       currency,
-                                      language,
+                                      locale,
                                     )}
                                   </Typography>
                                 </Grid>
@@ -124,7 +124,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                   {Number.isFinite(receivedPercentage)
                                     ? percentageFormat(
                                         receivedPercentage,
-                                        language,
+                                        locale,
                                       )
                                     : '-'}
                                 </Typography>
@@ -138,10 +138,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 </Typography>
                                 <Typography variant="h6">
                                   {Number.isFinite(totalPercentage)
-                                    ? percentageFormat(
-                                        totalPercentage,
-                                        language,
-                                      )
+                                    ? percentageFormat(totalPercentage, locale)
                                     : '-'}
                                 </Typography>
                               </Grid>

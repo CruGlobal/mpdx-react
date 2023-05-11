@@ -49,11 +49,6 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('i18next', () => ({
-  // this mock makes sure any components using the translate function can use it without a warning being shown
-  t: (str: string) => str,
-}));
-
 const mockContact: ContactOtherFragment = {
   name: mock.name,
   id: contactId,

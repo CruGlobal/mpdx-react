@@ -13,7 +13,10 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import {
+  LocalizationProvider as RawLocalizationProvider,
+  LocalizationProviderProps,
+} from '@mui/x-date-pickers/LocalizationProvider';
 import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
 import './helpscout.css';
@@ -29,6 +32,7 @@ import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
 import DataDog from 'src/components/DataDog/DataDog';
+import { useLocale } from 'src/hooks/useLocale';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -38,6 +42,15 @@ const handleExitComplete = (): void => {
 
 export type PageWithLayout = NextPage & {
   layout?: React.FC;
+};
+
+// Wrapper for LocalizationProvider that adds the user's preferred locale
+const LocalizationProvider = (
+  props: LocalizationProviderProps,
+): JSX.Element => {
+  const locale = useLocale();
+
+  return RawLocalizationProvider({ ...props, adapterLocale: locale });
 };
 
 const App = ({
@@ -123,7 +136,6 @@ const App = ({
                       <ThemeProvider theme={theme}>
                         <LocalizationProvider
                           dateAdapter={AdapterLuxon}
-                          adapterLocale={i18n.language}
                           localeText={{
                             cancelButtonLabel: `${t('Cancel')}`,
                             clearButtonLabel: `${t('Clear')}`,

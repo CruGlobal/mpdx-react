@@ -14,7 +14,7 @@ import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const IconAndTextContainer = styled(Box)(({ theme }) => ({
@@ -68,7 +68,7 @@ interface PartnershipInfoProp {
 
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
   const { data } = useLoadConstantsQuery();
   const constants = data?.constant;
   const [status, setStatus] = React.useState(
@@ -106,7 +106,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
             {`${currencyFormat(
               contact?.pledgeAmount ?? 0,
               contact?.pledgeCurrency,
-              language,
+              locale,
             )} - ${
               getLocalizedPledgeFrequency(t, contact?.pledgeFrequency) ??
               t('No Frequency Set')
@@ -139,7 +139,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.pledgeStartDate
-            ? dateFormat(DateTime.fromISO(contact?.pledgeStartDate), language)
+            ? dateFormat(DateTime.fromISO(contact?.pledgeStartDate), locale)
             : t('No Date Available')}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -154,7 +154,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           {contact?.lastDonation?.donationDate
             ? dateFormat(
                 DateTime.fromISO(contact.lastDonation.donationDate),
-                language,
+                locale,
               )
             : t('No Date Available')}
         </LabelsAndText>
@@ -172,7 +172,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
             currencyFormat(
               contact.lastDonation.amount.amount,
               contact.lastDonation.amount.currency,
-              language,
+              locale,
             )}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -198,7 +198,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           {currencyFormat(
             contact?.totalDonations ?? 0,
             contact?.pledgeCurrency,
-            language,
+            locale,
           )}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -216,7 +216,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
             // @ts-ignore
             // TypeScript incorrectly declares this method as having zero args
             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toLocaleString#syntax
-            .toLocaleString(language)}
+            .toLocaleString(locale)}
         </LabelsAndText>
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
@@ -239,7 +239,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1" role="textbox">
           {contact?.nextAsk &&
-            dateFormat(DateTime.fromISO(contact.nextAsk), language)}
+            dateFormat(DateTime.fromISO(contact.nextAsk), locale)}
         </LabelsAndText>
       </IconAndTextContainerCenter>
       {contact && editPartnershipModalOpen ? (

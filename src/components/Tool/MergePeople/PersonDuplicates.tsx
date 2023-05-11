@@ -20,7 +20,7 @@ import {
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
 import { PersonInfoFragment } from './GetPersonDuplicates.generated';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const useStyles = makeStyles()(() => ({
@@ -87,7 +87,7 @@ interface Props {
 const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
   const { classes } = useStyles();
   //TODO: Add button functionality
   //TODO: Make contact title a link to contact page
@@ -184,7 +184,7 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                       {t('On: {{when}}', {
                         when: dateFormatShort(
                           DateTime.fromISO(person1.createdAt),
-                          language,
+                          locale,
                         ),
                       })}
                     </Typography>
@@ -331,7 +331,7 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                       {t('On: {{when}}', {
                         when: dateFormatShort(
                           DateTime.fromISO(person2.createdAt),
-                          language,
+                          locale,
                         ),
                       })}
                     </Typography>

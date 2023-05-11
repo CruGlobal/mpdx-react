@@ -13,7 +13,7 @@ import { FourteenMonthReportTable as Table } from './Layout/Table/Table';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   accountListId: string;
@@ -37,7 +37,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const [orderBy, setOrderBy] = useState<OrderBy | number | null>(null);
   const reportTableRef = useRef(null);
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -102,7 +102,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   };
 
   const formatMonth = (month: string) =>
-    DateTime.fromISO(month).toJSDate().toLocaleString(language, {
+    DateTime.fromISO(month).toJSDate().toLocaleString(locale, {
       month: 'numeric',
       year: '2-digit',
     });

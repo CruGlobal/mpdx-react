@@ -56,7 +56,7 @@ import { possibleResults } from '../PossibleResults';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 const taskSchema = yup.object({
   activityType: yup.mixed<ActivityTypeEnum>().nullable(),
@@ -140,7 +140,7 @@ const TaskModalLogForm = ({
   };
 
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
   const [showMore, setShowMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIds, setSelectedIds] = useState(initialTask.contactIds);
@@ -431,7 +431,7 @@ const TaskModalLogForm = ({
                             </InputAdornment>
                           ),
                         }}
-                        inputFormat={getDateFormatPattern(language)}
+                        inputFormat={getDateFormatPattern(locale)}
                         closeOnSelect
                         label={t('Completed Date')}
                         value={completedAt}

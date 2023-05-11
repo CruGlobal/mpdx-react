@@ -27,7 +27,7 @@ import {
 } from './ContactPeople.generated';
 import { PersonModal } from './Items/PersonModal/PersonModal';
 import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 const ContactPersonAvatar = styled(Avatar)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -102,7 +102,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   const dateFromParts = (
     year: number | null | undefined,
@@ -114,9 +114,9 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
     }
 
     if (typeof year === 'number') {
-      return dateFormat(DateTime.local(year, month, day), language);
+      return dateFormat(DateTime.local(year, month, day), locale);
     } else {
-      return dayMonthFormat(day, month, language);
+      return dayMonthFormat(day, month, locale);
     }
   };
 

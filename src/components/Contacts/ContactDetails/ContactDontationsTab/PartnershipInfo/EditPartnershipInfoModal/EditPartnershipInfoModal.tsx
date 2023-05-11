@@ -48,7 +48,7 @@ import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedConta
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -89,7 +89,7 @@ export const EditPartnershipInfoModal: React.FC<
   EditPartnershipInfoModalProps
 > = ({ contact, handleClose }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
   const [referredByName, setReferredByName] = useState('');
@@ -519,7 +519,7 @@ export const EditPartnershipInfoModal: React.FC<
                   value={
                     pledgeStartDate ? DateTime.fromISO(pledgeStartDate) : null
                   }
-                  inputFormat={getDateFormatPattern(language)}
+                  inputFormat={getDateFormatPattern(locale)}
                   label={t('Start Date')}
                 />
               </ContactInputWrapper>
@@ -611,7 +611,7 @@ export const EditPartnershipInfoModal: React.FC<
                     !date ? null : setFieldValue('nextAsk', date)
                   }
                   value={nextAsk ? DateTime.fromISO(nextAsk) : null}
-                  inputFormat={getDateFormatPattern(language)}
+                  inputFormat={getDateFormatPattern(locale)}
                   label={t('Next Ask Increase')}
                 />
               </ContactInputWrapper>

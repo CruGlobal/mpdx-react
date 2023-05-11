@@ -36,7 +36,7 @@ import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];
@@ -67,7 +67,7 @@ export const MassActionsEditTasksModal: React.FC<
   MassActionsEditTasksModalProps
 > = ({ handleClose, accountListId, ids, selectedIdCount }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   const [updateTasks] = useMassActionsUpdateTasksMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
@@ -278,7 +278,7 @@ export const MassActionsEditTasksModal: React.FC<
                           </InputAdornment>
                         ),
                       }}
-                      inputFormat={getDateFormatPattern(language)}
+                      inputFormat={getDateFormatPattern(locale)}
                       closeOnSelect
                       label={t('Due Date')}
                       value={startAt}

@@ -16,7 +16,7 @@ import { AccountListItemChart as Chart } from './Chart/Chart';
 import { currencyFormat } from 'src/lib/intlFormat';
 import HandoffLink from 'src/components/HandoffLink';
 import { EntryHistoriesQuery } from 'src/components/Reports/ResponsibilityCentersReport/GetEntryHistories.generated';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 type EntryHistoriesGroup = Unarray<EntryHistoriesQuery['entryHistories']>;
@@ -48,7 +48,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
   onCheckToggle,
 }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   const average = useMemo(() => {
     if (account?.entryHistories) {
@@ -97,7 +97,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                         account.lastSyncDate
                           ? dateFormat(
                               DateTime.fromISO(account.lastSyncDate),
-                              language,
+                              locale,
                             )
                           : ''
                       }`}
@@ -122,7 +122,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                     {currencyFormat(
                       account.balance ?? 0,
                       account.currency,
-                      language,
+                      locale,
                     )}
                   </Typography>
                 </Box>

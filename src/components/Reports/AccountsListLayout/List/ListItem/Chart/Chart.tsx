@@ -17,7 +17,7 @@ import {
 } from 'recharts';
 import { currencyFormat } from 'src/lib/intlFormat';
 import AnimatedCard from 'src/components/AnimatedCard';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 type EntryHistory = {
   [key: string]: number | string;
@@ -47,7 +47,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
   data,
 }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
   const theme = useTheme<Theme>();
 
   return (
@@ -62,7 +62,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
                     <LegendIdentifier color={theme.palette.secondary.dark} />
                     <Typography variant="body1" component="span">
                       <strong>{t('Monthly Average')}</strong>{' '}
-                      {currencyFormat(average, currencyCode, language)}
+                      {currencyFormat(average, currencyCode, locale)}
                     </Typography>
                   </Grid>
                 </Grid>

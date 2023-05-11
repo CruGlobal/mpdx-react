@@ -68,7 +68,7 @@ import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 const taskSchema = yup.object({
   id: yup.string().nullable(),
@@ -143,7 +143,7 @@ const TaskModalForm = ({
       };
 
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -409,7 +409,7 @@ const TaskModalForm = ({
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
-                          inputFormat={getDateFormatPattern(language)}
+                          inputFormat={getDateFormatPattern(locale)}
                           closeOnSelect
                           label={t('Due Date')}
                           value={startAt}
@@ -455,7 +455,7 @@ const TaskModalForm = ({
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
-                          inputFormat={getDateFormatPattern(language)}
+                          inputFormat={getDateFormatPattern(locale)}
                           closeOnSelect
                           label={t('Completed Date')}
                           value={completedAt}

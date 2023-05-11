@@ -16,7 +16,7 @@ import {
   dateFormat,
 } from '../../../../../lib/intlFormat/intlFormat';
 import { useContactDonationsListQuery } from './ContactDonationsList.generated';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface ContactDonationsListProp {
   accountListId: string;
@@ -45,7 +45,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
   });
 
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   return (
     <Box>
@@ -72,21 +72,21 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                     <TableCell>
                       {dateFormat(
                         DateTime.fromISO(donation.donationDate),
-                        language,
+                        locale,
                       )}
                     </TableCell>
                     <TableCell>
                       {currencyFormat(
                         donation.amount.amount,
                         donation.amount.currency,
-                        language,
+                        locale,
                       )}
                     </TableCell>
                     <TableCell>
                       {currencyFormat(
                         donation.amount.convertedAmount,
                         donation.amount.convertedCurrency,
-                        language,
+                        locale,
                       )}
                     </TableCell>
                     <TableCell>{donation.paymentMethod}</TableCell>

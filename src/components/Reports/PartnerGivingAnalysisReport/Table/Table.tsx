@@ -14,7 +14,7 @@ import { styled } from '@mui/material/styles';
 import type { Contact } from '../PartnerGivingAnalysisReport';
 import type { Order } from '../../Reports.type';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 interface PartnerGivingAnalysisReportTableProps {
@@ -69,11 +69,11 @@ export const PartnerGivingAnalysisReportTable: FC<
   selectedContacts,
 }) => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   const formatCurrency = (amount: number, currency: string): string =>
     // Force to 2 decimal places and add separators between thousands
-    Intl.NumberFormat(language, {
+    Intl.NumberFormat(locale, {
       style: 'currency',
       currency,
       minimumFractionDigits: 2,
@@ -176,7 +176,7 @@ export const PartnerGivingAnalysisReportTable: FC<
                 <TableCell align="center">
                   {dateFormatShort(
                     DateTime.fromISO(contact.lastDonationDate),
-                    language,
+                    locale,
                   )}
                 </TableCell>
                 <TableCell align="center">

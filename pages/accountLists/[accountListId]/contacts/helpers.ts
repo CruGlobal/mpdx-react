@@ -51,7 +51,7 @@ export const getRedirectPathname = ({
 
 export const coordinatesFromContacts = (
   contacts: ContactsQuery['contacts'],
-  language: string,
+  locale: string,
 ): Coordinates[] =>
   contacts.nodes.map((contact): Coordinates => {
     const address = contact.primaryAddress;
@@ -78,9 +78,6 @@ export const coordinatesFromContacts = (
       country: address.country,
       postal: address.postalCode,
       source: address.source,
-      date: `(${dateFormatShort(
-        DateTime.fromISO(address.createdAt),
-        language,
-      )})`,
+      date: `(${dateFormatShort(DateTime.fromISO(address.createdAt), locale)})`,
     };
   });

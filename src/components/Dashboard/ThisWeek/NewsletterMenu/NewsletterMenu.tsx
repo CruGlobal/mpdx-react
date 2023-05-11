@@ -9,7 +9,7 @@ import { useGetTaskAnalyticsQuery } from './NewsletterMenu.generated';
 import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
 import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';
 import ExportPhysical from './MenuItems/ExportPhysical/ExportPhysical';
-import { useLanguage } from 'src/hooks/useLanguage';
+import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 interface Props {
@@ -22,7 +22,7 @@ const NewsletterTextContainer = styled(ListItemText)(() => ({
 
 const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
-  const language = useLanguage();
+  const locale = useLocale();
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
@@ -68,14 +68,14 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
 
     if (electronicDate && physicalDate) {
       return electronicDate < physicalDate
-        ? dateFormat(physicalDate, language)
-        : dateFormat(electronicDate, language);
+        ? dateFormat(physicalDate, locale)
+        : dateFormat(electronicDate, locale);
     }
     if (electronicDate) {
-      return dateFormat(electronicDate, language);
+      return dateFormat(electronicDate, locale);
     }
     if (physicalDate) {
-      return dateFormat(physicalDate, language);
+      return dateFormat(physicalDate, locale);
     }
     return t('never');
   };
