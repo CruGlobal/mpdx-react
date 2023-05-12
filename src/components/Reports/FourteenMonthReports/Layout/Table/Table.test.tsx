@@ -6,6 +6,7 @@ import { FourteenMonthReportTable } from './Table';
 import theme from 'src/theme';
 
 const onRequestSort = jest.fn();
+const onSelectContact = jest.fn();
 
 const mocks = {
   FourteenMonthReport: {
@@ -194,6 +195,7 @@ describe('FourteenMonthReportTable', () => {
                 .currency
             }
             onRequestSort={onRequestSort}
+            onSelectContact={onSelectContact}
             ref={null}
             totals={
               mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
@@ -232,6 +234,7 @@ describe('FourteenMonthReportTable', () => {
                 .currency
             }
             onRequestSort={onRequestSort}
+            onSelectContact={onSelectContact}
             ref={null}
             totals={
               mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
