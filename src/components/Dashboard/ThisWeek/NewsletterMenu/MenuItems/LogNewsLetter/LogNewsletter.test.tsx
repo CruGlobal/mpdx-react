@@ -12,6 +12,7 @@ import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../../../theme';
 import LogNewsletter from './LogNewsletter';
 import { createNewsletterTaskMutationMock } from './LogNewsLetter.mock';
+import { Settings } from 'luxon';
 
 const accountListId = 'abc';
 const handleClose = jest.fn();
@@ -20,6 +21,12 @@ jest.mock('uuid', () => ({
 }));
 
 describe('LogNewsletter', () => {
+  beforeEach(() => {
+    // Create a stable time so that the "now" in the component will match "now" in the mocks
+    const now = Date.now();
+    Settings.now = () => now;
+  });
+
   it('default', () => {
     const { queryByText } = render(
       <ThemeProvider theme={theme}>
