@@ -70,7 +70,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
 }) => {
   const { t } = useTranslation();
   const {
-    name,
+    user,
     preferredContactMethod,
     locale,
     timezone,
@@ -88,7 +88,9 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           <ContactOtherTextLabel variant="subtitle1">
             {t('Assignee')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">{name}</Typography>
+          <Typography variant="subtitle1">
+            {user?.firstName} {user?.lastName}
+          </Typography>
           <IconButton
             onClick={() => handleOpen(true)}
             aria-label={t('Edit Other Icon')}
