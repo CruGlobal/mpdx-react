@@ -102,7 +102,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   };
 
   const formatMonth = (month: string) =>
-    DateTime.fromISO(month).toJSDate().toLocaleString(locale, {
+    DateTime.fromISO(month).toJSDate().toLocaleDateString(locale, {
       month: 'numeric',
       year: '2-digit',
     });

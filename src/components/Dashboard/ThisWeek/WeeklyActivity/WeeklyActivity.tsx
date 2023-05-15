@@ -96,7 +96,9 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     );
 
   const intlDateFormat = (date: DateTime): string =>
-    date.toJSDate().toLocaleString(locale, { day: 'numeric', month: 'short' });
+    date
+      .toJSDate()
+      .toLocaleDateString(locale, { day: 'numeric', month: 'short' });
 
   const [openWeeklyReportModal, setOpenWeeklyReportModal] =
     useState<boolean>(false);

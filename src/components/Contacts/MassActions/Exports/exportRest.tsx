@@ -75,7 +75,7 @@ export const exportRest = (
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `contacts-${new Date().toLocaleString('en-US', {
+      a.download = `contacts-${new Date().toLocaleDateString('en-US', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
