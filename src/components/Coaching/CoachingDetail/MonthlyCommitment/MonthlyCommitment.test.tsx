@@ -4,7 +4,7 @@ import {
   useGetReportsPledgeHistoriesQuery,
 } from './MonthlyCommitment.generated';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import { MonthlyCommitment } from './MonthlyCommitment';
 import {
@@ -38,14 +38,16 @@ describe('MonthlyCommitment', () => {
     ).toMatchInlineSnapshot(`3`);
   });
 
-  it('renders', () => {
-    const { getByText } = render(
+  it('renders', async () => {
+    const { getByTestId } = render(
       <GqlMockedProvider<GetReportsPledgeHistoriesQuery>
         mocks={{
           GetReportsPledgeHistories: {
             reportPledgeHistories: [...Array(12)].map((x, i) => ({
               startDate: DateTime.local().minus({ month: i }).toISO(),
               endDate: DateTime.local().minus({ month: i }).toISO(),
+              recieved: i * 5,
+              pledged: i * 10,
             })),
           },
         }}
@@ -58,8 +60,43 @@ describe('MonthlyCommitment', () => {
       </GqlMockedProvider>,
     );
 
-    expect(
-      getByText('Monthly Commitment Average', { exact: false }),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(getByTestId('MonthlyCommitmentSummary')).toHaveTextContent(
+        'Monthly Commitment Average $55 | Monthly Commitment Goal: $2,000',
+      ),
+    );
+  });
+
+  it('renders with missing data', async () => {
+    const { getByTestId } = render(
+      <GqlMockedProvider<GetReportsPledgeHistoriesQuery>
+        mocks={{
+          GetReportsPledgeHistories: {
+            reportPledgeHistories: [
+              {
+                startDate: null,
+                endDate: null,
+                recieved: null,
+                pledged: null,
+              },
+              {
+                startDate: DateTime.local().toISO(),
+                endDate: DateTime.local().toISO(),
+                recieved: 100,
+                pledged: 200,
+              },
+            ],
+          },
+        }}
+      >
+        <MonthlyCommitment coachingId={coachingId} />
+      </GqlMockedProvider>,
+    );
+
+    await waitFor(() =>
+      expect(getByTestId('MonthlyCommitmentSummary')).toHaveTextContent(
+        'Monthly Commitment Average $100 | Monthly Commitment Goal: $0',
+      ),
+    );
   });
 });
