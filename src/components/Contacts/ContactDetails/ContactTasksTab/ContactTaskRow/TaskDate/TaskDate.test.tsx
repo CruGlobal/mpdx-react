@@ -17,7 +17,7 @@ describe('TaskCommentsButton', () => {
       </ThemeProvider>,
     );
 
-    const dateText = getByText(notLateDueDate.toFormat('MMM dd, yy'));
+    const dateText = getByText('Oct 12, 21');
 
     expect(dateText).toBeInTheDocument();
 
@@ -33,7 +33,7 @@ describe('TaskCommentsButton', () => {
       </ThemeProvider>,
     );
 
-    const dateText = getByText(notLateDueDate.toFormat('MMM dd, yy'));
+    const dateText = getByText('Oct 12, 21');
 
     expect(dateText).toBeInTheDocument();
 
@@ -49,7 +49,7 @@ describe('TaskCommentsButton', () => {
       </ThemeProvider>,
     );
 
-    const dateText = getByText(lateDueDate.toFormat('MMM dd, yy'));
+    const dateText = getByText('Oct 12, 19');
 
     expect(dateText).toBeInTheDocument();
 
@@ -65,7 +65,7 @@ describe('TaskCommentsButton', () => {
       </ThemeProvider>,
     );
 
-    const dateText = getByText(currentDate.toFormat('MMM dd'));
+    const dateText = getByText('Oct 12');
     expect(dateText).toBeInTheDocument();
   });
 });

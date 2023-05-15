@@ -2,7 +2,6 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { DateTime } from 'luxon';
 import {
   CheckboxFilter,
   DaterangeFilter,
@@ -106,12 +105,8 @@ describe('FilterListItem', () => {
 
   it('DateRangeFilter filled', () => {
     const dateRange: DateRangeInput = { min: '2021-08-01', max: '2021-08-30' };
-    const convertedMinDate = DateTime.fromISO(dateRange.min || '').toFormat(
-      'M/d/yyyy',
-    );
-    const convertedMaxDate = DateTime.fromISO(dateRange.max || '').toFormat(
-      'M/d/yyyy',
-    );
+    const convertedMinDate = '8/1/2021';
+    const convertedMaxDate = '8/30/2021';
 
     const { getByText, getAllByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>

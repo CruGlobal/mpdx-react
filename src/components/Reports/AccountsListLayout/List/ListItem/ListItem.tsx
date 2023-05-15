@@ -65,10 +65,14 @@ export const AccountListItem: FC<AccountListItemProps> = ({
     if (account.entryHistories) {
       return account.entryHistories.map((entryHistory: EntryHistory) => ({
         [account.currency]: -(entryHistory?.closingBalance ?? 0),
-        startDate:
-          (entryHistory?.endDate &&
-            DateTime.fromISO(entryHistory.endDate).toFormat('MMM yy')) ??
-          '',
+        startDate: entryHistory?.endDate
+          ? DateTime.fromISO(entryHistory.endDate)
+              .toJSDate()
+              .toLocaleDateString(locale, {
+                month: 'short',
+                year: '2-digit',
+              })
+          : '',
         total: -(entryHistory?.closingBalance ?? 0),
       }));
     }

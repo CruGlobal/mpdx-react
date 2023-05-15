@@ -39,19 +39,17 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
   });
 
   const pledges = data?.reportPledgeHistories?.map((pledge) => {
-    const pledgeData: {
-      [key: string]: string | number;
-      startDate: string;
-      received: number;
-      committed: number;
-    } = {
-      startDate: DateTime.fromISO(
-        pledge?.startDate ? pledge.startDate : '',
-      ).toFormat('LLL yy'),
-      received: Math.round(pledge?.recieved ?? 0),
-      committed: Math.round(pledge?.pledged ?? 0),
-    };
-    return pledgeData;
+    const startDate = pledge?.startDate
+      ? DateTime.fromISO(pledge.startDate)
+          .toJSDate()
+          .toLocaleDateString(locale, {
+            month: 'short',
+            year: '2-digit',
+          })
+      : '';
+    const received = Math.round(pledge?.recieved ?? 0);
+    const committed = Math.round(pledge?.pledged ?? 0);
+    return { startDate, received, committed };
   });
 
   const averageCommitments =
