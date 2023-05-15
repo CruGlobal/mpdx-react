@@ -103,7 +103,7 @@ export const createTasksMutationMock = (): MockedResponse => {
   const task: TaskCreateInput = {
     activityType: null,
     subject: 'abc',
-    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
+    startAt: DateTime.local().toISO(),
     completedAt: null,
     tagList: [],
     contactIds: [],
