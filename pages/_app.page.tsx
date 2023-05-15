@@ -29,6 +29,7 @@ import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
 import DataDog from 'src/components/DataDog/DataDog';
+import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -164,6 +165,10 @@ const App = ({
                 <DataDog />
               </SessionProvider>
               <HelpscoutBeacon />
+              <AlertBanner
+                text="MPDx has planned maintance on Wednesday 17th of May at 12:30 EDT. MPDx will most likely is down for 90 minutes."
+                cookieName="serverDown"
+              />
             </ApolloProvider>
           </AppSettingsProvider>
         </ErrorBoundary>
