@@ -165,10 +165,12 @@ const App = ({
                 <DataDog />
               </SessionProvider>
               <HelpscoutBeacon />
-              <AlertBanner
-                text="MPDx has planned maintance on Wednesday 17th of May at 12:30 EDT. MPDx will most likely is down for 90 minutes."
-                cookieName="serverDown"
-              />
+              {process.env.ALERT_MESSAGE ? (
+                <AlertBanner
+                  text={process.env.ALERT_MESSAGE}
+                  cookieName="ALERT_MESSAGE"
+                />
+              ) : null}
             </ApolloProvider>
           </AppSettingsProvider>
         </ErrorBoundary>

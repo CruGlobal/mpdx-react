@@ -24,9 +24,9 @@ const AlertBox = styled(Alert)({
 });
 
 export const AlertBanner: React.FC<AlertBannerProps> = ({
-  text = '',
+  text,
   severity = 'warning',
-  cookieName = 'serverDown',
+  cookieName,
 }) => {
   const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
