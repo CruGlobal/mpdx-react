@@ -89,7 +89,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
             {t('Assignee')}
           </ContactOtherTextLabel>
           <Typography variant="subtitle1">
-            {user?.firstName} {user?.lastName}
+            {user ? `${user.firstName} ${user.lastName}` : t('None')}
           </Typography>
           <IconButton
             onClick={() => handleOpen(true)}
