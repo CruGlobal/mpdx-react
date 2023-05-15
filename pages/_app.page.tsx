@@ -168,7 +168,7 @@ const App = ({
               {process.env.ALERT_MESSAGE ? (
                 <AlertBanner
                   text={process.env.ALERT_MESSAGE}
-                  cookieName="ALERT_MESSAGE"
+                  localStorageName="ALERT_MESSAGE"
                 />
               ) : null}
             </ApolloProvider>

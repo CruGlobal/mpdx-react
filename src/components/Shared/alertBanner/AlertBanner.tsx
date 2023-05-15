@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles';
 interface AlertBannerProps {
   text: string;
   severity?: 'error' | 'info' | 'success' | 'warning';
-  cookieName: string;
+  localStorageName: string;
 }
 const AlertBox = styled(Alert)({
   position: 'fixed',
@@ -26,19 +26,21 @@ const AlertBox = styled(Alert)({
 export const AlertBanner: React.FC<AlertBannerProps> = ({
   text,
   severity = 'warning',
-  cookieName,
+  localStorageName,
 }) => {
   const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     if (!window?.localStorage) return;
-    const isClosed = window.localStorage.getItem(`alert-${cookieName}-closed`);
+    const isClosed = window.localStorage.getItem(
+      `alert-${localStorageName}-closed`,
+    );
     if (!isClosed && isClosed !== 'true') setShowAlert(true);
   }, []);
 
   const closeAlert = () => {
-    window.localStorage.setItem(`alert-${cookieName}-closed`, 'true');
+    window.localStorage.setItem(`alert-${localStorageName}-closed`, 'true');
     setShowAlert(false);
   };
 
