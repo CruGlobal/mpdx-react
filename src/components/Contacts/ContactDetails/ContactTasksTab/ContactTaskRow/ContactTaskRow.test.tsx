@@ -232,9 +232,7 @@ describe('ContactTaskRow', () => {
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { name: 'Outlined Delete Icon' }));
       expect(
-        await findByText(
-          'Are you sure you wish to delete the selected {{deleteType}}?',
-        ),
+        await findByText('Are you sure you wish to delete the selected task?'),
       ).toBeVisible();
       userEvent.click(getByText('Yes'));
       await waitFor(() =>
