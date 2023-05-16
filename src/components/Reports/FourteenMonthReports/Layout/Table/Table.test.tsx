@@ -4,6 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { FourteenMonthReportTable } from './Table';
 import theme from 'src/theme';
+import userEvent from '@testing-library/user-event';
 
 const onRequestSort = jest.fn();
 const onSelectContact = jest.fn();
@@ -258,5 +259,43 @@ describe('FourteenMonthReportTable', () => {
     expect(fourteenMonthReportRow[0]).toHaveTextContent('test name');
     expect(fourteenMonthReportRow[1]).toHaveTextContent('name again');
     expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
+  });
+
+  it('click event should happen', async () => {
+    const { getByText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider>
+          <FourteenMonthReportTable
+            isExpanded={true}
+            order="asc"
+            orderBy="name"
+            orderedContacts={
+              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                .contacts
+            }
+            salaryCurrency={
+              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                .currency
+            }
+            onRequestSort={onRequestSort}
+            onSelectContact={onSelectContact}
+            ref={null}
+            totals={
+              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                .totals
+            }
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    userEvent.click(getByText('name again'));
+    expect(onSelectContact).toHaveBeenCalledWith('contact-2');
   });
 });
