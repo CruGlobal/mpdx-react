@@ -12,6 +12,7 @@ const AlertBox = styled(Alert)({
   position: 'fixed',
   top: '64px',
   width: '100%',
+  zIndex: '10',
   ['@media (max-width:1126px)']: {
     top: '73px',
   },
