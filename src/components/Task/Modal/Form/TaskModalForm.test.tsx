@@ -3,7 +3,7 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { SnackbarProvider } from 'notistack';
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
@@ -61,6 +61,12 @@ describe('TaskModalForm', () => {
     tagList: [],
     user: null,
   };
+
+  beforeEach(() => {
+    // Create a stable time so that the "now" in the component will match "now" in the mocks
+    const now = Date.now();
+    Settings.now = () => now;
+  });
 
   it('Modal will not save if invalid data', async () => {
     const onClose = jest.fn();

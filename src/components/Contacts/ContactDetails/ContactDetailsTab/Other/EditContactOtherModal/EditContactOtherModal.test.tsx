@@ -55,13 +55,13 @@ jest.mock('i18next', () => ({
 }));
 
 const mockContact: ContactOtherFragment = {
-  name: mock.name,
   id: contactId,
   timezone: '(GMT-05:00) Eastern Time (US & Canada)',
   locale: 'English',
   preferredContactMethod: PreferredContactMethodEnum.PhoneCall,
   churchName: mock.churchName,
   website: mock.website,
+  user: { id: 'user-1' },
   contactReferralsToMe: mock.contactReferralsToMe,
 };
 
@@ -288,7 +288,7 @@ describe('EditContactOtherModal', () => {
     const mutationSpy = jest.fn();
     const newChurchName = 'Great Cool Church II';
     const newWebsite = 'coolwebsite2.com';
-    const { getByText, getByLabelText } = render(
+    const { getByText, getByLabelText, getByRole, findByRole } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
@@ -317,6 +317,26 @@ describe('EditContactOtherModal', () => {
                     ],
                   },
                 },
+                AssigneeOptions: {
+                  accountListUsers: {
+                    nodes: [
+                      {
+                        user: {
+                          id: 'user-1',
+                          firstName: 'John',
+                          lastName: 'Doe',
+                        },
+                      },
+                      {
+                        user: {
+                          id: 'user-2',
+                          firstName: 'Jane',
+                          lastName: 'Doe',
+                        },
+                      },
+                    ],
+                  },
+                },
               }}
             >
               <ContactsPage>
@@ -336,13 +356,16 @@ describe('EditContactOtherModal', () => {
       </SnackbarProvider>,
     );
 
+    userEvent.click(getByRole('combobox', { name: 'Assignee' }));
+    userEvent.click(await findByRole('option', { name: 'Jane Doe' }));
+
     userEvent.clear(getByLabelText('Church'));
     userEvent.clear(getByLabelText('Website'));
 
     userEvent.click(getByLabelText('Preferred Contact Method'));
     userEvent.click(getByLabelText('WhatsApp'));
-    // userEvent.click(getByLabelText('Language'));
-    // userEvent.click(getByLabelText('Australian English'));
+    userEvent.click(getByLabelText('Language'));
+    userEvent.click(await findByRole('option', { name: 'Australian English' }));
     userEvent.click(getByLabelText('Timezone'));
     userEvent.click(getByText('(GMT-09:00) Alaska'));
     userEvent.type(getByLabelText('Church'), newChurchName);
@@ -354,18 +377,21 @@ describe('EditContactOtherModal', () => {
       }),
     );
 
-    // const { operation } = mutationSpy.mock.calls[3][0];
-    // TODO: Fix Test
-    // expect(operation.variables.accountListId).toEqual(accountListId);
-    // expect(operation.variables.attributes.preferredContactMethod).toEqual(
-    //   PreferredContactMethodEnum.WhatsApp,
-    // );
-    // // expect(operation.variables.attributes.locale).toEqual('Australian English');
-    // expect(operation.variables.attributes.timezone).toEqual(
-    //   '(GMT-09:00) Alaska',
-    // );
-    // expect(operation.variables.attributes.churchName).toEqual(newChurchName);
-    // expect(operation.variables.attributes.website).toEqual(newWebsite);
-    // expect(operation.variables.attributes.contactReferralsToMe).toEqual([{}]);
+    const { operation } = mutationSpy.mock.calls[5][0];
+    expect(operation).toMatchObject({
+      operationName: 'UpdateContactOther',
+      variables: {
+        accountListId,
+        attributes: {
+          preferredContactMethod: PreferredContactMethodEnum.WhatsApp,
+          locale: 'Australian English',
+          timezone: '(GMT-09:00) Alaska',
+          churchName: newChurchName,
+          website: newWebsite,
+          userId: 'user-2',
+          contactReferralsToMe: [{}],
+        },
+      },
+    });
   });
 });

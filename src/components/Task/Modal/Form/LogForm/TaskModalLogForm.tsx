@@ -129,7 +129,7 @@ const TaskModalLogForm = ({
     activityType: defaultValues?.activityType ?? null,
     subject: defaultValues?.subject ?? '',
     contactIds: defaultValues?.contactIds ?? [],
-    completedAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
+    completedAt: DateTime.local().toISO(),
     userId: defaultValues?.userId ?? null,
     tagList: defaultValues?.tagList ?? [],
     result: defaultValues?.result ?? ResultEnum.Completed,
