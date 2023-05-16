@@ -29,6 +29,7 @@ import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
 import DataDog from 'src/components/DataDog/DataDog';
+import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -164,6 +165,12 @@ const App = ({
                 <DataDog />
               </SessionProvider>
               <HelpscoutBeacon />
+              {process.env.ALERT_MESSAGE ? (
+                <AlertBanner
+                  text={process.env.ALERT_MESSAGE}
+                  localStorageName="ALERT_MESSAGE"
+                />
+              ) : null}
             </ApolloProvider>
           </AppSettingsProvider>
         </ErrorBoundary>
