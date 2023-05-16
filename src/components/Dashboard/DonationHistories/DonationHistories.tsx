@@ -113,7 +113,7 @@ const DonationHistories = ({
     } = {
       startDate: DateTime.fromISO(period.startDate)
         .toJSDate()
-        .toLocaleDateString('locale', { month: 'short', year: '2-digit' }),
+        .toLocaleDateString(locale, { month: 'short', year: '2-digit' }),
       total: period.convertedTotal,
       period: DateTime.fromISO(period.startDate),
     };
