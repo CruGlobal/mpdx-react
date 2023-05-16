@@ -33,6 +33,7 @@ import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPref
 import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
 import DataDog from 'src/components/DataDog/DataDog';
 import { useLocale } from 'src/hooks/useLocale';
+import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -177,6 +178,12 @@ const App = ({
                 <DataDog />
               </SessionProvider>
               <HelpscoutBeacon />
+              {process.env.ALERT_MESSAGE ? (
+                <AlertBanner
+                  text={process.env.ALERT_MESSAGE}
+                  localStorageName="ALERT_MESSAGE"
+                />
+              ) : null}
             </ApolloProvider>
           </AppSettingsProvider>
         </ErrorBoundary>

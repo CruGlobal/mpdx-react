@@ -1,3 +1,15 @@
+query AssigneeOptions($accountListId: ID!) {
+  accountListUsers(accountListId: $accountListId, first: 25) {
+    nodes {
+      user {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+}
+
 mutation UpdateContactOther(
   $accountListId: ID!
   $attributes: ContactUpdateInput!
@@ -7,7 +19,11 @@ mutation UpdateContactOther(
   ) {
     contact {
       id
-      name
+      user {
+        id
+        firstName
+        lastName
+      }
       churchName
       locale
       preferredContactMethod

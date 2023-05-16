@@ -129,7 +129,7 @@ const TaskModalForm = ({
         activityType: defaultValues?.activityType ?? null,
         location: '',
         subject: defaultValues?.subject ?? '',
-        startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
+        startAt: DateTime.local().toISO(),
         completedAt: null,
         result: defaultValues?.result ?? null,
         nextAction: defaultValues?.nextAction ?? null,

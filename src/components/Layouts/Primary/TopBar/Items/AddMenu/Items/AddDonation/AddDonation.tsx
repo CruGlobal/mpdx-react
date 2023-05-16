@@ -131,7 +131,7 @@ export const AddDonation = ({
     appealId: null,
     currency: data?.accountList.currency ?? '',
     designationAccountId: '',
-    donationDate: DateTime.local().startOf('hour').toISO(),
+    donationDate: DateTime.local().startOf('day').toISO(),
     donorAccountId: '',
     memo: null,
     motivation: null,
