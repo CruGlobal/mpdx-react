@@ -261,7 +261,7 @@ describe('FourteenMonthReportTable', () => {
     expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 
-  it('click event should happen', async () => {
+  it('can make contact click event happen', async () => {
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider>

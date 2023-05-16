@@ -439,7 +439,7 @@ describe('FourteenMonthReport', () => {
     );
   });
 
-  it('contact names are clickable', async () => {
+  it('can click on a contact name', async () => {
     const mutationSpy = jest.fn();
     const { getAllByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
