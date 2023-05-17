@@ -45,11 +45,11 @@ const IndexPage = ({
       return;
     }
     new Promise((resolve) => setTimeout(resolve, 500 * (attemptsFailed + 1)))
-      .then(async () => {
-        await fetch(process.env.API_URL || '', {
+      .then(() =>
+        fetch(process.env.API_URL || '', {
           method: 'POST',
-        });
-      })
+        }),
+      )
       .catch(() => {
         setAttemptsFailed(attemptsFailed + 1);
       });
@@ -95,7 +95,7 @@ const IndexPage = ({
         {!ableToConnect ? (
           <AlertBox severity="warning">
             {t(
-              'We are experiencing issues connecting to our database. This may interrupt your session.',
+              'We are experiencing issues connecting to our internal API. This may interrupt your session.',
             )}
           </AlertBox>
         ) : null}
