@@ -96,11 +96,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                       <Box display="flex" alignItems="center">
                         {!isExpanded && <InfoIcon fontSize="small" />}
                         <NameTypography variant="body1" expanded={isExpanded}>
-                          <Link
-                            onClick={() =>
-                              contact.id && onSelectContact(contact.id)
-                            }
-                          >
+                          <Link onClick={() => onSelectContact(contact.id)}>
                             {contact.name}
                           </Link>
                         </NameTypography>
