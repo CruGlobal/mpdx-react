@@ -31,6 +31,13 @@ const resolvers: DefaultMockResolvers = {
     new Date(
       1641016800000 /* Jan 1, 2022 */ + Math.floor(rng() * 365 * 86400) * 1000,
     ).toISOString(),
+  ISO8601Date: () =>
+    // Date in 2022
+    new Date(
+      1641016800000 /* Jan 1, 2022 */ + Math.floor(rng() * 365) * 86400 * 1000,
+    )
+      .toISOString()
+      .slice(0, 10),
 };
 
 export const GqlMockedProvider = <TData,>({

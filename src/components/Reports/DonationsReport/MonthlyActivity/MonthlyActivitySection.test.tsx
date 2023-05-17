@@ -22,6 +22,41 @@ const router = {
   push,
 };
 
+const mocks = {
+  GetDonationGraph: {
+    accountList: {
+      currency: 'CAD',
+      monthlyGoal: 100,
+      totalPledges: 10,
+    },
+    reportsDonationHistories: {
+      averageIgnoreCurrent: 10,
+      periods: [
+        {
+          startDate: DateTime.now().minus({ months: 12 }).toISO(),
+          convertedTotal: 10,
+          totals: [
+            {
+              currency: 'CAD',
+              convertedAmount: 10,
+            },
+          ],
+        },
+        {
+          startDate: DateTime.now().minus({ months: 11 }).toISO(),
+          convertedTotal: 10,
+          totals: [
+            {
+              currency: 'CAD',
+              convertedAmount: 10,
+            },
+          ],
+        },
+      ],
+    },
+  },
+};
+
 describe('Render Monthly Activity Section', () => {
   beforeEach(() => {
     beforeTestResizeObserver();
@@ -32,41 +67,6 @@ describe('Render Monthly Activity Section', () => {
   });
 
   it('renders with data', async () => {
-    const mocks = {
-      GetDonationGraph: {
-        accountList: {
-          currency: 'CAD',
-          monthlyGoal: 100,
-          totalPledges: 10,
-        },
-        reportsDonationHistories: {
-          averageIgnoreCurrent: 10,
-          periods: [
-            {
-              startDate: DateTime.now().minus({ months: 12 }).toISO(),
-              convertedTotal: 10,
-              totals: [
-                {
-                  currency: 'CAD',
-                  convertedAmount: 10,
-                },
-              ],
-            },
-            {
-              startDate: DateTime.now().minus({ months: 11 }).toISO(),
-              convertedTotal: 10,
-              totals: [
-                {
-                  currency: 'CAD',
-                  convertedAmount: 10,
-                },
-              ],
-            },
-          ],
-        },
-      },
-    };
-
     const { getByTestId, queryByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
@@ -178,7 +178,10 @@ describe('Render Monthly Activity Section', () => {
     render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetDonationGraphQuery> onCall={mutationSpy}>
+          <GqlMockedProvider<GetDonationGraphQuery>
+            mocks={mocks}
+            onCall={mutationSpy}
+          >
             <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
           </GqlMockedProvider>
         </TestRouter>

@@ -33,7 +33,7 @@ describe('ContactDonationsTab', () => {
       }
     `);
     expect(result.current.data?.contact.name).toMatchInlineSnapshot(
-      `undefined`,
+      `"Button Army"`,
     );
   });
   it('test renderer', async () => {
