@@ -129,6 +129,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
             headerHeight={navBarHeight}
             isScrollable={isScrollBox}
             style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}
+            data-testid="SidePanelsLayoutLeftPanel"
           >
             {leftPanel}
           </LeftPanelWrapper>
