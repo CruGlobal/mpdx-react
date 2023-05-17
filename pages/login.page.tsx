@@ -1,10 +1,13 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { signIn, getSession } from 'next-auth/react';
 import { Button } from '@mui/material';
 import SubjectIcon from '@mui/icons-material/Subject';
 import { GetServerSideProps } from 'next';
 import i18n from 'i18next';
 import Head from 'next/head';
+import Alert from '@mui/material/Alert';
+import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import useGetAppSettings from '../src/hooks/useGetAppSettings';
 import Welcome from '../src/components/Welcome';
 import BaseLayout from '../src/components/Layouts/Basic';
@@ -16,16 +19,41 @@ interface IndexPageProps {
   immediateSignIn: boolean;
 }
 
+const AlertBox = styled(Alert)({
+  marginTop: '20px',
+  width: '100%',
+  maxWidth: '450px',
+});
+
 const IndexPage = ({
   signInButtonText,
   signInAuthProviderId,
   immediateSignIn,
 }: IndexPageProps): ReactElement => {
   const { appName } = useGetAppSettings();
+  const [ableToConnect, setAbleToConnect] = useState(true);
+  const [attemptsFailed, setAttemptsFailed] = useState(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (immediateSignIn) signIn(signInAuthProviderId);
   }, []);
+
+  useEffect(() => {
+    if (attemptsFailed > 1) {
+      setAbleToConnect(false);
+      return;
+    }
+    new Promise((resolve) => setTimeout(resolve, 500 * (attemptsFailed + 1)))
+      .then(() =>
+        fetch(process.env.API_URL || '', {
+          method: 'POST',
+        }),
+      )
+      .catch(() => {
+        setAttemptsFailed(attemptsFailed + 1);
+      });
+  }, [attemptsFailed]);
 
   return (
     <>
@@ -63,6 +91,14 @@ const IndexPage = ({
         >
           Find help
         </Button>
+
+        {!ableToConnect ? (
+          <AlertBox severity="warning">
+            {t(
+              'We are experiencing issues connecting to our internal API. This may interrupt your session.',
+            )}
+          </AlertBox>
+        ) : null}
       </Welcome>
     </>
   );
