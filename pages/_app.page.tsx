@@ -29,7 +29,7 @@ import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPref
 import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
 import DataDog from 'src/components/DataDog/DataDog';
 import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
-import { AdapterLuxon } from './api/utils/LuxonAdapter';
+import { AdapterLuxon } from './api/utils/AdapterLuxon';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
