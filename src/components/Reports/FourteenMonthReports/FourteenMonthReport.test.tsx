@@ -2,10 +2,14 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
-import { FourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
+import {
+  FourteenMonthReportDocument,
+  FourteenMonthReportQuery,
+} from './GetFourteenMonthReport.generated';
 import { FourteenMonthReport } from './FourteenMonthReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 
 const accountListId = '111';
 const title = 'test title';
@@ -182,10 +186,11 @@ const mocks = {
   },
 };
 
-const errorMocks = {
-  FourteenMonthReport: {},
+const errorMock: MockedResponse = {
+  request: {
+    query: FourteenMonthReportDocument,
+  },
   error: {
-    hidden: true,
     name: 'error',
     message: 'Error loading data.  Try again.',
   },
@@ -286,7 +291,7 @@ describe('FourteenMonthReport', () => {
   it('salary report error', async () => {
     const { queryByTestId, getByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery> mocks={errorMocks}>
+        <MockedProvider mocks={[errorMock]}>
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Salary}
@@ -294,7 +299,7 @@ describe('FourteenMonthReport', () => {
             title={title}
             onNavListToggle={onNavListToggle}
           />
-        </GqlMockedProvider>
+        </MockedProvider>
       </ThemeProvider>,
     );
 
@@ -311,7 +316,7 @@ describe('FourteenMonthReport', () => {
   it('partner report error', async () => {
     const { queryByTestId, getByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery> mocks={errorMocks}>
+        <MockedProvider mocks={[errorMock]}>
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Donor}
@@ -319,7 +324,7 @@ describe('FourteenMonthReport', () => {
             title={title}
             onNavListToggle={onNavListToggle}
           />
-        </GqlMockedProvider>
+        </MockedProvider>
       </ThemeProvider>,
     );
 
