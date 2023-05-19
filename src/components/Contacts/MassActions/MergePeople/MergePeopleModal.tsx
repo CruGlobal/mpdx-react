@@ -6,7 +6,6 @@ import {
   DialogContent,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
@@ -17,10 +16,6 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 interface MergePeopleModalProps {
   people: Pick<Person, 'id' | 'firstName' | 'lastName'>[];
@@ -124,7 +119,7 @@ export const MergePeopleModal: React.FC<MergePeopleModalProps> = ({
               </Box>
             )}
           </Box>
-        )) ?? <LoadingIndicator size={20} />}
+        ))}
       </DialogContent>
       <DialogActions>
         <CancelButton onClick={handleClose} disabled={merging} />
