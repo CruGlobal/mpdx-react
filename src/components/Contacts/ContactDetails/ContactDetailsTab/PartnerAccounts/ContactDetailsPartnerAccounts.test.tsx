@@ -8,8 +8,6 @@ import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import TestRouter from '__tests__/util/TestRouter';
 import { ContactDetailsPartnerAccounts } from './ContactDetailsPartnerAccounts';
-import { DeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
-import { UpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -121,7 +119,7 @@ describe('ContactDetailsPartnerAccounts', () => {
     const { queryByRole, getByRole } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <GqlMockedProvider<UpdateContactOtherMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <ThemeProvider theme={theme}>
               <ContactDetailProvider>
                 <ContactDetailsPartnerAccounts contact={contact} />
@@ -178,7 +176,7 @@ describe('ContactDetailsPartnerAccounts', () => {
     const { getByText, queryAllByRole } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <GqlMockedProvider<DeleteDonorAccountMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <ThemeProvider theme={theme}>
               <ContactDetailProvider>
                 <ContactDetailsPartnerAccounts contact={contact} />

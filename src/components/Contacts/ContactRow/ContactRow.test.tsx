@@ -7,7 +7,6 @@ import {
   GqlMockedProvider,
 } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
-import { GetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { ContactRow } from './ContactRow';
 import {
@@ -72,7 +71,7 @@ describe('ContactsRow', () => {
   it('default', () => {
     const { getByText } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<GetUserOptionsQuery>>
+        <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <ContactsPage>
               <ContactRow contact={contact} />
@@ -97,7 +96,7 @@ describe('ContactsRow', () => {
   it('should render check event', async () => {
     const { getByRole } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<GetUserOptionsQuery>>
+        <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <ContactsPage>
               <ContactRow contact={contact} />
@@ -116,7 +115,7 @@ describe('ContactsRow', () => {
   it('should open log task modal', async () => {
     const { getByTitle } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<GetUserOptionsQuery>>
+        <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <ContactsPage>
               <ContactRow contact={contact} />
@@ -140,7 +139,7 @@ describe('ContactsRow', () => {
   it('should render contact select event', () => {
     const { getByTestId } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<GetUserOptionsQuery>>
+        <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <ContactsPage>
               <ContactRow contact={contact} />

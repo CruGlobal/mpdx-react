@@ -12,7 +12,7 @@ const onNavListToggle = jest.fn();
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetExpectedMonthlyTotalsQuery>>
+    <GqlMockedProvider>
       <ExpectedMonthlyTotalReport
         accountListId={'abc'}
         isNavListOpen={true}
@@ -41,7 +41,11 @@ export const Empty = (): ReactElement => {
   };
 
   return (
-    <GqlMockedProvider<GetExpectedMonthlyTotalsQuery> mocks={mocks}>
+    <GqlMockedProvider<{
+      GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
+    }>
+      mocks={mocks}
+    >
       <ExpectedMonthlyTotalReport
         accountListId={'abc'}
         isNavListOpen={true}

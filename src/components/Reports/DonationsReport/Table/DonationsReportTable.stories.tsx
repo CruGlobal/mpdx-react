@@ -13,7 +13,7 @@ const time = DateTime.now();
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetDonationsTableQuery>
+    <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
       mocks={{
         GetDonationsTable: {
           donations: {
@@ -79,7 +79,7 @@ export const Default = (): ReactElement => {
 
 export const Empty = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetDonationsTableQuery>
+    <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
       mocks={{
         GetDonationsTable: {
           donations: {

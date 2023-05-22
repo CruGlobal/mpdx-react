@@ -71,7 +71,7 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
@@ -97,7 +97,9 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetTaskModalContactsFilteredQuery>
+            <GqlMockedProvider<{
+              GetTaskModalContactsFiltered: GetTaskModalContactsFilteredQuery;
+            }>
               mocks={{
                 GetTaskModalContactsFiltered: {
                   contacts: {
@@ -149,7 +151,7 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
@@ -177,7 +179,7 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
@@ -207,9 +209,7 @@ describe('EditContactOtherModal', () => {
         <SnackbarProvider>
           <TestRouter router={router}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdateContactOtherMutation>
-                onCall={mutationSpy}
-              >
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactsPage>
                   <ContactDetailProvider>
                     <EditContactOtherModal
@@ -247,7 +247,7 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation> onCall={mutationSpy}>
+            <GqlMockedProvider onCall={mutationSpy}>
               <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
@@ -292,7 +292,9 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>
+            <GqlMockedProvider<{
+              UpdateContactOther: UpdateContactOtherMutation;
+            }>
               onCall={mutationSpy}
               mocks={{
                 LoadConstants: {

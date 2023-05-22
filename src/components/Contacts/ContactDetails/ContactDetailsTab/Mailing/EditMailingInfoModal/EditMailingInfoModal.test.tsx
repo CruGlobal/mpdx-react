@@ -7,7 +7,6 @@ import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import { EditMailingInfoModal } from './EditMailingInfoModal';
-import { EditMailingInfoMutation } from './EditMailingInfoModal.generated';
 
 const handleClose = jest.fn();
 const accountListId = 'abc';
@@ -36,7 +35,7 @@ describe('EditMailingInfoModal', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<EditMailingInfoMutation>>
+          <GqlMockedProvider>
             <EditMailingInfoModal
               accountListId={accountListId}
               contact={contact}
@@ -54,7 +53,7 @@ describe('EditMailingInfoModal', () => {
     const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<EditMailingInfoMutation>>
+          <GqlMockedProvider>
             <EditMailingInfoModal
               accountListId={accountListId}
               contact={contact}
@@ -74,7 +73,7 @@ describe('EditMailingInfoModal', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<EditMailingInfoMutation>>
+          <GqlMockedProvider>
             <EditMailingInfoModal
               accountListId={accountListId}
               contact={contact}
@@ -98,7 +97,7 @@ describe('EditMailingInfoModal', () => {
     const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<EditMailingInfoMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <EditMailingInfoModal
               accountListId={accountListId}
               contact={contact}

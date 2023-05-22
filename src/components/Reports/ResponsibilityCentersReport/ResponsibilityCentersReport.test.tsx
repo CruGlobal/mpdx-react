@@ -67,7 +67,9 @@ describe('ResponsibilityCentersReport', () => {
   it('default', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery> mocks={mocks}>
+        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
+          mocks={mocks}
+        >
           <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
@@ -94,7 +96,7 @@ describe('ResponsibilityCentersReport', () => {
   it('loading', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery>>
+        <GqlMockedProvider>
           <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
@@ -136,7 +138,9 @@ describe('ResponsibilityCentersReport', () => {
   it('empty', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery> mocks={emptyMocks}>
+        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
+          mocks={emptyMocks}
+        >
           <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
@@ -161,7 +165,7 @@ describe('ResponsibilityCentersReport', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery>
+        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -192,7 +196,7 @@ describe('ResponsibilityCentersReport', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery>
+        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >

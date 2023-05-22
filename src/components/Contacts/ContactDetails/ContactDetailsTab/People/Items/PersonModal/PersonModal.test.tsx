@@ -20,7 +20,6 @@ import {
   ContactDetailsTabQuery,
 } from '../../../ContactDetailsTab.generated';
 import { PersonModal } from './PersonModal';
-import { UpdatePersonMutation } from './PersonModal.generated';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 
 const handleClose = jest.fn();
@@ -144,7 +143,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -167,7 +166,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -191,7 +190,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -216,7 +215,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+            <GqlMockedProvider onCall={mutationSpy}>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -245,7 +244,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -269,7 +268,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -303,7 +302,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -358,7 +357,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -414,7 +413,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -445,7 +444,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -484,7 +483,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -513,7 +512,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -573,7 +572,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -604,7 +603,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -643,7 +642,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -675,7 +674,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -745,7 +744,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -786,7 +785,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -831,7 +830,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -898,7 +897,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -948,7 +947,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -976,7 +975,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation>>
+              <GqlMockedProvider>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -1138,7 +1137,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
                 mocks={mocks}
                 cache={cache}
                 onCall={mutationSpy}

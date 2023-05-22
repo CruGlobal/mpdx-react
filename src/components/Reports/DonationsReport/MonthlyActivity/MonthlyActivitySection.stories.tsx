@@ -10,7 +10,7 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetDonationsGraphQuery>
+    <GqlMockedProvider<{ GetDonationsGraph: GetDonationsGraphQuery }>
       mocks={{
         GetDonationGraph: {
           accountList: {
@@ -53,7 +53,7 @@ export const Default = (): ReactElement => {
 
 export const Empty = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetDonationsGraphQuery>
+    <GqlMockedProvider<{ GetDonationsGraph: GetDonationsGraphQuery }>
       mocks={{
         GetDonationGraph: {
           accountList: {

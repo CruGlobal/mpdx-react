@@ -19,7 +19,7 @@ const currency = 'USD';
 export const Default = (): ReactElement => {
   return (
     <Box m={2}>
-      <GqlMockedProvider<GetContactDonationsQuery>
+      <GqlMockedProvider<{ GetContactDonations: GetContactDonationsQuery }>
         mocks={{
           GetContactDonations: {
             reportsDonationHistories: {

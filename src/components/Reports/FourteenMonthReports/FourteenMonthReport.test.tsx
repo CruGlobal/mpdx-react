@@ -200,7 +200,7 @@ describe('FourteenMonthReport', () => {
   it('salary report loading', async () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>>
+        <GqlMockedProvider>
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Salary}
@@ -220,7 +220,9 @@ describe('FourteenMonthReport', () => {
   it('salary report loaded', async () => {
     const { getAllByTestId, getByTestId, queryByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
+          mocks={mocks}
+        >
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Salary}
@@ -246,7 +248,7 @@ describe('FourteenMonthReport', () => {
   it('partner report loading', async () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>>
+        <GqlMockedProvider>
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Donor}
@@ -266,7 +268,9 @@ describe('FourteenMonthReport', () => {
   it('partner report loaded', async () => {
     const { getByTestId, queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
+          mocks={mocks}
+        >
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Donor}
@@ -341,7 +345,9 @@ describe('FourteenMonthReport', () => {
   it('nav list closed', async () => {
     const { getByTestId, queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
+          mocks={mocks}
+        >
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Donor}
@@ -368,7 +374,7 @@ describe('FourteenMonthReport', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -400,7 +406,7 @@ describe('FourteenMonthReport', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >

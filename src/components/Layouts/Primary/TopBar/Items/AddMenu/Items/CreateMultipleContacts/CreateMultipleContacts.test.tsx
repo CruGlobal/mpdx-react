@@ -7,9 +7,9 @@ import { setupMocks, placePromise } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../../../../theme';
-import { CreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 import { CreateContactMutation } from '../CreateContact/CreateContact.generated';
 import { CreateMultipleContacts } from './CreateMultipleContacts';
+import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 
 jest.mock('@react-google-maps/api');
 
@@ -30,7 +30,7 @@ describe('CreateMultipleContacts', () => {
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<CreateContactMutation>>
+            <GqlMockedProvider>
               <CreateMultipleContacts
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -53,7 +53,7 @@ describe('CreateMultipleContacts', () => {
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<CreateContactMutation>>
+            <GqlMockedProvider>
               <CreateMultipleContacts
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -88,7 +88,10 @@ describe('CreateMultipleContacts', () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<CreateContactMutation & CreatePersonMutation>
+              <GqlMockedProvider<{
+                CreateContact: CreateContactMutation;
+                CreateContactAddress: CreateContactAddressMutation;
+              }>
                 onCall={mutationSpy}
                 mocks={{
                   CreateContact: {
@@ -177,7 +180,7 @@ describe('CreateMultipleContacts', () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<CreateContactMutation & CreatePersonMutation>
+              <GqlMockedProvider<{ CreateContact: CreateContactMutation }>
                 onCall={mutationSpy}
                 mocks={{
                   CreateContact: {
@@ -222,7 +225,7 @@ describe('CreateMultipleContacts', () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<CreateContactMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <CreateMultipleContacts
                   accountListId={accountListId}
                   handleClose={handleClose}
@@ -297,7 +300,7 @@ describe('CreateMultipleContacts', () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<CreateContactMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <CreateMultipleContacts
                   accountListId={accountListId}
                   handleClose={handleClose}

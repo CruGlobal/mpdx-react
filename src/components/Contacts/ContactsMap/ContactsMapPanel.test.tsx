@@ -7,7 +7,6 @@ import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
 import { ContactsMapPanel } from './ContactsMapPanel';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'account-list-1';
@@ -50,7 +49,7 @@ describe('ContactsMapPanel', () => {
     const { getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<ContactsQuery>>
+          <GqlMockedProvider>
             <ContactsPage>
               <ContactsMapPanel
                 data={data}
@@ -77,7 +76,7 @@ describe('ContactsMapPanel', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<ContactsQuery>>
+          <GqlMockedProvider>
             <ContactsPage>
               <ContactsMapPanel
                 data={data}

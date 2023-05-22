@@ -71,7 +71,9 @@ describe('MassActionsExportEmailsModal', () => {
     const mutationSpy = jest.fn();
     const { queryByTestId, queryByText, queryAllByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetEmailsForExportingQuery>
+        <GqlMockedProvider<{
+          GetEmailsForExporting: GetEmailsForExportingQuery;
+        }>
           mocks={mocks}
           onCall={mutationSpy}
         >

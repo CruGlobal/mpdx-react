@@ -8,10 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { SnackbarProvider } from 'notistack';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import {
-  DeleteDonationMutation,
-  UpdateDonationMutation,
-} from './EditDonation.generated';
+import { UpdateDonationMutation } from './EditDonation.generated';
 import { EditDonationModal } from './EditDonationModal';
 import { Donation } from '../DonationsReportTable';
 
@@ -84,7 +81,7 @@ describe('DonationsReportTable', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
-              <GqlMockedProvider<UpdateDonationMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <EditDonationModal
                   donation={donation}
                   open={true}
@@ -108,7 +105,7 @@ describe('DonationsReportTable', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
-              <GqlMockedProvider<UpdateDonationMutation>
+              <GqlMockedProvider<{ UpdateDonation: UpdateDonationMutation }>
                 mocks={mocks}
                 onCall={mutationSpy}
               >
@@ -143,7 +140,7 @@ describe('DonationsReportTable', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
-              <GqlMockedProvider<UpdateDonationMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <EditDonationModal
                   donation={donation}
                   open={true}
@@ -181,7 +178,7 @@ describe('DonationsReportTable', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
-              <GqlMockedProvider<UpdateDonationMutation>
+              <GqlMockedProvider<{ UpdateDonation: UpdateDonationMutation }>
                 mocks={mocks}
                 onCall={mutationSpy}
               >
@@ -228,7 +225,7 @@ describe('DonationsReportTable', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
-              <GqlMockedProvider<UpdateDonationMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <EditDonationModal
                   donation={donation}
                   open={true}
@@ -254,7 +251,7 @@ describe('DonationsReportTable', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
-              <GqlMockedProvider<UpdateDonationMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <EditDonationModal
                   donation={donation}
                   open={true}
@@ -290,7 +287,7 @@ describe('DonationsReportTable', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <TestRouter router={router}>
-                <GqlMockedProvider<DeleteDonationMutation> onCall={mutationSpy}>
+                <GqlMockedProvider onCall={mutationSpy}>
                   <EditDonationModal
                     donation={donation}
                     open={true}

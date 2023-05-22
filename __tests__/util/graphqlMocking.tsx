@@ -9,7 +9,6 @@ import {
   isSchema,
 } from 'graphql';
 import {
-  ApolloErgonoMockMap,
   ErgonoMockedProvider,
   ErgonoMockedProviderProps,
   ErgonomockOptions,
@@ -51,7 +50,7 @@ export const GqlMockedProvider = <TData,>({
 >): ReactElement => (
   <ErgonoMockedProvider
     {...props}
-    mocks={mocks as unknown as ApolloErgonoMockMap}
+    mocks={mocks}
     schema={schema}
     resolvers={resolvers}
   >
