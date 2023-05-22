@@ -127,10 +127,7 @@ const LogNewsletter = ({
             attributes: {
               ...attributes,
               activityType,
-              startAt: DateTime.local()
-                .plus({ hours: 1 })
-                .startOf('hour')
-                .toISO(),
+              startAt: DateTime.local().toISO(),
               comment: body.length > 1 ? body : undefined,
             },
           },

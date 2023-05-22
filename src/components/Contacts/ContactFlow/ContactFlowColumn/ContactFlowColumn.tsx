@@ -92,7 +92,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
     }),
   }));
 
-  return loading ? (
+  return loading && !data ? (
     <CircularProgress />
   ) : (
     <Card>

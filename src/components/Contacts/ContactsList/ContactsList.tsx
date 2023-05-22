@@ -70,7 +70,7 @@ export const ContactsList: React.FC = () => {
           <NullState
             page="contact"
             totalCount={data?.allContacts.totalCount || 0}
-            filtered={isFiltered}
+            filtered={isFiltered || !!searchTerm}
             changeFilters={setActiveFilters}
           />
         </Box>

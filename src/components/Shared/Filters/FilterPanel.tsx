@@ -700,7 +700,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                       })
                     : t('Filter')}
                 </Typography>
-                <IconButton onClick={onClose} aria-label={t('Close')}>
+                <IconButton
+                  onClick={onClose}
+                  aria-label={t('Close')}
+                  data-testid="FilterPanelClose"
+                >
                   <Close titleAccess={t('Close')} />
                 </IconButton>
               </Box>

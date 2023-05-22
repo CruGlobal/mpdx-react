@@ -11,6 +11,7 @@ import {
   ContactsContext,
   ContactsType,
 } from '../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { headerHeight, TableViewModeEnum } from '../Shared/Header/ListHeader';
 import Loading from '../Loading';
 import { ContactsMainPanel } from './ContactsMainPanel/ContactsMainPanel';
@@ -31,12 +32,13 @@ export const ContactsContainer: React.FC = ({}) => {
     viewMode,
     setContactFocus,
   } = useContext(ContactsContext) as ContactsType;
+  const { appName } = useGetAppSettings();
 
   return (
     <>
       <Head>
         <title>
-          MPDX |{' '}
+          {appName} |{' '}
           {viewMode === TableViewModeEnum.Flows
             ? t('Contact Flows')
             : viewMode === TableViewModeEnum.Map

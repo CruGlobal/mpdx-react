@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -22,6 +22,7 @@ import debounce from 'lodash/fp/debounce';
 import {
   ContactUpdateInput,
   PreferredContactMethodEnum,
+  UserScopedToAccountList,
 } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
@@ -32,7 +33,10 @@ import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
-import { useUpdateContactOtherMutation } from './EditContactOther.generated';
+import {
+  useUpdateContactOtherMutation,
+  useAssigneeOptionsQuery,
+} from './EditContactOther.generated';
 import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
   SubmitButton,
@@ -56,6 +60,19 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
+
+const userName = (
+  user: Pick<UserScopedToAccountList, 'firstName' | 'lastName'>,
+): string => {
+  const parts: string[] = [];
+  if (user.firstName) {
+    parts.push(user.firstName);
+  }
+  if (user.lastName) {
+    parts.push(user.lastName);
+  }
+  return parts.join(' ');
+};
 
 interface EditContactOtherModalProps {
   contact: ContactOtherFragment;
@@ -95,6 +112,20 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       setSearchTerm(event.target.value);
     }),
     [],
+  );
+
+  const { data: dataAssigneeOptions, loading: loadingAssigneeOptions } =
+    useAssigneeOptionsQuery({
+      variables: {
+        accountListId,
+      },
+    });
+  const users = useMemo(
+    () =>
+      dataAssigneeOptions?.accountListUsers.nodes
+        .map(({ user }) => user)
+        .sort((a, b) => userName(a).localeCompare(userName(b))) ?? [],
+    [dataAssigneeOptions],
   );
 
   const { data: dataFilteredByName, loading: loadingFilteredByName } =
@@ -137,10 +168,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       | 'preferredContactMethod'
       | 'locale'
       | 'timezone'
+      | 'userId'
       | 'website'
     > & { referredById: string | null | undefined }
   > = yup.object({
     id: yup.string().required(),
+    userId: yup.string().nullable(),
     churchName: yup.string().nullable(),
     preferredContactMethod: yup
       .mixed<PreferredContactMethodEnum>()
@@ -178,6 +211,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
         accountListId,
         attributes: {
           id: attributes.id,
+          userId: attributes.userId,
           churchName: attributes.churchName,
           preferredContactMethod: attributes.preferredContactMethod,
           locale: attributes.locale,
@@ -226,6 +260,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       <Formik
         initialValues={{
           id: contact.id,
+          userId: contact.user?.id,
           churchName: contact.churchName,
           preferredContactMethod: contact.preferredContactMethod,
           locale: contact.locale,
@@ -239,6 +274,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       >
         {({
           values: {
+            userId,
             churchName,
             preferredContactMethod,
             locale,
@@ -255,6 +291,25 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
           <form onSubmit={handleSubmit}>
             <DialogContent dividers>
               <ContactEditContainer>
+                <ContactInputWrapper>
+                  <Autocomplete
+                    loading={loadingAssigneeOptions}
+                    autoSelect
+                    autoHighlight
+                    options={users.map(({ id }) => id)}
+                    getOptionLabel={(userId) => {
+                      const user = users.find(({ id }) => id === userId);
+                      return user ? userName(user) : '';
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label={t('Assignee')} />
+                    )}
+                    value={userId ?? null}
+                    onChange={(_, userId) => {
+                      setFieldValue('userId', userId);
+                    }}
+                  />
+                </ContactInputWrapper>
                 <ContactInputWrapper>
                   <Grid item>
                     <Autocomplete
