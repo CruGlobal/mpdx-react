@@ -233,6 +233,28 @@ describe('ContactDetailTab', () => {
         within(modal).queryByRole('heading', { name: 'Test 3 Person' }),
       ).not.toBeInTheDocument();
     });
+
+    it('should close winner selection modal', async () => {
+      const { getByRole, findByRole, queryByRole } = render(
+        <TestComponent mocks={mocksMultiplePeople} />,
+      );
+
+      userEvent.click(await findByRole('button', { name: 'Merge People' }));
+      userEvent.click(getByRole('heading', { name: 'Test Person' }));
+      userEvent.click(getByRole('heading', { name: 'Test 2 Person' }));
+      userEvent.click(
+        getByRole('button', {
+          name: 'Merge Selected People',
+        }),
+      );
+
+      userEvent.click(
+        getByRole('button', {
+          name: 'Close',
+        }),
+      );
+      expect(queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 
   it('should close create address modal', async () => {
