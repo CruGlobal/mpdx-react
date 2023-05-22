@@ -1,4 +1,5 @@
 import React from 'react';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { cloneDeep } from '@apollo/client/utilities';
 import { render, waitFor, within } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
@@ -82,7 +83,9 @@ const TestComponent: React.FC<TestComponentProps> = (props) => (
     <TestRouter router={router}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<Mocks> mocks={props.mocks ?? mocks}>
+          <GqlMockedProvider<Mocks>
+            mocks={(props.mocks ?? mocks) as ApolloErgonoMockMap}
+          >
             <ContactsPage>
               <ContactDetailProvider>
                 <ContactDetailsTab
