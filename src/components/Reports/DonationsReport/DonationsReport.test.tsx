@@ -10,7 +10,7 @@ import {
   beforeTestResizeObserver,
   afterTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
-import { GetDonationsGraphQuery } from 'src/components/Contacts/ContactDetails/ContactDonationsTab/DonationsGraph/DonationsGraph.generated';
+import { GetDonationsGraphQuery } from '../../Contacts/ContactDetails/ContactDontationsTab/DonationsGraph/DonationsGraph.generated';
 import { GetDonationsTableQuery } from './GetDonationsTable.generated';
 
 const title = 'test title';
