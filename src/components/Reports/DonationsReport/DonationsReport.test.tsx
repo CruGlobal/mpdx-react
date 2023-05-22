@@ -10,6 +10,8 @@ import {
   beforeTestResizeObserver,
   afterTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
+import { GetDonationsGraphQuery } from 'src/components/Contacts/ContactDetails/ContactDonationsTab/DonationsGraph/DonationsGraph.generated';
+import { GetDonationsTableQuery } from './GetDonationsTable.generated';
 
 const title = 'test title';
 const onNavListToggle = jest.fn();
@@ -85,6 +87,10 @@ const mocks = {
     },
   },
 };
+interface Mocks {
+  GetDonationsGraph: GetDonationsGraphQuery;
+  GetDonationsTable: GetDonationsTableQuery;
+}
 
 describe('DonationsReport', () => {
   beforeEach(() => {
@@ -105,7 +111,7 @@ describe('DonationsReport', () => {
     } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider
+          <GqlMockedProvider<Mocks>
             mocks={{
               ...mocks,
               GetDonationGraph: {
@@ -144,7 +150,7 @@ describe('DonationsReport', () => {
     const { getByTestId, queryByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider mocks={mocks}>
+          <GqlMockedProvider<Mocks> mocks={mocks}>
             <DonationsReport
               accountListId={'abc'}
               isNavListOpen={true}

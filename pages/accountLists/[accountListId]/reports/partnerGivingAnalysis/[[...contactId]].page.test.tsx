@@ -6,6 +6,8 @@ import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
 import userEvent from '@testing-library/user-event';
+import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
+import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
 
 const push = jest.fn();
 
@@ -44,7 +46,7 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
           {
             filters: [
               {
-                __typename: 'TextFilter',
+                __typename: 'TextFilter' as const,
                 filterKey: 'designation_account_id',
               },
             ],
@@ -57,7 +59,12 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider mocks={mocks}>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+          ContactFilters: ContactFiltersQuery;
+        }>
+          mocks={mocks}
+        >
           <SnackbarProvider>
             <PartnerGivingAnalysisPage />
           </SnackbarProvider>
