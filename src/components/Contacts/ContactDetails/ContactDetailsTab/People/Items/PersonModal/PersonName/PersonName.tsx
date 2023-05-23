@@ -49,7 +49,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
             <Typography>
               <Box
                 component="span"
-                fontWeight="fontWeightBold"
+                fontWeight="bold"
               >{`${person.firstName} ${person.lastName}`}</Box>
             </Typography>
             <ModalSectionDeleteIcon />

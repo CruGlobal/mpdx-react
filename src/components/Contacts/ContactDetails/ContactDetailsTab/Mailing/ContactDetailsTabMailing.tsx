@@ -114,9 +114,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
               <>
                 <ContactAddressRowContainer>
                   <Typography variant="subtitle1">
-                    <Box fontWeight="fontWeightBold">
-                      {primaryAddress.street}
-                    </Box>
+                    <Box fontWeight="bold">{primaryAddress.street}</Box>
                   </Typography>
                   <ContactAddressPrimaryText variant="subtitle1">
                     {`- ${t('Primary')}`}
@@ -189,7 +187,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   >
                     <ContactAddressRowContainer>
                       <Typography variant="subtitle1">
-                        <Box fontWeight="fontWeightBold">{address.street}</Box>
+                        <Box fontWeight="bold">{address.street}</Box>
                       </Typography>
                       <AddressEditIconContainer
                         onClick={() => {
