@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { taskFiltersTabs } from '../../src/utils/tasks/taskFilterTabs';
 import { cookieDefaultInfo, nextAuthSessionCookie } from './utils/cookies';
+import { reportError } from './utils/RollBar';
 
 interface defineRedirectUrlProps {
   accountListId: string;
@@ -109,6 +110,7 @@ const mpdxWebHandoff = async (
     if (cookies) res.setHeader('Set-Cookie', [...new Set(cookies)]);
     res.redirect(jwtToken ? redirectUrl : `${process.env.SITE_URL}/login`);
   } catch (err) {
+    reportError(err);
     res.redirect(`${process.env.SITE_URL}/`);
   }
 };

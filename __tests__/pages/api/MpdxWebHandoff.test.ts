@@ -37,9 +37,14 @@ interface cookiesType {
   [key: string]: string;
 }
 
+interface createMocksRequests {
+  req: any;
+  res: any;
+}
+
 describe('/api/mpdx-web-handoff', () => {
   it('No accountListId or path defined. Redirect to home', async () => {
-    const { req, res } = createMocks({ method: 'GET' });
+    const { req, res }: createMocksRequests = createMocks({ method: 'GET' });
     await mpdxWebHandoff(req, res);
     expect(res._getRedirectUrl()).toBe(`${siteUrl}/`);
   });
@@ -51,7 +56,7 @@ describe('/api/mpdx-web-handoff', () => {
       (getToken as jest.Mock).mockReturnValue(null);
     });
     it('New user - Redirect to login with correct cookies', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -67,7 +72,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('Impersonate user - Redirect to login with correct cookies', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -89,7 +94,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('No user - Redirect to home', async () => {
-      const { req, res } = createMocks({ method: 'GET' });
+      const { req, res }: createMocksRequests = createMocks({ method: 'GET' });
       await mpdxWebHandoff(req, res);
       expect(res._getRedirectUrl()).toBe(`${siteUrl}/`);
     });
@@ -104,7 +109,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('New user - Loggout prev user', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -128,7 +133,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('New user - Same token - Shouldnt remove prev user', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -152,7 +157,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('Impersonate user - Loggout prev user', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -178,7 +183,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('New user - Same token - Should logout prev user', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -195,7 +200,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('Same user - Redirect to contact with url params', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -213,7 +218,7 @@ describe('/api/mpdx-web-handoff', () => {
       expect(cookies.length).toBe(0);
     });
     it('Same user - Redirects to reports', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -230,7 +235,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('Same user - Redirects to reports with url params', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -248,7 +253,7 @@ describe('/api/mpdx-web-handoff', () => {
       expect(cookies.length).toBe(0);
     });
     it('Same user - Redirects with tasks', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -265,7 +270,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('Same user - Redirects with tasks and group', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -291,7 +296,7 @@ describe('/api/mpdx-web-handoff', () => {
     });
 
     it('Same user - Redirects with none Contact/Report or Task path', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',

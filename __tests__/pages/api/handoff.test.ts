@@ -4,11 +4,17 @@ import handoff from '../../../pages/api/handoff.page';
 import { ssrClient } from 'src/lib/client';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
+jest.mock('reportError', () => jest.fn());
 jest.mock('src/lib/client', () => ({ ssrClient: jest.fn() }));
+
+interface createMocksRequests {
+  req: any;
+  res: any;
+}
 
 describe('/api/handoff', () => {
   it('returns 422', async () => {
-    const { req, res } = createMocks({ method: 'GET' });
+    const { req, res }: createMocksRequests = createMocks({ method: 'GET' });
     await handoff(req, res);
 
     expect(res._getStatusCode()).toBe(422);
@@ -29,7 +35,7 @@ describe('/api/handoff', () => {
     });
 
     it('returns redirect', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -46,7 +52,7 @@ describe('/api/handoff', () => {
     });
 
     it('returns redirect but gets session userID', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: 'accountListId',
@@ -63,7 +69,7 @@ describe('/api/handoff', () => {
     });
 
     it('returns redirect but gets defaultAccountList', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: '',
@@ -88,7 +94,7 @@ describe('/api/handoff', () => {
           },
         }),
       });
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           accountListId: '',
@@ -105,7 +111,7 @@ describe('/api/handoff', () => {
     });
 
     it('returns redirect for auth', async () => {
-      const { req, res } = createMocks({
+      const { req, res }: createMocksRequests = createMocks({
         method: 'GET',
         query: {
           path: 'auth/user/admin',
@@ -133,7 +139,7 @@ describe('/api/handoff', () => {
       });
 
       it('returns redirect', async () => {
-        const { req, res } = createMocks({
+        const { req, res }: createMocksRequests = createMocks({
           method: 'GET',
           query: {
             accountListId: 'accountListId',
@@ -150,7 +156,7 @@ describe('/api/handoff', () => {
       });
 
       it('returns redirect for auth', async () => {
-        const { req, res } = createMocks({
+        const { req, res }: createMocksRequests = createMocks({
           method: 'GET',
           query: {
             path: 'auth/user/admin',

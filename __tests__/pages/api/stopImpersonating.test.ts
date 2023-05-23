@@ -18,6 +18,10 @@ const convertCookieStringToObject = (cookieString) => {
 interface cookiesType {
   [key: string]: string;
 }
+interface createMocksRequests {
+  req: any;
+  res: any;
+}
 
 describe('/api/stop-impersonating', () => {
   beforeEach(() => {
@@ -27,7 +31,7 @@ describe('/api/stop-impersonating', () => {
   });
 
   it('Ensure Correct cookies are removed or added/edited', async () => {
-    const { req, res } = createMocks({ method: 'GET' });
+    const { req, res }: createMocksRequests = createMocks({ method: 'GET' });
     await stopImpersonating(req, res);
     expect(res._getRedirectUrl()).toBe(`${siteUrl}/login`);
     const cookies: cookiesType[] = [];

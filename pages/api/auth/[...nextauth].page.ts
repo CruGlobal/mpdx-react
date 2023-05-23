@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
 import { Provider } from 'next-auth/providers';
 import OktaProvider from 'next-auth/providers/okta';
-import Rollbar from 'rollbar';
+import rollbar, { reportError } from '../utils/RollBar';
 import client from '../../../src/lib/client';
 import {
   OktaSignInDocument,
@@ -15,13 +15,6 @@ import {
   ApiOauthSignInMutationVariables,
 } from './apiOauthSignIn';
 import { setUserInfo } from './setUserInfo';
-
-const rollbar = new Rollbar({
-  accessToken: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
-  environment: `react_${process.env.NODE_ENV}_server`,
-  captureUncaught: true,
-  captureUnhandledRejections: true,
-});
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -136,6 +129,9 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         const access_token = account?.access_token;
 
         if (!access_token) {
+          reportError(
+            `${account?.provider} sign in failed to return an access_token`,
+          );
           throw new Error(
             `${account?.provider} sign in failed to return an access_token`,
           );
@@ -172,6 +168,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             );
             return true;
           }
+          reportError('ApiOauthSignIn mutation failed to return a token');
           throw new Error('ApiOauthSignIn mutation failed to return a token');
         }
 
@@ -191,6 +188,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           );
           return true;
         }
+        reportError('oktaSignIn mutation failed to return a token');
         throw new Error('oktaSignIn mutation failed to return a token');
       },
       jwt: ({ token, user }) => {

@@ -7,6 +7,7 @@ import {
   RemoteGraphQLDataSource,
 } from '@apollo/gateway';
 import { getToken } from 'next-auth/jwt';
+import { reportError } from './utils/RollBar';
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({
@@ -23,6 +24,7 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
         );
       }
     } catch (e) {
+      reportError(e);
       // eslint-disable-next-line no-console
       console.error('Error adding Authorization header', e);
     }

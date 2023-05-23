@@ -56,6 +56,7 @@ const handoff = async (
     url.searchParams.append('access_token', jwtToken.apiToken);
     res.redirect(url.href);
   } else {
+    reportError('Invalid jwtToken token or incorrect url queries.');
     res.status(422);
   }
 };
