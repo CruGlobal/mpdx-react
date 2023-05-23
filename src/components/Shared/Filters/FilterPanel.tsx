@@ -676,7 +676,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const tagsFilters =
     (
-      filters.find((filter) => filter.name === 'Tags')
+      filters.find((filter) => filter?.filters[0]?.filterKey === 'tags')
         ?.filters[0] as MultiselectFilter
     )?.options ?? [];
   const noSelectedFilters =
@@ -776,7 +776,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   )}
 
                   {filters
-                    ?.filter((filter) => filter.name !== 'Tags')
+                    ?.filter(
+                      (filter) => filter?.filters[0]?.filterKey !== 'tags',
+                    )
                     ?.map((group) => {
                       const selectedOptions = getOptionsSelected(group);
                       return (
