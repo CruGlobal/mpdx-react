@@ -79,7 +79,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   return (
     <Box style={{ padding: 24, backgroundColor: 'transparent' }}>
       <HeaderBar>
-        <ContactAvatar src={data?.contact?.avatar || ''} />
+        <ContactAvatar alt={data?.contact.name} src={data?.contact.avatar} />
         <HeaderBarContactWrap>
           {loading ? (
             <Box data-testid="Skeleton">

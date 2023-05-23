@@ -115,7 +115,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
         {/* TODO - add avatar link */}
         <ContactPersonAvatar
           alt={`${person.firstName} ${person.lastName}`}
-          src={person.lastName ?? ''}
+          src={person.avatar}
         />
         <ContactPersonTextContainer>
           {/* Heading Section */}

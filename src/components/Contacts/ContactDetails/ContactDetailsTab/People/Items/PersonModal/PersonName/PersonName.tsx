@@ -44,7 +44,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
           <>
             <ContactAvatar
               alt={`${person.firstName} ${person.lastName}`}
-              src={person?.lastName ?? ''}
+              src={person.avatar}
             />
             <Typography>
               <Box
