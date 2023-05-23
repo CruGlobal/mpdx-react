@@ -7137,6 +7137,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/uuid@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@types/uuid@npm:9.0.1"
+  checksum: c472b8a77cbeded4bc529220b8611afa39bd64677f507838f8083d8aac8033b1f88cb9ddaa2f8589e0dcd2317291d0f6e1379f82d5ceebd6f74f3b4825288e00
+  languageName: node
+  linkType: hard
+
 "@types/webpack-env@npm:^1.16.0, @types/webpack-env@npm:^1.17.0":
   version: 1.18.0
   resolution: "@types/webpack-env@npm:1.18.0"
@@ -18056,6 +18063,7 @@ __metadata:
     "@types/react": ^18.0.21
     "@types/seedrandom": ^3.0.5
     "@types/testing-library__jest-dom": ^5.14.5
+    "@types/uuid": ^9.0.1
     "@typescript-eslint/eslint-plugin": ^5.38.0
     "@typescript-eslint/parser": ^5.38.0
     apollo-datasource-rest: ^3.7.0

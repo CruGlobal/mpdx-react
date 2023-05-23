@@ -85,6 +85,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react", "npm:18.0.21"],\
             ["@types/seedrandom", "npm:3.0.5"],\
             ["@types/testing-library__jest-dom", "npm:5.14.5"],\
+            ["@types/uuid", "npm:9.0.1"],\
             ["@typescript-eslint/eslint-plugin", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.38.0"],\
             ["@typescript-eslint/parser", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.38.0"],\
             ["apollo-datasource-rest", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.0"],\
@@ -13807,6 +13808,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/uuid", [\
+        ["npm:9.0.1", {\
+          "packageLocation": "./.yarn/cache/@types-uuid-npm-9.0.1-b44e45eb8a-c472b8a77c.zip/node_modules/@types/uuid/",\
+          "packageDependencies": [\
+            ["@types/uuid", "npm:9.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/webpack", [\
         ["npm:4.41.32", {\
           "packageLocation": "./.yarn/cache/@types-webpack-npm-4.41.32-34a78d0b36-e594a1357c.zip/node_modules/@types/webpack/",\
@@ -26900,6 +26910,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react", "npm:18.0.21"],\
             ["@types/seedrandom", "npm:3.0.5"],\
             ["@types/testing-library__jest-dom", "npm:5.14.5"],\
+            ["@types/uuid", "npm:9.0.1"],\
             ["@typescript-eslint/eslint-plugin", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.38.0"],\
             ["@typescript-eslint/parser", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.38.0"],\
             ["apollo-datasource-rest", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.0"],\
