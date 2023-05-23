@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -11,6 +11,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useSession } from 'next-auth/react';
+import { useApolloClient } from '@apollo/client';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
@@ -44,6 +46,7 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { uploadAvatar } from './uploadAvatar';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -116,6 +119,27 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     removeDialogOpen,
     handleRemoveDialogOpen,
   } = React.useContext(ContactDetailContext) as ContactDetailsType;
+
+  const { data: sessionData } = useSession();
+  const token = sessionData?.user?.apiToken ?? '';
+  const client = useApolloClient();
+
+  const [avatar, setAvatar] = useState<{ file: File; blobUrl: string } | null>(
+    null,
+  );
+  useEffect(() => {
+    return () => {
+      if (avatar) {
+        URL.revokeObjectURL(avatar.blobUrl);
+      }
+    };
+  }, []);
+  const updateAvatar = (file: File) => {
+    if (avatar) {
+      URL.revokeObjectURL(avatar.blobUrl);
+    }
+    setAvatar({ file, blobUrl: URL.createObjectURL(file) });
+  };
 
   const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
   const [createPerson, { loading: creating }] = useCreatePersonMutation();
@@ -370,12 +394,26 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     ): attributes is PersonUpdateInput => !!person;
 
     if (isUpdate(attributes)) {
+      const file = avatar?.file;
+      if (file) {
+        await uploadAvatar({
+          token,
+          personId: attributes.id,
+          file,
+        });
+      }
+
       await updatePerson({
         variables: {
           accountListId,
           attributes,
         },
       });
+
+      if (file) {
+        client.refetchQueries({ include: ['GetContactDetailsHeader'] });
+      }
+
       enqueueSnackbar(t('Person updated successfully'), {
         variant: 'success',
       });
@@ -462,7 +500,12 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               <ContactEditContainer>
                 <ContactPersonContainer>
                   {/* Name Section */}
-                  <PersonName person={person} formikProps={formikProps} />
+                  <PersonName
+                    person={person}
+                    formikProps={formikProps}
+                    pendingAvatar={avatar?.blobUrl}
+                    setAvatar={updateAvatar}
+                  />
                   {/* Phone Number Section */}
                   <PersonPhoneNumber
                     formikProps={formikProps}

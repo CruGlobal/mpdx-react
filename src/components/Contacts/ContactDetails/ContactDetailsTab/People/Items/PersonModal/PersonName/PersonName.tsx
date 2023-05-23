@@ -1,7 +1,7 @@
 import { Avatar, Box, Grid, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FormikProps } from 'formik';
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,6 +18,8 @@ const ContactAvatar = styled(Avatar)(() => ({
   top: '50%',
   left: 4,
   transform: 'translateY(-50%)',
+  cursor: 'pointer',
+  zIndex: 1,
   width: '34px',
   height: '34px',
 }));
@@ -25,11 +27,15 @@ const ContactAvatar = styled(Avatar)(() => ({
 interface PersonNameProps {
   person?: ContactDetailsTabQuery['contact']['people']['nodes'][0];
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  pendingAvatar?: string; // the URL to an uploaded avatar that has not been saved yet
+  setAvatar: (avatar: File) => void;
 }
 
 export const PersonName: React.FC<PersonNameProps> = ({
   person,
   formikProps,
+  pendingAvatar,
+  setAvatar,
 }) => {
   const { t } = useTranslation();
   const {
@@ -37,25 +43,46 @@ export const PersonName: React.FC<PersonNameProps> = ({
     handleChange,
     errors,
   } = formikProps;
+
+  const fileRef = useRef<HTMLInputElement>(null);
+  const handleFileClick = () => {
+    fileRef.current?.click();
+  };
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (
+    event,
+  ) => {
+    const personId = person?.id;
+    const file = event.target.files?.[0];
+    if (personId && file) {
+      setAvatar(file);
+    }
+  };
+
   return (
     <>
-      <ModalSectionContainer>
-        {person ? (
-          <>
-            <ContactAvatar
-              alt={`${person.firstName} ${person.lastName}`}
-              src={person.avatar}
-            />
-            <Typography>
-              <Box
-                component="span"
-                fontWeight="bold"
-              >{`${person.firstName} ${person.lastName}`}</Box>
-            </Typography>
-            <ModalSectionDeleteIcon />
-          </>
-        ) : null}
-      </ModalSectionContainer>
+      {person ? (
+        <ModalSectionContainer>
+          <ContactAvatar
+            alt={`${person.firstName} ${person.lastName}`}
+            src={pendingAvatar ?? person.avatar}
+            onClick={() => handleFileClick()}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            ref={fileRef}
+            onChange={handleFileChange}
+          />
+          <Typography>
+            <Box
+              component="span"
+              fontWeight="bold"
+            >{`${person.firstName} ${person.lastName}`}</Box>
+          </Typography>
+          <ModalSectionDeleteIcon />
+        </ModalSectionContainer>
+      ) : null}
       <ModalSectionContainer>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
