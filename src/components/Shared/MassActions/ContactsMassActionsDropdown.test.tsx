@@ -12,6 +12,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { ContactsMassActionsDropdown } from './ContactsMassActionsDropdown';
 import { TableViewModeEnum } from '../Header/ListHeader';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 
 const selectedIds: string[] = ['abc'];
 const massDeselectAll = jest.fn();
@@ -33,20 +34,22 @@ jest.mock('notistack', () => ({
 }));
 
 const ContactComponents = () => (
-  <ThemeProvider theme={theme}>
-    <GqlMockedProvider>
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <ContactsMassActionsDropdown
-            filterPanelOpen={false}
-            contactDetailsOpen={false}
-            contactsView={TableViewModeEnum.List}
-            selectedIds={selectedIds}
-          />
-        </SnackbarProvider>
-      </LocalizationProvider>
-    </GqlMockedProvider>
-  </ThemeProvider>
+  <AppSettingsProvider>
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <ContactsMassActionsDropdown
+              filterPanelOpen={false}
+              contactDetailsOpen={false}
+              contactsView={TableViewModeEnum.List}
+              selectedIds={selectedIds}
+            />
+          </SnackbarProvider>
+        </LocalizationProvider>
+      </GqlMockedProvider>
+    </ThemeProvider>
+  </AppSettingsProvider>
 );
 
 describe('ContactsMassActionsDropdown', () => {
@@ -142,7 +145,7 @@ describe('ContactsMassActionsDropdown', () => {
     await waitFor(() =>
       expect(
         getByText(
-          'Are you sure you wish to hide the selected contact? Hiding a contact in {{appName}} actually sets the contact status to "Never Ask".',
+          'Are you sure you wish to hide the selected contact? Hiding a contact in MPDX actually sets the contact status to "Never Ask".',
         ),
       ).toBeInTheDocument(),
     );
@@ -156,7 +159,7 @@ describe('ContactsMassActionsDropdown', () => {
     await waitFor(() =>
       expect(
         queryByText(
-          'Are you sure you wish to hide the selected contact? Hiding a contact in {{appName}} actually sets the contact status to "Never Ask".',
+          'Are you sure you wish to hide the selected contact? Hiding a contact in MPDX actually sets the contact status to "Never Ask".',
         ),
       ).not.toBeInTheDocument(),
     );

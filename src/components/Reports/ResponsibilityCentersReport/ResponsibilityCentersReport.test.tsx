@@ -30,7 +30,7 @@ const mocks = {
         {
           active: true,
           balance: {
-            conversionDate: '2/2/2021',
+            conversionDate: '2021-02-02',
             convertedAmount: 3500,
             convertedCurrency: 'CAD',
           },
@@ -41,7 +41,7 @@ const mocks = {
             id: '111-2222-3333',
             name: 'test org 01',
           },
-          updatedAt: '2/2/2021',
+          updatedAt: '2021-02-02',
         },
       ],
     },

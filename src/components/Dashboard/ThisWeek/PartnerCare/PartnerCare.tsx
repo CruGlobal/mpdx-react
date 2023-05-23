@@ -29,13 +29,14 @@ import {
   Contact,
   PersonWithParentContact,
 } from '../../../../../graphql/types.generated';
-import { dayMonthFormat } from '../../../../lib/intlFormat';
+import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import theme from 'src/theme';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { useLocale } from 'src/hooks/useLocale';
 
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',
@@ -143,6 +144,7 @@ const PartnerCare = ({
   reportsPeopleWithAnniversaries,
 }: Props): ReactElement => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const [value, setValue] = useState(0);
   const { openTaskModal } = useTaskModal();
 
@@ -244,16 +246,21 @@ const PartnerCare = ({
         onChange={handleChange}
       >
         <Tab
-          label={t('Prayer ({{ totalCount, number }})', {
-            totalCount: prayerRequestTasks?.totalCount || 0,
+          label={t('Prayer ({{totalCount}})', {
+            totalCount: numberFormat(
+              prayerRequestTasks?.totalCount || 0,
+              locale,
+            ),
           })}
           data-testid="PartnerCareTabPrayer"
         />
         <Tab
-          label={t('Celebrations ({{ totalCount, number }})', {
-            totalCount:
+          label={t('Celebrations ({{totalCount}})', {
+            totalCount: numberFormat(
               (mergedAnniversaries?.length || 0) +
-              (mergedBirthdays?.length || 0),
+                (mergedBirthdays?.length || 0),
+              locale,
+            ),
           })}
           data-testid="PartnerCareTabCelebrations"
         />
@@ -281,7 +288,7 @@ const PartnerCare = ({
               </CardList>
               <CardActions>
                 <Button size="small" color="primary" disabled>
-                  {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
+                  {t('View All ({{totalCount}})', { totalCount: 0 })}
                 </Button>
               </CardActions>
             </>
@@ -357,8 +364,11 @@ const PartnerCare = ({
                       passHref
                     >
                       <Button size="small" color="primary">
-                        {t('View All ({{ totalCount, number }})', {
-                          totalCount: prayerRequestTasks.totalCount,
+                        {t('View All ({{totalCount}})', {
+                          totalCount: numberFormat(
+                            prayerRequestTasks.totalCount,
+                            locale,
+                          ),
                         })}
                       </Button>
                     </Link>
@@ -436,10 +446,12 @@ const PartnerCare = ({
                                     ? dayMonthFormat(
                                         person.birthdayDay,
                                         person.birthdayMonth || 0,
+                                        locale,
                                       )
                                     : dayMonthFormat(
                                         person.anniversaryDay || 0,
                                         person.anniversaryMonth || 0,
+                                        locale,
                                       )}
                                 </Typography>
                               </Box>

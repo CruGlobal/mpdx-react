@@ -14,8 +14,9 @@ import {
 } from './EditDonation.generated';
 import { EditDonationModal } from './EditDonationModal';
 import { Donation } from '../DonationsReportTable';
+import { DateTime } from 'luxon';
 
-const time = new Date('2021-03-25');
+const time = DateTime.fromISO('2021-03-25');
 const router = {
   query: { accountListId: 'aaa' },
   isReady: true,

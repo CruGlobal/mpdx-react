@@ -16,6 +16,7 @@ import {
 import theme from 'src/theme';
 import { MonthlyActivitySection } from 'src/components/Reports/DonationsReport/MonthlyActivity/MonthlyActivitySection';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface CoachingDetailProps {
   coachingId: string;
@@ -84,6 +85,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   isAccountListId = false,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { data: accountListData, loading } =
     useLoadAccountListCoachingDetailQuery({
       variables: { coachingId },
@@ -171,6 +173,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             currencyFormat(
               data?.monthlyGoal ? data?.monthlyGoal : 0,
               data?.currency,
+              locale,
             )}
         </SideContainerText>
         <Divider style={{ background: theme.palette.primary.contrastText }} />

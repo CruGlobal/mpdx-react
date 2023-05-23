@@ -25,6 +25,8 @@ import {
   StatusEnum,
 } from '../../../../../graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { numberFormat } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 const LateCommitmentsContainer = styled(AnimatedCard)(({ theme }) => ({
   display: 'flex',
@@ -71,6 +73,7 @@ const LateCommitments = ({
   latePledgeContacts,
 }: Props): ReactElement => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const accountListId = useAccountListId();
   const { push } = useRouter();
 
@@ -117,7 +120,7 @@ const LateCommitments = ({
           </CardList>
           <CardActions>
             <Button size="small" color="primary" disabled>
-              {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
+              {t('View All ({{totalCount}})', { totalCount: 0 })}
             </Button>
           </CardActions>
         </MotionDiv>
@@ -165,9 +168,9 @@ const LateCommitments = ({
                           <ListItemText
                             primary={contact.name}
                             secondary={t(
-                              'Their gift is {{ daysLate, number }} day late._plural',
+                              'Their gift is {{daysLate}} day late._plural',
                               {
-                                daysLate,
+                                daysLate: numberFormat(daysLate, locale),
                               },
                             )}
                           />
@@ -196,8 +199,11 @@ const LateCommitments = ({
                       }),
                     )}`}
                   >
-                    {t('View All ({{ totalCount, number }})', {
-                      totalCount: latePledgeContacts?.totalCount,
+                    {t('View All ({{totalCount}})', {
+                      totalCount: numberFormat(
+                        latePledgeContacts?.totalCount ?? 0,
+                        locale,
+                      ),
                     })}
                   </Button>
                 </CardActions>
