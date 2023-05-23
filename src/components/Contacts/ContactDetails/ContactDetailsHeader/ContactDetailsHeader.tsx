@@ -119,7 +119,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             onClose={onClose}
           />
           <IconButton onClick={onClose}>
-            <CloseButtonIcon titleAccess={t('Close')} />
+            <CloseButtonIcon
+              titleAccess={t('Close')}
+              data-testid="ContactDetailsHeaderClose"
+            />
           </IconButton>
         </HeaderBarButtonsWrap>
       </HeaderBar>

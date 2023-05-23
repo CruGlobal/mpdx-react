@@ -12,7 +12,6 @@ import { SessionProvider } from 'next-auth/react';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import {
   LocalizationProvider as RawLocalizationProvider,
   LocalizationProviderProps,
@@ -34,6 +33,7 @@ import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSet
 import DataDog from 'src/components/DataDog/DataDog';
 import { useLocale } from 'src/hooks/useLocale';
 import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
+import { AdapterLuxon } from './api/utils/AdapterLuxon';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {

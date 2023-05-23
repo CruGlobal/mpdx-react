@@ -1,10 +1,14 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import { DesignationAccountsQuery } from './GetDesignationAccounts.generated';
+import {
+  DesignationAccountsDocument,
+  DesignationAccountsQuery,
+} from './GetDesignationAccounts.generated';
 import { DesignationAccountsReport } from './DesignationAccountsReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 
 jest.mock('next/router', () => ({
   useRouter: () => {
@@ -40,8 +44,10 @@ const mocks = {
   },
 };
 
-const errorMocks = {
-  DesignationAccounts: {},
+const errorMock: MockedResponse = {
+  request: {
+    query: DesignationAccountsDocument,
+  },
   error: { name: 'error', message: 'Error loading data.  Try again.' },
 };
 
@@ -101,14 +107,14 @@ describe('DesignationAccountsReport', () => {
   it('error', async () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DesignationAccountsQuery> mocks={errorMocks}>
+        <MockedProvider mocks={[errorMock]}>
           <DesignationAccountsReport
             accountListId={accountListId}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
           />
-        </GqlMockedProvider>
+        </MockedProvider>
       </ThemeProvider>,
     );
 

@@ -419,7 +419,7 @@ const TasksPage: React.FC = () => {
                         <NullState
                           page="task"
                           totalCount={data?.allTasks?.totalCount || 0}
-                          filtered={isFiltered}
+                          filtered={isFiltered || !!searchTerm}
                           changeFilters={setActiveFilters}
                         />
                       </Box>

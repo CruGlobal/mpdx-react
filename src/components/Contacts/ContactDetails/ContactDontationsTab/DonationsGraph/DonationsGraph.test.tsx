@@ -16,7 +16,24 @@ const currency = 'USD';
 describe('Donations Graph', () => {
   it('test renderer', async () => {
     const { findByRole } = render(
-      <GqlMockedProvider<GetDonationsGraphQuery>>
+      <GqlMockedProvider<GetDonationsGraphQuery>
+        mocks={{
+          GetDonationsGraph: {
+            accountList: {
+              currency: 'USD',
+            },
+            reportsDonationHistories: {
+              periods: [
+                {
+                  totals: {
+                    currency: 'USD',
+                  },
+                },
+              ],
+            },
+          },
+        }}
+      >
         <DonationsGraph
           accountListId={accountListId}
           donorAccountIds={donorAccountIds}
