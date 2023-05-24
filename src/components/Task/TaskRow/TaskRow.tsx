@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Button,
-  Checkbox,
-  Hidden,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Box, Checkbox, Hidden, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -228,9 +221,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               ))}
             </Box>
             <Hidden smUp>
-              <Button>
-                <ContactText>{assigneeName}</ContactText>
-              </Button>
+              <ContactText>{assigneeName}</ContactText>
             </Hidden>
           </Box>
         </Box>
