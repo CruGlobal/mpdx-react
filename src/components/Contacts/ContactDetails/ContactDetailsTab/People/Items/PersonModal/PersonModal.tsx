@@ -411,6 +411,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       });
 
       if (file) {
+        // Update the contact's avatar since it is based on the primary person's avatar
         client.refetchQueries({ include: ['GetContactDetailsHeader'] });
       }
 

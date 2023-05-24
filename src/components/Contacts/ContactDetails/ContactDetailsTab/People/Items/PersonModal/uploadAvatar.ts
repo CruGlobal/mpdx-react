@@ -1,3 +1,4 @@
+import { assert } from 'ts-essentials';
 import { v4 as uuidv4 } from 'uuid';
 
 export const uploadAvatar = async ({
@@ -34,8 +35,6 @@ export const uploadAvatar = async ({
   );
   const data = await res.json();
   const avatarUrl: string | undefined = data?.data?.attributes?.avatar;
-  if (!avatarUrl) {
-    throw new Error('Could not find avatar in response');
-  }
+  assert(avatarUrl, 'Could not find avatar in response');
   return avatarUrl;
 };
