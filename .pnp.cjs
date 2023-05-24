@@ -99,7 +99,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cross-env", "npm:7.0.3"],\
             ["css-mediaquery", "npm:0.1.2"],\
             ["dnd-core", "npm:16.0.1"],\
-            ["dotenv", "npm:16.0.3"],\
+            ["dotenv", "npm:16.0.2"],\
             ["eslint", "npm:8.23.1"],\
             ["eslint-config-prettier", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.5.0"],\
             ["eslint-plugin-import", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.26.0"],\
@@ -19717,10 +19717,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:16.0.3", {\
-          "packageLocation": "./.yarn/cache/dotenv-npm-16.0.3-4cc29121dc-afcf03f373.zip/node_modules/dotenv/",\
+        ["npm:16.0.2", {\
+          "packageLocation": "./.yarn/cache/dotenv-npm-16.0.2-80af4821b1-ca8f9ca2d6.zip/node_modules/dotenv/",\
           "packageDependencies": [\
-            ["dotenv", "npm:16.0.3"]\
+            ["dotenv", "npm:16.0.2"]\
           ],\
           "linkType": "HARD"\
         }],\
@@ -27174,7 +27174,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cross-env", "npm:7.0.3"],\
             ["css-mediaquery", "npm:0.1.2"],\
             ["dnd-core", "npm:16.0.1"],\
-            ["dotenv", "npm:16.0.3"],\
+            ["dotenv", "npm:16.0.2"],\
             ["eslint", "npm:8.23.1"],\
             ["eslint-config-prettier", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.5.0"],\
             ["eslint-plugin-import", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.26.0"],\
