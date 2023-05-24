@@ -13,6 +13,9 @@ fragment ContactMailing on Contact {
       primaryMailingAddress
       region
       source
+      sourceDonorAccount {
+        accountNumber
+      }
       state
       street
       createdAt
