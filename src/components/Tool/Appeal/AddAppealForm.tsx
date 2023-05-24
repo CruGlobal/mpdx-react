@@ -112,7 +112,7 @@ const AddAppealForm = (): ReactElement => {
   const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
     ? (
         contactFilterGroups.accountList.contactFilterGroups
-          .find((group) => group.name === 'Status')
+          .find((group) => group?.filters[0]?.filterKey === 'status')
           ?.filters.find(
             (filter: { filterKey: string }) => filter.filterKey === 'status',
           ) as MultiselectFilter
