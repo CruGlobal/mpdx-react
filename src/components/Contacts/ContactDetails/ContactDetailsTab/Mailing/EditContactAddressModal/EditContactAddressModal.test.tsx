@@ -290,7 +290,7 @@ describe('EditContactAddressModal', () => {
   });
 
   it('should restrict editing of Siebel addresses', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, findByRole } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider>
@@ -320,5 +320,8 @@ describe('EditContactAddressModal', () => {
     expect(
       getByRole('checkbox', { name: 'Address no longer valid' }),
     ).not.toBeDisabled();
+    expect(
+      await findByRole('link', { name: 'Email Donation Services here' }),
+    ).toBeInTheDocument();
   });
 });
