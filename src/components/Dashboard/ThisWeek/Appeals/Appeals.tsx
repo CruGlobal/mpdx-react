@@ -19,6 +19,7 @@ import { currencyFormat, percentageFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
 import illustration13 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -95,6 +96,7 @@ interface Props {
 const Appeals = ({ loading, appeal }: Props): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const locale = useLocale();
   const pledgesAmountProcessedPercentage =
     (appeal?.pledgesAmountProcessed || 0) / (appeal?.amount || 0);
   const pledgesAmountTotalPercentage =
@@ -147,7 +149,11 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                   {loading || !appeal?.amount ? (
                     <Skeleton variant="text" width={100} />
                   ) : (
-                    currencyFormat(appeal.amount, appeal?.amountCurrency)
+                    currencyFormat(
+                      appeal.amount,
+                      appeal?.amountCurrency,
+                      locale,
+                    )
                   )}
                 </Box>
               </Box>
@@ -175,7 +181,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                   {loading ? (
                     <Skeleton variant="text" />
                   ) : (
-                    percentageFormat(pledgesAmountProcessedPercentage)
+                    percentageFormat(pledgesAmountProcessedPercentage, locale)
                   )}
                 </Typography>
                 <Typography
@@ -188,6 +194,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                     currencyFormat(
                       appeal.pledgesAmountProcessed,
                       appeal.amountCurrency,
+                      locale,
                     )
                   )}
                 </Typography>
@@ -209,7 +216,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                   {loading ? (
                     <Skeleton variant="text" />
                   ) : (
-                    percentageFormat(pledgesAmountTotalPercentage)
+                    percentageFormat(pledgesAmountTotalPercentage, locale)
                   )}
                 </Typography>
                 <Typography
@@ -222,6 +229,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                     currencyFormat(
                       appeal.pledgesAmountTotal,
                       appeal.amountCurrency,
+                      locale,
                     )
                   )}
                 </Typography>

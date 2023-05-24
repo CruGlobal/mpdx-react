@@ -32,7 +32,7 @@ const mocks = {
           {
             active: true,
             id: 'test-id-111',
-            balanceUpdatedAt: '2/2/2021',
+            balanceUpdatedAt: '2021-02-02',
             convertedBalance: 3500,
             currency: 'CAD',
             designationNumber: '33221',

@@ -57,7 +57,7 @@ describe('NewsletterMenu', () => {
       );
       await waitFor(() =>
         expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
-          'NewsletterLatest: 10/27/2021',
+          'NewsletterLatest: Oct 27, 2021',
         ),
       );
     });
@@ -72,7 +72,7 @@ describe('NewsletterMenu', () => {
       );
       await waitFor(() =>
         expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
-          'NewsletterLatest: 11/11/2020',
+          'NewsletterLatest: Nov 11, 2020',
         ),
       );
     });
@@ -87,7 +87,7 @@ describe('NewsletterMenu', () => {
       );
       await waitFor(() =>
         expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
-          'NewsletterLatest: 10/27/2021',
+          'NewsletterLatest: Oct 27, 2021',
         ),
       );
     });
@@ -102,7 +102,7 @@ describe('NewsletterMenu', () => {
       );
       await waitFor(() =>
         expect(getByTestId('NewsletterMenuButton').textContent).toEqual(
-          'NewsletterLatest: 11/11/2020',
+          'NewsletterLatest: Nov 11, 2020',
         ),
       );
     });

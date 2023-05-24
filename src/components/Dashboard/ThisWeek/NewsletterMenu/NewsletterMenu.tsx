@@ -9,6 +9,8 @@ import { useGetTaskAnalyticsQuery } from './NewsletterMenu.generated';
 import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
 import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';
 import ExportPhysical from './MenuItems/ExportPhysical/ExportPhysical';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 interface Props {
   accountListId: string;
@@ -20,6 +22,7 @@ const NewsletterTextContainer = styled(ListItemText)(() => ({
 
 const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
@@ -65,14 +68,14 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
 
     if (electronicDate && physicalDate) {
       return electronicDate < physicalDate
-        ? physicalDate.toLocaleString()
-        : electronicDate.toLocaleString();
+        ? dateFormat(physicalDate, locale)
+        : dateFormat(electronicDate, locale);
     }
     if (electronicDate) {
-      return electronicDate.toLocaleString();
+      return dateFormat(electronicDate, locale);
     }
     if (physicalDate) {
-      return physicalDate.toLocaleString();
+      return dateFormat(physicalDate, locale);
     }
     return t('never');
   };

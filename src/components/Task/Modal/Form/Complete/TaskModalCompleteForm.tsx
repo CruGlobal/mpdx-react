@@ -46,6 +46,7 @@ import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { useLocale } from 'src/hooks/useLocale';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -78,6 +79,7 @@ const TaskModalCompleteForm = ({
     tagList: task.tagList,
   };
   const { t } = useTranslation();
+  const locale = useLocale();
   const [commentBody, changeCommentBody] = useState('');
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
@@ -185,7 +187,7 @@ const TaskModalCompleteForm = ({
                             </InputAdornment>
                           ),
                         }}
-                        inputFormat={getDateFormatPattern()}
+                        inputFormat={getDateFormatPattern(locale)}
                         closeOnSelect
                         label={t('Completed Date')}
                         value={completedAt}

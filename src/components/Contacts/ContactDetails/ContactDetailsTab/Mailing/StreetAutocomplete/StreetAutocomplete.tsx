@@ -96,6 +96,8 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
 
   useEffect(() => {
     if (isLoaded) {
+      // Bizz 05/23/2023 - Removing this as a precaution as we think we've fixed the error.
+      // if (!window.google.maps.places) return;
       mapsApi.current = {
         autocompleteService:
           new window.google.maps.places.AutocompleteService(),

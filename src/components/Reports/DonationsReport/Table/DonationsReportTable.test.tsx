@@ -43,7 +43,7 @@ const mocks = {
             id: 'abc',
             name: 'Appeal Test 1',
           },
-          donationDate: '2023-03-01',
+          donationDate: '2023-03-02',
           donorAccount: {
             contacts: {
               nodes: [{ id: 'contact1' }],
@@ -62,7 +62,7 @@ const mocks = {
             currency: 'CAD',
           },
           appeal: null,
-          donationDate: DateTime.now().minus({ minutes: 5 }).toISO(),
+          donationDate: '2023-03-01',
           donorAccount: {
             contacts: {
               nodes: [{ id: 'contact2' }],
@@ -118,7 +118,7 @@ describe('DonationsReportTable', () => {
 
     expect(getAllByTestId('appeal-name')).toHaveLength(2);
 
-    expect(getAllByTestId('appeal-name')[1]).toHaveTextContent('');
+    expect(getAllByTestId('appeal-name')[1]).toBeEmptyDOMElement();
 
     expect(getByText('3/1/2023')).toBeInTheDocument();
   });

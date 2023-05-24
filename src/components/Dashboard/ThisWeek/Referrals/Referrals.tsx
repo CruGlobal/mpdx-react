@@ -24,6 +24,8 @@ import AnimatedCard from '../../../AnimatedCard';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { numberFormat } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -103,7 +105,7 @@ const ReferralsTab = ({
           </List>
           <CardActions>
             <Button size="small" color="primary" disabled>
-              {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
+              {t('View All ({{totalCount}})', { totalCount: 0 })}
             </Button>
           </CardActions>
         </>
@@ -173,7 +175,7 @@ const ReferralsTab = ({
                   ),
                 )}`}
               >
-                {t('View All ({{ totalCount, number }})', {
+                {t('View All ({{totalCount}})', {
                   totalCount: referrals.totalCount,
                 })}
               </Button>
@@ -197,6 +199,7 @@ const Referrals = ({
 }: Props): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const locale = useLocale();
   const [value, setValue] = useState(0);
 
   const handleChange = (
@@ -217,14 +220,14 @@ const Referrals = ({
         onChange={handleChange}
       >
         <Tab
-          label={t('Recent ({{ totalCount, number }})', {
-            totalCount: recentReferrals?.totalCount || 0,
+          label={t('Recent ({{totalCount}})', {
+            totalCount: numberFormat(recentReferrals?.totalCount || 0, locale),
           })}
           data-testid="ReferralsTabRecent"
         />
         <Tab
-          label={t('On Hand ({{ totalCount, number }})', {
-            totalCount: onHandReferrals?.totalCount || 0,
+          label={t('On Hand ({{totalCount}})', {
+            totalCount: numberFormat(onHandReferrals?.totalCount || 0, locale),
           })}
           data-testid="ReferralsTabOnHand"
         />

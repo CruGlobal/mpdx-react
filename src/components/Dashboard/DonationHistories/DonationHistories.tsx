@@ -30,6 +30,7 @@ import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   cardHeader: {
@@ -99,6 +100,7 @@ const DonationHistories = ({
   const { classes } = useStyles();
   const { push } = useRouter();
   const { t } = useTranslation();
+  const locale = useLocale();
   const accountListId = useAccountListId();
   const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
   const currencies: { dataKey: string; fill: string }[] = [];
@@ -109,7 +111,9 @@ const DonationHistories = ({
       total: number;
       period: DateTime;
     } = {
-      startDate: DateTime.fromISO(period.startDate).toFormat('LLL yy'),
+      startDate: DateTime.fromISO(period.startDate)
+        .toJSDate()
+        .toLocaleDateString(locale, { month: 'short', year: '2-digit' }),
       total: period.convertedTotal,
       period: DateTime.fromISO(period.startDate),
     };
@@ -179,7 +183,7 @@ const DonationHistories = ({
                             data-testid="DonationHistoriesTypographyGoal"
                           >
                             <strong>{t('Goal')}</strong>{' '}
-                            {currencyFormat(goal, currencyCode)}
+                            {currencyFormat(goal, currencyCode, locale)}
                           </Typography>
                         </Grid>
                         <Grid item>|</Grid>
@@ -208,6 +212,7 @@ const DonationHistories = ({
                           currencyFormat(
                             reportsDonationHistories.averageIgnoreCurrent,
                             currencyCode,
+                            locale,
                           )
                         )}
                       </Typography>
@@ -228,7 +233,7 @@ const DonationHistories = ({
                             data-testid="DonationHistoriesTypographyPledged"
                           >
                             <strong>{t('Committed')}</strong>{' '}
-                            {currencyFormat(pledged, currencyCode)}
+                            {currencyFormat(pledged, currencyCode, locale)}
                           </Typography>
                         </Grid>
                       </>

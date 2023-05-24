@@ -15,6 +15,7 @@ import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   card: {
@@ -42,6 +43,7 @@ const Balance = ({
 }: Props): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const locale = useLocale();
   const accountListId = useAccountListId();
 
   return (
@@ -57,7 +59,7 @@ const Balance = ({
             {loading || balance === undefined ? (
               <Skeleton variant="text" />
             ) : (
-              currencyFormat(balance, currencyCode)
+              currencyFormat(balance, currencyCode, locale)
             )}
           </Typography>
           <Typography>{t('It may take a few days to update.')}</Typography>

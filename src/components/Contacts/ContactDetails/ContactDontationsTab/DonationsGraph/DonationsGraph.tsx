@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
@@ -17,6 +17,7 @@ import {
 import theme from '../../../../../theme';
 import { useGetDonationsGraphQuery } from './DonationsGraph.generated';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 const LegendText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(3, 0),
@@ -47,6 +48,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   convertedCurrency,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { data, loading } = useGetDonationsGraphQuery({
     variables: {
       accountListId: accountListId,
@@ -54,12 +56,20 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
     },
   });
 
+  const monthFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        month: 'short',
+      }),
+    [locale],
+  );
+
   const months = Object.values(
     data?.reportsDonationHistories.periods.reduce<{
       [month: string]: { month: string; lastYear: number; thisYear: number };
     }>((acc, period) => {
       const date = DateTime.fromISO(period.startDate);
-      const month = date.monthShort;
+      const month = monthFormatter.format(date.toJSDate());
       return {
         ...acc,
         [month]: {
@@ -85,6 +95,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
             average: currencyFormat(
               data.reportsDonationHistories.averageIgnoreCurrent,
               data.accountList.currency,
+              locale,
             ),
           })}
           {' | '}
@@ -92,6 +103,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
             average: currencyFormat(
               data.reportsDonationHistories.averageIgnoreCurrentAndZero,
               data.accountList.currency,
+              locale,
             ),
           })}
         </Typography>

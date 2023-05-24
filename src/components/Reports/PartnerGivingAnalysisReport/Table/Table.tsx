@@ -14,6 +14,8 @@ import { styled } from '@mui/material/styles';
 import type { Contact } from '../PartnerGivingAnalysisReport';
 import type { Order } from '../../Reports.type';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 interface PartnerGivingAnalysisReportTableProps {
   onClick: (contactId: string) => void;
@@ -54,16 +56,6 @@ const ContactName = styled(Typography)(({ theme }) => ({
   },
 }));
 
-function formatCurrency(amount: number, currency: string): string {
-  // Force to 2 decimal places and add commas between thousands
-  return (
-    Intl.NumberFormat([], {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount) + ` ${currency}`
-  );
-}
-
 export const PartnerGivingAnalysisReportTable: FC<
   PartnerGivingAnalysisReportTableProps
 > = ({
@@ -77,6 +69,16 @@ export const PartnerGivingAnalysisReportTable: FC<
   selectedContacts,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+
+  const formatCurrency = (amount: number, currency: string): string =>
+    // Force to 2 decimal places and add separators between thousands
+    Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
 
   const isSelectedSome =
     selectedContacts.length > 0 && selectedContacts.length < contacts.length;
@@ -172,10 +174,10 @@ export const PartnerGivingAnalysisReportTable: FC<
                   )}
                 </TableCell>
                 <TableCell align="center">
-                  {DateTime.fromFormat(
-                    contact.lastDonationDate,
-                    'yyyy-MM-dd',
-                  ).toLocaleString(DateTime.DATE_SHORT)}
+                  {dateFormatShort(
+                    DateTime.fromISO(contact.lastDonationDate),
+                    locale,
+                  )}
                 </TableCell>
                 <TableCell align="center">
                   {formatCurrency(

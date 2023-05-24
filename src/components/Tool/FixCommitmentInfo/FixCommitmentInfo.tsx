@@ -88,7 +88,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
     ? (
         contactFilterGroups.accountList.contactFilterGroups
-          .find((group) => group.name === 'Status')
+          .find((group) => group?.filters[0]?.filterKey === 'status')
           ?.filters.find(
             (filter: { filterKey: string }) => filter.filterKey === 'status',
           ) as MultiselectFilter
@@ -99,7 +99,6 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
           status.value !== 'ACTIVE',
       )
     : [{ name: '', value: '' }];
-
   //TODO: Make currency field a select element
 
   const updateContact = async (
@@ -222,6 +221,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                   <Typography>
                     <Trans
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      shouldUnescape
                       values={{ value: data.contacts.nodes.length }}
                       components={{ bold: <strong /> }}
                     />

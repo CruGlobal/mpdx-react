@@ -178,6 +178,7 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                   <Typography>
                     <Trans
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      shouldUnescape
                       values={{ value: data?.contactDuplicates.nodes.length }}
                       components={{ bold: <strong /> }}
                     />

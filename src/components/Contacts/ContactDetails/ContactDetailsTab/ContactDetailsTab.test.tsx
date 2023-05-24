@@ -21,6 +21,15 @@ const router = {
 };
 const onContactSelected = jest.fn();
 
+const dates = {
+  anniversaryDay: 1,
+  anniversaryMonth: 1,
+  anniversaryYear: 1980,
+  birthdayDay: 1,
+  birthdayMonth: 1,
+  birthdayYear: 1950,
+};
+
 const mocks = {
   ContactDetailsTab: {
     contact: {
@@ -57,12 +66,16 @@ const mocks = {
             id: contactId,
             firstName: 'Test',
             lastName: 'Person',
+            ...dates,
             primaryPhoneNumber: { number: '555-555-5555' },
             primaryEmailAddress: {
               email: 'testperson@fake.com',
             },
           },
         ],
+      },
+      primaryPerson: {
+        ...dates,
       },
       website: 'testperson.com',
     },
@@ -195,7 +208,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -223,7 +238,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
