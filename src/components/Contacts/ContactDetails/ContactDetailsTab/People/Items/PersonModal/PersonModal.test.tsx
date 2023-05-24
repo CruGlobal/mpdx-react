@@ -6,6 +6,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { InMemoryCache } from '@apollo/client';
+import { useSession } from 'next-auth/react';
 import {
   ContactPeopleFragment,
   ContactPeopleFragmentDoc,
@@ -22,6 +23,8 @@ import {
 import { PersonModal } from './PersonModal';
 import { UpdatePersonMutation } from './PersonModal.generated';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+
+jest.mock('next-auth/react');
 
 const handleClose = jest.fn();
 const accountListId = '123';
@@ -139,6 +142,16 @@ jest.mock('notistack', () => ({
 }));
 
 describe('PersonModal', () => {
+  beforeEach(() => {
+    (useSession as jest.Mock).mockReturnValue({
+      data: {
+        user: {
+          apiToken: 'token',
+        },
+      },
+    });
+  });
+
   it('should render edit person modal', () => {
     const { getByText } = render(
       <SnackbarProvider>
