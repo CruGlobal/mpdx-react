@@ -37,6 +37,16 @@ export const getRedirectPathname = ({
     pathname = `/accountLists/${accountListId}/reports/partnerGivingAnalysis`;
   } else if (
     routerPathname ===
+    '/accountLists/[accountListId]/reports/partnerCurrency/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/reports/partnerCurrency`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/reports/salaryCurrency/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/reports/salaryCurrency`;
+  } else if (
+    routerPathname ===
     '/accountLists/[accountListId]/reports/donations/[[...contactId]]'
   ) {
     pathname = `/accountLists/${accountListId}/reports/donations`;

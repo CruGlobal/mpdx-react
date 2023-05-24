@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Box,
   Table,
+  Link,
   TableBody,
   TableCell,
   TableContainer,
@@ -25,12 +26,17 @@ interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[] | undefined;
   ref: React.Ref<HTMLTableElement>;
+  onSelectContact: (contactId: string) => void;
 }
 
 const NameTypography = styled(Typography, {
   shouldForwardProp: (prop) => prop !== 'expanded',
 })(({ expanded }: { expanded: boolean }) => ({
   marginLeft: expanded ? 0 : theme.spacing(1),
+  cursor: 'pointer',
+  '&:hover': {
+    textDecoration: 'underline',
+  },
 }));
 
 const PrintableContainer = styled(TableContainer)(() => ({
@@ -57,6 +63,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
         onRequestSort,
         salaryCurrency,
         totals,
+        onSelectContact,
       },
       ref,
     ) => {
@@ -91,7 +98,9 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                       <Box display="flex" alignItems="center">
                         {!isExpanded && <InfoIcon fontSize="small" />}
                         <NameTypography variant="body1" expanded={isExpanded}>
-                          {contact.name}
+                          <Link onClick={() => onSelectContact(contact.id)}>
+                            {contact.name}
+                          </Link>
                         </NameTypography>
                       </Box>
                       {isExpanded && (

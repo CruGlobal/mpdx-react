@@ -133,6 +133,30 @@ describe('getRedirectPathname', () => {
       '/accountLists/account-list-1/reports/partnerGivingAnalysis',
     );
   });
+
+  it('should return the partner currency URL when user is on the partnerCurrency 14 month report page', () => {
+    const pathname = getRedirectPathname({
+      routerPathname:
+        '/accountLists/[accountListId]/reports/partnerCurrency/[[...contactId]]',
+      accountListId,
+    });
+
+    expect(pathname).toBe(
+      '/accountLists/account-list-1/reports/partnerCurrency',
+    );
+  });
+
+  it('should return the salary currency URL when user is on the salaryCurrency 14 month report page', () => {
+    const pathname = getRedirectPathname({
+      routerPathname:
+        '/accountLists/[accountListId]/reports/salaryCurrency/[[...contactId]]',
+      accountListId,
+    });
+
+    expect(pathname).toBe(
+      '/accountLists/account-list-1/reports/salaryCurrency',
+    );
+  });
 });
 
 describe('coordinatesFromContacts', () => {
