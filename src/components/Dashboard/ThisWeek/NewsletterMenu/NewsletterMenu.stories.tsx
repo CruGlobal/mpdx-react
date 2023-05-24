@@ -67,6 +67,11 @@ export const Loading = (): ReactElement => {
   );
 };
 
+interface EmptyMocks {
+  GetTaskAnalytics: GetTaskAnalyticsQuery;
+  GetEmailNewsletterContacts: GetEmailNewsletterContactsQuery;
+}
+
 export const Empty = (): ReactElement => {
   const mocks = {
     GetEmailNewsletterContacts: {
@@ -83,12 +88,7 @@ export const Empty = (): ReactElement => {
     },
   };
   return (
-    <GqlMockedProvider<{
-      GetTaskAnalytics: GetTaskAnalyticsQuery;
-      GetEmailNewsletterContacts: GetEmailNewsletterContactsQuery;
-    }>
-      mocks={mocks}
-    >
+    <GqlMockedProvider<EmptyMocks> mocks={mocks}>
       <NewsletterMenu accountListId={accountListId} />
     </GqlMockedProvider>
   );

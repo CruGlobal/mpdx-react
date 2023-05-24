@@ -13,6 +13,11 @@ import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDet
 
 jest.mock('@react-google-maps/api');
 
+interface CreateContactMocks {
+  CreateContact: CreateContactMutation;
+  CreateContactAddress: CreateContactAddressMutation;
+}
+
 const accountListId = '111';
 const handleClose = jest.fn();
 
@@ -88,10 +93,7 @@ describe('CreateMultipleContacts', () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<{
-                CreateContact: CreateContactMutation;
-                CreateContactAddress: CreateContactAddressMutation;
-              }>
+              <GqlMockedProvider<CreateContactMocks>
                 onCall={mutationSpy}
                 mocks={{
                   CreateContact: {

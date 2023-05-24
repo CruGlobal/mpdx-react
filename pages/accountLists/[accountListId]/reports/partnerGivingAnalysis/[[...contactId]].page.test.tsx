@@ -11,6 +11,11 @@ import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
 
 const push = jest.fn();
 
+interface Mocks {
+  GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+  ContactFilters: ContactFiltersQuery;
+}
+
 interface TestingComponentProps {
   routerContactId?: string;
 }
@@ -59,12 +64,7 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-          ContactFilters: ContactFiltersQuery;
-        }>
-          mocks={mocks}
-        >
+        <GqlMockedProvider<Mocks> mocks={mocks}>
           <SnackbarProvider>
             <PartnerGivingAnalysisPage />
           </SnackbarProvider>
