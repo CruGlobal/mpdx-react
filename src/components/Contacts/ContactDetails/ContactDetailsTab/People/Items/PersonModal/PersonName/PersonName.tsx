@@ -68,6 +68,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
             onClick={() => handleFileClick()}
           />
           <input
+            data-testid="PersonNameUpload"
             type="file"
             accept="image/*"
             style={{ display: 'none' }}

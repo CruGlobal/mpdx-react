@@ -133,9 +133,10 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         URL.revokeObjectURL(avatar.blobUrl);
       }
     };
-  }, []);
+  }, [avatar]);
   const updateAvatar = (file: File) => {
     if (avatar) {
+      // Release the previous avatar blob
       URL.revokeObjectURL(avatar.blobUrl);
     }
     setAvatar({ file, blobUrl: URL.createObjectURL(file) });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
@@ -23,8 +23,10 @@ import {
 import { PersonModal } from './PersonModal';
 import { UpdatePersonMutation } from './PersonModal.generated';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+import { uploadAvatar } from './uploadAvatar';
 
 jest.mock('next-auth/react');
+jest.mock('./uploadAvatar');
 
 const handleClose = jest.fn();
 const accountListId = '123';
@@ -150,6 +152,8 @@ describe('PersonModal', () => {
         },
       },
     });
+
+    (uploadAvatar as jest.Mock).mockResolvedValue('avatar-url');
   });
 
   it('should render edit person modal', () => {
@@ -305,6 +309,61 @@ describe('PersonModal', () => {
     );
   });
   describe('Updating', () => {
+    const createObjectURL = jest
+      .fn()
+      .mockReturnValueOnce('blob:1')
+      .mockReturnValueOnce('blob:2');
+    const revokeObjectURL = jest.fn();
+    beforeEach(() => {
+      window.URL.createObjectURL = createObjectURL;
+      window.URL.revokeObjectURL = revokeObjectURL;
+    });
+
+    it('should handle uploading an avatar', async () => {
+      const { getByRole, getByTestId } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const file1 = new File(['contents1'], 'image1.png', {
+        type: 'image/png',
+      });
+      const file2 = new File(['contents2'], 'image2.png', {
+        type: 'image/png',
+      });
+      userEvent.upload(getByTestId('PersonNameUpload'), file1);
+      expect(revokeObjectURL).not.toHaveBeenCalledWith('blob:1');
+      userEvent.upload(getByTestId('PersonNameUpload'), file2);
+      expect(revokeObjectURL).toHaveBeenCalledWith('blob:1');
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(uploadAvatar).toHaveBeenCalledWith({
+          token: 'token',
+          personId: mockPerson.id,
+          file: file2,
+        }),
+      );
+
+      cleanup();
+      expect(revokeObjectURL).toHaveBeenCalledWith('blob:2');
+    });
+
     it('should handle editing person name section', async () => {
       const mutationSpy = jest.fn();
       const newPersonFirstName = 'Test';
