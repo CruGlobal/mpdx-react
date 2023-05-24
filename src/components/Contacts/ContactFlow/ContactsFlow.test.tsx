@@ -41,7 +41,7 @@ describe('ContactFlow', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetUserOptionsQuery>>
+          <GqlMockedProvider>
             <ThemeProvider theme={theme}>
               <ContactsPage>
                 <DndProvider backend={HTML5Backend}>
@@ -65,7 +65,9 @@ describe('ContactFlow', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetUserOptionsQuery> mocks={mocks}>
+          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
+            mocks={mocks}
+          >
             <ThemeProvider theme={theme}>
               <ContactsPage>
                 <DndProvider backend={HTML5Backend}>

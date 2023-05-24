@@ -34,7 +34,7 @@ describe('LoadCoachingDetail', () => {
   it('view', async () => {
     const { findByText } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<LoadCoachingDetailQuery>
+        <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
           mocks={{
             LoadCoachingDetail: {
               coachingAccountList: {
@@ -57,7 +57,7 @@ describe('LoadCoachingDetail', () => {
   it('null goal', async () => {
     const { findByText } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<LoadCoachingDetailQuery>
+        <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
           mocks={{
             LoadCoachingDetail: {
               coachingAccountList: {
@@ -81,7 +81,7 @@ describe('LoadCoachingDetail', () => {
   it('view isAccountList', async () => {
     const { findByText } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<LoadCoachingDetailQuery>
+        <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
           mocks={{
             LoadAccountListCoachingDetail: {
               accountList: {
@@ -104,7 +104,7 @@ describe('LoadCoachingDetail', () => {
   it('null goal isAccountList', async () => {
     const { findByText } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<LoadCoachingDetailQuery>
+        <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
           mocks={{
             LoadAccountListCoachingDetail: {
               accountList: {

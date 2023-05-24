@@ -108,7 +108,7 @@ describe('ContactsPageContext', () => {
             push,
           }}
         >
-          <GqlMockedProvider<GetUserOptionsQuery>
+          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
             mocks={{
               GetUserOptions: {
                 userOptions: [
@@ -151,7 +151,7 @@ describe('ContactsPageContext', () => {
             push,
           }}
         >
-          <GqlMockedProvider<GetUserOptionsQuery>
+          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
             mocks={{
               GetUserOptions: {
                 userOptions: [
@@ -202,7 +202,7 @@ describe('ContactsPageContext', () => {
             push,
           }}
         >
-          <GqlMockedProvider<GetUserOptionsQuery>
+          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
             mocks={{
               GetUserOptions: {
                 userOptions: [
@@ -246,7 +246,7 @@ describe('ContactsPageContext', () => {
             push,
           }}
         >
-          <GqlMockedProvider<ContactFiltersQuery>
+          <GqlMockedProvider<{ ContactFilters: ContactFiltersQuery }>
             mocks={{
               ContactFilters: {
                 userOptions: [
@@ -282,7 +282,7 @@ describe('ContactsPageContext', () => {
             push,
           }}
         >
-          <GqlMockedProvider<ContactFiltersQuery>
+          <GqlMockedProvider<{ ContactFilters: ContactFiltersQuery }>
             mocks={{
               ContactFilters: {
                 userOptions: [

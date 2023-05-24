@@ -24,9 +24,15 @@ const router = {
 };
 const onContactSelected = jest.fn();
 
-interface Mocks {
-  ContactDetailsTab: ContactDetailsTabQuery;
-}
+const dates = {
+  anniversaryDay: 1,
+  anniversaryMonth: 1,
+  anniversaryYear: 1980,
+  birthdayDay: 1,
+  birthdayMonth: 1,
+  birthdayYear: 1950,
+};
+
 const primaryPerson = {
   id: 'person-1',
   firstName: 'Test',
@@ -35,7 +41,12 @@ const primaryPerson = {
   primaryEmailAddress: {
     email: 'testperson@fake.com',
   },
+  ...dates,
 };
+
+interface Mocks {
+  ContactDetailsTab: ContactDetailsTabQuery;
+}
 const mocks: DeepPartial<Mocks> = {
   ContactDetailsTab: {
     contact: {
@@ -160,6 +171,7 @@ describe('ContactDetailTab', () => {
         lastName: 'Person',
         primaryPhoneNumber: null,
         primaryEmailAddress: null,
+        ...dates,
       },
       {
         id: 'person-3',
@@ -167,6 +179,7 @@ describe('ContactDetailTab', () => {
         lastName: 'Person',
         primaryPhoneNumber: null,
         primaryEmailAddress: null,
+        ...dates,
       },
     );
 

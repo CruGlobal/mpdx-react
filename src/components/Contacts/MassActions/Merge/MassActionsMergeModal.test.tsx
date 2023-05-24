@@ -3,6 +3,7 @@ import { render, waitFor, queryByText } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { StatusEnum } from '../../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { MassActionsMergeModal } from './MassActionsMergeModal';
@@ -35,7 +36,7 @@ const mocks = {
           avatar: 'https://mpdx.org/images/avatar.png',
           name: 'Doe, Jane',
           createdAt: '2022-04-02T00:00:00-05:00',
-          status: 'NEVER_CONTACTED',
+          status: StatusEnum.NeverContacted,
           primaryAddress: {
             id: 'address-2',
             street: '123 First Ave',
@@ -67,7 +68,11 @@ describe('ExportModal', () => {
   it('should render modal', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetContactsForMergingQuery> mocks={mocks}>
+        <GqlMockedProvider<{
+          GetContactsForMerging: GetContactsForMergingQuery;
+        }>
+          mocks={mocks}
+        >
           <MassActionsMergeModal
             accountListId={accountListId}
             ids={['contact-1', 'contact-2']}
@@ -83,7 +88,11 @@ describe('ExportModal', () => {
   it('should close modal', () => {
     const { getByLabelText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetContactsForMergingQuery> mocks={mocks}>
+        <GqlMockedProvider<{
+          GetContactsForMerging: GetContactsForMergingQuery;
+        }>
+          mocks={mocks}
+        >
           <MassActionsMergeModal
             accountListId={accountListId}
             ids={['contact-1', 'contact-2']}
@@ -100,7 +109,11 @@ describe('ExportModal', () => {
   it('should select clicked contact', async () => {
     const { queryAllByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetContactsForMergingQuery> mocks={mocks}>
+        <GqlMockedProvider<{
+          GetContactsForMerging: GetContactsForMergingQuery;
+        }>
+          mocks={mocks}
+        >
           <MassActionsMergeModal
             accountListId={accountListId}
             ids={['contact-1', 'contact-2']}
@@ -129,7 +142,9 @@ describe('ExportModal', () => {
     const { getByText, queryAllByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<GetContactsForMergingQuery>
+          <GqlMockedProvider<{
+            GetContactsForMerging: GetContactsForMergingQuery;
+          }>
             mocks={mocks}
             onCall={mutationSpy}
           >

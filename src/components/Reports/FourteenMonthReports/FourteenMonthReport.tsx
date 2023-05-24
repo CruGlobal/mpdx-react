@@ -13,6 +13,7 @@ import { FourteenMonthReportTable as Table } from './Layout/Table/Table';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   accountListId: string;
@@ -36,6 +37,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const [orderBy, setOrderBy] = useState<OrderBy | number | null>(null);
   const reportTableRef = useRef(null);
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -99,6 +101,12 @@ export const FourteenMonthReport: React.FC<Props> = ({
     setOrderBy(property);
   };
 
+  const formatMonth = (month: string) =>
+    DateTime.fromISO(month).toJSDate().toLocaleDateString(locale, {
+      month: 'numeric',
+      year: '2-digit',
+    });
+
   const csvData = useMemo(() => {
     if (!contacts) return [];
 
@@ -156,12 +164,9 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
         const inHandDateRange =
           inHandMonths && inHandMonthlyEquivalent
-            ? `${DateTime.fromISO(inHandMonths[0].month).toLocaleString({
-                month: 'numeric',
-                year: '2-digit',
-              })} - ${DateTime.fromISO(
+            ? `${formatMonth(inHandMonths[0].month)} - ${formatMonth(
                 inHandMonths[inHandMonths.length - 1].month,
-              ).toLocaleString({ month: 'numeric', year: '2-digit' })}`
+              )}`
             : '';
 
         return [

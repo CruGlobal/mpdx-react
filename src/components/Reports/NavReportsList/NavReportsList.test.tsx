@@ -6,6 +6,7 @@ import { NavReportsList } from './NavReportsList';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { GetDesignationAccountsQuery } from '../DonationsReport/Table/Modal/EditDonation.generated';
 
 const accountListId = 'account-list-1';
 const selected = 'salaryCurrency';
@@ -65,7 +66,12 @@ describe('NavReportsList', () => {
     const { getAllByRole, getByRole, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
+          <GqlMockedProvider<{
+            GetDesignationAccounts: GetDesignationAccountsQuery;
+          }>
+            mocks={mocks}
+            onCall={mutationSpy}
+          >
             <NavReportsList
               selectedId={selected}
               isOpen={true}
@@ -109,7 +115,12 @@ describe('NavReportsList', () => {
     const { queryByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
+          <GqlMockedProvider<{
+            GetDesignationAccounts: GetDesignationAccountsQuery;
+          }>
+            mocks={mocks}
+            onCall={mutationSpy}
+          >
             <NavReportsList
               selectedId={selected}
               isOpen={true}

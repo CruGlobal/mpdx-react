@@ -198,6 +198,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                   <Typography>
                     <Trans
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      shouldUnescape
                       values={{
                         value: data?.contacts.nodes.length,
                       }}

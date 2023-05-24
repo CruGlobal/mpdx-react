@@ -6,8 +6,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../../../../theme';
-import { CreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
-import { CreateContactMutation } from './CreateContact.generated';
 import CreateContact from './CreateContact';
 
 const accountListId = '111';
@@ -23,7 +21,7 @@ describe('CreateContact', () => {
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<CreateContactMutation>>
+            <GqlMockedProvider>
               <CreateContact
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -41,7 +39,7 @@ describe('CreateContact', () => {
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<CreateContactMutation>>
+            <GqlMockedProvider>
               <CreateContact
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -64,9 +62,7 @@ describe('CreateContact', () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<CreateContactMutation & CreatePersonMutation>
-                onCall={mutationSpy}
-              >
+              <GqlMockedProvider onCall={mutationSpy}>
                 <CreateContact
                   accountListId={accountListId}
                   handleClose={handleClose}
@@ -113,9 +109,7 @@ describe('CreateContact', () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<CreateContactMutation & CreatePersonMutation>
-                onCall={mutationSpy}
-              >
+              <GqlMockedProvider onCall={mutationSpy}>
                 <CreateContact
                   accountListId={accountListId}
                   handleClose={handleClose}

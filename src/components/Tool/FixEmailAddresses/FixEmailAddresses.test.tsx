@@ -82,7 +82,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -120,7 +122,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -149,7 +153,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -179,7 +185,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -215,7 +223,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -252,7 +262,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -280,7 +292,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {

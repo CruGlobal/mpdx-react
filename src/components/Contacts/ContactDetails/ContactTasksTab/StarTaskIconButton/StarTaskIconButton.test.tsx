@@ -3,7 +3,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import { SetTaskStarredMutation } from './SetTaskStarred.generated';
 import { StarTaskIconButton } from './StarTaskIconButton';
 
 const accountListId = 'abc';
@@ -12,7 +11,7 @@ const taskId = '1';
 describe('StarTaskIconButton', () => {
   it('renders not starred', async () => {
     const { queryByRole } = render(
-      <GqlMockedProvider<SetTaskStarredMutation>>
+      <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <StarTaskIconButton
             accountListId={accountListId}
@@ -38,7 +37,7 @@ describe('StarTaskIconButton', () => {
 
   it('renders starred', async () => {
     const { queryByRole } = render(
-      <GqlMockedProvider<SetTaskStarredMutation>>
+      <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <StarTaskIconButton
             accountListId={accountListId}

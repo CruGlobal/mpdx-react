@@ -49,11 +49,6 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('i18next', () => ({
-  // this mock makes sure any components using the translate function can use it without a warning being shown
-  t: (str: string) => str,
-}));
-
 const mockContact: ContactOtherFragment = {
   id: contactId,
   timezone: '(GMT-05:00) Eastern Time (US & Canada)',
@@ -71,7 +66,7 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
@@ -97,7 +92,9 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetTaskModalContactsFilteredQuery>
+            <GqlMockedProvider<{
+              GetTaskModalContactsFiltered: GetTaskModalContactsFilteredQuery;
+            }>
               mocks={{
                 GetTaskModalContactsFiltered: {
                   contacts: {
@@ -149,7 +146,7 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
@@ -177,7 +174,7 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
@@ -207,9 +204,7 @@ describe('EditContactOtherModal', () => {
         <SnackbarProvider>
           <TestRouter router={router}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdateContactOtherMutation>
-                onCall={mutationSpy}
-              >
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactsPage>
                   <ContactDetailProvider>
                     <EditContactOtherModal
@@ -247,7 +242,7 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation> onCall={mutationSpy}>
+            <GqlMockedProvider onCall={mutationSpy}>
               <ContactsPage>
                 <ContactDetailProvider>
                   <EditContactOtherModal
@@ -292,7 +287,9 @@ describe('EditContactOtherModal', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>
+            <GqlMockedProvider<{
+              UpdateContactOther: UpdateContactOtherMutation;
+            }>
               onCall={mutationSpy}
               mocks={{
                 LoadConstants: {

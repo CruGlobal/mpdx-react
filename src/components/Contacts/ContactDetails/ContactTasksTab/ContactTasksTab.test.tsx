@@ -55,7 +55,7 @@ describe('ContactTasksTab', () => {
     const querySpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<ContactTasksTabQuery> onCall={querySpy}>
+        <GqlMockedProvider onCall={querySpy}>
           <ContactTasksTab
             accountListId={accountListId}
             contactId={contactId}
@@ -79,7 +79,7 @@ describe('ContactTasksTab', () => {
   it('loading', async () => {
     const { getAllByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<ContactTasksTabQuery>>
+        <GqlMockedProvider>
           <ContactTasksTab
             accountListId={accountListId}
             contactId={contactId}
@@ -94,7 +94,7 @@ describe('ContactTasksTab', () => {
     const querySpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<ContactTasksTabQuery> onCall={querySpy}>
+        <GqlMockedProvider onCall={querySpy}>
           <ContactTasksTab
             accountListId={accountListId}
             contactId={contactId}
@@ -127,7 +127,7 @@ describe('ContactTasksTab', () => {
     const querySpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<ContactTasksTabQuery> onCall={querySpy}>
+        <GqlMockedProvider onCall={querySpy}>
           <ContactTasksTab
             accountListId={accountListId}
             contactId={contactId}
@@ -159,7 +159,7 @@ describe('ContactTasksTab', () => {
   it('load null state', async () => {
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<ContactTasksTabQuery>
+        <GqlMockedProvider<{ ContactTasksTab: ContactTasksTabQuery }>
           mocks={{
             ContactTasksTab: {
               tasks: {
@@ -186,7 +186,7 @@ describe('ContactTasksTab', () => {
   it('counts total tasks when all are selected', async () => {
     const { getAllByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<ContactTasksTabQuery>
+        <GqlMockedProvider<{ ContactTasksTab: ContactTasksTabQuery }>
           mocks={{
             ContactTasksTab: {
               tasks: {

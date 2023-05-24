@@ -24,7 +24,7 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
@@ -48,7 +48,9 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
               mocks={{
                 GetContactDetailsHeader: {
                   contact: {
@@ -84,7 +86,9 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
               mocks={{
                 GetContactDetailsHeader: {
                   contact: {
@@ -121,7 +125,9 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
               mocks={{
                 GetContactDetailsHeader: {
                   contact: {
@@ -161,7 +167,9 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
               mocks={{
                 GetContactDetailsHeader: {
                   contact: {

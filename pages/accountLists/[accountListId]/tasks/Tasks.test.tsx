@@ -52,7 +52,7 @@ jest.mock('notistack', () => ({
 const MocksProviders = (props: { children: JSX.Element }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider<TasksQuery>
+      <GqlMockedProvider<{ Tasks: TasksQuery }>
         mocks={{
           Tasks: {
             tasks: {
@@ -138,7 +138,7 @@ it('should show Completed', async () => {
 it('should dispatch one analytics event per task', async () => {
   const { getAllByTestId, getByRole } = render(
     <MocksProviders>
-      <GqlMockedProvider<TasksQuery>
+      <GqlMockedProvider<{ Tasks: TasksQuery }>
         mocks={{
           Tasks: {
             tasks: {

@@ -1,5 +1,3 @@
-import { DateTime } from 'luxon';
-
 interface restExportFields {
   type: string;
   attributes: {
@@ -77,7 +75,7 @@ export const exportRest = (
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `contacts-${DateTime.now().toLocaleString({
+      a.download = `contacts-${new Date().toLocaleDateString('en-US', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',

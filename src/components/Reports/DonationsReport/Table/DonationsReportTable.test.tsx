@@ -43,7 +43,7 @@ const mocks = {
             id: 'abc',
             name: 'Appeal Test 1',
           },
-          donationDate: '2023-03-01',
+          donationDate: '2023-03-02',
           donorAccount: {
             contacts: {
               nodes: [{ id: 'contact1' }],
@@ -62,7 +62,7 @@ const mocks = {
             currency: 'CAD',
           },
           appeal: null,
-          donationDate: DateTime.now().minus({ minutes: 5 }).toISO(),
+          donationDate: '2023-03-01',
           donorAccount: {
             contacts: {
               nodes: [{ id: 'contact2' }],
@@ -91,7 +91,9 @@ describe('DonationsReportTable', () => {
       queryAllByText,
     } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
+          mocks={mocks}
+        >
           <DonationsReportTable
             accountListId={'abc'}
             onSelectContact={onSelectContact}
@@ -116,7 +118,7 @@ describe('DonationsReportTable', () => {
 
     expect(getAllByTestId('appeal-name')).toHaveLength(2);
 
-    expect(getAllByTestId('appeal-name')[1]).toHaveTextContent('');
+    expect(getAllByTestId('appeal-name')[1]).toBeEmptyDOMElement();
 
     expect(getByText('3/1/2023')).toBeInTheDocument();
   });
@@ -128,7 +130,11 @@ describe('DonationsReportTable', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <TestRouter router={router}>
-                <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+                <GqlMockedProvider<{
+                  GetDonationsTable: GetDonationsTableQuery;
+                }>
+                  mocks={mocks}
+                >
                   <DonationsReportTable
                     accountListId={'abc'}
                     onSelectContact={onSelectContact}
@@ -174,7 +180,9 @@ describe('DonationsReportTable', () => {
     const { queryByTestId, queryAllByRole, queryByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+          <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
+            mocks={mocks}
+          >
             <DonationsReportTable
               accountListId={'abc'}
               onSelectContact={onSelectContact}
@@ -198,7 +206,9 @@ describe('DonationsReportTable', () => {
   it('is clickable', async () => {
     const { queryAllByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
+          mocks={mocks}
+        >
           <DonationsReportTable
             accountListId={'abc'}
             onSelectContact={onSelectContact}
@@ -219,7 +229,7 @@ describe('DonationsReportTable', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -250,7 +260,7 @@ describe('DonationsReportTable', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -309,7 +319,9 @@ describe('DonationsReportTable', () => {
     };
     const { queryAllByText, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
+          mocks={mocks}
+        >
           <DonationsReportTable
             accountListId={'abc'}
             onSelectContact={onSelectContact}
@@ -329,7 +341,9 @@ describe('DonationsReportTable', () => {
   it('hides currency column if all currencies match the account currency', async () => {
     const { getByLabelText, queryByLabelText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery> mocks={mocks}>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
+          mocks={mocks}
+        >
           <DonationsReportTable
             accountListId={'abc'}
             onSelectContact={onSelectContact}
@@ -350,7 +364,7 @@ describe('DonationsReportTable', () => {
       'EUR';
     const { getByLabelText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
           mocks={mocksWithMultipleCurrencies}
         >
           <DonationsReportTable
@@ -371,7 +385,7 @@ describe('DonationsReportTable', () => {
     const mutationSpy = jest.fn();
     const { findByRole, getAllByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -418,7 +432,7 @@ describe('DonationsReportTable', () => {
     const mutationSpy = jest.fn();
     const { findByRole, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -465,7 +479,7 @@ describe('DonationsReportTable', () => {
     const mutationSpy = jest.fn();
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonationsTableQuery>
+        <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
           mocks={{
             GetAccountListCurrency: mocks.GetAccountListCurrency,
             GetDonationsTable: {

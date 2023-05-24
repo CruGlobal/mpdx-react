@@ -7,7 +7,6 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import { DeleteContactMutation } from '../../ContactDetailsTab/ContactDetailsTab.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { UpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactDetailProvider } from '../../ContactDetailContext';
@@ -147,7 +146,9 @@ describe('ContactDetailsMoreActions', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>
+            <GqlMockedProvider<{
+              UpdateContactOther: UpdateContactOtherMutation;
+            }>
               mocks={{
                 UpdateContactOther: {
                   updateContact: {
@@ -198,7 +199,7 @@ describe('ContactDetailsMoreActions', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<DeleteContactMutation>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
@@ -236,7 +237,7 @@ describe('ContactDetailsMoreActions', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<DeleteContactMutation>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
@@ -268,7 +269,7 @@ describe('ContactDetailsMoreActions', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<DeleteContactMutation>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions

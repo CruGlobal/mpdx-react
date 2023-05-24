@@ -17,7 +17,7 @@ const account = {
   balance: 3500,
   code: '32111',
   currency: 'CAD',
-  lastSyncDate: '2/2/2021',
+  lastSyncDate: '2021-02-02',
   name: 'Test Account',
 };
 

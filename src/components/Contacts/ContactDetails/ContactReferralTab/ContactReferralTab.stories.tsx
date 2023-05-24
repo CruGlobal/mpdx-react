@@ -3,10 +3,7 @@ import { Box } from '@mui/material';
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactReferralTab } from './ContactReferralTab';
-import {
-  ContactReferralTabDocument,
-  ContactReferralTabQuery,
-} from './ContactReferralTab.generated';
+import { ContactReferralTabDocument } from './ContactReferralTab.generated';
 
 export default {
   title: 'Contacts/Tab/ContactReferralTab',
@@ -21,7 +18,7 @@ const onContactSelected = () => {};
 export const Default = (): ReactElement => {
   return (
     <Box m="2">
-      <GqlMockedProvider<ContactReferralTabQuery>>
+      <GqlMockedProvider>
         <ContactReferralTab
           accountListId={accountListId}
           contactId={contactId}

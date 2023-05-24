@@ -19,7 +19,6 @@ export const useUser = (): GetUserQuery['user'] | undefined => {
   }, []);
 
   const { data } = useGetUserQuery({
-    fetchPolicy: 'cache-first',
     skip: !session,
   });
   return data?.user;

@@ -12,6 +12,7 @@ import {
   CurrentCoachingAnswerSetDocument,
   CurrentCoachingAnswerSetQuery,
 } from './WeeklyReportModal.generated';
+import { GetTopBarQuery } from 'src/components/Layouts/Primary/TopBar/GetTopBar.generated';
 
 const organizationId = 'org-1';
 const accountListId = 'account-list-1';
@@ -62,6 +63,10 @@ const mocks = {
     },
   },
 };
+interface Mocks {
+  GetTopBar: GetTopBarQuery;
+  CurrentCoachingAnswerSet: CurrentCoachingAnswerSetQuery;
+}
 
 const mocksWithoutAnswers = cloneDeep(mocks);
 mocksWithoutAnswers.CurrentCoachingAnswerSet.currentCoachingAnswerSet.answers =
@@ -72,7 +77,7 @@ describe('Weekly Report Modal', () => {
     const { findByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider mocks={mocks}>
+          <GqlMockedProvider<Mocks> mocks={mocks}>
             <WeeklyReportModal
               accountListId={accountListId}
               open={true}
@@ -92,7 +97,7 @@ describe('Weekly Report Modal', () => {
     const { findByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider mocks={mocks}>
+          <GqlMockedProvider<Mocks> mocks={mocks}>
             <WeeklyReportModal
               accountListId={accountListId}
               open={true}
@@ -112,7 +117,7 @@ describe('Weekly Report Modal', () => {
     const { findByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider mocks={mocks}>
+          <GqlMockedProvider<Mocks> mocks={mocks}>
             <WeeklyReportModal
               accountListId={accountListId}
               open={true}
@@ -135,7 +140,7 @@ describe('Weekly Report Modal', () => {
       const { findByRole } = render(
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider mocks={mocks}>
+            <GqlMockedProvider<Mocks> mocks={mocks}>
               <WeeklyReportModal
                 accountListId={accountListId}
                 open={true}
@@ -160,7 +165,7 @@ describe('Weekly Report Modal', () => {
       const { getByRole, findByRole } = render(
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider
+            <GqlMockedProvider<Mocks>
               mocks={mocksWithoutAnswers}
               cache={cache}
               onCall={mutationSpy}
@@ -209,7 +214,7 @@ describe('Weekly Report Modal', () => {
       const { getByRole, findByRole } = render(
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
+            <GqlMockedProvider<Mocks> mocks={mocks} onCall={mutationSpy}>
               <WeeklyReportModal
                 accountListId={accountListId}
                 open={true}
@@ -247,7 +252,7 @@ describe('Weekly Report Modal', () => {
     const { findByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider mocks={mocks} onCall={mutationSpy}>
+          <GqlMockedProvider<Mocks> mocks={mocks} onCall={mutationSpy}>
             <WeeklyReportModal
               accountListId={accountListId}
               open={true}

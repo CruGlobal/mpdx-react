@@ -32,7 +32,7 @@ describe('ContactTags', () => {
   it('should render with tags', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <GqlMockedProvider<UpdateContactTagsMutation>>
+        <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <ContactTags
               accountListId={accountListId}
@@ -51,7 +51,7 @@ describe('ContactTags', () => {
   it('should add a tag', async () => {
     const { getByPlaceholderText, getByText } = render(
       <SnackbarProvider>
-        <GqlMockedProvider<UpdateContactTagsMutation>
+        <GqlMockedProvider<{ UpdateContactTags: UpdateContactTagsMutation }>
           mocks={{
             UpdateContactTags: {
               updateContact: {
@@ -93,7 +93,7 @@ describe('ContactTags', () => {
     const mutationSpy = jest.fn();
     const { getAllByTitle } = render(
       <SnackbarProvider>
-        <GqlMockedProvider<UpdateContactTagsMutation>
+        <GqlMockedProvider<{ UpdateContactTags: UpdateContactTagsMutation }>
           mocks={{
             UpdateContactTags: {
               updateContact: {

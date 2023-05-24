@@ -70,7 +70,9 @@ describe('Render Monthly Activity Section', () => {
     const { getByTestId, queryByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
+          <GqlMockedProvider<{ GetDonationGraph: GetDonationGraphQuery }>
+            mocks={mocks}
+          >
             <MonthlyActivitySection accountListId={'abc'} setTime={setTime} />
           </GqlMockedProvider>
         </TestRouter>
@@ -127,7 +129,9 @@ describe('Render Monthly Activity Section', () => {
     const { queryByText, queryByRole, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetDonationGraphQuery> mocks={mocks}>
+          <GqlMockedProvider<{ GetDonationGraph: GetDonationGraphQuery }>
+            mocks={mocks}
+          >
             <MonthlyActivitySection
               accountListId={'abc'}
               designationAccounts={[]}
@@ -150,7 +154,7 @@ describe('Render Monthly Activity Section', () => {
     render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetDonationGraphQuery> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <MonthlyActivitySection
               accountListId={'abc'}
               designationAccounts={['account-1']}
@@ -178,7 +182,7 @@ describe('Render Monthly Activity Section', () => {
     render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetDonationGraphQuery>
+          <GqlMockedProvider<{ GetDonationGraph: GetDonationGraphQuery }>
             mocks={mocks}
             onCall={mutationSpy}
           >

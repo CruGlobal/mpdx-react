@@ -89,7 +89,7 @@ it('should render list of people', async () => {
   const { findByTestId, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider<ContactsQuery>
+        <GqlMockedProvider<{ Contacts: ContactsQuery }>
           mocks={{
             Contacts: mockResponse,
           }}
@@ -108,7 +108,7 @@ it('should render contact detail panel', async () => {
   const { findByTestId, findAllByRole, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider<ContactsQuery>
+        <GqlMockedProvider<{ Contacts: ContactsQuery }>
           mocks={{
             Contacts: mockResponse,
           }}
