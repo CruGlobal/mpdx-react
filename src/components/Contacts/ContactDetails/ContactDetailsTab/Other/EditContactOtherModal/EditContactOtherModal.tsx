@@ -36,6 +36,7 @@ import {
 import {
   useUpdateContactOtherMutation,
   useAssigneeOptionsQuery,
+  useChurchOptionsQuery,
 } from './EditContactOther.generated';
 import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
@@ -106,6 +107,9 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
 
   const [selectedId, setSelectedId] = useState(referral?.referredBy.id ?? '');
   const [searchTerm, setSearchTerm] = useState(referral?.referredBy.name ?? '');
+  const [churchSearchTerm, setChurchSearchTerm] = useState(
+    referral?.referredBy.name ?? '',
+  );
 
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
@@ -113,6 +117,18 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     }),
     [],
   );
+
+  const handleChurchSearchTermChange = (e) => {
+    setChurchSearchTerm(e.target.value);
+  };
+
+  const { data: dataChurchOptions, loading: loadingChurchOptions } =
+    useChurchOptionsQuery({
+      variables: {
+        accountListId,
+        search: churchSearchTerm,
+      },
+    });
 
   const { data: dataAssigneeOptions, loading: loadingAssigneeOptions } =
     useAssigneeOptionsQuery({
@@ -482,6 +498,26 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                     onChange={handleChange('churchName')}
                     inputProps={{ 'aria-label': t('Church') }}
                     fullWidth
+                  />
+                  <Autocomplete
+                    loading={loadingChurchOptions}
+                    autoSelect
+                    autoHighlight
+                    freeSolo
+                    options={dataChurchOptions}
+                    getOptionLabel={dataChurchOptions}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={t('Church')}
+                        onChange={handleChurchSearchTermChange}
+                        inputProps={{ 'aria-label': t('Church') }}
+                      />
+                    )}
+                    value={userId ?? null}
+                    onChange={(_, userId) => {
+                      setFieldValue('userId', userId);
+                    }}
                   />
                 </ContactInputWrapper>
                 <ContactInputWrapper>
