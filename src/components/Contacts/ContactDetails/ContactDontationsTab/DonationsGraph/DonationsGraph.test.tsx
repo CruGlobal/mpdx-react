@@ -16,7 +16,7 @@ const currency = 'USD';
 describe('Donations Graph', () => {
   it('test renderer', async () => {
     const { findByRole } = render(
-      <GqlMockedProvider<GetDonationsGraphQuery>
+      <GqlMockedProvider<{ GetDonationsGraph: GetDonationsGraphQuery }>
         mocks={{
           GetDonationsGraph: {
             accountList: {
@@ -25,9 +25,11 @@ describe('Donations Graph', () => {
             reportsDonationHistories: {
               periods: [
                 {
-                  totals: {
-                    currency: 'USD',
-                  },
+                  totals: [
+                    {
+                      currency: 'USD',
+                    },
+                  ],
                 },
               ],
             },
@@ -96,7 +98,7 @@ describe('Donations Graph', () => {
 
   it('renders gift averages', async () => {
     const { findByRole } = render(
-      <GqlMockedProvider<GetDonationsGraphQuery>
+      <GqlMockedProvider<{ GetDonationsGraph: GetDonationsGraphQuery }>
         mocks={{
           GetDonationsGraph: {
             accountList: {

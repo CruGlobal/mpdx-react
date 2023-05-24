@@ -89,7 +89,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -109,7 +109,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -130,7 +130,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -151,7 +151,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -197,7 +197,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -239,7 +239,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -274,7 +274,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -309,7 +309,9 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>
+            <GqlMockedProvider<{
+              UpdateContactPartnership: UpdateContactPartnershipMutation;
+            }>
               mocks={{
                 LoadConstants: {
                   constant: {
@@ -362,7 +364,9 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>
+            <GqlMockedProvider<{
+              UpdateContactPartnership: UpdateContactPartnershipMutation;
+            }>
               mocks={{
                 LoadConstants: {
                   constant: {
@@ -418,9 +422,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>
-              onCall={mutationSpy}
-            >
+            <GqlMockedProvider onCall={mutationSpy}>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -463,7 +465,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>>
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -502,7 +504,9 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>
+            <GqlMockedProvider<{
+              UpdateContactPartnership: UpdateContactPartnershipMutation;
+            }>
               mocks={{
                 GetDataForPartnershipInfoModal: {
                   contacts: {
@@ -554,7 +558,9 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>
+            <GqlMockedProvider<{
+              UpdateContactPartnership: UpdateContactPartnershipMutation;
+            }>
               mocks={{
                 GetDataForPartnershipInfoModal: {
                   contacts: {
@@ -584,7 +590,9 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactPartnershipMutation>
+            <GqlMockedProvider<{
+              UpdateContactPartnership: UpdateContactPartnershipMutation;
+            }>
               mocks={{
                 LoadConstants: {
                   constant: {

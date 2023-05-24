@@ -99,7 +99,7 @@ describe('LoadCoaching', () => {
   });
   it('test list view', () => {
     const { getAllByRole } = render(
-      <GqlMockedProvider<LoadCoachingListQuery>
+      <GqlMockedProvider<{ LoadCoachingList: LoadCoachingListQuery }>
         mocks={{
           LoadCoachingList: {
             coachingAccountLists: {

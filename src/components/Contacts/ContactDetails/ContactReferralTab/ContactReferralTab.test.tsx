@@ -37,7 +37,7 @@ describe('ContactReferralTab', () => {
 
   it('test render', async () => {
     const { findByText } = render(
-      <GqlMockedProvider<ContactReferralTabQuery>
+      <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
         mocks={{
           ContactReferralTab: {
             contact: {
@@ -62,7 +62,7 @@ describe('ContactReferralTab', () => {
 
   it('tests render with data and click event', async () => {
     const { findByText, getByText } = render(
-      <GqlMockedProvider<ContactReferralTabQuery>
+      <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
         mocks={{
           ContactReferralTab: {
             contact: {

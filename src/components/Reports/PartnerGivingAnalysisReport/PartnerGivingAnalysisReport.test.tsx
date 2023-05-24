@@ -87,7 +87,7 @@ describe('PartnerGivingAnalysisReport', () => {
   it('loading', async () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>>
+        <GqlMockedProvider>
           <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -103,7 +103,11 @@ describe('PartnerGivingAnalysisReport', () => {
   it('loaded', async () => {
     const { getAllByTestId, getByTestId, queryByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery> mocks={mocks}>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
+          mocks={mocks}
+        >
           <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -125,7 +129,11 @@ describe('PartnerGivingAnalysisReport', () => {
   it('nav list closed', async () => {
     const { getByTestId, queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery> mocks={mocks}>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
+          mocks={mocks}
+        >
           <PartnerGivingAnalysisReport
             {...defaultProps}
             isNavListOpen={false}
@@ -159,7 +167,9 @@ describe('PartnerGivingAnalysisReport', () => {
     };
     const { queryByTestId, queryByText, queryByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
           mocks={mocksWithZeroContacts}
         >
           <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
@@ -181,7 +191,9 @@ describe('PartnerGivingAnalysisReport', () => {
     const mutationSpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -243,7 +255,9 @@ describe('PartnerGivingAnalysisReport', () => {
     const mutationSpy = jest.fn();
     const { getByPlaceholderText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -279,7 +293,9 @@ describe('PartnerGivingAnalysisReport', () => {
     const mutationSpy = jest.fn();
     const { getByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -309,7 +325,11 @@ describe('PartnerGivingAnalysisReport', () => {
   it('selects and unselects all', async () => {
     const { getAllByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery> mocks={mocks}>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
+          mocks={mocks}
+        >
           <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -360,7 +380,9 @@ describe('PartnerGivingAnalysisReport', () => {
     const mutationSpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -383,7 +405,9 @@ describe('PartnerGivingAnalysisReport', () => {
     const mutationSpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetPartnerGivingAnalysisReportQuery>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
           mocks={mocks}
           onCall={mutationSpy}
         >

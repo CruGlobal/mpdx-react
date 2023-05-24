@@ -12,9 +12,11 @@ const taskId = '1';
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<SetTaskStarredMutation>
+    <GqlMockedProvider<{ SetTaskStarred: SetTaskStarredMutation }>
       mocks={{
-        updateTask: { task: { id: taskId, starred: false } },
+        SetTaskStarred: {
+          updateTask: { task: { id: taskId, starred: false } },
+        },
       }}
     >
       <StarTaskIconButton
@@ -28,8 +30,10 @@ export const Default = (): ReactElement => {
 
 export const IsStarred = (): ReactElement => {
   return (
-    <GqlMockedProvider<SetTaskStarredMutation>
-      mocks={{ updateTask: { task: { id: taskId, starred: true } } }}
+    <GqlMockedProvider<{ SetTaskStarred: SetTaskStarredMutation }>
+      mocks={{
+        SetTaskStarred: { updateTask: { task: { id: taskId, starred: true } } },
+      }}
     >
       <StarTaskIconButton
         accountListId={accountListId}

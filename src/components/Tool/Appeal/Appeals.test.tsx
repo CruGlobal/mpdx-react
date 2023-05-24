@@ -74,7 +74,7 @@ describe('AppealsTest', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider<GetAppealsQuery> mocks={mocks}>
+            <GqlMockedProvider<{ GetAppeals: GetAppealsQuery }> mocks={mocks}>
               <Appeals accountListId={accountListId} />
             </GqlMockedProvider>
           </TestRouter>
@@ -97,7 +97,7 @@ describe('AppealsTest', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider<GetAppealsQuery> mocks={mocks}>
+            <GqlMockedProvider<{ GetAppeals: GetAppealsQuery }> mocks={mocks}>
               <Appeals accountListId={accountListId} />
             </GqlMockedProvider>
           </TestRouter>

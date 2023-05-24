@@ -51,7 +51,9 @@ describe('MassActionsAddToAppealModal', () => {
     const mutationSpy = jest.fn();
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetAppealsForMassActionQuery>
+        <GqlMockedProvider<{
+          GetAppealsForMassAction: GetAppealsForMassActionQuery;
+        }>
           mocks={mocks}
           onCall={mutationSpy}
         >

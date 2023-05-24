@@ -102,7 +102,7 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>>
+              <GqlMockedProvider>
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -127,7 +127,7 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>>
+              <GqlMockedProvider>
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -155,7 +155,7 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>>
+              <GqlMockedProvider>
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -180,7 +180,7 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>>
+              <GqlMockedProvider>
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -208,7 +208,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -236,7 +238,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -262,7 +266,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -287,7 +293,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -315,7 +323,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -340,7 +350,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -368,7 +380,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -393,7 +407,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
@@ -418,7 +434,9 @@ describe('ContactDetailTab', () => {
         <TestRouter router={router}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery> mocks={mocks}>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
+                mocks={mocks}
+              >
                 <ContactsPage>
                   <ContactDetailProvider>
                     <ContactDetailsTab
