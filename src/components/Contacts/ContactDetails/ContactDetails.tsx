@@ -29,6 +29,10 @@ const ContactDetailsWrapper = styled(Box)(({}) => ({
   width: '100%',
 }));
 
+const TabPanelNoBottomPadding = styled(TabPanel)(({}) => ({
+  paddingBottom: '0px',
+}));
+
 const ContactTabsWrapper = styled(Box)(({}) => ({
   width: '100%',
   backgroundColor: 'transparent',
@@ -105,14 +109,14 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
             <ContactTab value={TabKey.Notes} label={t('Notes')} />
           </ContactTabs>
         </ContactTabsWrapper>
-        <TabPanel value={TabKey.Tasks}>
+        <TabPanelNoBottomPadding value={TabKey.Tasks}>
           {contactId && accountListId && (
             <ContactTasksTab
               accountListId={accountListId}
               contactId={contactId}
             />
           )}
-        </TabPanel>
+        </TabPanelNoBottomPadding>
         <TabPanel value={TabKey.Donations}>
           {contactId && accountListId && (
             <ContactDonationsTab

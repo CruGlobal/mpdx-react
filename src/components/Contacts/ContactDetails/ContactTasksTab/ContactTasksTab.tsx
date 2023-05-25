@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Box, Button, Checkbox, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Add from '@mui/icons-material/Add';
@@ -96,6 +96,8 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
+  const [infiniteListHeight, setInfiniteListHeight] = useState('400px');
+  const infiniteListRef = useRef<HTMLInputElement>(null);
 
   const { data, loading, fetchMore } = useContactTasksTabQuery({
     variables: {
@@ -142,6 +144,19 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   const { openTaskModal } = useTaskModal();
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!window || !infiniteListRef.current) return;
+    const infiniteListCalculatedHeight =
+      window.innerHeight -
+      infiniteListRef.current.getBoundingClientRect().top -
+      25;
+    setInfiniteListHeight(
+      infiniteListCalculatedHeight < 251
+        ? '400px'
+        : `${infiniteListCalculatedHeight}px`,
+    );
+  }, [contactId]);
 
   return (
     <ContactDetailsTabContainer>
@@ -210,37 +225,39 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         </HeaderRow>
       </ContactTasksHeaderContainer>
       <Divider />
-      <InfiniteList
-        loading={loading}
-        data={data?.tasks.nodes}
-        EmptyPlaceholder={<ContactTasksTabNullState contactId={contactId} />}
-        itemContent={(index, task) => (
-          <Box
-            key={index}
-            flexDirection="row"
-            width="100%"
-            data-testid={`task-${task.id}`}
-          >
-            <ContactTaskRow
-              key={task.id}
-              accountListId={accountListId}
-              task={task}
-              isChecked={isRowChecked(task.id)}
-              onTaskCheckToggle={toggleSelectionById}
-            />
-          </Box>
-        )}
-        endReached={() =>
-          data?.tasks?.pageInfo.hasNextPage &&
-          fetchMore({
-            variables: { after: data.tasks?.pageInfo.endCursor },
-          })
-        }
-        style={{
-          height: `400px`,
-        }}
-        data-testid="virtuoso-item-list"
-      />
+      <Box ref={infiniteListRef}>
+        <InfiniteList
+          loading={loading}
+          data={data?.tasks.nodes}
+          EmptyPlaceholder={<ContactTasksTabNullState contactId={contactId} />}
+          itemContent={(index, task) => (
+            <Box
+              key={index}
+              flexDirection="row"
+              width="100%"
+              data-testid={`task-${task.id}`}
+            >
+              <ContactTaskRow
+                key={task.id}
+                accountListId={accountListId}
+                task={task}
+                isChecked={isRowChecked(task.id)}
+                onTaskCheckToggle={toggleSelectionById}
+              />
+            </Box>
+          )}
+          endReached={() =>
+            data?.tasks?.pageInfo.hasNextPage &&
+            fetchMore({
+              variables: { after: data.tasks?.pageInfo.endCursor },
+            })
+          }
+          style={{
+            height: infiniteListHeight,
+          }}
+          data-testid="virtuoso-item-list"
+        />
+      </Box>
     </ContactDetailsTabContainer>
   );
 };
