@@ -2,6 +2,7 @@ import { createMocks } from 'node-mocks-http';
 import { getToken } from 'next-auth/jwt';
 import stopImpersonating from '../../../pages/api/stop-impersonating.page';
 import { nextAuthSessionCookieName } from 'pages/api/utils/cookies';
+import { reportError } from 'pages/api/utils/RollBar';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
 const siteUrl = `${process.env.SITE_URL}`;
@@ -28,6 +29,8 @@ describe('/api/stop-impersonating', () => {
     (getToken as jest.Mock).mockReturnValue({
       impersonatorApiToken: userOneImpersonate,
     });
+
+    reportError as jest.Mock;
   });
 
   it('Ensure Correct cookies are removed or added/edited', async () => {

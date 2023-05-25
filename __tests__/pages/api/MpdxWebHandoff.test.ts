@@ -3,6 +3,7 @@ import { getToken } from 'next-auth/jwt';
 import mpdxWebHandoff from '../../../pages/api/mpdx-web-handoff.page';
 import { taskFiltersTabs } from '../../../src/utils/tasks/taskFilterTabs';
 import { nextAuthSessionCookieName } from 'pages/api/utils/cookies';
+import { reportError } from 'pages/api/utils/RollBar';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
 
@@ -43,6 +44,9 @@ interface createMocksRequests {
 }
 
 describe('/api/mpdx-web-handoff', () => {
+  beforeEach(() => {
+    reportError as jest.Mock;
+  });
   it('No accountListId or path defined. Redirect to home', async () => {
     const { req, res }: createMocksRequests = createMocks({ method: 'GET' });
     await mpdxWebHandoff(req, res);

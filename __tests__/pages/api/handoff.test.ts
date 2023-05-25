@@ -2,9 +2,9 @@ import { createMocks } from 'node-mocks-http';
 import { getToken } from 'next-auth/jwt';
 import handoff from '../../../pages/api/handoff.page';
 import { ssrClient } from 'src/lib/client';
+import { reportError } from 'pages/api/utils/RollBar';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
-jest.mock('reportError', () => jest.fn());
 jest.mock('src/lib/client', () => ({ ssrClient: jest.fn() }));
 
 interface createMocksRequests {
@@ -32,6 +32,7 @@ describe('/api/handoff', () => {
           data: { user: { defaultAccountList } },
         }),
       });
+      reportError as jest.Mock;
     });
 
     it('returns redirect', async () => {
