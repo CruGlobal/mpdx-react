@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Avatar,
   Box,
@@ -8,14 +8,18 @@ import {
   Typography,
   Button,
   Link,
+  SxProps,
+  Theme,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
+import MergeIcon from '@mui/icons-material/Merge';
 import Cake from '@mui/icons-material/Cake';
 import CreateIcon from '@mui/icons-material/Create';
 import Email from '@mui/icons-material/Email';
 import Phone from '@mui/icons-material/Phone';
 import { useTranslation } from 'react-i18next';
+import { MergePeopleModal } from 'src/components/Contacts/MassActions/MergePeople/MergePeopleModal';
 import { RingIcon } from '../../../RingIcon';
 import {
   ContactDetailContext,
@@ -82,6 +86,10 @@ export const ContactDetailsAddIcon = styled(AddIcon)(({ theme }) => ({
   color: theme.palette.info.main,
 }));
 
+export const MergePeopleIcon = styled(MergeIcon)(({ theme }) => ({
+  color: theme.palette.info.main,
+}));
+
 export const ContactDetailsAddText = styled(Typography)(({ theme }) => ({
   color: theme.palette.info.main,
   textTransform: 'uppercase',
@@ -127,9 +135,38 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
     setCreatePersonModalOpen,
   } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
+  const [selecting, setSelectingRaw] = useState(false);
+  const [selectedPeople, setSelectedPeople] = useState<string[]>([]);
+  const [mergePeopleModalOpen, setMergePeopleModalOpen] = useState(false);
+
+  const setSelecting: typeof setSelectingRaw = (value) => {
+    setSelectedPeople([]);
+    setSelectingRaw(value);
+  };
+
+  const toggleSelectPerson = (personId: string) => {
+    if (!selecting) {
+      return;
+    }
+
+    if (selectedPeople.includes(personId)) {
+      setSelectedPeople(selectedPeople.filter((id) => id !== personId));
+    } else {
+      setSelectedPeople([...selectedPeople, personId]);
+    }
+  };
+
   const { primaryPerson, people, id } = data;
 
   const personView = (person: ContactPersonFragment) => {
+    const selected = selecting && selectedPeople.includes(person.id);
+    const styles: SxProps<Theme> = selecting
+      ? {
+          cursor: 'pointer',
+          backgroundColor: selected ? '#EBECEC' : undefined,
+        }
+      : {};
+
     const birthday = dateFromParts(
       person.birthdayYear,
       person.birthdayMonth,
@@ -142,7 +179,12 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
     );
 
     return (
-      <ContactPersonContainer key={person.id}>
+      <ContactPersonContainer
+        key={person.id}
+        sx={styles}
+        aria-selected={selected}
+        onClick={() => toggleSelectPerson(person.id)}
+      >
         {/* TODO - add avatar link */}
         <ContactPersonAvatar
           alt={`${person.firstName} ${person.lastName}`}
@@ -234,20 +276,71 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       {people.nodes.map((person) =>
         person.id !== primaryPerson?.id ? personView(person) : null,
       )}
-      <ContactDetailsAddButton onClick={() => setCreatePersonModalOpen(true)}>
-        <Grid container alignItems="center">
-          <ContactDetailsAddIcon />
-          <ContactDetailsAddText variant="subtitle1">
-            {t('Add Person')}
-          </ContactDetailsAddText>
-        </Grid>
-      </ContactDetailsAddButton>
+      {!selecting && (
+        <ContactDetailsAddButton onClick={() => setCreatePersonModalOpen(true)}>
+          <Grid container alignItems="center">
+            <ContactDetailsAddIcon />
+            <ContactDetailsAddText variant="subtitle1">
+              {t('Add Person')}
+            </ContactDetailsAddText>
+          </Grid>
+        </ContactDetailsAddButton>
+      )}
+      {people.nodes.length > 1 &&
+        (selecting ? (
+          <>
+            <ContactDetailsAddButton onClick={() => setSelecting(false)}>
+              <Grid container alignItems="center">
+                <ContactDetailsAddText variant="subtitle1">
+                  {t('Cancel')}
+                </ContactDetailsAddText>
+              </Grid>
+            </ContactDetailsAddButton>
+
+            <ContactDetailsAddButton
+              onClick={() => setMergePeopleModalOpen(true)}
+              variant="contained"
+              disabled={selectedPeople.length < 2}
+            >
+              <Grid container alignItems="center">
+                <MergePeopleIcon sx={{ color: 'unset' }} />
+                <ContactDetailsAddText
+                  variant="subtitle1"
+                  sx={{ color: 'unset' }}
+                >
+                  {t('Merge Selected People')}
+                </ContactDetailsAddText>
+              </Grid>
+            </ContactDetailsAddButton>
+          </>
+        ) : (
+          <ContactDetailsAddButton onClick={() => setSelecting(true)}>
+            <Grid container alignItems="center">
+              <MergePeopleIcon />
+              <ContactDetailsAddText variant="subtitle1">
+                {t('Merge People')}
+              </ContactDetailsAddText>
+            </Grid>
+          </ContactDetailsAddButton>
+        ))}
       {createPersonModalOpen ? (
         <PersonModal
           person={undefined}
           contactId={id}
           accountListId={accountListId}
           handleClose={() => setCreatePersonModalOpen(false)}
+        />
+      ) : null}
+      {mergePeopleModalOpen ? (
+        <MergePeopleModal
+          accountListId={accountListId}
+          people={people.nodes.filter((person) =>
+            selectedPeople.includes(person.id),
+          )}
+          handleClose={() => {
+            setSelecting(false);
+            setMergePeopleModalOpen(false);
+          }}
         />
       ) : null}
     </>
