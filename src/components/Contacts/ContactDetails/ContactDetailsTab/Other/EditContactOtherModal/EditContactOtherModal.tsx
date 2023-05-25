@@ -486,12 +486,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                   </Grid>
                 </ContactInputWrapper>
                 <ContactInputWrapper>
-                  {/* <ul>
-                    {churches.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul> */}
-
                   <Autocomplete
                     loading={loadingChurchOptions}
                     autoSelect
