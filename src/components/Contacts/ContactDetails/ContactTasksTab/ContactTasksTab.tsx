@@ -147,16 +147,15 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
 
   useEffect(() => {
     if (!window || !infiniteListRef.current) return;
-    const infiniteListCalculatedHeight =
-      window.innerHeight -
-      infiniteListRef.current.getBoundingClientRect().top -
-      25;
     setInfiniteListHeight(
-      infiniteListCalculatedHeight < 251
-        ? '400px'
-        : `${infiniteListCalculatedHeight}px`,
+      Math.max(
+        window.innerHeight -
+          infiniteListRef.current.getBoundingClientRect().top -
+          25,
+        260,
+      ) + 'px',
     );
-  }, [contactId]);
+  }, [contactId, window.innerHeight]);
 
   return (
     <ContactDetailsTabContainer>
