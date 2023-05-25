@@ -41,6 +41,7 @@ import { useUpdateCache } from '../useUpdateCache';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
 import { updateAddressSchema } from './updateAddressSchema';
+import { generateEmailBody } from './helpers';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -174,26 +175,6 @@ export const EditContactAddressModal: React.FC<
     },
     skip: !editingDisabled,
   });
-  const requestEmailUpdateBody = (): string => {
-    if (!emailData) {
-      return '';
-    }
-
-    const donorAccount = address.sourceDonorAccount;
-    const donorName = donorAccount
-      ? `${emailData.contact.name} (ministry partner #${donorAccount.accountNumber})`
-      : emailData.contact.name;
-    const previousAddress = address.street
-      ? `\nThey were previously located at:\n${address.street}\n${address.city}, ` +
-        `${address.state} ${address.postalCode}\n`
-      : ' ';
-    return (
-      `Dear Donation Services,\n\nOne of my ministry partners, ${donorName} ` +
-      `has a new current address.\n${previousAddress}\nPlease update their address to:\n` +
-      'REPLACE WITH NEW STREET\nREPLACE WITH NEW CITY, STATE, ZIP\n\nThanks,\n\n' +
-      `${emailData.user.firstName}`
-    );
-  };
 
   return (
     <Modal isOpen={true} title={t('Edit Address')} handleClose={handleClose}>
@@ -251,7 +232,7 @@ export const EditContactAddressModal: React.FC<
                         <p>
                           <Link
                             href={`mailto:donation.services@cru.org?subject=Donor+address+change&body=${encodeURIComponent(
-                              requestEmailUpdateBody(),
+                              generateEmailBody(emailData, address),
                             )}`}
                             sx={{ fontWeight: 'bold' }}
                           >
