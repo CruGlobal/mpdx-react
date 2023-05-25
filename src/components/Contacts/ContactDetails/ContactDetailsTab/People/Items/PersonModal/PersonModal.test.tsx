@@ -6,7 +6,6 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { InMemoryCache } from '@apollo/client';
-import { useSession } from 'next-auth/react';
 import {
   ContactPeopleFragment,
   ContactPeopleFragmentDoc,
@@ -25,7 +24,6 @@ import { UpdatePersonMutation } from './PersonModal.generated';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import { uploadAvatar } from './uploadAvatar';
 
-jest.mock('next-auth/react');
 jest.mock('./uploadAvatar');
 
 const handleClose = jest.fn();
@@ -145,15 +143,7 @@ jest.mock('notistack', () => ({
 
 describe('PersonModal', () => {
   beforeEach(() => {
-    (useSession as jest.Mock).mockReturnValue({
-      data: {
-        user: {
-          apiToken: 'token',
-        },
-      },
-    });
-
-    (uploadAvatar as jest.Mock).mockResolvedValue('avatar-url');
+    (uploadAvatar as jest.Mock).mockResolvedValue(undefined);
   });
 
   it('should render edit person modal', () => {
@@ -355,7 +345,6 @@ describe('PersonModal', () => {
 
       await waitFor(() =>
         expect(uploadAvatar).toHaveBeenCalledWith({
-          token: 'token',
           personId: mockPerson.id,
           file: file2,
         }),

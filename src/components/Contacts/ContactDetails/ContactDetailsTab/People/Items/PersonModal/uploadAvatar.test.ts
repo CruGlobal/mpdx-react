@@ -2,8 +2,7 @@ import { uploadAvatar } from './uploadAvatar';
 
 describe('uploadAvatar', () => {
   const fetch = jest.fn().mockResolvedValue({
-    json: () =>
-      Promise.resolve({ data: { attributes: { avatar: 'avatar-url' } } }),
+    json: () => Promise.resolve({ success: true }),
   });
   beforeEach(() => {
     window.fetch = fetch;
@@ -16,19 +15,18 @@ describe('uploadAvatar', () => {
     type: 'text/plain',
   });
 
-  it('uploads the image', async () => {
-    const url = await uploadAvatar({
-      token: 'abc',
-      personId: 'person-1',
-      file,
-    });
-    expect(url).toEqual('avatar-url');
+  it('uploads the image', () => {
+    return expect(
+      uploadAvatar({
+        personId: 'person-1',
+        file,
+      }),
+    ).resolves.toBeUndefined();
   });
 
   it('rejects files that are not images', () => {
     return expect(
       uploadAvatar({
-        token: 'abc',
         personId: 'person-1',
         file: invalidFile,
       }),
@@ -40,7 +38,6 @@ describe('uploadAvatar', () => {
 
     return expect(
       uploadAvatar({
-        token: 'abc',
         personId: 'person-1',
         file,
       }),

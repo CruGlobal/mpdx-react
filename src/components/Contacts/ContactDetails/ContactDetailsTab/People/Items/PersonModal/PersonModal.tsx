@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useSession } from 'next-auth/react';
 import { useApolloClient } from '@apollo/client';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -120,8 +119,6 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     handleRemoveDialogOpen,
   } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
-  const { data: sessionData } = useSession();
-  const token = sessionData?.user?.apiToken ?? '';
   const client = useApolloClient();
 
   const [avatar, setAvatar] = useState<{ file: File; blobUrl: string } | null>(
@@ -399,7 +396,6 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       if (file) {
         try {
           await uploadAvatar({
-            token,
             personId: attributes.id,
             file,
           });

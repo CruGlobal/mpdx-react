@@ -1,46 +1,26 @@
-import { assert } from 'ts-essentials';
-import { v4 as uuidv4 } from 'uuid';
-
 export const uploadAvatar = async ({
-  token,
   personId,
   file,
 }: {
-  token: string;
   personId: string;
   file: File;
-}): Promise<string> => {
+}): Promise<void> => {
   if (!file.type.startsWith('image/')) {
     throw new Error('Cannot upload avatar: file is not an image');
   }
 
-  const pictureId = uuidv4();
-
   const form = new FormData();
-  form.append('data[id]', personId);
-  form.append('data[type]', 'people');
-  form.append('data[attributes][overwrite]', 'true');
-  form.append('data[relationships][pictures][data][][id]', pictureId);
-  form.append('data[relationships][pictures][data][][type]', 'pictures');
-  form.append('included[][id]', pictureId);
-  form.append('included[][type]', 'pictures');
-  form.append('included[][attributes][image]', file);
-  form.append('included[][attributes][primary]', 'true');
+  form.append('personId', personId);
+  form.append('avatar', file);
 
-  const res = await fetch(
-    `${process.env.REST_API_URL}contacts/people/${personId}`,
-    {
-      method: 'PUT',
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-      body: form,
-    },
-  ).catch(() => {
+  const res = await fetch(`/api/upload-person-avatar`, {
+    method: 'POST',
+    body: form,
+  }).catch(() => {
     throw new Error('Cannot upload avatar: server error');
   });
-  const data = await res.json();
-  const avatarUrl: string | undefined = data?.data?.attributes?.avatar;
-  assert(avatarUrl, 'Could not find avatar in response');
-  return avatarUrl;
+  const data: { success: boolean } = await res.json();
+  if (!data.success) {
+    throw new Error('Cannot upload avatar: server error');
+  }
 };
