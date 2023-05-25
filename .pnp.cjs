@@ -151,7 +151,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.14.7"],\
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.2"],\
-            ["rollbar", "npm:2.25.2"],\
+            ["rollbar", "npm:2.26.1"],\
             ["seedrandom", "npm:3.0.5"],\
             ["storybook", "npm:6.5.16"],\
             ["storybook-addon-designs", "npm:6.3.1"],\
@@ -11169,7 +11169,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/rollbar", null],\
             ["prop-types", "npm:15.8.1"],\
             ["react", "npm:18.2.0"],\
-            ["rollbar", "npm:2.25.2"],\
+            ["rollbar", "npm:2.26.1"],\
             ["tiny-invariant", "npm:1.2.0"]\
           ],\
           "packagePeers": [\
@@ -27226,7 +27226,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.14.7"],\
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.2"],\
-            ["rollbar", "npm:2.25.2"],\
+            ["rollbar", "npm:2.26.1"],\
             ["seedrandom", "npm:3.0.5"],\
             ["storybook", "npm:6.5.16"],\
             ["storybook-addon-designs", "npm:6.3.1"],\
@@ -31429,10 +31429,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["rollbar", [\
-        ["npm:2.25.2", {\
-          "packageLocation": "./.yarn/cache/rollbar-npm-2.25.2-ec7b548f0b-34d1e097c9.zip/node_modules/rollbar/",\
+        ["npm:2.26.1", {\
+          "packageLocation": "./.yarn/cache/rollbar-npm-2.26.1-3b09789774-0a13c48f41.zip/node_modules/rollbar/",\
           "packageDependencies": [\
-            ["rollbar", "npm:2.25.2"],\
+            ["rollbar", "npm:2.26.1"],\
             ["async", "npm:3.2.4"],\
             ["console-polyfill", "npm:0.3.0"],\
             ["decache", "npm:3.1.0"],\
