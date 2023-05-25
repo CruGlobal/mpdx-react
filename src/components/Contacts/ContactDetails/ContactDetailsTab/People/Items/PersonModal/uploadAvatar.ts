@@ -10,6 +10,10 @@ export const uploadAvatar = async ({
   personId: string;
   file: File;
 }): Promise<string> => {
+  if (!file.type.startsWith('image/')) {
+    throw new Error('Cannot upload avatar: file is not an image');
+  }
+
   const pictureId = uuidv4();
 
   const form = new FormData();
@@ -32,7 +36,9 @@ export const uploadAvatar = async ({
       },
       body: form,
     },
-  );
+  ).catch(() => {
+    throw new Error('Cannot upload avatar: server error');
+  });
   const data = await res.json();
   const avatarUrl: string | undefined = data?.data?.attributes?.avatar;
   assert(avatarUrl, 'Could not find avatar in response');

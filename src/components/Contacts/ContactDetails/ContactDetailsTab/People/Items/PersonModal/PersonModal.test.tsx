@@ -345,9 +345,10 @@ describe('PersonModal', () => {
       const file2 = new File(['contents2'], 'image2.png', {
         type: 'image/png',
       });
-      userEvent.upload(getByTestId('PersonNameUpload'), file1);
+      const fileInput = getByTestId('PersonNameUpload');
+      userEvent.upload(fileInput, file1);
       expect(revokeObjectURL).not.toHaveBeenCalledWith('blob:1');
-      userEvent.upload(getByTestId('PersonNameUpload'), file2);
+      userEvent.upload(fileInput, file2);
       expect(revokeObjectURL).toHaveBeenCalledWith('blob:1');
 
       userEvent.click(getByRole('button', { name: 'Save' }));
@@ -362,6 +363,46 @@ describe('PersonModal', () => {
 
       cleanup();
       expect(revokeObjectURL).toHaveBeenCalledWith('blob:2');
+    });
+
+    it('should notify the user about upload errors', async () => {
+      (uploadAvatar as jest.Mock).mockRejectedValue(
+        new Error('Upload failure'),
+      );
+
+      const { getByRole, getByTestId } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const file = new File(['contents'], 'image.png', {
+        type: 'image/png',
+      });
+      userEvent.upload(getByTestId('PersonNameUpload'), file);
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Avatar could not be uploaded',
+          {
+            variant: 'error',
+          },
+        ),
+      );
     });
 
     it('should handle editing person name section', async () => {

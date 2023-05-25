@@ -397,11 +397,18 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     if (isUpdate(attributes)) {
       const file = avatar?.file;
       if (file) {
-        await uploadAvatar({
-          token,
-          personId: attributes.id,
-          file,
-        });
+        try {
+          await uploadAvatar({
+            token,
+            personId: attributes.id,
+            file,
+          });
+        } catch (err) {
+          enqueueSnackbar(t('Avatar could not be uploaded'), {
+            variant: 'error',
+          });
+          return;
+        }
       }
 
       await updatePerson({
