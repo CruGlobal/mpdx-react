@@ -107,9 +107,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
 
   const [selectedId, setSelectedId] = useState(referral?.referredBy.id ?? '');
   const [searchTerm, setSearchTerm] = useState(referral?.referredBy.name ?? '');
-  const [churchSearchTerm, setChurchSearchTerm] = useState(
-    referral?.referredBy.name ?? '',
-  );
 
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
@@ -118,17 +115,13 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     [],
   );
 
-  const handleChurchSearchTermChange = (e) => {
-    setChurchSearchTerm(e.target.value);
-  };
-
   const { data: dataChurchOptions, loading: loadingChurchOptions } =
     useChurchOptionsQuery({
       variables: {
         accountListId,
-        search: churchSearchTerm,
       },
     });
+  const churches = dataChurchOptions?.accountList.churches ?? [];
 
   const { data: dataAssigneeOptions, loading: loadingAssigneeOptions } =
     useAssigneeOptionsQuery({
@@ -136,6 +129,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
         accountListId,
       },
     });
+
   const users = useMemo(
     () =>
       dataAssigneeOptions?.accountListUsers.nodes
@@ -492,31 +486,38 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                   </Grid>
                 </ContactInputWrapper>
                 <ContactInputWrapper>
-                  <TextField
-                    label={t('Church')}
-                    value={churchName}
-                    onChange={handleChange('churchName')}
-                    inputProps={{ 'aria-label': t('Church') }}
-                    fullWidth
-                  />
+                  {/* <ul>
+                    {churches.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul> */}
+
                   <Autocomplete
                     loading={loadingChurchOptions}
                     autoSelect
                     autoHighlight
                     freeSolo
-                    options={dataChurchOptions}
-                    getOptionLabel={dataChurchOptions}
-                    renderInput={(params) => (
+                    options={churches}
+                    renderInput={(params): ReactElement => (
                       <TextField
                         {...params}
                         label={t('Church')}
-                        onChange={handleChurchSearchTermChange}
-                        inputProps={{ 'aria-label': t('Church') }}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loadingChurchOptions && (
+                                <CircularProgress color="primary" size={20} />
+                              )}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
                       />
                     )}
-                    value={userId ?? null}
-                    onChange={(_, userId) => {
-                      setFieldValue('userId', userId);
+                    value={churchName || ''}
+                    onChange={(_, churchName): void => {
+                      setFieldValue('churchName', churchName);
                     }}
                   />
                 </ContactInputWrapper>
