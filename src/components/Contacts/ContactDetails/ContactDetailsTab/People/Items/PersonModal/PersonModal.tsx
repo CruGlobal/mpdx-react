@@ -142,8 +142,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     setAvatar({ file, blobUrl: URL.createObjectURL(file) });
   };
 
-  const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
-  const [createPerson, { loading: creating }] = useCreatePersonMutation();
+  const [updatePerson] = useUpdatePersonMutation();
+  const [createPerson] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
 
   const personSchema: yup.SchemaOf<
@@ -557,7 +557,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               <SubmitButton
                 disabled={!formikProps.isValid || formikProps.isSubmitting}
               >
-                {(updating || creating || deleting) && (
+                {formikProps.isSubmitting && (
                   <LoadingIndicator color="primary" size={20} />
                 )}
                 {t('Save')}
