@@ -79,7 +79,9 @@ describe('ContactsLeftPanel', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetUserOptionsQuery> mocks={mocks}>
+          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
+            mocks={mocks}
+          >
             <ContactsPage>
               <>
                 <Component />

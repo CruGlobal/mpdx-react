@@ -10,10 +10,18 @@ import { FourteenMonthReport } from './FourteenMonthReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import userEvent from '@testing-library/user-event';
 
 const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
+const onSelectContact = jest.fn();
+const defaultProps = {
+  accountListId,
+  title,
+  onNavListToggle,
+  onSelectContact,
+};
 
 const mocks = {
   FourteenMonthReport: {
@@ -200,13 +208,14 @@ describe('FourteenMonthReport', () => {
   it('salary report loading', async () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>>
+        <GqlMockedProvider>
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Salary}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -220,13 +229,16 @@ describe('FourteenMonthReport', () => {
   it('salary report loaded', async () => {
     const { getAllByTestId, getByTestId, queryByTestId, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
+          mocks={mocks}
+        >
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Salary}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -246,13 +258,14 @@ describe('FourteenMonthReport', () => {
   it('partner report loading', async () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>>
+        <GqlMockedProvider>
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Donor}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -266,13 +279,16 @@ describe('FourteenMonthReport', () => {
   it('partner report loaded', async () => {
     const { getByTestId, queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
+          mocks={mocks}
+        >
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Donor}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -298,6 +314,7 @@ describe('FourteenMonthReport', () => {
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
           />
         </MockedProvider>
       </ThemeProvider>,
@@ -323,6 +340,7 @@ describe('FourteenMonthReport', () => {
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
           />
         </MockedProvider>
       </ThemeProvider>,
@@ -341,13 +359,16 @@ describe('FourteenMonthReport', () => {
   it('nav list closed', async () => {
     const { getByTestId, queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
+          mocks={mocks}
+        >
           <FourteenMonthReport
             accountListId={accountListId}
             currencyType={FourteenMonthReportCurrencyType.Donor}
             isNavListOpen={false}
             title={title}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -368,7 +389,7 @@ describe('FourteenMonthReport', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -379,6 +400,7 @@ describe('FourteenMonthReport', () => {
             isNavListOpen={false}
             title={title}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -400,7 +422,7 @@ describe('FourteenMonthReport', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>
+        <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -410,6 +432,7 @@ describe('FourteenMonthReport', () => {
             isNavListOpen={false}
             title={title}
             onNavListToggle={onNavListToggle}
+            onSelectContact={onSelectContact}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -425,5 +448,32 @@ describe('FourteenMonthReport', () => {
         },
       }),
     );
+  });
+
+  it('can click on a contact name', async () => {
+    const mutationSpy = jest.fn();
+    const { getAllByText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<FourteenMonthReportQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <FourteenMonthReport
+            {...defaultProps}
+            isNavListOpen={true}
+            currencyType={FourteenMonthReportCurrencyType.Donor}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    userEvent.click(getAllByText('test name')[0]);
+    expect(onSelectContact).toHaveBeenCalledWith('contact-1');
   });
 });

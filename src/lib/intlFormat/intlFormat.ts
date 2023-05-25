@@ -1,14 +1,8 @@
 import { DateTime } from 'luxon';
 
-const getLanguage = (): string => {
-  const language =
-    (typeof window !== 'undefined' && window.navigator.language) || 'en-US';
-  return language;
-};
-
 // Return the current locale's date format (i.e. patterns like MM/dd/yyyy, dd.MM.yyyy, yyyy.MM.dd)
-export const getDateFormatPattern = (language = getLanguage()): string =>
-  new Intl.DateTimeFormat(language)
+export const getDateFormatPattern = (locale: string): string =>
+  new Intl.DateTimeFormat(locale)
     // Use January 1st so that the month and day of month are both one-digit numbers
     .formatToParts(new Date(2023, 0, 1))
     .reduce((pattern, part) => {
@@ -27,44 +21,33 @@ export const getDateFormatPattern = (language = getLanguage()): string =>
       }
     }, '');
 
-export const numberFormat = (value: number, language = getLanguage()): string =>
-  new Intl.NumberFormat(language, {
+export const numberFormat = (value: number, locale: string): string =>
+  new Intl.NumberFormat(locale, {
     style: 'decimal',
   }).format(Number.isFinite(value) ? value : 0);
 
-export const percentageFormat = (
-  value: number,
-  language = getLanguage(),
-  removeSpace = false,
-): string => {
-  const percentage = new Intl.NumberFormat(language, {
+export const percentageFormat = (value: number, locale: string): string =>
+  new Intl.NumberFormat(locale, {
     style: 'percent',
   }).format(Number.isFinite(value) ? value : 0);
-  return removeSpace ? percentage?.replace(' ', '') : percentage;
-};
 
 export const currencyFormat = (
   value: number,
-  currency = 'USD',
-  minimumFractionDigits = 0,
-  language = getLanguage(),
+  currency: string | null | undefined,
+  locale: string,
 ): string =>
-  new Intl.NumberFormat(language, {
+  new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency,
-    minimumFractionDigits,
-  }).format(
-    Number.isFinite(value)
-      ? parseFloat(value.toFixed(minimumFractionDigits))
-      : 0,
-  );
+    currency: currency ?? 'USD',
+    maximumFractionDigits: 0,
+  }).format(Number.isFinite(value) ? value : 0);
 
 export const dayMonthFormat = (
   day: number,
   month: number,
-  language = getLanguage(),
+  locale: string,
 ): string =>
-  new Intl.DateTimeFormat(language, {
+  new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'short',
   }).format(DateTime.local().set({ month, day }).toJSDate());
@@ -72,26 +55,30 @@ export const dayMonthFormat = (
 export const monthYearFormat = (
   month: number,
   year: number,
-  language = getLanguage(),
+  locale: string,
 ): string =>
-  new Intl.DateTimeFormat(language, {
+  new Intl.DateTimeFormat(locale, {
     month: 'short',
     year: 'numeric',
   }).format(DateTime.local(year, month, 1).toJSDate());
 
-export const dateFormat = (
-  date: DateTime,
-  language = getLanguage(),
-): string => {
+export const dateFormat = (date: DateTime | null, locale: string): string => {
   if (date === null) {
     return '';
   }
-  return new Intl.DateTimeFormat(language, {
+  return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   }).format(date.toJSDate());
 };
+
+export const dateFormatShort = (date: DateTime, locale: string): string =>
+  new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+  }).format(date.toJSDate());
 
 const intlFormat = {
   numberFormat,

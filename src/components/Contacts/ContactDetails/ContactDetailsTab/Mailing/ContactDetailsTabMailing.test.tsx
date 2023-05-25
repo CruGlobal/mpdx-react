@@ -60,6 +60,6 @@ describe('ContactDetailsTabMailing', () => {
       </TestRouter>,
     );
 
-    expect(getByText('Source: MPDX (1/1/2023)')).toBeInTheDocument();
+    expect(getByText('Source: MPDX (Jan 1, 2023)')).toBeInTheDocument();
   });
 });

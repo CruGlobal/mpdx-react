@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 import { ContactsQuery } from './Contacts.generated';
 import { Coordinates } from './map/map';
 
@@ -36,6 +37,16 @@ export const getRedirectPathname = ({
     pathname = `/accountLists/${accountListId}/reports/partnerGivingAnalysis`;
   } else if (
     routerPathname ===
+    '/accountLists/[accountListId]/reports/partnerCurrency/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/reports/partnerCurrency`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/reports/salaryCurrency/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/reports/salaryCurrency`;
+  } else if (
+    routerPathname ===
     '/accountLists/[accountListId]/reports/donations/[[...contactId]]'
   ) {
     pathname = `/accountLists/${accountListId}/reports/donations`;
@@ -50,6 +61,7 @@ export const getRedirectPathname = ({
 
 export const coordinatesFromContacts = (
   contacts: ContactsQuery['contacts'],
+  locale: string,
 ): Coordinates[] =>
   contacts.nodes.map((contact): Coordinates => {
     const address = contact.primaryAddress;
@@ -76,8 +88,6 @@ export const coordinatesFromContacts = (
       country: address.country,
       postal: address.postalCode,
       source: address.source,
-      date: `(${DateTime.fromISO(address.createdAt).toLocaleString(
-        DateTime.DATE_SHORT,
-      )})`,
+      date: `(${dateFormatShort(DateTime.fromISO(address.createdAt), locale)})`,
     };
   });

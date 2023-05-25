@@ -311,6 +311,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                   <Typography>
                     <Trans
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      shouldUnescape
                       values={{ value: data.people.nodes.length }}
                       components={{ bold: <strong /> }}
                     />

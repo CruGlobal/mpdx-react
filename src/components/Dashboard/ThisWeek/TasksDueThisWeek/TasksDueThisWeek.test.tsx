@@ -101,7 +101,7 @@ describe('TasksDueThisWeek', () => {
       };
       const { getByTestId, queryByTestId, getByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<LoadConstantsQuery>
+          <GqlMockedProvider<{ LoadConstants: LoadConstantsQuery }>
             mocks={{
               constant: {
                 activities: [
@@ -165,7 +165,7 @@ describe('TasksDueThisWeek', () => {
       };
       const { getByTestId, getByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<LoadConstantsQuery>
+          <GqlMockedProvider<{ LoadConstants: LoadConstantsQuery }>
             mocks={{
               constant: {
                 activities: [

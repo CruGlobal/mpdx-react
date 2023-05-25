@@ -42,7 +42,7 @@ describe('DonorAccountAutocomplete', () => {
     const mutationSpy = jest.fn();
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonorAccountsQuery>
+        <GqlMockedProvider<{ GetDonorAccounts: GetDonorAccountsQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -69,7 +69,7 @@ describe('DonorAccountAutocomplete', () => {
     const mutationSpy = jest.fn();
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonorAccountsQuery>
+        <GqlMockedProvider<{ GetDonorAccounts: GetDonorAccountsQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -110,7 +110,7 @@ describe('DonorAccountAutocomplete', () => {
     const mutationSpy = jest.fn();
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetDonorAccountsQuery>
+        <GqlMockedProvider<{ GetDonorAccounts: GetDonorAccountsQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >

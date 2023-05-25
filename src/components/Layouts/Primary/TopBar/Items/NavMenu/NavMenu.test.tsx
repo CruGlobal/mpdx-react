@@ -187,7 +187,9 @@ describe('NavMenu', () => {
     const { queryByTestId, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetToolNotificationsQuery>
+          <GqlMockedProvider<{
+            GetToolNotifications: GetToolNotificationsQuery;
+          }>
             mocks={{
               GetToolNotifications: {
                 contacts: {
@@ -228,7 +230,9 @@ describe('NavMenu', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetToolNotificationsQuery>
+          <GqlMockedProvider<{
+            GetToolNotifications: GetToolNotificationsQuery;
+          }>
             mocks={{
               GetToolNotifications: {
                 contacts: {
@@ -270,7 +274,9 @@ describe('NavMenu', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetToolNotificationsQuery>
+          <GqlMockedProvider<{
+            GetToolNotifications: GetToolNotificationsQuery;
+          }>
             mocks={{
               GetToolNotifications: {
                 contacts: {

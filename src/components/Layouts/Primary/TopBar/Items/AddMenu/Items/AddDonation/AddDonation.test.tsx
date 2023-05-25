@@ -18,7 +18,7 @@ describe('AddDonation', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
-            <GqlMockedProvider<AddDonationMutation>>
+            <GqlMockedProvider>
               <AddDonation
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -36,7 +36,7 @@ describe('AddDonation', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
-            <GqlMockedProvider<AddDonationMutation>>
+            <GqlMockedProvider>
               <AddDonation
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -57,7 +57,7 @@ describe('AddDonation', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
-            <GqlMockedProvider<AddDonationMutation>
+            <GqlMockedProvider<{ AddDonation: AddDonationMutation }>
               onCall={mutationSpy}
               mocks={{
                 GetDonationModal: {

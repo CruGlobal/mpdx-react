@@ -19,7 +19,6 @@ import {
   savedGraphQLTaskMock,
 } from './FilterPanel.mocks';
 import { FilterPanel, FilterPanelProps } from './FilterPanel';
-import { SaveFilterMutation } from './SaveFilterModal/SaveFilterModal.generated';
 import theme from 'src/theme';
 
 const onSelectedFiltersChanged = jest.fn();
@@ -53,7 +52,7 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<SaveFilterMutation>>
+              <GqlMockedProvider>
                 <FilterPanel
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock]}
@@ -101,7 +100,7 @@ describe('FilterPanel', () => {
       } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
+            <GqlMockedProvider>
               <FilterPanel
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
@@ -160,7 +159,7 @@ describe('FilterPanel', () => {
       } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
+            <GqlMockedProvider>
               <FilterPanel
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
@@ -196,7 +195,7 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<SaveFilterMutation>>
+              <GqlMockedProvider>
                 <FilterPanel
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock, savedGraphQLContactMock]}
@@ -364,7 +363,7 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<SaveFilterMutation>>
+              <GqlMockedProvider>
                 <FilterPanel
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMockTwo, savedGraphQLContactMock]}
@@ -463,7 +462,7 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<SaveFilterMutation>>
+              <GqlMockedProvider>
                 <FilterPanel
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[
@@ -510,7 +509,7 @@ describe('FilterPanel', () => {
 
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
+        <GqlMockedProvider>
           <FilterPanel
             filters={[]}
             savedFilters={[savedFiltersMock]}
@@ -531,7 +530,7 @@ describe('FilterPanel', () => {
       const { getByText, queryByTestId, queryAllByTestId } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
+            <GqlMockedProvider>
               <FilterPanel
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
@@ -559,7 +558,7 @@ describe('FilterPanel', () => {
 
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
+        <GqlMockedProvider>
           <FilterPanel
             filters={[]}
             savedFilters={[savedFiltersMock]}
@@ -590,7 +589,7 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<SaveFilterMutation>>
+              <GqlMockedProvider>
                 <FilterPanel
                   filters={[
                     filterPanelDefaultMock,
@@ -636,7 +635,7 @@ describe('FilterPanel', () => {
       const { getByTestId, queryByTestId, getAllByTestId } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
+            <GqlMockedProvider>
               <FilterPanel
                 filters={[
                   filterPanelDefaultMock,
@@ -677,7 +676,7 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<SaveFilterMutation>>
+              <GqlMockedProvider>
                 <FilterPanel
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock]}
@@ -727,7 +726,7 @@ describe('FilterPanel', () => {
       } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
+            <GqlMockedProvider>
               <FilterPanel
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
@@ -782,7 +781,7 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<SaveFilterMutation>>
+              <GqlMockedProvider>
                 <FilterPanel
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedGraphQLTaskMock]}
@@ -812,7 +811,7 @@ describe('FilterPanel', () => {
 
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
+        <GqlMockedProvider>
           <FilterPanel
             filters={[]}
             savedFilters={[savedFiltersMock]}
@@ -833,7 +832,7 @@ describe('FilterPanel', () => {
       const { getByText, queryByTestId, queryAllByTestId } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
+            <GqlMockedProvider>
               <FilterPanel
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
@@ -861,7 +860,7 @@ describe('FilterPanel', () => {
 
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
-        <GqlMockedProvider<SaveFilterMutation>>
+        <GqlMockedProvider>
           <FilterPanel
             filters={[]}
             savedFilters={[]}
@@ -887,7 +886,7 @@ describe('FilterPanel', () => {
         return (
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<SaveFilterMutation>>
+              <GqlMockedProvider>
                 <FilterPanel
                   filters={[filterPanelTagsMock]}
                   savedFilters={[savedFiltersMock]}
@@ -920,7 +919,7 @@ describe('FilterPanel', () => {
       const { queryByRole } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<SaveFilterMutation>>
+            <GqlMockedProvider>
               <FilterPanel
                 filters={[filterPanelZeroTagsMock]}
                 savedFilters={[savedFiltersMock]}

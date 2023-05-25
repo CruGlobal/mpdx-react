@@ -82,7 +82,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            }>
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
@@ -115,7 +117,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            }>
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
@@ -144,7 +148,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            }>
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
@@ -174,7 +180,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            }>
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
@@ -210,7 +218,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            }>
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
@@ -247,7 +257,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            }>
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
@@ -275,7 +287,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidPhoneNumbersQuery>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            }>
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {

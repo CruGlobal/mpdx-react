@@ -19,6 +19,8 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   comment?: GetCommentsForTaskModalCommentListQuery['task']['comments']['nodes'][0];
@@ -35,6 +37,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
   taskId,
 }: Props) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const accountListId = useAccountListId();
   const [deleteComment] = useDeleteCommentMutation();
   const [updateComment] = useUpdateCommentMutation();
@@ -93,7 +96,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
         <Tooltip placement="bottom" title={comment?.createdAt || ''} arrow>
           <CommentInfoText display="inline">
             {comment?.createdAt &&
-              DateTime.fromISO(comment.createdAt).toLocaleString()}
+              dateFormat(DateTime.fromISO(comment.createdAt), locale)}
           </CommentInfoText>
         </Tooltip>
       </Box>

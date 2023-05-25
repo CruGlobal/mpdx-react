@@ -26,6 +26,8 @@ import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
+import { numberFormat } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -74,6 +76,7 @@ const TasksDueThisWeek = ({
 }: Props): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const locale = useLocale();
   const { openTaskModal } = useTaskModal();
   const { data } = useLoadConstantsQuery();
   const [activityTypes, setActivityTypes] = React.useState(
@@ -124,7 +127,7 @@ const TasksDueThisWeek = ({
           </List>
           <CardActions>
             <Button size="small" color="primary" disabled>
-              {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
+              {t('View All ({{totalCount}})', { totalCount: 0 })}
             </Button>
           </CardActions>
         </motion.div>
@@ -214,8 +217,8 @@ const TasksDueThisWeek = ({
                     color="primary"
                     data-testid="TasksDueThisWeekButtonViewAll"
                   >
-                    {t('View All ({{ totalCount, number }})', {
-                      totalCount: dueTasks.totalCount,
+                    {t('View All ({{totalCount}})', {
+                      totalCount: numberFormat(dueTasks.totalCount, locale),
                     })}
                   </Button>
                 </Link>

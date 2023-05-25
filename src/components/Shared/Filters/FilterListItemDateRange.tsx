@@ -9,6 +9,7 @@ import {
   DateRangeInput,
 } from '../../../../graphql/types.generated';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   filter: DaterangeFilter;
@@ -22,6 +23,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
   onUpdate,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const range = value
     ? Interval.fromISO(value.min + '/' + value.max)
@@ -59,7 +61,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          inputFormat={getDateFormatPattern()}
+          inputFormat={getDateFormatPattern(locale)}
         />
         <MobileDatePicker
           renderInput={(params) => (
@@ -80,7 +82,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          inputFormat={getDateFormatPattern()}
+          inputFormat={getDateFormatPattern(locale)}
         />
       </ListItem>
     </>

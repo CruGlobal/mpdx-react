@@ -133,6 +133,30 @@ describe('getRedirectPathname', () => {
       '/accountLists/account-list-1/reports/partnerGivingAnalysis',
     );
   });
+
+  it('should return the partner currency URL when user is on the partnerCurrency 14 month report page', () => {
+    const pathname = getRedirectPathname({
+      routerPathname:
+        '/accountLists/[accountListId]/reports/partnerCurrency/[[...contactId]]',
+      accountListId,
+    });
+
+    expect(pathname).toBe(
+      '/accountLists/account-list-1/reports/partnerCurrency',
+    );
+  });
+
+  it('should return the salary currency URL when user is on the salaryCurrency 14 month report page', () => {
+    const pathname = getRedirectPathname({
+      routerPathname:
+        '/accountLists/[accountListId]/reports/salaryCurrency/[[...contactId]]',
+      accountListId,
+    });
+
+    expect(pathname).toBe(
+      '/accountLists/account-list-1/reports/salaryCurrency',
+    );
+  });
 });
 
 describe('coordinatesFromContacts', () => {
@@ -148,54 +172,57 @@ describe('coordinatesFromContacts', () => {
       people: { nodes: [] },
     };
 
-    const result = coordinatesFromContacts({
-      nodes: [
-        {
-          id: 'contact-no-address',
-          name: 'Contact No Address',
-          avatar: 'https://example.com/1.jpg',
-          ...otherFields,
-        },
-        {
-          id: 'contact-address-no-geo',
-          name: 'Contact Address No Geo',
-          avatar: 'https://example.com/2.jpg',
-          primaryAddress: {
-            id: 'address-1',
-            street: '123 Main St',
-            city: 'Orlando',
-            state: 'FL',
-            country: 'USA',
-            postalCode: '32832',
-            source: 'MPDX',
-            createdAt: '2023-01-01T00:00:00.000Z',
+    const result = coordinatesFromContacts(
+      {
+        nodes: [
+          {
+            id: 'contact-no-address',
+            name: 'Contact No Address',
+            avatar: 'https://example.com/1.jpg',
+            ...otherFields,
           },
-          ...otherFields,
-        },
-        {
-          id: 'contact-address',
-          name: 'Contact Address',
-          avatar: 'https://example.com/3.jpg',
-          status: StatusEnum.PartnerFinancial,
-          primaryAddress: {
-            id: 'address-2',
-            street: '123 Main St',
-            city: 'Orlando',
-            state: 'FL',
-            country: 'USA',
-            postalCode: '32832',
-            source: 'MPDX',
-            geo: '32.1,-60',
-            createdAt: '2023-01-01T00:00:00.000Z',
+          {
+            id: 'contact-address-no-geo',
+            name: 'Contact Address No Geo',
+            avatar: 'https://example.com/2.jpg',
+            primaryAddress: {
+              id: 'address-1',
+              street: '123 Main St',
+              city: 'Orlando',
+              state: 'FL',
+              country: 'USA',
+              postalCode: '32832',
+              source: 'MPDX',
+              createdAt: '2023-01-01T00:00:00.000Z',
+            },
+            ...otherFields,
           },
-          ...otherFields,
+          {
+            id: 'contact-address',
+            name: 'Contact Address',
+            avatar: 'https://example.com/3.jpg',
+            status: StatusEnum.PartnerFinancial,
+            primaryAddress: {
+              id: 'address-2',
+              street: '123 Main St',
+              city: 'Orlando',
+              state: 'FL',
+              country: 'USA',
+              postalCode: '32832',
+              source: 'MPDX',
+              geo: '32.1,-60',
+              createdAt: '2023-01-01T00:00:00.000Z',
+            },
+            ...otherFields,
+          },
+        ],
+        totalCount: 3,
+        pageInfo: {
+          hasNextPage: false,
         },
-      ],
-      totalCount: 3,
-      pageInfo: {
-        hasNextPage: false,
       },
-    });
+      'en-US',
+    );
 
     expect(result).toEqual([
       {

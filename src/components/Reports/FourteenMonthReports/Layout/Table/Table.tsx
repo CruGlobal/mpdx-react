@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Box,
   Table,
+  Link,
   TableBody,
   TableCell,
   TableContainer,
@@ -19,17 +20,23 @@ import {
   FourteenMonthReportTableHeadProps as TableHeadProps,
 } from './TableHead/TableHead';
 import type { Contact, Month } from './TableHead/TableHead';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[] | undefined;
   ref: React.Ref<HTMLTableElement>;
+  onSelectContact: (contactId: string) => void;
 }
 
 const NameTypography = styled(Typography, {
   shouldForwardProp: (prop) => prop !== 'expanded',
 })(({ expanded }: { expanded: boolean }) => ({
   marginLeft: expanded ? 0 : theme.spacing(1),
+  cursor: 'pointer',
+  '&:hover': {
+    textDecoration: 'underline',
+  },
 }));
 
 const PrintableContainer = styled(TableContainer)(() => ({
@@ -56,10 +63,12 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
         onRequestSort,
         salaryCurrency,
         totals,
+        onSelectContact,
       },
       ref,
     ) => {
       const { t } = useTranslation();
+      const locale = useLocale();
       const apiConstants = useApiConstants();
 
       return (
@@ -89,7 +98,9 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                       <Box display="flex" alignItems="center">
                         {!isExpanded && <InfoIcon fontSize="small" />}
                         <NameTypography variant="body1" expanded={isExpanded}>
-                          {contact.name}
+                          <Link onClick={() => onSelectContact(contact.id)}>
+                            {contact.name}
+                          </Link>
                         </NameTypography>
                       </Box>
                       {isExpanded && (
@@ -104,30 +115,36 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                       <TableCell>{contact.status}</TableCell>
                       <TableCell>
                         {contact.pledgeAmount &&
-                          `${numberFormat(Math.round(contact.pledgeAmount))} ${
-                            contact.pledgeCurrency
-                          } ${
+                          `${numberFormat(
+                            Math.round(contact.pledgeAmount),
+                            locale,
+                          )} ${contact.pledgeCurrency} ${
                             apiConstants?.pledgeFrequencies?.find(
                               ({ key }) => key === contact.pledgeFrequency,
                             )?.value ?? ''
                           }`}
                       </TableCell>
                       <TableCell>
-                        {numberFormat(Math.round(contact.average))}
+                        {numberFormat(Math.round(contact.average), locale)}
                       </TableCell>
                       <TableCell>
-                        {numberFormat(Math.round(contact.minimum))}
+                        {numberFormat(Math.round(contact.minimum), locale)}
                       </TableCell>
                     </React.Fragment>
                   )}
                   {contact.months?.map((month: Month) => (
                     <TableCell key={month?.month} align="center">
                       {month?.salaryCurrencyTotal &&
-                        numberFormat(Math.round(month?.salaryCurrencyTotal))}
+                        numberFormat(
+                          Math.round(month?.salaryCurrencyTotal),
+                          locale,
+                        )}
                     </TableCell>
                   ))}
                   <TableCell align="right">
-                    <strong>{numberFormat(Math.round(contact.total))}</strong>
+                    <strong>
+                      {numberFormat(Math.round(contact.total), locale)}
+                    </strong>
                   </TableCell>
                 </TableRow>
               ))}
@@ -137,7 +154,9 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                 </TableCell>
                 {totals?.months?.map((month) => (
                   <TableCell key={month.month} align="center">
-                    <strong>{numberFormat(Math.round(month.total))}</strong>
+                    <strong>
+                      {numberFormat(Math.round(month.total), locale)}
+                    </strong>
                   </TableCell>
                 ))}
                 <TableCell align="right">
@@ -149,6 +168,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                           0,
                         ) ?? 0,
                       ),
+                      locale,
                     )}
                   </strong>
                 </TableCell>

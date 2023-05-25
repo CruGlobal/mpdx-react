@@ -4,6 +4,7 @@ import theme from 'src/theme';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';
 import React from 'react';
+import { useLocale } from 'src/hooks/useLocale';
 
 const TaskRowWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -47,6 +48,7 @@ export const TaskDate: React.FC<TaskDateProps> = ({
   small,
 }) => {
   if (!taskDate) return null;
+  const locale = useLocale();
   const isLate = isComplete ? false : taskDate < DateTime.local();
   const showYear = taskDate.year !== DateTime.local().year;
 
@@ -54,7 +56,11 @@ export const TaskDate: React.FC<TaskDateProps> = ({
     <TaskRowWrap>
       <TaskCommentIcon isLate={isLate} small={small || false} />
       <DateText isLate={isLate} isComplete={isComplete} small={small || false}>
-        {taskDate.toFormat(showYear ? 'MMM dd, yy' : 'MMM dd')}
+        {taskDate.toJSDate().toLocaleDateString(locale, {
+          day: '2-digit',
+          month: 'short',
+          year: showYear ? '2-digit' : undefined,
+        })}
       </DateText>
     </TaskRowWrap>
   );

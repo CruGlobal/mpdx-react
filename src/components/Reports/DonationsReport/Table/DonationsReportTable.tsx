@@ -35,6 +35,8 @@ import {
 } from '../GetDonationsTable.generated';
 import { EditDonationModal } from './Modal/EditDonationModal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 interface DonationReportTableProps {
   accountListId: string;
@@ -88,7 +90,7 @@ const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
 }));
 
 export interface Donation {
-  date: Date;
+  date: DateTime;
   contactId: string | null;
   partnerId: string;
   partner: string;
@@ -111,6 +113,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
   setTime,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
     null,
   );
@@ -163,7 +166,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
 
   const createData = (data: ExpectedDonationDataFragment): Donation => {
     return {
-      date: new Date(`${data.donationDate}T00:00:00`),
+      date: DateTime.fromISO(data.donationDate),
       contactId: data.donorAccount.contacts.nodes[0]?.id ?? null,
       partnerId: data.donorAccount.id,
       partner: data.donorAccount.displayName,
@@ -183,6 +186,12 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
   };
 
   const donations = useMemo(() => nodes.map(createData), [nodes]);
+
+  const date = (params: GridCellParams) => {
+    const donation = params.row as Donation;
+
+    return dateFormatShort(donation.date, locale);
+  };
 
   const link = (params: GridCellParams) => {
     const donation = params.row as Donation;
@@ -256,8 +265,8 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
     {
       field: 'date',
       headerName: t('Date'),
-      type: 'date',
       width: 100,
+      renderCell: date,
     },
     {
       field: 'partner',
@@ -316,7 +325,10 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
 
   const isEmpty = nodes.length === 0;
 
-  const title = `${time.monthLong} ${time.year}`;
+  const title = time.toJSDate().toLocaleDateString(locale, {
+    month: 'long',
+    year: 'numeric',
+  });
 
   const hasNext = time.hasSame(DateTime.now().startOf('month'), 'month');
 

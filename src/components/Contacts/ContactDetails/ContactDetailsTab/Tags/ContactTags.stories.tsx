@@ -4,7 +4,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { ContactTags } from './ContactTags';
-import { UpdateContactTagsMutation } from './ContactTags.generated';
 
 export default {
   title: 'Contacts/Tab/ContactDetailsTab/ContactTags',
@@ -20,7 +19,7 @@ export const Default = ({
 }): ReactElement => {
   return (
     <Box m={2}>
-      <GqlMockedProvider<UpdateContactTagsMutation>>
+      <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <ContactTags
             accountListId={accountListId}
@@ -43,7 +42,7 @@ export const EmptyTags = ({
 }): ReactElement => {
   return (
     <Box m={2}>
-      <GqlMockedProvider<UpdateContactTagsMutation>>
+      <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <ContactTags
             accountListId={accountListId}

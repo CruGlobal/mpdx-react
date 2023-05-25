@@ -14,7 +14,7 @@ const contactId = 'contact-id';
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<ContactDonationsListQuery>
+    <GqlMockedProvider<{ ContactDonationsList: ContactDonationsListQuery }>
       mocks={{
         ContactDonationsList: {
           donations: {

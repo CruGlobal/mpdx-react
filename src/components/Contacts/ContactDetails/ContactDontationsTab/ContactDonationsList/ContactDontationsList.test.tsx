@@ -38,7 +38,7 @@ describe('ContactDonationsList', () => {
 
   it('test Renderer', async () => {
     const { findByRole, getByRole } = render(
-      <GqlMockedProvider<ContactDonationsListQuery>
+      <GqlMockedProvider<{ ContactDonationsList: ContactDonationsListQuery }>
         mocks={{
           ContactDonationsList: {
             contact: {

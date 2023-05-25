@@ -12,7 +12,6 @@ import {
   savedFiltersMock,
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
-import { SaveFilterMutation } from 'src/components/Shared/Filters/SaveFilterModal/SaveFilterModal.generated';
 import theme from 'src/theme';
 import { ContactsPage } from './ContactsPage';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
@@ -60,7 +59,7 @@ describe('Contacts', () => {
     } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
+          <GqlMockedProvider>
             <ContactsPage>
               <FilterPanel
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
@@ -145,7 +144,7 @@ describe('Contacts', () => {
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
+          <GqlMockedProvider>
             <ContactsPage>
               <ComponentWrapper />
             </ContactsPage>

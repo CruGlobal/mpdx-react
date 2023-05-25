@@ -9,7 +9,10 @@ import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/Contac
 import { ContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../src/theme';
-import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
+import {
+  ContactFilterStatusEnum,
+  StatusEnum,
+} from '../../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
@@ -20,7 +23,7 @@ const changeContactStatus = jest.fn();
 const contact = {
   id: '123',
   name: 'Test Person',
-  status: 'PARTNER_FINANCIAL',
+  status: StatusEnum.PartnerFinancial,
   primaryAddress: {
     id: 'address',
     updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
@@ -38,7 +41,7 @@ describe('ContactFlowColumn', () => {
         <DndProvider backend={HTML5Backend}>
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
-              <GqlMockedProvider<ContactsQuery>
+              <GqlMockedProvider<{ Contacts: ContactsQuery }>
                 mocks={{
                   Contacts: {
                     contacts: {
