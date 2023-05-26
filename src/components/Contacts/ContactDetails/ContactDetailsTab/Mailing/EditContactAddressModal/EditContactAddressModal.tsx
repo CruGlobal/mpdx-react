@@ -3,6 +3,8 @@ import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import {
+  Alert,
+  AlertTitle,
   Box,
   Checkbox,
   CircularProgress,
@@ -12,6 +14,7 @@ import {
   FormControlLabel,
   Grid,
   InputLabel,
+  Link,
   MenuItem,
   Select,
   TextField,
@@ -26,6 +29,7 @@ import {
 } from '../../ContactDetailsTab.generated';
 import {
   useDeleteContactAddressMutation,
+  useDonationServicesEmailQuery,
   useUpdateContactAddressMutation,
 } from './EditContactAddress.generated';
 import {
@@ -37,6 +41,7 @@ import { useUpdateCache } from '../useUpdateCache';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
 import { updateAddressSchema } from './updateAddressSchema';
+import { generateEmailBody } from './helpers';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -162,6 +167,15 @@ export const EditContactAddressModal: React.FC<
     handleClose();
   };
 
+  const editingDisabled = address.source === 'Siebel';
+  const { data: emailData } = useDonationServicesEmailQuery({
+    variables: {
+      accountListId,
+      contactId,
+    },
+    skip: !editingDisabled,
+  });
+
   return (
     <Modal isOpen={true} title={t('Edit Address')} handleClose={handleClose}>
       <Formik
@@ -203,6 +217,32 @@ export const EditContactAddressModal: React.FC<
           <form onSubmit={handleSubmit} noValidate>
             <DialogContent dividers>
               <ContactEditContainer>
+                {editingDisabled && (
+                  <ContactInputWrapper>
+                    <Alert severity="info">
+                      <AlertTitle sx={{ fontWeight: 'bold' }}>
+                        {t('This address is provided by Donation Services')}
+                      </AlertTitle>
+                      <p>
+                        {t(
+                          'The address that syncs with Donation Services cannot be edited here. Please email Donation Services with the updated address, or you can create a new address and select it as your primary mailing address.',
+                        )}
+                      </p>
+                      {emailData && (
+                        <p>
+                          <Link
+                            href={`mailto:donation.services@cru.org?subject=Donor+address+change&body=${encodeURIComponent(
+                              generateEmailBody(emailData, address),
+                            )}`}
+                            sx={{ fontWeight: 'bold' }}
+                          >
+                            {t('Email Donation Services here')}
+                          </Link>
+                        </p>
+                      )}
+                    </Alert>
+                  </ContactInputWrapper>
+                )}
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
                     <Grid item sm={12} md={9}>
@@ -225,6 +265,7 @@ export const EditContactAddressModal: React.FC<
                           required: true,
                           fullWidth: true,
                         }}
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item xs={12} md={3}>
@@ -264,6 +305,7 @@ export const EditContactAddressModal: React.FC<
                         onChange={handleChange}
                         inputProps={{ 'aria-label': t('City') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
@@ -274,6 +316,7 @@ export const EditContactAddressModal: React.FC<
                         onChange={handleChange}
                         inputProps={{ 'aria-label': t('State') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
@@ -284,6 +327,7 @@ export const EditContactAddressModal: React.FC<
                         onChange={handleChange}
                         inputProps={{ 'aria-label': t('Zip') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                   </Grid>
@@ -298,6 +342,7 @@ export const EditContactAddressModal: React.FC<
                         onChange={handleChange}
                         inputProps={{ 'aria-label': t('Country') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
@@ -308,6 +353,7 @@ export const EditContactAddressModal: React.FC<
                         onChange={handleChange}
                         inputProps={{ 'aria-label': t('Region') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
@@ -318,6 +364,7 @@ export const EditContactAddressModal: React.FC<
                         onChange={handleChange}
                         inputProps={{ 'aria-label': t('Metro') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                   </Grid>
