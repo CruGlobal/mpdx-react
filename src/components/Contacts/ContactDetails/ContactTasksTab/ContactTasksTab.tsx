@@ -96,7 +96,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
-  const [infiniteListHeight, setInfiniteListHeight] = useState('400px');
+  const [infiniteListRectTop, setInfiniteListRectTop] = useState(260);
   const infiniteListRef = useRef<HTMLInputElement>(null);
 
   const { data, loading, fetchMore } = useContactTasksTabQuery({
@@ -146,16 +146,9 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!window || !infiniteListRef.current) return;
-    setInfiniteListHeight(
-      Math.max(
-        window.innerHeight -
-          infiniteListRef.current.getBoundingClientRect().top -
-          25,
-        260,
-      ) + 'px',
-    );
-  }, [contactId, window.innerHeight]);
+    if (!infiniteListRef.current) return;
+    setInfiniteListRectTop(infiniteListRef.current.getBoundingClientRect().top);
+  }, [contactId]);
 
   return (
     <ContactDetailsTabContainer>
@@ -252,7 +245,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
             })
           }
           style={{
-            height: infiniteListHeight,
+            height: `Max(calc(100vh - ${infiniteListRectTop}px), 260px)`,
           }}
           data-testid="virtuoso-item-list"
         />

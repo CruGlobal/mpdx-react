@@ -255,36 +255,10 @@ describe('ContactTasksTab', () => {
     ).toBe(100);
   });
 
-  const createMocks = (): any[] => {
-    const mocks: any = [];
-    for (let i = 0; i < 3; i++) {
-      mocks.push({
-        __typename: 'Task',
-        id: `${i}`,
-        activityType: 'EMAIL',
-        startAt: '2022-12-21T02:09:23.000Z',
-        completedAt: '2022-03-07T09:55:19.000Z',
-        comments: { __typename: 'CommentConnection', totalCount: 0 },
-        contacts: { __typename: 'ContactConnection', nodes: [] },
-        result: 'DONE',
-        starred: false,
-        subject: 'Flower Saddle Sword',
-        tagList: ['Navy Robot'],
-        user: {
-          __typename: 'UserScopedToAccountList',
-          id: '2667881',
-          firstName: 'Feather Sun',
-          lastName: 'Monster',
-        },
-      });
-    }
-    return mocks;
-  };
-
   const mocks = {
     ContactTasksTab: {
       tasks: {
-        nodes: createMocks(),
+        nodes: [{}, {}, {}],
         pageInfo: {
           endCursor: 'MjU',
           hasNextPage: true,
