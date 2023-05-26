@@ -8,6 +8,8 @@ describe('uploadAvatar', () => {
     window.fetch = fetch;
   });
 
+  const t = (message: string) => message;
+
   const file = new File(['contents'], 'image.png', {
     type: 'image/png',
   });
@@ -20,6 +22,7 @@ describe('uploadAvatar', () => {
       uploadAvatar({
         personId: 'person-1',
         file,
+        t,
       }),
     ).resolves.toBeUndefined();
   });
@@ -29,6 +32,7 @@ describe('uploadAvatar', () => {
       uploadAvatar({
         personId: 'person-1',
         file: invalidFile,
+        t,
       }),
     ).rejects.toThrow('Cannot upload avatar: file is not an image');
   });
@@ -40,6 +44,7 @@ describe('uploadAvatar', () => {
       uploadAvatar({
         personId: 'person-1',
         file,
+        t,
       }),
     ).rejects.toThrow('Cannot upload avatar: server error');
   });

@@ -344,10 +344,12 @@ describe('PersonModal', () => {
       userEvent.click(getByRole('button', { name: 'Save' }));
 
       await waitFor(() =>
-        expect(uploadAvatar).toHaveBeenCalledWith({
-          personId: mockPerson.id,
-          file: file2,
-        }),
+        expect(uploadAvatar).toHaveBeenCalledWith(
+          expect.objectContaining({
+            personId: mockPerson.id,
+            file: file2,
+          }),
+        ),
       );
 
       cleanup();
@@ -385,12 +387,9 @@ describe('PersonModal', () => {
       userEvent.click(getByRole('button', { name: 'Save' }));
 
       await waitFor(() =>
-        expect(mockEnqueue).toHaveBeenCalledWith(
-          'Avatar could not be uploaded',
-          {
-            variant: 'error',
-          },
-        ),
+        expect(mockEnqueue).toHaveBeenCalledWith('Upload failure', {
+          variant: 'error',
+        }),
       );
     });
 

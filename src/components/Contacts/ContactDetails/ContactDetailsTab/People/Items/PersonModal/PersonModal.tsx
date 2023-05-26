@@ -398,11 +398,17 @@ export const PersonModal: React.FC<PersonModalProps> = ({
           await uploadAvatar({
             personId: attributes.id,
             file,
+            t,
           });
         } catch (err) {
-          enqueueSnackbar(t('Avatar could not be uploaded'), {
-            variant: 'error',
-          });
+          enqueueSnackbar(
+            err instanceof Error
+              ? err.message
+              : t('Avatar could not be uploaded'),
+            {
+              variant: 'error',
+            },
+          );
           return;
         }
       }
