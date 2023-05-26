@@ -410,7 +410,6 @@ describe('EditContactOtherModal', () => {
     userEvent.click(await findByRole('option', { name: 'Australian English' }));
     userEvent.click(getByLabelText('Timezone'));
     userEvent.click(getByText('(GMT-09:00) Alaska'));
-    userEvent.click(church);
     userEvent.clear(church);
     userEvent.type(church, newChurchName);
     userEvent.type(getByLabelText('Website'), newWebsite);
