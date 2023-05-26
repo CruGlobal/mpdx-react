@@ -45,7 +45,7 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { uploadAvatar } from './uploadAvatar';
+import { uploadAvatar, validateAvatar } from './uploadAvatar';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -132,6 +132,14 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     };
   }, [avatar]);
   const updateAvatar = (file: File) => {
+    const validationResult = validateAvatar({ file, t });
+    if (!validationResult.success) {
+      enqueueSnackbar(validationResult.message, {
+        variant: 'error',
+      });
+      return;
+    }
+
     if (avatar) {
       // Release the previous avatar blob
       URL.revokeObjectURL(avatar.blobUrl);

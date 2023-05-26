@@ -13,8 +13,11 @@ describe('uploadAvatar', () => {
   const file = new File(['contents'], 'image.png', {
     type: 'image/png',
   });
-  const invalidFile = new File(['contents'], 'file.txt', {
+  const textFile = new File(['contents'], 'file.txt', {
     type: 'text/plain',
+  });
+  const largeFile = new File([new ArrayBuffer(2_000_000)], 'image.png', {
+    type: 'image/png',
   });
 
   it('uploads the image', () => {
@@ -31,10 +34,20 @@ describe('uploadAvatar', () => {
     return expect(
       uploadAvatar({
         personId: 'person-1',
-        file: invalidFile,
+        file: textFile,
         t,
       }),
-    ).rejects.toThrow('Cannot upload avatar: file is not an image');
+    ).rejects.toThrow('Cannot upload avatar: file must be an image');
+  });
+
+  it('rejects files that are too large', () => {
+    return expect(
+      uploadAvatar({
+        personId: 'person-1',
+        file: largeFile,
+        t,
+      }),
+    ).rejects.toThrow('Cannot upload avatar: file size cannot exceed 1MB');
   });
 
   it('handles server errors', () => {

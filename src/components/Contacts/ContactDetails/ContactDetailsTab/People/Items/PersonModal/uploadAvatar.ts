@@ -1,5 +1,31 @@
 import { TFunction } from 'i18next';
 
+export const validateAvatar = ({
+  file,
+  t,
+}: {
+  file: File;
+  t: TFunction;
+}): { success: true } | { success: false; message: string } => {
+  if (!file.type.startsWith('image/')) {
+    return {
+      success: false,
+      message: t('Cannot upload avatar: file must be an image'),
+    };
+  }
+  // The /api/upload-person-avatar lambda appears to truncate the source body at 2^20 bytes
+  // Conservatively set the limit at 1MB, which is a little lower than 1MiB because of the
+  // overhead of encoding multipart/form-data and the other fields in the POST body
+  if (file.size > 1_000_000) {
+    return {
+      success: false,
+      message: t('Cannot upload avatar: file size cannot exceed 1MB'),
+    };
+  }
+
+  return { success: true };
+};
+
 export const uploadAvatar = async ({
   personId,
   file,
@@ -9,14 +35,9 @@ export const uploadAvatar = async ({
   file: File;
   t: TFunction;
 }): Promise<void> => {
-  if (!file.type.startsWith('image/')) {
-    throw new Error(t('Cannot upload avatar: file is not an image'));
-  }
-  // The /api/upload-person-avatar lambda appears to truncate the source body at 2^20 bytes
-  // Conservatively set the limit at 1MB, which is a little lower than 1MiB because of the
-  // overhead of encoding multipart/form-data and the other fields in the POST body
-  if (file.size > 1_000_000) {
-    throw new Error(t('Cannot upload avatar: file size cannot exceed 1MB'));
+  const validationResult = validateAvatar({ file, t });
+  if (!validationResult.success) {
+    throw new Error(validationResult.message);
   }
 
   const form = new FormData();
