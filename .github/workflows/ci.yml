@@ -57,6 +57,7 @@ jobs:
         run: echo $CHUNKS | jq '.[${{ matrix.chunk }}] | .[] | @text' | xargs yarn test:coverage --ci
         env:
           CHUNKS: ${{ needs.split-tests.outputs['test-chunks'] }}
+          ROLLBAR_SERVER_ACCESS_TOKEN: ${{secrets.ROLLBAR_SERVER_ACCESS_TOKEN}}
       - name: Codecov
         uses: codecov/codecov-action@v3
         with:
