@@ -56,6 +56,22 @@ describe('generateEmailBody', () => {
     expect(generateEmailBody(emailData, address)).toContain('123456789');
   });
 
+  it('includes ministry partner name even when account number is not present', () => {
+    const address = gqlMock<ContactMailingFragment>(ContactMailingFragmentDoc, {
+      mocks: {
+        addresses: {
+          nodes: [
+            {
+              sourceDonorAccount: null,
+            },
+          ],
+        },
+      },
+    }).addresses.nodes[0];
+
+    expect(generateEmailBody(emailData, address)).toContain('Contact');
+  });
+
   it('includes address when present', () => {
     const address = gqlMock<ContactMailingFragment>(ContactMailingFragmentDoc, {
       mocks: {
@@ -70,5 +86,26 @@ describe('generateEmailBody', () => {
     }).addresses.nodes[0];
 
     expect(generateEmailBody(emailData, address)).toContain('100 Lake Hart Dr');
+  });
+
+  it('handles missing address address', () => {
+    const address = gqlMock<ContactMailingFragment>(ContactMailingFragmentDoc, {
+      mocks: {
+        addresses: {
+          nodes: [
+            {
+              street: null,
+              city: null,
+              state: null,
+              postalCode: null,
+            },
+          ],
+        },
+      },
+    }).addresses.nodes[0];
+
+    expect(generateEmailBody(emailData, address)).toContain(
+      'Please update their address to',
+    );
   });
 });
