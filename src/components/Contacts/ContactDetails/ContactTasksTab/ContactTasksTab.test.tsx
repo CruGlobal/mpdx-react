@@ -63,6 +63,7 @@ describe('ContactTasksTab', () => {
             <ContactTasksTab
               accountListId={accountListId}
               contactId={contactId}
+              contactDetailsLoaded={false}
             />
           </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
@@ -93,6 +94,7 @@ describe('ContactTasksTab', () => {
             <ContactTasksTab
               accountListId={accountListId}
               contactId={contactId}
+              contactDetailsLoaded={false}
             />
           </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
@@ -114,6 +116,7 @@ describe('ContactTasksTab', () => {
             <ContactTasksTab
               accountListId={accountListId}
               contactId={contactId}
+              contactDetailsLoaded={false}
             />
           </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
@@ -153,6 +156,7 @@ describe('ContactTasksTab', () => {
             <ContactTasksTab
               accountListId={accountListId}
               contactId={contactId}
+              contactDetailsLoaded={false}
             />
           </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
@@ -201,6 +205,7 @@ describe('ContactTasksTab', () => {
           <ContactTasksTab
             accountListId={accountListId}
             contactId={contactId}
+            contactDetailsLoaded={false}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -233,6 +238,7 @@ describe('ContactTasksTab', () => {
           <ContactTasksTab
             accountListId={accountListId}
             contactId={contactId}
+            contactDetailsLoaded={false}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
