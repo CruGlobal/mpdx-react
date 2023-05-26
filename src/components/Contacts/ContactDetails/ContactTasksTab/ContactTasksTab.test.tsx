@@ -76,7 +76,6 @@ describe('ContactTasksTab', () => {
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
     expect(operation.variables.tasksFilter.contactIds).toEqual([contactId]);
-
     await waitFor(() =>
       expect(
         getByText(response.data.tasks.nodes[0].subject),
@@ -255,19 +254,6 @@ describe('ContactTasksTab', () => {
     ).toBe(100);
   });
 
-  const mocks = {
-    ContactTasksTab: {
-      tasks: {
-        nodes: [{}, {}, {}],
-        pageInfo: {
-          endCursor: 'MjU',
-          hasNextPage: true,
-        },
-        totalCount: 10,
-      },
-    },
-  };
-
   it('reached end of list and fetched more', async () => {
     const querySpy = jest.fn();
     const { queryByTestId } = render(
@@ -275,7 +261,18 @@ describe('ContactTasksTab', () => {
         <GqlMockedProvider<{
           ContactTasksTabQuery: ContactTasksTabQuery;
         }>
-          mocks={mocks}
+          mocks={{
+            ContactTasksTab: {
+              tasks: {
+                nodes: [{}, {}, {}],
+                pageInfo: {
+                  endCursor: 'MjU',
+                  hasNextPage: true,
+                },
+                totalCount: 10,
+              },
+            },
+          }}
           onCall={querySpy}
         >
           <VirtuosoMockContext.Provider
