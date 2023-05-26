@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile } from 'fs/promises';
 import fetch, { File, FormData } from 'node-fetch';
 import formidable, { IncomingForm } from 'formidable';
 import { NextApiRequest, NextApiResponse } from 'next';
