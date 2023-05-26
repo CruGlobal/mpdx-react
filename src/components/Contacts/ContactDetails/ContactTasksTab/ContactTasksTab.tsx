@@ -88,11 +88,13 @@ const PlaceholderActionBar = styled(Box)(({ theme }) => ({
 interface ContactTasksTabProps {
   accountListId: string;
   contactId: string;
+  contactDetailsLoaded: boolean;
 }
 
 export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   accountListId,
   contactId,
+  contactDetailsLoaded,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
@@ -148,7 +150,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   useEffect(() => {
     if (!infiniteListRef.current) return;
     setInfiniteListRectTop(infiniteListRef.current.getBoundingClientRect().top);
-  }, [contactId]);
+  }, [contactId, contactDetailsLoaded]);
 
   return (
     <ContactDetailsTabContainer>

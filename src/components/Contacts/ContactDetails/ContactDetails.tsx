@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import {
@@ -73,6 +73,7 @@ export enum TabKey {
 
 export const ContactDetails: React.FC<Props> = ({ onClose }) => {
   const { t } = useTranslation();
+  const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
 
   const {
     accountListId,
@@ -91,6 +92,8 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
           accountListId={accountListId}
           contactId={contactId}
           onClose={onClose}
+          contactDetailsLoaded={contactDetailsLoaded}
+          setContactDetailsLoaded={setContactDetailsLoaded}
         />
       )}
       <TabContext value={selectedTabKey}>
@@ -114,6 +117,7 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
             <ContactTasksTab
               accountListId={accountListId}
               contactId={contactId}
+              contactDetailsLoaded={contactDetailsLoaded}
             />
           )}
         </TabPanelNoBottomPadding>
