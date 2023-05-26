@@ -287,6 +287,7 @@ describe('ContactTasksTab', () => {
             <ContactTasksTab
               accountListId={accountListId}
               contactId={contactId}
+              contactDetailsLoaded={false}
             />
           </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
