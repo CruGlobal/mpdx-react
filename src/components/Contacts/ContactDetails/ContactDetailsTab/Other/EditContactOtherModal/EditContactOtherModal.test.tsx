@@ -141,6 +141,51 @@ describe('EditContactOtherModal', () => {
     userEvent.click(getByText('Aaa Bbb'));
   });
 
+  it('should load church data', async () => {
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              GetTaskModalContactsFiltered: GetTaskModalContactsFilteredQuery;
+            }>
+              mocks={{
+                ChurchOptions: {
+                  accountList: {
+                    churches: ['Big Church', 'test5567'],
+                  },
+                },
+              }}
+            >
+              <ContactsPage>
+                <ContactDetailProvider>
+                  <EditContactOtherModal
+                    accountListId={accountListId}
+                    isOpen={true}
+                    handleClose={handleClose}
+                    contact={mockContact}
+                    referral={referral}
+                  />
+                </ContactDetailProvider>
+              </ContactsPage>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+
+    expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
+    const churchElement = getByRole('combobox', {
+      hidden: true,
+      name: 'Church',
+    });
+    userEvent.click(churchElement);
+    await waitFor(() => expect(getByText('Big Church')).toBeInTheDocument());
+    userEvent.clear(churchElement);
+    userEvent.type(churchElement, 'te');
+    await waitFor(() => expect(getByText('test5567')).toBeInTheDocument());
+  });
+
   it('should close edit contact other modal', () => {
     const { getByText, getByLabelText } = render(
       <SnackbarProvider>
@@ -356,7 +401,7 @@ describe('EditContactOtherModal', () => {
     userEvent.click(getByRole('combobox', { name: 'Assignee' }));
     userEvent.click(await findByRole('option', { name: 'Jane Doe' }));
 
-    userEvent.clear(getByLabelText('Church'));
+    const church = getByLabelText('Church');
     userEvent.clear(getByLabelText('Website'));
 
     userEvent.click(getByLabelText('Preferred Contact Method'));
@@ -365,7 +410,9 @@ describe('EditContactOtherModal', () => {
     userEvent.click(await findByRole('option', { name: 'Australian English' }));
     userEvent.click(getByLabelText('Timezone'));
     userEvent.click(getByText('(GMT-09:00) Alaska'));
-    userEvent.type(getByLabelText('Church'), newChurchName);
+    userEvent.click(church);
+    userEvent.clear(church);
+    userEvent.type(church, newChurchName);
     userEvent.type(getByLabelText('Website'), newWebsite);
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -374,7 +421,7 @@ describe('EditContactOtherModal', () => {
       }),
     );
 
-    const { operation } = mutationSpy.mock.calls[5][0];
+    const { operation } = mutationSpy.mock.calls[6][0];
     expect(operation).toMatchObject({
       operationName: 'UpdateContactOther',
       variables: {
