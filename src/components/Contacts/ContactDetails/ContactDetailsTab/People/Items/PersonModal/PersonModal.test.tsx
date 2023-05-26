@@ -22,7 +22,7 @@ import {
 import { PersonModal } from './PersonModal';
 import { UpdatePersonMutation } from './PersonModal.generated';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
-import { uploadAvatar } from './uploadAvatar';
+import { uploadAvatar, validateAvatar } from './uploadAvatar';
 
 jest.mock('./uploadAvatar');
 
@@ -144,6 +144,7 @@ jest.mock('notistack', () => ({
 describe('PersonModal', () => {
   beforeEach(() => {
     (uploadAvatar as jest.Mock).mockResolvedValue(undefined);
+    (validateAvatar as jest.Mock).mockReturnValue({ success: true });
   });
 
   it('should render edit person modal', () => {
@@ -354,6 +355,41 @@ describe('PersonModal', () => {
 
       cleanup();
       expect(revokeObjectURL).toHaveBeenCalledWith('blob:2');
+    });
+
+    it('should notify the user about validation errors', () => {
+      (validateAvatar as jest.Mock).mockReturnValue({
+        success: false,
+        message: 'Invalid file',
+      });
+
+      const { getByTestId } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const file = new File(['contents'], 'image.png', {
+        type: 'image/png',
+      });
+      userEvent.upload(getByTestId('PersonNameUpload'), file);
+
+      expect(mockEnqueue).toHaveBeenCalledWith('Invalid file', {
+        variant: 'error',
+      });
     });
 
     it('should notify the user about upload errors', async () => {
