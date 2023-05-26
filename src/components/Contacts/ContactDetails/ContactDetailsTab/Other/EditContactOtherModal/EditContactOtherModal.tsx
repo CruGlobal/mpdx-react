@@ -121,7 +121,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
         accountListId,
       },
     });
-  const churches = dataChurchOptions?.accountList.churches ?? [];
+  const churches = dataChurchOptions?.accountList?.churches ?? [];
 
   const { data: dataAssigneeOptions, loading: loadingAssigneeOptions } =
     useAssigneeOptionsQuery({
@@ -129,7 +129,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
         accountListId,
       },
     });
-
   const users = useMemo(
     () =>
       dataAssigneeOptions?.accountListUsers.nodes
