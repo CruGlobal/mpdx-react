@@ -101,6 +101,7 @@ module.exports = withPlugins([
         },
       },
     },
+    distDir: 'build/.next',
     // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
     pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
     productionBrowserSourceMaps: true,

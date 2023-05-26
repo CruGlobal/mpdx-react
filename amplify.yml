@@ -19,7 +19,7 @@ frontend:
       commands:
         - yarn build:amplify
   artifacts:
-    baseDirectory: .next
+    baseDirectory: build
     files:
       - '**/*'
   cache:

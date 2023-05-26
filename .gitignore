@@ -18,7 +18,7 @@
 
 # next.js
 /.next
-/dist
+/build
 
 # Typescript
 tsconfig.tsbuildinfo
