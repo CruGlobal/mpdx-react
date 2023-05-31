@@ -408,11 +408,13 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                       [key]: ContactFilterNewsletterEnum.NoValue,
                     };
                   case 'physical':
+                  case 'address':
                     return {
                       ...acc,
                       [key]: ContactFilterNewsletterEnum.Physical,
                     };
                   case 'physical_only':
+                  case 'address_only':
                     return {
                       ...acc,
                       [key]: ContactFilterNewsletterEnum.PhysicalOnly,
