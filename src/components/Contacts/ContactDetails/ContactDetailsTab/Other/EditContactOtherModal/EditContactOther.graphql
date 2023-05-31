@@ -10,6 +10,12 @@ query AssigneeOptions($accountListId: ID!) {
   }
 }
 
+query ChurchOptions($accountListId: ID!, $search: String) {
+  accountList(id: $accountListId) {
+    churches(search: $search)
+  }
+}
+
 mutation UpdateContactOther(
   $accountListId: ID!
   $attributes: ContactUpdateInput!
