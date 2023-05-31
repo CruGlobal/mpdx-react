@@ -31,6 +31,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -67,6 +69,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -106,6 +110,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -145,6 +151,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -187,6 +195,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>

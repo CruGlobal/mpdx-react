@@ -22,7 +22,11 @@ export const Default = (): ReactElement => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <GqlMockedProvider>
-        <ContactTasksTab accountListId={accountListId} contactId={contactId} />
+        <ContactTasksTab
+          accountListId={accountListId}
+          contactId={contactId}
+          contactDetailsLoaded={false}
+        />
       </GqlMockedProvider>
     </ThemeProvider>
   );
@@ -45,7 +49,11 @@ export const Loading = (): ReactElement => {
         },
       ]}
     >
-      <ContactTasksTab accountListId={accountListId} contactId={contactId} />
+      <ContactTasksTab
+        accountListId={accountListId}
+        contactId={contactId}
+        contactDetailsLoaded={false}
+      />
     </MockedProvider>
   );
 };
