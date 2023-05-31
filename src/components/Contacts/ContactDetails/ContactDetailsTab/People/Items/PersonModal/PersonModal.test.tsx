@@ -357,6 +357,35 @@ describe('PersonModal', () => {
       expect(revokeObjectURL).toHaveBeenCalledWith('blob:2');
     });
 
+    it('should render avatar', async () => {
+      mockPerson.avatar = 'https://cru.org/assets/image.jpg';
+      mockPerson.firstName = 'James';
+      mockPerson.lastName = 'Smith';
+      mockPerson.avatar = 'https://cru.org/assets/image.jpg';
+      render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const avatarImage = document.querySelector('img') as HTMLImageElement;
+      expect(avatarImage.src).toEqual('https://cru.org/assets/image.jpg');
+      expect(avatarImage.alt).toEqual('James Smith');
+    });
+
     it('should notify the user about validation errors', () => {
       (validateAvatar as jest.Mock).mockReturnValue({
         success: false,
