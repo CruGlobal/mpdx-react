@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event';
 import { DeleteConfirmation } from './DeleteConfirmation';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { DeleteTaskMutation } from 'src/components/Task/Modal/Form/TaskModal.generated';
 
 const onClickConfirm = jest.fn();
 const onClickDecline = jest.fn();
@@ -27,7 +26,7 @@ describe('DeleteConfirmation', () => {
   it('should do basic rendering', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DeleteTaskMutation>>
+        <GqlMockedProvider>
           <DeleteConfirmation
             open={true}
             deleting={false}
@@ -47,7 +46,7 @@ describe('DeleteConfirmation', () => {
   it('should call the onClick function for declining', async () => {
     const { getByText, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DeleteTaskMutation>>
+        <GqlMockedProvider>
           <DeleteConfirmation
             open={true}
             deleting={false}
@@ -66,7 +65,7 @@ describe('DeleteConfirmation', () => {
   it('should call the onClick function for confirming', async () => {
     const { getByText, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DeleteTaskMutation>>
+        <GqlMockedProvider>
           <DeleteConfirmation
             open={true}
             deleting={false}

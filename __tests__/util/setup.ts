@@ -2,6 +2,8 @@ import '@testing-library/jest-dom/extend-expect';
 import { Settings } from 'luxon';
 import matchMediaMock from './matchMediaMock';
 
+process.env.APP_NAME = 'MPDX';
+
 window.Beacon = jest.fn();
 
 window.document.createRange = (): Range =>

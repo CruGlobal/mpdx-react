@@ -32,7 +32,7 @@ jest.mock('notistack', () => ({
 describe('SearchMenu', () => {
   it('default', async () => {
     const { getByRole, getByPlaceholderText } = render(
-      <GqlMockedProvider<GetSearchMenuContactsQuery>>
+      <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
             <SearchMenu />
@@ -50,7 +50,7 @@ describe('SearchMenu', () => {
 
   it('handles searching', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
-      <GqlMockedProvider<GetSearchMenuContactsQuery>
+      <GqlMockedProvider<{ GetSearchMenuContacts: GetSearchMenuContactsQuery }>
         mocks={{
           GetSearchMenuContacts: {
             contacts: {
@@ -113,7 +113,7 @@ describe('SearchMenu', () => {
 
   it('handles clicking search result', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
-      <GqlMockedProvider<GetSearchMenuContactsQuery>
+      <GqlMockedProvider<{ GetSearchMenuContacts: GetSearchMenuContactsQuery }>
         mocks={{
           GetSearchMenuContacts: {
             contacts: {
@@ -162,7 +162,7 @@ describe('SearchMenu', () => {
 
 it('handles creating a new contact', async () => {
   const { getByRole, getByPlaceholderText, getByText } = render(
-    <GqlMockedProvider<GetSearchMenuContactsQuery>
+    <GqlMockedProvider<{ GetSearchMenuContacts: GetSearchMenuContactsQuery }>
       mocks={{
         GetSearchMenuContacts: {
           contacts: {

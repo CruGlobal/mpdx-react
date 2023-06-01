@@ -15,7 +15,7 @@ const accountListId = '111';
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetEmailNewsletterContactsQuery>>
+    <GqlMockedProvider>
       <ExportEmail accountListId={accountListId} handleClose={() => {}} />
     </GqlMockedProvider>
   );
@@ -51,7 +51,11 @@ export const Empty = (): ReactElement => {
     },
   };
   return (
-    <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
+    <GqlMockedProvider<{
+      GetEmailNewsletterContacts: GetEmailNewsletterContactsQuery;
+    }>
+      mocks={mocks}
+    >
       <ExportEmail accountListId={accountListId} handleClose={() => {}} />
     </GqlMockedProvider>
   );

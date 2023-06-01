@@ -28,48 +28,45 @@ describe('useUser', () => {
     expect(result.current).toMatchInlineSnapshot(`
       Object {
         "__typename": "User",
-        "admin": false,
+        "admin": true,
         "administrativeOrganizations": Object {
           "__typename": "OrganizationConnection",
           "nodes": Array [
             Object {
               "__typename": "Organization",
-              "id": "774361",
+              "id": "1851199",
             },
             Object {
               "__typename": "Organization",
-              "id": "7939597",
-            },
-            Object {
-              "__typename": "Organization",
-              "id": "9762715",
+              "id": "3120940",
             },
           ],
         },
-        "developer": true,
-        "firstName": "Brain Ice-cream",
-        "id": "4394961",
+        "developer": false,
+        "firstName": "Flower Bee",
+        "id": "863856",
         "keyAccounts": Array [
           Object {
             "__typename": "KeyAccount",
-            "email": "Printer Cycle Air",
-            "id": "4072203",
+            "email": "Balloon Spice",
+            "id": "2541550",
           },
           Object {
             "__typename": "KeyAccount",
-            "email": "Signature",
-            "id": "6591416",
+            "email": "Drink Worm Rocket",
+            "id": "6455335",
           },
           Object {
             "__typename": "KeyAccount",
-            "email": "Software",
-            "id": "8774894",
+            "email": "Barbecue Chocolates",
+            "id": "8591453",
           },
         ],
-        "lastName": "Eyes",
+        "lastName": "Telescope",
         "preferences": Object {
           "__typename": "Preference",
-          "locale": "Magnet",
+          "language": "Typewriter Backpack",
+          "locale": "Bed Coffee-shop",
         },
       }
     `);

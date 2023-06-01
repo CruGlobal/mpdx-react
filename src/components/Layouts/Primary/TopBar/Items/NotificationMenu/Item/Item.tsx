@@ -15,6 +15,7 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import {
+  currencyFormat,
   dateFormat,
   monthYearFormat,
 } from '../../../../../../../lib/intlFormat/intlFormat';
@@ -25,6 +26,7 @@ import {
 } from '../GetNotificationsQuery.generated';
 import { useAccountListId } from '../../../../../../../hooks/useAccountListId';
 import { useAcknowledgeUserNotificationMutation } from './AcknowledgeUserNotification.generated';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   item?: GetNotificationsQuery['userNotifications']['nodes'][0];
@@ -40,6 +42,7 @@ const NotificationMenuItem = ({
   onClick,
 }: Props): ReactElement => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const accountListId = useAccountListId();
 
   if (!item) {
@@ -111,9 +114,9 @@ const NotificationMenuItem = ({
     case NotificationTypeTypeEnum.LargerGift:
       if (amount) {
         message = t(
-          'Gave a gift of {{ amount, currency }} which is greater than their commitment amount',
+          'Gave a gift of {{amount}} which is greater than their commitment amount',
           {
-            amount,
+            amount: currencyFormat(amount.amount, amount.currency, locale),
           },
         );
       } else {
@@ -123,9 +126,9 @@ const NotificationMenuItem = ({
     case NotificationTypeTypeEnum.LongTimeFrameGift:
       if (amount) {
         message = t(
-          'Gave a gift of {{ amount, currency }} where commitment frequency is set to semi-annual or greater',
+          'Gave a gift of {{amount}} where commitment frequency is set to semi-annual or greater',
           {
-            amount,
+            amount: currencyFormat(amount.amount, amount.currency, locale),
           },
         );
       } else {
@@ -165,9 +168,9 @@ const NotificationMenuItem = ({
     case NotificationTypeTypeEnum.SmallerGift:
       if (amount) {
         message = t(
-          'Gave a gift of {{ amount, currency }} which is less than their commitment amount',
+          'Gave a gift of {{amount}} which is less than their commitment amount',
           {
-            amount,
+            amount: currencyFormat(amount.amount, amount.currency, locale),
           },
         );
       } else {
@@ -176,8 +179,8 @@ const NotificationMenuItem = ({
       break;
     case NotificationTypeTypeEnum.SpecialGift:
       if (amount) {
-        message = t('Gave a special gift of {{ amount, currency }}', {
-          amount,
+        message = t('Gave a special gift of {{amount}}', {
+          amount: currencyFormat(amount.amount, amount.currency, locale),
         });
       } else {
         message = t('Gave a special gift');
@@ -214,6 +217,7 @@ const NotificationMenuItem = ({
             {monthYearFormat(
               DateTime.fromISO(item.notification.occurredAt).month,
               DateTime.fromISO(item.notification.occurredAt).year,
+              locale,
             )}
           </ListSubheader>
         )}
@@ -246,7 +250,10 @@ const NotificationMenuItem = ({
                   variant="body2"
                   color="textPrimary"
                 >
-                  {dateFormat(DateTime.fromISO(item.notification.occurredAt))}
+                  {dateFormat(
+                    DateTime.fromISO(item.notification.occurredAt),
+                    locale,
+                  )}
                 </Typography>{' '}
                 —{' '}
                 <Typography component="span" variant="body2">

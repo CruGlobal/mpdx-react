@@ -36,13 +36,15 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>>
+            <GqlMockedProvider>
               <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -60,7 +62,9 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
               mocks={{
                 GetContactDetailsHeader: {
                   contact: {
@@ -77,6 +81,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -96,13 +102,19 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery> mocks={mocks}>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
+              mocks={mocks}
+            >
               <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -122,13 +134,19 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery> mocks={mocks}>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
+              mocks={mocks}
+            >
               <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -151,13 +169,19 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery> mocks={mocks}>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
+              mocks={mocks}
+            >
               <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -183,13 +207,19 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery> mocks={mocks}>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
+              mocks={mocks}
+            >
               <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>

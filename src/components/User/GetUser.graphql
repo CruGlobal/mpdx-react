@@ -10,7 +10,8 @@ query GetUser {
       email
     }
     preferences {
-      locale
+      language: locale
+      locale: localeDisplay
     }
     administrativeOrganizations(first: 25) {
       nodes {

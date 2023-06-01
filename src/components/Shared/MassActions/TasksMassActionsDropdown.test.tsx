@@ -162,7 +162,9 @@ describe('TasksMassActionsDropdown', () => {
     const mutationSpy = jest.fn();
     const { queryByTestId, getByText, queryByText, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetTasksForAddingTagsQuery>
+        <GqlMockedProvider<{
+          GetTasksForAddingTags: GetTasksForAddingTagsQuery;
+        }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -209,7 +211,9 @@ describe('TasksMassActionsDropdown', () => {
     const mutationSpy = jest.fn();
     const { queryByTestId, getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetTasksForAddingTagsQuery>
+        <GqlMockedProvider<{
+          GetTasksForAddingTags: GetTasksForAddingTagsQuery;
+        }>
           mocks={mocks}
           onCall={mutationSpy}
         >

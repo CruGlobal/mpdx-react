@@ -34,6 +34,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface AddDonationProps {
   accountListId: string;
@@ -101,6 +102,7 @@ export const AddDonation = ({
   handleClose,
 }: AddDonationProps): ReactElement<AddDonationProps> => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const constants = useApiConstants();
   const isMobile = useMediaQuery((theme: Theme) =>
@@ -323,7 +325,7 @@ export const AddDonation = ({
                             value={
                               field.value ? DateTime.fromISO(field.value) : null
                             }
-                            inputFormat={getDateFormatPattern()}
+                            inputFormat={getDateFormatPattern(locale)}
                           />
                         </Box>
                       )}

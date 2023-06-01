@@ -4,7 +4,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from '../ContactDetailContext';
-import { UpdateContactNotesMutation } from './ContactNotesTab.generated';
 import { ContactNotesTab } from './ContactNotesTab';
 
 const mockEnqueue = jest.fn();
@@ -24,7 +23,7 @@ describe('ContactNotesTab', () => {
   it('renders', () => {
     const { queryByPlaceholderText } = render(
       <SnackbarProvider>
-        <GqlMockedProvider<UpdateContactNotesMutation>>
+        <GqlMockedProvider>
           <ContactDetailProvider>
             <ContactNotesTab accountListId="123" contactId="abc" />
           </ContactDetailProvider>
@@ -39,7 +38,7 @@ describe('ContactNotesTab', () => {
     const note = 'cool new note!';
     const { queryByPlaceholderText, getByText } = render(
       <SnackbarProvider>
-        <GqlMockedProvider<UpdateContactNotesMutation> onCall={mutationSpy}>
+        <GqlMockedProvider onCall={mutationSpy}>
           <ContactDetailProvider>
             <ContactNotesTab accountListId="123" contactId="abc" />
           </ContactDetailProvider>

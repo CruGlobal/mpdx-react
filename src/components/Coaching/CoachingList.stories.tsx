@@ -13,7 +13,7 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<LoadCoachingListQuery>
+    <GqlMockedProvider<{ LoadCoachingList: LoadCoachingListQuery }>
       mocks={{
         LoadCoachingList: {
           coachingAccountLists: {

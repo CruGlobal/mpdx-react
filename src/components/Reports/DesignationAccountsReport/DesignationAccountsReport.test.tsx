@@ -32,7 +32,7 @@ const mocks = {
           {
             active: true,
             id: 'test-id-111',
-            balanceUpdatedAt: '2/2/2021',
+            balanceUpdatedAt: '2021-02-02',
             convertedBalance: 3500,
             currency: 'CAD',
             designationNumber: '33221',
@@ -61,7 +61,9 @@ describe('DesignationAccountsReport', () => {
   it('default', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DesignationAccountsQuery> mocks={mocks}>
+        <GqlMockedProvider<{ DesignationAccounts: DesignationAccountsQuery }>
+          mocks={mocks}
+        >
           <DesignationAccountsReport
             accountListId={accountListId}
             isNavListOpen={true}
@@ -88,7 +90,7 @@ describe('DesignationAccountsReport', () => {
   it('loading', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DesignationAccountsQuery>>
+        <GqlMockedProvider>
           <DesignationAccountsReport
             accountListId={accountListId}
             isNavListOpen={true}
@@ -130,7 +132,9 @@ describe('DesignationAccountsReport', () => {
   it('empty', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<DesignationAccountsQuery> mocks={emptyMocks}>
+        <GqlMockedProvider<{ DesignationAccounts: DesignationAccountsQuery }>
+          mocks={emptyMocks}
+        >
           <DesignationAccountsReport
             accountListId={accountListId}
             isNavListOpen={true}

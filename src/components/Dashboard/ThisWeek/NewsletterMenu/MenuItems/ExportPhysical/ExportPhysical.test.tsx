@@ -40,7 +40,11 @@ describe('ExportPhysical', () => {
   it('default', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
+        <GqlMockedProvider<{
+          CreateExportedContacts: CreateExportedContactsMutation;
+        }>
+          mocks={mocks}
+        >
           <ExportPhysical
             accountListId={accountListId}
             handleClose={handleClose}
@@ -54,7 +58,11 @@ describe('ExportPhysical', () => {
   it('handles closing menu', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<CreateExportedContactsMutation> mocks={mocks}>
+        <GqlMockedProvider<{
+          CreateExportedContacts: CreateExportedContactsMutation;
+        }>
+          mocks={mocks}
+        >
           <ExportPhysical
             accountListId={accountListId}
             handleClose={handleClose}
@@ -93,7 +101,9 @@ describe('ExportPhysical', () => {
     it('Exports Contacts and Downloads File - PDF of Mail Merged Labels | Avery5160 and Contact Name', async () => {
       const { getByText, getByTestId } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateExportedContactsMutation>
+          <GqlMockedProvider<{
+            CreateExportedContacts: CreateExportedContactsMutation;
+          }>
             mocks={createMock(ExportFormatEnum.Pdf)}
           >
             <ExportPhysical
@@ -123,7 +133,9 @@ describe('ExportPhysical', () => {
     it('Exports Contacts and Downloads File - PDF of Mail Merged Labels | Avery7160 and Zip', async () => {
       const { getByText, getByTestId, getByLabelText, getByRole } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateExportedContactsMutation>
+          <GqlMockedProvider<{
+            CreateExportedContacts: CreateExportedContactsMutation;
+          }>
             mocks={createMock(ExportFormatEnum.Pdf)}
           >
             <ExportPhysical
@@ -163,7 +175,9 @@ describe('ExportPhysical', () => {
     it('Exports Contacts and Downloads File - CSV For Mailing', async () => {
       const { getByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateExportedContactsMutation>
+          <GqlMockedProvider<{
+            CreateExportedContacts: CreateExportedContactsMutation;
+          }>
             mocks={createMock(ExportFormatEnum.Csv)}
           >
             <ExportPhysical
@@ -184,7 +198,9 @@ describe('ExportPhysical', () => {
     it('Exports Contacts and Downloads File - Advanced CSV', async () => {
       const { getByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateExportedContactsMutation>
+          <GqlMockedProvider<{
+            CreateExportedContacts: CreateExportedContactsMutation;
+          }>
             mocks={createMock(ExportFormatEnum.Csv)}
           >
             <ExportPhysical
@@ -205,7 +221,9 @@ describe('ExportPhysical', () => {
     it('Exports Contacts and Downloads File - Advanced Excel (XLSX)', async () => {
       const { getByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateExportedContactsMutation>
+          <GqlMockedProvider<{
+            CreateExportedContacts: CreateExportedContactsMutation;
+          }>
             mocks={createMock(ExportFormatEnum.Xlsx)}
           >
             <ExportPhysical

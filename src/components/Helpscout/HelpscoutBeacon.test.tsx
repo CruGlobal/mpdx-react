@@ -29,7 +29,7 @@ describe('HelpscoutBeacon', () => {
 
   it('identifies the current user', async () => {
     render(
-      <GqlMockedProvider<GetUserQuery>
+      <GqlMockedProvider<{ GetUser: GetUserQuery }>
         mocks={{
           GetUser: {
             user: {

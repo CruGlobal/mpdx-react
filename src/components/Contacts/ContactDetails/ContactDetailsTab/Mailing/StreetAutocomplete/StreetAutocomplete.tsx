@@ -77,6 +77,7 @@ export interface StreetAutocompleteProps {
   onStreetChange: (street: string) => void;
   onPredictionChosen: (fields: AddressFields) => void;
   TextFieldProps?: TextFieldProps;
+  disabled?: boolean;
 }
 
 export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
@@ -84,6 +85,7 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
   onStreetChange,
   onPredictionChosen,
   TextFieldProps,
+  disabled,
 }) => {
   const googleAttributionRef = useRef<HTMLDivElement | null>(null);
 
@@ -96,6 +98,8 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
 
   useEffect(() => {
     if (isLoaded) {
+      // Bizz 05/23/2023 - Removing this as a precaution as we think we've fixed the error.
+      // if (!window.google.maps.places) return;
       mapsApi.current = {
         autocompleteService:
           new window.google.maps.places.AutocompleteService(),
@@ -160,6 +164,7 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
         disableClearable
         autoSelect
         autoHighlight
+        disabled={disabled}
         getOptionLabel={(option) =>
           typeof option === 'string' ? option : option.description
         }

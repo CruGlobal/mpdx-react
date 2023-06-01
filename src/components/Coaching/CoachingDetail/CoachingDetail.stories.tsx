@@ -11,7 +11,7 @@ const coachingId = 'coaching-id';
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<LoadCoachingDetailQuery>
+    <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
       mocks={{
         LoadCoachingDetail: {
           coachingAccountList: {
@@ -28,7 +28,7 @@ export const Default = (): ReactElement => {
 
 export const AccountListDetail = (): ReactElement => {
   return (
-    <GqlMockedProvider<LoadCoachingDetailQuery>
+    <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
       mocks={{
         LoadAccountListCoachingDetail: {
           accountList: {

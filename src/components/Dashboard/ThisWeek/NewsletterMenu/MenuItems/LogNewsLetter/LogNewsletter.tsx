@@ -32,6 +32,7 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   accountListId: string;
@@ -97,6 +98,7 @@ const LogNewsletter = ({
   handleClose,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const [commentBody, changeCommentBody] = useState('');
 
@@ -226,7 +228,7 @@ const LogNewsletter = ({
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        inputFormat={getDateFormatPattern()}
+                        inputFormat={getDateFormatPattern(locale)}
                         closeOnSelect
                         label={t('Completed Date')}
                         InputProps={{

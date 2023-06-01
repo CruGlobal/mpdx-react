@@ -38,7 +38,7 @@ describe('FilterTagDeleteModal', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <GqlMockedProvider<DeleteTagMutation>>
+          <GqlMockedProvider>
             <ThemeProvider theme={theme}>
               <FilterTagDeleteModal
                 isOpen={true}
@@ -61,7 +61,7 @@ describe('FilterTagDeleteModal', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <GqlMockedProvider<DeleteTagMutation>>
+          <GqlMockedProvider>
             <ThemeProvider theme={theme}>
               <FilterTagDeleteModal
                 isOpen={true}
@@ -82,7 +82,7 @@ describe('FilterTagDeleteModal', () => {
     const { getByRole } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
-          <GqlMockedProvider<DeleteTagMutation>
+          <GqlMockedProvider<{ DeleteTag: DeleteTagMutation }>
             mocks={{
               deleteTags: {
                 id: '123',

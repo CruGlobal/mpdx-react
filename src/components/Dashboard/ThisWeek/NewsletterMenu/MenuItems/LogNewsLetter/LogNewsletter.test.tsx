@@ -6,7 +6,6 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
-import { CreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../../../theme';
@@ -32,7 +31,7 @@ describe('LogNewsletter', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
-            <GqlMockedProvider<CreateTasksMutation>>
+            <GqlMockedProvider>
               <LogNewsletter
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -50,7 +49,7 @@ describe('LogNewsletter', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
-            <GqlMockedProvider<CreateTasksMutation>>
+            <GqlMockedProvider>
               <LogNewsletter
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -70,7 +69,7 @@ describe('LogNewsletter', () => {
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
-              <GqlMockedProvider<CreateTasksMutation>>
+              <GqlMockedProvider>
                 <LogNewsletter
                   accountListId={accountListId}
                   handleClose={handleClose}
@@ -96,7 +95,7 @@ describe('LogNewsletter', () => {
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
-              <GqlMockedProvider<CreateTasksMutation>>
+              <GqlMockedProvider>
                 <LogNewsletter
                   accountListId={accountListId}
                   handleClose={handleClose}
@@ -123,7 +122,7 @@ describe('LogNewsletter', () => {
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
-              <GqlMockedProvider<CreateTasksMutation>>
+              <GqlMockedProvider>
                 <LogNewsletter
                   accountListId={accountListId}
                   handleClose={handleClose}

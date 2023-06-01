@@ -10,11 +10,7 @@ import useTaskModal from '../../../../../hooks/useTaskModal';
 import TaskModalLogForm from './TaskModalLogForm';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import TestRouter from '__tests__/util/TestRouter';
-import {
-  CreateTasksMutation,
-  GetTaskModalContactsFilteredQuery,
-  UpdateTaskMutation,
-} from 'src/components/Task/Modal/Form/TaskModal.generated';
+import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
   getDataForTaskModalMock,
   updateTaskMutationMock,
@@ -59,10 +55,7 @@ describe('TaskModalLogForm', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<CreateTasksMutation>
-              addTypename={false}
-              onCall={mutationSpy}
-            >
+            <GqlMockedProvider addTypename={false} onCall={mutationSpy}>
               <TaskModalLogForm
                 accountListId={accountListId}
                 onClose={onClose}
@@ -94,7 +87,9 @@ describe('TaskModalLogForm', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<GetTaskModalContactsFilteredQuery>
+            <GqlMockedProvider<{
+              GetTaskModalContactsFiltered: GetTaskModalContactsFilteredQuery;
+            }>
               onCall={mutationSpy}
               mocks={{
                 GetTaskModalContactsFiltered: {
@@ -139,7 +134,7 @@ describe('TaskModalLogForm', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<UpdateTaskMutation> addTypename={false}>
+            <GqlMockedProvider addTypename={false}>
               <TaskModalLogForm
                 accountListId={accountListId}
                 onClose={onClose}
@@ -232,7 +227,7 @@ describe('TaskModalLogForm', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<CreateTasksMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <TaskModalLogForm
                   accountListId={accountListId}
                   onClose={onClose}
@@ -275,7 +270,7 @@ describe('TaskModalLogForm', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<UpdateTaskMutation> onCall={mutationSpy}>
+            <GqlMockedProvider onCall={mutationSpy}>
               <TaskModalLogForm
                 accountListId={accountListId}
                 onClose={onClose}

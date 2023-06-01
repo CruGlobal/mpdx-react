@@ -3,7 +3,6 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as nextRouter from 'next/router';
 import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
-import { GetUserQuery } from '../User/GetUser.generated';
 import HandoffLink from '.';
 
 describe('HandoffLink', () => {
@@ -31,7 +30,7 @@ describe('HandoffLink', () => {
 
   it('default', async () => {
     const { getByRole } = render(
-      <GqlMockedProvider<GetUserQuery>>
+      <GqlMockedProvider>
         <HandoffLink path="/contacts">
           <a>Link</a>
         </HandoffLink>

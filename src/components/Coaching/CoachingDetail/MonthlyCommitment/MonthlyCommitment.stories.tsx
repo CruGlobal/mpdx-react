@@ -17,13 +17,15 @@ const coachingId = 'coaching-id';
 export const Default = (): ReactElement => {
   return (
     <Box m="4">
-      <GqlMockedProvider<GetReportsPledgeHistoriesQuery>
+      <GqlMockedProvider<{
+        GetReportsPledgeHistories: GetReportsPledgeHistoriesQuery;
+      }>
         mocks={{
           GetReportsPledgeHistories: {
             reportPledgeHistories: [...Array(12)].map((x, i) => {
               return {
-                startDate: DateTime.local().minus({ month: i }).toISO,
-                endDate: DateTime.local().minus({ month: i }).toISO,
+                startDate: DateTime.local().minus({ month: i }).toISO(),
+                endDate: DateTime.local().minus({ month: i }).toISO(),
               };
             }),
           },

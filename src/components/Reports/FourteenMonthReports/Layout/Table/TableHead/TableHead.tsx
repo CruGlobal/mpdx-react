@@ -7,6 +7,7 @@ import { styled } from '@mui/material/styles';
 import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
 import type { Order, Unarray } from '../../../../Reports.type';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
+import { useLocale } from 'src/hooks/useLocale';
 
 export type Contacts =
   FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
@@ -43,6 +44,7 @@ export const FourteenMonthReportTableHead: FC<
   FourteenMonthReportTableHeadProps
 > = ({ isExpanded, totals, salaryCurrency, order, orderBy, onRequestSort }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const createSortHandler =
     (property: OrderBy | number) => (event: React.MouseEvent<unknown>) => {
@@ -141,7 +143,9 @@ export const FourteenMonthReportTableHead: FC<
             direction={orderBy === i ? order : 'asc'}
             onClick={createSortHandler(i)}
           >
-            {DateTime.fromISO(month.month).toFormat('LLL')}
+            {DateTime.fromISO(month.month)
+              .toJSDate()
+              .toLocaleDateString(locale, { month: 'short' })}
           </TableHeadCell>
         ))}
         <TableHeadCell

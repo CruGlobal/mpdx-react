@@ -7,7 +7,6 @@ import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import { AddAddressModal } from './AddAddressModal';
-import { CreateContactAddressMutation } from './CreateContactAddress.generated';
 
 const handleClose = jest.fn();
 const accountListId = 'abc';
@@ -37,7 +36,7 @@ describe('AddAddressModal', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateContactAddressMutation>>
+          <GqlMockedProvider>
             <AddAddressModal
               accountListId={accountListId}
               contactId={contactId}
@@ -55,7 +54,7 @@ describe('AddAddressModal', () => {
     const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateContactAddressMutation>>
+          <GqlMockedProvider>
             <AddAddressModal
               accountListId={accountListId}
               contactId={contactId}
@@ -75,7 +74,7 @@ describe('AddAddressModal', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateContactAddressMutation>>
+          <GqlMockedProvider>
             <AddAddressModal
               accountListId={accountListId}
               contactId={contactId}
@@ -103,7 +102,7 @@ describe('AddAddressModal', () => {
     const { getByRole, getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateContactAddressMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <AddAddressModal
               accountListId={accountListId}
               contactId={contactId}
@@ -202,7 +201,7 @@ describe('AddAddressModal', () => {
     const { getByText, getByRole } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateContactAddressMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <AddAddressModal
               accountListId={accountListId}
               contactId={contactId}
@@ -237,7 +236,7 @@ describe('AddAddressModal', () => {
     const { getByText, getByLabelText, getByRole } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<CreateContactAddressMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <AddAddressModal
               accountListId={accountListId}
               contactId={contactId}

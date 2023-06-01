@@ -36,6 +36,7 @@ import {
 import {
   useUpdateContactOtherMutation,
   useAssigneeOptionsQuery,
+  useChurchOptionsQuery,
 } from './EditContactOther.generated';
 import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
@@ -113,6 +114,14 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     }),
     [],
   );
+
+  const { data: dataChurchOptions, loading: loadingChurchOptions } =
+    useChurchOptionsQuery({
+      variables: {
+        accountListId,
+      },
+    });
+  const churches = dataChurchOptions?.accountList?.churches ?? [];
 
   const { data: dataAssigneeOptions, loading: loadingAssigneeOptions } =
     useAssigneeOptionsQuery({
@@ -476,12 +485,33 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                   </Grid>
                 </ContactInputWrapper>
                 <ContactInputWrapper>
-                  <TextField
-                    label={t('Church')}
-                    value={churchName}
-                    onChange={handleChange('churchName')}
-                    inputProps={{ 'aria-label': t('Church') }}
-                    fullWidth
+                  <Autocomplete
+                    loading={loadingChurchOptions}
+                    autoSelect
+                    autoHighlight
+                    freeSolo
+                    options={churches}
+                    renderInput={(params): ReactElement => (
+                      <TextField
+                        {...params}
+                        label={t('Church')}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loadingChurchOptions && (
+                                <CircularProgress color="primary" size={20} />
+                              )}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                    value={churchName || ''}
+                    onChange={(_, churchName): void => {
+                      setFieldValue('churchName', churchName);
+                    }}
                   />
                 </ContactInputWrapper>
                 <ContactInputWrapper>

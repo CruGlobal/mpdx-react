@@ -178,6 +178,7 @@ const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
                   <Typography>
                     <Trans
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      shouldUnescape
                       values={{ value: data?.personDuplicates.nodes.length }}
                       components={{ bold: <strong /> }}
                     />

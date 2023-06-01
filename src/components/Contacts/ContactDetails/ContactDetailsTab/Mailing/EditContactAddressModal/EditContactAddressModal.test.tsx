@@ -14,7 +14,6 @@ import {
   ContactMailingFragmentDoc,
 } from '../ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal';
-import { UpdateContactAddressMutation } from './EditContactAddress.generated';
 
 const handleClose = jest.fn();
 const mock = gqlMock<ContactMailingFragment>(ContactMailingFragmentDoc);
@@ -61,7 +60,7 @@ describe('EditContactAddressModal', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<UpdateContactAddressMutation>>
+          <GqlMockedProvider>
             <EditContactAddressModal
               contactId={contactId}
               accountListId={accountListId}
@@ -80,7 +79,7 @@ describe('EditContactAddressModal', () => {
     const { getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<UpdateContactAddressMutation>>
+          <GqlMockedProvider>
             <EditContactAddressModal
               contactId={contactId}
               accountListId={accountListId}
@@ -101,7 +100,7 @@ describe('EditContactAddressModal', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<UpdateContactAddressMutation>>
+          <GqlMockedProvider>
             <EditContactAddressModal
               contactId={contactId}
               accountListId={accountListId}
@@ -130,7 +129,7 @@ describe('EditContactAddressModal', () => {
     const { getByRole, getByText, getByLabelText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<UpdateContactAddressMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <EditContactAddressModal
               contactId={contactId}
               accountListId={accountListId}
@@ -238,7 +237,7 @@ describe('EditContactAddressModal', () => {
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<UpdateContactAddressMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <EditContactAddressModal
               contactId={contactId}
               accountListId={accountListId}
@@ -267,7 +266,7 @@ describe('EditContactAddressModal', () => {
     const { getByText, getByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<UpdateContactAddressMutation>>
+          <GqlMockedProvider>
             <EditContactAddressModal
               contactId={contactId}
               accountListId={accountListId}
@@ -288,5 +287,41 @@ describe('EditContactAddressModal', () => {
       }),
     );
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should restrict editing of Siebel addresses', async () => {
+    const { getByRole, getByText, findByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <EditContactAddressModal
+              contactId={contactId}
+              accountListId={accountListId}
+              handleClose={handleClose}
+              address={{ ...mockContact.addresses.nodes[0], source: 'Siebel' }}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(
+      getByText('This address is provided by Donation Services'),
+    ).toBeInTheDocument();
+    expect(getByRole('combobox', { name: 'Street' })).toBeDisabled();
+    expect(getByRole('button', { name: 'Location Home' })).not.toBeDisabled();
+    expect(getByRole('textbox', { name: 'City' })).toBeDisabled();
+    expect(getByRole('textbox', { name: 'State' })).toBeDisabled();
+    expect(getByRole('textbox', { name: 'Zip' })).toBeDisabled();
+    expect(getByRole('textbox', { name: 'Country' })).toBeDisabled();
+    expect(getByRole('textbox', { name: 'Region' })).toBeDisabled();
+    expect(getByRole('textbox', { name: 'Metro' })).toBeDisabled();
+    expect(getByRole('checkbox', { name: 'Primary' })).not.toBeDisabled();
+    expect(
+      getByRole('checkbox', { name: 'Address no longer valid' }),
+    ).not.toBeDisabled();
+    expect(
+      await findByRole('link', { name: 'Email Donation Services here' }),
+    ).toBeInTheDocument();
   });
 });

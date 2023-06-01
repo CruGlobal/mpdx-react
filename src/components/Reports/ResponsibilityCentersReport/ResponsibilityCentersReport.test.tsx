@@ -30,7 +30,7 @@ const mocks = {
         {
           active: true,
           balance: {
-            conversionDate: '2/2/2021',
+            conversionDate: '2021-02-02',
             convertedAmount: 3500,
             convertedCurrency: 'CAD',
           },
@@ -41,7 +41,7 @@ const mocks = {
             id: '111-2222-3333',
             name: 'test org 01',
           },
-          updatedAt: '2/2/2021',
+          updatedAt: '2021-02-02',
         },
       ],
     },
@@ -67,7 +67,9 @@ describe('ResponsibilityCentersReport', () => {
   it('default', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery> mocks={mocks}>
+        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
+          mocks={mocks}
+        >
           <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
@@ -94,7 +96,7 @@ describe('ResponsibilityCentersReport', () => {
   it('loading', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery>>
+        <GqlMockedProvider>
           <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
@@ -136,7 +138,9 @@ describe('ResponsibilityCentersReport', () => {
   it('empty', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery> mocks={emptyMocks}>
+        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
+          mocks={emptyMocks}
+        >
           <ResponsibilityCentersReport
             accountListId={accountListId}
             isNavListOpen={true}
@@ -161,7 +165,7 @@ describe('ResponsibilityCentersReport', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery>
+        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
@@ -192,7 +196,7 @@ describe('ResponsibilityCentersReport', () => {
     const mutationSpy = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FinancialAccountsQuery>
+        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
           mocks={mocks}
           onCall={mutationSpy}
         >
