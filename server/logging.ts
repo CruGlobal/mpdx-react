@@ -39,7 +39,7 @@ const Logging = () => {
       try {
         const DDMessages =
           nativeError && parts.length === 1
-            ? [nativeError.toString()]
+            ? nativeError.toString()
             : parts.reduce((all, current) => {
                 return (all += ` | ${current}`);
               }, '');

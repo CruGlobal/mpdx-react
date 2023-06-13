@@ -17,11 +17,31 @@ frontend:
         - yarn gql
     build:
       commands:
-        - yarn build:amplify
+        - yarn build:next
   artifacts:
-    baseDirectory: build
+    baseDirectory: .next
     files:
       - '**/*'
   cache:
     paths:
-      - 'build/.next/cache/**/*'
+      - '.next/cache/**/*'
+backend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 16.16.0
+        - nvm use 16.16.0
+        - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
+        - echo "NODE_ENV=$NODE_ENV" >> .env
+        - yarn set version 3.2.3
+        - yarn config set nodeLinker node-modules
+        - yarn -v
+        - yarn
+        - yarn disable-telemetry
+    build:
+      commands:
+        - yarn build:server
+  artifacts:
+    baseDirectory: build
+    files:
+      - '**/*'
