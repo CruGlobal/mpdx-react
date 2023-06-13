@@ -2582,6 +2582,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.20.13":
+  version: 7.22.5
+  resolution: "@babel/runtime@npm:7.22.5"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: 12a50b7de2531beef38840d17af50c55a094253697600cee255311222390c68eed704829308d4fd305e1b3dfbce113272e428e9d9d45b1730e0fede997eaceb1
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.12.7, @babel/template@npm:^7.18.10, @babel/template@npm:^7.18.6, @babel/template@npm:^7.3.3":
   version: 7.18.10
   resolution: "@babel/template@npm:7.18.10"
@@ -5121,10 +5130,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@panva/hkdf@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "@panva/hkdf@npm:1.0.2"
-  checksum: 75183b4d5ea816ef516dcea70985c610683579a9e2ac540c2d59b9a3ed27eedaff830a43a1c43c1683556a457c92ac66e09109ee995ab173090e4042c4c4bb03
+"@panva/hkdf@npm:^1.0.2":
+  version: 1.1.1
+  resolution: "@panva/hkdf@npm:1.1.1"
+  checksum: f0dd12903751d8792420353f809ed3c7de860cf506399759fff5f59f7acfef8a77e2b64012898cee7e5b047708fa0bd91dff5ef55a502bf8ea11aad9842160da
   languageName: node
   linkType: hard
 
@@ -16590,7 +16599,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.9.2, jose@npm:^4.9.3":
+"jose@npm:^4.11.4":
+  version: 4.14.4
+  resolution: "jose@npm:4.14.4"
+  checksum: 2d820a91a8fd97c05d8bc8eedc373b944a0cd7f5fe41063086da233d0473c73fb523912a9f026ea870782bd221f4a515f441a2d3af4de48c6f2c76dac5082377
+  languageName: node
+  linkType: hard
+
+"jose@npm:^4.9.2":
   version: 4.11.2
   resolution: "jose@npm:4.11.2"
   checksum: bc9b2271c31683603857b2fd2903afa29f826fffd4bcefc0845355ed86995def87eaadf502033207996109d76698c912e5a986e279326d9629321a50504fe466
@@ -18324,7 +18340,7 @@ __metadata:
     micro-cors: ^0.1.1
     mui-datatables: ^4.2.2
     next: ^12.3.1
-    next-auth: ^4.18.10
+    next-auth: 4.22.1
     next-compose-plugins: ^2.2.1
     next-optimized-images: ^2.6.2
     next-plugin-graphql: 0.0.2
@@ -18506,28 +18522,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-auth@npm:^4.18.10":
-  version: 4.19.2
-  resolution: "next-auth@npm:4.19.2"
+"next-auth@npm:4.22.1":
+  version: 4.22.1
+  resolution: "next-auth@npm:4.22.1"
   dependencies:
-    "@babel/runtime": ^7.16.3
-    "@panva/hkdf": ^1.0.1
+    "@babel/runtime": ^7.20.13
+    "@panva/hkdf": ^1.0.2
     cookie: ^0.5.0
-    jose: ^4.9.3
+    jose: ^4.11.4
     oauth: ^0.9.15
-    openid-client: ^5.1.0
+    openid-client: ^5.4.0
     preact: ^10.6.3
     preact-render-to-string: ^5.1.19
     uuid: ^8.3.2
   peerDependencies:
-    next: ^12.2.5 || ^13
+    next: ^12.3.1 || ^13
     nodemailer: ^6.6.5
     react: ^17.0.2 || ^18
     react-dom: ^17.0.2 || ^18
   peerDependenciesMeta:
     nodemailer:
       optional: true
-  checksum: 7067147c80e4ba9ba328f27c548239895b746a04c0c4faa4f1e0c16cf82eb941ef7ed904a7d3bdf423f07791b471b55f5a2959f66b78495af4f02195d1a59c4e
+  checksum: 42bae16b62bac4b3d215d991c7c964dfc071a84df32900a28d4cbc20d4b6a65689b3ba9f10633780a22ff0cbc420248d012614a5b0d82918f9bbb56f7f92f7c5
   languageName: node
   linkType: hard
 
@@ -19005,7 +19021,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-hash@npm:^2.0.1":
+"object-hash@npm:^2.2.0":
   version: 2.2.0
   resolution: "object-hash@npm:2.2.0"
   checksum: 55ba841e3adce9c4f1b9b46b41983eda40f854e0d01af2802d3ae18a7085a17168d6b81731d43fdf1d6bcbb3c9f9c56d22c8fea992203ad90a38d7d919bc28f1
@@ -19128,10 +19144,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oidc-token-hash@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "oidc-token-hash@npm:5.0.1"
-  checksum: d62aa8c665f1a0133a3694785e4cd75f471364e6a2f4fbf7997e193a49ccf8f8de15596f475c7fdf8510d021c3b72f7ff6ab8bc5b07bff4cf21d490177f164a5
+"oidc-token-hash@npm:^5.0.3":
+  version: 5.0.3
+  resolution: "oidc-token-hash@npm:5.0.3"
+  checksum: 35fa19aea9ff2c509029ec569d74b778c8a215b92bd5e6e9bc4ebbd7ab035f44304ff02430a6397c3fb7c1d15ebfa467807ca0bcd31d06ba610b47798287d303
   languageName: node
   linkType: hard
 
@@ -19215,15 +19231,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:^5.1.0":
-  version: 5.1.8
-  resolution: "openid-client@npm:5.1.8"
+"openid-client@npm:^5.4.0":
+  version: 5.4.2
+  resolution: "openid-client@npm:5.4.2"
   dependencies:
-    jose: ^4.1.4
+    jose: ^4.14.1
     lru-cache: ^6.0.0
-    object-hash: ^2.0.1
-    oidc-token-hash: ^5.0.1
-  checksum: e6fe2c7d7699280ec47ed18433367e6ea57969f6e1a5aa74be03ebf6011b801179c88fc42dd90dad4ed8df8529f3f56756670a2c0b8f9ccae5149036e9152bff
+    object-hash: ^2.2.0
+    oidc-token-hash: ^5.0.3
+  checksum: 0f3570990a4979aff8581de35078c82d21d45baed9805e0e385dfc62c24fa295ee82d86386846a33bc33ed3b524a5406d8564f9f927420027719f84bf1d8b741
   languageName: node
   linkType: hard
 
@@ -21257,6 +21273,13 @@ __metadata:
   version: 1.4.2
   resolution: "regenerate@npm:1.4.2"
   checksum: 3317a09b2f802da8db09aa276e469b57a6c0dd818347e05b8862959c6193408242f150db5de83c12c3fa99091ad95fb42a6db2c3329bfaa12a0ea4cbbeb30cb0
+  languageName: node
+  linkType: hard
+
+"regenerator-runtime@npm:^0.13.11":
+  version: 0.13.11
+  resolution: "regenerator-runtime@npm:0.13.11"
+  checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
   languageName: node
   linkType: hard
 
