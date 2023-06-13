@@ -121,7 +121,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/react-hooks": "^8.0.1",
-    "@testing-library/user-event": "^13.5.0",
+    "@testing-library/user-event": "^14.0.0",
     "@types/formidable": "^2.0.6",
     "@types/google.maps": "^3.50.2",
     "@types/jest": "^29.0.3",
