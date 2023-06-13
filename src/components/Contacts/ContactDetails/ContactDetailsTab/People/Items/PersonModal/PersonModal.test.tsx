@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
@@ -21,6 +21,9 @@ import {
 } from '../../../ContactDetailsTab.generated';
 import { PersonModal } from './PersonModal';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+import { uploadAvatar, validateAvatar } from './uploadAvatar';
+
+jest.mock('./uploadAvatar');
 
 const handleClose = jest.fn();
 const accountListId = '123';
@@ -138,6 +141,11 @@ jest.mock('notistack', () => ({
 }));
 
 describe('PersonModal', () => {
+  beforeEach(() => {
+    (uploadAvatar as jest.Mock).mockResolvedValue(undefined);
+    (validateAvatar as jest.Mock).mockReturnValue({ success: true });
+  });
+
   it('should render edit person modal', () => {
     const { getByText } = render(
       <SnackbarProvider>
@@ -291,6 +299,164 @@ describe('PersonModal', () => {
     );
   });
   describe('Updating', () => {
+    const createObjectURL = jest
+      .fn()
+      .mockReturnValueOnce('blob:1')
+      .mockReturnValueOnce('blob:2');
+    const revokeObjectURL = jest.fn();
+    beforeEach(() => {
+      window.URL.createObjectURL = createObjectURL;
+      window.URL.revokeObjectURL = revokeObjectURL;
+    });
+
+    it('should handle uploading an avatar', async () => {
+      const { getByRole, getByTestId } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const file1 = new File(['contents1'], 'image1.png', {
+        type: 'image/png',
+      });
+      const file2 = new File(['contents2'], 'image2.png', {
+        type: 'image/png',
+      });
+      const fileInput = getByTestId('PersonNameUpload');
+      userEvent.upload(fileInput, file1);
+      expect(revokeObjectURL).not.toHaveBeenCalledWith('blob:1');
+      userEvent.upload(fileInput, file2);
+      expect(revokeObjectURL).toHaveBeenCalledWith('blob:1');
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(uploadAvatar).toHaveBeenCalledWith(
+          expect.objectContaining({
+            personId: mockPerson.id,
+            file: file2,
+          }),
+        ),
+      );
+
+      cleanup();
+      expect(revokeObjectURL).toHaveBeenCalledWith('blob:2');
+    });
+
+    it('should render avatar', async () => {
+      mockPerson.avatar = 'https://cru.org/assets/image.jpg';
+      mockPerson.firstName = 'James';
+      mockPerson.lastName = 'Smith';
+      mockPerson.avatar = 'https://cru.org/assets/image.jpg';
+      render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const avatarImage = document.querySelector('img') as HTMLImageElement;
+      expect(avatarImage.src).toEqual('https://cru.org/assets/image.jpg');
+      expect(avatarImage.alt).toEqual('James Smith');
+    });
+
+    it('should notify the user about validation errors', () => {
+      (validateAvatar as jest.Mock).mockReturnValue({
+        success: false,
+        message: 'Invalid file',
+      });
+
+      const { getByTestId } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const file = new File(['contents'], 'image.png', {
+        type: 'image/png',
+      });
+      userEvent.upload(getByTestId('PersonNameUpload'), file);
+
+      expect(mockEnqueue).toHaveBeenCalledWith('Invalid file', {
+        variant: 'error',
+      });
+    });
+
+    it('should notify the user about upload errors', async () => {
+      (uploadAvatar as jest.Mock).mockRejectedValue(
+        new Error('Upload failure'),
+      );
+
+      const { getByRole, getByTestId } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const file = new File(['contents'], 'image.png', {
+        type: 'image/png',
+      });
+      userEvent.upload(getByTestId('PersonNameUpload'), file);
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith('Upload failure', {
+          variant: 'error',
+        }),
+      );
+    });
+
     it('should handle editing person name section', async () => {
       const mutationSpy = jest.fn();
       const newPersonFirstName = 'Test';

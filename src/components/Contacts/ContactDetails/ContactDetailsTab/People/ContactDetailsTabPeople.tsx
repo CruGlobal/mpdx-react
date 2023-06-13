@@ -185,10 +185,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
         aria-selected={selected}
         onClick={() => toggleSelectPerson(person.id)}
       >
-        {/* TODO - add avatar link */}
         <ContactPersonAvatar
           alt={`${person.firstName} ${person.lastName}`}
-          src={person.lastName ?? ''}
+          src={person.avatar}
+          data-testid="ContactPersonAvatar"
         />
         <ContactPersonTextContainer>
           {/* Heading Section */}
