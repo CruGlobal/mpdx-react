@@ -17,7 +17,7 @@ frontend:
         - yarn gql
     build:
       commands:
-        - yarn build:amplify
+        - yarn build:next
   artifacts:
     baseDirectory: .next
     files:
