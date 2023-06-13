@@ -10,7 +10,7 @@
     "build": "yarn build:next && yarn build:server",
     "build:analyze": "ANALYZE=true yarn build",
     "build:amplify": "AMPLIFY_NEXTJS_EXPERIMENTAL_TRACE=true yarn build:next && yarn build:server",
-    "serve": "NODE_ENV=production node build/index.js",
+    "serve": "NODE_ENV=production node .next/express/index.js",
     "disable-telemetry": "next telemetry disable",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "lint:ci": "eslint '*/**/*.{js,ts,tsx}'",
