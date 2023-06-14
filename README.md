@@ -82,7 +82,9 @@ If you choose `API_OAUTH`, you will need to configure these environment variable
 
 - `API_OAUTH_CLIENT_ID` - Api OAuth Client ID
 - `API_OAUTH_CLIENT_SECRET` - Api OAuth Client Secret
-- `API_OAUTH_ISSUER` - Api OAuth issuer web address
+- `API_OAUTH_ISSUER_AUTHORIZATION_URL` - Api OAuth issuer authorization url
+- `API_OAUTH_ISSUER_TOKEN_URL` - Api OAuth issuer token url
+- `API_OAUTH_SCOPE` - Scope for Api OAuth
 - `API_OAUTH_VISIBLE_NAME` - UI name for your OAuth, default is `SSO`.
 
 _Also if you're viewing the next-auth code, you'll come across this file `pages/api/auth/apiOauthSignIn.ts`. `apiOauthSignIn.ts` is a Graphql generated file, but since the apiOauthSignIn Graphql isn't added to MPDX API Prod, only to MPDX API Staging for security reasons. We've added the generated file for apiOauthSignIn and not the GraphQl file since it will cause build errors on prod._
