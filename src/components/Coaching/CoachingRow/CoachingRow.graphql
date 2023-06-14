@@ -1,5 +1,5 @@
 mutation DeleteCoachingAccountList($id: ID!) {
-  deleteCoachingAccountList(input: { id: $id }) {
+  deleteAccountListCoach(input: { id: $id }) {
     id
   }
 }
