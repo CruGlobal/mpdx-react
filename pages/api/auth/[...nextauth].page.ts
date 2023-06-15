@@ -46,7 +46,10 @@ const AUTH_PROVIDER = process.env.AUTH_PROVIDER,
   OKTA_ISSUER = process.env.OKTA_ISSUER,
   API_OAUTH_CLIENT_ID = process.env.API_OAUTH_CLIENT_ID,
   API_OAUTH_CLIENT_SECRET = process.env.API_OAUTH_CLIENT_SECRET,
-  API_OAUTH_ISSUER = process.env.API_OAUTH_ISSUER;
+  API_OAUTH_ISSUER_AUTHORIZATION_URL =
+    process.env.API_OAUTH_ISSUER_AUTHORIZATION_URL,
+  API_OAUTH_ISSUER_TOKEN_URL = process.env.API_OAUTH_ISSUER_TOKEN_URL,
+  API_OAUTH_SCOPE = process.env.API_OAUTH_SCOPE;
 
 if (AUTH_PROVIDER !== 'OKTA' && AUTH_PROVIDER !== 'API_OAUTH') {
   throw new Error(
@@ -64,10 +67,14 @@ if (
 }
 if (
   AUTH_PROVIDER === 'API_OAUTH' &&
-  (!API_OAUTH_CLIENT_ID || !API_OAUTH_CLIENT_SECRET || !API_OAUTH_ISSUER)
+  (!API_OAUTH_CLIENT_ID ||
+    !API_OAUTH_CLIENT_SECRET ||
+    !API_OAUTH_ISSUER_AUTHORIZATION_URL ||
+    !API_OAUTH_ISSUER_TOKEN_URL ||
+    !API_OAUTH_SCOPE)
 ) {
   throw new Error(
-    'API_OAUTH_CLIENT_ID, API_OAUTH_CLIENT_SECRET or API_OAUTH_ISSUER envs not defined',
+    'API_OAUTH_CLIENT_ID, API_OAUTH_CLIENT_SECRET, API_OAUTH_ISSUER_AUTHORIZATION_URL, API_OAUTH_ISSUER_TOKEN_URL or API_OAUTH_SCOPE envs not defined',
   );
 }
 
@@ -94,12 +101,12 @@ if (AUTH_PROVIDER === 'API_OAUTH') {
     clientId: API_OAUTH_CLIENT_ID ?? '',
     clientSecret: API_OAUTH_CLIENT_SECRET ?? '',
     authorization: {
-      url: `${API_OAUTH_ISSUER}/oauth/authorize`,
-      params: { scope: 'read write', response_type: 'code' },
+      url: API_OAUTH_ISSUER_AUTHORIZATION_URL ?? '',
+      params: { scope: API_OAUTH_SCOPE ?? '', response_type: 'code' },
     },
     token: {
-      url: `${API_OAUTH_ISSUER}/oauth/token`,
-      params: { scope: 'read write', response_type: 'code' },
+      url: API_OAUTH_ISSUER_TOKEN_URL ?? '',
+      params: { scope: API_OAUTH_SCOPE ?? '', response_type: 'code' },
     },
     userinfo: {
       async request() {

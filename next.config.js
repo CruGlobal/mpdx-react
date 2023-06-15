@@ -53,8 +53,7 @@ module.exports = withPlugins([
       SITE_URL: siteUrl,
       CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
-      BEACON_TOKEN:
-        process.env.BEACON_TOKEN ?? '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
+      BEACON_TOKEN: process.env.BEACON_TOKEN,
       AUTH_PROVIDER: process.env.AUTH_PROVIDER ?? 'OKTA',
       OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
       OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
@@ -65,8 +64,13 @@ module.exports = withPlugins([
         process.env.API_OAUTH_CLIENT_ID ??
         '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',
       API_OAUTH_CLIENT_SECRET: process.env.API_OAUTH_CLIENT_SECRET,
-      API_OAUTH_ISSUER:
-        process.env.API_OAUTH_ISSUER ?? 'https://api.stage.mpdx.org',
+      API_OAUTH_ISSUER_AUTHORIZATION_URL:
+        process.env.API_OAUTH_ISSUER_AUTHORIZATION_URL ??
+        'https://api.stage.mpdx.org/oauth/authorize',
+      API_OAUTH_ISSUER_TOKEN_URL:
+        process.env.API_OAUTH_ISSUER_TOKEN_URL ??
+        'https://api.stage.mpdx.org/oauth/token',
+      API_OAUTH_SCOPE: process.env.API_OAUTH_SCOPE ?? 'read write',
       API_OAUTH_VISIBLE_NAME: process.env.API_OAUTH_VISIBLE_NAME ?? 'SSO',
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       GOOGLE_TAG_MANAGER_CONTAINER_ID:
