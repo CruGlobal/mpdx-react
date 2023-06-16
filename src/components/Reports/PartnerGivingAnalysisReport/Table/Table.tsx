@@ -19,11 +19,7 @@ import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 interface PartnerGivingAnalysisReportTableProps {
   onClick: (contactId: string) => void;
-  onSelectOne: (
-    event: React.ChangeEvent<HTMLInputElement>,
-    contactId: string,
-  ) => void;
-  onSelectAll: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSelectOne: (contactId: string) => void;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof Contact,
@@ -32,8 +28,6 @@ interface PartnerGivingAnalysisReportTableProps {
   //selectedContacts: Array<string>;
   order: Order;
   orderBy: string | null;
-  ids: string[];
-  allContactIds: string[];
   isRowChecked: (id: string) => boolean;
 }
 
@@ -68,10 +62,7 @@ export const PartnerGivingAnalysisReportTable: FC<
   contacts,
   onClick,
   onRequestSort,
-  onSelectAll,
   onSelectOne,
-  ids,
-  allContactIds,
   isRowChecked,
 }) => {
   const { t } = useTranslation();
@@ -85,11 +76,6 @@ export const PartnerGivingAnalysisReportTable: FC<
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
-
-  const isSelectedSome = ids.length > 0 && ids.length < allContactIds.length;
-
-  const isSelectedAll = ids?.length === allContactIds.length;
-
   return (
     <StickyTableContainer>
       <StickyTable
@@ -128,12 +114,9 @@ export const PartnerGivingAnalysisReportTable: FC<
               label: t('Lifetime Total'),
             },
           ]}
-          isSelectedAll={isSelectedAll}
-          isSelectedSome={isSelectedSome}
           order={order}
           orderBy={orderBy}
           onRequestSort={onRequestSort}
-          onSelectAll={onSelectAll}
         />
         <TableBody>
           {contacts?.map((contact) => {
@@ -146,7 +129,7 @@ export const PartnerGivingAnalysisReportTable: FC<
                 <TableCell padding="checkbox">
                   <Checkbox
                     checked={isRowChecked(contact.id)}
-                    onChange={(event) => onSelectOne(event, contact.id)}
+                    onChange={() => onSelectOne(contact.id)}
                     value={contact.id}
                   />
                 </TableCell>

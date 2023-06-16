@@ -6,6 +6,7 @@ import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisRepo
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
 const accountListId = '111';
 const title = 'test title';
@@ -24,6 +25,19 @@ const defaultProps = {
   // contactFilters,
 };
 
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 jest.mock('next/router', () => ({
   useRouter: () => {
     return {
@@ -35,6 +49,7 @@ jest.mock('next/router', () => ({
 
 type Mocks = {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+  GetIdsForMassSelection?: GetIdsForMassSelectionQuery;
 };
 
 const mocks: Mocks = {
@@ -84,7 +99,22 @@ const mocks: Mocks = {
         totalItems: 120,
         totalPages: 12,
       },
-      totalContacts: 300,
+      totalContacts: 3,
+    },
+  },
+  GetIdsForMassSelection: {
+    contacts: {
+      nodes: [
+        {
+          id: '01',
+        },
+        {
+          id: '02',
+        },
+        {
+          id: '03',
+        },
+      ],
     },
   },
 };
@@ -223,11 +253,12 @@ describe('PartnerGivingAnalysisReport', () => {
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
       ).not.toBeInTheDocument();
     });
+
     expect(
-      mutationSpy.mock.calls[1][0].operation.variables.input.sortField,
+      mutationSpy.mock.calls[2][0].operation.variables.input.sortField,
     ).toEqual('donationPeriodCount');
     expect(
-      mutationSpy.mock.calls[1][0].operation.variables.input.sortDirection,
+      mutationSpy.mock.calls[2][0].operation.variables.input.sortDirection,
     ).toEqual('ASCENDING');
 
     userEvent.click(getByText('Gift Count'));
@@ -236,11 +267,12 @@ describe('PartnerGivingAnalysisReport', () => {
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
       ).not.toBeInTheDocument();
     });
+
     expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.sortField,
+      mutationSpy.mock.calls[3][0].operation.variables.input.sortField,
     ).toEqual('donationPeriodCount');
     expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.sortDirection,
+      mutationSpy.mock.calls[3][0].operation.variables.input.sortDirection,
     ).toEqual('DESCENDING');
 
     userEvent.click(getByText('Gift Average'));
@@ -250,10 +282,10 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
     expect(
-      mutationSpy.mock.calls[3][0].operation.variables.input.sortField,
+      mutationSpy.mock.calls[4][0].operation.variables.input.sortField,
     ).toEqual('donationPeriodAverage');
     expect(
-      mutationSpy.mock.calls[3][0].operation.variables.input.sortDirection,
+      mutationSpy.mock.calls[4][0].operation.variables.input.sortDirection,
     ).toEqual('ASCENDING');
   });
 
@@ -278,7 +310,7 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    userEvent.type(getByPlaceholderText('Search contacts'), 'John');
+    userEvent.type(getByPlaceholderText('Search Contacts'), 'John');
     await waitFor(() => {
       expect(
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
@@ -291,7 +323,7 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[1][0].operation.variables.input.contactFilters,
+      mutationSpy.mock.calls[2][0].operation.variables.input.contactFilters,
     ).toEqual({ nameLike: '%John%' });
   });
 
@@ -324,7 +356,7 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[1][0].operation.variables.input.pageSize,
+      mutationSpy.mock.calls[2][0].operation.variables.input.pageSize,
     ).toBe(50);
   });
 
@@ -354,6 +386,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     // Select all
     userEvent.click(getAllByRole('checkbox')[0]);
+    expect(getAllByRole('checkbox')[0]).toBeChecked();
     expect(getAllByRole('checkbox')[1]).toBeChecked();
     expect(getAllByRole('checkbox')[2]).toBeChecked();
     expect(getAllByRole('checkbox')[3]).toBeChecked();

@@ -112,17 +112,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setOrderBy(property as keyof Contact);
   };
 
-  const handleSelectAll = (): void => {
-    toggleSelectAll();
-  };
-
-  const handleSelectOne = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    contactId: string,
-  ): void => {
-    toggleSelectionById(contactId);
-  };
-
   const handlePageChange = (
     event: React.MouseEvent<unknown> | null,
     newPage: number,
@@ -172,14 +161,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           <Table
             onClick={onSelectContact}
             onRequestSort={handleRequestSort}
-            onSelectAll={handleSelectAll}
-            onSelectOne={handleSelectOne}
+            onSelectOne={(contactId) => toggleSelectionById(contactId)}
             order={order}
             orderBy={orderBy}
             contacts={contacts}
             isRowChecked={isRowChecked}
-            ids={ids}
-            allContactIds={allContactIds}
           />
           <TablePagination
             colSpan={3}
