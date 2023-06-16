@@ -18,6 +18,18 @@ const router = {
   query: { accountListId },
 };
 
+const mocks = {
+  GetContactDetailsHeader: {
+    contact: {
+      name: 'Lname, Fname',
+      avatar: `https://cru.org/assets/image.jpg`,
+      primaryPerson: null,
+      pledgeCurrency: 'USD',
+      lastDonation: null,
+    },
+  },
+};
+
 describe('ContactDetails', () => {
   it('should show loading state', async () => {
     const { queryByTestId } = render(
@@ -31,6 +43,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -67,6 +81,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -89,16 +105,7 @@ describe('ContactDetails', () => {
             <GqlMockedProvider<{
               GetContactDetailsHeader: GetContactDetailsHeaderQuery;
             }>
-              mocks={{
-                GetContactDetailsHeader: {
-                  contact: {
-                    name: 'Lname, Fname',
-                    primaryPerson: null,
-                    pledgeCurrency: 'USD',
-                    lastDonation: null,
-                  },
-                },
-              }}
+              mocks={mocks}
             >
               <ContactsPage>
                 <ContactDetailProvider>
@@ -106,6 +113,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -128,16 +137,7 @@ describe('ContactDetails', () => {
             <GqlMockedProvider<{
               GetContactDetailsHeader: GetContactDetailsHeaderQuery;
             }>
-              mocks={{
-                GetContactDetailsHeader: {
-                  contact: {
-                    name: 'Lname, Fname',
-                    primaryPerson: null,
-                    pledgeCurrency: 'USD',
-                    lastDonation: null,
-                  },
-                },
-              }}
+              mocks={mocks}
             >
               <ContactsPage>
                 <ContactDetailProvider>
@@ -145,6 +145,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -170,16 +172,7 @@ describe('ContactDetails', () => {
             <GqlMockedProvider<{
               GetContactDetailsHeader: GetContactDetailsHeaderQuery;
             }>
-              mocks={{
-                GetContactDetailsHeader: {
-                  contact: {
-                    name: 'Lname, Fname',
-                    primaryPerson: null,
-                    pledgeCurrency: 'USD',
-                    lastDonation: null,
-                  },
-                },
-              }}
+              mocks={mocks}
             >
               <ContactsPage>
                 <ContactDetailProvider>
@@ -187,6 +180,8 @@ describe('ContactDetails', () => {
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
@@ -206,5 +201,43 @@ describe('ContactDetails', () => {
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).not.toBeInTheDocument(),
     );
+  });
+  it('should render avatar', async () => {
+    const { queryByText, getAllByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
+              mocks={mocks}
+            >
+              <ContactsPage>
+                <ContactDetailProvider>
+                  <ContactDetailsHeader
+                    accountListId={accountListId}
+                    contactId={contactId}
+                    onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
+                  />
+                </ContactDetailProvider>
+              </ContactsPage>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() =>
+      expect(getAllByLabelText('Edit Icon')[0]).toBeInTheDocument(),
+    );
+    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+    );
+
+    const avatarImage = document.querySelector('img') as HTMLImageElement;
+    expect(avatarImage.src).toEqual('https://cru.org/assets/image.jpg');
+    expect(avatarImage.alt).toEqual('Lname, Fname');
   });
 });

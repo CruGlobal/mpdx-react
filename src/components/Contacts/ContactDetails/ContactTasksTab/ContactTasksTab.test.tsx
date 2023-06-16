@@ -8,6 +8,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../../theme';
 import { ContactTasksTab } from './ContactTasksTab';
 import { ContactTasksTabQuery } from './ContactTasksTab.generated';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import { TasksMassActionsDropdown } from '../../../Shared/MassActions/TasksMassActionsDropdown';
 
 jest.mock('../../../../hooks/useTaskModal');
@@ -56,15 +57,22 @@ describe('ContactTasksTab', () => {
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={querySpy}>
-          <ContactTasksTab
-            accountListId={accountListId}
-            contactId={contactId}
-          />
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 300, itemHeight: 100 }}
+          >
+            <ContactTasksTab
+              accountListId={accountListId}
+              contactId={contactId}
+              contactDetailsLoaded={false}
+            />
+          </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
       </ThemeProvider>,
     );
     await waitFor(() =>
-      expect(queryByTestId('loadingRow')).not.toBeInTheDocument(),
+      expect(
+        queryByTestId('infinite-list-skeleton-loading'),
+      ).not.toBeInTheDocument(),
     );
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
@@ -80,14 +88,21 @@ describe('ContactTasksTab', () => {
     const { getAllByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider>
-          <ContactTasksTab
-            accountListId={accountListId}
-            contactId={contactId}
-          />
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 300, itemHeight: 100 }}
+          >
+            <ContactTasksTab
+              accountListId={accountListId}
+              contactId={contactId}
+              contactDetailsLoaded={false}
+            />
+          </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
       </ThemeProvider>,
     );
-    expect(getAllByTestId('loadingRow')[0]).toBeInTheDocument();
+    expect(
+      getAllByTestId('infinite-list-skeleton-loading')[0],
+    ).toBeInTheDocument();
   });
 
   it('handles add task click', async () => {
@@ -95,15 +110,22 @@ describe('ContactTasksTab', () => {
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={querySpy}>
-          <ContactTasksTab
-            accountListId={accountListId}
-            contactId={contactId}
-          />
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 300, itemHeight: 100 }}
+          >
+            <ContactTasksTab
+              accountListId={accountListId}
+              contactId={contactId}
+              contactDetailsLoaded={false}
+            />
+          </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
       </ThemeProvider>,
     );
     await waitFor(() =>
-      expect(queryByTestId('loadingRow')).not.toBeInTheDocument(),
+      expect(
+        queryByTestId('infinite-list-skeleton-loading'),
+      ).not.toBeInTheDocument(),
     );
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
@@ -128,15 +150,22 @@ describe('ContactTasksTab', () => {
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={querySpy}>
-          <ContactTasksTab
-            accountListId={accountListId}
-            contactId={contactId}
-          />
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 300, itemHeight: 100 }}
+          >
+            <ContactTasksTab
+              accountListId={accountListId}
+              contactId={contactId}
+              contactDetailsLoaded={false}
+            />
+          </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
       </ThemeProvider>,
     );
     await waitFor(() =>
-      expect(queryByTestId('loadingRow')).not.toBeInTheDocument(),
+      expect(
+        queryByTestId('infinite-list-skeleton-loading'),
+      ).not.toBeInTheDocument(),
     );
     const { operation, response } = querySpy.mock.calls[0][0];
     expect(operation.variables.accountListId).toEqual(accountListId);
@@ -164,6 +193,11 @@ describe('ContactTasksTab', () => {
             ContactTasksTab: {
               tasks: {
                 nodes: [],
+                pageInfo: {
+                  endCursor: 'MjU',
+                  hasNextPage: false,
+                },
+                totalCount: 0,
               },
             },
           }}
@@ -171,16 +205,21 @@ describe('ContactTasksTab', () => {
           <ContactTasksTab
             accountListId={accountListId}
             contactId={contactId}
+            contactDetailsLoaded={false}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
     await waitFor(() =>
-      expect(queryByTestId('loadingRow')).not.toBeInTheDocument(),
+      expect(
+        queryByTestId('infinite-list-skeleton-loading'),
+      ).not.toBeInTheDocument(),
     );
-    expect(
-      getByText('No tasks can be found for this contact'),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        getByText('No tasks can be found for this contact'),
+      ).toBeInTheDocument(),
+    );
   });
 
   it('counts total tasks when all are selected', async () => {
@@ -199,12 +238,15 @@ describe('ContactTasksTab', () => {
           <ContactTasksTab
             accountListId={accountListId}
             contactId={contactId}
+            contactDetailsLoaded={false}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
     await waitFor(() =>
-      expect(queryByTestId('loadingRow')).not.toBeInTheDocument(),
+      expect(
+        queryByTestId('infinite-list-skeleton-loading'),
+      ).not.toBeInTheDocument(),
     );
 
     userEvent.click(getAllByRole('checkbox')[0]);
@@ -216,5 +258,52 @@ describe('ContactTasksTab', () => {
         >
       ).mock.lastCall?.[0].selectedIdCount,
     ).toBe(100);
+  });
+
+  it('reached end of list and fetched more', async () => {
+    const querySpy = jest.fn();
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{
+          ContactTasksTabQuery: ContactTasksTabQuery;
+        }>
+          mocks={{
+            ContactTasksTab: {
+              tasks: {
+                nodes: [{}, {}, {}],
+                pageInfo: {
+                  endCursor: 'MjU',
+                  hasNextPage: true,
+                },
+                totalCount: 10,
+              },
+            },
+          }}
+          onCall={querySpy}
+        >
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 400, itemHeight: 100 }}
+          >
+            <ContactTasksTab
+              accountListId={accountListId}
+              contactId={contactId}
+              contactDetailsLoaded={false}
+            />
+          </VirtuosoMockContext.Provider>
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(
+        queryByTestId('infinite-list-skeleton-loading'),
+      ).not.toBeInTheDocument(),
+    );
+
+    // Wait for the fetchMore to be called
+    await waitFor(() => {
+      const { operation } = querySpy.mock.calls[2][0];
+      expect(operation.operationName).toBe('ContactTasksTab');
+      expect(operation.variables.after).toBe('MjU');
+    });
   });
 });

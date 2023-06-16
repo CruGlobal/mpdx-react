@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useApolloClient } from '@apollo/client';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
@@ -44,6 +45,7 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { uploadAvatar, validateAvatar } from './uploadAvatar';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -117,8 +119,36 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     handleRemoveDialogOpen,
   } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
-  const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
-  const [createPerson, { loading: creating }] = useCreatePersonMutation();
+  const client = useApolloClient();
+
+  const [avatar, setAvatar] = useState<{ file: File; blobUrl: string } | null>(
+    null,
+  );
+  useEffect(() => {
+    return () => {
+      if (avatar) {
+        URL.revokeObjectURL(avatar.blobUrl);
+      }
+    };
+  }, [avatar]);
+  const updateAvatar = (file: File) => {
+    const validationResult = validateAvatar({ file, t });
+    if (!validationResult.success) {
+      enqueueSnackbar(validationResult.message, {
+        variant: 'error',
+      });
+      return;
+    }
+
+    if (avatar) {
+      // Release the previous avatar blob
+      URL.revokeObjectURL(avatar.blobUrl);
+    }
+    setAvatar({ file, blobUrl: URL.createObjectURL(file) });
+  };
+
+  const [updatePerson] = useUpdatePersonMutation();
+  const [createPerson] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
 
   const personSchema: yup.SchemaOf<
@@ -370,12 +400,39 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     ): attributes is PersonUpdateInput => !!person;
 
     if (isUpdate(attributes)) {
+      const file = avatar?.file;
+      if (file) {
+        try {
+          await uploadAvatar({
+            personId: attributes.id,
+            file,
+            t,
+          });
+        } catch (err) {
+          enqueueSnackbar(
+            err instanceof Error
+              ? err.message
+              : t('Avatar could not be uploaded'),
+            {
+              variant: 'error',
+            },
+          );
+          return;
+        }
+      }
+
       await updatePerson({
         variables: {
           accountListId,
           attributes,
         },
       });
+
+      if (file) {
+        // Update the contact's avatar since it is based on the primary person's avatar
+        client.refetchQueries({ include: ['GetContactDetailsHeader'] });
+      }
+
       enqueueSnackbar(t('Person updated successfully'), {
         variant: 'success',
       });
@@ -462,7 +519,12 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               <ContactEditContainer>
                 <ContactPersonContainer>
                   {/* Name Section */}
-                  <PersonName person={person} formikProps={formikProps} />
+                  <PersonName
+                    person={person}
+                    formikProps={formikProps}
+                    pendingAvatar={avatar?.blobUrl}
+                    setAvatar={updateAvatar}
+                  />
                   {/* Phone Number Section */}
                   <PersonPhoneNumber
                     formikProps={formikProps}
@@ -512,7 +574,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               <SubmitButton
                 disabled={!formikProps.isValid || formikProps.isSubmitting}
               >
-                {(updating || creating || deleting) && (
+                {formikProps.isSubmitting && (
                   <LoadingIndicator color="primary" size={20} />
                 )}
                 {t('Save')}

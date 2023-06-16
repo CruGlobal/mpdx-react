@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import {
@@ -27,6 +27,10 @@ interface Props {
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
   width: '100%',
+}));
+
+const TabPanelNoBottomPadding = styled(TabPanel)(({}) => ({
+  paddingBottom: '0px',
 }));
 
 const ContactTabsWrapper = styled(Box)(({}) => ({
@@ -69,6 +73,7 @@ export enum TabKey {
 
 export const ContactDetails: React.FC<Props> = ({ onClose }) => {
   const { t } = useTranslation();
+  const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
 
   const {
     accountListId,
@@ -87,6 +92,8 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
           accountListId={accountListId}
           contactId={contactId}
           onClose={onClose}
+          contactDetailsLoaded={contactDetailsLoaded}
+          setContactDetailsLoaded={setContactDetailsLoaded}
         />
       )}
       <TabContext value={selectedTabKey}>
@@ -105,14 +112,15 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
             <ContactTab value={TabKey.Notes} label={t('Notes')} />
           </ContactTabs>
         </ContactTabsWrapper>
-        <TabPanel value={TabKey.Tasks}>
+        <TabPanelNoBottomPadding value={TabKey.Tasks}>
           {contactId && accountListId && (
             <ContactTasksTab
               accountListId={accountListId}
               contactId={contactId}
+              contactDetailsLoaded={contactDetailsLoaded}
             />
           )}
-        </TabPanel>
+        </TabPanelNoBottomPadding>
         <TabPanel value={TabKey.Donations}>
           {contactId && accountListId && (
             <ContactDonationsTab
