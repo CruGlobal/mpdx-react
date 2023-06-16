@@ -29,9 +29,12 @@ interface PartnerGivingAnalysisReportTableProps {
     property: keyof Contact,
   ) => void;
   contacts: Contact[];
-  selectedContacts: Array<string>;
+  //selectedContacts: Array<string>;
   order: Order;
   orderBy: string | null;
+  ids: string[];
+  allContactIds: string[];
+  isRowChecked: (id: string) => boolean;
 }
 
 const StickyTableContainer = styled(TableContainer)(() => ({
@@ -44,6 +47,7 @@ const StickyTable = styled(Table)(({}) => ({
 
 const TableCell = styled(TableCellMui)({
   fontSize: '1.15em',
+  align: 'left',
 });
 
 const ContactName = styled(Typography)(({ theme }) => ({
@@ -66,7 +70,9 @@ export const PartnerGivingAnalysisReportTable: FC<
   onRequestSort,
   onSelectAll,
   onSelectOne,
-  selectedContacts,
+  ids,
+  allContactIds,
+  isRowChecked,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -80,10 +86,9 @@ export const PartnerGivingAnalysisReportTable: FC<
       maximumFractionDigits: 2,
     }).format(amount);
 
-  const isSelectedSome =
-    selectedContacts.length > 0 && selectedContacts.length < contacts.length;
+  const isSelectedSome = ids.length > 0 && ids.length < allContactIds.length;
 
-  const isSelectedAll = selectedContacts?.length === contacts.length;
+  const isSelectedAll = ids?.length === allContactIds.length;
 
   return (
     <StickyTableContainer>
@@ -132,8 +137,6 @@ export const PartnerGivingAnalysisReportTable: FC<
         />
         <TableBody>
           {contacts?.map((contact) => {
-            const isContactSelected = selectedContacts?.includes(contact.id);
-
             return (
               <TableRow
                 key={contact.id}
@@ -142,9 +145,9 @@ export const PartnerGivingAnalysisReportTable: FC<
               >
                 <TableCell padding="checkbox">
                   <Checkbox
-                    checked={isContactSelected}
+                    checked={isRowChecked(contact.id)}
                     onChange={(event) => onSelectOne(event, contact.id)}
-                    value={isContactSelected}
+                    value={contact.id}
                   />
                 </TableCell>
                 <TableCell>
@@ -152,34 +155,32 @@ export const PartnerGivingAnalysisReportTable: FC<
                     {contact.name}
                   </ContactName>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {formatCurrency(
                     contact.donationPeriodSum,
                     contact.pledgeCurrency,
                   )}
                 </TableCell>
-                <TableCell align="center">
-                  {contact.donationPeriodCount}
-                </TableCell>
-                <TableCell align="center">
+                <TableCell>{contact.donationPeriodCount}</TableCell>
+                <TableCell>
                   {formatCurrency(
                     contact.donationPeriodAverage,
                     contact.pledgeCurrency,
                   )}
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {formatCurrency(
                     contact.lastDonationAmount,
                     contact.lastDonationCurrency,
                   )}
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {dateFormatShort(
                     DateTime.fromISO(contact.lastDonationDate),
                     locale,
                   )}
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {formatCurrency(
                     contact.totalDonations,
                     contact.pledgeCurrency,

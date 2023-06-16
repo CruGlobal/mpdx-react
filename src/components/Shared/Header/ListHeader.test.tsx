@@ -490,6 +490,7 @@ describe('ListHeader', () => {
           contactDetailsOpen={false}
           contactsView={TableViewModeEnum.List}
           totalItems={100}
+          showShowingCount={true}
           {...mockedProps}
         />
       </MocksProviders>,

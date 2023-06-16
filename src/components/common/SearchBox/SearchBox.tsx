@@ -10,7 +10,7 @@ export interface SearchBoxProps {
   onChange: (searchTerm: string) => void;
   searchTerm?: string | string[];
   placeholder?: string;
-  page: 'task' | 'contact';
+  page: 'task' | 'contact' | 'report';
 }
 
 export const AccountSearchIcon = styled(Icon)(({ theme }) => ({

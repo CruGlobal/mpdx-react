@@ -96,6 +96,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
       toggleStarredFilter={setStarredFilter}
       headerCheckboxState={selectionType}
       selectedIds={selectedIds}
+      showShowingCount={viewMode === TableViewModeEnum.List}
       buttonGroup={
         <Hidden xsDown>
           <Box display="flex" alignItems="center">

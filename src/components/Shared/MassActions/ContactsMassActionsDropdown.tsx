@@ -16,8 +16,8 @@ import { MassActionsCreateAppealModal } from 'src/components/Contacts/MassAction
 import { ExportsModal } from 'src/components/Contacts/MassActions/Exports/ExportsModal';
 import { MailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/MailMergedLabelModal';
 import { MassActionsExportEmailsModal } from 'src/components/Contacts/MassActions/Exports/Emails/MassActionsExportEmailsModal';
+import { HideContactsModal } from 'src/components/Shared/HideContactsModal/HideContactsModal';
 import { MassActionsMergeModal } from 'src/components/Contacts/MassActions/Merge/MassActionsMergeModal';
-import { HideContactsModal } from 'src/components/Shared/HideContactsModal/HideConatctsModal';
 import { TableViewModeEnum } from '../Header/ListHeader';
 import { MassActionsDropdown } from './MassActionsDropdown';
 

@@ -9,13 +9,19 @@ import theme from 'src/theme';
 
 const accountListId = '111';
 const title = 'test title';
+const contactDetailsOpen = false;
 const onNavListToggle = jest.fn();
 const onSelectContact = jest.fn();
+const activeFilters = {};
+// const contactFilters = {};
 const defaultProps = {
   accountListId,
   title,
   onNavListToggle,
   onSelectContact,
+  contactDetailsOpen,
+  activeFilters,
+  // contactFilters,
 };
 
 jest.mock('next/router', () => ({
@@ -376,7 +382,7 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(getAllByRole('checkbox')[0]).not.toBeChecked();
   });
 
-  it('contact names are clickable', async () => {
+  it('can click on contact names', async () => {
     const mutationSpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>

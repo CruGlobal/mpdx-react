@@ -1,16 +1,14 @@
+import { PartnerGivingAnalysisReportContact } from '../../../../../graphql/types.generated';
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { PartnerGivingAnalysisReportTable } from './Table';
 import theme from 'src/theme';
+import type { Order } from '../../Reports.type';
 import { GetPartnerGivingAnalysisReportQuery } from '../PartnerGivingAnalysisReport.generated';
 
-const onClick = jest.fn();
-const onRequestSort = jest.fn();
-const onSelectAll = jest.fn();
-const onSelectOne = jest.fn();
-const selectedContacts: Array<string> = [];
+type Contact = PartnerGivingAnalysisReportContact;
 
 const mocks: {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
@@ -66,18 +64,39 @@ const mocks: {
   },
 };
 
+const order: Order = 'asc';
+const orderBy: keyof Contact = 'name';
+const ids = [];
+const isRowChecked = jest.fn();
+const allContactIds =
+  mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport?.contacts.map(
+    (contact) => contact.id,
+  ) ?? [];
+const onClick = jest.fn();
+const onRequestSort = jest.fn();
+const onSelectAll = jest.fn();
+const onSelectOne = jest.fn();
+//const selectedContacts: Array<string> = [];
+
+const defaultProps = {
+  order,
+  orderBy,
+  //selectedContacts,
+  onRequestSort,
+  onClick,
+  onSelectAll,
+  onSelectOne,
+  ids,
+  allContactIds,
+  isRowChecked,
+};
+
 describe('PartnerGivingAnalysisReportTable', () => {
   it('default', async () => {
     const { getAllByTestId, getByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <PartnerGivingAnalysisReportTable
-          order="asc"
-          orderBy={null}
-          selectedContacts={selectedContacts}
-          onRequestSort={onRequestSort}
-          onClick={onClick}
-          onSelectAll={onSelectAll}
-          onSelectOne={onSelectOne}
+          {...defaultProps}
           contacts={
             mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
               .contacts
@@ -103,13 +122,7 @@ describe('PartnerGivingAnalysisReportTable', () => {
     const { getAllByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <PartnerGivingAnalysisReportTable
-          order="asc"
-          orderBy={null}
-          selectedContacts={selectedContacts}
-          onRequestSort={onRequestSort}
-          onClick={onClick}
-          onSelectAll={onSelectAll}
-          onSelectOne={onSelectOne}
+          {...defaultProps}
           contacts={
             mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
               .contacts
@@ -126,20 +139,14 @@ describe('PartnerGivingAnalysisReportTable', () => {
 
     const checkbox = getAllByRole('checkbox')[0];
     userEvent.click(checkbox);
-    expect(onSelectAll).toHaveBeenCalled();
+    expect(onSelectOne).toHaveBeenCalled();
   });
 
   it('click event should happen', async () => {
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <PartnerGivingAnalysisReportTable
-          order="asc"
-          orderBy={null}
-          selectedContacts={selectedContacts}
-          onRequestSort={onRequestSort}
-          onClick={onClick}
-          onSelectAll={onSelectAll}
-          onSelectOne={onSelectOne}
+          {...defaultProps}
           contacts={
             mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
               .contacts

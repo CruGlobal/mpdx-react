@@ -1,8 +1,9 @@
 import {
+  ContactFilterSetInput,
   PartnerGivingAnalysisReportContact,
   SortDirection,
 } from '../../../../graphql/types.generated';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
@@ -10,15 +11,18 @@ import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Heade
 import type { Order } from '../Reports.type';
 import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
-import { PartnerGivingAnalysisReportActions as Actions } from './Actions/Actions';
-// import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { ListHeader } from 'src/components/Shared/Header/ListHeader';
+import { useMassSelection } from 'src/hooks/useMassSelection';
+import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
 interface Props {
   accountListId: string;
   isNavListOpen: boolean;
+  activeFilters?: ContactFilterSetInput;
+  contactDetailsOpen: boolean;
   onNavListToggle: () => void;
   onSelectContact: (contactId: string) => void;
   title: string;
@@ -30,13 +34,14 @@ export type Contact = PartnerGivingAnalysisReportContact;
 export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   accountListId,
   isNavListOpen,
+  activeFilters,
+  contactDetailsOpen,
   onNavListToggle,
   onSelectContact,
   title,
   contactFilters: filters,
 }) => {
   const { t } = useTranslation();
-  const [selectedContacts, setSelectedContacts] = useState<Array<string>>([]);
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Contact>('name');
   const [limit, setLimit] = useState<number>(10);
@@ -50,6 +55,10 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       nameLike: `%${search}%`,
     }),
   };
+
+  const isActiveFilters = activeFilters
+    ? Object.keys(activeFilters).length > 0
+    : false;
 
   const { data, loading } = useGetPartnerGivingAnalysisReportQuery({
     variables: {
@@ -67,16 +76,32 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   });
   const contacts = data?.partnerGivingAnalysisReport.contacts ?? [];
 
-  const handleModalOpen = () => {
-    return;
-  };
+  const contactCount = data?.partnerGivingAnalysisReport?.totalContacts ?? 0;
+  const { data: allContacts } = useGetIdsForMassSelectionQuery({
+    variables: {
+      accountListId,
+      first: contactCount,
+      contactsFilters: contactFilters,
+    },
+    skip: contactCount === 0,
+  });
+  const allContactIds = useMemo(
+    () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
+    [allContacts],
+  );
 
-  const handleQueryChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    event.persist();
-    setQuery(event.target.value);
-  };
+  const {
+    ids,
+    selectionType,
+    toggleSelectAll,
+    toggleSelectionById,
+    isRowChecked,
+  } = useMassSelection(
+    data?.partnerGivingAnalysisReport?.totalContacts ?? 0,
+    allContactIds,
+    activeFilters,
+    query as string,
+  );
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -87,25 +112,15 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setOrderBy(property as keyof Contact);
   };
 
-  const handleSelectAll = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setSelectedContacts(
-      event.target.checked ? contacts.map((contact) => contact.id) : [],
-    );
+  const handleSelectAll = (): void => {
+    toggleSelectAll();
   };
 
   const handleSelectOne = (
     event: React.ChangeEvent<HTMLInputElement>,
     contactId: string,
   ): void => {
-    if (!selectedContacts.includes(contactId)) {
-      setSelectedContacts((prevSelected) => [...prevSelected, contactId]);
-    } else {
-      setSelectedContacts((prevSelected) =>
-        prevSelected.filter((id) => id !== contactId),
-      );
-    }
+    toggleSelectionById(contactId);
   };
 
   const handlePageChange = (
@@ -124,14 +139,24 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   return (
     <Box>
       <Header
-        isNavListOpen={isNavListOpen}
-        onNavListToggle={onNavListToggle}
         title={title}
+        showNavListButton={false}
+        onNavListToggle={onNavListToggle}
+        isNavListOpen={isNavListOpen}
       />
-      <Actions
-        query={query}
-        onQueryChange={handleQueryChange}
-        onModalOpen={handleModalOpen}
+      <ListHeader
+        page="report"
+        activeFilters={isActiveFilters}
+        filterPanelOpen={isNavListOpen}
+        toggleFilterPanel={onNavListToggle}
+        contactDetailsOpen={contactDetailsOpen}
+        onCheckAllItems={toggleSelectAll}
+        showShowingCount={false}
+        onSearchTermChanged={(string) => setQuery(string)}
+        searchTerm={query}
+        totalItems={data?.partnerGivingAnalysisReport?.totalContacts || 0}
+        headerCheckboxState={selectionType}
+        selectedIds={ids}
       />
       {loading ? (
         <Box
@@ -152,7 +177,9 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             order={order}
             orderBy={orderBy}
             contacts={contacts}
-            selectedContacts={selectedContacts}
+            isRowChecked={isRowChecked}
+            ids={ids}
+            allContactIds={allContactIds}
           />
           <TablePagination
             colSpan={3}

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Checkbox, TableCell, TableHead, TableRow } from '@mui/material';
+import { TableCell, TableHead, TableRow } from '@mui/material';
 // import { PartnerGivingAnalysisReportQuery } from '../../../GetPartnerGivingAnalysisReport.generated';
 import type { Order } from '../../../Reports.type';
 import type { Contact } from '../../PartnerGivingAnalysisReport';
@@ -26,13 +26,13 @@ export interface PartnerGivingAnalysisReportTableHeadProps {
 export const PartnerGivingAnalysisReportTableHead: FC<
   PartnerGivingAnalysisReportTableHeadProps
 > = ({
-  isSelectedAll,
-  isSelectedSome,
+  // isSelectedAll,
+  // isSelectedSome,
+  // onSelectAll,
   items,
   order,
   orderBy,
   onRequestSort,
-  onSelectAll,
 }) => {
   const createSortHandler =
     (property: keyof Contact) => (event: React.MouseEvent<unknown>) => {
@@ -43,16 +43,16 @@ export const PartnerGivingAnalysisReportTableHead: FC<
     <TableHead data-testid="PartnerGivingAnalysisReportTableHead">
       <TableRow>
         <TableCell padding="checkbox">
-          <Checkbox
+          {/* <Checkbox
             checked={isSelectedAll}
             indeterminate={isSelectedSome}
             onChange={onSelectAll}
-          />
+          /> */}
         </TableCell>
         {items.map((item) => (
           <TableHeadCell
             key={item.id}
-            align="center"
+            align="left"
             isActive={orderBy === item.id}
             sortDirection={orderBy === item.id ? order : false}
             direction={orderBy === item.id ? order : 'asc'}
