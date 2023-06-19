@@ -327,9 +327,9 @@ describe('PartnerGivingAnalysisReport', () => {
     ).toEqual({ nameLike: '%John%' });
   });
 
-  it('sets the pagination limit', async () => {
+  it('sets the pagination limit and changes the page', async () => {
     const mutationSpy = jest.fn();
-    const { getByRole, queryByTestId } = render(
+    const { getByRole, queryByTestId, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
           GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
@@ -358,6 +358,13 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(
       mutationSpy.mock.calls[2][0].operation.variables.input.pageSize,
     ).toBe(50);
+
+    userEvent.click(getByTestId('KeyboardArrowRightIcon'));
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('selects and unselects all', async () => {
