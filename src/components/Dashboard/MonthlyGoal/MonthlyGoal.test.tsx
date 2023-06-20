@@ -38,7 +38,7 @@ describe('MonthlyGoal', () => {
       getByTestId('MonthlyGoalTypographyAboveGoalPercentage').textContent,
     ).toEqual('-');
     expect(getByTestId('MonthlyGoalTypographyAboveGoal').textContent).toEqual(
-      '$0',
+      '-$0',
     );
   });
 

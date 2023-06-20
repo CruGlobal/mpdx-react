@@ -1,16 +1,16 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   GoogleMap,
-  useLoadScript,
   Marker,
   MarkerClusterer,
   InfoWindow,
+  useJsApiLoader,
 } from '@react-google-maps/api';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from '../../../../../graphql/types.generated';
-import { ContactsPageContext, ContactsPageType } from '../ContactsPageContext';
+import { ContactsContext, ContactsType } from '../ContactsContext';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
 
@@ -29,24 +29,24 @@ const MapLoading = styled(CircularProgress)(() => ({
 }));
 
 export interface Coordinates {
-  id: string | undefined | null;
-  name: string | undefined | null;
-  avatar: string | undefined | null;
-  status?: StatusEnum | undefined | null;
-  lat?: number | undefined | null;
-  lng?: number | undefined | null;
-  street?: string | undefined | null;
-  city?: string | undefined | null;
-  state?: string | undefined | null;
-  country?: string | undefined | null;
-  postal?: string | undefined | null;
+  id: string;
+  name: string;
+  avatar: string;
+  status?: StatusEnum | null;
+  lat?: number;
+  lng?: number;
+  street?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  postal?: string | null;
   source?: string;
   date?: string;
 }
 
 const mapContainerStyle = {
   height: '100%',
-  width: '100vw',
+  width: '100%',
   zIndex: 2000,
 };
 
@@ -55,10 +55,9 @@ const options = {
   zoomControl: true,
 };
 
-// TODO: Determine how default center
-const center = {
-  lat: 44.967243,
-  lng: -103.771556,
+const defaultCenter = {
+  lat: 40,
+  lng: -95,
 };
 
 const getStatusPin = (status: StatusEnum | null | undefined): string => {
@@ -94,113 +93,134 @@ export const ContactsMap: React.FC = ({}) => {
     selected,
     setSelected,
     setContactFocus: onContactSelected,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
-  const onMapLoad = useCallback((map) => {
+  const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
   }, []);
 
-  const { isLoaded, loadError } = useLoadScript({
+  const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+    libraries: useRef(['places' as const]).current,
   });
 
-  return (
-    <>
-      {!loadError && isLoaded ? (
-        // Important! Always set the container height explicitly
-        // Top bar is 96px + header is 60px = 156px
-        <div
-          style={{
-            height: 'calc(100vh - 156px)',
-            width: '100%',
-          }}
-        >
-          <GoogleMap
-            mapContainerStyle={mapContainerStyle}
-            id="map"
-            zoom={5}
-            center={center}
-            options={options}
-            onLoad={onMapLoad}
-            onClick={() => setSelected(null)}
-          >
-            {data && (
-              <MarkerClusterer>
-                {(clusterer) => {
-                  return (
-                    <Fragment>
-                      {data
-                        .filter((contact) => contact?.lat)
-                        .map((contact) => (
-                          <Marker
-                            key={contact?.id}
-                            clusterer={clusterer}
-                            position={{
-                              lat: contact?.lat || 0,
-                              lng: contact?.lng || 0,
-                            }}
-                            onClick={() => {
-                              setSelected(contact);
-                            }}
-                            icon={{
-                              url: `/images/pin${getStatusPin(
-                                contact?.status,
-                              )}.png`,
-                              origin: new window.google.maps.Point(0, 0),
-                              anchor: new window.google.maps.Point(15, 48),
-                              scaledSize: new window.google.maps.Size(30, 48),
-                            }}
-                          />
-                        ))}
-                    </Fragment>
-                  );
-                }}
-              </MarkerClusterer>
-            )}
+  useEffect(() => {
+    // Add styles to HelpScout Beacon to move left of Google zoom buttons.
+    const beacon = document.querySelector(
+      '#beacon-container .BeaconFabButtonFrame',
+    ) as HTMLElement;
+    if (!beacon) return;
+    beacon.style.setProperty('right', '60px', 'important');
+    return () => beacon.style.setProperty('right', '20px');
+  }, []);
 
-            {selected ? (
-              <InfoWindow
-                position={{ lat: selected.lat || 0, lng: selected.lng || 0 }}
-                onCloseClick={() => {
-                  setSelected(null);
-                }}
+  useEffect(() => {
+    if (!data || !isLoaded || !mapRef.current) {
+      return;
+    }
+
+    // Update the map to contain all of the contacts' locations
+    const bounds = new window.google.maps.LatLngBounds();
+    data.forEach((contact) => {
+      if (typeof contact.lat === 'number' && typeof contact.lng === 'number')
+        bounds.extend({ lat: contact.lat, lng: contact.lng });
+    });
+    mapRef.current.fitBounds(bounds);
+  }, [data, isLoaded, mapRef.current]);
+
+  return !loadError && isLoaded ? (
+    // Important! Always set the container height explicitly
+    // Top bar is 96px + header is 60px = 156px
+    <div
+      style={{
+        height: 'calc(100vh - 156px)',
+        width: '100%',
+      }}
+    >
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        id="map"
+        zoom={5}
+        center={defaultCenter}
+        options={options}
+        onLoad={onMapLoad}
+        onClick={() => setSelected(null)}
+      >
+        {data && (
+          <MarkerClusterer>
+            {(clusterer) => (
+              <>
+                {data.map(
+                  (contact) =>
+                    typeof contact.lat === 'number' &&
+                    typeof contact.lng === 'number' && (
+                      <Marker
+                        key={contact.id}
+                        clusterer={clusterer}
+                        position={{
+                          lat: contact.lat,
+                          lng: contact.lng,
+                        }}
+                        onClick={() => {
+                          setSelected(contact);
+                        }}
+                        icon={{
+                          url: `/images/pin${getStatusPin(contact.status)}.png`,
+                          origin: new window.google.maps.Point(0, 0),
+                          anchor: new window.google.maps.Point(15, 48),
+                          scaledSize: new window.google.maps.Size(30, 48),
+                        }}
+                      />
+                    ),
+                )}
+              </>
+            )}
+          </MarkerClusterer>
+        )}
+
+        {selected ? (
+          <InfoWindow
+            position={{
+              lat: selected.lat ?? 0,
+              lng: selected.lng ?? 0,
+            }}
+            onCloseClick={() => {
+              setSelected(null);
+            }}
+          >
+            {/*Box width the same size as old app (224px)*/}
+            <Box minWidth={theme.spacing(28)}>
+              <Typography style={{ fontWeight: 550 }}>
+                {selected.name}
+              </Typography>
+              <Typography>{selected.street}</Typography>
+              <Typography>{`${selected.city} ${selected.state} ${selected.postal}`}</Typography>
+              <Typography
+                display="inline"
+                style={{ marginRight: theme.spacing(0.5) }}
               >
-                {/*Box width the same size as old app (224px)*/}
-                <Box minWidth={theme.spacing(28)}>
-                  <Typography style={{ fontWeight: 550 }}>
-                    {selected.name}
-                  </Typography>
-                  <Typography>{selected.street}</Typography>
-                  <Typography>{`${selected.city} ${selected.state} ${selected.postal}`}</Typography>
-                  <Typography
-                    display="inline"
-                    style={{ marginRight: theme.spacing(0.5) }}
-                  >
-                    {t('Source:')}
-                  </Typography>
-                  <Typography
-                    display="inline"
-                    style={{ marginRight: theme.spacing(0.5) }}
-                  >
-                    {sourceToStr(selected.source ?? '')}
-                  </Typography>
-                  <Typography display="inline">{selected.date}</Typography>
-                  <ContactLink
-                    onClick={() =>
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      onContactSelected(selected.id!, true, false, true)
-                    }
-                  >
-                    Show Contact
-                  </ContactLink>
-                </Box>
-              </InfoWindow>
-            ) : null}
-          </GoogleMap>
-        </div>
-      ) : (
-        <MapLoading />
-      )}
-    </>
+                {t('Source:')}
+              </Typography>
+              <Typography
+                display="inline"
+                style={{ marginRight: theme.spacing(0.5) }}
+              >
+                {sourceToStr(selected.source ?? '')}
+              </Typography>
+              <Typography display="inline">{selected.date}</Typography>
+              <ContactLink
+                onClick={() =>
+                  onContactSelected(selected.id, true, false, true)
+                }
+              >
+                Show Contact
+              </ContactLink>
+            </Box>
+          </InfoWindow>
+        ) : null}
+      </GoogleMap>
+    </div>
+  ) : (
+    <MapLoading />
   );
 };

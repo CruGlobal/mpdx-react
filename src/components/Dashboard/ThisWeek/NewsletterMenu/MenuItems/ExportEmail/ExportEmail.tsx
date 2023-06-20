@@ -13,6 +13,7 @@ import Skeleton from '@mui/material/Skeleton';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { useGetEmailNewsletterContactsQuery } from './GetNewsletterContacts.generated';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
 interface Props {
   accountListId: string;
@@ -44,8 +45,12 @@ const ExportEmail = ({
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
 
-  const { data, loading } = useGetEmailNewsletterContactsQuery({
+  const { data, fetchMore } = useGetEmailNewsletterContactsQuery({
     variables: { accountListId },
+  });
+  const { loading } = useFetchAllPages({
+    fetchMore,
+    pageInfo: data?.contacts.pageInfo,
   });
 
   const emailList = useMemo(
@@ -78,7 +83,7 @@ const ExportEmail = ({
               'Reminder: Please only use the Bcc: field when sending emails to groups of partners.',
             )}
           </DialogContentText>
-          {loading || !data?.contacts ? (
+          {loading ? (
             <Skeleton
               variant="text"
               style={{ display: 'inline-block' }}

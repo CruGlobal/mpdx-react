@@ -9,16 +9,16 @@ import {
 } from '../../../../../graphql/types.generated';
 import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
 import {
-  CreateTaskDocument,
-  CreateTaskMutation,
+  CreateTasksDocument,
+  CreateTasksMutation,
   DeleteTaskDocument,
   DeleteTaskMutation,
-  TaskMutationResponseFragment,
   UpdateTaskDocument,
   UpdateTaskMutation,
   GetDataForTaskModalDocument,
   GetDataForTaskModalQuery,
 } from '../../Modal/Form/TaskModal.generated';
+import { TaskRowFragment } from '../../TaskRow/TaskRow.generated';
 
 export const getDataForTaskModalMock = (
   accountListId: string,
@@ -99,12 +99,11 @@ export const getDataForTaskModalEmptyMock = (
   };
 };
 
-export const createTaskMutationMock = (): MockedResponse => {
+export const createTasksMutationMock = (): MockedResponse => {
   const task: TaskCreateInput = {
-    id: null,
     activityType: null,
     subject: 'abc',
-    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
+    startAt: DateTime.local().toISO(),
     completedAt: null,
     tagList: [],
     contactIds: [],
@@ -112,16 +111,20 @@ export const createTaskMutationMock = (): MockedResponse => {
     notificationTimeBefore: null,
     notificationType: null,
     notificationTimeUnit: null,
+    result: null,
+    nextAction: null,
+    comment: 'test comment',
+    location: '',
   };
-  const data: CreateTaskMutation = {
-    createTask: {
-      task: { ...task, id: 'task-1' } as TaskMutationResponseFragment,
+  const data: CreateTasksMutation = {
+    createTasks: {
+      tasks: [{ ...task, id: 'task-1' } as TaskRowFragment],
     },
   };
 
   return {
     request: {
-      query: CreateTaskDocument,
+      query: CreateTasksDocument,
       variables: {
         accountListId: 'abc',
         attributes: task,
@@ -141,13 +144,10 @@ export const updateTaskMutationMock = (): MockedResponse => {
     tagList: ['tag-1', 'tag-2'],
     contactIds: ['contact-1', 'contact-2'],
     userId: 'user-1',
-    notificationTimeBefore: 20,
-    notificationType: NotificationTypeEnum.Both,
-    notificationTimeUnit: NotificationTimeUnitEnum.Hours,
   };
   const data: UpdateTaskMutation = {
     updateTask: {
-      task: task as TaskMutationResponseFragment,
+      task: task as TaskRowFragment,
     },
   };
   return {

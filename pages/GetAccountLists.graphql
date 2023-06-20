@@ -1,5 +1,5 @@
 query GetAccountLists {
-  accountLists {
+  accountLists(first: 50) {
     nodes {
       id
       name

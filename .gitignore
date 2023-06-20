@@ -4,6 +4,7 @@
 .yarn/*
 !.yarn/cache
 !.yarn/releases
+!.yarn/patches
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions
@@ -56,3 +57,9 @@ yarn-error.log*
 .eslintcache
 
 node_modules
+
+# Storybook
+build-storybook.log
+
+# GraphQL
+graphql-digest.txt

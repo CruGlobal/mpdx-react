@@ -1,84 +1,40 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
+import { TaskRowFragment } from 'src/components/Task/TaskRow/TaskRow.generated';
 import {
   ActivityTypeEnum,
   TaskCreateInput,
 } from '../../../../../../../graphql/types.generated';
 import {
-  CreateTaskCommentDocument,
-  CreateTaskCommentMutation,
-} from '../../../../../Task/Modal/Comments/Form/CreateTaskComment.generated';
-import {
-  CreateTaskDocument,
-  CreateTaskMutation,
-  TaskMutationResponseFragment,
+  CreateTasksDocument,
+  CreateTasksMutation,
 } from '../../../../../Task/Modal/Form/TaskModal.generated';
 
-export const createNewsletterTaskMutationMock = (): MockedResponse => {
+export const createNewsletterTaskMutationMock = (
+  id: string,
+  activityType: ActivityTypeEnum,
+): MockedResponse => {
   const task: TaskCreateInput = {
-    activityType: ActivityTypeEnum.NewsletterPhysical,
+    activityType,
     completedAt: null,
-    contactIds: [],
-    id: null,
-    nextAction: null,
-    notificationTimeBefore: null,
-    notificationTimeUnit: null,
-    notificationType: null,
-    result: null,
-    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
+    startAt: DateTime.local().toISO(),
     subject: 'abc',
-    tagList: [],
-    userId: null,
+    comment: 'comment',
   };
-  const data: CreateTaskMutation = {
-    createTask: {
-      task: { ...task, id: 'task-1' } as TaskMutationResponseFragment,
+  const data: CreateTasksMutation = {
+    createTasks: {
+      tasks: [{ ...task, id } as TaskRowFragment],
     },
   };
 
   return {
     request: {
-      query: CreateTaskDocument,
+      query: CreateTasksDocument,
       variables: {
         accountListId: 'abc',
         attributes: task,
       },
     },
     result: { data },
-  };
-};
-
-export const createNewsLetterTaskCommentMutation = (): MockedResponse => {
-  const data: CreateTaskCommentMutation = {
-    createTaskComment: {
-      comment: {
-        id: 'comment-0',
-        body: 'comment',
-        createdAt: DateTime.local().toISO(),
-        me: true,
-        person: {
-          id: 'user-1',
-          firstName: 'John',
-          lastName: 'Smith',
-        },
-      },
-    },
-  };
-
-  return {
-    request: {
-      query: CreateTaskCommentDocument,
-      variables: {
-        accountListId: 'abc',
-        taskId: 'task-1',
-        attributes: {
-          id: 'comment-0',
-          body: 'comment',
-        },
-      },
-    },
-    result: {
-      data,
-    },
   };
 };

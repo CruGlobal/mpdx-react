@@ -1,10 +1,14 @@
-query ContactReferralTab($accountListId: ID!, $contactId: ID!) {
+query ContactReferralTab($accountListId: ID!, $contactId: ID!, $after: String) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
     name
-    contactReferralsByMe {
+    contactReferralsByMe(first: 25, after: $after) {
       nodes {
         ...ContactReferral
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
       }
     }
   }
@@ -16,18 +20,5 @@ fragment ContactReferral on Referral {
   referredTo {
     id
     name
-  }
-}
-
-mutation UpdateContactReferral(
-  $accountListId: ID!
-  $attributes: ContactUpdateInput!
-) {
-  updateContact(
-    input: { accountListId: $accountListId, attributes: $attributes }
-  ) {
-    contact {
-      id
-    }
   }
 }

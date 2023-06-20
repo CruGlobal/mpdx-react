@@ -1,6 +1,7 @@
 extend type Query {
   fourteenMonthReport(
     accountListId: ID!
+    designationAccountId: [ID!]
     currencyType: FourteenMonthReportCurrencyType!
   ): FourteenMonthReport!
 }

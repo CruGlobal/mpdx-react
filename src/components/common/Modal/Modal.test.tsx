@@ -13,7 +13,7 @@ it('renders when isOpen is true', () => {
   const { getByText } = render(
     <ThemeProvider theme={theme}>
       <Modal isOpen={true} title={modalTitle} handleClose={handleClose}>
-        <>{modalTextContent}</>
+        {modalTextContent}
       </Modal>
     </ThemeProvider>,
   );
@@ -25,7 +25,7 @@ it('does not render when isOpen is false', () => {
   const { queryByText } = render(
     <ThemeProvider theme={theme}>
       <Modal isOpen={false} title={modalTitle} handleClose={handleClose}>
-        <>{modalTextContent}</>
+        {modalTextContent}
       </Modal>
     </ThemeProvider>,
   );
@@ -37,7 +37,7 @@ it('fires onClose | Close Button', () => {
   const { getByLabelText } = render(
     <ThemeProvider theme={theme}>
       <Modal isOpen={true} title={modalTitle} handleClose={handleClose}>
-        <>{modalTextContent}</>
+        {modalTextContent}
       </Modal>
     </ThemeProvider>,
   );

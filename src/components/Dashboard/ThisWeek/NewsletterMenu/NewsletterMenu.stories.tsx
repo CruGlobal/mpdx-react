@@ -28,7 +28,7 @@ export const Default = (): ReactElement => {
     },
   };
   return (
-    <GqlMockedProvider<GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery>
+    <GqlMockedProvider<{ GetTaskAnalytics: GetTaskAnalyticsQuery }>
       mocks={mocks}
     >
       <NewsletterMenu accountListId={accountListId} />
@@ -67,6 +67,11 @@ export const Loading = (): ReactElement => {
   );
 };
 
+interface EmptyMocks {
+  GetTaskAnalytics: GetTaskAnalyticsQuery;
+  GetEmailNewsletterContacts: GetEmailNewsletterContactsQuery;
+}
+
 export const Empty = (): ReactElement => {
   const mocks = {
     GetEmailNewsletterContacts: {
@@ -83,9 +88,7 @@ export const Empty = (): ReactElement => {
     },
   };
   return (
-    <GqlMockedProvider<GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery>
-      mocks={mocks}
-    >
+    <GqlMockedProvider<EmptyMocks> mocks={mocks}>
       <NewsletterMenu accountListId={accountListId} />
     </GqlMockedProvider>
   );
@@ -104,9 +107,7 @@ export const Error = (): ReactElement => {
     },
   };
   return (
-    <GqlMockedProvider<GetTaskAnalyticsQuery & GetEmailNewsletterContactsQuery>
-      mocks={mocks}
-    >
+    <GqlMockedProvider mocks={mocks}>
       <NewsletterMenu accountListId={accountListId} />
     </GqlMockedProvider>
   );

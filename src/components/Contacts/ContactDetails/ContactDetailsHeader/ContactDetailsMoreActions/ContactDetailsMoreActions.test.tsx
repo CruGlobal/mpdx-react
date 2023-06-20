@@ -1,3 +1,4 @@
+import { StatusEnum } from '../../../../../../graphql/types.generated';
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
@@ -6,12 +7,11 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import { DeleteContactMutation } from '../../ContactDetailsTab/ContactDetailsTab.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { UpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = '111';
 const contactId = 'contact-1';
@@ -51,14 +51,15 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -80,14 +81,15 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -99,6 +101,7 @@ describe('ContactDetailsMoreActions', () => {
     await waitFor(() => expect(getByText('Add Task')).toBeInTheDocument());
     userEvent.click(getByText('Add Task'));
     expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'add',
       defaultValues: {
         contactIds: [contactId],
       },
@@ -111,14 +114,15 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -142,7 +146,9 @@ describe('ContactDetailsMoreActions', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactOtherMutation>
+            <GqlMockedProvider<{
+              UpdateContactOther: UpdateContactOtherMutation;
+            }>
               mocks={{
                 UpdateContactOther: {
                   updateContact: {
@@ -153,14 +159,15 @@ describe('ContactDetailsMoreActions', () => {
                 },
               }}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -172,6 +179,7 @@ describe('ContactDetailsMoreActions', () => {
     );
     expect(getByText('Hide Contact')).toBeInTheDocument();
     userEvent.click(getByText('Hide Contact'));
+    userEvent.click(getByText('Hide'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contact hidden successfully!', {
         variant: 'success',
@@ -191,15 +199,16 @@ describe('ContactDetailsMoreActions', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<DeleteContactMutation>>
-              <ContactsPageProvider>
+            <GqlMockedProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -228,15 +237,16 @@ describe('ContactDetailsMoreActions', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<DeleteContactMutation>>
-              <ContactsPageProvider>
+            <GqlMockedProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -259,15 +269,16 @@ describe('ContactDetailsMoreActions', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<DeleteContactMutation>>
-              <ContactsPageProvider>
+            <GqlMockedProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
+                    status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>

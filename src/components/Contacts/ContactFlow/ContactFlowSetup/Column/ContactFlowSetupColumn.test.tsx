@@ -53,6 +53,7 @@ describe('ContactFlowSetupColumn', () => {
                 setColumnWidth={setColumnWidth}
                 statuses={status}
                 updateColumns={updateColumns}
+                flowOptions={[]}
               />
             </TestRouter>
           </ThemeProvider>
@@ -66,7 +67,16 @@ describe('ContactFlowSetupColumn', () => {
     );
     const columnTitle = getByTestId('column-title') as HTMLInputElement;
     expect(columnTitle.value).toBe(title);
-    userEvent.type(columnTitle, 'additional text');
+
+    userEvent.type(columnTitle, 'addi');
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    userEvent.type(columnTitle, 'tional');
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    userEvent.type(columnTitle, ' text');
+
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    expect(changeTitle).toHaveBeenCalledTimes(1);
+
     expect(columnTitle.value).toBe(title + 'additional text');
   });
 
@@ -91,6 +101,7 @@ describe('ContactFlowSetupColumn', () => {
                 moveColumns={moveColumns}
                 statuses={status}
                 updateColumns={updateColumns}
+                flowOptions={[]}
               />
             </TestRouter>
           </ThemeProvider>
@@ -138,6 +149,7 @@ describe('ContactFlowSetupColumn', () => {
                 moveColumns={moveColumns}
                 statuses={status}
                 updateColumns={updateColumns}
+                flowOptions={[]}
               />
             </TestRouter>
           </ThemeProvider>

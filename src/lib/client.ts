@@ -9,11 +9,13 @@ import { onError } from '@apollo/client/link/error';
 import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
 import { signOut } from 'next-auth/react';
+import { clearDataDogUser } from 'src/hooks/useDataDog';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
 import snackNotifications from '../components/Snackbar/Snackbar';
+import { dispatch } from './analytics';
 import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
 
-const ignoredkeyArgsForPagination = ['before', 'after', 'first', 'last'];
+const ignoredkeyArgsForPagination = ['before', 'after'];
 const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
   args
     ? Object.keys(args).filter(
@@ -25,9 +27,18 @@ const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
 export const cache = new InMemoryCache({
   possibleTypes: generatedIntrospection.possibleTypes,
   typePolicies: {
+    AccountList: { merge: true },
+    User: { merge: true },
+    Contact: {
+      fields: {
+        contactReferralsByMe: paginationFieldPolicy,
+      },
+      merge: true,
+    },
     Query: {
       fields: {
         contacts: paginationFieldPolicy,
+        donations: paginationFieldPolicy,
         tasks: paginationFieldPolicy,
         userNotifications: paginationFieldPolicy,
       },
@@ -47,13 +58,18 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.map(({ message, extensions }) => {
       if (extensions?.code === 'AUTHENTICATION_ERROR') {
-        signOut({ redirect: true });
+        signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
+          clearDataDogUser();
+        });
       }
       snackNotifications.error(message);
     });
   }
 
-  if (networkError) snackNotifications.error(networkError.message);
+  if (networkError) {
+    dispatch('mpdx-api-error');
+    snackNotifications.error(networkError.message);
+  }
 });
 
 if (process.browser && process.env.NODE_ENV === 'production') {

@@ -15,6 +15,10 @@ import {
   GetTaskForTaskModalDocument,
   GetTaskForTaskModalQuery,
 } from '../../TaskModalTask.generated';
+import {
+  CreateTaskCommentDocument,
+  CreateTaskCommentMutation,
+} from '../../Comments/Form/CreateTaskComment.generated';
 
 export const getCompleteTaskForTaskModalMock = (
   accountListId: string,
@@ -61,14 +65,14 @@ export const completeSimpleTaskMutationMock = (
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.None,
+    result: ResultEnum.Completed,
     nextAction: null,
   };
   const attributes: TaskUpdateInput = {
     id: 'task-1',
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.None,
+    result: ResultEnum.Completed,
   };
   const data: CompleteTaskMutation = {
     updateTask: {
@@ -94,14 +98,14 @@ export const completeTaskMutationMock = (
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.Completed,
+    result: ResultEnum.Received,
     nextAction: ActivityTypeEnum.Appointment,
   };
   const attributes: TaskUpdateInput = {
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.Completed,
+    result: ResultEnum.Received,
     nextAction: ActivityTypeEnum.Appointment,
   };
   const data: CompleteTaskMutation = {
@@ -115,6 +119,37 @@ export const completeTaskMutationMock = (
       variables: {
         accountListId,
         attributes,
+      },
+    },
+    result: { data },
+  };
+};
+export const addTaskMutationMock = (
+  accountListId: string,
+  taskId: string,
+): MockedResponse => {
+  const data: CreateTaskCommentMutation = {
+    createTaskComment: {
+      comment: {
+        id: 'comment-1',
+        body: 'Comment',
+        createdAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+        me: true,
+        person: {
+          id: 'person-1',
+          firstName: 'John',
+          lastName: 'Doe',
+        },
+      },
+    },
+  };
+  return {
+    request: {
+      query: CreateTaskCommentDocument,
+      variables: {
+        accountListId,
+        taskId,
+        attributes: { id: 'comment-1', body: 'Comment' },
       },
     },
     result: { data },

@@ -70,9 +70,8 @@ export const MassActionsRemoveTagsModal: React.FC<
   const { data: contactsForTags } = useGetContactsForTagsQuery({
     variables: {
       accountListId,
-      contactsFilters: {
-        ids,
-      },
+      contactIds: ids,
+      numContactIds: ids.length,
     },
   });
 
@@ -129,7 +128,11 @@ export const MassActionsRemoveTagsModal: React.FC<
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            data-testid="RemoveTagsModal"
+          >
             <DialogContent dividers>
               <FormControl fullWidth>
                 {contactTagsList?.accountList.contactTagList && tagList ? (

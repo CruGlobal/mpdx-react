@@ -28,6 +28,17 @@ const testAppeal = {
   pledgesAmountTotal: 55,
 };
 
+const mocks = {
+  GetAppeals: {
+    appeals: {
+      nodes: [testAppeal],
+      pageInfo: {
+        hasNextPage: false,
+      },
+    },
+  },
+};
+
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
@@ -63,15 +74,7 @@ describe('AppealsTest', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider<GetAppealsQuery>
-              mocks={{
-                GetAppeals: {
-                  appeals: {
-                    nodes: [testAppeal],
-                  },
-                },
-              }}
-            >
+            <GqlMockedProvider<{ GetAppeals: GetAppealsQuery }> mocks={mocks}>
               <Appeals accountListId={accountListId} />
             </GqlMockedProvider>
           </TestRouter>
@@ -89,20 +92,12 @@ describe('AppealsTest', () => {
     );
   });
 
-  it.skip('should set appeal to primary', async () => {
+  it('should set appeal to primary', async () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider<GetAppealsQuery>
-              mocks={{
-                GetAppeals: {
-                  appeals: {
-                    nodes: [testAppeal],
-                  },
-                },
-              }}
-            >
+            <GqlMockedProvider<{ GetAppeals: GetAppealsQuery }> mocks={mocks}>
               <Appeals accountListId={accountListId} />
             </GqlMockedProvider>
           </TestRouter>
@@ -112,7 +107,9 @@ describe('AppealsTest', () => {
     const setPrimaryButton = await waitFor(() => getByTestId('setPrimary-1'));
     expect(setPrimaryButton).toBeInTheDocument();
     userEvent.click(setPrimaryButton);
-    await waitFor(() => expect(setPrimaryButton).not.toBeInTheDocument());
-    expect(mockEnqueue).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(setPrimaryButton).not.toBeInTheDocument();
+      expect(mockEnqueue).toHaveBeenCalled();
+    });
   });
 });

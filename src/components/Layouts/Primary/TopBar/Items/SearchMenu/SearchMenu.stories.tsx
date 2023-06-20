@@ -8,12 +8,10 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <>
-      <AppBar>
-        <Box>
-          <SearchMenu />
-        </Box>
-      </AppBar>
-    </>
+    <AppBar>
+      <Box>
+        <SearchMenu />
+      </Box>
+    </AppBar>
   );
 };

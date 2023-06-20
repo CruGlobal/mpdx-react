@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import {
+  Alert,
+  AlertTitle,
   Box,
   Checkbox,
   CircularProgress,
@@ -13,6 +14,7 @@ import {
   FormControlLabel,
   Grid,
   InputLabel,
+  Link,
   MenuItem,
   Select,
   TextField,
@@ -27,6 +29,7 @@ import {
 } from '../../ContactDetailsTab.generated';
 import {
   useDeleteContactAddressMutation,
+  useDonationServicesEmailQuery,
   useUpdateContactAddressMutation,
 } from './EditContactAddress.generated';
 import {
@@ -34,6 +37,11 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useUpdateCache } from '../useUpdateCache';
+import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
+import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
+import { updateAddressSchema } from './updateAddressSchema';
+import { generateEmailBody } from './helpers';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -83,31 +91,33 @@ export const EditContactAddressModal: React.FC<
     useUpdateContactAddressMutation();
   const [deleteAddress, { loading: deleting }] =
     useDeleteContactAddressMutation();
+  const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
+    useSetContactPrimaryAddressMutation();
+  const { update } = useUpdateCache(contactId);
 
-  const contactAddressSchema: yup.SchemaOf<
-    Omit<AddressUpdateInput, 'validValues'>
-  > = yup.object({
-    city: yup.string().nullable(),
-    country: yup.string().nullable(),
-    historic: yup.boolean().nullable(),
-    id: yup.string().required(),
-    location: yup.string().nullable(),
-    metroArea: yup.string().nullable(),
-    postalCode: yup.string().nullable(),
-    region: yup.string().nullable(),
-    state: yup.string().nullable(),
-    street: yup.string().nullable(),
-  });
-
-  const onSubmit = async (
-    attributes: Omit<AddressUpdateInput, 'validValues'>,
-  ) => {
+  const onSubmit = async ({
+    primaryMailingAddress,
+    ...attributes
+  }: Omit<AddressUpdateInput, 'validValues'> & {
+    primaryMailingAddress: boolean;
+  }) => {
     await updateContactAddress({
       variables: {
         accountListId,
         attributes,
       },
     });
+    // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
+    // that field changes, then use the setContactPrimaryAddress mutation to update it
+    if (address.primaryMailingAddress !== primaryMailingAddress) {
+      await setContactPrimaryAddress({
+        variables: {
+          contactId,
+          primaryAddressId: primaryMailingAddress ? address.id : null,
+        },
+        update,
+      });
+    }
     enqueueSnackbar(t('Address updated successfully'), {
       variant: 'success',
     });
@@ -157,6 +167,15 @@ export const EditContactAddressModal: React.FC<
     handleClose();
   };
 
+  const editingDisabled = address.source === 'Siebel';
+  const { data: emailData } = useDonationServicesEmailQuery({
+    variables: {
+      accountListId,
+      contactId,
+    },
+    skip: !editingDisabled,
+  });
+
   return (
     <Modal isOpen={true} title={t('Edit Address')} handleClose={handleClose}>
       <Formik
@@ -171,8 +190,9 @@ export const EditContactAddressModal: React.FC<
           region: address.region ?? '',
           state: address.state ?? '',
           street: address.street ?? '',
+          primaryMailingAddress: address.primaryMailingAddress ?? false,
         }}
-        validationSchema={contactAddressSchema}
+        validationSchema={updateAddressSchema}
         onSubmit={onSubmit}
       >
         {({
@@ -186,26 +206,66 @@ export const EditContactAddressModal: React.FC<
             region,
             state,
             street,
+            primaryMailingAddress,
           },
           handleChange,
           handleSubmit,
-          setFieldValue,
           isSubmitting,
           isValid,
+          setFieldValue,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate>
             <DialogContent dividers>
               <ContactEditContainer>
+                {editingDisabled && (
+                  <ContactInputWrapper>
+                    <Alert severity="info">
+                      <AlertTitle sx={{ fontWeight: 'bold' }}>
+                        {t('This address is provided by Donation Services')}
+                      </AlertTitle>
+                      <p>
+                        {t(
+                          'The address that syncs with Donation Services cannot be edited here. Please email Donation Services with the updated address, or you can create a new address and select it as your primary mailing address.',
+                        )}
+                      </p>
+                      {emailData && (
+                        <p>
+                          <Link
+                            href={`mailto:donation.services@cru.org?subject=Donor+address+change&body=${encodeURIComponent(
+                              generateEmailBody(emailData, address),
+                            )}`}
+                            sx={{ fontWeight: 'bold' }}
+                          >
+                            {t('Email Donation Services here')}
+                          </Link>
+                        </p>
+                      )}
+                    </Alert>
+                  </ContactInputWrapper>
+                )}
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
                     <Grid item sm={12} md={9}>
-                      <TextField
-                        label={t('Street')}
-                        value={street}
-                        required
-                        onChange={handleChange('street')}
-                        inputProps={{ 'aria-label': t('Street') }}
-                        fullWidth
+                      <StreetAutocomplete
+                        streetValue={street}
+                        onStreetChange={(street) =>
+                          setFieldValue('street', street)
+                        }
+                        onPredictionChosen={(fields) => {
+                          Object.entries(fields).forEach(([field, value]) => {
+                            setFieldValue(field, value);
+                          });
+                          if (!location) {
+                            setFieldValue('location', 'Home');
+                          }
+                        }}
+                        TextFieldProps={{
+                          name: 'street',
+                          label: t('Street'),
+                          required: true,
+                          fullWidth: true,
+                        }}
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item xs={12} md={3}>
@@ -214,12 +274,11 @@ export const EditContactAddressModal: React.FC<
                           {t('Location')}
                         </InputLabel>
                         <Select
+                          name="location"
                           label={t('Location')}
                           labelId="location-select-label"
                           value={location}
-                          onChange={(e) =>
-                            setFieldValue('location', e.target.value)
-                          }
+                          onChange={handleChange}
                           fullWidth
                         >
                           {Object.values(AddressLocationEnum).map((value) => (
@@ -240,29 +299,35 @@ export const EditContactAddressModal: React.FC<
                   <Grid container spacing={1}>
                     <Grid item sm={12} md={6}>
                       <TextField
+                        name="city"
                         label={t('City')}
                         value={city}
-                        onChange={handleChange('city')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('City') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
                       <TextField
+                        name="state"
                         label={t('State')}
                         value={state}
-                        onChange={handleChange('state')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('State') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
                       <TextField
+                        name="postalCode"
                         label={t('Zip')}
                         value={postalCode}
-                        onChange={handleChange('postalCode')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('Zip') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                   </Grid>
@@ -271,29 +336,35 @@ export const EditContactAddressModal: React.FC<
                   <Grid container spacing={1}>
                     <Grid item sm={12} md={6}>
                       <TextField
+                        name="country"
                         label={t('Country')}
                         value={country}
-                        onChange={handleChange('country')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('Country') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
                       <TextField
+                        name="region"
                         label={t('Region')}
                         value={region}
-                        onChange={handleChange('region')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('Region') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                     <Grid item sm={12} md={3}>
                       <TextField
+                        name="metroArea"
                         label={t('Metro')}
                         value={metroArea}
-                        onChange={handleChange('metroArea')}
+                        onChange={handleChange}
                         inputProps={{ 'aria-label': t('Metro') }}
                         fullWidth
+                        disabled={editingDisabled}
                       />
                     </Grid>
                   </Grid>
@@ -302,8 +373,21 @@ export const EditContactAddressModal: React.FC<
                   <FormControlLabel
                     control={
                       <Checkbox
+                        name="primaryMailingAddress"
+                        checked={primaryMailingAddress}
+                        onChange={handleChange}
+                      />
+                    }
+                    label={t('Primary')}
+                  />
+                </ContactInputWrapper>
+                <ContactInputWrapper>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name="historic"
                         checked={historic}
-                        onChange={() => setFieldValue('historic', !historic)}
+                        onChange={handleChange}
                         color="secondary"
                       />
                     }
@@ -316,7 +400,7 @@ export const EditContactAddressModal: React.FC<
               {address && <DeleteButton onClick={deleteContactAddress} />}
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
               <SubmitButton disabled={!isValid || isSubmitting}>
-                {(updating || deleting) && (
+                {(updating || deleting || settingPrimaryAddress) && (
                   <LoadingIndicator color="primary" size={20} />
                 )}
                 {t('Save')}

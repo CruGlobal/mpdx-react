@@ -29,13 +29,14 @@ import {
   Contact,
   PersonWithParentContact,
 } from '../../../../../graphql/types.generated';
-import { dayMonthFormat } from '../../../../lib/intlFormat';
+import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import theme from 'src/theme';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { useLocale } from 'src/hooks/useLocale';
 
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',
@@ -143,6 +144,7 @@ const PartnerCare = ({
   reportsPeopleWithAnniversaries,
 }: Props): ReactElement => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const [value, setValue] = useState(0);
   const { openTaskModal } = useTaskModal();
 
@@ -165,6 +167,7 @@ const PartnerCare = ({
       GetThisWeekQuery['reportsPeopleWithBirthdays']['periods'][0]['people'][0],
   ) => {
     openTaskModal({
+      view: 'add',
       defaultValues: {
         contactIds: [person.parentContact.id],
         subject:
@@ -243,16 +246,21 @@ const PartnerCare = ({
         onChange={handleChange}
       >
         <Tab
-          label={t('Prayer ({{ totalCount, number }})', {
-            totalCount: prayerRequestTasks?.totalCount || 0,
+          label={t('Prayer ({{totalCount}})', {
+            totalCount: numberFormat(
+              prayerRequestTasks?.totalCount || 0,
+              locale,
+            ),
           })}
           data-testid="PartnerCareTabPrayer"
         />
         <Tab
-          label={t('Celebrations ({{ totalCount, number }})', {
-            totalCount:
+          label={t('Celebrations ({{totalCount}})', {
+            totalCount: numberFormat(
               (mergedAnniversaries?.length || 0) +
-              (mergedBirthdays?.length || 0),
+                (mergedBirthdays?.length || 0),
+              locale,
+            ),
           })}
           data-testid="PartnerCareTabCelebrations"
         />
@@ -280,7 +288,7 @@ const PartnerCare = ({
               </CardList>
               <CardActions>
                 <Button size="small" color="primary" disabled>
-                  {t('View All ({{ totalCount, number }})', { totalCount: 0 })}
+                  {t('View All ({{totalCount}})', { totalCount: 0 })}
                 </Button>
               </CardActions>
             </>
@@ -356,8 +364,11 @@ const PartnerCare = ({
                       passHref
                     >
                       <Button size="small" color="primary">
-                        {t('View All ({{ totalCount, number }})', {
-                          totalCount: prayerRequestTasks.totalCount,
+                        {t('View All ({{totalCount}})', {
+                          totalCount: numberFormat(
+                            prayerRequestTasks.totalCount,
+                            locale,
+                          ),
                         })}
                       </Button>
                     </Link>
@@ -390,90 +401,85 @@ const PartnerCare = ({
               ))}
             </CardList>
           )}
-          {!loading && (
-            <>
-              {!celebrations || (celebrations && celebrations.length === 0) ? (
-                <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
-                  <img src={illustration7} alt="No partner care celebrations" />
-                  {t('No celebrations to show.')}
-                </CardContentContainer>
-              ) : (
-                <CardList data-testid="PartnerCareCelebrationList">
-                  {celebrations?.map(
-                    (person, index) =>
-                      (person.birthdayDay || person.anniversaryDay) &&
-                      (person.birthdayMonth || person.anniversaryMonth) && (
-                        <ListItem
-                          key={person.id}
-                          button
-                          data-testid={`CelebrationItem-${index}`}
-                        >
-                          <ListItemIcon>
-                            {person.birthdayDay ? (
-                              <CakeIcon />
-                            ) : (
-                              <FavoriteIcon />
-                            )}
-                          </ListItemIcon>
-                          <ListItemText
-                            disableTypography={true}
-                            primary={
-                              <Typography variant="body1">
-                                {person.birthdayDay
-                                  ? `${person.firstName} ${person.lastName}`
-                                  : person.parentContact.name}
-                              </Typography>
-                            }
-                            secondary={
-                              <Box style={{ whiteSpace: 'nowrap' }}>
-                                <Box
-                                  component="div"
-                                  textOverflow="ellipsis"
-                                  overflow="hidden"
+          {!loading &&
+            (!celebrations || (celebrations && celebrations.length === 0) ? (
+              <CardContentContainer data-testid="PartnerCareCelebrationCardContentEmpty">
+                <img src={illustration7} alt="No partner care celebrations" />
+                {t('No celebrations to show.')}
+              </CardContentContainer>
+            ) : (
+              <CardList data-testid="PartnerCareCelebrationList">
+                {celebrations?.map(
+                  (person, index) =>
+                    (person.birthdayDay || person.anniversaryDay) &&
+                    (person.birthdayMonth || person.anniversaryMonth) && (
+                      <ListItem
+                        key={person.id}
+                        button
+                        data-testid={`CelebrationItem-${index}`}
+                      >
+                        <ListItemIcon>
+                          {person.birthdayDay ? <CakeIcon /> : <FavoriteIcon />}
+                        </ListItemIcon>
+                        <ListItemText
+                          disableTypography={true}
+                          primary={
+                            <Typography variant="body1">
+                              {person.birthdayDay
+                                ? `${person.firstName} ${person.lastName}`
+                                : person.parentContact.name}
+                            </Typography>
+                          }
+                          secondary={
+                            <Box style={{ whiteSpace: 'nowrap' }}>
+                              <Box
+                                component="div"
+                                textOverflow="ellipsis"
+                                overflow="hidden"
+                              >
+                                <Typography
+                                  component="span"
+                                  variant="body2"
+                                  color="textSecondary"
                                 >
-                                  <Typography
-                                    component="span"
-                                    variant="body2"
-                                    color="textSecondary"
-                                  >
-                                    {person.birthdayDay
-                                      ? dayMonthFormat(
-                                          person.birthdayDay,
-                                          person.birthdayMonth || 0,
-                                        )
-                                      : dayMonthFormat(
-                                          person.anniversaryDay || 0,
-                                          person.anniversaryMonth || 0,
-                                        )}
-                                  </Typography>
-                                </Box>
+                                  {person.birthdayDay
+                                    ? dayMonthFormat(
+                                        person.birthdayDay,
+                                        person.birthdayMonth || 0,
+                                        locale,
+                                      )
+                                    : dayMonthFormat(
+                                        person.anniversaryDay || 0,
+                                        person.anniversaryMonth || 0,
+                                        locale,
+                                      )}
+                                </Typography>
                               </Box>
+                            </Box>
+                          }
+                        />
+                        <ListItemSecondaryAction>
+                          <CompleteButton
+                            role="button"
+                            aria-label="Complete Button"
+                            onClick={() =>
+                              handleCreateClick(
+                                person.birthdayDay
+                                  ? CelebrationTypeEnum.birthday
+                                  : CelebrationTypeEnum.anniversary,
+                                person,
+                              )
                             }
-                          />
-                          <ListItemSecondaryAction>
-                            <CompleteButton
-                              role="button"
-                              aria-label="Complete Button"
-                              onClick={() =>
-                                handleCreateClick(
-                                  person.birthdayDay
-                                    ? CelebrationTypeEnum.birthday
-                                    : CelebrationTypeEnum.anniversary,
-                                  person,
-                                )
-                              }
-                            >
-                              <Brightness1Outlined name="Circle Icon" />
-                              <AddHoverIcon name="Add Icon" />
-                            </CompleteButton>
-                          </ListItemSecondaryAction>
-                        </ListItem>
-                      ),
-                  )}
-                </CardList>
-              )}
-            </>
-          )}
+                          >
+                            <Brightness1Outlined name="Circle Icon" />
+                            <AddHoverIcon name="Add Icon" />
+                          </CompleteButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    ),
+                )}
+              </CardList>
+            ))}
         </MotionDiv>
       )}
     </CardContainer>

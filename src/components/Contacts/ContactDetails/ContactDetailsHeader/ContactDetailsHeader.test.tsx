@@ -9,7 +9,7 @@ import { ContactDetailsHeader } from './ContactDetailsHeader';
 import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'abc';
 const contactId = 'contact-1';
@@ -18,22 +18,36 @@ const router = {
   query: { accountListId },
 };
 
+const mocks = {
+  GetContactDetailsHeader: {
+    contact: {
+      name: 'Lname, Fname',
+      avatar: `https://cru.org/assets/image.jpg`,
+      primaryPerson: null,
+      pledgeCurrency: 'USD',
+      lastDonation: null,
+    },
+  },
+};
+
 describe('ContactDetails', () => {
   it('should show loading state', async () => {
     const { queryByTestId } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>>
-              <ContactsPageProvider>
+            <GqlMockedProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -48,7 +62,9 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
               mocks={{
                 GetContactDetailsHeader: {
                   contact: {
@@ -59,15 +75,17 @@ describe('ContactDetails', () => {
                 },
               }}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -84,27 +102,22 @@ describe('ContactDetails', () => {
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>
-              mocks={{
-                GetContactDetailsHeader: {
-                  contact: {
-                    name: 'Lname, Fname',
-                    primaryPerson: null,
-                    pledgeCurrency: 'USD',
-                    lastDonation: null,
-                  },
-                },
-              }}
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
+              mocks={mocks}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -116,76 +129,70 @@ describe('ContactDetails', () => {
     expect(queryByTestId('Skeleton')).toBeNull();
   });
 
-  it.skip('should open edit contact details modal', async () => {
+  it('should open edit contact details modal', async () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>
-              mocks={{
-                GetContactDetailsHeader: {
-                  contact: {
-                    name: 'Lname, Fname',
-                    primaryPerson: null,
-                    pledgeCurrency: 'USD',
-                    lastDonation: null,
-                  },
-                },
-              }}
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
+              mocks={mocks}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(getAllByLabelText('Edit Icon')[0]).toBeInTheDocument(),
+    );
     userEvent.click(getAllByLabelText('Edit Icon')[0]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
     );
   });
 
-  it.skip('should close edit contact address modal', async () => {
+  it('should close edit contact address modal', async () => {
     const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<GetContactDetailsHeaderQuery>
-              mocks={{
-                GetContactDetailsHeader: {
-                  contact: {
-                    name: 'Lname, Fname',
-                    primaryPerson: null,
-                    pledgeCurrency: 'USD',
-                    lastDonation: null,
-                  },
-                },
-              }}
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
+              mocks={mocks}
             >
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
                     contactId={contactId}
                     onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
       </SnackbarProvider>,
     );
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(getAllByLabelText('Edit Icon')[0]).toBeInTheDocument(),
+    );
     userEvent.click(getAllByLabelText('Edit Icon')[0]);
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
@@ -194,5 +201,43 @@ describe('ContactDetails', () => {
     await waitFor(() =>
       expect(queryByText('Edit Contact Details')).not.toBeInTheDocument(),
     );
+  });
+  it('should render avatar', async () => {
+    const { queryByText, getAllByLabelText } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+            }>
+              mocks={mocks}
+            >
+              <ContactsPage>
+                <ContactDetailProvider>
+                  <ContactDetailsHeader
+                    accountListId={accountListId}
+                    contactId={contactId}
+                    onClose={() => {}}
+                    setContactDetailsLoaded={() => {}}
+                    contactDetailsLoaded={false}
+                  />
+                </ContactDetailProvider>
+              </ContactsPage>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    await waitFor(() =>
+      expect(getAllByLabelText('Edit Icon')[0]).toBeInTheDocument(),
+    );
+    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    await waitFor(() =>
+      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+    );
+
+    const avatarImage = document.querySelector('img') as HTMLImageElement;
+    expect(avatarImage.src).toEqual('https://cru.org/assets/image.jpg');
+    expect(avatarImage.alt).toEqual('Lname, Fname');
   });
 });

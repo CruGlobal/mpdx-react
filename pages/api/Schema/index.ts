@@ -5,10 +5,14 @@ import ScalarTypeDefs from './scalars.graphql';
 import { ScalarResolvers } from './scalarResolvers';
 import { ExportContactsResolvers } from './ExportContacts/resolvers';
 import ExportContactsTypeDefs from './ExportContacts/exportContacts.graphql';
+import { MergeContactsResolvers } from './MergeContacts/resolvers';
+import MergeContactsTypeDefs from './MergeContacts/mergeContacts.graphql';
 import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
 import TaskAnalyticsTypeDefs from './TaskAnalytics/taskAnalytics.graphql';
 import FourteenMonthReportTypeDefs from './reports/fourteenMonth/fourteenMonth.graphql';
 import { FourteenMonthReportResolvers } from './reports/fourteenMonth/resolvers';
+import { PartnerGivingAnalysisReportResolvers } from './reports/partnerGivingAnalysis/resolvers';
+import PartnerGivingAnalysisTypeDefs from './reports/partnerGivingAnalysis/partnerGivingAnalysis.graphql';
 import ExpectedMonthlyTotalReportTypeDefs from './reports/expectedMonthlyTotal/expectedMonthlyTotal.graphql';
 import { ExpectedMonthlyTotalReportResolvers } from './reports/expectedMonthlyTotal/resolvers';
 import DesignationAccountsTypeDefs from './reports/designationAccounts/designationAccounts.graphql';
@@ -21,6 +25,8 @@ import { AccountListAnalyticsResolvers } from './AccountListAnalytics/resolvers'
 import AccountListAnalyticsTypeDefs from './AccountListAnalytics/accountListAnalytics.graphql';
 import { AppointmentResultsResolvers } from './reports/appointmentResults/resolvers';
 import AppointmentResultsTypeDefs from './reports/appointmentResults/appointmentResults.graphql';
+import ContactPrimaryAddressTypeDefs from './ContactPrimaryAddress/contactPrimaryAddress.graphql';
+import { ContactPrimaryAddressResolvers } from './ContactPrimaryAddress/resolvers';
 import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment.graphql';
 import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
 import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComments.graphql';
@@ -33,6 +39,12 @@ import AccountListCoachesTypeDefs from './AccountListCoaches/accountListCoaches.
 import { AccountListCoachesResolvers } from './AccountListCoaches/resolvers';
 import ReportsPledgeHistoriesTyeDefs from './reports/pledgeHistories/pledgeHistories.graphql';
 import { ReportsPledgeHistoriesResolvers } from './reports/pledgeHistories/resolvers';
+import DesginationDisplayNamesTypeDefs from './donations/getDesignationDisplayNames.graphql';
+import { DesginationDisplayNamesResolvers } from './donations/resolvers';
+import DestroyDonorAccountTypeDefs from './Contacts/DonorAccounts/Destroy/destroyDonorAccount.graphql';
+import { DestroyDonorAccountResolvers } from './Contacts/DonorAccounts/Destroy/resolvers';
+import DeleteTagsTypeDefs from './Tags/Delete/deleteTags.graphql';
+import { DeleteTagsResolvers } from './Tags/Delete/resolvers';
 
 const schema = buildSubgraphSchema([
   {
@@ -61,10 +73,19 @@ const schema = buildSubgraphSchema([
     typeDefs: AppointmentResultsTypeDefs,
     resolvers: AppointmentResultsResolvers,
   },
+  {
+    typeDefs: ContactPrimaryAddressTypeDefs,
+    resolvers: ContactPrimaryAddressResolvers,
+  },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
+  { typeDefs: MergeContactsTypeDefs, resolvers: MergeContactsResolvers },
   {
     typeDefs: FourteenMonthReportTypeDefs,
     resolvers: FourteenMonthReportResolvers,
+  },
+  {
+    typeDefs: PartnerGivingAnalysisTypeDefs,
+    resolvers: PartnerGivingAnalysisReportResolvers,
   },
   {
     typeDefs: ExpectedMonthlyTotalReportTypeDefs,
@@ -93,6 +114,18 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: UpdateCommentTypeDefs,
     resolvers: UpdateCommentResolvers,
+  },
+  {
+    typeDefs: DesginationDisplayNamesTypeDefs,
+    resolvers: DesginationDisplayNamesResolvers,
+  },
+  {
+    typeDefs: DestroyDonorAccountTypeDefs,
+    resolvers: DestroyDonorAccountResolvers,
+  },
+  {
+    typeDefs: DeleteTagsTypeDefs,
+    resolvers: DeleteTagsResolvers,
   },
 ]);
 

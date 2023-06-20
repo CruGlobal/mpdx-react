@@ -44,17 +44,12 @@ export const EmptyReport: React.FC<Props> = ({
       </Box>
       <Typography variant="h5">{title}</Typography>
       {subTitle && <Typography>{subTitle}</Typography>}
-      <Box style={{ padding: 4 }}>
+      <Box sx={{ padding: 1, display: 'flex', gap: 2 }}>
         <HandoffLink path="/preferences/integrations">
           <Button variant="contained">{t('Connect Services')}</Button>
         </HandoffLink>
         {hasAddNewDonation && (
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ marginLeft: 2 }}
-            onClick={addNewDonation}
-          >
+          <Button variant="contained" color="primary" onClick={addNewDonation}>
             {t('Add New Donation')}
           </Button>
         )}

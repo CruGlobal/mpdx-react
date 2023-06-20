@@ -29,6 +29,7 @@ query GetThisWeek(
       completedAt
       contacts {
         nodes {
+          id
           name
         }
         totalCount

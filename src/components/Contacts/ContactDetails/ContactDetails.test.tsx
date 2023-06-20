@@ -8,7 +8,7 @@ import theme from '../../../theme';
 import { ContactDetails } from './ContactDetails';
 import { ContactDetailProvider } from './ContactDetailContext';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -24,11 +24,11 @@ describe('ContactDetails', () => {
         <TestRouter router={router}>
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
-              <ContactsPageProvider>
+              <ContactsPage>
                 <ContactDetailProvider>
                   <ContactDetails onClose={() => {}} />
                 </ContactDetailProvider>
-              </ContactsPageProvider>
+              </ContactsPage>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>

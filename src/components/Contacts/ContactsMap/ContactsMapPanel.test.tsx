@@ -1,13 +1,13 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { StatusEnum } from '../../../../graphql/types.generated';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
-import { ContactsPageProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
 import { ContactsMapPanel } from './ContactsMapPanel';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'account-list-1';
 
@@ -49,8 +49,8 @@ describe('ContactsMapPanel', () => {
     const { getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<ContactsQuery>>
-            <ContactsPageProvider>
+          <GqlMockedProvider>
+            <ContactsPage>
               <ContactsMapPanel
                 data={data}
                 selected={selected}
@@ -58,7 +58,7 @@ describe('ContactsMapPanel', () => {
                 panTo={panTo}
                 onClose={onClose}
               />
-            </ContactsPageProvider>
+            </ContactsPage>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -70,5 +70,30 @@ describe('ContactsMapPanel', () => {
     expect(getByText('1 Contact Street')).toBeInTheDocument();
     expect(queryByText('Partner - Special')).not.toBeInTheDocument();
     expect(getByText('No Primary Address Set')).toBeInTheDocument();
+  });
+
+  it('should pan to the clicked contact', async () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <ContactsPage>
+              <ContactsMapPanel
+                data={data}
+                selected={selected}
+                setSelected={setSelected}
+                panTo={panTo}
+                onClose={onClose}
+              />
+            </ContactsPage>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(getByText('Partner - Financial')).toBeInTheDocument(),
+    );
+    userEvent.click(getByText('Contact One'));
+    expect(panTo).toHaveBeenCalledWith({ lat: 1.0, lng: 1.0 });
   });
 });

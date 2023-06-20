@@ -1,19 +1,24 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
 import {
   Checkbox,
   Table,
   TableBody,
-  TableCell,
+  TableCell as TableCellMui,
   TableContainer,
   TableRow,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import type { Contact } from '../PartnerGivingAnalysisReport';
 import type { Order } from '../../Reports.type';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 interface PartnerGivingAnalysisReportTableProps {
+  onClick: (contactId: string) => void;
   onSelectOne: (
     event: React.ChangeEvent<HTMLInputElement>,
     contactId: string,
@@ -37,18 +42,43 @@ const StickyTable = styled(Table)(({}) => ({
   height: 'calc(100vh - 96px)',
 }));
 
+const TableCell = styled(TableCellMui)({
+  fontSize: '1.15em',
+});
+
+const ContactName = styled(Typography)(({ theme }) => ({
+  fontWeight: 700,
+  whiteSpace: 'nowrap',
+  marginRight: theme.spacing(0.5),
+  cursor: 'pointer',
+  '&:hover': {
+    textDecoration: 'underline',
+  },
+}));
+
 export const PartnerGivingAnalysisReportTable: FC<
   PartnerGivingAnalysisReportTableProps
 > = ({
   order,
   orderBy,
   contacts,
+  onClick,
   onRequestSort,
   onSelectAll,
   onSelectOne,
   selectedContacts,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+
+  const formatCurrency = (amount: number, currency: string): string =>
+    // Force to 2 decimal places and add separators between thousands
+    Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
 
   const isSelectedSome =
     selectedContacts.length > 0 && selectedContacts.length < contacts.length;
@@ -60,7 +90,7 @@ export const PartnerGivingAnalysisReportTable: FC<
       <StickyTable
         stickyHeader={true}
         aria-label="partner giving analysis report table"
-        data-testid="PartnerGivingAnalysis"
+        data-testid="PartnerGivingAnalysisReport"
       >
         <TableHead
           items={[
@@ -69,27 +99,27 @@ export const PartnerGivingAnalysisReportTable: FC<
               label: t('Name'),
             },
             {
-              id: 'giftTotal',
+              id: 'donationPeriodSum',
               label: t('Gift Total'),
             },
             {
-              id: 'giftCount',
+              id: 'donationPeriodCount',
               label: t('Gift Count'),
             },
             {
-              id: 'giftAverage',
+              id: 'donationPeriodAverage',
               label: t('Gift Average'),
             },
             {
-              id: 'lastGiftAmount',
+              id: 'lastDonationAmount',
               label: t('Last Gift Amount'),
             },
             {
-              id: 'lastGiftDate',
+              id: 'lastDonationDate',
               label: t('Last Gift Date'),
             },
             {
-              id: 'lifeTimeTotal',
+              id: 'totalDonations',
               label: t('Lifetime Total'),
             },
           ]}
@@ -117,13 +147,44 @@ export const PartnerGivingAnalysisReportTable: FC<
                     value={isContactSelected}
                   />
                 </TableCell>
-                <TableCell>{contact.name}</TableCell>
-                <TableCell align="center">{contact.giftTotal}</TableCell>
-                <TableCell align="center">{contact.giftCount}</TableCell>
-                <TableCell align="center">{contact.giftAverage}</TableCell>
-                <TableCell align="center">{contact.lastGiftAmount}</TableCell>
-                <TableCell align="center">{contact.lastGiftDate}</TableCell>
-                <TableCell align="center">{contact.lifeTimeTotal}</TableCell>
+                <TableCell>
+                  <ContactName onClick={() => onClick(contact.id)}>
+                    {contact.name}
+                  </ContactName>
+                </TableCell>
+                <TableCell align="center">
+                  {formatCurrency(
+                    contact.donationPeriodSum,
+                    contact.pledgeCurrency,
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {contact.donationPeriodCount}
+                </TableCell>
+                <TableCell align="center">
+                  {formatCurrency(
+                    contact.donationPeriodAverage,
+                    contact.pledgeCurrency,
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {formatCurrency(
+                    contact.lastDonationAmount,
+                    contact.lastDonationCurrency,
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {dateFormatShort(
+                    DateTime.fromISO(contact.lastDonationDate),
+                    locale,
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  {formatCurrency(
+                    contact.totalDonations,
+                    contact.pledgeCurrency,
+                  )}
+                </TableCell>
               </TableRow>
             );
           })}

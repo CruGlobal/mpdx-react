@@ -4,6 +4,7 @@ import { Box, Grid, IconButton, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import LocationOn from '@mui/icons-material/LocationOn';
 import CreateIcon from '@mui/icons-material/Create';
+import { DateTime } from 'luxon';
 import {
   ContactDetailsAddButton,
   ContactDetailsAddIcon,
@@ -16,7 +17,12 @@ import {
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
 import { AddAddressModal } from './AddAddressModal/AddAddressModal';
+import { EditMailingInfoModal } from './EditMailingInfoModal/EditMailingInfoModal';
+import { ContactDetailEditIcon } from '../ContactDetailsTab';
 import { sourceToStr } from 'src/utils/sourceToStr';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -77,12 +83,15 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
-  const { addresses, greeting, sendNewsletter, id } = data;
+  const locale = useLocale();
+  const { addresses, greeting, envelopeGreeting, sendNewsletter, id } = data;
   const {
     editingAddressId,
     setEditingAddressId,
     addAddressModalOpen,
     setAddAddressModalOpen,
+    editMailingModalOpen,
+    setEditMailingModalOpen,
   } = React.useContext(ContactDetailContext) as ContactDetailsType;
   const primaryAddress = addresses.nodes.filter(
     (address) => address.primaryMailingAddress === true,
@@ -108,9 +117,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
               <>
                 <ContactAddressRowContainer>
                   <Typography variant="subtitle1">
-                    <Box fontWeight="fontWeightBold">
-                      {primaryAddress.street}
-                    </Box>
+                    <Box fontWeight="bold">{primaryAddress.street}</Box>
                   </Typography>
                   <ContactAddressPrimaryText variant="subtitle1">
                     {`- ${t('Primary')}`}
@@ -143,7 +150,12 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 </ContactAddressRowContainer>
                 <ContactAddressRowContainer>
                   <Typography variant="subtitle1">
-                    {t(`Source: ${sourceToStr(primaryAddress.source)}`)}
+                    {t('Source:')} {t(sourceToStr(primaryAddress.source))} (
+                    {dateFormat(
+                      DateTime.fromISO(primaryAddress.createdAt),
+                      locale,
+                    )}
+                    )
                   </Typography>
                 </ContactAddressRowContainer>
               </>
@@ -179,7 +191,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   >
                     <ContactAddressRowContainer>
                       <Typography variant="subtitle1">
-                        <Box fontWeight="fontWeightBold">{address.street}</Box>
+                        <Box fontWeight="bold">{address.street}</Box>
                       </Typography>
                       <AddressEditIconContainer
                         onClick={() => {
@@ -197,31 +209,40 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                       {address.country}
                     </Typography>
                     <Typography variant="subtitle1">
-                      {t(`Source: ${sourceToStr(address.source)}`)}
+                      {t('Source:')} {t(sourceToStr(address.source))} (
+                      {dateFormat(DateTime.fromISO(address.createdAt), locale)})
                     </Typography>
                   </ContactDetailsMailingTextContainer>
                 ))
               : null}
             {/* Greeting Section */}
-            <ContactDetailsMailingLabelTextContainer>
+            <ContactDetailsMailingLabelTextContainer alignItems="center">
               <ContactDetailsMailingLabel variant="subtitle1">
                 {t('Greeting')}
               </ContactDetailsMailingLabel>
               <Typography variant="subtitle1">{greeting}</Typography>
+              <AddressEditIconContainer
+                onClick={() => setEditMailingModalOpen(true)}
+                aria-label={t('Edit Mailing')}
+              >
+                <ContactDetailEditIcon />
+              </AddressEditIconContainer>
+            </ContactDetailsMailingLabelTextContainer>
+            {/* Envelope Name Section */}
+            <ContactDetailsMailingLabelTextContainer>
+              <ContactDetailsMailingLabel variant="subtitle1">
+                {t('Envelope Name')}
+              </ContactDetailsMailingLabel>
+              <Typography variant="subtitle1">{envelopeGreeting}</Typography>
             </ContactDetailsMailingLabelTextContainer>
             {/* Newsletter Section */}
             <ContactDetailsMailingLabelTextContainer>
               <ContactDetailsMailingLabel variant="subtitle1">
                 {t('Newsletter')}
               </ContactDetailsMailingLabel>
-              <Typography variant="subtitle1">{sendNewsletter}</Typography>
-            </ContactDetailsMailingLabelTextContainer>
-            {/* Magazine Section */}
-            <ContactDetailsMailingLabelTextContainer>
-              <ContactDetailsMailingLabel variant="subtitle1">
-                {t('Magazine')}
-              </ContactDetailsMailingLabel>
-              <Typography variant="subtitle1">Not Implemented</Typography>
+              <Typography variant="subtitle1">
+                {getLocalizedSendNewsletter(t, sendNewsletter)}
+              </Typography>
             </ContactDetailsMailingLabelTextContainer>
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
@@ -249,6 +270,13 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           handleClose={() => setAddAddressModalOpen(false)}
         />
       ) : null}
+      {editMailingModalOpen && (
+        <EditMailingInfoModal
+          contact={data}
+          accountListId={accountListId}
+          handleClose={() => setEditMailingModalOpen(false)}
+        />
+      )}
     </>
   );
 };

@@ -1,4 +1,11 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, {
+  ReactElement,
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+  ChangeEventHandler,
+} from 'react';
 import {
   Autocomplete,
   TextField,
@@ -9,16 +16,12 @@ import {
   Chip,
   Grid,
   CircularProgress,
-  DialogTitle,
   DialogActions,
   DialogContent,
-  DialogContentText,
-  Dialog,
   InputAdornment,
   FormControlLabel,
   Switch,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
 import { useTranslation } from 'react-i18next';
@@ -27,179 +30,171 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { DateTime } from 'luxon';
-import { v4 as uuidv4 } from 'uuid';
 import { AnimatePresence, motion } from 'framer-motion';
 import { debounce } from 'lodash/fp';
 import {
   ActivityTypeEnum,
-  NotificationTimeUnitEnum,
-  NotificationTypeEnum,
   TaskCreateInput,
-  TaskUpdateInput,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
-import { GetTasksForTaskListDocument } from '../../../List/TaskList.generated';
-import { TaskFilter } from '../../../List/List';
-import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import {
   useGetDataForTaskModalQuery,
-  useCreateTaskMutation,
-  useDeleteTaskMutation,
+  useCreateTasksMutation,
   useGetTaskModalContactsFilteredQuery,
 } from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { ContactTasksTabDocument } from 'src/components/Contacts/ContactDetails/ContactTasksTab/ContactTasksTab.generated';
-import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import {
   SubmitButton,
   CancelButton,
-  DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { possibleNextActions } from '../PossibleNextActions';
+import { possibleResults } from '../PossibleResults';
+import { dispatch } from 'src/lib/analytics';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { useLocale } from 'src/hooks/useLocale';
 
-const LoadingIndicator = styled(CircularProgress)(() => ({
-  display: 'flex',
-  margin: 'auto',
-}));
-
-const taskSchema: yup.SchemaOf<TaskCreateInput | TaskUpdateInput> = yup.object({
-  id: yup.string().nullable(),
-  activityType: yup.mixed<ActivityTypeEnum>(),
+const taskSchema = yup.object({
+  activityType: yup.mixed<ActivityTypeEnum>().nullable(),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
-  starred: yup.boolean().nullable(),
-  startAt: yup.string().nullable(),
   completedAt: yup.string().nullable(),
   userId: yup.string().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
-  notificationTimeBefore: yup.number().nullable(),
-  notificationType: yup.mixed<NotificationTypeEnum>(),
   result: yup.mixed<ResultEnum>(),
-  nextAction: yup.mixed<ActivityTypeEnum>(),
-  notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
+  nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
+  // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
+  // when those fields fields are blank for some reason, and we need to allow blank values
+  location: yup.string(),
+  comment: yup.string(),
 });
+type Attributes = yup.InferType<typeof taskSchema>;
 
 interface Props {
   accountListId: string;
-  task?: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
-  filter?: TaskFilter;
-  rowsPerPage: number;
 }
+
+interface NextActionsSectionProps {
+  activityType: ActivityTypeEnum;
+  nextAction: ActivityTypeEnum | undefined | null;
+  setFieldValue: (
+    field: string,
+    value: string | null,
+    shouldValidate?: boolean | undefined,
+  ) => void;
+}
+
+const NextActionsSection: React.FC<NextActionsSectionProps> = ({
+  activityType,
+  nextAction,
+  setFieldValue,
+}) => {
+  const { t } = useTranslation();
+  const availableNextActions = possibleNextActions(activityType);
+  return availableNextActions.length > 0 ? (
+    <Grid item xs={12}>
+      <FormControl fullWidth>
+        <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
+        <Select
+          labelId="nextAction"
+          label={t('Next Action')}
+          value={nextAction}
+          onChange={(e) => setFieldValue('nextAction', e.target.value)}
+        >
+          <MenuItem value={ActivityTypeEnum.None}>{t('None')}</MenuItem>
+          {availableNextActions
+            .filter((val) => val !== ActivityTypeEnum.None)
+            .map((val) => (
+              <MenuItem key={val} value={val}>
+                {getLocalizedTaskType(t, val)}
+              </MenuItem>
+            ))}
+        </Select>
+      </FormControl>
+    </Grid>
+  ) : null;
+};
 
 const TaskModalLogForm = ({
   accountListId,
-  task,
   onClose,
   defaultValues,
-  filter,
-  rowsPerPage,
 }: Props): ReactElement => {
-  const initialTask: TaskCreateInput = task
-    ? {
-        ...(({ user: _user, contacts: _contacts, ...task }) => task)(task),
-        contactIds: task.contacts.nodes.map(({ id }) => id),
-      }
-    : {
-        id: null,
-        activityType: null,
-        subject: '',
-        startAt: null,
-        completedAt: DateTime.local()
-          .plus({ hours: 1 })
-          .startOf('hour')
-          .toISO(),
-        tagList: [],
-        contactIds: [],
-        notificationTimeBefore: null,
-        notificationType: null,
-        notificationTimeUnit: null,
-        result: null,
-        nextAction: null,
-        ...defaultValues,
-      };
+  const initialTask: Attributes = {
+    activityType: defaultValues?.activityType ?? null,
+    subject: defaultValues?.subject ?? '',
+    contactIds: defaultValues?.contactIds ?? [],
+    completedAt: DateTime.local().toISO(),
+    userId: defaultValues?.userId ?? null,
+    tagList: defaultValues?.tagList ?? [],
+    result: defaultValues?.result ?? ResultEnum.Completed,
+    nextAction: defaultValues?.nextAction ?? null,
+    location: '',
+    comment: '',
+  };
+
   const { t } = useTranslation();
-  const [commentBody, setCommentBody] = useState('');
+  const locale = useLocale();
   const [showMore, setShowMore] = useState(false);
-  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState(initialTask.contactIds);
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
 
   const { data, loading } = useGetDataForTaskModalQuery({
     variables: { accountListId },
   });
-  const [createTask, { loading: creating }] = useCreateTaskMutation();
-  const [deleteTask, { loading: deleting }] = useDeleteTaskMutation();
-  const [createTaskComment] = useCreateTaskCommentMutation();
-
-  const handleSearchTermChange = useCallback(
+  const [createTasks, { loading: creating }] = useCreateTasksMutation();
+  const { update } = useUpdateTasksQueries();
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) (inputRef.current as HTMLInputElement).focus();
+  }, []);
+  const handleSearchTermChange = useCallback<
+    ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  >(
     debounce(500, (event) => {
       setSearchTerm(event.target.value);
     }),
     [],
   );
 
-  const onSubmit = async (attributes: TaskCreateInput): Promise<void> => {
-    const body = commentBody.trim();
-    const { data } = await createTask({
-      variables: { accountListId, attributes },
-      update: (_cache, { data }) => {
-        if (data?.createTask?.task.id && body !== '') {
-          const id = uuidv4();
-          createTaskComment({
-            variables: {
-              accountListId,
-              taskId: data.createTask.task.id,
-              attributes: { id, body },
-            },
-          });
-        }
+  const onSubmit = async (attributes: Attributes): Promise<void> => {
+    await createTasks({
+      variables: {
+        accountListId,
+        attributes: { ...attributes, comment: attributes.comment?.trim() },
       },
-      refetchQueries: [
-        {
-          query: GetTasksForTaskListDocument,
-          variables: { accountListId, first: rowsPerPage, ...filter },
-        },
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-        {
-          query: ContactTasksTabDocument,
-          variables: {
-            accountListId,
-            tasksFilter: {
-              contactIds: [
-                defaultValues?.contactIds ? defaultValues.contactIds[0] : '',
-              ],
-            },
-          },
-        },
-      ],
+      refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity'],
     });
-    enqueueSnackbar(t('Task logged successfully'), { variant: 'success' });
+    update();
+    if (attributes.contactIds && attributes.contactIds.length > 1) {
+      attributes.contactIds.forEach(() => {
+        dispatch('mpdx-task-completed');
+      });
+    } else {
+      dispatch('mpdx-task-completed');
+    }
+    enqueueSnackbar(t('Task(s) logged successfully'), { variant: 'success' });
     onClose();
     if (
       attributes.nextAction &&
       attributes.nextAction !== ActivityTypeEnum.None
     ) {
       openTaskModal({
+        view: 'add',
         defaultValues: {
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
-          contactIds:
-            data?.createTask?.task?.contacts?.nodes.map(
-              (contact) => contact.id,
-            ) || [],
-          userId: data?.createTask?.task.user?.id,
-          tagList: data?.createTask?.task.tagList,
+          contactIds: attributes.contactIds,
+          userId: attributes.userId ?? undefined,
+          tagList: attributes.tagList,
         },
       });
     }
@@ -209,7 +204,8 @@ const TaskModalLogForm = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
-        contactsFilters: { wildcardSearch: searchTerm as string },
+        first: 10,
+        contactsFilters: { wildcardSearch: searchTerm },
       },
     });
 
@@ -217,14 +213,16 @@ const TaskModalLogForm = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
+        first: selectedIds.length,
         contactsFilters: { ids: selectedIds },
       },
+      skip: selectedIds.length === 0,
     });
 
   const mergedContacts =
     dataFilteredByName && dataFilteredById
-      ? dataFilteredByName?.contacts.nodes
-          .concat(dataFilteredById?.contacts.nodes)
+      ? dataFilteredByName.contacts.nodes
+          .concat(dataFilteredById.contacts.nodes)
           .filter(
             (contact1, index, self) =>
               self.findIndex((contact2) => contact2.id === contact1.id) ===
@@ -234,37 +232,6 @@ const TaskModalLogForm = ({
         dataFilteredByName?.contacts.nodes ||
         data?.contacts.nodes ||
         [];
-
-  const onDeleteTask = async (): Promise<void> => {
-    if (task) {
-      const endOfDay = DateTime.local().endOf('day');
-      await deleteTask({
-        variables: {
-          accountListId,
-          id: task.id,
-        },
-        refetchQueries: [
-          {
-            query: GetTasksForTaskListDocument,
-            variables: { accountListId, first: rowsPerPage, ...filter },
-          },
-          {
-            query: GetThisWeekDocument,
-            variables: {
-              accountListId,
-              endOfDay: endOfDay.toISO(),
-              today: endOfDay.toISODate(),
-              threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
-              twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
-            },
-          },
-        ],
-      });
-      enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
-      setRemoveDialogOpen(false);
-      onClose();
-    }
-  };
 
   const handleShowMoreChange = (): void => {
     setShowMore((prevState) => !prevState);
@@ -286,6 +253,8 @@ const TaskModalLogForm = ({
           contactIds,
           result,
           nextAction,
+          location,
+          comment,
         },
         setFieldValue,
         handleChange,
@@ -296,7 +265,7 @@ const TaskModalLogForm = ({
         touched,
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
-          <DialogContent dividers>
+          <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
                 <TextField
@@ -311,50 +280,83 @@ const TaskModalLogForm = ({
                     errors.subject && touched.subject && t('Field is required')
                   }
                   required
+                  inputRef={inputRef}
                 />
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
-                  <InputLabel id="activityType">{t('Action')}</InputLabel>
-                  <Select
-                    labelId="activityType"
-                    label={t('Action')}
-                    value={activityType}
-                    onChange={(e) =>
-                      setFieldValue('activityType', e.target.value)
+                  <Autocomplete
+                    openOnFocus
+                    autoSelect
+                    autoHighlight
+                    value={
+                      activityType === null ||
+                      typeof activityType === 'undefined'
+                        ? ''
+                        : activityType
                     }
-                  >
-                    <MenuItem value={undefined}>{t('None')}</MenuItem>
-                    {Object.values(ActivityTypeEnum)
-                      .filter((val) => val !== 'NONE')
-                      .map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedTaskType(t, val)}
-                        </MenuItem>
-                      ))}
-                  </Select>
+                    // Sort option 'None' to top of list
+                    options={Object.values(ActivityTypeEnum).sort((a) =>
+                      a === ActivityTypeEnum.None ? -1 : 1,
+                    )}
+                    getOptionLabel={(activity) => {
+                      if (activity === ActivityTypeEnum.None) {
+                        return t('None');
+                      } else {
+                        return getLocalizedTaskType(
+                          t,
+                          activity as ActivityTypeEnum,
+                        );
+                      }
+                    }}
+                    renderInput={(params): ReactElement => (
+                      <TextField {...params} label={t('Action')} />
+                    )}
+                    onChange={(_, activity): void => {
+                      setFieldValue(
+                        'activityType',
+                        activity === ActivityTypeEnum.None ? null : activity,
+                      );
+                    }}
+                  />
                 </FormControl>
               </Grid>
+              {activityType === ActivityTypeEnum.Appointment && (
+                <Grid item>
+                  <TextField
+                    label={t('Location')}
+                    value={location}
+                    onChange={handleChange('location')}
+                    fullWidth
+                    multiline
+                    inputProps={{ 'aria-label': 'Location' }}
+                  />
+                </Grid>
+              )}
               <Grid item>
-                <Autocomplete
-                  multiple
-                  options={
-                    (
-                      mergedContacts &&
-                      [...mergedContacts].sort((a, b) =>
-                        a.name.localeCompare(b.name),
-                      )
-                    )?.map(({ id }) => id) || []
-                  }
-                  getOptionLabel={(contactId) =>
-                    mergedContacts.find(({ id }) => id === contactId)?.name ??
-                    ''
-                  }
-                  loading={
-                    loading || loadingFilteredById || loadingFilteredByName
-                  }
-                  renderInput={(params): ReactElement => {
-                    return !loadingFilteredById ? (
+                {loadingFilteredById ? (
+                  <CircularProgress color="primary" size={20} />
+                ) : (
+                  <Autocomplete
+                    multiple
+                    autoSelect
+                    autoHighlight
+                    options={
+                      (
+                        mergedContacts &&
+                        [...mergedContacts].sort((a, b) =>
+                          a.name.localeCompare(b.name),
+                        )
+                      )?.map(({ id }) => id) || []
+                    }
+                    getOptionLabel={(contactId) =>
+                      mergedContacts.find(({ id }) => id === contactId)?.name ??
+                      ''
+                    }
+                    loading={
+                      loading || loadingFilteredById || loadingFilteredByName
+                    }
+                    renderInput={(params): ReactElement => (
                       <TextField
                         {...params}
                         onChange={handleSearchTermChange}
@@ -375,19 +377,17 @@ const TaskModalLogForm = ({
                           ),
                         }}
                       />
-                    ) : (
-                      <CircularProgress color="primary" size={20} />
-                    );
-                  }}
-                  value={contactIds ?? undefined}
-                  onChange={(_, contactIds): void => {
-                    setFieldValue('contactIds', contactIds);
-                    setSelectedIds(contactIds);
-                  }}
-                  isOptionEqualToValue={(option, value): boolean =>
-                    option === value
-                  }
-                />
+                    )}
+                    value={contactIds ?? undefined}
+                    onChange={(_, contactIds): void => {
+                      setFieldValue('contactIds', contactIds);
+                      setSelectedIds(contactIds);
+                    }}
+                    isOptionEqualToValue={(option, value): boolean =>
+                      option === value
+                    }
+                  />
+                )}
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
@@ -398,11 +398,17 @@ const TaskModalLogForm = ({
                     value={result}
                     onChange={(e) => setFieldValue('result', e.target.value)}
                   >
-                    {Object.values(ResultEnum).map((val) => (
-                      <MenuItem key={val} value={val}>
-                        {t(val) /* manually added to translation file */}
+                    {activityType ? (
+                      possibleResults(activityType).map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {getLocalizedResultString(t, val)}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem value={ResultEnum.Completed}>
+                        {getLocalizedResultString(t, ResultEnum.Completed)}
                       </MenuItem>
-                    ))}
+                    )}
                   </Select>
                 </FormControl>
               </Grid>
@@ -425,7 +431,7 @@ const TaskModalLogForm = ({
                             </InputAdornment>
                           ),
                         }}
-                        inputFormat="MMM dd, yyyy"
+                        inputFormat={getDateFormatPattern(locale)}
                         closeOnSelect
                         label={t('Completed Date')}
                         value={completedAt}
@@ -475,17 +481,20 @@ const TaskModalLogForm = ({
                   {showMore && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 193, opacity: 1 }}
+                      animate={{ height: 216, opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                     >
-                      <Grid item container spacing={2}>
+                      <Grid
+                        item
+                        container
+                        spacing={2}
+                        style={{ marginBottom: 16 }}
+                      >
                         <Grid item xs={12}>
                           <TextField
                             label={t('Comment')}
-                            value={commentBody}
-                            onChange={(event) =>
-                              setCommentBody(event.target.value)
-                            }
+                            value={comment}
+                            onChange={handleChange('comment')}
                             fullWidth
                             multiline
                             inputProps={{ 'aria-label': 'Comment' }}
@@ -494,6 +503,8 @@ const TaskModalLogForm = ({
                         <Grid item xs={12}>
                           <Autocomplete
                             multiple
+                            autoSelect
+                            autoHighlight
                             freeSolo
                             renderTags={(value, getTagProps): ReactElement[] =>
                               value.map((option, index) => (
@@ -519,6 +530,8 @@ const TaskModalLogForm = ({
                         <Grid item xs={12}>
                           <Autocomplete
                             loading={loading}
+                            autoSelect
+                            autoHighlight
                             options={
                               (data?.accountListUsers?.nodes &&
                                 data.accountListUsers.nodes.map(
@@ -561,30 +574,13 @@ const TaskModalLogForm = ({
                             }
                           />
                         </Grid>
-                        <Grid item xs={12}>
-                          <FormControl fullWidth>
-                            <InputLabel id="nextAction">
-                              {t('Next Action')}
-                            </InputLabel>
-                            <Select
-                              labelId="nextAction"
-                              label={t('Next Action')}
-                              value={nextAction}
-                              onChange={(e) =>
-                                setFieldValue('nextAction', e.target.value)
-                              }
-                            >
-                              <MenuItem value={undefined}>{t('None')}</MenuItem>
-                              {Object.values(ActivityTypeEnum)
-                                .filter((val) => val !== 'NONE')
-                                .map((val) => (
-                                  <MenuItem key={val} value={val}>
-                                    {getLocalizedTaskType(t, val)}
-                                  </MenuItem>
-                                ))}
-                            </Select>
-                          </FormControl>
-                        </Grid>
+                        {activityType && (
+                          <NextActionsSection
+                            activityType={activityType}
+                            nextAction={nextAction}
+                            setFieldValue={setFieldValue}
+                          />
+                        )}
                       </Grid>
                     </motion.div>
                   )}
@@ -593,9 +589,6 @@ const TaskModalLogForm = ({
             </FormFieldsGridContainer>
           </DialogContent>
           <DialogActions>
-            {task?.id ? (
-              <DeleteButton onClick={() => setRemoveDialogOpen(true)} />
-            ) : null}
             <CancelButton disabled={isSubmitting} onClick={onClose} />
             <SubmitButton disabled={!isValid || isSubmitting}>
               {creating && (
@@ -606,32 +599,6 @@ const TaskModalLogForm = ({
               )}
               {t('Save')}
             </SubmitButton>
-
-            <Dialog
-              open={removeDialogOpen}
-              aria-labelledby={t('Remove task confirmation')}
-              fullWidth
-              maxWidth="sm"
-            >
-              <DialogTitle>{t('Confirm')}</DialogTitle>
-              <DialogContent dividers>
-                {deleting ? (
-                  <LoadingIndicator color="primary" size={50} />
-                ) : (
-                  <DialogContentText>
-                    {t('Are you sure you wish to delete the selected task?')}
-                  </DialogContentText>
-                )}
-              </DialogContent>
-              <DialogActions>
-                <CancelButton onClick={() => setRemoveDialogOpen(false)}>
-                  {t('No')}
-                </CancelButton>
-                <SubmitButton type="button" onClick={onDeleteTask}>
-                  {t('Yes')}
-                </SubmitButton>
-              </DialogActions>
-            </Dialog>
           </DialogActions>
         </form>
       )}

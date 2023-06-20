@@ -15,7 +15,6 @@ import { EditContactDetailsModal } from './EditContactDetailsModal';
 import {
   ContactDetailsFragment,
   ContactDetailsFragmentDoc,
-  UpdateContactDetailsMutation,
 } from './EditContactDetails.generated';
 
 const handleClose = jest.fn();
@@ -72,7 +71,7 @@ describe('EditContactDetailsModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactDetailsMutation>>
+            <GqlMockedProvider>
               <EditContactDetailsModal
                 accountListId={accountListId}
                 isOpen={true}
@@ -93,7 +92,7 @@ describe('EditContactDetailsModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactDetailsMutation>>
+            <GqlMockedProvider>
               <EditContactDetailsModal
                 accountListId={accountListId}
                 isOpen={true}
@@ -115,7 +114,7 @@ describe('EditContactDetailsModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactDetailsMutation>>
+            <GqlMockedProvider>
               <EditContactDetailsModal
                 accountListId={accountListId}
                 isOpen={true}
@@ -140,9 +139,7 @@ describe('EditContactDetailsModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdateContactDetailsMutation>
-              onCall={mutationSpy}
-            >
+            <GqlMockedProvider onCall={mutationSpy}>
               <EditContactDetailsModal
                 accountListId={accountListId}
                 isOpen={true}

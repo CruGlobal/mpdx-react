@@ -2,7 +2,7 @@ import { Box, Checkbox, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../theme';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
@@ -11,11 +11,13 @@ import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { DeleteTaskIconButton } from '../DeleteTaskIconButton/DeleteTaskIconButton';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
-import { TaskDueDate } from './TaskDueDate/TaskDueDate';
+import { TaskDate } from './TaskDate/TaskDate';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
-const TaskRowWrap = styled(Box)(({ isChecked }: { isChecked: boolean }) => ({
+const TaskRowWrap = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isChecked',
+})<{ isChecked?: boolean }>(({ theme, isChecked }) => ({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
@@ -75,13 +77,13 @@ const StarIconWrap = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
-const FieldLoadingState = styled(Skeleton)(
-  ({ width, margin }: { width: number; margin: string }) => ({
-    width,
-    height: '24px',
-    margin: margin,
-  }),
-);
+const FieldLoadingState = styled(Skeleton, {
+  shouldForwardProp: (prop) => prop !== 'width' && prop !== 'margin',
+})(({ width, margin }: { width: number; margin: string }) => ({
+  width,
+  height: '24px',
+  margin: margin,
+}));
 
 interface ContactTaskRowProps {
   accountListId: string;
@@ -97,6 +99,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   onTaskCheckToggle,
 }) => {
   const { t } = useTranslation();
+  const [hasBeenDeleted, setHasBeenDeleted] = useState<boolean>(false);
 
   const { openTaskModal } = useTaskModal();
 
@@ -122,6 +125,10 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
     });
   };
 
+  const handleDeleteConfirm = () => {
+    setHasBeenDeleted(true);
+  };
+
   if (!task) {
     return (
       <TaskRowWrap data-testid="loadingRow" isChecked={isChecked}>
@@ -142,15 +149,13 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
     );
   }
 
-  const { activityType, user, comments, startAt, subject } = task;
-
-  const dueDate = (startAt && DateTime.fromISO(startAt)) || null;
-
+  const { activityType, user, comments, startAt, completedAt, subject } = task;
+  const isComplete = !!completedAt;
+  const dateToShow = completedAt ?? startAt;
+  const taskDate = (dateToShow && DateTime.fromISO(dateToShow)) || null;
   const assigneeName = user ? `${user.firstName} ${user.lastName}` : '';
 
-  const isComplete = !!task.completedAt;
-
-  return (
+  return !hasBeenDeleted ? (
     <TaskRowWrap isChecked={isChecked}>
       <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
         <Checkbox
@@ -171,8 +176,8 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
 
       <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
         <AssigneeName noWrap>{assigneeName}</AssigneeName>
-        <Box width={theme.spacing(12)}>
-          <TaskDueDate isComplete={isComplete} dueDate={dueDate} />
+        <Box width={theme.spacing(16)}>
+          <TaskDate isComplete={isComplete} taskDate={taskDate} />
         </Box>
         <TaskCommentsButton
           isComplete={isComplete}
@@ -181,7 +186,11 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
           detailsPage
         />
 
-        <DeleteTaskIconButton accountListId={accountListId} taskId={task.id} />
+        <DeleteTaskIconButton
+          accountListId={accountListId}
+          taskId={task.id}
+          onDeleteConfirm={handleDeleteConfirm}
+        />
         <StarTaskIconButton
           accountListId={accountListId}
           taskId={task.id}
@@ -189,5 +198,5 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         />
       </TaskItemWrap>
     </TaskRowWrap>
-  );
+  ) : null;
 };

@@ -38,9 +38,12 @@ export const AddMenuPanel = (): ReactElement => {
       },
     },
     {
-      text: 'Multiple Contacts',
+      text: 'Add Multiple Contacts',
       icon: PeopleIcon,
-      onClick: () => console.log('multiple contacts'),
+      onClick: () => {
+        changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);
+        changeDialogOpen(true);
+      },
     },
     {
       text: 'Add Donation',
@@ -54,12 +57,13 @@ export const AddMenuPanel = (): ReactElement => {
       text: 'Add Task',
       icon: ListIcon,
       onClick: () => {
-        openTaskModal({});
+        openTaskModal({ view: 'add' });
       },
     },
     {
       text: 'Log Task',
       icon: EditIcon,
+      // eslint-disable-next-line no-console
       onClick: () => console.log('log task'),
     },
   ];

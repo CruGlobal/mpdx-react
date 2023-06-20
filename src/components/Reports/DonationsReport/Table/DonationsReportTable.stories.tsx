@@ -8,11 +8,12 @@ export default {
   title: 'Reports/DonationsReport/Table',
 };
 
-const time = new DateTime();
+const onSelectContact = () => {};
+const time = DateTime.now();
 
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetDonationsTableQuery>
+    <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
       mocks={{
         GetDonationsTable: {
           donations: {
@@ -68,6 +69,7 @@ export const Default = (): ReactElement => {
     >
       <DonationsReportTable
         accountListId={'abc'}
+        onSelectContact={onSelectContact}
         time={time}
         setTime={() => {}}
       />
@@ -77,7 +79,7 @@ export const Default = (): ReactElement => {
 
 export const Empty = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetDonationsTableQuery>
+    <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
       mocks={{
         GetDonationsTable: {
           donations: {
@@ -88,6 +90,7 @@ export const Empty = (): ReactElement => {
     >
       <DonationsReportTable
         accountListId={'abc'}
+        onSelectContact={onSelectContact}
         time={time}
         setTime={() => {}}
       />

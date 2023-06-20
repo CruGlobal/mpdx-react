@@ -1,14 +1,14 @@
 import React from 'react';
 import _ from 'lodash';
-import { ContactsPageProvider } from './ContactsPageContext';
 import { ContactsContainer } from 'src/components/Contacts/ContactsContainer';
+import { ContactsPage } from './ContactsPage';
 
-const ContactsPage: React.FC = () => {
+const Contacts: React.FC = () => {
   return (
-    <ContactsPageProvider>
+    <ContactsPage>
       <ContactsContainer />
-    </ContactsPageProvider>
+    </ContactsPage>
   );
 };
 
-export default ContactsPage;
+export default Contacts;

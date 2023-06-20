@@ -3,6 +3,7 @@ query GetDashboard($accountListId: ID!) {
     firstName
   }
   accountList(id: $accountListId) {
+    id
     name
     monthlyGoal
     receivedPledges

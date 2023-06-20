@@ -1,7 +1,10 @@
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
+import { ThemeProvider } from '@mui/material/styles';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import theme from 'src/theme';
 import {
   GetWeeklyActivityQueryDefaultMocks,
   GetWeeklyActivityQueryLoadingMocks,
@@ -122,5 +125,25 @@ describe('WeeklyActivity', () => {
     expect(
       getByRole('link', { hidden: true, name: 'View Activity Detail' }),
     ).toHaveAttribute('href', 'https://stage.mpdx.org/reports/coaching');
+  });
+
+  it('opens weekly activity modal', async () => {
+    const { findByLabelText, findByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <MockedProvider
+            mocks={GetWeeklyActivityQueryDefaultMocks()}
+            addTypename={false}
+          >
+            <WeeklyActivity accountListId="abc" />
+          </MockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.click(
+      await findByRole('button', { name: 'Fill out weekly report' }),
+    );
+    expect(await findByLabelText('Weekly Report')).toBeInTheDocument();
   });
 });

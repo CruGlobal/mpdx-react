@@ -112,7 +112,7 @@ const AddAppealForm = (): ReactElement => {
   const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
     ? (
         contactFilterGroups.accountList.contactFilterGroups
-          .find((group) => group.name === 'Status')
+          .find((group) => group?.filters[0]?.filterKey === 'status')
           ?.filters.find(
             (filter: { filterKey: string }) => filter.filterKey === 'status',
           ) as MultiselectFilter
@@ -378,6 +378,8 @@ const AddAppealForm = (): ReactElement => {
 
                     <Autocomplete
                       multiple
+                      autoSelect
+                      autoHighlight
                       id="tags-standard"
                       options={contactStatuses.filter(
                         ({ value: id1 }) =>
@@ -416,6 +418,8 @@ const AddAppealForm = (): ReactElement => {
                     </Typography>
                     <Autocomplete
                       multiple
+                      autoSelect
+                      autoHighlight
                       id="tags-standard"
                       options={contactTagsList.filter(
                         (tag1) =>
@@ -443,6 +447,8 @@ const AddAppealForm = (): ReactElement => {
                   </Typography>
                   <Autocomplete
                     multiple
+                    autoSelect
+                    autoHighlight
                     id="tags-standard"
                     options={contactExclusions.filter(
                       ({ value: id1 }) =>

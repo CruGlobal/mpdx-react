@@ -32,7 +32,7 @@ describe('ContactTags', () => {
   it('should render with tags', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <GqlMockedProvider<UpdateContactTagsMutation>>
+        <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <ContactTags
               accountListId={accountListId}
@@ -49,9 +49,9 @@ describe('ContactTags', () => {
   });
 
   it('should add a tag', async () => {
-    const { getByPlaceholderText } = render(
+    const { getByPlaceholderText, getByText } = render(
       <SnackbarProvider>
-        <GqlMockedProvider<UpdateContactTagsMutation>
+        <GqlMockedProvider<{ UpdateContactTags: UpdateContactTagsMutation }>
           mocks={{
             UpdateContactTags: {
               updateContact: {
@@ -80,6 +80,8 @@ describe('ContactTags', () => {
     );
     userEvent.type(getByPlaceholderText('add tag'), '{enter}');
 
+    userEvent.click(getByText('save'));
+
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Tag successfully added', {
         variant: 'success',
@@ -87,11 +89,11 @@ describe('ContactTags', () => {
     );
   });
 
-  it.skip('should delete a tag', async () => {
+  it('should delete a tag', async () => {
     const mutationSpy = jest.fn();
-    const { getAllByRole } = render(
+    const { getAllByTitle } = render(
       <SnackbarProvider>
-        <GqlMockedProvider<UpdateContactTagsMutation>
+        <GqlMockedProvider<{ UpdateContactTags: UpdateContactTagsMutation }>
           mocks={{
             UpdateContactTags: {
               updateContact: {
@@ -115,9 +117,9 @@ describe('ContactTags', () => {
         </GqlMockedProvider>
       </SnackbarProvider>,
     );
-    const tag1DeleteIcon = getAllByRole('button', {
-      name: 'Delete Icon',
-    })[0].querySelector('.MuiChip-deleteIcon');
+    const tag1DeleteIcon = getAllByTitle('Delete Icon')[0].querySelector(
+      '.MuiChip-deleteIcon',
+    );
 
     expect(tag1DeleteIcon).toBeInTheDocument();
     tag1DeleteIcon && userEvent.click(tag1DeleteIcon);

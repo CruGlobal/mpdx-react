@@ -1,6 +1,7 @@
 import { DialogActions, DialogContent, Typography } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import Modal from '../../common/Modal/Modal';
 import {
   SubmitButton,
@@ -21,6 +22,7 @@ export const HideContactsModal: React.FC<HideContactsModalProps> = ({
   onConfirm,
 }) => {
   const { t } = useTranslation();
+  const { appName } = useGetAppSettings();
 
   return (
     <Modal
@@ -31,8 +33,11 @@ export const HideContactsModal: React.FC<HideContactsModalProps> = ({
       <DialogContent dividers>
         <Typography>
           {t(
-            'Are you sure you wish to hide the selected contact? Hiding a contact in MPDX actually sets the contact status to "Never Ask".',
-            { count: multi ? 2 : 1 },
+            'Are you sure you wish to hide the selected contact? Hiding a contact in {{appName}} actually sets the contact status to "Never Ask".',
+            {
+              count: multi ? 2 : 1,
+              appName,
+            },
           )}
         </Typography>
       </DialogContent>

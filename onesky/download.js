@@ -1,10 +1,12 @@
+/* eslint-disable no-console */
+
 const fs = require('fs');
 const onesky = require('@brainly/onesky-utils');
 
 const options = {
   secret: process.env.ONESKY_API_SECRET,
   apiKey: process.env.ONESKY_API_KEY,
-  projectId: '367075',
+  projectId: process.env.ONESKY_PROJECT_ID,
 };
 
 onesky
@@ -18,7 +20,7 @@ onesky
             language: lang.code,
             secret: process.env.ONESKY_API_SECRET,
             apiKey: process.env.ONESKY_API_KEY,
-            projectId: '367075',
+            projectId: process.env.ONESKY_PROJECT_ID,
             fileName: 'translation.json',
           })
           .then(function (langContent) {

@@ -24,14 +24,17 @@ import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
 
 interface ContactMapsPanelProps {
-  data: (Coordinates | undefined)[] | undefined;
-  selected: Coordinates | null | undefined;
-  setSelected: Dispatch<SetStateAction<Coordinates | null | undefined>>;
-  panTo: (coords: {
-    lat: number | null | undefined;
-    lng: number | null | undefined;
-  }) => void;
+  data: Coordinates[] | undefined;
+  selected: Coordinates | null;
+  setSelected: Dispatch<SetStateAction<Coordinates | null>>;
+  panTo: (coords: { lat: number; lng: number }) => void;
   onClose: () => void;
+}
+
+interface PanelItem {
+  title: string;
+  imgUrl: string;
+  data: Coordinates[] | undefined;
 }
 
 const StatusAccordion = styled(Accordion)(() => ({
@@ -56,7 +59,9 @@ const ContactList = styled(AccordionDetails)(() => ({
   width: '100%',
 }));
 
-const ContactWrapper = styled(Box)(({ current }: { current: boolean }) => ({
+const ContactWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'current',
+})(({ current }: { current: boolean }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
@@ -103,13 +108,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
       setStatusContactsMapOpen(newExpanded ? panel : -1);
     };
 
-  const panelData: {
-    [key: string]: {
-      title: string;
-      imgUrl: string;
-      data: (Coordinates | undefined)[] | undefined;
-    };
-  } = {
+  const panelData: Record<string, PanelItem> = {
     AppointmentScheduled: {
       title: t('Appointment Scheduled'),
       imgUrl: '/images/pin_appt_scheduled.png',
@@ -202,7 +201,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
     if (selected) {
       setStatusContactsMapOpen(
         Object.values(panelData).findIndex((status) =>
-          status.data?.find((contact) => contact?.id === selected.id),
+          status.data?.find((contact) => contact.id === selected.id),
         ),
       );
       setTimeout(
@@ -227,9 +226,10 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
         </Box>
       </Box>
       <Box>
-        {Object.entries(panelData).map(([status, entry], index) => (
-          <>
-            {entry.data && entry.data?.length > 0 && (
+        {Object.entries(panelData).map(
+          ([status, entry], index) =>
+            entry.data &&
+            entry.data?.length > 0 && (
               <StatusAccordion
                 key={status}
                 expanded={statusContactsMapOpen === index}
@@ -261,7 +261,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                   <Box display="flex" flexDirection="column" width="100%">
                     {entry.data.map((contact) => (
                       <Box
-                        key={contact?.id}
+                        key={contact.id}
                         display="flex"
                         width="100%"
                         style={{
@@ -269,16 +269,19 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                         }}
                       >
                         <ContactWrapper
-                          current={selected?.id === contact?.id}
+                          current={selected?.id === contact.id}
                           {...{
-                            ref: selected?.id === contact?.id ? cardRef : null,
+                            ref: selected?.id === contact.id ? cardRef : null,
                           }}
                           onClick={() => {
-                            if (contact?.lat) {
+                            if (
+                              typeof contact.lat === 'number' &&
+                              typeof contact.lng === 'number'
+                            ) {
                               setSelected(contact);
                               panTo({
-                                lat: contact?.lat,
-                                lng: contact?.lng,
+                                lat: contact.lat,
+                                lng: contact.lng,
                               });
                             }
                           }}
@@ -289,7 +292,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                             width="100%"
                           >
                             <Typography style={{ fontWeight: 550 }}>
-                              {contact?.name}
+                              {contact.name}
                             </Typography>
                             {contact?.lat && contact?.lng && (
                               <>
@@ -313,9 +316,8 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                   </Box>
                 </ContactList>
               </StatusAccordion>
-            )}
-          </>
-        ))}
+            ),
+        )}
       </Box>
     </>
   );

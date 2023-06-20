@@ -1,10 +1,9 @@
-/* eslint-disable eqeqeq */
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
@@ -17,6 +16,8 @@ import {
 } from 'recharts';
 import theme from '../../../../../theme';
 import { useGetDonationsGraphQuery } from './DonationsGraph.generated';
+import { currencyFormat } from 'src/lib/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 const LegendText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(3, 0),
@@ -47,6 +48,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   convertedCurrency,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { data, loading } = useGetDonationsGraphQuery({
     variables: {
       accountListId: accountListId,
@@ -54,12 +56,20 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
     },
   });
 
+  const monthFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        month: 'short',
+      }),
+    [locale],
+  );
+
   const months = Object.values(
     data?.reportsDonationHistories.periods.reduce<{
       [month: string]: { month: string; lastYear: number; thisYear: number };
     }>((acc, period) => {
       const date = DateTime.fromISO(period.startDate);
-      const month = date.monthShort;
+      const month = monthFormatter.format(date.toJSDate());
       return {
         ...acc,
         [month]: {
@@ -74,37 +84,62 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
   );
 
   return (
-    <GraphContainer fontFamily={theme.typography.fontFamily}>
-      {loading ? (
-        <Box style={{ width: '100%' }} role="alert">
-          <GraphLoadingPlaceHolder />
-          <GraphLoadingPlaceHolder />
-          <GraphLoadingPlaceHolder />
-        </Box>
-      ) : (
-        <>
-          <LegendText variant="body1" role="textbox">{`${t(
-            'Amount',
-          )} (${convertedCurrency})`}</LegendText>
-          <BarChart width={600} height={300} data={months}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar
-              name={t('Last Year')}
-              dataKey="lastYear"
-              fill={theme.palette.secondary.dark}
-            />
-            <Bar
-              name={t('This Year')}
-              dataKey="thisYear"
-              fill={theme.palette.secondary.main}
-            />
-          </BarChart>
-        </>
+    <>
+      {data && (
+        <Typography
+          variant="h6"
+          align="center"
+          sx={(theme) => ({ paddingBottom: theme.spacing(1) })}
+        >
+          {t('Average: {{average}}', {
+            average: currencyFormat(
+              data.reportsDonationHistories.averageIgnoreCurrent,
+              data.accountList.currency,
+              locale,
+            ),
+          })}
+          {' | '}
+          {t('Gift Average: {{average}}', {
+            average: currencyFormat(
+              data.reportsDonationHistories.averageIgnoreCurrentAndZero,
+              data.accountList.currency,
+              locale,
+            ),
+          })}
+        </Typography>
       )}
-    </GraphContainer>
+      <GraphContainer fontFamily={theme.typography.fontFamily}>
+        {loading ? (
+          <Box style={{ width: '100%' }} role="alert">
+            <GraphLoadingPlaceHolder />
+            <GraphLoadingPlaceHolder />
+            <GraphLoadingPlaceHolder />
+          </Box>
+        ) : (
+          <>
+            <LegendText variant="body1" role="textbox">{`${t(
+              'Amount',
+            )} (${convertedCurrency})`}</LegendText>
+            <BarChart width={600} height={300} data={months}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar
+                name={t('Last Year')}
+                dataKey="lastYear"
+                fill={theme.palette.secondary.dark}
+              />
+              <Bar
+                name={t('This Year')}
+                dataKey="thisYear"
+                fill={theme.palette.secondary.main}
+              />
+            </BarChart>
+          </>
+        )}
+      </GraphContainer>
+    </>
   );
 };

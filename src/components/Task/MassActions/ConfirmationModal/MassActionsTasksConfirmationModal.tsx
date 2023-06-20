@@ -26,7 +26,7 @@ export const MassActionsTasksConfirmationModal: React.FC<
       isOpen={open}
       handleClose={() => setOpen(false)}
     >
-      <DialogContent dividers>
+      <DialogContent dividers data-testid={'CompleteAndDeleteTasksModal'}>
         <Typography>
           {t(
             'Are you sure you wish to {{action}} the {{count}} selected tasks?',

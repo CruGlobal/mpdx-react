@@ -10,6 +10,7 @@
 
 # Storybook cache
 /node_modules/.cache
+/storybook-static
 
 # next.js
 /.next

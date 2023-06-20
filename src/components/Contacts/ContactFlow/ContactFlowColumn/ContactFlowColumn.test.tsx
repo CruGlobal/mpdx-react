@@ -4,11 +4,15 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import { GroupItemContent } from 'react-virtuoso';
+import { VirtuosoMockContext } from 'react-virtuoso';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import { ContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../src/theme';
-import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
+import {
+  ContactFilterStatusEnum,
+  StatusEnum,
+} from '../../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
@@ -19,7 +23,7 @@ const changeContactStatus = jest.fn();
 const contact = {
   id: '123',
   name: 'Test Person',
-  status: 'PARTNER_FINANCIAL',
+  status: StatusEnum.PartnerFinancial,
   primaryAddress: {
     id: 'address',
     updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
@@ -30,17 +34,6 @@ const router = {
   isReady: true,
 };
 
-jest.mock('react-virtuoso', () => ({
-  // eslint-disable-next-line react/display-name
-  GroupedVirtuoso: ({
-    itemContent,
-  }: {
-    itemContent: GroupItemContent<undefined, undefined>;
-  }) => {
-    return <div>{itemContent(0, 0, undefined, undefined)}</div>;
-  },
-}));
-
 describe('ContactFlowColumn', () => {
   it('should render a column with correct details', async () => {
     const { getByText, getByTestId } = render(
@@ -48,7 +41,7 @@ describe('ContactFlowColumn', () => {
         <DndProvider backend={HTML5Backend}>
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
-              <GqlMockedProvider<ContactsQuery>
+              <GqlMockedProvider<{ Contacts: ContactsQuery }>
                 mocks={{
                   Contacts: {
                     contacts: {
@@ -59,15 +52,21 @@ describe('ContactFlowColumn', () => {
                   },
                 }}
               >
-                <ContactFlowColumn
-                  accountListId={accountListId}
-                  selectedFilters={{}}
-                  color={theme.palette.mpdxBlue.main}
-                  title={title}
-                  onContactSelected={onContactSelected}
-                  changeContactStatus={changeContactStatus}
-                  statuses={[ContactFilterStatusEnum.PartnerFinancial]}
-                />
+                <ContactsPage>
+                  <VirtuosoMockContext.Provider
+                    value={{ viewportHeight: 300, itemHeight: 100 }}
+                  >
+                    <ContactFlowColumn
+                      accountListId={accountListId}
+                      selectedFilters={{}}
+                      color={theme.palette.mpdxBlue.main}
+                      title={title}
+                      onContactSelected={onContactSelected}
+                      changeContactStatus={changeContactStatus}
+                      statuses={[ContactFilterStatusEnum.PartnerFinancial]}
+                    />
+                  </VirtuosoMockContext.Provider>
+                </ContactsPage>
               </GqlMockedProvider>
             </TestRouter>
           </ThemeProvider>

@@ -5,6 +5,7 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import StyledProgress from 'src/components/StyledProgress';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   currency?: string;
@@ -30,8 +31,9 @@ export const AppealProgress = ({
   pledged = 0,
 }: Props): ReactElement => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
-  const goalText = `${t('Monthly')} ${currencyFormat(goal, currency)}`;
+  const goalText = `${t('Monthly')} ${currencyFormat(goal, currency, locale)}`;
   return (
     <>
       <CoachingProgressLabelContainer>
@@ -39,14 +41,14 @@ export const AppealProgress = ({
           {loading
             ? ' '
             : isPrimary
-            ? t('Primary Appeal ') + currencyFormat(goal, currency)
+            ? t('Primary Appeal ') + currencyFormat(goal, currency, locale)
             : goalText}
         </Typography>
         <Typography>
-          {currencyFormat(received, currency)}(
-          {percentageFormat(received / goal)})/
-          {currencyFormat(pledged, currency)}({percentageFormat(pledged / goal)}
-          )
+          {currencyFormat(received, currency, locale)}(
+          {percentageFormat(received / goal, locale)})/
+          {currencyFormat(pledged, currency, locale)}(
+          {percentageFormat(pledged / goal, locale)})
         </Typography>
       </CoachingProgressLabelContainer>
       <StyledProgress

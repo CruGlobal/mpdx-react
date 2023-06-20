@@ -6,10 +6,7 @@ import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking'
 import theme from '../../../../theme';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsTab } from './ContactDetailsTab';
-import {
-  ContactDetailsTabDocument,
-  ContactDetailsTabQuery,
-} from './ContactDetailsTab.generated';
+import { ContactDetailsTabDocument } from './ContactDetailsTab.generated';
 
 export default {
   title: 'Contacts/Tab/ContactDetailsTab',
@@ -23,7 +20,7 @@ export const Default = (): ReactElement => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <GqlMockedProvider<ContactDetailsTabQuery>>
+      <GqlMockedProvider>
         <ContactDetailProvider>
           <ContactDetailsTab
             accountListId={accountListId}

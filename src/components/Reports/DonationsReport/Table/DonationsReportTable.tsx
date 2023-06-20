@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   Typography,
@@ -9,6 +9,9 @@ import {
   TableCell,
   TableRow,
   CircularProgress,
+  TableHead,
+  TableBody,
+  LinearProgress,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
@@ -16,17 +19,29 @@ import EditIcon from '@mui/icons-material/Edit';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useTranslation } from 'react-i18next';
-import { DataGrid, GridColDef, GridCellParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridCellParams,
+  GridSortModel,
+} from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
 import {
   useGetDonationsTableQuery,
   ExpectedDonationDataFragment,
   useGetAccountListCurrencyQuery,
+  GetDonationsTableQueryVariables,
 } from '../GetDonationsTable.generated';
+import { EditDonationModal } from './Modal/EditDonationModal';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
-interface Props {
+interface DonationReportTableProps {
   accountListId: string;
+  designationAccounts?: string[];
+  onSelectContact: (contactId: string) => void;
   time: DateTime;
   setTime: (time: DateTime) => void;
 }
@@ -39,6 +54,13 @@ const DataTable = styled(Box)(({ theme }) => ({
       theme.palette.mode === 'light'
         ? theme.palette.common.white
         : theme.palette.cruGrayLight.main,
+  },
+  '& .MuiDataGrid-cell': {
+    '& .MuiTypography-root': {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    },
   },
 }));
 
@@ -57,32 +79,80 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-interface Donation {
-  date: Date;
+const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
+  flex: 0.25,
+  height: '0.5rem',
+  borderRadius: theme.shape.borderRadius,
+  ['& .MuiLinearProgress-bar']: {
+    borderRadius: theme.shape.borderRadius,
+  },
+  alignSelf: 'center',
+}));
+
+export interface Donation {
+  date: DateTime;
+  contactId: string | null;
   partnerId: string;
   partner: string;
   currency: string;
   foreignCurrency: string;
   convertedAmount: number;
   foreignAmount: number;
-  designation: string;
+  designationAccount: { id: string; name: string };
   method: string | null;
   id: string;
+  appeal: ExpectedDonationDataFragment['appeal'];
+  appealAmount: number | null;
 }
 
-export const DonationsReportTable: React.FC<Props> = ({
+export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
   accountListId,
+  designationAccounts,
+  onSelectContact,
   time,
   setTime,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
+    null,
+  );
 
-  const startDate = time.toString();
+  const handleClose = () => {
+    setSelectedDonation(null);
+  };
 
-  const endDate = time.plus({ months: 1 }).toString();
+  const startDate = time.toString().slice(0, 10);
+  const endDate = time
+    .plus({ months: 1 })
+    .minus({ days: 1 })
+    .toString()
+    .slice(0, 10);
 
-  const { data, loading } = useGetDonationsTableQuery({
-    variables: { accountListId, startDate, endDate },
+  const [pageSize, setPageSize] = useState(25);
+
+  // pageSize is intentionally omitted from the dependencies array so that the query isn't rerun when the page size changes
+  // If all the pages have loaded and the user changes the page size, there's no reason to reload all the pages
+  // TODO: sort donations on the server after https://jira.cru.org/browse/MPDX-7634 is implemented
+  const variables: GetDonationsTableQueryVariables = useMemo(
+    () => ({
+      accountListId,
+      pageSize,
+      startDate,
+      endDate,
+      designationAccountIds: designationAccounts?.length
+        ? designationAccounts
+        : null,
+    }),
+    [accountListId, startDate, endDate, designationAccounts],
+  );
+  const { data, loading, fetchMore } = useGetDonationsTableQuery({
+    variables,
+  });
+  // Load the rest of the pages asynchronously so that we can calculate the total donations
+  useFetchAllPages({
+    fetchMore,
+    pageInfo: data?.donations.pageInfo,
   });
 
   const { data: accountListData, loading: loadingAccountListData } =
@@ -96,27 +166,43 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const createData = (data: ExpectedDonationDataFragment): Donation => {
     return {
-      date: new Date(data.donationDate),
+      date: DateTime.fromISO(data.donationDate),
+      contactId: data.donorAccount.contacts.nodes[0]?.id ?? null,
       partnerId: data.donorAccount.id,
       partner: data.donorAccount.displayName,
       currency: data.amount.convertedCurrency,
       foreignCurrency: data.amount.currency,
       convertedAmount: data.amount.convertedAmount,
       foreignAmount: data.amount.amount,
-      designation: `${data.designationAccount.name} (${data.designationAccount.accountNumber})`,
+      designationAccount: {
+        id: data.designationAccount.id,
+        name: data.designationAccount.name,
+      },
       method: data.paymentMethod || null,
       id: data.id,
+      appeal: data.appeal,
+      appealAmount: (data.appeal && data.appealAmount?.amount) ?? null,
     };
   };
 
-  const donations = nodes.map(createData);
+  const donations = useMemo(() => nodes.map(createData), [nodes]);
+
+  const date = (params: GridCellParams) => {
+    const donation = params.row as Donation;
+
+    return dateFormatShort(donation.date, locale);
+  };
 
   const link = (params: GridCellParams) => {
     const donation = params.row as Donation;
 
     return (
-      <Typography>
-        <Link href={`../../${accountListId}/contacts/${donation.partnerId}`}>
+      <Typography sx={{ cursor: 'pointer' }}>
+        <Link
+          onClick={() =>
+            donation.contactId && onSelectContact(donation.contactId)
+          }
+        >
           {donation.partner}
         </Link>
       </Typography>
@@ -148,38 +234,56 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const designation = (params: GridCellParams) => {
     const donation = params.row as Donation;
-    return <Typography>{donation.designation}</Typography>;
+    return <Typography>{donation.designationAccount?.name}</Typography>;
   };
 
-  const button = () => (
-    <IconButton color="primary">
-      <EditIcon />
-    </IconButton>
-  );
+  const button = (params: GridCellParams) => {
+    const donation = params.row as Donation;
+    return (
+      <Box
+        width={'100%'}
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Typography data-testid="appeal-name">
+          {donation.appeal?.name}
+        </Typography>
+        <IconButton
+          color="primary"
+          onClick={() => {
+            setSelectedDonation(donation);
+          }}
+        >
+          <EditIcon data-testid={`edit-${donation.id}`} />
+        </IconButton>
+      </Box>
+    );
+  };
 
   const columns: GridColDef[] = [
     {
       field: 'date',
       headerName: t('Date'),
-      type: 'date',
-      width: 140,
+      width: 100,
+      renderCell: date,
     },
     {
       field: 'partner',
       headerName: t('Partner'),
-      width: 260,
+      width: 360,
       renderCell: link,
     },
     {
       field: 'convertedAmount',
       headerName: t('Amount'),
-      width: 150,
+      width: 120,
       renderCell: amount,
     },
     {
       field: 'foreignAmount',
       headerName: t('Foreign Amount'),
-      width: 180,
+      width: 120,
       renderCell: foreignAmount,
     },
     {
@@ -191,7 +295,7 @@ export const DonationsReportTable: React.FC<Props> = ({
     {
       field: 'method',
       headerName: t('Method'),
-      width: 155,
+      width: 100,
     },
     {
       field: 'appeal',
@@ -201,23 +305,30 @@ export const DonationsReportTable: React.FC<Props> = ({
     },
   ];
 
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    { field: 'date', sort: 'desc' },
+  ]);
+
   // Remove foreign amount column if both of these conditions are met:
   // 1.) There only one type of currency.
   // 2.) The type of currency is the same as the account currency.
-  const currencyList = [
-    ...new Set(donations.map((donation) => donation.foreignCurrency)),
-  ];
+  const currencyList = new Set(
+    donations.map((donation) => donation.foreignCurrency),
+  );
 
-  if (currencyList.length === 1 && currencyList.includes(accountCurrency)) {
+  if (currencyList.size === 1 && currencyList.has(accountCurrency)) {
     columns.splice(3, 1);
     columns.forEach(
-      (column) => (column.width = column.width ? column.width + 36 : 0),
+      (column) => (column.width = column.width ? column.width + 20 : 0),
     );
   }
 
-  const isEmpty = nodes?.length === 0;
+  const isEmpty = nodes.length === 0;
 
-  const title = `${time.monthLong} ${time.year}`;
+  const title = time.toJSDate().toLocaleDateString(locale, {
+    month: 'long',
+    year: 'numeric',
+  });
 
   const hasNext = time.hasSame(DateTime.now().startOf('month'), 'month');
 
@@ -235,9 +346,7 @@ export const DonationsReportTable: React.FC<Props> = ({
 
   const totalForeignDonations = donations.reduce(
     (
-      acc: {
-        [key: string]: { convertedTotal: number; foreignTotal: number };
-      },
+      acc: Record<string, { convertedTotal: number; foreignTotal: number }>,
       donation,
     ) => {
       const { foreignCurrency, foreignAmount, convertedAmount } = donation;
@@ -255,10 +364,27 @@ export const DonationsReportTable: React.FC<Props> = ({
     {},
   );
 
+  const loadingProgress = data
+    ? (data.donations.nodes.length / (data?.donations.totalCount || 1)) * 100
+    : 0;
+
   return (
     <>
-      <Box style={{ display: 'flex', margin: 8 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          margin: 1,
+          gap: 2,
+        }}
+      >
         <Typography variant="h6">{title}</Typography>
+        {data?.donations.pageInfo.hasNextPage && (
+          <LoadingProgressBar
+            data-testid="nextPageProcessBar"
+            variant="determinate"
+            value={loadingProgress}
+          />
+        )}
         <Button
           style={{ marginLeft: 'auto', maxHeight: 35 }}
           variant="contained"
@@ -284,47 +410,68 @@ export const DonationsReportTable: React.FC<Props> = ({
         <DataTable>
           <DataGrid
             rows={donations}
+            rowCount={data?.donations.totalCount}
             columns={columns}
-            autoPageSize
+            pageSize={pageSize}
+            onPageSizeChange={(pageSize) => setPageSize(pageSize)}
+            rowsPerPageOptions={[25, 50, 100]}
+            pagination
+            sortModel={sortModel}
+            onSortModelChange={(sortModel) => setSortModel(sortModel)}
             autoHeight
             disableSelectionOnClick
-            hideFooter
+            disableVirtualization
           />
-          <Table>
-            {Object.entries(totalForeignDonations).map(([currency, total]) => (
-              <TableRow data-testid="donationRow" key={currency}>
-                <TableCell style={{ width: 395 }}>
-                  <Typography style={{ float: 'right', fontWeight: 'bold' }}>
-                    {t('Total {{currency}} Donations:', { currency })}
-                  </Typography>
-                </TableCell>
-                <TableCell style={{ width: 150 }}>
-                  <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {Math.round(total.convertedTotal * 100) / 100}{' '}
-                    {accountCurrency}
-                  </Typography>
-                </TableCell>
-                <TableCell style={{}}>
-                  <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                    {Math.round(total.foreignTotal * 100) / 100} {currency}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ))}
-            <TableRow>
-              <TableCell>
-                <Typography style={{ float: 'right', fontWeight: 'bold' }}>
-                  {t('Total Donations: ')}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                  {Math.round(totalDonations * 100) / 100}
-                </Typography>
-              </TableCell>
-              <TableCell />
-            </TableRow>
-          </Table>
+          {!data?.donations.pageInfo.hasNextPage && (
+            <Table>
+              <TableHead>
+                {Object.entries(totalForeignDonations).map(
+                  ([currency, total]) => (
+                    <TableRow data-testid="donationRow" key={currency}>
+                      <TableCell style={{ width: 395 }}>
+                        <Typography
+                          style={{ float: 'right', fontWeight: 'bold' }}
+                        >
+                          {t('Total {{currency}} Donations:', { currency })}
+                        </Typography>
+                      </TableCell>
+                      <TableCell style={{ width: 150 }}>
+                        <Typography
+                          style={{ float: 'left', fontWeight: 'bold' }}
+                        >
+                          {Math.round(total.convertedTotal * 100) / 100}{' '}
+                          {accountCurrency}
+                        </Typography>
+                      </TableCell>
+                      <TableCell style={{}}>
+                        <Typography
+                          style={{ float: 'left', fontWeight: 'bold' }}
+                        >
+                          {Math.round(total.foreignTotal * 100) / 100}{' '}
+                          {currency}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ),
+                )}
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>
+                    <Typography style={{ float: 'right', fontWeight: 'bold' }}>
+                      {t('Total Donations: ')}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography style={{ float: 'left', fontWeight: 'bold' }}>
+                      {Math.round(totalDonations * 100) / 100}
+                    </Typography>
+                  </TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableBody>
+            </Table>
+          )}
         </DataTable>
       ) : loading || loadingAccountListData ? (
         <LoadingBox>
@@ -336,6 +483,13 @@ export const DonationsReportTable: React.FC<Props> = ({
             month: time.monthLong,
             year: time.year,
           })}
+        />
+      )}
+      {selectedDonation && (
+        <EditDonationModal
+          open
+          donation={selectedDonation}
+          handleClose={() => handleClose()}
         />
       )}
     </>

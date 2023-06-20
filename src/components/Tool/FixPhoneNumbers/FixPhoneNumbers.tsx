@@ -231,118 +231,115 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   };
 
   return (
-    <>
-      <Box className={classes.container}>
-        {!loading && data ? (
-          <Grid container className={classes.outter}>
-            <Grid item xs={12}>
-              <Typography variant="h4">{t('Fix Phone Numbers')}</Typography>
-              <Divider className={classes.divider} />
-            </Grid>
-            {data.people.nodes.length > 0 ? (
-              <>
-                <Grid item xs={12}>
-                  <Box mb={2}>
-                    <Typography>
-                      <strong>
-                        {t('You have {{amount}} phone numbers to confirm.', {
-                          amount: data.people.nodes.length,
-                        })}
-                      </strong>
-                    </Typography>
-                    <Typography>
-                      {t(
-                        'Choose below which phone number will be set as primary.',
-                      )}
-                    </Typography>
-                    <Box className={classes.defaultBox}>
-                      <Typography>{t('Default Primary Source:')}</Typography>
-
-                      <NativeSelect
-                        input={
-                          <StyledInput
-                            inputProps={{
-                              'data-testid': 'source-select',
-                            }}
-                          />
-                        }
-                        className={classes.nativeSelect}
-                        value={defaultSource}
-                        data-testid="source-select"
-                        onChange={(
-                          event: React.ChangeEvent<HTMLSelectElement>,
-                        ) => handleSourceChange(event)}
-                      >
-                        <option value="MPDX" data-testid="source-option-mpdx">
-                          MPDX
-                        </option>
-                        <option
-                          value="DataServer"
-                          data-testid="source-option-dataserver"
-                        >
-                          DataServer
-                        </option>
-                      </NativeSelect>
-                      <Button
-                        className={classes.buttonBlue}
-                        data-testid="source-button"
-                      >
-                        <Icon
-                          path={mdiCheckboxMarkedCircle}
-                          size={0.8}
-                          className={classes.buttonIcon}
-                        />
-                        {t('Confirm {{amount}} as {{source}}', {
-                          amount: data.people.nodes.length,
-                          source: defaultSource,
-                        })}
-                      </Button>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  {data.people.nodes.map((person) => (
-                    <>
-                      <Contact
-                        name={`${person.firstName} ${person.lastName}`}
-                        key={person.id}
-                        personId={person.id}
-                        numbers={dataState[person.id]?.phoneNumbers || []}
-                        toDelete={dataState[person.id]?.toDelete}
-                        handleChange={handleChange}
-                        handleDelete={handleDeleteModalOpen}
-                        handleAdd={handleAdd}
-                        handleChangePrimary={handleChangePrimary}
-                      />
-                    </>
-                  ))}
-                </Grid>
-                <Grid item xs={12}>
-                  <Box className={classes.footer}>
-                    <Typography>
-                      <Trans
-                        defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                        values={{ value: data.people.nodes.length }}
-                        components={{ bold: <strong /> }}
-                      />
-                    </Typography>
-                  </Box>
-                </Grid>
-              </>
-            ) : (
-              <NoData tool="fixPhoneNumbers" />
-            )}
+    <Box className={classes.container}>
+      {!loading && data ? (
+        <Grid container className={classes.outter}>
+          <Grid item xs={12}>
+            <Typography variant="h4">{t('Fix Phone Numbers')}</Typography>
+            <Divider className={classes.divider} />
           </Grid>
-        ) : (
-          <CircularProgress style={{ marginTop: theme.spacing(3) }} />
-        )}
-        <DeleteModal
-          modalState={deleteModalState}
-          handleClose={handleDeleteModalClose}
-          handleDelete={handleDelete}
-        />
-      </Box>
-    </>
+          {data.people.nodes.length > 0 ? (
+            <>
+              <Grid item xs={12}>
+                <Box mb={2}>
+                  <Typography>
+                    <strong>
+                      {t('You have {{amount}} phone numbers to confirm.', {
+                        amount: data.people.nodes.length,
+                      })}
+                    </strong>
+                  </Typography>
+                  <Typography>
+                    {t(
+                      'Choose below which phone number will be set as primary.',
+                    )}
+                  </Typography>
+                  <Box className={classes.defaultBox}>
+                    <Typography>{t('Default Primary Source:')}</Typography>
+
+                    <NativeSelect
+                      input={
+                        <StyledInput
+                          inputProps={{
+                            'data-testid': 'source-select',
+                          }}
+                        />
+                      }
+                      className={classes.nativeSelect}
+                      value={defaultSource}
+                      data-testid="source-select"
+                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                        handleSourceChange(event)
+                      }
+                    >
+                      <option value="MPDX" data-testid="source-option-mpdx">
+                        MPDX
+                      </option>
+                      <option
+                        value="DataServer"
+                        data-testid="source-option-dataserver"
+                      >
+                        DataServer
+                      </option>
+                    </NativeSelect>
+                    <Button
+                      className={classes.buttonBlue}
+                      data-testid="source-button"
+                    >
+                      <Icon
+                        path={mdiCheckboxMarkedCircle}
+                        size={0.8}
+                        className={classes.buttonIcon}
+                      />
+                      {t('Confirm {{amount}} as {{source}}', {
+                        amount: data.people.nodes.length,
+                        source: defaultSource,
+                      })}
+                    </Button>
+                  </Box>
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                {data.people.nodes.map((person) => (
+                  <Contact
+                    name={`${person.firstName} ${person.lastName}`}
+                    key={person.id}
+                    personId={person.id}
+                    numbers={dataState[person.id]?.phoneNumbers || []}
+                    toDelete={dataState[person.id]?.toDelete}
+                    handleChange={handleChange}
+                    handleDelete={handleDeleteModalOpen}
+                    handleAdd={handleAdd}
+                    handleChangePrimary={handleChangePrimary}
+                  />
+                ))}
+              </Grid>
+              <Grid item xs={12}>
+                <Box className={classes.footer}>
+                  <Typography>
+                    <Trans
+                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      shouldUnescape
+                      values={{ value: data.people.nodes.length }}
+                      components={{ bold: <strong /> }}
+                    />
+                  </Typography>
+                </Box>
+              </Grid>
+            </>
+          ) : (
+            <NoData tool="fixPhoneNumbers" />
+          )}
+        </Grid>
+      ) : (
+        <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+      )}
+      <DeleteModal
+        modalState={deleteModalState}
+        handleClose={handleDeleteModalClose}
+        handleDelete={handleDelete}
+      />
+    </Box>
   );
 };
 

@@ -14,6 +14,7 @@ import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
 import { ContactTags } from './Tags/ContactTags';
 import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
+import { ContactDetailsPartnerAccounts } from './PartnerAccounts/ContactDetailsPartnerAccounts';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -97,11 +98,6 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           // People Section
         }
         <ContactDetailSectionContainer>
-          <ContactDetailHeadingContainer>
-            <ContactDetailHeadingText variant="h6">
-              {loading || !data ? t('Loading') : data.contact.name}
-            </ContactDetailHeadingText>
-          </ContactDetailHeadingContainer>
           {loading || !data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -163,17 +159,35 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
+        {
+          // Patner Accounts Section
+        }
+        <ContactDetailSectionContainer>
+          <ContactDetailHeadingContainer>
+            <ContactDetailHeadingText variant="h6">
+              {t('Partner Accounts')}
+            </ContactDetailHeadingText>
+          </ContactDetailHeadingContainer>
+          {loading || !data ? (
+            <>
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+              <ContactDetailLoadingPlaceHolder variant="rectangular" />
+            </>
+          ) : (
+            <ContactDetailsPartnerAccounts contact={data.contact} />
+          )}
+        </ContactDetailSectionContainer>
+        <Divider />
       </ContactDetailsTabContainer>
       {loading || !data ? null : (
-        <>
-          <EditContactOtherModal
-            accountListId={accountListId}
-            contact={data.contact}
-            isOpen={editOtherModalOpen}
-            referral={data.contact.contactReferralsToMe?.nodes[0]}
-            handleClose={() => setEditOtherModalOpen(false)}
-          />
-        </>
+        <EditContactOtherModal
+          accountListId={accountListId}
+          contact={data.contact}
+          isOpen={editOtherModalOpen}
+          referral={data.contact.contactReferralsToMe?.nodes[0]}
+          handleClose={() => setEditOtherModalOpen(false)}
+        />
       )}
     </>
   );

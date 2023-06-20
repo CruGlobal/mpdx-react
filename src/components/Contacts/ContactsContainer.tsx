@@ -8,10 +8,11 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import _ from 'lodash';
 import { SidePanelsLayout } from '../Layouts/SidePanelsLayout';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from '../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
-import { TableViewModeEnum } from '../Shared/Header/ListHeader';
+  ContactsContext,
+  ContactsType,
+} from '../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { headerHeight, TableViewModeEnum } from '../Shared/Header/ListHeader';
 import Loading from '../Loading';
 import { ContactsMainPanel } from './ContactsMainPanel/ContactsMainPanel';
 import { ContactsLeftPanel } from './ContactsLeftPanel/ContactsLeftPanel';
@@ -30,13 +31,14 @@ export const ContactsContainer: React.FC = ({}) => {
     contactDetailsOpen,
     viewMode,
     setContactFocus,
-  } = useContext(ContactsPageContext) as ContactsPageType;
+  } = useContext(ContactsContext) as ContactsType;
+  const { appName } = useGetAppSettings();
 
   return (
     <>
       <Head>
         <title>
-          MPDX |{' '}
+          {appName} |{' '}
           {viewMode === TableViewModeEnum.Flows
             ? t('Contact Flows')
             : viewMode === TableViewModeEnum.Map
@@ -67,6 +69,7 @@ export const ContactsContainer: React.FC = ({}) => {
               }
               rightOpen={contactDetailsOpen}
               rightWidth="60%"
+              headerHeight={headerHeight}
             />
           </WhiteBackground>
         </DndProvider>

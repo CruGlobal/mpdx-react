@@ -44,6 +44,7 @@ describe('ContactTasksTabNullState', () => {
     ).toBeInTheDocument();
     userEvent.click(getByText('Add New Task'));
     expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'add',
       defaultValues: { contactIds: [contactId] },
     });
   });

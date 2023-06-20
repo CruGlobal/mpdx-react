@@ -33,7 +33,10 @@ export const createEntryHistoriesGroup = (
   financialAccountId: string,
 ): EntryHistoriesGroup => ({
   financialAccountId,
-  entryHistories: data.map((entryHistory) => createEntryHistory(entryHistory)),
+  entryHistories: data
+    // The last entry is the total for the whole year, so ignore it
+    .slice(0, -1)
+    .map((entryHistory) => createEntryHistory(entryHistory)),
 });
 
 const createEntryHistory = (

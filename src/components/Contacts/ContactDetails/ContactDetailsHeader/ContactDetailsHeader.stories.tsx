@@ -5,11 +5,8 @@ import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking'
 import { ContactDetailProvider } from '../ContactDetailContext';
 
 import { ContactDetailsHeader } from './ContactDetailsHeader';
-import {
-  GetContactDetailsHeaderDocument,
-  GetContactDetailsHeaderQuery,
-} from './ContactDetailsHeader.generated';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { GetContactDetailsHeaderDocument } from './ContactDetailsHeader.generated';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'accountList-1';
 const contactId = 'contact-1';
@@ -21,23 +18,25 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <ContactsPageProvider>
+    <ContactsPage>
       <ContactDetailProvider>
-        <GqlMockedProvider<GetContactDetailsHeaderQuery>>
+        <GqlMockedProvider>
           <ContactDetailsHeader
             accountListId={accountListId}
             contactId={contactId}
             onClose={() => {}}
+            setContactDetailsLoaded={() => {}}
+            contactDetailsLoaded={false}
           />
         </GqlMockedProvider>
       </ContactDetailProvider>
-    </ContactsPageProvider>
+    </ContactsPage>
   );
 };
 
 export const Loading = (): ReactElement => {
   return (
-    <ContactsPageProvider>
+    <ContactsPage>
       <ContactDetailProvider>
         <MockedProvider
           mocks={[
@@ -58,9 +57,11 @@ export const Loading = (): ReactElement => {
             accountListId={accountListId}
             contactId={contactId}
             onClose={() => {}}
+            setContactDetailsLoaded={() => {}}
+            contactDetailsLoaded={false}
           />
         </MockedProvider>
       </ContactDetailProvider>
-    </ContactsPageProvider>
+    </ContactsPage>
   );
 };

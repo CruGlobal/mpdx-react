@@ -24,20 +24,15 @@ import ClockIcon from '@mui/icons-material/AccessTime';
 import CalendarIcon from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  ActivityTypeEnum,
-  NotificationTimeUnitEnum,
-  NotificationTypeEnum,
-  TaskCreateInput,
-} from '../../../../../../../graphql/types.generated';
+import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
 
-import { useCreateTaskMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
-import { useCreateTaskCommentMutation } from '../../../../../Task/Modal/Comments/Form/CreateTaskComment.generated';
+import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   accountListId: string;
@@ -89,72 +84,62 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const taskSchema: yup.SchemaOf<Omit<TaskCreateInput, 'result' | 'nextAction'>> =
-  yup.object({
-    id: yup.string().nullable(),
-    activityType: yup.mixed<ActivityTypeEnum>(),
-    subject: yup.string().required(),
-    starred: yup.boolean().nullable(),
-    startAt: yup.string().nullable(),
-    completedAt: yup.string().nullable(),
-    tagList: yup.array().of(yup.string()).default([]),
-    contactIds: yup.array().of(yup.string()).default([]),
-    userId: yup.string().nullable(),
-    notificationTimeBefore: yup.number().nullable(),
-    notificationType: yup.mixed<NotificationTypeEnum>(),
-    notificationTimeUnit: yup.mixed<NotificationTimeUnitEnum>(),
-  });
+const taskSchema = yup.object({
+  activityType: yup
+    .mixed()
+    .oneOf([...Object.values(ActivityTypeEnum), 'BOTH' as const])
+    .defined(),
+  completedAt: yup.string().nullable(),
+  subject: yup.string().required(),
+});
 
 const LogNewsletter = ({
   accountListId,
   handleClose,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const [commentBody, changeCommentBody] = useState('');
 
-  const [createTask, { loading: creating }] = useCreateTaskMutation();
-  const [createTaskComment] = useCreateTaskCommentMutation();
+  const [createTasks, { loading: creating }] = useCreateTasksMutation();
 
-  const initialTask: TaskCreateInput = {
+  const initialTask: yup.InferType<typeof taskSchema> = {
     activityType: ActivityTypeEnum.NewsletterPhysical,
     completedAt: null,
-    contactIds: [],
-    id: null,
-    nextAction: null,
-    notificationTimeBefore: null,
-    notificationTimeUnit: null,
-    notificationType: null,
-    result: null,
-    startAt: DateTime.local().plus({ hours: 1 }).startOf('hour').toISO(),
     subject: '',
-    tagList: [],
-    userId: null,
   };
 
-  const onSubmit = async (attributes: TaskCreateInput) => {
+  const onSubmit = async (attributes: yup.InferType<typeof taskSchema>) => {
     const body = commentBody.trim();
 
-    await createTask({
-      variables: {
-        accountListId,
-        attributes,
-      },
-      update: (_cache, { data }) => {
-        if (data?.createTask?.task.id && body !== '') {
-          const id = uuidv4();
-
-          createTaskComment({
-            variables: {
-              accountListId,
-              taskId: data.createTask.task.id,
-              attributes: { id, body },
+    // Create two tasks when the activity type is both
+    const taskTypes =
+      attributes.activityType === 'BOTH'
+        ? [
+            ActivityTypeEnum.NewsletterPhysical,
+            ActivityTypeEnum.NewsletterEmail,
+          ]
+        : [attributes.activityType];
+    await Promise.all(
+      taskTypes.map((activityType) =>
+        createTasks({
+          variables: {
+            accountListId,
+            attributes: {
+              ...attributes,
+              activityType,
+              startAt: DateTime.local().toISO(),
+              comment: body.length > 1 ? body : undefined,
             },
-          });
-        }
-      },
+          },
+        }),
+      ),
+    );
+
+    enqueueSnackbar(t('Newsletter logged successfully'), {
+      variant: 'success',
     });
-    enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     handleClose();
   };
 
@@ -222,12 +207,11 @@ const LogNewsletter = ({
                       control={<Radio color="secondary" required />}
                       label={t('Newsletter - Email')}
                     />
-                    {/* TODO: Add Both option once BOTH is added to ActivityTypeEnum type */}
-                    {/* <LogFormControlLabel
-                      value="both"
-                      control={<Radio />}
+                    <LogFormControlLabel
+                      value="BOTH"
+                      control={<Radio color="secondary" required />}
                       label={t('Both')}
-                    /> */}
+                    />
                   </RadioGroup>
                 </FormControl>
               </Grid>
@@ -244,7 +228,7 @@ const LogNewsletter = ({
                         onChange={(date): void =>
                           setFieldValue('completedAt', date)
                         }
-                        inputFormat="MM/dd/yyyy"
+                        inputFormat={getDateFormatPattern(locale)}
                         closeOnSelect
                         label={t('Completed Date')}
                         InputProps={{

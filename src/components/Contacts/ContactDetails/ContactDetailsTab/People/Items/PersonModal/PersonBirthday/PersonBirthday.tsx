@@ -12,6 +12,8 @@ import {
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
 import { NewSocial } from '../PersonModal';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface PersonBirthdayProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
@@ -21,6 +23,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
   formikProps,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const {
     values: { birthdayDay, birthdayMonth, birthdayYear },
@@ -36,11 +39,11 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
   return (
     <ModalSectionContainer>
       <ModalSectionIcon icon={<CakeIcon />} />
-      <MobileDatePicker
+      <MobileDatePicker<Date, DateTime>
         renderInput={(params) => (
           <TextField
             fullWidth
-            helperText="mm/dd/yyyy"
+            helperText={getDateFormatPattern(locale).toLowerCase()}
             inputProps={{ 'aria-label': t('Birthday') }}
             {...params}
           />
@@ -51,7 +54,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
             ? new Date(birthdayYear ?? 1900, birthdayMonth - 1, birthdayDay)
             : null
         }
-        inputFormat="MM/dd/yyyy"
+        inputFormat={getDateFormatPattern(locale)}
         label={t('Birthday')}
       />
     </ModalSectionContainer>

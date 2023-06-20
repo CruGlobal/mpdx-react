@@ -14,7 +14,7 @@ describe('LogNewsletter', () => {
   it('default', () => {
     const { queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetEmailNewsletterContactsQuery>>
+        <GqlMockedProvider>
           <ExportEmail
             accountListId={accountListId}
             handleClose={handleClose}
@@ -50,12 +50,19 @@ describe('LogNewsletter', () => {
               primaryPerson: null,
             },
           ],
+          pageInfo: {
+            hasNextPage: false,
+          },
         },
       },
     };
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
+        <GqlMockedProvider<{
+          GetEmailNewsletterContacts: GetEmailNewsletterContactsQuery;
+        }>
+          mocks={mocks}
+        >
           <ExportEmail
             accountListId={accountListId}
             handleClose={handleClose}
@@ -97,12 +104,19 @@ describe('LogNewsletter', () => {
               primaryPerson: null,
             },
           ],
+          pageInfo: {
+            hasNextPage: false,
+          },
         },
       },
     };
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<GetEmailNewsletterContactsQuery> mocks={mocks}>
+        <GqlMockedProvider<{
+          GetEmailNewsletterContacts: GetEmailNewsletterContactsQuery;
+        }>
+          mocks={mocks}
+        >
           <ExportEmail
             accountListId={accountListId}
             handleClose={handleClose}

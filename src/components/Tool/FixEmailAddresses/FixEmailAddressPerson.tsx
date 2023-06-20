@@ -25,6 +25,8 @@ import { DateTime } from 'luxon';
 import { PersonEmailAddressInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon, EmailAddressData } from './FixEmailAddresses';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -125,6 +127,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   handleChangePrimary,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { classes } = useStyles();
   const [newEmailAddress, setNewEmailAddress] = useState<string>('');
   //TODO: Add button functionality
@@ -199,9 +202,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               </Typography>
                             </Hidden>
                             <Typography display="inline">
-                              {`${email.source} (${DateTime.fromISO(
-                                email.updatedAt,
-                              ).toLocaleString(DateTime.DATE_SHORT)})`}
+                              {`${email.source} (${dateFormatShort(
+                                DateTime.fromISO(email.updatedAt),
+                                locale,
+                              )})`}
                             </Typography>
                           </Box>
                           <Typography>

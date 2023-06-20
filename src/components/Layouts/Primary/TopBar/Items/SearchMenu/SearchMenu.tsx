@@ -15,7 +15,6 @@ import CompassIcon from '@mui/icons-material/Explore';
 import PersonIcon from '@mui/icons-material/Person';
 import PeopleIcon from '@mui/icons-material/People';
 import AddIcon from '@mui/icons-material/Add';
-import { createFilterOptions } from '@mui/material/Autocomplete';
 import debounce from 'lodash/debounce';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -32,6 +31,13 @@ const SearchDialog = styled(Dialog)(() => ({
   '& .MuiPaper-root': {
     position: 'absolute',
     top: 50,
+  },
+}));
+
+const ClickableBox = styled(Box)(({ theme }) => ({
+  cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: theme.palette.cruGrayLight.main,
   },
 }));
 
@@ -98,8 +104,6 @@ const SearchMenu = (): ReactElement => {
     setIsOpen(false);
     setWildcardSearch('');
   };
-
-  const filter = createFilterOptions<Option>({ limit: 5 });
 
   const defaultOptions: Option[] = [
     {
@@ -286,7 +290,7 @@ const SearchMenu = (): ReactElement => {
             renderOption={(props, option) => {
               if (option.link === 'createContact') {
                 return (
-                  <Box
+                  <ClickableBox
                     display="flex"
                     width="100%"
                     padding="6px 16px"
@@ -298,13 +302,18 @@ const SearchMenu = (): ReactElement => {
                     <Box display="flex" flexDirection="column">
                       <Typography>{option.name}</Typography>
                     </Box>
-                  </Box>
+                  </ClickableBox>
                 );
               }
 
               return (
                 <NextLink href={option.link} passHref>
-                  <Box display="flex" width="100%" padding="6px 16px">
+                  <ClickableBox
+                    display="flex"
+                    width="100%"
+                    padding="6px 16px"
+                    onClick={handleClose}
+                  >
                     <Box display="flex" marginRight={1}>
                       {option.icon}
                     </Box>
@@ -314,19 +323,18 @@ const SearchMenu = (): ReactElement => {
                         {option.status && t(option.status)}
                       </Typography>
                     </Box>
-                  </Box>
+                  </ClickableBox>
                 </NextLink>
               );
             }}
             options={wildcardSearch !== '' ? options : []}
             filterOptions={(options, params) => {
-              const filtered = filter(options, params);
               if (params.inputValue !== '') {
                 if (
                   data?.contacts.totalCount &&
                   data?.contacts.totalCount > data.contacts.nodes.length
                 ) {
-                  filtered.splice(5, 0, {
+                  options.splice(5, 0, {
                     name: t(
                       `And ${
                         data?.contacts.totalCount - data.contacts.nodes.length
@@ -336,14 +344,14 @@ const SearchMenu = (): ReactElement => {
                     link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
                   });
                 }
-                filtered.push({
+                options.push({
                   name: t(`Create a new contact for "${params.inputValue}"`),
                   icon: <AddIcon />,
                   link: 'createContact',
                 });
               }
 
-              return filtered;
+              return options;
             }}
             renderInput={(params): ReactElement => (
               <TextField

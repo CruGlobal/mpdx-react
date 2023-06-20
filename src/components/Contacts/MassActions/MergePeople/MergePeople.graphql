@@ -1,0 +1,17 @@
+mutation MassActionsMergePeople(
+  $accountListId: ID!
+  $winnerId: ID!
+  $loserIds: [ID!]!
+) {
+  mergePeople(
+    input: {
+      accountListId: $accountListId
+      winnerId: $winnerId
+      loserIds: $loserIds
+    }
+  ) {
+    contact {
+      ...ContactPeople
+    }
+  }
+}

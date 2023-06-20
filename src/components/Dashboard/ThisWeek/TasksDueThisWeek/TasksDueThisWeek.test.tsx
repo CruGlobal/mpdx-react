@@ -79,7 +79,7 @@ describe('TasksDueThisWeek', () => {
             subject: 'the quick brown fox jumps over the lazy dog',
             activityType: ActivityTypeEnum.PrayerRequest,
             contacts: {
-              nodes: [{ hidden: true, name: 'Smith, Roger' }],
+              nodes: [{ hidden: true, name: 'Smith, Roger', id: '1' }],
               totalCount: 1,
             },
             startAt: null,
@@ -90,7 +90,7 @@ describe('TasksDueThisWeek', () => {
             subject: 'the quick brown fox jumps over the lazy dog',
             activityType: ActivityTypeEnum.Appointment,
             contacts: {
-              nodes: [{ hidden: true, name: 'Smith, Sarah' }],
+              nodes: [{ hidden: true, name: 'Smith, Sarah', id: '2' }],
               totalCount: 1,
             },
             startAt: null,
@@ -101,7 +101,7 @@ describe('TasksDueThisWeek', () => {
       };
       const { getByTestId, queryByTestId, getByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<LoadConstantsQuery>
+          <GqlMockedProvider<{ LoadConstants: LoadConstantsQuery }>
             mocks={{
               constant: {
                 activities: [
@@ -134,7 +134,10 @@ describe('TasksDueThisWeek', () => {
         'Smith, Roger — the quick brown fox jumps over the lazy dog',
       );
       userEvent.click(task1Element);
-      expect(openTaskModal).toHaveBeenCalledWith({ taskId: 'task_1' });
+      expect(openTaskModal).toHaveBeenCalledWith({
+        view: 'edit',
+        taskId: 'task_1',
+      });
       expect(
         getByTestId('TasksDueThisWeekListItem-task_2').textContent,
       ).toEqual('Smith, Sarah — the quick brown fox jumps over the lazy dog');
@@ -149,8 +152,8 @@ describe('TasksDueThisWeek', () => {
             activityType: ActivityTypeEnum.PrayerRequest,
             contacts: {
               nodes: [
-                { hidden: true, name: 'Smith, Roger' },
-                { hidden: true, name: 'Smith, Sarah' },
+                { hidden: true, name: 'Smith, Roger', id: '1' },
+                { hidden: true, name: 'Smith, Sarah', id: '2' },
               ],
               totalCount: 2,
             },
@@ -162,7 +165,7 @@ describe('TasksDueThisWeek', () => {
       };
       const { getByTestId, getByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<LoadConstantsQuery>
+          <GqlMockedProvider<{ LoadConstants: LoadConstantsQuery }>
             mocks={{
               constant: {
                 activities: [

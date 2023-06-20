@@ -1,32 +1,38 @@
 import { FC, ReactElement } from 'react';
 import { Box, Theme, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { CSSProperties } from '@mui/styles';
+import { navBarHeight } from './Primary/Primary';
 
-type ScrollBoxProps = {
-  isscroll?: 1 | 0;
+interface ToolbarMixin extends CSSProperties {
+  minHeight: number;
+  ['@media (min-width:600px)']: { minHeight: number };
+  ['@media (min-width:0px)']: {
+    ['@media (orientation: landscape)']: { minHeight: number };
+  };
+}
+
+type FullHeightBoxProps = {
+  isScrollable?: boolean;
+  headerHeight: number | string;
 };
 
-const FullHeightBox = styled(Box)(({ theme }) => ({
-  height: `calc(100vh - ${theme.mixins.toolbar.minHeight}px)`,
-  ['@media (min-width:0px) and (orientation: landscape)']: {
-    height: `calc(100vh - ${
-      theme.mixins.toolbar[
-        '@media (min-width:0px) and (orientation: landscape)'
-      ] as { minHeight: number }
-    }px)`,
-  },
-  ['@media (min-width:600px)']: {
-    height: `calc(100vh - ${
-      theme.mixins.toolbar['@media (min-width:600px)'] as {
-        minHeight: number;
-      }
-    }px)`,
-  },
-}));
-
-const ScrollBox = styled(FullHeightBox)(({ isscroll }: ScrollBoxProps) => ({
-  overflowY: isscroll === 1 ? 'auto' : 'hidden',
-}));
+const FullHeightBox = styled(Box, {
+  shouldForwardProp: (prop) =>
+    prop !== 'headerHeight' && prop !== 'isScrollable',
+})<FullHeightBoxProps>(({ theme, headerHeight, isScrollable = false }) => {
+  const toolbar = theme.mixins.toolbar as ToolbarMixin;
+  return {
+    height: `calc(100vh - ${toolbar.minHeight}px - ${headerHeight})`,
+    ['@media (min-width:0px) and (orientation: landscape)']: {
+      height: `calc(100vh - ${toolbar['@media (min-width:0px)']['@media (orientation: landscape)'].minHeight}px - ${headerHeight})`,
+    },
+    ['@media (min-width:600px)']: {
+      height: `calc(100vh - ${toolbar['@media (min-width:600px)'].minHeight}px - ${headerHeight})`,
+    },
+    overflowY: isScrollable ? 'auto' : 'hidden',
+  };
+});
 
 const OuterWrapper = styled(Box)({
   position: 'relative',
@@ -48,7 +54,7 @@ const ExpandingContent = styled(Box)(({ open }: { open: boolean }) => ({
   zIndex: 10,
 }));
 
-const LeftPanelWrapper = styled(ScrollBox)(({ theme }: { theme: Theme }) => ({
+const LeftPanelWrapper = styled(FullHeightBox)(({ theme }) => ({
   flexShrink: 0,
   borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
   left: 0,
@@ -60,30 +66,42 @@ const LeftPanelWrapper = styled(ScrollBox)(({ theme }: { theme: Theme }) => ({
     zIndex: 20,
   },
 }));
-const RightPanelWrapper = styled(ScrollBox)(({ theme }: { theme: Theme }) => ({
-  position: 'absolute',
-  zIndex: 20,
-  top: 0,
-  right: 0,
-  transition: 'transform ease-in-out 225ms',
-  background: theme.palette.common.white,
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-  },
-  [theme.breakpoints.up('md')]: {
-    borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
-  },
-}));
+
+const RightPanelWrapper = styled(FullHeightBox)(({ theme, headerHeight }) => {
+  const toolbar = theme.mixins.toolbar as ToolbarMixin;
+  return {
+    position: 'fixed',
+    zIndex: 20,
+    right: 0,
+    transition: 'transform ease-in-out 225ms',
+    overflowY: 'scroll',
+    background: theme.palette.common.white,
+    top: `calc(${toolbar.minHeight}px + ${headerHeight})`,
+    ['@media (min-width:0px) and (orientation: landscape)']: {
+      top: `calc(${toolbar['@media (min-width:0px)']['@media (orientation: landscape)'].minHeight}px + ${headerHeight})`,
+    },
+    ['@media (min-width:600px)']: {
+      top: `calc(${toolbar['@media (min-width:600px)'].minHeight}px + ${headerHeight})`,
+      borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
+    },
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+    },
+  };
+});
 
 interface SidePanelsLayoutProps {
   isScrollBox?: boolean;
-  leftPanel: ReactElement;
+  leftPanel?: ReactElement;
   leftWidth: string;
   leftOpen: boolean;
   mainContent: ReactElement;
   rightPanel?: ReactElement;
   rightWidth?: string;
   rightOpen?: boolean;
+
+  // The height of any extra header that the right panel should be under, not including the root navbar
+  headerHeight?: number | string;
 }
 
 export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
@@ -95,6 +113,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   rightPanel,
   rightWidth,
   rightOpen = false,
+  headerHeight = '0px',
 }) => {
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -107,18 +126,25 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           <LeftPanelWrapper
             width={leftWidth}
             flexBasis={leftWidth}
+            headerHeight={navBarHeight}
+            isScrollable={isScrollBox}
             style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}
+            data-testid="SidePanelsLayoutLeftPanel"
           >
-            <ScrollBox isscroll={isScrollBox ? 1 : 0}>{leftPanel}</ScrollBox>
+            {leftPanel}
           </LeftPanelWrapper>
           <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
         </CollapsibleWrapper>
       </ExpandingContent>
       <RightPanelWrapper
         width={isMobile ? '100%' : rightWidth}
-        style={{ transform: rightOpen ? 'none' : 'translate(100%)' }}
+        headerHeight={headerHeight}
+        isScrollable
+        style={{
+          transform: rightOpen ? 'none' : 'translate(100%)',
+        }}
       >
-        <ScrollBox isscroll={isScrollBox ? 1 : 0}>{rightPanel}</ScrollBox>
+        {rightPanel}
       </RightPanelWrapper>
     </OuterWrapper>
   );

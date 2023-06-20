@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   BoxProps,
   Button,
@@ -13,17 +16,19 @@ import {
 } from '@mui/material';
 import { useTheme, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import Close from '@mui/icons-material/Close';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { filter } from 'lodash';
 import {
+  ActivityTypeEnum,
   ContactFilterNewsletterEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
+  ContactFilterPledgeReceivedEnum,
   FilterGroup,
-  FilterOption,
   MultiselectFilter,
+  ReportContactFilterSetInput,
+  ResultEnum,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
 import {
@@ -34,13 +39,22 @@ import { FilterListItemShowAll } from './FilterListItemShowAll';
 import { FilterListItem } from './FilterListItem';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
+type ReportContactFilterKey = keyof ReportContactFilterSetInput;
+type ReportContactFilterValue = ReportContactFilterSetInput[ContactFilterKey];
 type TaskFilterKey = keyof TaskFilterSetInput;
 type TaskFilterValue = TaskFilterSetInput[TaskFilterKey];
-export type FilterKey = ContactFilterKey | TaskFilterKey;
-export type FilterValue = ContactFilterValue | TaskFilterValue;
+export type FilterKey =
+  | ContactFilterKey
+  | TaskFilterKey
+  | ReportContactFilterKey;
+export type FilterValue =
+  | ContactFilterValue
+  | TaskFilterValue
+  | ReportContactFilterValue;
 
 export const snakeToCamel = (inputKey: string): string => {
   const stringParts = inputKey.split('_');
@@ -53,6 +67,50 @@ export const snakeToCamel = (inputKey: string): string => {
     return `${outputKey}${part.charAt(0).toUpperCase()}${part.slice(1)}`;
   }, '');
 };
+
+const ReverseFiltersOptions = {
+  alma_mater: 'reverseAlmaMater',
+  appeal: 'reverseAppeal',
+  church: 'reverseChurch',
+  city: 'reverseCity',
+  contact_type: 'reverseContactType',
+  country: 'reverseCountry',
+  designation_account_id: 'reverseDesignationAccountId',
+  donation: 'reverseDonation',
+  likely: 'reverseLikely',
+  locale: 'reverseLocale',
+  metro_area: 'reverseMetroArea',
+  pledge_amount: 'reversePledgeAmount',
+  pledge_currency: 'reversePledgeCurrency',
+  pledge_frequency: 'reversePledgeFrequency',
+  referrer: 'reverseReferrer',
+  region: 'reverseRegion',
+  related_task_action: 'reverseRelatedTaskAction',
+  source: 'reverseSource',
+  state: 'reverseState',
+  status: 'reverseStatus',
+  activity_type: 'reverseActivityType',
+  contact_appeal: 'reverseContactAppeal',
+  contact_church: 'reverseContactChurch',
+  contact_city: 'reverseContactCity',
+  contact_country: 'reverseContactCountry',
+  contact_designation_account_id: 'reverseContactDesignationAccountId',
+  contact_ids: 'reverseContactIds',
+  contact_likely: 'reverseContactLikely',
+  contact_metro_area: 'reverseContactMetroArea',
+  contact_pledge_frequency: 'reverseContactPledgeFrequency',
+  contact_referrer: 'reverseContactReferrer',
+  contact_region: 'reverseContactRegion',
+  contact_state: 'reverseContactState',
+  contact_status: 'reverseContactStatus',
+  contact_timezone: 'reverseContactTimezone',
+  next_action: 'reverseNextAction',
+  result: 'reverseResult',
+  timezone: 'reverseTimezone',
+  donation_amount: 'reverseDonationAmount',
+  user_ids: 'reverseUserIds',
+};
+export const ReverseFiltersMap = new Map(Object.entries(ReverseFiltersOptions));
 
 const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -77,18 +135,33 @@ const LinkButton = styled(Button)(({ theme }) => ({
   fontWeight: 'bold',
 }));
 
-interface FilterPanelProps {
+const FlatAccordion = styled(Accordion)(({ theme }) => ({
+  '&.MuiPaper-elevation1': {
+    boxShadow: 'none',
+    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+  },
+  '& .MuiAccordionDetails-root': {
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+}));
+
+type FilterInput = ContactFilterSetInput &
+  TaskFilterSetInput &
+  ReportContactFilterSetInput;
+
+export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
+  defaultExpandedFilterGroups?: Set<string>;
   savedFilters: UserOptionFragment[];
-  selectedFilters: ContactFilterSetInput & TaskFilterSetInput;
+  selectedFilters: FilterInput;
   onClose: () => void;
-  onSelectedFiltersChanged: (
-    selectedFilters: ContactFilterSetInput & TaskFilterSetInput,
-  ) => void;
+  onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   filters,
+  defaultExpandedFilterGroups = new Set(),
   savedFilters,
   onClose,
   selectedFilters,
@@ -98,19 +171,17 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const [selectedGroup, setSelectedGroup] = useState<FilterGroup>();
-  const [savedFilterOpen, setSavedFilterOpen] = useState(false);
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
-      const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
+      const newFilters: FilterInput = {
         ...selectedFilters,
         [name]: value,
       };
       onSelectedFiltersChanged(newFilters);
     } else {
-      const newFilters: ContactFilterSetInput & TaskFilterSetInput = {
+      const newFilters: FilterInput = {
         ...selectedFilters,
       };
       delete newFilters[name];
@@ -164,9 +235,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           }, {});
         // Set the selected filter with our saved filter data
         onSelectedFiltersChanged(newFilter);
-
-        // close the saved filter panel
-        setSavedFilterOpen(false);
         return;
       }
       // Map through keys to convert key to camel from snake
@@ -178,28 +246,52 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           } as { name: string; value: FilterKey }),
       );
 
-      const newFilter = filters.reduce<
-        ContactFilterSetInput & TaskFilterSetInput
-      >((acc, filter) => {
+      const newFilter = filters.reduce<FilterInput>((acc, filter) => {
         if (filter.name === 'params') {
-          const nonDefaultFilters = Object.entries(filter.value).reduce<
-            ContactFilterSetInput & TaskFilterSetInput
-          >((acc, [name, value]) => {
+          const nonDefaultFilters = Object.entries(
+            filter.value,
+          ).reduce<FilterInput>((acc, [name, value]) => {
             const key = snakeToCamel(name) as FilterKey;
             switch (key) {
               // Boolean
               case 'addressHistoric':
               case 'addressValid':
+              case 'anyTags':
+              case 'completed':
               case 'noAppeals':
-              case 'pledgeReceived':
+              case 'overdue':
               case 'reverseAlmaMater':
               case 'reverseAppeal':
+              case 'reverseActivityType':
+              case 'reverseContactAppeal':
+              case 'reverseContactChurch':
+              case 'reverseContactCity':
+              case 'reverseContactCountry':
+              case 'reverseContactDesignationAccountId':
+              case 'reverseContactIds':
+              case 'reverseContactLikely':
+              case 'reverseContactMetroArea':
+              case 'reverseContactPledgeFrequency':
+              case 'reverseContactReferrer':
+              case 'reverseContactRegion':
+              case 'reverseContactState':
+              case 'reverseContactStatus':
+              case 'reverseContactTimezone':
+              case 'reverseContactType':
+              case 'reverseNextAction':
+              case 'reverseResult':
+              case 'reverseTags':
+              case 'reverseUserIds':
               case 'reverseChurch':
               case 'reverseCity':
               case 'reverseCountry':
               case 'reverseDesignationAccountId':
               case 'reverseDonation':
               case 'reverseDonationAmount':
+              case 'reverseDonationPeriodAverage':
+              case 'reverseDonationPeriodCount':
+              case 'reverseDonationPeriodPercentRank':
+              case 'reverseDonationPeriodSum':
               case 'reverseIds':
               case 'reverseLikely':
               case 'reverseLocale':
@@ -207,7 +299,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'reversePledgeAmount':
               case 'reversePledgeCurrency':
               case 'reversePledgeFrequency':
-              case 'reversePrimaryAddress':
               case 'reverseReferrer':
               case 'reverseRegion':
               case 'reverseRelatedTaskAction':
@@ -215,20 +306,24 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'reverseState':
               case 'reverseStatus':
               case 'reverseTimezone':
-              case 'reverseUserIds':
               case 'starred':
               case 'statusValid':
               case 'tasksAllCompleted':
-                return { ...acc, [key]: value === 'true' };
+              case 'reverseContactType':
+              case 'reverseTags':
+                return { ...acc, [key]: value.toString() === 'true' };
               // DateRangeInput
               case 'donationDate':
               case 'createdAt':
+              case 'completedAt':
               case 'anniversary':
               case 'birthday':
+              case 'dateRange':
               case 'gaveMoreThanPledgedRange':
               case 'lateAt':
               case 'nextAsk':
               case 'pledgeAmountIncreasedRange':
+              case 'startAt':
               case 'startedGivingRange':
               case 'stoppedGivingRange':
               case 'taskDueDate':
@@ -245,31 +340,45 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'almaMater':
               case 'appeal':
               case 'church':
+              case 'contactChurch':
               case 'city':
+              case 'contactCity':
               case 'country':
+              case 'contactCountry':
               case 'designationAccountId':
+              case 'contactDesignationAccountId':
               case 'donation':
               case 'donationAmount':
               case 'ids':
               case 'likely':
+              case 'contactLikely':
               case 'locale':
               case 'metroArea':
+              case 'contactMetroArea':
               case 'organizationId':
               case 'pledgeAmount':
               case 'pledgeCurrency':
               case 'pledgeFrequency':
-              case 'primaryAddress':
+              case 'contactPledgeFrequency':
               case 'referrer':
+              case 'contactReferrer':
               case 'referrerIds':
               case 'region':
+              case 'contactRegion':
               case 'relatedTaskAction':
               case 'source':
               case 'state':
+              case 'contactState':
               case 'timezone':
+              case 'contactTimezone':
               case 'userIds':
-                return { ...acc, [key]: value.split(',') };
+                return {
+                  ...acc,
+                  [key]: typeof value === 'string' ? value.split(',') : value,
+                };
               // Newsletter
               case 'newsletter':
+              case 'contactNewsletter':
                 switch (value) {
                   case 'all':
                     return { ...acc, [key]: ContactFilterNewsletterEnum.All };
@@ -299,11 +408,13 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                       [key]: ContactFilterNewsletterEnum.NoValue,
                     };
                   case 'physical':
+                  case 'address':
                     return {
                       ...acc,
                       [key]: ContactFilterNewsletterEnum.Physical,
                     };
                   case 'physical_only':
+                  case 'address_only':
                     return {
                       ...acc,
                       [key]: ContactFilterNewsletterEnum.PhysicalOnly,
@@ -311,8 +422,34 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   default:
                     return { ...acc };
                 }
+              // Pledge Received
+              case 'pledgeReceived':
+                switch (value) {
+                  case 'true':
+                    return {
+                      ...acc,
+                      [key]: ContactFilterPledgeReceivedEnum.Received,
+                    };
+                  case 'false':
+                    return {
+                      ...acc,
+                      [key]: ContactFilterPledgeReceivedEnum.NotReceived,
+                    };
+                  default:
+                    return {
+                      ...acc,
+                      [key]: ContactFilterPledgeReceivedEnum.Any,
+                    };
+                }
               // Status
               case 'status':
+              case 'contactStatus':
+                if (value.includes('--any--')) {
+                  return {
+                    ...acc,
+                    [key]: Object.values(ContactFilterStatusEnum),
+                  };
+                }
                 return {
                   ...acc,
                   [key]: value.split(',').map((enumValue) => {
@@ -357,10 +494,130 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                     }
                   }),
                 };
+              // Activity Type
+              case 'activityType':
+                if (value.includes('--any--')) {
+                  return { ...acc, [key]: Object.values(ActivityTypeEnum) };
+                }
+                return {
+                  ...acc,
+                  [key]: value.split(',').map((enumValue) => {
+                    // --any--,none
+                    switch (enumValue) {
+                      case 'Appointment':
+                        return ActivityTypeEnum.Appointment;
+                      case 'Call':
+                        return ActivityTypeEnum.Call;
+                      case 'Email':
+                        return ActivityTypeEnum.Email;
+                      case 'Facebook Message':
+                        return ActivityTypeEnum.FacebookMessage;
+                      case 'Prayer Request':
+                        return ActivityTypeEnum.PrayerRequest;
+                      case 'Talk to In Person':
+                        return ActivityTypeEnum.TalkToInPerson;
+                      case 'Text Message':
+                        return ActivityTypeEnum.TextMessage;
+                      case 'Thank':
+                        return ActivityTypeEnum.Thank;
+                      case 'None':
+                        return ActivityTypeEnum.None;
+                      case 'Letter':
+                        return ActivityTypeEnum.Letter;
+                      case 'Newsletter - Physical':
+                        return ActivityTypeEnum.NewsletterPhysical;
+                      case 'Newsletter - Email':
+                        return ActivityTypeEnum.NewsletterEmail;
+                      case 'Pre Call Letter':
+                        return ActivityTypeEnum.PreCallLetter;
+                      case 'Reminder Letter':
+                        return ActivityTypeEnum.ReminderLetter;
+                      case 'Support Letter':
+                        return ActivityTypeEnum.SupportLetter;
+                      case 'To Do':
+                        return ActivityTypeEnum.ToDo;
+                      default:
+                        return ActivityTypeEnum.None;
+                    }
+                  }),
+                };
+
+              // Next Action
+              case 'nextAction':
+                if (value.includes('--any--')) {
+                  return {
+                    ...acc,
+                    [key]: [
+                      ActivityTypeEnum.Appointment,
+                      ActivityTypeEnum.Call,
+                      ActivityTypeEnum.Email,
+                      ActivityTypeEnum.FacebookMessage,
+                      ActivityTypeEnum.PrayerRequest,
+                      ActivityTypeEnum.TalkToInPerson,
+                      ActivityTypeEnum.TextMessage,
+                      ActivityTypeEnum.Thank,
+                      ActivityTypeEnum.None,
+                    ],
+                  };
+                }
+                return {
+                  ...acc,
+                  [key]: value.split(',').map((enumValue) => {
+                    switch (enumValue) {
+                      case 'Appointment':
+                        return ActivityTypeEnum.Appointment;
+                      case 'Call':
+                        return ActivityTypeEnum.Call;
+                      case 'Email':
+                        return ActivityTypeEnum.Email;
+                      case 'Facebook Message':
+                        return ActivityTypeEnum.FacebookMessage;
+                      case 'Prayer Request':
+                        return ActivityTypeEnum.PrayerRequest;
+                      case 'Talk to In Person':
+                        return ActivityTypeEnum.TalkToInPerson;
+                      case 'Text Message':
+                        return ActivityTypeEnum.TextMessage;
+                      case 'Thank':
+                        return ActivityTypeEnum.Thank;
+                      case 'None':
+                        return ActivityTypeEnum.None;
+                      default:
+                        return ActivityTypeEnum.None;
+                    }
+                  }),
+                };
+              // Result
+              case 'result':
+                if (value.includes('--any--')) {
+                  return { ...acc, [key]: Object.values(ResultEnum) };
+                }
+                return {
+                  ...acc,
+                  [key]: value.split(',').map((enumValue) => {
+                    switch (enumValue) {
+                      case 'Attempted':
+                        return ResultEnum.Attempted;
+                      case 'Attempted - Left Message':
+                        return ResultEnum.AttemptedLeftMessage;
+                      case 'Completed':
+                        return ResultEnum.Completed;
+                      case 'Done':
+                        return ResultEnum.Done;
+                      case 'None':
+                        return ResultEnum.None;
+                      case 'Received':
+                        return ResultEnum.Received;
+                      default:
+                        return ResultEnum.None;
+                    }
+                  }),
+                };
 
               // NumericRangeInput & String
               case 'addressLatLng':
               case 'appealStatus':
+              case 'contactAppeal':
               case 'contactInfoAddr':
               case 'contactInfoEmail':
               case 'contactInfoFacebook':
@@ -369,12 +626,24 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'contactInfoWorkPhone':
               case 'contactType':
               case 'donationAmountRange':
+              case 'donationPeriodAverage':
+              case 'donationPeriodCount':
+              case 'donationPeriodPercentRank':
+              case 'donationPeriodSum':
               case 'nameLike':
               case 'notes':
               case 'optOut':
               case 'pledge':
               case 'pledgeLateBy':
+              case 'primaryAddress':
               case 'wildcardSearch':
+                if (key === 'notes') {
+                  value = value['wildcard_note_search'];
+                }
+                if (key === 'donationAmountRange') {
+                  value['min'] = Number(value['min']);
+                  value['max'] = Number(value['max']);
+                }
                 return { ...acc, [key]: value };
               default:
                 return { ...acc };
@@ -404,27 +673,21 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
       // Set the selected filter with our saved filter data
       onSelectedFiltersChanged(newFilter);
-
-      // close the saved filter panel
-      setSavedFilterOpen(false);
     }
   };
 
-  const tagsFilters: FilterOption[] | Record<string, never>[] = (
-    filters.find((filter) => filter.name === 'Tags')
-      ?.filters[0] as MultiselectFilter
-  )?.options ?? [{}];
+  const tagsFilters =
+    (
+      filters.find((filter) => filter?.filters[0]?.filterKey === 'tags')
+        ?.filters[0] as MultiselectFilter
+    )?.options ?? [];
+  const noSelectedFilters =
+    Object.keys(sanitizeFilters(selectedFilters)).length === 0;
 
   return (
     <Box {...boxProps}>
       <div style={{ overflow: 'hidden' }}>
-        <Slide
-          in={!selectedGroup && !savedFilterOpen}
-          direction="right"
-          appear={false}
-          mountOnEnter
-          unmountOnExit
-        >
+        <Slide in direction="right" appear={false} mountOnEnter unmountOnExit>
           <div>
             <FilterHeader>
               <Box
@@ -439,33 +702,37 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                       })
                     : t('Filter')}
                 </Typography>
-                <IconButton onClick={onClose} aria-label={t('Close')}>
+                <IconButton
+                  onClick={onClose}
+                  aria-label={t('Close')}
+                  data-testid="FilterPanelClose"
+                >
                   <Close titleAccess={t('Close')} />
                 </IconButton>
               </Box>
               <LinkButton
                 style={{ marginInlineStart: theme.spacing(-1) }}
-                disabled={Object.keys(selectedFilters).length === 0}
+                disabled={noSelectedFilters}
                 onClick={() => setSaveFilterModalOpen(true)}
               >
                 {t('Save')}
               </LinkButton>
               <LinkButton
                 style={{ marginInlineStart: theme.spacing(2) }}
-                disabled={Object.keys(selectedFilters).length === 0}
+                disabled={noSelectedFilters}
                 onClick={clearSelectedFilter}
               >
                 {t('Clear All')}
               </LinkButton>
             </FilterHeader>
-            {tagsFilters && (
+            {tagsFilters.some((filter) => filter.value !== '--any--') && (
               <FilterPanelTagsSection
                 filterOptions={tagsFilters}
                 selectedFilters={selectedFilters}
                 onSelectedFiltersChanged={onSelectedFiltersChanged}
               />
             )}
-            <FilterList dense>
+            <FilterList dense sx={{ paddingY: 0 }}>
               {filters?.length === 0 ? (
                 <ListItem data-testid="NoFiltersState">
                   <ListItemText
@@ -476,19 +743,44 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               ) : (
                 <>
                   {savedFilters.length > 0 && (
-                    <Collapse key={'savedFilters'} in={true}>
-                      <ListItem button onClick={() => setSavedFilterOpen(true)}>
-                        <ListItemText
-                          primary={t('Saved Filters')}
-                          primaryTypographyProps={{ variant: 'subtitle1' }}
-                        />
-                        <ArrowForwardIos fontSize="small" color="disabled" />
-                      </ListItem>
-                    </Collapse>
+                    <FlatAccordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>{t('Saved Filters')}</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <FilterList dense sx={{ paddingY: 0 }}>
+                          {savedFilters.map((filter) => {
+                            const filterName = filter?.key
+                              ?.replace(
+                                /^(graphql_)?saved_(contacts|tasks|)_filter_/,
+                                '',
+                              )
+                              .replaceAll('_', ' ');
+
+                            return (
+                              <ListItem
+                                key={filter.id}
+                                button
+                                onClick={() => setSelectedSavedFilter(filter)}
+                              >
+                                <ListItemText
+                                  primary={filterName}
+                                  primaryTypographyProps={{
+                                    variant: 'subtitle1',
+                                  }}
+                                />
+                              </ListItem>
+                            );
+                          })}
+                        </FilterList>
+                      </AccordionDetails>
+                    </FlatAccordion>
                   )}
 
                   {filters
-                    .filter((filter) => filter.name !== 'Tags')
+                    ?.filter(
+                      (filter) => filter?.filters[0]?.filterKey !== 'tags',
+                    )
                     ?.map((group) => {
                       const selectedOptions = getOptionsSelected(group);
                       return (
@@ -497,23 +789,59 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                           in={showAll || isGroupVisible(group)}
                           data-testid="FilterGroup"
                         >
-                          <ListItem
-                            button
-                            onClick={() => setSelectedGroup(group)}
+                          <FlatAccordion
+                            TransitionProps={{ unmountOnExit: true }}
+                            defaultExpanded={defaultExpandedFilterGroups.has(
+                              group.name,
+                            )}
                           >
-                            <ListItemText
-                              primary={`${group.name} ${
-                                selectedOptions.length > 0
-                                  ? `(${selectedOptions.length})`
-                                  : ''
-                              }`}
-                              primaryTypographyProps={{ variant: 'subtitle1' }}
-                            />
-                            <ArrowForwardIos
-                              fontSize="small"
-                              color="disabled"
-                            />
-                          </ListItem>
+                            <AccordionSummary expandIcon={<ExpandMore />}>
+                              <Typography>
+                                {group.name}
+                                {selectedOptions.length > 0
+                                  ? ` (${selectedOptions.length})`
+                                  : ''}
+                              </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                              <FilterList dense>
+                                {group.filters.map((filter) => {
+                                  const { filterKey } = filter;
+                                  const filterKeyCamel = snakeToCamel(
+                                    filterKey,
+                                  ) as FilterKey;
+
+                                  const reverseFiltersKey =
+                                    ReverseFiltersMap.get(
+                                      filterKey,
+                                    ) as FilterKey;
+
+                                  return (
+                                    <FilterListItem
+                                      key={filterKeyCamel}
+                                      filter={filter}
+                                      value={selectedFilters[filterKeyCamel]}
+                                      onUpdate={(value) =>
+                                        updateSelectedFilter(
+                                          filterKeyCamel,
+                                          value,
+                                        )
+                                      }
+                                      reverseSelected={
+                                        !!selectedFilters[reverseFiltersKey]
+                                      }
+                                      onReverseFilter={() =>
+                                        updateSelectedFilter(
+                                          reverseFiltersKey,
+                                          !selectedFilters[reverseFiltersKey],
+                                        )
+                                      }
+                                    />
+                                  );
+                                })}
+                              </FilterList>
+                            </AccordionDetails>
+                          </FlatAccordion>
                         </Collapse>
                       );
                     })}
@@ -525,92 +853,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   ) : null}
                 </>
               )}
-            </FilterList>
-          </div>
-        </Slide>
-        <Slide in={savedFilterOpen} direction="left" mountOnEnter unmountOnExit>
-          <div>
-            <FilterHeader>
-              <IconButton
-                data-testid="CloseFilterGroupButton"
-                size="small"
-                edge="start"
-                onClick={() => setSavedFilterOpen(false)}
-                style={{ verticalAlign: 'middle' }}
-              >
-                <ArrowBackIos fontSize="small" />
-              </IconButton>
-              <Typography
-                variant="h6"
-                component="span"
-                style={{ verticalAlign: 'middle' }}
-              >
-                {t('Saved Filters')}
-              </Typography>
-            </FilterHeader>
-            <FilterList dense>
-              {savedFilters.map((filter) => {
-                const filterName = (
-                  filter.key?.includes('graphql_')
-                    ? filter.key.includes('graphql_saved_contacts_filter_')
-                      ? filter.key?.replace(
-                          'graphql_saved_contacts_filter_',
-                          '',
-                        )
-                      : filter.key?.replace('graphql_saved_tasks_filter_', '')
-                    : filter.key?.includes('saved_contacts_filter_')
-                    ? filter.key?.replace('saved_contacts_filter_', '')
-                    : filter.key?.replace('saved_tasks_filter_', '')
-                )?.replaceAll('_', ' ');
-
-                return (
-                  <ListItem
-                    key={filter.id}
-                    button
-                    onClick={() => setSelectedSavedFilter(filter)}
-                  >
-                    <ListItemText
-                      primary={filterName}
-                      primaryTypographyProps={{ variant: 'subtitle1' }}
-                    />
-                  </ListItem>
-                );
-              })}
-            </FilterList>
-          </div>
-        </Slide>
-        <Slide in={!!selectedGroup} direction="left" mountOnEnter unmountOnExit>
-          <div>
-            <FilterHeader>
-              <IconButton
-                data-testid="CloseFilterGroupButton"
-                size="small"
-                edge="start"
-                onClick={() => setSelectedGroup(undefined)}
-              >
-                <ArrowBackIos fontSize="small" />
-              </IconButton>
-              <Typography
-                variant="h6"
-                component="span"
-                style={{ verticalAlign: 'middle' }}
-              >
-                {selectedGroup?.name}
-              </Typography>
-            </FilterHeader>
-            <FilterList dense>
-              {selectedGroup?.filters?.map((filter) => {
-                const filterKey = snakeToCamel(filter.filterKey) as FilterKey;
-
-                return (
-                  <FilterListItem
-                    key={filterKey}
-                    filter={filter}
-                    value={selectedFilters[filterKey]}
-                    onUpdate={(value) => updateSelectedFilter(filterKey, value)}
-                  />
-                );
-              })}
             </FilterList>
           </div>
         </Slide>

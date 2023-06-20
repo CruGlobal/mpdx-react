@@ -3,13 +3,13 @@ import { styled } from '@mui/material/styles';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../theme';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+  ContactsContext,
+  ContactsType,
+} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
@@ -27,6 +27,10 @@ interface Props {
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
   width: '100%',
+}));
+
+const TabPanelNoBottomPadding = styled(TabPanel)(({}) => ({
+  paddingBottom: '0px',
 }));
 
 const ContactTabsWrapper = styled(Box)(({}) => ({
@@ -69,85 +73,87 @@ export enum TabKey {
 
 export const ContactDetails: React.FC<Props> = ({ onClose }) => {
   const { t } = useTranslation();
+  const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
 
   const {
     accountListId,
     contactDetailsId: contactId,
     setContactFocus,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
   const { selectedTabKey, handleTabChange: handleChange } = React.useContext(
     ContactDetailContext,
   ) as ContactDetailsType;
 
   return (
-    <>
-      <ContactDetailsWrapper>
-        {contactId && accountListId && (
-          <ContactDetailsHeader
-            accountListId={accountListId}
-            contactId={contactId}
-            onClose={onClose}
+    <ContactDetailsWrapper>
+      {contactId && accountListId && (
+        <ContactDetailsHeader
+          accountListId={accountListId}
+          contactId={contactId}
+          onClose={onClose}
+          contactDetailsLoaded={contactDetailsLoaded}
+          setContactDetailsLoaded={setContactDetailsLoaded}
+        />
+      )}
+      <TabContext value={selectedTabKey}>
+        <ContactTabsWrapper>
+          <ContactTabs
+            onChange={handleChange}
+            TabIndicatorProps={{ children: <span /> }}
+          >
+            <ContactTab value={TabKey.Tasks} label={t('Tasks')} />
+            <ContactTab value={TabKey.Donations} label={t('Donations')} />
+            <ContactTab value={TabKey.Referrals} label={t('Referrals')} />
+            <ContactTab
+              value={TabKey.ContactDetails}
+              label={t('Contact Details')}
+            />
+            <ContactTab value={TabKey.Notes} label={t('Notes')} />
+          </ContactTabs>
+        </ContactTabsWrapper>
+        <TabPanelNoBottomPadding value={TabKey.Tasks}>
+          {contactId && accountListId && (
+            <ContactTasksTab
+              accountListId={accountListId}
+              contactId={contactId}
+              contactDetailsLoaded={contactDetailsLoaded}
+            />
+          )}
+        </TabPanelNoBottomPadding>
+        <TabPanel value={TabKey.Donations}>
+          {contactId && accountListId && (
+            <ContactDonationsTab
+              accountListId={accountListId}
+              contactId={contactId}
+            />
+          )}
+        </TabPanel>
+        <TabPanel value={TabKey.Referrals}>
+          <ContactReferralTab
+            accountListId={accountListId ?? ''}
+            contactId={contactId ?? ''}
+            onContactSelected={setContactFocus}
           />
-        )}
-        <TabContext value={selectedTabKey}>
-          <ContactTabsWrapper>
-            <ContactTabs
-              onChange={handleChange}
-              TabIndicatorProps={{ children: <span /> }}
-            >
-              <ContactTab value={TabKey.Tasks} label={t('Tasks')} />
-              <ContactTab value={TabKey.Donations} label={t('Donations')} />
-              <ContactTab value={TabKey.Referrals} label={t('Referrals')} />
-              <ContactTab
-                value={TabKey.ContactDetails}
-                label={t('Contact Details')}
-              />
-              <ContactTab value={TabKey.Notes} label={t('Notes')} />
-            </ContactTabs>
-          </ContactTabsWrapper>
-          <TabPanel value={TabKey.Tasks}>
-            {contactId && accountListId && (
-              <ContactTasksTab
-                accountListId={accountListId}
-                contactId={contactId}
-              />
-            )}
-          </TabPanel>
-          <TabPanel value={TabKey.Donations}>
-            {contactId && accountListId && (
-              <ContactDonationsTab
-                accountListId={accountListId}
-                contactId={contactId}
-              />
-            )}
-          </TabPanel>
-          <TabPanel value={TabKey.Referrals}>
-            <ContactReferralTab
-              accountListId={accountListId ?? ''}
-              contactId={contactId ?? ''}
+        </TabPanel>
+        <TabPanel value={TabKey.ContactDetails}>
+          {contactId && accountListId && (
+            <ContactDetailsTab
+              accountListId={accountListId}
+              contactId={contactId}
               onContactSelected={setContactFocus}
             />
-          </TabPanel>
-          <TabPanel value={TabKey.ContactDetails}>
-            {contactId && accountListId && (
-              <ContactDetailsTab
-                accountListId={accountListId}
-                contactId={contactId}
-                onContactSelected={setContactFocus}
-              />
-            )}
-          </TabPanel>
-          <TabPanel value={TabKey.Notes}>
-            {contactId && accountListId && (
-              <ContactNotesTab
-                accountListId={accountListId}
-                contactId={contactId}
-              />
-            )}
-          </TabPanel>
-        </TabContext>
-      </ContactDetailsWrapper>
-    </>
+          )}
+        </TabPanel>
+        <TabPanel value={TabKey.Notes}>
+          {contactId && accountListId && (
+            <ContactNotesTab
+              accountListId={accountListId}
+              contactId={contactId}
+            />
+          )}
+        </TabPanel>
+      </TabContext>
+    </ContactDetailsWrapper>
   );
 };

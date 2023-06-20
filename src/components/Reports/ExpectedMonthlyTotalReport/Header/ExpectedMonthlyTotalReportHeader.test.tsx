@@ -33,7 +33,7 @@ it('renders with data', () => {
 });
 
 it('renders empty', () => {
-  const { getByText, queryByTestId } = render(
+  const { queryByTestId } = render(
     <ThemeProvider theme={theme}>
       <ExpectedMonthlyTotalReportHeader
         empty={true}
@@ -45,7 +45,6 @@ it('renders empty', () => {
       />
     </ThemeProvider>,
   );
-  expect(getByText('Expected Monthly Total')).toBeInTheDocument();
 
   expect(queryByTestId('progressBarWrapper')).not.toBeInTheDocument();
 });

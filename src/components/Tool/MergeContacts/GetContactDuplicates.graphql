@@ -1,5 +1,6 @@
 query GetContactDuplicates($accountListId: ID!) {
-  contactDuplicates(accountListId: $accountListId) {
+  # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
+  contactDuplicates(accountListId: $accountListId, first: 50) {
     nodes {
       id
       reason

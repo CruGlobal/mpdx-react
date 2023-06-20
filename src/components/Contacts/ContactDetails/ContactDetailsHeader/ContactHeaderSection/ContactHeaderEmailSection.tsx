@@ -1,4 +1,4 @@
-import Typography from '@mui/material/Typography';
+import { Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Email from '@mui/icons-material/Email';
 import Skeleton from '@mui/material/Skeleton';
@@ -41,13 +41,8 @@ export const ContactHeaderEmailSection = ({
   } else if (email) {
     return (
       <ContactHeaderSection icon={<EmailIcon />}>
-        <Typography
-          variant="subtitle1"
-          component="a"
-          style={{ width: 'fit-content' }}
-          href={`mailto:${email}`}
-        >
-          {email}
+        <Typography variant="subtitle1" style={{ width: 'fit-content' }}>
+          <Link href={`mailto:${email}`}>{email}</Link>
         </Typography>
       </ContactHeaderSection>
     );

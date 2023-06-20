@@ -65,19 +65,22 @@ export const ContactFlowRow: React.FC<Props> = ({
   columnWidth,
   avatar,
 }: Props) => {
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: 'contact',
-    item: {
-      id,
-      status,
-      name,
-      starred,
-      width: columnWidth,
-    },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
+  const [{ isDragging }, drag, preview] = useDrag(
+    () => ({
+      type: 'contact',
+      item: {
+        id,
+        status,
+        name,
+        starred,
+        width: columnWidth,
+      },
+      collect: (monitor) => ({
+        isDragging: !!monitor.isDragging(),
+      }),
     }),
-  }));
+    [id],
+  );
 
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });

@@ -1,41 +1,30 @@
-import { ReactElement, useEffect } from 'react';
+import Script from 'next/script';
+import { useEffect } from 'react';
+import { callBeacon, identifyUser, initBeacon } from 'src/lib/helpScout';
+import { useUser } from '../User/useUser';
 
-const HelpscoutBeacon = (): ReactElement => {
-  const addToQueue = (method: any, options: any, data: any) => {
-    (window as any).Beacon.readyQueue.push({ method, options, data });
-  };
+const HelpscoutBeacon: React.FC = () => {
+  const user = useUser();
 
   useEffect(() => {
-    const load = () => {
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      const scriptTag = document.createElement('script');
-      scriptTag.type = 'text/javascript';
-      scriptTag.async = !0;
-      scriptTag.src = 'https://beacon-v2.helpscout.net';
-      firstScriptTag.parentNode?.insertBefore(scriptTag, firstScriptTag);
-      (window as any).Beacon = addToQueue;
-      (window as any).Beacon.readyQueue = [];
-      callBeaconFunction('init', process.env.BEACON_TOKEN);
-    };
+    initBeacon();
 
-    const callBeaconFunction = (
-      name: string,
-      options: string | null = null,
-    ) => {
-      (process.env.NODE_ENV === 'test'
-        ? // eslint-disable-next-line @typescript-eslint/no-empty-function
-          (_method: any, _options: any) => {}
-        : (window as any).Beacon)(name, options);
+    return () => {
+      callBeacon('destroy');
     };
-
-    if (document.readyState === 'complete') {
-      load();
-    } else {
-      window.addEventListener('load', load, false);
-    }
   }, []);
 
-  return <></>;
+  useEffect(() => {
+    if (user) {
+      identifyUser(
+        user.id,
+        user.keyAccounts[0]?.email ?? '',
+        [user.firstName, user.lastName].filter((name) => name).join(' '),
+      );
+    }
+  }, [user]);
+
+  return <Script src="https://beacon-v2.helpscout.net" strategy="lazyOnload" />;
 };
 
 export default HelpscoutBeacon;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Box, Button, Checkbox, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Add from '@mui/icons-material/Add';
@@ -14,6 +14,9 @@ import { ContactTasksTabNullState } from './NullState/ContactTasksTabNullState';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
+import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
+import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -85,16 +88,20 @@ const PlaceholderActionBar = styled(Box)(({ theme }) => ({
 interface ContactTasksTabProps {
   accountListId: string;
   contactId: string;
+  contactDetailsLoaded: boolean;
 }
 
 export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   accountListId,
   contactId,
+  contactDetailsLoaded,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
+  const [infiniteListRectTop, setInfiniteListRectTop] = useState(260);
+  const infiniteListRef = useRef<HTMLInputElement>(null);
 
-  const { data, loading } = useContactTasksTabQuery({
+  const { data, loading, fetchMore } = useContactTasksTabQuery({
     variables: {
       accountListId,
       tasksFilter: {
@@ -105,13 +112,45 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     },
   });
 
+  const tasksFilter = useMemo(
+    () => ({
+      contactIds: [contactId],
+      ...starredFilter,
+      wildcardSearch: searchTerm as string,
+    }),
+    [starredFilter, searchTerm],
+  );
+  const taskCount = data?.tasks.totalCount ?? 0;
+  const { data: allTasks } = useGetTaskIdsForMassSelectionQuery({
+    variables: {
+      accountListId,
+      first: taskCount,
+      tasksFilter,
+    },
+    skip: taskCount === 0,
+  });
+  const allTaskIds = useMemo(
+    () => allTasks?.tasks.nodes.map((task) => task.id) ?? [],
+    [allTasks],
+  );
   //#region Mass Actions
-  const { selectionType, isRowChecked, toggleSelectAll, toggleSelectionById } =
-    useMassSelection(data?.tasks?.totalCount ?? 0, []);
+  const {
+    ids,
+    selectionType,
+    isRowChecked,
+    toggleSelectAll,
+    toggleSelectionById,
+    deselectAll,
+  } = useMassSelection(data?.tasks?.totalCount ?? 0, allTaskIds);
 
   const { openTaskModal } = useTaskModal();
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!infiniteListRef.current) return;
+    setInfiniteListRectTop(infiniteListRef.current.getBoundingClientRect().top);
+  }, [contactId, contactDetailsLoaded]);
 
   return (
     <ContactDetailsTabContainer>
@@ -121,7 +160,10 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
           <HeaderItemsWrap>
             <TaskButton
               onClick={() =>
-                openTaskModal({ defaultValues: { contactIds: [contactId] } })
+                openTaskModal({
+                  view: 'add',
+                  defaultValues: { contactIds: [contactId] },
+                })
               }
             >
               <AddTaskButtonIcon />
@@ -141,6 +183,16 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               <LogTaskButtonIcon />
               <TaskButtonText>{t('log task')}</TaskButtonText>
             </TaskButton>
+            <TasksMassActionsDropdown
+              buttonGroup={null}
+              selectedIds={ids}
+              massDeselectAll={deselectAll}
+              selectedIdCount={
+                selectionType === ListHeaderCheckBoxState.checked
+                  ? taskCount
+                  : ids.length
+              }
+            />
           </HeaderItemsWrap>
         </HeaderRow>
         <HeaderRow mb={2}>
@@ -167,44 +219,38 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         </HeaderRow>
       </ContactTasksHeaderContainer>
       <Divider />
-      <Box>
-        {loading || !data ? (
-          <>
-            <ContactTaskRow
-              key="0"
-              accountListId={accountListId}
-              task={undefined}
-              isChecked={false}
-              onTaskCheckToggle={toggleSelectionById}
-            />
-            <ContactTaskRow
-              key="1"
-              accountListId={accountListId}
-              task={undefined}
-              isChecked={false}
-              onTaskCheckToggle={toggleSelectionById}
-            />
-            <ContactTaskRow
-              key="2"
-              accountListId={accountListId}
-              task={undefined}
-              isChecked={false}
-              onTaskCheckToggle={toggleSelectionById}
-            />
-          </>
-        ) : data.tasks.nodes.length > 0 ? (
-          data.tasks.nodes.map((task) => (
-            <ContactTaskRow
-              key={task.id}
-              accountListId={accountListId}
-              task={task}
-              isChecked={isRowChecked(task.id)}
-              onTaskCheckToggle={toggleSelectionById}
-            />
-          ))
-        ) : (
-          <ContactTasksTabNullState contactId={contactId} />
-        )}
+      <Box ref={infiniteListRef}>
+        <InfiniteList
+          loading={loading}
+          data={data?.tasks.nodes}
+          EmptyPlaceholder={<ContactTasksTabNullState contactId={contactId} />}
+          itemContent={(index, task) => (
+            <Box
+              key={index}
+              flexDirection="row"
+              width="100%"
+              data-testid={`task-${task.id}`}
+            >
+              <ContactTaskRow
+                key={task.id}
+                accountListId={accountListId}
+                task={task}
+                isChecked={isRowChecked(task.id)}
+                onTaskCheckToggle={toggleSelectionById}
+              />
+            </Box>
+          )}
+          endReached={() =>
+            data?.tasks?.pageInfo.hasNextPage &&
+            fetchMore({
+              variables: { after: data.tasks?.pageInfo.endCursor },
+            })
+          }
+          style={{
+            height: `Max(calc(100vh - ${infiniteListRectTop}px), 260px)`,
+          }}
+          data-testid="virtuoso-item-list"
+        />
       </Box>
     </ContactDetailsTabContainer>
   );

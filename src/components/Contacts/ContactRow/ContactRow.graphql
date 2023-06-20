@@ -10,7 +10,7 @@ fragment ContactRow on Contact {
     country
     geo
     source
-    updatedAt
+    createdAt
   }
   status
   pledgeAmount

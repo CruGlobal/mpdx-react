@@ -6,6 +6,11 @@ import { GroupItemContent } from 'react-virtuoso';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
+import {
+  StatusEnum,
+  PledgeFrequencyEnum,
+  SendNewsletterEnum,
+} from '../../../../graphql/types.generated';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { ListHeaderCheckBoxState } from '../../../../src/components/Shared/Header/ListHeader';
 import Contacts from './[[...contactId]].page';
@@ -18,11 +23,38 @@ const router = {
   isReady: true,
 };
 
-const contact = { id: '1', name: 'Test Person', pledgeCurrency: 'USD' };
+const contact = {
+  id: '1',
+  name: 'Test Person',
+  avatar: 'img.png',
+  primaryAddress: null,
+  status: StatusEnum.PartnerFinancial,
+  pledgeAmount: 100,
+  pledgeFrequency: PledgeFrequencyEnum.Monthly,
+  pledgeCurrency: 'USD',
+  pledgeReceived: true,
+  lateAt: new Date().toISOString(),
+  sendNewsletter: SendNewsletterEnum.Both,
+  starred: false,
+  uncompletedTasksCount: 0,
+  people: { nodes: [] },
+};
+
+const mockResponse = {
+  contacts: {
+    nodes: [contact],
+    totalCount: 1,
+    pageInfo: { endCursor: 'Mg', hasNextPage: false },
+  },
+  allContacts: {
+    totalCount: 1,
+  },
+};
 
 jest.mock('../../../../src/hooks/useMassSelection');
 
 (useMassSelection as jest.Mock).mockReturnValue({
+  ids: [],
   selectionType: ListHeaderCheckBoxState.unchecked,
   isRowChecked: jest.fn(),
   toggleSelectAll: jest.fn(),
@@ -53,18 +85,13 @@ jest.mock('react-virtuoso', () => ({
   },
 }));
 
-it.skip('should render list of people', async () => {
+it('should render list of people', async () => {
   const { findByTestId, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider<ContactsQuery>
+        <GqlMockedProvider<{ Contacts: ContactsQuery }>
           mocks={{
-            Contacts: {
-              contacts: {
-                nodes: [contact],
-                pageInfo: { endCursor: 'Mg', hasNextPage: false },
-              },
-            },
+            Contacts: mockResponse,
           }}
         >
           <Contacts />
@@ -77,18 +104,13 @@ it.skip('should render list of people', async () => {
   expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
 });
 
-it.skip('should render contact detail panel', async () => {
+it('should render contact detail panel', async () => {
   const { findByTestId, findAllByRole, getByText } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider<ContactsQuery>
+        <GqlMockedProvider<{ Contacts: ContactsQuery }>
           mocks={{
-            Contacts: {
-              contacts: {
-                nodes: [contact],
-                pageInfo: { endCursor: 'Mg', hasNextPage: false },
-              },
-            },
+            Contacts: mockResponse,
           }}
         >
           <Contacts />

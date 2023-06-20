@@ -1,5 +1,6 @@
 query GetPersonDuplicates($accountListId: ID!) {
-  personDuplicates(accountListId: $accountListId) {
+  # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
+  personDuplicates(accountListId: $accountListId, first: 50) {
     nodes {
       id
       reason

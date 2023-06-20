@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import Clear from '@mui/icons-material/Clear';
 import CreateIcon from '@mui/icons-material/Create';
 import DateRangeOutlined from '@mui/icons-material/DateRangeOutlined';
-import Delete from '@mui/icons-material/Delete';
 import FiberManualRecordOutlined from '@mui/icons-material/FiberManualRecordOutlined';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +13,9 @@ import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/H
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const IconAndTextContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0, 4),
@@ -44,11 +46,6 @@ const PartnershipInfoContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
-const AddAccountButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(2, 0),
-  color: theme.palette.text.secondary,
-}));
-
 const PartnershipTitle = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
@@ -71,6 +68,7 @@ interface PartnershipInfoProp {
 
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { data } = useLoadConstantsQuery();
   const constants = data?.constant;
   const [status, setStatus] = React.useState(
@@ -89,6 +87,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       <Box display="flex" justifyContent="space-between">
         <PartnershipTitle variant="h6">{t('Partnership')}</PartnershipTitle>
         <IconButton
+          sx={{ margin: 1 }}
           onClick={() => setEditPartnershipModalOpen(true)}
           aria-label={t('Edit Icon')}
         >
@@ -106,8 +105,12 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           <LabelsAndText variant="subtitle1">
             {`${currencyFormat(
               contact?.pledgeAmount ?? 0,
-              contact?.pledgeCurrency ?? 'USD',
-            )} - ${contact?.pledgeFrequency ?? t('No Frequency Set')}`}
+              contact?.pledgeCurrency,
+              locale,
+            )} - ${
+              getLocalizedPledgeFrequency(t, contact?.pledgeFrequency) ??
+              t('No Frequency Set')
+            }`}
           </LabelsAndText>
           <LabelsAndText variant="subtitle1">{contact?.source}</LabelsAndText>
         </Box>
@@ -121,7 +124,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           )}
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
-          {t('Commitment Recieved ')}
+          {t('Commitment Received ')}
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.pledgeReceived ? t('Yes') : t('No')}
@@ -136,7 +139,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.pledgeStartDate
-            ? DateTime.fromISO(contact?.pledgeStartDate).toLocaleString()
+            ? dateFormat(DateTime.fromISO(contact?.pledgeStartDate), locale)
             : t('No Date Available')}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -149,9 +152,10 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.lastDonation?.donationDate
-            ? DateTime.fromISO(
-                contact?.lastDonation.donationDate,
-              ).toLocaleString()
+            ? dateFormat(
+                DateTime.fromISO(contact.lastDonation.donationDate),
+                locale,
+              )
             : t('No Date Available')}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -168,6 +172,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
             currencyFormat(
               contact.lastDonation.amount.amount,
               contact.lastDonation.amount.currency,
+              locale,
             )}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -192,7 +197,8 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         <LabelsAndText variant="subtitle1">
           {currencyFormat(
             contact?.totalDonations ?? 0,
-            contact?.pledgeCurrency ?? 'USD',
+            contact?.pledgeCurrency,
+            locale,
           )}
         </LabelsAndText>
       </IconAndTextContainerCenter>
@@ -205,10 +211,12 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.contactReferralsToMe.nodes
-            .map((referral) => {
-              return referral.referredBy.name;
-            })
-            .toLocaleString()}
+            .map((referral) => referral.referredBy.name)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            // TypeScript incorrectly declares this method as having zero args
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toLocaleString#syntax
+            .toLocaleString(locale)}
         </LabelsAndText>
       </IconAndTextContainerCenter>
       <IconAndTextContainerCenter>
@@ -231,31 +239,8 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </LabelsAndText>
         <LabelsAndText variant="subtitle1" role="textbox">
           {contact?.nextAsk &&
-            DateTime.fromISO(contact.nextAsk).toLocaleString()}
+            dateFormat(DateTime.fromISO(contact.nextAsk), locale)}
         </LabelsAndText>
-      </IconAndTextContainerCenter>
-      <Divider />
-      <PartnershipTitle variant="h6">{t('Partner Account')}</PartnershipTitle>
-      {contact?.contactDonorAccounts.nodes.map((donor) => {
-        return (
-          <IconAndTextContainerCenter key={donor.id}>
-            <IconContainer />
-            <LabelsAndText variant="subtitle1" color="textSecondary">
-              {t('Name Account')}
-            </LabelsAndText>
-            <LabelsAndText variant="subtitle1">
-              {donor.donorAccount.displayName}
-            </LabelsAndText>
-            <IconContainer>
-              <Delete color="disabled" style={{ flexGrow: 1 }} />
-            </IconContainer>
-          </IconAndTextContainerCenter>
-        );
-      })}
-      <IconAndTextContainerCenter>
-        <AddAccountButton variant="outlined" color="inherit">
-          {t('Add Account')}
-        </AddAccountButton>
       </IconAndTextContainerCenter>
       {contact && editPartnershipModalOpen ? (
         <EditPartnershipInfoModal

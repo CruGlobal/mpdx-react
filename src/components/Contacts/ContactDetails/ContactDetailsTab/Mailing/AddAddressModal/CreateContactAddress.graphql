@@ -6,6 +6,7 @@ mutation CreateContactAddress(
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
     address {
+      id
       city
       country
       historic
@@ -14,8 +15,10 @@ mutation CreateContactAddress(
       postalCode
       primaryMailingAddress
       region
+      source
       state
       street
+      createdAt
     }
   }
 }

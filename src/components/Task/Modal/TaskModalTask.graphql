@@ -3,10 +3,13 @@ query GetTaskForTaskModal($accountListId: ID!, $taskId: ID!) {
     id
     activityType
     subject
+    location
     startAt
     completedAt
+    result
+    nextAction
     tagList
-    contacts {
+    contacts(first: 25) {
       nodes {
         id
         name

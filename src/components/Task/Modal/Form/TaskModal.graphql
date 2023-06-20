@@ -3,7 +3,7 @@ query GetDataForTaskModal($accountListId: ID!) {
     id
     taskTagList
   }
-  accountListUsers(accountListId: $accountListId) {
+  accountListUsers(accountListId: $accountListId, first: 25) {
     nodes {
       id
       user {
@@ -13,7 +13,7 @@ query GetDataForTaskModal($accountListId: ID!) {
       }
     }
   }
-  contacts(accountListId: $accountListId) {
+  contacts(accountListId: $accountListId, first: 10) {
     nodes {
       id
       name
@@ -21,12 +21,12 @@ query GetDataForTaskModal($accountListId: ID!) {
   }
 }
 
-mutation CreateTask($accountListId: ID!, $attributes: TaskCreateInput!) {
-  createTask(
+mutation CreateTasks($accountListId: ID!, $attributes: TaskCreateInput!) {
+  createTasks(
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
-    task {
-      ...TaskMutationResponse
+    tasks {
+      ...TaskRow
     }
   }
 }
@@ -36,7 +36,7 @@ mutation UpdateTask($accountListId: ID!, $attributes: TaskUpdateInput!) {
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
     task {
-      ...TaskMutationResponse
+      ...TaskRow
     }
   }
 }
@@ -47,37 +47,25 @@ mutation DeleteTask($accountListId: ID!, $id: ID!) {
   }
 }
 
-fragment TaskMutationResponse on Task {
-  id
-  activityType
-  subject
-  startAt
-  completedAt
-  tagList
-  contacts {
+query GetTaskModalContactsFiltered(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+  $first: Int!
+  $after: String
+) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: $contactsFilters
+    first: $first
+    after: $after
+  ) {
     nodes {
       id
       name
     }
-  }
-  user {
-    id
-    firstName
-    lastName
-  }
-  notificationTimeBefore
-  notificationType
-  notificationTimeUnit
-}
-
-query GetTaskModalContactsFiltered(
-  $accountListId: ID!
-  $contactsFilters: ContactFilterSetInput
-) {
-  contacts(accountListId: $accountListId, contactsFilter: $contactsFilters) {
-    nodes {
-      id
-      name
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }

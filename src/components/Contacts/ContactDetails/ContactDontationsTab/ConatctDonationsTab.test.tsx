@@ -33,12 +33,12 @@ describe('ContactDonationsTab', () => {
       }
     `);
     expect(result.current.data?.contact.name).toMatchInlineSnapshot(
-      `undefined`,
+      `"Button Army"`,
     );
   });
   it('test renderer', async () => {
     const { findByRole } = render(
-      <GqlMockedProvider<GetContactDonationsQuery>
+      <GqlMockedProvider<{ GetContactDonations: GetContactDonationsQuery }>
         mocks={{
           GetContactDonations: {
             contact: {

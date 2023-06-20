@@ -9,7 +9,6 @@ import {
   DialogActions,
   DialogContent,
   CircularProgress,
-  Grid,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
@@ -18,10 +17,7 @@ import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { Formik } from 'formik';
 import Modal from '../../../../../../common/Modal/Modal';
-import {
-  ContactUpdateInput,
-  SendNewsletterEnum,
-} from '../../../../../../../../graphql/types.generated';
+import { ContactUpdateInput } from '../../../../../../../../graphql/types.generated';
 import {
   ContactDetailsFragment,
   useUpdateContactDetailsMutation,
@@ -76,22 +72,12 @@ export const EditContactDetailsModal: React.FC<
   const [updateContact, { loading: updating }] =
     useUpdateContactDetailsMutation();
 
-  const contactSchema: yup.SchemaOf<
-    Pick<
-      ContactUpdateInput,
-      'name' | 'id' | 'greeting' | 'envelopeGreeting' | 'sendNewsletter'
-    >
-  > = yup.object({
-    name: yup.string().required(),
-    id: yup.string().required(),
-    primaryPersonId: yup.string().required(),
-    greeting: yup.string().nullable(),
-    envelopeGreeting: yup.string().nullable(),
-    sendNewsletter: yup
-      .mixed<SendNewsletterEnum>()
-      .oneOf(Object.values(SendNewsletterEnum))
-      .nullable(),
-  });
+  const contactSchema: yup.SchemaOf<Pick<ContactUpdateInput, 'name' | 'id'>> =
+    yup.object({
+      name: yup.string().required(),
+      id: yup.string().required(),
+      primaryPersonId: yup.string().required(),
+    });
 
   const onSubmit = async (attributes: ContactUpdateInput) => {
     await updateContact({
@@ -101,9 +87,6 @@ export const EditContactDetailsModal: React.FC<
           name: attributes.name,
           id: attributes.id,
           primaryPersonId: attributes.primaryPersonId,
-          greeting: attributes.greeting,
-          envelopeGreeting: attributes.envelopeGreeting,
-          sendNewsletter: attributes.sendNewsletter,
         },
       },
     });
@@ -124,21 +107,12 @@ export const EditContactDetailsModal: React.FC<
           name: contact.name,
           id: contact.id,
           primaryPersonId: contact?.primaryPerson?.id ?? '',
-          greeting: contact.greeting,
-          envelopeGreeting: contact.envelopeGreeting,
-          sendNewsletter: contact.sendNewsletter,
         }}
         validationSchema={contactSchema}
         onSubmit={onSubmit}
       >
         {({
-          values: {
-            name,
-            primaryPersonId,
-            greeting,
-            envelopeGreeting,
-            sendNewsletter,
-          },
+          values: { name, primaryPersonId },
           handleChange,
           handleSubmit,
           setFieldValue,
@@ -191,49 +165,6 @@ export const EditContactDetailsModal: React.FC<
                       })}
                     </Select>
                   </FormControl>
-                </ContactInputWrapper>
-                <ContactInputWrapper>
-                  <FormControl fullWidth size="small">
-                    <InputLabel id="send-newsletter-select-label">
-                      {t('Newsletter')}
-                    </InputLabel>
-                    <Select
-                      labelId="send-newsletter-select-label"
-                      value={sendNewsletter}
-                      onChange={(e) =>
-                        setFieldValue('sendNewsletter', e.target.value)
-                      }
-                      fullWidth={true}
-                    >
-                      {Object.values(SendNewsletterEnum).map((value) => (
-                        <MenuItem key={value} value={value}>
-                          {t(value)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </ContactInputWrapper>
-                <ContactInputWrapper>
-                  <Grid container spacing={3}>
-                    <Grid item sm={12} md={6}>
-                      <TextField
-                        label={t('Envelope Name Line')}
-                        value={envelopeGreeting}
-                        onChange={handleChange('envelopeGreeting')}
-                        inputProps={{ 'aria-label': t('Envelope Name Line') }}
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item sm={12} md={6}>
-                      <TextField
-                        label={t('Greeting (used in export)')}
-                        value={greeting}
-                        onChange={handleChange('greeting')}
-                        inputProps={{ 'aria-label': t('Greeting') }}
-                        fullWidth
-                      />
-                    </Grid>
-                  </Grid>
                 </ContactInputWrapper>
               </ContactEditContainer>
             </DialogContent>

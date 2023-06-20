@@ -2,11 +2,29 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
+import { signOut } from 'next-auth/react';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../../theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
+
+const session = {
+  expires: '2021-10-28T14:48:20.897Z',
+  user: {
+    email: 'Chair Library Bed',
+    image: null,
+    name: 'Dung Tapestry',
+    token: 'superLongJwtString',
+  },
+};
+
+jest.mock('next-auth/react', () => {
+  return {
+    signOut: jest.fn().mockImplementation(() => Promise.resolve()),
+    getSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
+  };
+});
 
 const router = {
   pathname: '/accountLists/[accountListId]/test',
@@ -91,5 +109,21 @@ describe('ProfileMenuPanelForNavBar', () => {
         query: { accountListId: '1' },
       }),
     );
+  });
+
+  it('Ensure Sign Out is called with callback', async () => {
+    const { getByText } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <TestWrapper mocks={[getTopBarMock()]}>
+            <ProfileMenuPanel />
+          </TestWrapper>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+
+    await waitFor(() => expect(getByText(/sign out/i)).toBeInTheDocument());
+    userEvent.click(getByText(/sign out/i));
+    expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' });
   });
 });

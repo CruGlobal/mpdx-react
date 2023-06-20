@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useApolloClient } from '@apollo/client';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
@@ -44,21 +45,22 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { uploadAvatar, validateAvatar } from './uploadAvatar';
 
-export const ContactInputField = styled(TextField)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    // '&& > label': {
-    //   textTransform: 'uppercase',
-    // },
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
+export const ContactInputField = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
+  // '&& > label': {
+  //   textTransform: 'uppercase',
+  // },
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
-export const PrimaryControlLabel = styled(FormControlLabel)(
-  ({ destroyed }: { destroyed: boolean }) => ({
-    textDecoration: destroyed ? 'line-through' : 'none',
-  }),
-);
+export const PrimaryControlLabel = styled(FormControlLabel, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
@@ -117,8 +119,36 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     handleRemoveDialogOpen,
   } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
-  const [updatePerson, { loading: updating }] = useUpdatePersonMutation();
-  const [createPerson, { loading: creating }] = useCreatePersonMutation();
+  const client = useApolloClient();
+
+  const [avatar, setAvatar] = useState<{ file: File; blobUrl: string } | null>(
+    null,
+  );
+  useEffect(() => {
+    return () => {
+      if (avatar) {
+        URL.revokeObjectURL(avatar.blobUrl);
+      }
+    };
+  }, [avatar]);
+  const updateAvatar = (file: File) => {
+    const validationResult = validateAvatar({ file, t });
+    if (!validationResult.success) {
+      enqueueSnackbar(validationResult.message, {
+        variant: 'error',
+      });
+      return;
+    }
+
+    if (avatar) {
+      // Release the previous avatar blob
+      URL.revokeObjectURL(avatar.blobUrl);
+    }
+    setAvatar({ file, blobUrl: URL.createObjectURL(file) });
+  };
+
+  const [updatePerson] = useUpdatePersonMutation();
+  const [createPerson] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
 
   const personSchema: yup.SchemaOf<
@@ -134,6 +164,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         number: yup.string().required(t('This field is required')),
         destroy: yup.boolean().default(false),
         primary: yup.boolean().default(false),
+        historic: yup.boolean().default(false),
       }),
     ),
     emailAddresses: yup.array().of(
@@ -145,6 +176,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
           .required(t('This field is required')),
         destroy: yup.boolean().default(false),
         primary: yup.boolean().default(false),
+        historic: yup.boolean().default(false),
       }),
     ),
     facebookAccounts: yup.array().of(
@@ -220,6 +252,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       id: phoneNumber.id,
       primary: phoneNumber.primary,
       number: phoneNumber.number,
+      historic: phoneNumber.historic,
       location: phoneNumber.location,
       destroy: false,
     };
@@ -230,6 +263,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       id: emailAddress.id,
       primary: emailAddress.primary,
       email: emailAddress.email,
+      historic: emailAddress.historic,
       location: emailAddress.location,
       destroy: false,
     };
@@ -366,12 +400,39 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     ): attributes is PersonUpdateInput => !!person;
 
     if (isUpdate(attributes)) {
+      const file = avatar?.file;
+      if (file) {
+        try {
+          await uploadAvatar({
+            personId: attributes.id,
+            file,
+            t,
+          });
+        } catch (err) {
+          enqueueSnackbar(
+            err instanceof Error
+              ? err.message
+              : t('Avatar could not be uploaded'),
+            {
+              variant: 'error',
+            },
+          );
+          return;
+        }
+      }
+
       await updatePerson({
         variables: {
           accountListId,
           attributes,
         },
       });
+
+      if (file) {
+        // Update the contact's avatar since it is based on the primary person's avatar
+        client.refetchQueries({ include: ['GetContactDetailsHeader'] });
+      }
+
       enqueueSnackbar(t('Person updated successfully'), {
         variant: 'success',
       });
@@ -431,6 +492,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         ],
       });
     }
+    handleRemoveDialogOpen(false);
     enqueueSnackbar(t('Person deleted successfully'), {
       variant: 'success',
     });
@@ -440,6 +502,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     <Modal
       isOpen={true}
       title={person ? t('Edit Person') : t('Create Person')}
+      size="md"
       handleClose={handleClose}
     >
       <Formik
@@ -449,11 +512,19 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       >
         {(formikProps): ReactElement => (
           <form onSubmit={formikProps.handleSubmit} noValidate>
-            <DialogContent dividers style={{ maxHeight: '80vh' }}>
+            <DialogContent
+              dividers
+              style={{ maxHeight: 'calc(100vh - 200px)' }}
+            >
               <ContactEditContainer>
                 <ContactPersonContainer>
                   {/* Name Section */}
-                  <PersonName person={person} formikProps={formikProps} />
+                  <PersonName
+                    person={person}
+                    formikProps={formikProps}
+                    pendingAvatar={avatar?.blobUrl}
+                    setAvatar={updateAvatar}
+                  />
                   {/* Phone Number Section */}
                   <PersonPhoneNumber
                     formikProps={formikProps}
@@ -503,7 +574,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               <SubmitButton
                 disabled={!formikProps.isValid || formikProps.isSubmitting}
               >
-                {(updating || creating || deleting) && (
+                {formikProps.isSubmitting && (
                   <LoadingIndicator color="primary" size={20} />
                 )}
                 {t('Save')}

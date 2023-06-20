@@ -77,12 +77,14 @@ const testData: ErgonoMockShape[] = [
 ];
 
 describe('FixPhoneNumbers-Home', () => {
-  it.skip('default with test data', async () => {
+  it('default with test data', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -120,7 +122,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -144,12 +148,14 @@ describe('FixPhoneNumbers-Home', () => {
     expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
   });
 
-  it.skip('delete third email from first person', async () => {
+  it('delete third email from first person', async () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -168,18 +174,20 @@ describe('FixPhoneNumbers-Home', () => {
     const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
     userEvent.click(delete02);
 
-    const deleteButton = getByTestId('emailAddressDeleteButton');
+    const deleteButton = getByTestId('modal-delete-button');
     userEvent.click(deleteButton);
 
     expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
   });
 
-  it.skip('change second email for second person to primary then delete it', async () => {
+  it('change second email for second person to primary then delete it', async () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -203,7 +211,7 @@ describe('FixPhoneNumbers-Home', () => {
     const delete11 = getByTestId('delete-testid2-1');
     userEvent.click(delete11);
 
-    const deleteButton = getByTestId('emailAddressDeleteButton');
+    const deleteButton = getByTestId('modal-delete-button');
     userEvent.click(deleteButton);
 
     expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
@@ -215,7 +223,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -252,7 +262,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {
@@ -280,7 +292,9 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<GetInvalidEmailAddressesQuery>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            }>
               mocks={{
                 GetInvalidEmailAddresses: {
                   people: {

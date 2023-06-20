@@ -5,29 +5,33 @@ import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import {
-  ContactsPageContext,
-  ContactsPageType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
-import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
+  ContactsContext,
+  ContactsType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+import {
+  headerHeight,
+  TableViewModeEnum,
+} from 'src/components/Shared/Header/ListHeader';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 
 export const ContactsList: React.FC = () => {
   const {
     contactId,
     accountListId,
-    activeFilters,
+    sanitizedFilters,
     searchTerm,
     starredFilter,
     viewMode,
     urlFilters,
     isFiltered,
     setActiveFilters,
-  } = React.useContext(ContactsPageContext) as ContactsPageType;
+  } = React.useContext(ContactsContext) as ContactsType;
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
-        ...activeFilters,
+        ...sanitizedFilters,
         wildcardSearch: searchTerm as string,
         ...starredFilter,
         ids:
@@ -44,8 +48,7 @@ export const ContactsList: React.FC = () => {
     <InfiniteList
       loading={loading}
       data={data?.contacts?.nodes ?? []}
-      totalCount={data?.contacts?.totalCount ?? 0}
-      style={{ height: 'calc(100vh - 160px)' }}
+      style={{ height: `calc(100vh - ${navBarHeight} - ${headerHeight})` }}
       itemContent={(index, contact) => (
         <ContactRow
           key={contact.id}
@@ -53,7 +56,7 @@ export const ContactsList: React.FC = () => {
           useTopMargin={index === 0}
         />
       )}
-      groupBy={(item) => item.name[0].toUpperCase()}
+      groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
       endReached={() =>
         data?.contacts?.pageInfo.hasNextPage &&
         fetchMore({
@@ -67,7 +70,7 @@ export const ContactsList: React.FC = () => {
           <NullState
             page="contact"
             totalCount={data?.allContacts.totalCount || 0}
-            filtered={isFiltered}
+            filtered={isFiltered || !!searchTerm}
             changeFilters={setActiveFilters}
           />
         </Box>
