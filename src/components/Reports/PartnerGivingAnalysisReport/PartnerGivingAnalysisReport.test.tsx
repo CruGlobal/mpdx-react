@@ -81,13 +81,109 @@ const mocks: Mocks = {
           totalDonations: 13118.42,
         },
         {
-          donationPeriodAverage: 86.4682954545454545,
+          donationPeriodAverage: 86.4684354186,
           donationPeriodCount: 221,
           donationPeriodSum: 25218.42,
           lastDonationAmount: 150.92,
           lastDonationCurrency: 'CAD',
           lastDonationDate: '2021-08-07',
           id: '03',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '04',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '05',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '06',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '07',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '08',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '09',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '10',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '11',
           name: 'Jasmine (Princess)',
           pledgeCurrency: 'CAD',
           totalDonations: 25218.42,
@@ -99,7 +195,7 @@ const mocks: Mocks = {
         totalItems: 120,
         totalPages: 12,
       },
-      totalContacts: 3,
+      totalContacts: 11,
     },
   },
   GetIdsForMassSelection: {
@@ -157,7 +253,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     expect(getByRole('table')).toBeInTheDocument();
     expect(getAllByTestId('PartnerGivingAnalysisReportTableRow').length).toBe(
-      3,
+      11,
     );
     expect(getByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
   });
@@ -327,9 +423,9 @@ describe('PartnerGivingAnalysisReport', () => {
     ).toEqual({ nameLike: '%John%' });
   });
 
-  it('sets the pagination limit and changes the page', async () => {
+  it('sets the pagination limit', async () => {
     const mutationSpy = jest.fn();
-    const { getByRole, queryByTestId, getByTestId } = render(
+    const { getByRole, queryByTestId, getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
           GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
@@ -359,12 +455,15 @@ describe('PartnerGivingAnalysisReport', () => {
       mutationSpy.mock.calls[2][0].operation.variables.input.pageSize,
     ).toBe(50);
 
+    userEvent.selectOptions(getByRole('combobox'), '10');
     userEvent.click(getByTestId('KeyboardArrowRightIcon'));
     await waitFor(() => {
       expect(
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
       ).not.toBeInTheDocument();
     });
+
+    expect(getByText('11–20 of 120')).toBeInTheDocument();
   });
 
   it('selects and unselects all', async () => {
@@ -413,6 +512,14 @@ describe('PartnerGivingAnalysisReport', () => {
     userEvent.click(getAllByRole('checkbox')[1]);
     userEvent.click(getAllByRole('checkbox')[2]);
     userEvent.click(getAllByRole('checkbox')[3]);
+    userEvent.click(getAllByRole('checkbox')[4]);
+    userEvent.click(getAllByRole('checkbox')[5]);
+    userEvent.click(getAllByRole('checkbox')[6]);
+    userEvent.click(getAllByRole('checkbox')[7]);
+    userEvent.click(getAllByRole('checkbox')[8]);
+    userEvent.click(getAllByRole('checkbox')[9]);
+    userEvent.click(getAllByRole('checkbox')[10]);
+    userEvent.click(getAllByRole('checkbox')[11]);
     expect(getAllByRole('checkbox')[0]).toBeChecked();
 
     // Deselect all individually
