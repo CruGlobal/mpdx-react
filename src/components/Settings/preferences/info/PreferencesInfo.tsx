@@ -4,10 +4,10 @@ import { Avatar, Box, Button, Typography, useMediaQuery } from '@mui/material';
 import { Theme, styled, useTheme } from '@mui/material/styles';
 import { Edit } from '@mui/icons-material';
 import { profile } from '../DemoContent';
-import { PersPrefModal } from '../modals/PersPrefModal';
-import { PersPrefContactMethods } from './PersPrefContactMethods';
-import { PersPrefAnniversary } from './PersPrefAnniversary';
-import { PersPrefSocials } from './PersPrefSocials';
+import { PersPrefModal } from '../modals/PreferencesModal';
+import { PersPrefContactMethods } from './PreferencesContactMethods';
+import { PersPrefAnniversary } from './PreferencesAnniversary';
+import { PersPrefSocials } from './PreferencesSocials';
 
 const PersPrefInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',

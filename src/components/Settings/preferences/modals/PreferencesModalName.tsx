@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Unstable_Grid2 as Grid } from '@mui/material';
-import { PersPrefInput } from '../forms/PersPrefInput';
+import { PersPrefInput } from '../forms/PreferencesInput';
 import { info } from '../DemoContent';
 
 export const PersPrefModalName: React.FC = () => {

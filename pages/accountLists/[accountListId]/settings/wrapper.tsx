@@ -2,6 +2,7 @@ import { Box, Container, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React from 'react';
 import Head from 'next/head';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const PageHeadingWrapper = styled(Box)(({ theme }) => ({
   color: theme.palette.common.white,
@@ -10,26 +11,29 @@ const PageHeadingWrapper = styled(Box)(({ theme }) => ({
   paddingBottom: theme.spacing(3),
 }));
 
-const PageContentWrapper = styled(Container)(({theme}) => ({
+const PageContentWrapper = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(3),
   paddingBottom: theme.spacing(3),
-}))
+}));
 
-interface PrefWrapperProps {
+interface SettingsWrapperProps {
   pageTitle: string;
   pageHeading: string;
   children?: React.ReactNode;
 }
 
-export const PreferencesWrapper: React.FC<PrefWrapperProps> = ({
+export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
   pageTitle,
   pageHeading,
   children,
 }) => {
+  const { appName } = useGetAppSettings();
   return (
     <>
       <Head>
-        <title>MPDX | {pageTitle}</title>
+        <title>
+          {appName} | {pageTitle}
+        </title>
       </Head>
       <Box component="main">
         <PageHeadingWrapper>
@@ -37,9 +41,7 @@ export const PreferencesWrapper: React.FC<PrefWrapperProps> = ({
             <Typography variant="h4">{pageHeading}</Typography>
           </Container>
         </PageHeadingWrapper>
-        <PageContentWrapper maxWidth="lg">
-          {children}
-        </PageContentWrapper>
+        <PageContentWrapper maxWidth="lg">{children}</PageContentWrapper>
       </Box>
     </>
   );

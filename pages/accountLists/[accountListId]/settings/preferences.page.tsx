@@ -10,27 +10,27 @@ import {
   //InputAdornment,
 } from '@mui/material';
 //import { styled } from '@mui/material/styles';
-import { PreferencesWrapper } from './wrapper';
-import { PersPrefInfo } from './personal/info/PersPrefInfo';
-import { PersPrefGroup } from './personal/accordions/PersPrefGroup';
-import { PersPrefItem } from './personal/accordions/PersPrefItem';
-import { PersPrefFormWrapper } from './personal/forms/PersPrefFormWrapper';
-import { PersPrefSelect } from './personal/forms/PersPrefSelect';
+import { SettingsWrapper } from './wrapper';
+import { PersPrefInfo } from '../../../../src/components/Settings/preferences/info/PreferencesInfo';
+import { PersPrefGroup } from '../../../../src/components/Settings/preferences/accordions/PreferencesGroup';
+import { PersPrefItem } from '../../../../src/components/Settings/preferences/accordions/PreferencesItem';
+import { PersPrefFormWrapper } from '../../../../src/components/Settings/preferences/forms/PreferencesFormWrapper';
+import { PersPrefSelect } from '../../../../src/components/Settings/preferences/forms/PreferencesSelect';
 import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,
   StyledSelect,
-} from './personal/shared/PersPrefForms';
+} from '../../../../src/components/Settings/preferences/shared/PreferencesForms';
 import {
   language,
   options,
   localeOptions,
   options2,
-} from './personal/DemoContent';
+} from '../../../../src/components/Settings/preferences/DemoContent';
 
 //import { useLocale } from 'src/hooks/useLocale';
 
-const PersonalPreferences: React.FC = () => {
+const Preferences: React.FC = () => {
   const { t } = useTranslation();
   const [expandedPanel, setExpandedPanel] = useState('');
   //const locale = useLocale();
@@ -40,7 +40,7 @@ const PersonalPreferences: React.FC = () => {
   };
 
   return (
-    <PreferencesWrapper
+    <SettingsWrapper
       pageTitle={t('Personal Preferences')}
       pageHeading={t('Preferences')}
     >
@@ -320,8 +320,8 @@ const PersonalPreferences: React.FC = () => {
           </PersPrefFormWrapper>
         </PersPrefItem>
       </PersPrefGroup>
-    </PreferencesWrapper>
+    </SettingsWrapper>
   );
 };
 
-export default PersonalPreferences;
+export default Preferences;

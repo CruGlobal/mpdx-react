@@ -225,7 +225,7 @@ const ProfileMenu = (): ReactElement => {
         <MenuItem
           onClick={handleProfileMenuClose}
           component="a"
-          href={`/accountLists/${accountListId}/preferences/personal`}
+          href={`/accountLists/${accountListId}/settings/preferences`}
         >
           <ListItemText primary={t('Preferences')} />
         </MenuItem>

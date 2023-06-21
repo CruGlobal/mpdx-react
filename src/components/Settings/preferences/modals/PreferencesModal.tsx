@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { DialogActions, DialogContent, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import Modal from '../../../../../../src/components/common/Modal/Modal';
-import { PersPrefModalContact } from './PersPrefModalContactInfo';
-import { PersPrefModalDetails } from './PersPrefModalDetails';
-import { PersPrefModalSocial } from './PersPrefModalSocial';
-import { PersPrefModalRelationships } from './PersPrefModalRelationships';
-import { PersPrefModalName } from './PersPrefModalName';
+import Modal from '../../../common/Modal/Modal';
+import { PersPrefModalContact } from './PreferencesModalContactInfo';
+import { PersPrefModalDetails } from './PreferencesModalDetails';
+import { PersPrefModalSocial } from './PreferencesModalSocial';
+import { PersPrefModalRelationships } from './PreferencesModalRelationships';
+import { PersPrefModalName } from './PreferencesModalName';
 import {
   SubmitButton,
   CancelButton,
@@ -86,9 +86,7 @@ export const PersPrefModal: React.FC<PersPrefModalProps> = ({
         </DialogContent>
         <DialogActions>
           <CancelButton onClick={handleClose} />
-          <SubmitButton>
-            {t('Save')}
-          </SubmitButton>
+          <SubmitButton>{t('Save')}</SubmitButton>
         </DialogActions>
       </form>
     </Modal>

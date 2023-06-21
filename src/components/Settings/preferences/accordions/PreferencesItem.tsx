@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { ExpandMore } from '@mui/icons-material';
-import { accordionShared } from '../shared/PersPrefShared';
+import { accordionShared } from '../shared/PreferencesShared';
 
 const StyledAccordion = styled(Accordion)(() => ({
   overflow: 'hidden',
