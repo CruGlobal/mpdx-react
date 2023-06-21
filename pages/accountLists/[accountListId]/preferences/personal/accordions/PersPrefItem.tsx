@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -7,7 +8,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { ExpandMore } from '@mui/icons-material';
-import React from 'react';
 import { accordionShared } from '../shared/PersPrefShared';
 
 const StyledAccordion = styled(Accordion)(() => ({

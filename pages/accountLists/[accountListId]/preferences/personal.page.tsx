@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Checkbox, FormControlLabel, MenuItem } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import {
+  //Box,
+  Checkbox,
+  FormControlLabel,
+  MenuItem,
+  Grid,
+  //TextField,
+  //InputAdornment,
+} from '@mui/material';
+//import { styled } from '@mui/material/styles';
 import { PreferencesWrapper } from './wrapper';
 import { PersPrefInfo } from './personal/info/PersPrefInfo';
 import { PersPrefGroup } from './personal/accordions/PersPrefGroup';
@@ -13,21 +21,19 @@ import {
   StyledOutlinedInput,
   StyledSelect,
 } from './personal/shared/PersPrefForms';
-import { language, locale, options, options2 } from './personal/DemoContent';
+import {
+  language,
+  options,
+  localeOptions,
+  options2,
+} from './personal/DemoContent';
 
-const StyledColumnsWrapper = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-  '& .MuiFormControl-root': {
-    width: `calc(50% - ${theme.spacing(1)}px)`,
-    '&:nth-child(2n)': {
-      marginLeft: theme.spacing(2),
-    },
-  },
-}));
+//import { useLocale } from 'src/hooks/useLocale';
 
 const PersonalPreferences: React.FC = () => {
   const { t } = useTranslation();
   const [expandedPanel, setExpandedPanel] = useState('');
+  //const locale = useLocale();
 
   const handleAccordionChange = (panel: string) => {
     setExpandedPanel(expandedPanel === panel ? '' : panel);
@@ -85,11 +91,11 @@ const PersonalPreferences: React.FC = () => {
             <PersPrefFieldWrapper
               labelText={t('Locale')}
               helperText={t(
-                'The locale determines how numbers, dates and other information areformatted in MPDX.',
+                'The locale determines how numbers, dates and other information are formatted in MPDX.',
               )}
             >
               <StyledSelect value="en">
-                {locale.map(([localeCode, localeName], index) => (
+                {localeOptions.map(([localeCode, localeName], index) => (
                   <MenuItem value={localeCode} key={index}>
                     {t(localeName)}
                   </MenuItem>
@@ -289,14 +295,20 @@ const PersonalPreferences: React.FC = () => {
           value=""
         >
           <PersPrefFormWrapper>
-            <StyledColumnsWrapper>
-              <PersPrefFieldWrapper labelText={t('Start Date')}>
-                <StyledOutlinedInput />
-              </PersPrefFieldWrapper>
-              <PersPrefFieldWrapper labelText={t('End Date')}>
-                <StyledOutlinedInput />
-              </PersPrefFieldWrapper>
-            </StyledColumnsWrapper>
+            {/* <StyledColumnsWrapper> */}
+            <Grid container spacing={1}>
+              <Grid item xs={6} spacing={3}>
+                <PersPrefFieldWrapper labelText={t('Start Date')}>
+                  <StyledOutlinedInput />
+                </PersPrefFieldWrapper>
+              </Grid>
+              <Grid item xs={6} spacing={3}>
+                <PersPrefFieldWrapper labelText={t('End Date')}>
+                  <StyledOutlinedInput />
+                </PersPrefFieldWrapper>
+              </Grid>
+            </Grid>
+            {/* </StyledColumnsWrapper> */}
             <PersPrefFieldWrapper
               labelText={t('New Recurring Commitment Goal')}
               helperText={t(

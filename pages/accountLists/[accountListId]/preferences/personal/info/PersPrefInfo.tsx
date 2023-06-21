@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Avatar, Box, Button, Typography, useMediaQuery } from '@mui/material';
 import { Theme, styled, useTheme } from '@mui/material/styles';
 import { Edit } from '@mui/icons-material';
-import { info } from '../DemoContent';
+import { profile } from '../DemoContent';
 import { PersPrefModal } from '../modals/PersPrefModal';
 import { PersPrefContactMethods } from './PersPrefContactMethods';
 import { PersPrefAnniversary } from './PersPrefAnniversary';
@@ -59,45 +59,46 @@ export const PersPrefInfo: React.FC = () => {
       <Box marginBottom={isMobile ? theme.spacing(2) : 0}>
         {/* Avatar */}
         <StyledAvatar
-          src={info.avatar}
-          alt={`${info.first_name} ${info.last_name}`}
+          src={profile.avatar}
+          alt={`${profile.first_name} ${profile.last_name}`}
         />
 
         {/* Name */}
         <Typography component="h3" variant="h5">
-          {t(info.title)} {info.first_name} {info.last_name} {t(info.suffix)}
+          {t(profile.title)} {profile.first_name} {profile.last_name}{' '}
+          {t(profile.suffix)}
         </Typography>
 
         {/* Work */}
-        {(info.occupation || info.employer) && (
+        {(profile.occupation || profile.employer) && (
           <Typography component="h4">
-            {`${info.occupation} ${
-              info.occupation && info.employer ? '-' : ''
-            } ${info.employer}`}
+            {`${profile.occupation} ${
+              profile.occupation && profile.employer ? '-' : ''
+            } ${profile.employer}`}
           </Typography>
         )}
       </Box>
 
       {/* Email */}
-      <PersPrefContactMethods type="email" methods={info.email} />
+      <PersPrefContactMethods type="email" methods={profile.email} />
 
       {/* Phone */}
-      <PersPrefContactMethods type="phone" methods={info.phone} />
+      <PersPrefContactMethods type="phone" methods={profile.phone} />
 
       {/* Anniversay */}
       <PersPrefAnniversary
-        marital_status={t(info.marital_status)}
-        anniversary_day={info.anniversary_day}
-        anniversary_month={info.anniversary_month}
-        anniversary_year={info.anniversary_year}
+        marital_status={t(profile.marital_status)}
+        anniversary_day={profile.anniversary_day}
+        anniversary_month={profile.anniversary_month}
+        anniversary_year={profile.anniversary_year}
       />
 
       {/* Social Media */}
       <PersPrefSocials
-        facebook_accounts={info.facebook_accounts}
-        twitter_accounts={info.twitter_accounts}
-        linkedin_accounts={info.linkedin_accounts}
-        websites={info.websites}
+        facebook_accounts={profile.facebook_accounts}
+        twitter_accounts={profile.twitter_accounts}
+        linkedin_accounts={profile.linkedin_accounts}
+        websites={profile.websites}
       />
 
       {/* Edit Info Button */}

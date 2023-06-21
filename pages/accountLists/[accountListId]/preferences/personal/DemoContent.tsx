@@ -1,4 +1,5 @@
-export const info = {
+export const profile = {
+  id: '1',
   alma_mater: 'Sac State',
   anniversary_day: 18,
   anniversary_month: 10,
@@ -88,7 +89,7 @@ export const language = [
   ['vi', 'Vietnamese (Tiếng Việt)'],
 ];
 
-export const locale = [
+export const localeOptions = [
   ['af', 'Afrikaans (af) (Afrikaans - af)'],
   ['sq', 'Albanian (sq) (shqip - sq)'],
   ['ar', 'Arabic (ar) (العربية - ar)'],
