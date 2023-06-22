@@ -96,12 +96,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     toggleSelectAll,
     toggleSelectionById,
     isRowChecked,
-  } = useMassSelection(
-    data?.partnerGivingAnalysisReport?.totalContacts ?? 0,
-    allContactIds,
-    activeFilters,
-    query as string,
-  );
+  } = useMassSelection(contactCount, allContactIds, activeFilters, query);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -143,7 +138,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         showShowingCount={false}
         onSearchTermChanged={(string) => setQuery(string)}
         searchTerm={query}
-        totalItems={data?.partnerGivingAnalysisReport?.totalContacts || 0}
+        totalItems={contactCount}
         headerCheckboxState={selectionType}
         selectedIds={ids}
       />
@@ -161,7 +156,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           <Table
             onClick={onSelectContact}
             onRequestSort={handleRequestSort}
-            onSelectOne={(contactId) => toggleSelectionById(contactId)}
+            onSelectOne={toggleSelectionById}
             order={order}
             orderBy={orderBy}
             contacts={contacts}

@@ -16,7 +16,6 @@ interface AccountsListHeaderProps {
 const StickyHeader = styled(Box)(({}) => ({
   position: 'sticky',
   top: 0,
-  //height: 96,
 }));
 
 const NavListButton = styled(IconButton, {
@@ -53,7 +52,7 @@ export const AccountsListHeader: FC<AccountsListHeaderProps> = ({
         alignItems="center"
         sx={{ lineHeight: 1.1 }}
       >
-        {showNavListButton !== false && (
+        {showNavListButton && (
           <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
             <NavListIcon titleAccess={t('Toggle Filter Panel')} />
           </NavListButton>

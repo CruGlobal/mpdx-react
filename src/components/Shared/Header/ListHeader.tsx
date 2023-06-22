@@ -103,7 +103,6 @@ interface ListHeaderProps {
   ) => void;
   selectedIds: string[];
   massDeselectAll?: () => void;
-  showStarFilter?: boolean;
   showShowingCount?: boolean;
 }
 

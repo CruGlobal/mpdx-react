@@ -10,19 +10,16 @@ import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.ge
 
 const accountListId = '111';
 const title = 'test title';
-const contactDetailsOpen = false;
 const onNavListToggle = jest.fn();
 const onSelectContact = jest.fn();
 const activeFilters = {};
-// const contactFilters = {};
 const defaultProps = {
   accountListId,
   title,
   onNavListToggle,
   onSelectContact,
-  contactDetailsOpen,
+  contactDetailsOpen: false,
   activeFilters,
-  // contactFilters,
 };
 
 const mockEnqueue = jest.fn();

@@ -10,6 +10,19 @@ import { GetPartnerGivingAnalysisReportQuery } from '../PartnerGivingAnalysisRep
 
 type Contact = PartnerGivingAnalysisReportContact;
 
+const order: Order = 'asc';
+const orderBy: keyof Contact = 'name';
+const ids = [];
+const isRowChecked = jest.fn();
+const allContactIds =
+  mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport?.contacts.map(
+    (contact) => contact.id,
+  ) ?? [];
+const onClick = jest.fn();
+const onRequestSort = jest.fn();
+const onSelectAll = jest.fn();
+const onSelectOne = jest.fn();
+
 const mocks: {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
 } = {
@@ -64,24 +77,9 @@ const mocks: {
   },
 };
 
-const order: Order = 'asc';
-const orderBy: keyof Contact = 'name';
-const ids = [];
-const isRowChecked = jest.fn();
-const allContactIds =
-  mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport?.contacts.map(
-    (contact) => contact.id,
-  ) ?? [];
-const onClick = jest.fn();
-const onRequestSort = jest.fn();
-const onSelectAll = jest.fn();
-const onSelectOne = jest.fn();
-//const selectedContacts: Array<string> = [];
-
 const defaultProps = {
   order,
   orderBy,
-  //selectedContacts,
   onRequestSort,
   onClick,
   onSelectAll,

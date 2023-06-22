@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { TableCell, TableHead, TableRow } from '@mui/material';
-// import { PartnerGivingAnalysisReportQuery } from '../../../GetPartnerGivingAnalysisReport.generated';
 import type { Order } from '../../../Reports.type';
 import type { Contact } from '../../PartnerGivingAnalysisReport';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';

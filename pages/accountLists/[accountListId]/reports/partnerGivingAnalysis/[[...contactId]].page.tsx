@@ -123,7 +123,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
                 onSelectContact={handleSelectContact}
                 title={t('Partner Giving Analysis')}
                 contactFilters={debouncedFilters}
-                contactDetailsOpen={typeof selectedContactId !== 'undefined'}
+                contactDetailsOpen={!!selectedContactId}
               />
             }
             rightPanel={

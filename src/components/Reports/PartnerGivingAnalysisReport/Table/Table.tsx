@@ -25,7 +25,6 @@ interface PartnerGivingAnalysisReportTableProps {
     property: keyof Contact,
   ) => void;
   contacts: Contact[];
-  //selectedContacts: Array<string>;
   order: Order;
   orderBy: string | null;
   isRowChecked: (id: string) => boolean;
