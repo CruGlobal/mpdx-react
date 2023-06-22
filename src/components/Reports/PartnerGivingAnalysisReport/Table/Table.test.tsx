@@ -14,10 +14,6 @@ const order: Order = 'asc';
 const orderBy: keyof Contact = 'name';
 const ids = [];
 const isRowChecked = jest.fn();
-const allContactIds =
-  mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport?.contacts.map(
-    (contact) => contact.id,
-  ) ?? [];
 const onClick = jest.fn();
 const onRequestSort = jest.fn();
 const onSelectAll = jest.fn();
@@ -76,6 +72,11 @@ const mocks: {
     },
   },
 };
+
+const allContactIds =
+  mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport?.contacts.map(
+    (contact) => contact.id,
+  ) ?? [];
 
 const defaultProps = {
   order,
