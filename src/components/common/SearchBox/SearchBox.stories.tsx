@@ -7,14 +7,14 @@ export default {
   title: 'SearchBox',
   component: SearchBox,
   args: {
-    page: 'contact',
+    showContactSearchIcon: true,
   },
   argTypes: {
     onChange: { action: 'search box changed' },
-    page: {
-      name: 'page',
-      options: ['task', 'contact'],
-      control: { type: 'select' },
+    showContactSearchIcon: {
+      name: 'showContactSearchIcon',
+      options: [true, false],
+      control: { type: 'radio' },
     },
   },
   decorators: [withDesign],
@@ -23,7 +23,7 @@ export default {
 export const Default: Story = (args) => {
   return (
     <SearchBox
-      page={args.page}
+      showContactSearchIcon={args.showContactSearchIcon}
       onChange={(searchTerm) => {
         args.onChange(searchTerm);
       }}

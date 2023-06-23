@@ -154,7 +154,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           )}
         </FilterButton>
         <SearchBox
-          page={page}
+          showContactSearchIcon={page === 'task' ? false : true}
           searchTerm={searchTerm}
           onChange={onSearchTermChanged}
           placeholder={
