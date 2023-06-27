@@ -4,6 +4,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { AccountListItem as ListItem } from './ListItem';
 import theme from 'src/theme';
+import {
+  beforeTestResizeObserver,
+  afterTestResizeObserver,
+} from 'src/utils/tests/windowResizeObserver';
 
 const onCheckToggle = jest.fn();
 
@@ -13,7 +17,7 @@ const account = {
   balance: 3500,
   code: '32111',
   currency: 'CAD',
-  lastSyncDate: '2/2/2021',
+  lastSyncDate: '2021-02-02',
   name: 'Test Account',
 };
 
@@ -50,28 +54,38 @@ describe('AccountItem', () => {
     expect(queryByTestId('AccountItemChart')).not.toBeInTheDocument();
   });
 
-  it('should render chart', async () => {
-    const entryHistoriesMock = [
-      {
-        closingBalance: 123,
-        endDate: '2021-08-29',
-        id: 'test-id-1',
-      },
-    ];
+  describe('AccountItem Chart', () => {
+    beforeEach(() => {
+      beforeTestResizeObserver();
+    });
 
-    const { queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <ListItem
-          account={{
-            ...account,
-            active: true,
-            entryHistories: entryHistoriesMock,
-          }}
-          onCheckToggle={onCheckToggle}
-        />
-      </ThemeProvider>,
-    );
+    afterEach(() => {
+      afterTestResizeObserver();
+    });
 
-    expect(queryByTestId('AccountItemChart')).toBeInTheDocument();
+    it('should render chart', async () => {
+      const entryHistoriesMock = [
+        {
+          closingBalance: 123,
+          endDate: '2021-08-29',
+          id: 'test-id-1',
+        },
+      ];
+
+      const { queryByTestId } = render(
+        <ThemeProvider theme={theme}>
+          <ListItem
+            account={{
+              ...account,
+              active: true,
+              entryHistories: entryHistoriesMock,
+            }}
+            onCheckToggle={onCheckToggle}
+          />
+        </ThemeProvider>,
+      );
+
+      expect(queryByTestId('AccountItemChart')).toBeInTheDocument();
+    });
   });
 });

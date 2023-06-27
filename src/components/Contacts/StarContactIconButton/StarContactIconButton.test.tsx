@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event';
 import { waitFor } from '@testing-library/dom';
 import theme from '../../../theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { SetContactStarredMutation } from './SetContactStarred.generated';
 import { StarContactIconButton } from './StarContactIconButton';
 
 const accountListId = 'abc';
@@ -14,7 +13,7 @@ const contactId = '1';
 describe('StarTaskIconButton', () => {
   it('renders not starred', async () => {
     const { queryByRole } = render(
-      <GqlMockedProvider<SetContactStarredMutation>>
+      <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <StarContactIconButton
             accountListId={accountListId}
@@ -40,7 +39,7 @@ describe('StarTaskIconButton', () => {
 
   it('renders starred', async () => {
     const { queryByRole } = render(
-      <GqlMockedProvider<SetContactStarredMutation>>
+      <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <StarContactIconButton
             accountListId={accountListId}
@@ -68,7 +67,7 @@ describe('StarTaskIconButton', () => {
     const mutationSpy = jest.fn();
 
     const { getByRole } = render(
-      <GqlMockedProvider<SetContactStarredMutation> onCall={mutationSpy}>
+      <GqlMockedProvider onCall={mutationSpy}>
         <ThemeProvider theme={theme}>
           <StarContactIconButton
             accountListId={accountListId}

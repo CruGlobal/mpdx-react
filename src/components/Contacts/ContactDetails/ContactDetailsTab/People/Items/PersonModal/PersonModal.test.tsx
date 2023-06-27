@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
@@ -20,8 +20,10 @@ import {
   ContactDetailsTabQuery,
 } from '../../../ContactDetailsTab.generated';
 import { PersonModal } from './PersonModal';
-import { UpdatePersonMutation } from './PersonModal.generated';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+import { uploadAvatar, validateAvatar } from './uploadAvatar';
+
+jest.mock('./uploadAvatar');
 
 const handleClose = jest.fn();
 const accountListId = '123';
@@ -36,6 +38,7 @@ const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
               {
                 email: 'test1234@test.com',
                 primary: true,
+                historic: false,
                 location: 'Work',
                 source: 'MPDX',
               },
@@ -43,6 +46,7 @@ const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
                 email: 'secondemail@test.com',
                 location: 'Personal',
                 primary: false,
+                historic: false,
                 source: 'MPDX',
               },
             ],
@@ -53,12 +57,14 @@ const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
                 number: '777-777-7777',
                 location: 'Mobile',
                 primary: true,
+                historic: false,
                 source: 'MPDX',
               },
               {
                 number: '999-999-9999',
                 location: 'Work',
                 primary: false,
+                historic: false,
                 source: 'MPDX',
               },
             ],
@@ -135,12 +141,17 @@ jest.mock('notistack', () => ({
 }));
 
 describe('PersonModal', () => {
+  beforeEach(() => {
+    (uploadAvatar as jest.Mock).mockResolvedValue(undefined);
+    (validateAvatar as jest.Mock).mockReturnValue({ success: true });
+  });
+
   it('should render edit person modal', () => {
     const { getByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -163,7 +174,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -187,7 +198,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -212,7 +223,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+            <GqlMockedProvider onCall={mutationSpy}>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -241,7 +252,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -265,7 +276,7 @@ describe('PersonModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<UpdatePersonMutation>>
+            <GqlMockedProvider>
               <ContactDetailProvider>
                 <PersonModal
                   contactId={contactId}
@@ -288,6 +299,164 @@ describe('PersonModal', () => {
     );
   });
   describe('Updating', () => {
+    const createObjectURL = jest
+      .fn()
+      .mockReturnValueOnce('blob:1')
+      .mockReturnValueOnce('blob:2');
+    const revokeObjectURL = jest.fn();
+    beforeEach(() => {
+      window.URL.createObjectURL = createObjectURL;
+      window.URL.revokeObjectURL = revokeObjectURL;
+    });
+
+    it('should handle uploading an avatar', async () => {
+      const { getByRole, getByTestId } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const file1 = new File(['contents1'], 'image1.png', {
+        type: 'image/png',
+      });
+      const file2 = new File(['contents2'], 'image2.png', {
+        type: 'image/png',
+      });
+      const fileInput = getByTestId('PersonNameUpload');
+      userEvent.upload(fileInput, file1);
+      expect(revokeObjectURL).not.toHaveBeenCalledWith('blob:1');
+      userEvent.upload(fileInput, file2);
+      expect(revokeObjectURL).toHaveBeenCalledWith('blob:1');
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(uploadAvatar).toHaveBeenCalledWith(
+          expect.objectContaining({
+            personId: mockPerson.id,
+            file: file2,
+          }),
+        ),
+      );
+
+      cleanup();
+      expect(revokeObjectURL).toHaveBeenCalledWith('blob:2');
+    });
+
+    it('should render avatar', async () => {
+      mockPerson.avatar = 'https://cru.org/assets/image.jpg';
+      mockPerson.firstName = 'James';
+      mockPerson.lastName = 'Smith';
+      mockPerson.avatar = 'https://cru.org/assets/image.jpg';
+      render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const avatarImage = document.querySelector('img') as HTMLImageElement;
+      expect(avatarImage.src).toEqual('https://cru.org/assets/image.jpg');
+      expect(avatarImage.alt).toEqual('James Smith');
+    });
+
+    it('should notify the user about validation errors', () => {
+      (validateAvatar as jest.Mock).mockReturnValue({
+        success: false,
+        message: 'Invalid file',
+      });
+
+      const { getByTestId } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const file = new File(['contents'], 'image.png', {
+        type: 'image/png',
+      });
+      userEvent.upload(getByTestId('PersonNameUpload'), file);
+
+      expect(mockEnqueue).toHaveBeenCalledWith('Invalid file', {
+        variant: 'error',
+      });
+    });
+
+    it('should notify the user about upload errors', async () => {
+      (uploadAvatar as jest.Mock).mockRejectedValue(
+        new Error('Upload failure'),
+      );
+
+      const { getByRole, getByTestId } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const file = new File(['contents'], 'image.png', {
+        type: 'image/png',
+      });
+      userEvent.upload(getByTestId('PersonNameUpload'), file);
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith('Upload failure', {
+          variant: 'error',
+        }),
+      );
+    });
+
     it('should handle editing person name section', async () => {
       const mutationSpy = jest.fn();
       const newPersonFirstName = 'Test';
@@ -299,7 +468,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -354,7 +523,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -404,13 +573,44 @@ describe('PersonModal', () => {
       );
     });
 
+    it('handles marking a phone number as invalid', async () => {
+      const mutationSpy = jest.fn();
+      const { getByRole, getAllByRole } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      userEvent.click(getAllByRole('checkbox', { name: 'Invalid' })[0]);
+      userEvent.click(getByRole('button', { name: 'Save' }));
+      await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+      const { phoneNumbers } =
+        mutationSpy.mock.calls[0][0].operation.variables.attributes;
+      expect(phoneNumbers[0].historic).toBe(true);
+      expect(phoneNumbers[1].historic).toBe(false);
+    });
+
     it('handles deleting a phone number', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -449,7 +649,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -478,7 +678,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -532,13 +732,44 @@ describe('PersonModal', () => {
       expect(operation.variables.attributes.optoutEnewsletter).toEqual(true);
     });
 
+    it('handles marking an email address as invalid', async () => {
+      const mutationSpy = jest.fn();
+      const { getByRole, getAllByRole } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      userEvent.click(getAllByRole('checkbox', { name: 'Invalid' })[2]);
+      userEvent.click(getByRole('button', { name: 'Save' }));
+      await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+      const { emailAddresses } =
+        mutationSpy.mock.calls[0][0].operation.variables.attributes;
+      expect(emailAddresses[0].historic).toBe(true);
+      expect(emailAddresses[1].historic).toBe(false);
+    });
+
     it('handles deleting an email address', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -577,7 +808,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -609,7 +840,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -679,7 +910,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -720,7 +951,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -765,7 +996,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -832,7 +1063,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -882,7 +1113,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -910,7 +1141,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<UpdatePersonMutation>>
+              <GqlMockedProvider>
                 <ContactDetailProvider>
                   <PersonModal
                     contactId={contactId}
@@ -1018,6 +1249,9 @@ describe('PersonModal', () => {
           id: contactId,
           name: 'Person, Test',
           tagList: ['tag1', 'tag2', 'tag3'],
+          contactDonorAccounts: {
+            nodes: [],
+          },
           contactReferralsToMe: {
             nodes: [
               {
@@ -1042,6 +1276,7 @@ describe('PersonModal', () => {
                 historic: false,
                 region: 'some region',
                 source: 'some source',
+                createdAt: '2023-01-01T00:00:00.000Z',
               },
             ],
           },
@@ -1068,7 +1303,7 @@ describe('PersonModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<ContactDetailsTabQuery>
+              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
                 mocks={mocks}
                 cache={cache}
                 onCall={mutationSpy}

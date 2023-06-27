@@ -85,11 +85,9 @@ const columns = [
     renderCell: function renderActions() {
       const { classes } = useStyles();
       return (
-        <>
-          <IconButton className={classes.actionIconButton}>
-            <Icon path={mdiAccountPlus} size={1} />
-          </IconButton>
-        </>
+        <IconButton className={classes.actionIconButton}>
+          <Icon path={mdiAccountPlus} size={1} />
+        </IconButton>
       );
     },
   },
@@ -111,22 +109,18 @@ const AppealDetailsExcluded = ({ appeal }: Props): ReactElement => {
     }`,
   }));
 
-  return (
-    <>
-      {appeal.excluded.length > 0 ? (
-        <Box component="div" className={classes.container}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={25}
-            rowsPerPageOptions={[10, 25, 50, 100]}
-            disableSelectionOnClick
-          />
-        </Box>
-      ) : (
-        <AppealDetailsNoData />
-      )}
-    </>
+  return appeal.excluded.length > 0 ? (
+    <Box component="div" className={classes.container}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        pageSize={25}
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        disableSelectionOnClick
+      />
+    </Box>
+  ) : (
+    <AppealDetailsNoData />
   );
 };
 

@@ -61,7 +61,7 @@ describe('AddMenu', () => {
   });
 
   it('handles menu item click | Add Multiple Contacts', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, getAllByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
@@ -74,12 +74,14 @@ describe('AddMenu', () => {
     );
     userEvent.click(getByRole('button', { hidden: true, name: 'Add Button' }));
     await waitFor(() =>
-      expect(getByText('Multiple Contacts')).toBeInTheDocument(),
-    );
-    userEvent.click(getByText('Multiple Contacts'));
-    await waitFor(() =>
       expect(getByText('Add Multiple Contacts')).toBeInTheDocument(),
     );
+    getAllByText('Add Multiple Contacts').map(async (text) => {
+      userEvent.click(text);
+      await waitFor(() =>
+        expect(getByText('Add Multiple Contacts')).toBeInTheDocument(),
+      );
+    });
   });
 
   it('handles menu item click | Add Task', async () => {
@@ -97,6 +99,8 @@ describe('AddMenu', () => {
     userEvent.click(getByRole('button', { hidden: true, name: 'Add Button' }));
     await waitFor(() => expect(getByText('Add Task')).toBeInTheDocument());
     userEvent.click(getByText('Add Task'));
-    await waitFor(() => expect(openTaskModal).toHaveBeenCalledWith({}));
+    await waitFor(() =>
+      expect(openTaskModal).toHaveBeenCalledWith({ view: 'add' }),
+    );
   });
 });

@@ -8,9 +8,11 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../graphql/types.generated';
-import { TaskFilter } from '../List/List';
 import { useAccountListId } from '../../../hooks/useAccountListId';
-import { useGetTaskForTaskModalQuery } from '../Modal/TaskModalTask.generated';
+import {
+  GetTaskForTaskModalQuery,
+  useGetTaskForTaskModalQuery,
+} from '../Modal/TaskModalTask.generated';
 import TaskModalForm from './Form/TaskModalForm';
 import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
 import TaskModalCommentsList from './Comments/TaskModalCommentsList';
@@ -19,11 +21,9 @@ import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
 export interface TaskModalProps {
   taskId?: string;
   onClose?: () => void;
-  view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
+  view: 'comments' | 'log' | 'add' | 'complete' | 'edit';
   showCompleteForm?: boolean;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
-  filter?: TaskFilter;
-  rowsPerPage?: number;
 }
 
 export enum TaskModalTabsEnum {
@@ -37,8 +37,6 @@ const TaskModal = ({
   onClose,
   view,
   defaultValues,
-  filter,
-  rowsPerPage,
 }: TaskModalProps): ReactElement => {
   const accountListId = useAccountListId();
   const [open, setOpen] = useState(!taskId);
@@ -57,7 +55,7 @@ const TaskModal = ({
     onClose && onClose();
   };
 
-  const task = data?.task;
+  const task: GetTaskForTaskModalQuery['task'] | null = data?.task ?? null;
 
   const renderTitle = (): string => {
     switch (view) {
@@ -98,11 +96,8 @@ const TaskModal = ({
         return (
           <TaskModalLogForm
             accountListId={accountListId || ''}
-            task={task}
             onClose={onModalClose}
             defaultValues={defaultValues}
-            filter={filter}
-            rowsPerPage={rowsPerPage || 100}
           />
         );
       default:
@@ -112,33 +107,28 @@ const TaskModal = ({
             task={task}
             onClose={onModalClose}
             defaultValues={defaultValues}
-            filter={filter}
-            rowsPerPage={rowsPerPage || 100}
+            view={view}
           />
         );
     }
   };
 
-  return (
-    <>
-      {loading ? (
-        <Loading loading />
+  return loading ? (
+    <Loading loading />
+  ) : (
+    <Modal isOpen={open} title={renderTitle()} handleClose={onModalClose}>
+      {accountListId ? (
+        renderView()
       ) : (
-        <Modal isOpen={open} title={renderTitle()} handleClose={onModalClose}>
-          {accountListId ? (
-            <>{renderView()}</>
-          ) : (
-            <DialogContent dividers>
-              <Typography color="error" align="center">
-                {t(
-                  'Our apologies. It appears something has gone wrong. Please try again later and contact the administrator if this problem persists.',
-                )}
-              </Typography>
-            </DialogContent>
-          )}
-        </Modal>
+        <DialogContent dividers>
+          <Typography color="error" align="center">
+            {t(
+              'Our apologies. It appears something has gone wrong. Please try again later and contact the administrator if this problem persists.',
+            )}
+          </Typography>
+        </DialogContent>
       )}
-    </>
+    </Modal>
   );
 };
 

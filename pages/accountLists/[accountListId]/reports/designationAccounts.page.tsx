@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
@@ -7,7 +7,9 @@ import { DesignationAccountsReport } from 'src/components/Reports/DesignationAcc
 import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+import { suggestArticles } from 'src/lib/helpScout';
 
 const DesignationAccountsReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -16,7 +18,13 @@ const DesignationAccountsReportPageWrapper = styled(Box)(({ theme }) => ({
 const DesignationAccountsReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
+
+  useEffect(() => {
+    suggestArticles('HS_REPORTS_SUGGESTIONS');
+  }, []);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -25,7 +33,9 @@ const DesignationAccountsReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Reports - Designation Accounts')}</title>
+        <title>
+          {appName} | {t('Reports - Designation Accounts')}
+        </title>
       </Head>
       {accountListId ? (
         <DesignationAccountsReportPageWrapper>
@@ -36,6 +46,8 @@ const DesignationAccountsReportPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="designationAccounts"
                 onClose={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
               />
             }
             leftOpen={isNavListOpen}

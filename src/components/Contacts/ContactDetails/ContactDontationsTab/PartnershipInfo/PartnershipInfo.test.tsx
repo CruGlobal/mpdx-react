@@ -87,7 +87,7 @@ describe('PartnershipInfo', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('CA$55 - ANNUAL')).toBeInTheDocument();
+      expect(getByText('CA$55 - Annual')).toBeInTheDocument();
       expect(getByText('Principal - Financial')).toBeInTheDocument();
     });
   });

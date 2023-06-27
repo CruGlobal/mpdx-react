@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Divider, Tooltip } from '@mui/material';
+import { Box, Typography, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
@@ -13,18 +13,12 @@ interface Props {
   currency: string;
 }
 
-const HeaderWrapper = styled(Box)(({}) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  padding: 24,
-}));
-
-const ProgressBarWrapper = styled(Box)(({}) => ({
+const ProgressBarWrapper = styled(Box)(({ theme }) => ({
   width: 450,
   display: 'flex',
   flexDirection: 'row',
   height: 35,
+  marginRight: theme.spacing(0.5),
   border: '2px solid inherit',
   borderRadius: 30,
   overflow: 'hidden',
@@ -51,71 +45,53 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = ({
     return (amount / total) * 100;
   };
 
-  return (
-    <Box>
-      <HeaderWrapper>
-        <Typography variant="h4">{t('Expected Monthly Total')}</Typography>
-        {!empty ? (
-          <ProgressBarWrapper data-testid="progressBarWrapper">
-            <Tooltip
-              title={
-                <Typography>
-                  {Math.round(totalDonations) + ' ' + currency}
-                </Typography>
-              }
-              arrow
-            >
-              <ProgressBarSection
-                style={{
-                  backgroundColor: theme.palette.progressBarYellow.main,
-                  width: `${calculateWidth(totalDonations)}%`,
-                }}
-              >
-                <Typography style={{ marginTop: 4 }}>
-                  {t('Received')}
-                </Typography>
-              </ProgressBarSection>
-            </Tooltip>
-            <Tooltip
-              title={
-                <Typography>
-                  {Math.round(totalLikely) + ' ' + currency}
-                </Typography>
-              }
-              arrow
-            >
-              <ProgressBarSection
-                style={{
-                  backgroundColor: theme.palette.progressBarOrange.main,
-                  width: `${calculateWidth(totalLikely)}%`,
-                }}
-              >
-                <Typography style={{ marginTop: 4 }}>{t('Likely')}</Typography>
-              </ProgressBarSection>
-            </Tooltip>
-            <Tooltip
-              title={
-                <Typography>
-                  {Math.round(totalUnlikely) + ' ' + currency}
-                </Typography>
-              }
-              arrow
-            >
-              <ProgressBarSection
-                style={{
-                  backgroundColor: theme.palette.progressBarGray.main,
-                  width: `${calculateWidth(totalUnlikely)}%`,
-                }}
-              >
-                <Typography style={{ marginTop: 4 }}>
-                  {t('Possible')}
-                </Typography>
-              </ProgressBarSection>
-            </Tooltip>
-          </ProgressBarWrapper>
-        ) : null}
-      </HeaderWrapper>
-      <Divider style={{ marginBottom: 8 }} variant="middle"></Divider>
-    </Box>
-  );
+  return !empty ? (
+    <ProgressBarWrapper data-testid="progressBarWrapper">
+      <Tooltip
+        title={
+          <Typography>{Math.round(totalDonations) + ' ' + currency}</Typography>
+        }
+        arrow
+      >
+        <ProgressBarSection
+          style={{
+            backgroundColor: theme.palette.progressBarYellow.main,
+            width: `${calculateWidth(totalDonations)}%`,
+          }}
+        >
+          <Typography style={{ marginTop: 4 }}>{t('Received')}</Typography>
+        </ProgressBarSection>
+      </Tooltip>
+      <Tooltip
+        title={
+          <Typography>{Math.round(totalLikely) + ' ' + currency}</Typography>
+        }
+        arrow
+      >
+        <ProgressBarSection
+          style={{
+            backgroundColor: theme.palette.progressBarOrange.main,
+            width: `${calculateWidth(totalLikely)}%`,
+          }}
+        >
+          <Typography style={{ marginTop: 4 }}>{t('Likely')}</Typography>
+        </ProgressBarSection>
+      </Tooltip>
+      <Tooltip
+        title={
+          <Typography>{Math.round(totalUnlikely) + ' ' + currency}</Typography>
+        }
+        arrow
+      >
+        <ProgressBarSection
+          style={{
+            backgroundColor: theme.palette.progressBarGray.main,
+            width: `${calculateWidth(totalUnlikely)}%`,
+          }}
+        >
+          <Typography style={{ marginTop: 4 }}>{t('Possible')}</Typography>
+        </ProgressBarSection>
+      </Tooltip>
+    </ProgressBarWrapper>
+  ) : null;
 };

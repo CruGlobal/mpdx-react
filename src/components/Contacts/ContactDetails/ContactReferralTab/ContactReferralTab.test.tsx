@@ -37,21 +37,16 @@ describe('ContactReferralTab', () => {
 
   it('test render', async () => {
     const { findByText } = render(
-      <GqlMockedProvider<ContactReferralTabQuery>
+      <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
         mocks={{
-          contact: {
-            id: 'contact-id',
-            name: 'name',
-            contactReferralsByMe: [
-              {
-                id: 'referral-id',
-                createdAt: '2021-04-29T07:48:28+0000',
-                referredTo: {
-                  id: 'contact-id-2',
-                  name: 'name-2',
-                },
+          ContactReferralTab: {
+            contact: {
+              id: 'contact-id',
+              name: 'name',
+              contactReferralsByMe: {
+                nodes: [],
               },
-            ],
+            },
           },
         }}
       >
@@ -67,7 +62,7 @@ describe('ContactReferralTab', () => {
 
   it('tests render with data and click event', async () => {
     const { findByText, getByText } = render(
-      <GqlMockedProvider<ContactReferralTabQuery>
+      <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
         mocks={{
           ContactReferralTab: {
             contact: {

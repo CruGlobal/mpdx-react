@@ -1,9 +1,24 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
 import { useUser } from './useUser';
+import { getSession } from 'next-auth/react';
+
+jest.mock('next-auth/react');
+
+const session = {
+  expires: '2021-10-28T14:48:20.897Z',
+  user: {
+    email: 'Chair Library Bed',
+    image: null,
+    name: 'Dung Tapestry',
+    token: 'superLongJwtString',
+  },
+};
 
 describe('useUser', () => {
   it('gets user', async () => {
+    (getSession as jest.Mock).mockResolvedValue(session);
+
     const { result, waitForNextUpdate } = renderHook(() => useUser(), {
       wrapper: GqlMockedProvider,
     });
@@ -13,38 +28,45 @@ describe('useUser', () => {
     expect(result.current).toMatchInlineSnapshot(`
       Object {
         "__typename": "User",
-        "admin": false,
+        "admin": true,
         "administrativeOrganizations": Object {
           "__typename": "OrganizationConnection",
           "nodes": Array [
             Object {
               "__typename": "Organization",
-              "id": "2807863",
+              "id": "1851199",
             },
             Object {
               "__typename": "Organization",
-              "id": "2698416",
-            },
-            Object {
-              "__typename": "Organization",
-              "id": "7545127",
+              "id": "3120940",
             },
           ],
         },
-        "developer": true,
-        "firstName": "Dung Tapestry",
-        "id": "8071787",
+        "developer": false,
+        "firstName": "Flower Bee",
+        "id": "863856",
         "keyAccounts": Array [
           Object {
             "__typename": "KeyAccount",
-            "email": "Chair Library Bed",
-            "id": "1433814",
+            "email": "Balloon Spice",
+            "id": "2541550",
+          },
+          Object {
+            "__typename": "KeyAccount",
+            "email": "Drink Worm Rocket",
+            "id": "6455335",
+          },
+          Object {
+            "__typename": "KeyAccount",
+            "email": "Barbecue Chocolates",
+            "id": "8591453",
           },
         ],
-        "lastName": "Parachute",
+        "lastName": "Telescope",
         "preferences": Object {
           "__typename": "Preference",
-          "locale": "Circus Leg Slave",
+          "language": "Typewriter Backpack",
+          "locale": "Bed Coffee-shop",
         },
       }
     `);

@@ -11,7 +11,7 @@ interface Props {
 }
 
 const StarButton = styled(IconButton)(({ theme }) => ({
-  margin: theme.spacing(1),
+  margin: `${theme.spacing(1)} 0`,
 }));
 
 export const StarTaskIconButton: React.FC<Props> = ({
@@ -24,6 +24,16 @@ export const StarTaskIconButton: React.FC<Props> = ({
   const toggleStarred = () => {
     setTaskStarred({
       variables: { accountListId, taskId, starred: !isStarred },
+      optimisticResponse: {
+        updateTask: {
+          __typename: 'TaskUpdateMutationPayload',
+          task: {
+            __typename: 'Task',
+            id: taskId,
+            starred: !isStarred,
+          },
+        },
+      },
     });
   };
 

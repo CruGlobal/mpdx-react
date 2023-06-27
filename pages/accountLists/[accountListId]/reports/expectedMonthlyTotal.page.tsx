@@ -1,29 +1,71 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { ExpectedMonthlyTotalReportHeader } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Header/ExpectedMonthlyTotalReportHeader';
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ExpectedMonthlyTotalReport } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReport';
+import { suggestArticles } from 'src/lib/helpScout';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+
+const ExpectedMonthlyTotalReportPageWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));
 
 const ExpectedMonthlyTotalReportPage = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
+  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
+
+  useEffect(() => {
+    suggestArticles('HS_REPORTS_SUGGESTIONS');
+  }, []);
+
+  const handleNavListToggle = () => {
+    setNavListOpen(!isNavListOpen);
+  };
 
   return (
     <>
       <Head>
         <title>
-          MPDX | {t('Reports')} | {t('Expect Monthly Total')}
+          {appName} | {t('Reports')} | {t('Expect Monthly Total')}
         </title>
       </Head>
       {accountListId ? (
-        <ExpectedMonthlyTotalReport
-          accountListId={accountListId}
-        ></ExpectedMonthlyTotalReport>
+        <ExpectedMonthlyTotalReportPageWrapper>
+          <SidePanelsLayout
+            isScrollBox={false}
+            leftPanel={
+              <NavReportsList
+                isOpen={isNavListOpen}
+                selectedId="expectedMonthlyTotal"
+                onClose={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
+              />
+            }
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            mainContent={
+              <ExpectedMonthlyTotalReport
+                accountListId={accountListId}
+                designationAccounts={designationAccounts}
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Expected Monthly Total')}
+              />
+            }
+          />
+        </ExpectedMonthlyTotalReportPageWrapper>
       ) : (
-        <Box>
+        <>
           <ExpectedMonthlyTotalReportHeader
             empty={true}
             totalDonations={0}
@@ -33,7 +75,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
             currency={''}
           />
           <Loading loading />
-        </Box>
+        </>
       )}
     </>
   );

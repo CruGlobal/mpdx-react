@@ -5,6 +5,7 @@ import { Theme, Grid, Box, Typography, Divider } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { motion } from 'framer-motion';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
 
 import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
@@ -40,6 +41,7 @@ const AppealsPage: React.FC = () => {
   const { t } = useTranslation();
   const { classes } = useStyles();
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
 
   const variants = {
     animate: {
@@ -57,7 +59,9 @@ const AppealsPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>MPDX | {t('Appeals')}</title>
+        <title>
+          {appName} | {t('Appeals')}
+        </title>
       </Head>
       {accountListId ? (
         <motion.div

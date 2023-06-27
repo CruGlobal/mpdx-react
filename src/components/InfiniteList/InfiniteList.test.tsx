@@ -1,4 +1,5 @@
 import React from 'react';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../theme';
@@ -24,17 +25,21 @@ describe('InfiniteList', () => {
     expect(getByTestId('infinite-list-skeleton-loading')).toBeVisible();
   });
 
-  it.skip('should render data', async () => {
+  it('should render data', async () => {
     const { queryByTestId, queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
-        <InfiniteList
-          loading={false}
-          data={['item 1', 'item 2']}
-          initialItemCount={2}
-          itemContent={(index, item) => <div>{item}</div>}
-          endReached={endReached}
-          EmptyPlaceholder={<div>No items</div>}
-        />
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 300, itemHeight: 100 }}
+        >
+          <InfiniteList
+            loading={false}
+            data={['item 1', 'item 2']}
+            initialItemCount={2}
+            itemContent={(index, item) => <div>{item}</div>}
+            endReached={endReached}
+            EmptyPlaceholder={<div>No items</div>}
+          />
+        </VirtuosoMockContext.Provider>
       </ThemeProvider>,
     );
 
@@ -45,18 +50,22 @@ describe('InfiniteList', () => {
     expect(endReached).not.toHaveBeenCalled();
   });
 
-  it.skip('should render data with headers', async () => {
+  it('should render data with headers', async () => {
     const { queryByTestId, queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
-        <InfiniteList
-          loading={false}
-          data={['item 1', 'item 2']}
-          initialItemCount={2}
-          groupBy={(item) => item[0].toUpperCase()}
-          itemContent={(index, item) => <div>{item}</div>}
-          endReached={endReached}
-          EmptyPlaceholder={<div>No items</div>}
-        />
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 300, itemHeight: 100 }}
+        >
+          <InfiniteList
+            loading={false}
+            data={['item 1', 'item 2']}
+            initialItemCount={2}
+            groupBy={(item) => ({ label: item[0].toUpperCase() })}
+            itemContent={(index, item) => <div>{item}</div>}
+            endReached={endReached}
+            EmptyPlaceholder={<div>No items</div>}
+          />
+        </VirtuosoMockContext.Provider>
       </ThemeProvider>,
     );
 

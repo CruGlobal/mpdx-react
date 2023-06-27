@@ -2,23 +2,9 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
     ...ContactDonorAccounts
-    donations {
-      nodes {
-        ...ContactDonation
-      }
-    }
     name
     lastDonation {
       ...ContactDonation
-    }
-
-    contactDonorAccounts {
-      nodes {
-        id
-        donorAccount {
-          ...ContactDonorAccount
-        }
-      }
     }
   }
 }
@@ -47,12 +33,13 @@ fragment ContactDonorAccounts on Contact {
   pledgeFrequency
   totalDonations
   noAppeals
+  sendNewsletter
   status
   source
   lastDonation {
     ...ContactDonation
   }
-  contactReferralsToMe {
+  contactReferralsToMe(first: 10) {
     nodes {
       id
       referredBy {
@@ -61,7 +48,7 @@ fragment ContactDonorAccounts on Contact {
       }
     }
   }
-  contactDonorAccounts {
+  contactDonorAccounts(first: 25) {
     nodes {
       id
       donorAccount {

@@ -2,7 +2,6 @@ import React, { useState, ReactElement } from 'react';
 import {
   Avatar,
   Box,
-  IconButton,
   ListItemText,
   Menu,
   Divider,
@@ -18,22 +17,19 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { signOut, useSession } from 'next-auth/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import { clearDataDogUser } from 'src/hooks/useDataDog';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
 import theme from '../../../../../../theme';
+import ProfileName from './ProfileName';
 
 const AccountName = styled(Typography)(({ theme }) => ({
   color: theme.palette.common.white,
   margin: 0,
   padding: '0px 8px',
-}));
-
-const StyledAvatar = styled(AccountCircleIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayMedium.main,
 }));
 
 const MenuItemAccount = styled(MenuItem)(() => ({
@@ -100,9 +96,21 @@ const MenuWrapper = styled(Menu)(({ theme }) => ({
   },
 }));
 
+const ImpersonatingMenuButton = styled(Button)(({ theme }) => ({
+  width: '100%',
+  marginTop: theme.spacing(1),
+  borderColor: '#f6921e',
+  color: '#f6921e',
+  '&:hover': {
+    backgroundColor: '#f6921e',
+    color: '#ffffff',
+  },
+}));
+
 const ProfileMenu = (): ReactElement => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { data: session } = useSession();
   const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
   const { data } = useGetTopBarQuery();
@@ -118,39 +126,41 @@ const ProfileMenu = (): ReactElement => {
   const handleProfileMenuClose = () => {
     setProfileMenuAnchorEl(undefined);
   };
+  const hasSelectedAccount = data?.accountLists?.nodes
+    ? !!(accountListId && data.accountLists.nodes.length > 1)
+    : false;
 
   return (
     <>
-      <IconButton
-        onClick={handleProfileMenuOpen}
-        data-testid="profileMenuButton"
+      <ProfileName
+        impersonating={!!session?.user?.impersonating}
+        onProfileMenuOpen={handleProfileMenuOpen}
+        showSubAccount={hasSelectedAccount}
       >
-        <Box display="flex" alignItems="center" m={-1}>
-          <StyledAvatar />
-          {data && (
-            <Box display="block" textAlign="left">
-              <AccountName>
-                {[data.user.firstName, data.user.lastName]
-                  .filter(Boolean)
-                  .join(' ')}
+        {data && (
+          <Box display="block" textAlign="left">
+            <AccountName>
+              {session?.user?.impersonating ? `Impersonating ` : ``}
+              {[data.user.firstName, data.user.lastName]
+                .filter(Boolean)
+                .join(' ')}
+            </AccountName>
+            {hasSelectedAccount && (
+              <AccountName
+                display="block"
+                variant="body2"
+                data-testid="accountListName"
+              >
+                {
+                  data?.accountLists.nodes.find(
+                    (accountList) => accountList.id === accountListId,
+                  )?.name
+                }
               </AccountName>
-              {accountListId && data.accountLists.nodes.length > 1 && (
-                <AccountName
-                  display="block"
-                  variant="body2"
-                  data-testid="accountListName"
-                >
-                  {
-                    data?.accountLists.nodes.find(
-                      (accountList) => accountList.id === accountListId,
-                    )?.name
-                  }
-                </AccountName>
-              )}
-            </Box>
-          )}
-        </Box>
-      </IconButton>
+            )}
+          </Box>
+        )}
+      </ProfileName>
       <MenuWrapper
         data-testid="profileMenu"
         anchorEl={profileMenuAnchorEl}
@@ -275,13 +285,28 @@ const ProfileMenu = (): ReactElement => {
           </HandoffLink>
         )}
         <MenuItem>
-          <MenuButton
-            variant="outlined"
-            color="inherit"
-            onClick={() => signOut()}
-          >
-            {t('Sign Out')}
-          </MenuButton>
+          {session?.user?.impersonating && (
+            <ImpersonatingMenuButton
+              variant="outlined"
+              color="inherit"
+              href="/api/stop-impersonating"
+            >
+              {t('Stop Impersonating')}
+            </ImpersonatingMenuButton>
+          )}
+          {!session?.user?.impersonating && (
+            <MenuButton
+              variant="outlined"
+              color="inherit"
+              onClick={() => {
+                signOut({ callbackUrl: 'signOut' }).then(() => {
+                  clearDataDogUser();
+                });
+              }}
+            >
+              {t('Sign Out')}
+            </MenuButton>
+          )}
         </MenuItem>
         <MenuItemFooter>
           <Link

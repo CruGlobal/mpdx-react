@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Grid,
   MenuItem,
@@ -25,10 +25,9 @@ import theme from '../../../../../../theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import HandoffLink from 'src/components/HandoffLink';
+import { ReportLink } from './ReportLink';
 
-export const filteredReportNavItems = ReportNavItems.filter(
-  (item) => item.id !== 'partnerCurrency',
-);
+export const filteredReportNavItems = ReportNavItems;
 
 const useStyles = makeStyles()(() => ({
   navListItem: {
@@ -112,7 +111,7 @@ export const toolsRedirectLinks: { [key: string]: string } = {
   csv: 'import/csv/upload',
 };
 
-const NavMenu = (): ReactElement => {
+const NavMenu: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { classes } = useStyles();
@@ -176,251 +175,240 @@ const NavMenu = (): ReactElement => {
     setToolsMenuOpen(false);
   };
   const router = useRouter();
-  return (
-    <>
-      {accountListId ? (
-        <Grid container item alignItems="center" xs="auto">
-          <Grid item className={classes.navListItem}>
-            <NextLink href={`/accountLists/${accountListId}`}>
-              <MenuItem
-                tabIndex={0}
-                className={classes.menuItem}
-                aria-current={
-                  router.asPath === `/accountLists/${accountListId}` && 'page'
-                }
-              >
-                <ListItemText primary={t('Dashboard')} />
-              </MenuItem>
-            </NextLink>
-          </Grid>
-          <Grid item className={classes.navListItem}>
-            <NextLink href={`/accountLists/${accountListId}/contacts`}>
-              <MenuItem
-                tabIndex={0}
-                className={classes.menuItem}
-                aria-current={router.asPath.includes('contacts') && 'page'}
-              >
-                <ListItemText primary={t('Contacts')} />
-              </MenuItem>
-            </NextLink>
-          </Grid>
-          <Grid item className={classes.navListItem}>
-            <NextLink href={`/accountLists/${accountListId}/tasks`}>
-              <MenuItem
-                tabIndex={0}
-                className={classes.menuItem}
-                aria-current={router.asPath.includes('tasks') && 'page'}
-              >
-                <ListItemText primary={t('Tasks')} />
-              </MenuItem>
-            </NextLink>
-          </Grid>
-          <Grid item className={classes.navListItem}>
-            <MenuItem
-              tabIndex={0}
-              ref={anchorRef}
-              aria-controls={reportsMenuOpen ? 'menu-list-grow' : undefined}
-              aria-haspopup="true"
-              onClick={handleReportsMenuToggle}
-              data-testid="ReportMenuToggle"
-              aria-expanded={reportsMenuOpen}
-              className={clsx(
-                classes.menuItem,
-                reportsMenuOpen && classes.menuItemSelected,
-                router.asPath.includes('reports') && classes.menuItemSelected,
-              )}
+  return accountListId ? (
+    <Grid container item alignItems="center" xs="auto">
+      <Grid item className={classes.navListItem}>
+        <NextLink href={`/accountLists/${accountListId}`}>
+          <MenuItem
+            tabIndex={0}
+            className={classes.menuItem}
+            aria-current={
+              router.asPath === `/accountLists/${accountListId}` && 'page'
+            }
+          >
+            <ListItemText primary={t('Dashboard')} />
+          </MenuItem>
+        </NextLink>
+      </Grid>
+      <Grid item className={classes.navListItem}>
+        <NextLink href={`/accountLists/${accountListId}/contacts`}>
+          <MenuItem
+            tabIndex={0}
+            className={classes.menuItem}
+            aria-current={router.asPath?.includes('contacts') && 'page'}
+          >
+            <ListItemText primary={t('Contacts')} />
+          </MenuItem>
+        </NextLink>
+      </Grid>
+      <Grid item className={classes.navListItem}>
+        <NextLink href={`/accountLists/${accountListId}/tasks`}>
+          <MenuItem
+            tabIndex={0}
+            className={classes.menuItem}
+            aria-current={router.asPath?.includes('tasks') && 'page'}
+          >
+            <ListItemText primary={t('Tasks')} />
+          </MenuItem>
+        </NextLink>
+      </Grid>
+      <Grid item className={classes.navListItem}>
+        <MenuItem
+          tabIndex={0}
+          ref={anchorRef}
+          aria-controls={reportsMenuOpen ? 'menu-list-grow' : undefined}
+          aria-haspopup="true"
+          onClick={handleReportsMenuToggle}
+          data-testid="ReportMenuToggle"
+          aria-expanded={reportsMenuOpen}
+          className={clsx(
+            classes.menuItem,
+            reportsMenuOpen && classes.menuItemSelected,
+            router.asPath?.includes('reports') && classes.menuItemSelected,
+          )}
+        >
+          <ListItemText primary={t('Reports')} />
+          <ArrowDropDownIcon
+            className={clsx(classes.expand, {
+              [classes.expandOpen]: reportsMenuOpen,
+            })}
+          />
+        </MenuItem>
+        <Popper
+          open={reportsMenuOpen}
+          anchorEl={anchorRef.current}
+          role={undefined}
+          transition
+          disablePortal
+        >
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin:
+                  placement === 'bottom' ? 'center top' : 'center bottom',
+              }}
             >
-              <ListItemText primary={t('Reports')} />
-              <ArrowDropDownIcon
-                className={clsx(classes.expand, {
-                  [classes.expandOpen]: reportsMenuOpen,
-                })}
-              />
-            </MenuItem>
-            <Popper
-              open={reportsMenuOpen}
-              anchorEl={anchorRef.current}
-              role={undefined}
-              transition
-              disablePortal
-            >
-              {({ TransitionProps, placement }) => (
-                <Grow
-                  {...TransitionProps}
-                  style={{
-                    transformOrigin:
-                      placement === 'bottom' ? 'center top' : 'center bottom',
-                  }}
-                >
-                  <Paper>
-                    <ClickAwayListener onClickAway={handleReportsMenuClose}>
-                      <MenuList
-                        autoFocusItem={reportsMenuOpen}
-                        id="menu-list-grow"
+              <Paper>
+                <ClickAwayListener onClickAway={handleReportsMenuClose}>
+                  <MenuList autoFocusItem={reportsMenuOpen} id="menu-list-grow">
+                    {filteredReportNavItems.map(({ id, title }) => (
+                      <ReportLink
+                        key={id}
+                        id={id}
+                        accountListId={accountListId}
                       >
-                        {filteredReportNavItems.map(({ id, title }) => (
-                          <NextLink
-                            key={id}
-                            href={`/accountLists/${accountListId}/reports/${id}`}
-                          >
-                            <MenuItem
-                              onClick={handleReportsMenuClose}
-                              tabIndex={0}
-                              aria-current={
-                                router.asPath.includes(`${id}`) && 'page'
-                              }
+                        <MenuItem
+                          onClick={handleReportsMenuClose}
+                          tabIndex={0}
+                          aria-current={
+                            router.asPath.includes(`${id}`) && 'page'
+                          }
+                        >
+                          <ListItemText primary={t(title)} />
+                        </MenuItem>
+                      </ReportLink>
+                    ))}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </Grid>
+      <Grid item className={classes.navListItem}>
+        <MenuItem
+          tabIndex={0}
+          ref={anchorRefTools}
+          aria-controls={toolsMenuOpen ? 'menu-list-grow' : undefined}
+          aria-haspopup="true"
+          onClick={handleToolsMenuToggle}
+          data-testid="ToolsMenuToggle"
+          className={clsx(
+            classes.menuItem,
+            toolsMenuOpen && classes.menuItemSelected,
+            router.asPath?.includes('tools') && classes.menuItemSelected,
+          )}
+          aria-expanded={toolsMenuOpen}
+        >
+          <ListItemText primary={t('Tools')} />
+          {sum > 0 && (
+            <Box
+              className={classes.notificationBox}
+              data-testid="notificationTotal"
+            >
+              <Typography data-testid="notificationTotalText">
+                {sum < 10 ? sum : '9+'}
+              </Typography>
+            </Box>
+          )}
+          <ArrowDropDownIcon
+            className={clsx(classes.expand, {
+              [classes.expandOpen]: toolsMenuOpen,
+            })}
+          />
+        </MenuItem>
+        <Popper
+          open={toolsMenuOpen}
+          anchorEl={anchorRefTools.current}
+          role={undefined}
+          transition
+          disablePortal
+        >
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin:
+                  placement === 'bottom' ? 'center top' : 'center bottom',
+              }}
+            >
+              <Paper className={classes.subMenu}>
+                <ClickAwayListener onClickAway={handleToolsMenuClose}>
+                  <MenuList autoFocusItem={toolsMenuOpen} id="menu-list-grow">
+                    {ToolsList.map((toolsGroup) => (
+                      <Box key={toolsGroup.groupName}>
+                        {toolsGroup.items.map((tool) => {
+                          const needsAttention = toolData
+                            ? toolData[tool.id]?.totalCount > 0
+                            : false;
+                          return (
+                            <HandoffLink
+                              key={tool.id}
+                              path={`https://mpdx.org/tools/${
+                                toolsRedirectLinks[tool.id]
+                              }`}
                             >
-                              <ListItemText primary={t(title)} />
-                            </MenuItem>
-                          </NextLink>
-                        ))}
-                      </MenuList>
-                    </ClickAwayListener>
-                  </Paper>
-                </Grow>
-              )}
-            </Popper>
-          </Grid>
-          <Grid item className={classes.navListItem}>
-            <MenuItem
-              tabIndex={0}
-              ref={anchorRefTools}
-              aria-controls={toolsMenuOpen ? 'menu-list-grow' : undefined}
-              aria-haspopup="true"
-              onClick={handleToolsMenuToggle}
-              data-testid="ToolsMenuToggle"
-              className={clsx(
-                classes.menuItem,
-                toolsMenuOpen && classes.menuItemSelected,
-                router.asPath.includes('tools') && classes.menuItemSelected,
-              )}
-              aria-expanded={toolsMenuOpen}
-            >
-              <ListItemText primary={t('Tools')} />
-              {sum > 0 && (
-                <Box
-                  className={classes.notificationBox}
-                  data-testid="notificationTotal"
-                >
-                  <Typography data-testid="notificationTotalText">
-                    {sum < 10 ? sum : '9+'}
-                  </Typography>
-                </Box>
-              )}
-              <ArrowDropDownIcon
-                className={clsx(classes.expand, {
-                  [classes.expandOpen]: toolsMenuOpen,
-                })}
-              />
-            </MenuItem>
-            <Popper
-              open={toolsMenuOpen}
-              anchorEl={anchorRefTools.current}
-              role={undefined}
-              transition
-              disablePortal
-            >
-              {({ TransitionProps, placement }) => (
-                <Grow
-                  {...TransitionProps}
-                  style={{
-                    transformOrigin:
-                      placement === 'bottom' ? 'center top' : 'center bottom',
-                  }}
-                >
-                  <Paper className={classes.subMenu}>
-                    <ClickAwayListener onClickAway={handleToolsMenuClose}>
-                      <MenuList
-                        autoFocusItem={toolsMenuOpen}
-                        id="menu-list-grow"
-                      >
-                        {ToolsList.map((toolsGroup) => (
-                          <Box key={toolsGroup.groupName}>
-                            {toolsGroup.items.map((tool) => {
-                              const needsAttention = toolData
-                                ? toolData[tool.id]?.totalCount > 0
-                                : false;
-                              return (
-                                <HandoffLink
-                                  key={tool.id}
-                                  path={`https://mpdx.org/tools/${
-                                    toolsRedirectLinks[tool.id]
-                                  }`}
-                                >
-                                  <MenuItem
-                                    tabIndex={0}
-                                    onClick={handleToolsMenuClose}
-                                    data-testid={`${tool.id}-${
-                                      currentToolId === tool.id
-                                    }`}
-                                    aria-current={
-                                      router.asPath.includes(tool.id) && 'page'
-                                    }
-                                    className={clsx(
-                                      classes.menuItem,
-                                      needsAttention && classes.needsAttention,
-                                    )}
+                              <MenuItem
+                                tabIndex={0}
+                                onClick={handleToolsMenuClose}
+                                data-testid={`${tool.id}-${
+                                  currentToolId === tool.id
+                                }`}
+                                aria-current={
+                                  router.asPath.includes(tool.id) && 'page'
+                                }
+                                className={clsx(
+                                  classes.menuItem,
+                                  needsAttention && classes.needsAttention,
+                                )}
+                              >
+                                <Icon
+                                  path={tool.icon}
+                                  size={1}
+                                  className={clsx(
+                                    classes.menuIcon,
+                                    needsAttention
+                                      ? classes.darkText
+                                      : classes.whiteText,
+                                  )}
+                                />
+                                <ListItemText
+                                  className={clsx(
+                                    needsAttention
+                                      ? classes.darkText
+                                      : classes.whiteText,
+                                  )}
+                                  primary={t(tool.tool)}
+                                />
+                                {!loading && needsAttention && (
+                                  <Box
+                                    className={classes.notificationBox}
+                                    data-testid={`${tool.id}-notifications`}
                                   >
-                                    <Icon
-                                      path={tool.icon}
-                                      size={1}
-                                      className={clsx(
-                                        classes.menuIcon,
-                                        needsAttention
-                                          ? classes.darkText
-                                          : classes.whiteText,
-                                      )}
-                                    />
-                                    <ListItemText
-                                      className={clsx(
-                                        needsAttention
-                                          ? classes.darkText
-                                          : classes.whiteText,
-                                      )}
-                                      primary={t('{{toolname}}', {
-                                        toolname: tool.tool,
-                                      })}
-                                    />
-                                    {!loading && needsAttention && (
-                                      <Box
-                                        className={classes.notificationBox}
-                                        data-testid={`${tool.id}-notifications`}
-                                      >
-                                        <Typography>
-                                          {toolData[tool.id].totalCount < 10
-                                            ? toolData[tool.id].totalCount
-                                            : '9+'}
-                                        </Typography>
-                                      </Box>
-                                    )}
-                                  </MenuItem>
-                                </HandoffLink>
-                              );
-                            })}
-                          </Box>
-                        ))}
-                      </MenuList>
-                    </ClickAwayListener>
-                  </Paper>
-                </Grow>
-              )}
-            </Popper>
-          </Grid>
-          <Grid item className={classes.navListItem}>
-            <NextLink href={`/accountLists/${accountListId}/coaching`}>
-              <MenuItem
-                tabIndex={0}
-                className={classes.menuItem}
-                aria-current={router.asPath.includes(`/coaching`) && 'page'}
-              >
-                <ListItemText primary={t('Coaches')} />
-              </MenuItem>
-            </NextLink>
-          </Grid>
-        </Grid>
-      ) : null}
-    </>
-  );
+                                    <Typography>
+                                      {toolData[tool.id].totalCount < 10
+                                        ? toolData[tool.id].totalCount
+                                        : '9+'}
+                                    </Typography>
+                                  </Box>
+                                )}
+                              </MenuItem>
+                            </HandoffLink>
+                          );
+                        })}
+                      </Box>
+                    ))}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </Grid>
+      <Grid item className={classes.navListItem}>
+        <NextLink href={`/accountLists/${accountListId}/coaching`}>
+          <MenuItem
+            tabIndex={0}
+            className={classes.menuItem}
+            aria-current={router.asPath?.includes(`/coaching`) && 'page'}
+          >
+            <ListItemText primary={t('Coaches')} />
+          </MenuItem>
+        </NextLink>
+      </Grid>
+    </Grid>
+  ) : null;
 };
 
 export default NavMenu;

@@ -9,7 +9,7 @@ import {
   ContactRowFragment,
   ContactRowFragmentDoc,
 } from './ContactRow.generated';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 export default {
   title: 'Contacts/ContactRow',
@@ -26,9 +26,9 @@ export const Default: Story = () => {
   });
 
   return (
-    <ContactsPageProvider>
+    <ContactsPage>
       <ContactRow contact={contact} />
-    </ContactsPageProvider>
+    </ContactsPage>
   );
 };
 

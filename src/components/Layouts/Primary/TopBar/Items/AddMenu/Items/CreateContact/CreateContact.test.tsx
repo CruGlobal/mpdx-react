@@ -6,7 +6,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../../../../theme';
-import { CreateContactMutation } from './CreateContact.generated';
 import CreateContact from './CreateContact';
 
 const accountListId = '111';
@@ -22,7 +21,7 @@ describe('CreateContact', () => {
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<CreateContactMutation>>
+            <GqlMockedProvider>
               <CreateContact
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -40,7 +39,7 @@ describe('CreateContact', () => {
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<CreateContactMutation>>
+            <GqlMockedProvider>
               <CreateContact
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -57,13 +56,13 @@ describe('CreateContact', () => {
 
   describe('Contact Creation', () => {
     const mutationSpy = jest.fn();
-    const name = 'Huffman, Christian';
+    const name = 'Skywalker, Anakin';
     it('creates contact', async () => {
       const { getByText, findByText, getByRole } = render(
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<CreateContactMutation> onCall={mutationSpy}>
+              <GqlMockedProvider onCall={mutationSpy}>
                 <CreateContact
                   accountListId={accountListId}
                   handleClose={handleClose}
@@ -87,6 +86,64 @@ describe('CreateContact', () => {
       const { operation, response } = mutationSpy.mock.calls[0][0];
       expect(operation.variables.accountListId).toEqual(accountListId);
       expect(operation.variables.attributes.name).toEqual(name);
+
+      const { operation: operation1 } = mutationSpy.mock.calls[1][0];
+      expect(operation1.variables.accountListId).toEqual(accountListId);
+      expect(operation1.variables.attributes.firstName).toEqual('Anakin');
+      expect(operation1.variables.attributes.lastName).toEqual('Skywalker');
+
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/accountLists/[accountListId]/contacts/[contactId]',
+        query: {
+          accountListId,
+          contactId: response.data.createContact.contact.id,
+        },
+      });
+    });
+  });
+  describe('Contact Creation with spouse', () => {
+    const mutationSpy = jest.fn();
+    const name = 'Skywalker, Anakin and Padme';
+    it('creates contact', async () => {
+      const { getByText, findByText, getByRole } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <CreateContact
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      userEvent.click(getByText('Save'));
+      expect(await findByText('Field is required')).toBeInTheDocument();
+      userEvent.type(
+        getByRole('textbox', { hidden: true, name: 'Name' }),
+        name,
+      );
+      await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+      userEvent.click(getByText('Save'));
+      await waitFor(() => expect(handleClose).toHaveBeenCalled());
+
+      const { operation, response } = mutationSpy.mock.calls[0][0];
+      expect(operation.variables.accountListId).toEqual(accountListId);
+      expect(operation.variables.attributes.name).toEqual(name);
+
+      const { operation: operation1 } = mutationSpy.mock.calls[1][0];
+      expect(operation.variables.accountListId).toEqual(accountListId);
+      expect(operation1.variables.attributes.firstName).toEqual('Anakin');
+      expect(operation1.variables.attributes.lastName).toEqual('Skywalker');
+
+      const { operation: operation2 } = mutationSpy.mock.calls[2][0];
+      expect(operation.variables.accountListId).toEqual(accountListId);
+      expect(operation2.variables.attributes.firstName).toEqual('Padme');
+      expect(operation2.variables.attributes.lastName).toEqual('Skywalker');
+
       expect(router.push).toHaveBeenCalledWith({
         pathname: '/accountLists/[accountListId]/contacts/[contactId]',
         query: {

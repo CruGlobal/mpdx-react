@@ -1,8 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { DateTime } from 'luxon';
 import {
   CheckboxFilter,
   DaterangeFilter,
@@ -13,6 +12,7 @@ import {
   TextFilter,
 } from '../../../../graphql/types.generated';
 import { FilterListItem } from './FilterListItem';
+import userEvent from '@testing-library/user-event';
 
 const checkboxFilter: CheckboxFilter = {
   __typename: 'CheckboxFilter',
@@ -105,12 +105,8 @@ describe('FilterListItem', () => {
 
   it('DateRangeFilter filled', () => {
     const dateRange: DateRangeInput = { min: '2021-08-01', max: '2021-08-30' };
-    const convertedMinDate = DateTime.fromISO(dateRange.min || '').toFormat(
-      'MM/dd/yyyy',
-    );
-    const convertedMaxDate = DateTime.fromISO(dateRange.max || '').toFormat(
-      'MM/dd/yyyy',
-    );
+    const convertedMinDate = '8/1/2021';
+    const convertedMaxDate = '8/30/2021';
 
     const { getByText, getAllByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -131,7 +127,7 @@ describe('FilterListItem', () => {
     );
   });
 
-  it.skip('MultiSelectFilter blank', () => {
+  it('MultiSelectFilter blank', () => {
     const { getAllByText, getByTestId } = render(
       <FilterListItem
         filter={multiselectFilter}
@@ -140,7 +136,7 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getAllByText(multiselectFilter.title)).toHaveLength(2);
+    expect(getAllByText(multiselectFilter.title)).toHaveLength(3);
     expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
   });
 
@@ -178,8 +174,54 @@ describe('FilterListItem', () => {
     );
   });
 
-  it.skip('TextFieldFilter blank', async () => {
-    const { getByText, getByRole } = render(
+  it('NumericRangeFilter empty value', async () => {
+    const numericRange: NumericRangeInput = { min: undefined, max: 1.0 };
+    const onUpdate = jest.fn();
+    const { getByText, getAllByRole } = render(
+      <FilterListItem
+        filter={numericRangeFilter}
+        value={numericRange}
+        onUpdate={onUpdate}
+      />,
+    );
+
+    expect(getByText(numericRangeFilter.title)).toBeInTheDocument();
+    const maxInput = getAllByRole('spinbutton')[1];
+    userEvent.type(maxInput, '5');
+    waitFor(() => expect(maxInput).toHaveValue('5'));
+    waitFor(() =>
+      expect(onUpdate).toHaveBeenCalledWith({ min: undefined, max: 5 }),
+    );
+  });
+
+  it('NumericRangeFilter changed', async () => {
+    const numericRange: NumericRangeInput = { min: 0.0, max: 1.0 };
+
+    const { getByText, getAllByRole } = render(
+      <FilterListItem
+        filter={numericRangeFilter}
+        value={numericRange}
+        onUpdate={() => {}}
+      />,
+    );
+
+    expect(getByText(numericRangeFilter.title)).toBeInTheDocument();
+    const minInput = getAllByRole('spinbutton')[0];
+    const maxInput = getAllByRole('spinbutton')[1];
+    expect(minInput.getAttribute('value')).toEqual(
+      numericRange.min?.toString(),
+    );
+    expect(maxInput.getAttribute('value')).toEqual(
+      numericRange.max?.toString(),
+    );
+    userEvent.type(minInput, '5');
+    waitFor(() => expect(minInput).toHaveValue('5'));
+    userEvent.type(maxInput, '20');
+    waitFor(() => expect(maxInput).toHaveValue('20'));
+  });
+
+  it('TextFieldFilter blank', async () => {
+    const { getAllByText, getByRole } = render(
       <FilterListItem
         filter={textFieldFilter}
         value={undefined}
@@ -187,12 +229,12 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getByText(textFieldFilter.title)).toBeInTheDocument();
+    expect(getAllByText(textFieldFilter.title)[0]).toBeInTheDocument();
     expect(getByRole('textbox').getAttribute('value')).toEqual('');
   });
 
-  it.skip('TextFieldFilter filled', async () => {
-    const { getByText, getByRole } = render(
+  it('TextFieldFilter filled', async () => {
+    const { getAllByText, getByRole } = render(
       <FilterListItem
         filter={textFieldFilter}
         value={'Text'}
@@ -200,7 +242,7 @@ describe('FilterListItem', () => {
       />,
     );
 
-    expect(getByText(textFieldFilter.title)).toBeInTheDocument();
+    expect(getAllByText(textFieldFilter.title)[0]).toBeInTheDocument();
     expect(getByRole('textbox').getAttribute('value')).toEqual('Text');
   });
 });

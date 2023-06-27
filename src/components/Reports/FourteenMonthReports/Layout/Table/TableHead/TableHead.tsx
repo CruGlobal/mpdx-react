@@ -7,6 +7,7 @@ import { styled } from '@mui/material/styles';
 import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
 import type { Order, Unarray } from '../../../../Reports.type';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
+import { useLocale } from 'src/hooks/useLocale';
 
 export type Contacts =
   FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
@@ -43,6 +44,7 @@ export const FourteenMonthReportTableHead: FC<
   FourteenMonthReportTableHeadProps
 > = ({ isExpanded, totals, salaryCurrency, order, orderBy, onRequestSort }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const createSortHandler =
     (property: OrderBy | number) => (event: React.MouseEvent<unknown>) => {
@@ -54,7 +56,7 @@ export const FourteenMonthReportTableHead: FC<
   }, [totals]);
 
   const monthCount = useMemo(() => {
-    return allYears?.reduce<{
+    const yearsObj = allYears?.reduce<{
       [key: string]: number;
     }>(
       (count, year) => ({
@@ -63,6 +65,9 @@ export const FourteenMonthReportTableHead: FC<
       }),
       {},
     );
+    return Object.entries(yearsObj ?? {})
+      .map(([key, value]) => ({ year: key, count: value }))
+      .reverse();
   }, [allYears]);
 
   return (
@@ -72,9 +77,14 @@ export const FourteenMonthReportTableHead: FC<
           <Typography variant="h6">{salaryCurrency}</Typography>
         </TableCell>
         {monthCount &&
-          Object.entries(monthCount).map(([year, count]) => (
-            <YearTableCell key={year} colSpan={count} align="center">
-              <YearTypography variant="h6">{year}</YearTypography>
+          monthCount.map((year) => (
+            <YearTableCell
+              key={year.year}
+              colSpan={year.count}
+              align="center"
+              data-testid="tableHeaderCell"
+            >
+              <YearTypography variant="h6">{year.year}</YearTypography>
             </YearTableCell>
           ))}
         <TableCell />
@@ -133,7 +143,9 @@ export const FourteenMonthReportTableHead: FC<
             direction={orderBy === i ? order : 'asc'}
             onClick={createSortHandler(i)}
           >
-            {DateTime.fromISO(month.month).toFormat('LLL')}
+            {DateTime.fromISO(month.month)
+              .toJSDate()
+              .toLocaleDateString(locale, { month: 'short' })}
           </TableHeadCell>
         ))}
         <TableHeadCell

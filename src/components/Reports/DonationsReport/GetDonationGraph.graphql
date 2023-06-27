@@ -1,10 +1,14 @@
-query GetDonationGraph($accountListId: ID!) {
+query GetDonationGraph($accountListId: ID!, $designationAccountIds: [ID!]) {
   accountList(id: $accountListId) {
+    id
     currency
     monthlyGoal
     totalPledges
   }
-  reportsDonationHistories(accountListId: $accountListId) {
+  reportsDonationHistories(
+    accountListId: $accountListId
+    designationAccountId: $designationAccountIds
+  ) {
     averageIgnoreCurrent
     periods {
       startDate

@@ -1,8 +1,9 @@
 query GetTopBar {
-  accountLists {
+  accountLists(first: 50) {
     nodes {
       id
       name
+      salaryOrganizationId
     }
   }
   user {
@@ -15,7 +16,7 @@ query GetTopBar {
       id
       email
     }
-    administrativeOrganizations {
+    administrativeOrganizations(first: 25) {
       nodes {
         id
       }

@@ -1,5 +1,5 @@
 query LoadCoachingList {
-  coachingAccountLists {
+  coachingAccountLists(first: 25) {
     nodes {
       ...CoachedPerson
     }

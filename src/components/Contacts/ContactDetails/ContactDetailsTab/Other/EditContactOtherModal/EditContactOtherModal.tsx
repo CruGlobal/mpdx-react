@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect } from 'react';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -13,7 +13,6 @@ import {
   Grid,
   InputLabel,
   MenuItem,
-  Select,
   TextField,
   Theme,
   useMediaQuery,
@@ -23,6 +22,7 @@ import debounce from 'lodash/fp/debounce';
 import {
   ContactUpdateInput,
   PreferredContactMethodEnum,
+  UserScopedToAccountList,
 } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
@@ -34,15 +34,16 @@ import {
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
 import {
-  ContactDetailContext,
-  ContactDetailsType,
-} from '../../../ContactDetailContext';
-import { useUpdateContactOtherMutation } from './EditContactOther.generated';
+  useUpdateContactOtherMutation,
+  useAssigneeOptionsQuery,
+  useChurchOptionsQuery,
+} from './EditContactOther.generated';
 import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -61,9 +62,24 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
+const userName = (
+  user: Pick<UserScopedToAccountList, 'firstName' | 'lastName'>,
+): string => {
+  const parts: string[] = [];
+  if (user.firstName) {
+    parts.push(user.firstName);
+  }
+  if (user.lastName) {
+    parts.push(user.lastName);
+  }
+  return parts.join(' ');
+};
+
 interface EditContactOtherModalProps {
   contact: ContactOtherFragment;
-  referral: { id: string; referredBy: { id: string; name: string } };
+  referral:
+    | { id: string; referredBy: { id: string; name: string } }
+    | undefined;
   accountListId: string;
   isOpen: boolean;
   handleClose: () => void;
@@ -89,17 +105,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const languages = constants?.languages ?? [];
   const timezones = useGetTimezones();
 
-  const {
-    selectedReferralId: selectedId,
-    setSelectedReferralId: setSelectedId,
-    searchReferrelName: searchTerm,
-    setSearchReferralName: setSearchTerm,
-  } = React.useContext(ContactDetailContext) as ContactDetailsType;
-
-  useEffect(() => {
-    setSelectedId(referral?.referredBy.id);
-    setSearchTerm(referral?.referredBy.name);
-  }, []);
+  const [selectedId, setSelectedId] = useState(referral?.referredBy.id ?? '');
+  const [searchTerm, setSearchTerm] = useState(referral?.referredBy.name ?? '');
 
   const handleSearchTermChange = useCallback(
     debounce(500, (event) => {
@@ -108,11 +115,34 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     [],
   );
 
+  const { data: dataChurchOptions, loading: loadingChurchOptions } =
+    useChurchOptionsQuery({
+      variables: {
+        accountListId,
+      },
+    });
+  const churches = dataChurchOptions?.accountList?.churches ?? [];
+
+  const { data: dataAssigneeOptions, loading: loadingAssigneeOptions } =
+    useAssigneeOptionsQuery({
+      variables: {
+        accountListId,
+      },
+    });
+  const users = useMemo(
+    () =>
+      dataAssigneeOptions?.accountListUsers.nodes
+        .map(({ user }) => user)
+        .sort((a, b) => userName(a).localeCompare(userName(b))) ?? [],
+    [dataAssigneeOptions],
+  );
+
   const { data: dataFilteredByName, loading: loadingFilteredByName } =
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
-        contactsFilters: { wildcardSearch: searchTerm as string },
+        first: 10,
+        contactsFilters: searchTerm ? { wildcardSearch: searchTerm } : {},
       },
     });
 
@@ -120,8 +150,10 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     useGetTaskModalContactsFilteredQuery({
       variables: {
         accountListId,
-        contactsFilters: { ids: [selectedId] },
+        first: 1,
+        contactsFilters: selectedId ? { ids: [selectedId] } : {},
       },
+      skip: !selectedId,
     });
 
   const mergedContacts =
@@ -145,19 +177,21 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       | 'preferredContactMethod'
       | 'locale'
       | 'timezone'
+      | 'userId'
       | 'website'
-    > & { referredById: string | undefined }
+    > & { referredById: string | null | undefined }
   > = yup.object({
     id: yup.string().required(),
+    userId: yup.string().nullable(),
     churchName: yup.string().nullable(),
     preferredContactMethod: yup
       .mixed<PreferredContactMethodEnum>()
-      .oneOf(Object.values(PreferredContactMethodEnum))
+      .oneOf([...Object.values(PreferredContactMethodEnum), null])
       .nullable(),
     locale: yup.string().nullable(),
     timezone: yup.string().nullable(),
     website: yup.string().nullable(),
-    referredById: yup.string(),
+    referredById: yup.string().nullable(),
   });
 
   const onSubmit = async (
@@ -186,6 +220,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
         accountListId,
         attributes: {
           id: attributes.id,
+          userId: attributes.userId,
           churchName: attributes.churchName,
           preferredContactMethod: attributes.preferredContactMethod,
           locale: attributes.locale,
@@ -234,6 +269,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       <Formik
         initialValues={{
           id: contact.id,
+          userId: contact.user?.id,
           churchName: contact.churchName,
           preferredContactMethod: contact.preferredContactMethod,
           locale: contact.locale,
@@ -247,6 +283,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       >
         {({
           values: {
+            userId,
             churchName,
             preferredContactMethod,
             locale,
@@ -264,9 +301,30 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
             <DialogContent dividers>
               <ContactEditContainer>
                 <ContactInputWrapper>
+                  <Autocomplete
+                    loading={loadingAssigneeOptions}
+                    autoSelect
+                    autoHighlight
+                    options={users.map(({ id }) => id)}
+                    getOptionLabel={(userId) => {
+                      const user = users.find(({ id }) => id === userId);
+                      return user ? userName(user) : '';
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label={t('Assignee')} />
+                    )}
+                    value={userId ?? null}
+                    onChange={(_, userId) => {
+                      setFieldValue('userId', userId);
+                    }}
+                  />
+                </ContactInputWrapper>
+                <ContactInputWrapper>
                   <Grid item>
                     <Autocomplete
                       loading={loadingFilteredById || loadingFilteredByName}
+                      autoSelect
+                      autoHighlight
                       options={
                         (
                           mergedContacts &&
@@ -298,7 +356,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           }}
                         />
                       )}
-                      value={referredById}
+                      value={referredById || null}
                       onChange={(_, referredBy): void => {
                         setFieldValue('referredById', referredBy);
                         setSelectedId(referredBy || '');
@@ -317,7 +375,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                     >
                       {t('Preferred Contact Method')}
                     </InputLabel>
-                    <Select
+                    <NullableSelect
                       label={t('Preferred Contact Method')}
                       labelId="preferred-contact-method-select-label"
                       value={preferredContactMethod}
@@ -340,7 +398,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           );
                         },
                       )}
-                    </Select>
+                    </NullableSelect>
                   </FormControl>
                 </ContactInputWrapper>
                 <ContactInputWrapper>
@@ -350,7 +408,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         <InputLabel id="language-select-label">
                           {t('Language')}
                         </InputLabel>
-                        <Select
+                        <NullableSelect
                           label={t('Language')}
                           labelId="language-select-label"
                           value={locale}
@@ -383,7 +441,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                                 </MenuItem>
                               ),
                           )}
-                        </Select>
+                        </NullableSelect>
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -391,7 +449,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         <InputLabel id="timezone-select-label">
                           {t('Timezone')}
                         </InputLabel>
-                        <Select
+                        <NullableSelect
                           label={t('Timezone')}
                           labelId="timezone-select-label"
                           value={timezone}
@@ -421,18 +479,39 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                               {t(value)}
                             </MenuItem>
                           ))}
-                        </Select>
+                        </NullableSelect>
                       </FormControl>
                     </Grid>
                   </Grid>
                 </ContactInputWrapper>
                 <ContactInputWrapper>
-                  <TextField
-                    label={t('Church')}
-                    value={churchName}
-                    onChange={handleChange('churchName')}
-                    inputProps={{ 'aria-label': t('Church') }}
-                    fullWidth
+                  <Autocomplete
+                    loading={loadingChurchOptions}
+                    autoSelect
+                    autoHighlight
+                    freeSolo
+                    options={churches}
+                    renderInput={(params): ReactElement => (
+                      <TextField
+                        {...params}
+                        label={t('Church')}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loadingChurchOptions && (
+                                <CircularProgress color="primary" size={20} />
+                              )}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                    value={churchName || ''}
+                    onChange={(_, churchName): void => {
+                      setFieldValue('churchName', churchName);
+                    }}
                   />
                 </ContactInputWrapper>
                 <ContactInputWrapper>

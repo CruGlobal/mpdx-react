@@ -211,4 +211,18 @@ describe('useMassSelection', () => {
     });
   });
   //#endregion
+
+  describe('deselectAll', () => {
+    it('sets checkbox to unchecked and clears selected ids', () => {
+      const { result } = renderHook(() => useMassSelection(10, []), {});
+
+      result.current.toggleSelectionById(id);
+      result.current.deselectAll();
+
+      expect(result.current.selectionType).toBe(
+        ListHeaderCheckBoxState.unchecked,
+      );
+      expect(result.current.ids).toHaveLength(0);
+    });
+  });
 });

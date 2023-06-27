@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import { TabKey } from './ContactDetails';
 import { DonationTabKey } from './ContactDontationsTab/ContactDonationsTab';
 
@@ -19,10 +20,6 @@ export type ContactDetailsType = {
   setEditingAddressId: React.Dispatch<React.SetStateAction<string | undefined>>;
   addAddressModalOpen: boolean;
   setAddAddressModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedReferralId: string;
-  setSelectedReferralId: React.Dispatch<React.SetStateAction<string>>;
-  searchReferrelName: string;
-  setSearchReferralName: React.Dispatch<React.SetStateAction<string>>;
   personEditShowMore: boolean;
   setPersonEditShowMore: React.Dispatch<React.SetStateAction<boolean>>;
   removeDialogOpen: boolean;
@@ -57,22 +54,23 @@ interface Props {
 }
 
 export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
+  const router = useRouter();
+  const query = router?.query;
   const [editingAddressId, setEditingAddressId] = useState<string>();
   const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editOtherModalOpen, setEditOtherModalOpen] = useState(false);
   const [editMailingModalOpen, setEditMailingModalOpen] = useState(false);
-  const [selectedTabKey, setSelectedTabKey] = React.useState(TabKey.Tasks);
+  const [selectedTabKey, setSelectedTabKey] = React.useState(
+    query?.tab ? TabKey[query?.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
+  );
   const handleTabChange = (
     _event: React.ChangeEvent<Record<string, unknown>>,
     newKey: TabKey,
   ) => {
     setSelectedTabKey(newKey);
   };
-
-  const [selectedReferralId, setSelectedReferralId] = useState('');
-  const [searchReferrelName, setSearchReferralName] = useState('');
 
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [removeDialogOpen, handleRemoveDialogOpen] = useState(false);
@@ -107,10 +105,6 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
         selectedTabKey: selectedTabKey,
         setSelectedTabKey: setSelectedTabKey,
         handleTabChange: handleTabChange,
-        selectedReferralId: selectedReferralId,
-        setSelectedReferralId: setSelectedReferralId,
-        searchReferrelName: searchReferrelName,
-        setSearchReferralName: setSearchReferralName,
         personEditShowMore: personEditShowMore,
         setPersonEditShowMore: setPersonEditShowMore,
         removeDialogOpen: removeDialogOpen,

@@ -272,6 +272,7 @@ describe('PartnerCare', () => {
       queryAllByRole('button', { hidden: true, name: 'Complete Button' })[0],
     );
     expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'add',
       defaultValues: {
         contactIds: ['contact'],
         subject: "John Doe's Birthday",
@@ -301,6 +302,7 @@ describe('PartnerCare', () => {
       queryAllByRole('button', { hidden: true, name: 'Complete Button' })[2],
     );
     expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'add',
       defaultValues: {
         contactIds: ['contact'],
         subject: "John and Sarah, Doe's Anniversary",

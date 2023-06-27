@@ -4,12 +4,9 @@ import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from './ContactDetailContext';
 import { ContactDetails } from './ContactDetails';
-import {
-  GetContactDetailsHeaderDocument,
-  GetContactDetailsHeaderQuery,
-} from './ContactDetailsHeader/ContactDetailsHeader.generated';
+import { GetContactDetailsHeaderDocument } from './ContactDetailsHeader/ContactDetailsHeader.generated';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPageProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsPageContext';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'abc';
 const contactId = 'contact-1';
@@ -26,12 +23,12 @@ const router = {
 export const Default = (): ReactElement => {
   return (
     <TestRouter router={router}>
-      <GqlMockedProvider<GetContactDetailsHeaderQuery>>
-        <ContactsPageProvider>
+      <GqlMockedProvider>
+        <ContactsPage>
           <ContactDetailProvider>
             <ContactDetails onClose={() => {}} />
           </ContactDetailProvider>
-        </ContactsPageProvider>
+        </ContactsPage>
       </GqlMockedProvider>
     </TestRouter>
   );
@@ -55,11 +52,11 @@ export const Loading = (): ReactElement => {
           },
         ]}
       >
-        <ContactsPageProvider>
+        <ContactsPage>
           <ContactDetailProvider>
             <ContactDetails onClose={() => {}} />
           </ContactDetailProvider>
-        </ContactsPageProvider>
+        </ContactsPage>
       </MockedProvider>
     </TestRouter>
   );

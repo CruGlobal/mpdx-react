@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
@@ -7,6 +7,8 @@ import Box from '@mui/material/Box';
 import { v4 as uuidv4 } from 'uuid';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
+import theme from 'src/theme';
+import useGetAppSettings from '../../../../../src/hooks/useGetAppSettings';
 import { ContactFlowSetupDragLayer } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
 import { UnusedStatusesColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
 import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
@@ -25,22 +27,20 @@ import {
 } from '../../../../../src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
 import { useUpdateUserOptionsMutation } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
+import { styled } from '@mui/material/styles';
+
+const StickyBox = styled(Box)(() => ({
+  ['@media (min-width:900px)']: {
+    position: 'sticky',
+    right: 0,
+    background: '#ffffff',
+  },
+}));
 
 const ContactFlowSetupPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
-  const { data: userOptions, loading } = useGetUserOptionsQuery({
-    onCompleted: () => {
-      setFlowOptions(
-        JSON.parse(
-          userOptions?.userOptions.find((option) => option.key === 'flows')
-            ?.value || '[]',
-        ),
-      );
-    },
-  });
-  const [updateUserOptions] = useUpdateUserOptionsMutation();
   const [flowOptions, setFlowOptions] = useState<
     {
       name: string;
@@ -49,6 +49,18 @@ const ContactFlowSetupPage: React.FC = () => {
       id: string;
     }[]
   >([]);
+  const { data: userOptions, loading } = useGetUserOptionsQuery();
+
+  useEffect(() => {
+    const newOptions = JSON.parse(
+      userOptions?.userOptions.find((option) => option.key === 'flows')
+        ?.value || '[]',
+    );
+    setFlowOptions(newOptions);
+  }, [userOptions]);
+
+  const [updateUserOptions] = useUpdateUserOptionsMutation();
+  const { appName } = useGetAppSettings();
 
   const allUsedStatuses = flowOptions
     ? flowOptions.flatMap((option) => option.statuses)
@@ -95,8 +107,8 @@ const ContactFlowSetupPage: React.FC = () => {
     });
   };
 
-  const addColumn = (): void => {
-    updateOptions([
+  const addColumn = (): Promise<void> => {
+    return updateOptions([
       ...flowOptions,
       {
         name: 'Untitled',
@@ -176,7 +188,7 @@ const ContactFlowSetupPage: React.FC = () => {
     <>
       <Head>
         <title>
-          MPDX | {t('Contact Flows')} | {t('Setup')}
+          {appName} | {t('Contact Flows')} | {t('Setup')}
         </title>
       </Head>
       {accountListId ? (
@@ -188,19 +200,17 @@ const ContactFlowSetupPage: React.FC = () => {
               <Box
                 display="grid"
                 minWidth="100%"
-                gridTemplateColumns={`repeat(${flowOptions.length + 1}, 1fr`}
+                gridTemplateColumns={`repeat(${
+                  flowOptions.length + 1
+                }, minmax(300px, 1fr)); minmax(300px, 1fr)`}
                 gridAutoFlow="column"
+                gap={theme.spacing(1)}
+                overflow="auto"
                 style={{ overflowX: 'auto' }}
+                gridAutoColumns="300px"
               >
                 {flowOptions.map((column, index) => (
-                  <Box
-                    width={'100%'}
-                    // If there are more than five columns give them a fixed width
-                    // otherwise fit them equally into the screen
-                    minWidth={flowOptions.length > 5 ? 360 : '100%'}
-                    p={2}
-                    key={index}
-                  >
+                  <Box width={'100%'} minWidth={300} p={2} key={index}>
                     <ContactFlowSetupColumn
                       index={index}
                       loading={loading}
@@ -219,16 +229,11 @@ const ContactFlowSetupPage: React.FC = () => {
                         id: statusMap[status] as ContactFilterStatusEnum,
                         value: status,
                       }))}
+                      flowOptions={flowOptions}
                     />
                   </Box>
                 ))}
-                <Box
-                  width={'100%'}
-                  // If there are more than five columns give them a fixed width
-                  // otherwise fit them equally into the screen
-                  minWidth={flowOptions.length > 5 ? 360 : '100%'}
-                  p={2}
-                >
+                <StickyBox width={'100%'} minWidth={250} p={2}>
                   <UnusedStatusesColumn
                     accountListId={accountListId}
                     columnWidth={columnWidth}
@@ -239,7 +244,7 @@ const ContactFlowSetupPage: React.FC = () => {
                       value: status,
                     }))}
                   />
-                </Box>
+                </StickyBox>
               </Box>
             )}
           </Box>

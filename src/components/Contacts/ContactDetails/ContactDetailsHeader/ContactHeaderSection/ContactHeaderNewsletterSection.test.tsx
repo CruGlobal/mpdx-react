@@ -1,3 +1,4 @@
+import { SendNewsletterEnum } from '../../../../../../graphql/types.generated';
 import { render } from '@testing-library/react';
 import React from 'react';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
@@ -9,7 +10,12 @@ import { ContactHeaderNewsletterSection } from './ContactHeaderNewsletterSection
 
 const contact = gqlMock<ContactDetailsHeaderFragment>(
   ContactDetailsHeaderFragmentDoc,
-  { mocks: { lastDonation: null } },
+  {
+    mocks: {
+      lastDonation: null,
+      sendNewsletter: SendNewsletterEnum.Both,
+    },
+  },
 );
 
 describe('ContactHeaderNewsletterSection', () => {
@@ -18,7 +24,7 @@ describe('ContactHeaderNewsletterSection', () => {
       <ContactHeaderNewsletterSection loading={true} contact={undefined} />,
     );
 
-    expect(queryByText(contact.sendNewsletter || '')).toBeNull();
+    expect(queryByText('Newsletter', { exact: false })).not.toBeInTheDocument();
   });
 
   it('should render with contact details', async () => {
@@ -26,6 +32,7 @@ describe('ContactHeaderNewsletterSection', () => {
       <ContactHeaderNewsletterSection loading={false} contact={contact} />,
     );
 
-    expect(queryByText(`Newsletter: {{newsletter}}` || '')).toBeInTheDocument();
+    expect(queryByText('Newsletter', { exact: false })).toBeInTheDocument();
+    expect(queryByText('Both', { exact: false })).toBeInTheDocument();
   });
 });

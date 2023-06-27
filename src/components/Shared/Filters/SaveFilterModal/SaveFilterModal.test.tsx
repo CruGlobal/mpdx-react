@@ -12,7 +12,6 @@ import {
   UserOptionFragmentDoc,
 } from '../FilterPanel.generated';
 import { SaveFilterModal } from './SaveFilterModal';
-import { SaveFilterMutation } from './SaveFilterModal.generated';
 
 //#region Mocks
 const mockEnqueue = jest.fn();
@@ -91,7 +90,7 @@ describe('SaveFilterModal', () => {
     it('renders modal', () => {
       const { getByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
+          <GqlMockedProvider>
             <SaveFilterModal
               isOpen={true}
               handleClose={handleClose}
@@ -108,7 +107,7 @@ describe('SaveFilterModal', () => {
     it('closes modal', () => {
       const { getByText, getByLabelText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation>>
+          <GqlMockedProvider>
             <SaveFilterModal
               isOpen={true}
               handleClose={handleClose}
@@ -128,7 +127,7 @@ describe('SaveFilterModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <SaveFilterModal
               isOpen={true}
               handleClose={handleClose}
@@ -165,7 +164,7 @@ describe('SaveFilterModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <SaveFilterModal
               isOpen={true}
               handleClose={handleClose}
@@ -219,7 +218,7 @@ describe('SaveFilterModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <SaveFilterModal
               isOpen={true}
               handleClose={handleClose}
@@ -256,7 +255,7 @@ describe('SaveFilterModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<SaveFilterMutation> onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy}>
             <SaveFilterModal
               isOpen={true}
               handleClose={handleClose}

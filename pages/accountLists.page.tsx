@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import AccountLists from '../src/components/AccountLists';
 import { ssrClient } from '../src/lib/client';
 import BaseLayout from '../src/components/Layouts/Primary';
@@ -18,11 +19,14 @@ interface Props {
 
 const AccountListsPage = ({ data }: Props): ReactElement => {
   const { t } = useTranslation();
+  const { appName } = useGetAppSettings();
 
   return (
     <>
       <Head>
-        <title>MPDX | {t('Account Lists')}</title>
+        <title>
+          {appName} | {t('Account Lists')}
+        </title>
       </Head>
       {data && <AccountLists data={data} />}
     </>

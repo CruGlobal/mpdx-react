@@ -4,6 +4,7 @@ import { ErrorBoundary, Provider } from '@rollbar/react';
 import type { AppProps } from 'next/app';
 import StyledEngineProvider from '@mui/material/StyledEngineProvider';
 import { ThemeProvider } from '@mui/material/styles';
+import { Box } from '@mui/material';
 import { ApolloProvider } from '@apollo/client';
 import { AnimatePresence } from 'framer-motion';
 import { Session } from 'next-auth';
@@ -11,8 +12,10 @@ import { SessionProvider } from 'next-auth/react';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import {
+  LocalizationProvider as RawLocalizationProvider,
+  LocalizationProviderProps,
+} from '@mui/x-date-pickers/LocalizationProvider';
 import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
 import './helpscout.css';
@@ -26,6 +29,11 @@ import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
 import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
 import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
+import DataDog from 'src/components/DataDog/DataDog';
+import { useLocale } from 'src/hooks/useLocale';
+import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
+import { AdapterLuxon } from './api/utils/AdapterLuxon';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -35,6 +43,15 @@ const handleExitComplete = (): void => {
 
 export type PageWithLayout = NextPage & {
   layout?: React.FC;
+};
+
+// Wrapper for LocalizationProvider that adds the user's preferred locale
+const LocalizationProvider = (
+  props: LocalizationProviderProps,
+): JSX.Element => {
+  const locale = useLocale();
+
+  return RawLocalizationProvider({ ...props, adapterLocale: locale });
 };
 
 const App = ({
@@ -61,6 +78,7 @@ const App = ({
       },
     },
   };
+
   // useEffect(() => {
   //     // Remove the server-side injected CSS.
   //     const jssStyles = document.querySelector('#jss-server-side');
@@ -81,7 +99,12 @@ const App = ({
         />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <link rel="manifest" href="/manifest.json" />
-        <link href="/favicon.png" rel="icon" type="image/png" sizes="32x32" />
+        <link
+          href={process.env.NEXT_PUBLIC_MEDIA_FAVICON}
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+        />
         <link
           rel="apple-touch-icon"
           href="/icons/apple-touch-icon-iphone-60x60.png"
@@ -105,49 +128,64 @@ const App = ({
       </Head>
       <Provider config={rollbarConfig}>
         <ErrorBoundary>
-          <ApolloProvider client={client}>
-            <SessionProvider session={session}>
-              <UserPreferenceProvider>
-                <I18nextProvider i18n={i18n}>
-                  <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={theme}>
-                      <LocalizationProvider
-                        dateAdapter={AdapterLuxon}
-                        localeText={{
-                          cancelButtonLabel: `${t('Cancel')}`,
-                          clearButtonLabel: `${t('Clear')}`,
-                          okButtonLabel: `${t('OK')}`,
-                          todayButtonLabel: `${t('Today')}`,
-                        }}
-                      >
-                        <SnackbarProvider maxSnack={3}>
-                          <GlobalStyles />
-                          <AnimatePresence
-                            mode="wait"
-                            onExitComplete={handleExitComplete}
-                          >
-                            <RouterGuard>
-                              <TaskModalProvider>
-                                <Layout>
-                                  <SnackbarUtilsConfigurator />
-                                  <Component
-                                    {...pageProps}
-                                    key={router.route}
-                                  />
-                                </Layout>
-                              </TaskModalProvider>
-                            </RouterGuard>
-                          </AnimatePresence>
-                          <Loading />
-                        </SnackbarProvider>
-                      </LocalizationProvider>
-                    </ThemeProvider>
-                  </StyledEngineProvider>
-                </I18nextProvider>
-              </UserPreferenceProvider>
-            </SessionProvider>
-          </ApolloProvider>
-          <HelpscoutBeacon />
+          <AppSettingsProvider>
+            <ApolloProvider client={client}>
+              <SessionProvider session={session}>
+                <UserPreferenceProvider>
+                  <I18nextProvider i18n={i18n}>
+                    <StyledEngineProvider injectFirst>
+                      <ThemeProvider theme={theme}>
+                        <LocalizationProvider
+                          dateAdapter={AdapterLuxon}
+                          localeText={{
+                            cancelButtonLabel: `${t('Cancel')}`,
+                            clearButtonLabel: `${t('Clear')}`,
+                            okButtonLabel: `${t('OK')}`,
+                            todayButtonLabel: `${t('Today')}`,
+                          }}
+                        >
+                          <SnackbarProvider maxSnack={3}>
+                            <GlobalStyles />
+                            <AnimatePresence
+                              mode="wait"
+                              onExitComplete={handleExitComplete}
+                            >
+                              <RouterGuard>
+                                <TaskModalProvider>
+                                  <Layout>
+                                    <SnackbarUtilsConfigurator />
+                                    <Box
+                                      sx={(theme) => ({
+                                        fontFamily: theme.typography.fontFamily,
+                                      })}
+                                    >
+                                      <Component
+                                        {...pageProps}
+                                        key={router.route}
+                                      />
+                                    </Box>
+                                  </Layout>
+                                </TaskModalProvider>
+                              </RouterGuard>
+                            </AnimatePresence>
+                            <Loading />
+                          </SnackbarProvider>
+                        </LocalizationProvider>
+                      </ThemeProvider>
+                    </StyledEngineProvider>
+                  </I18nextProvider>
+                </UserPreferenceProvider>
+                <DataDog />
+              </SessionProvider>
+              <HelpscoutBeacon />
+              {process.env.ALERT_MESSAGE ? (
+                <AlertBanner
+                  text={process.env.ALERT_MESSAGE}
+                  localStorageName="ALERT_MESSAGE"
+                />
+              ) : null}
+            </ApolloProvider>
+          </AppSettingsProvider>
         </ErrorBoundary>
       </Provider>
     </>

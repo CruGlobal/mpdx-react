@@ -1,8 +1,9 @@
+import { StatusEnum } from '../../../../../graphql/types.generated';
 import { Avatar, Box, IconButton, Typography } from '@mui/material';
 import Close from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';
 
@@ -26,6 +27,8 @@ interface Props {
   accountListId: string;
   contactId: string;
   onClose: () => void;
+  setContactDetailsLoaded: (value: boolean) => void;
+  contactDetailsLoaded: boolean;
 }
 
 const HeaderBar = styled(Box)(({}) => ({
@@ -50,6 +53,7 @@ const ContactAvatar = styled(Avatar)(({}) => ({
 const PrimaryContactName = styled(Typography)(({}) => ({
   display: 'inline',
   marginLeft: 18,
+  fontWeight: 'bold',
 }));
 const CloseButtonIcon = styled(Close)(({}) => ({
   width: 14,
@@ -64,6 +68,8 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   accountListId,
   contactId,
   onClose,
+  setContactDetailsLoaded,
+  contactDetailsLoaded,
 }: Props) => {
   const { data, loading } = useGetContactDetailsHeaderQuery({
     variables: { accountListId, contactId },
@@ -74,10 +80,17 @@ export const ContactDetailsHeader: React.FC<Props> = ({
     ContactDetailContext,
   ) as ContactDetailsType;
 
+  useEffect(() => {
+    if (!loading && !contactDetailsLoaded) {
+      setContactDetailsLoaded(true);
+    }
+    return () => setContactDetailsLoaded(false);
+  }, [loading]);
+
   return (
     <Box style={{ padding: 24, backgroundColor: 'transparent' }}>
       <HeaderBar>
-        <ContactAvatar src={data?.contact?.avatar || ''} />
+        <ContactAvatar alt={data?.contact.name} src={data?.contact.avatar} />
         <HeaderBarContactWrap>
           {loading ? (
             <Box data-testid="Skeleton">
@@ -111,9 +124,16 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             contactId={contactId}
             isStarred={data?.contact?.starred || false}
           />
-          <ContactDetailsMoreAcitions contactId={contactId} onClose={onClose} />
+          <ContactDetailsMoreAcitions
+            contactId={contactId}
+            status={data?.contact.status ?? StatusEnum.Unresponsive}
+            onClose={onClose}
+          />
           <IconButton onClick={onClose}>
-            <CloseButtonIcon titleAccess={t('Close')} />
+            <CloseButtonIcon
+              titleAccess={t('Close')}
+              data-testid="ContactDetailsHeaderClose"
+            />
           </IconButton>
         </HeaderBarButtonsWrap>
       </HeaderBar>

@@ -18,7 +18,7 @@ describe('AddDonation', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
-            <GqlMockedProvider<AddDonationMutation>>
+            <GqlMockedProvider>
               <AddDonation
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -36,7 +36,7 @@ describe('AddDonation', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
-            <GqlMockedProvider<AddDonationMutation>>
+            <GqlMockedProvider>
               <AddDonation
                 accountListId={accountListId}
                 handleClose={handleClose}
@@ -51,13 +51,13 @@ describe('AddDonation', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it.skip('Creates a donation', async () => {
+  it('Creates a donation', async () => {
     const mutationSpy = jest.fn();
-    const { getByRole, queryByText } = render(
+    const { getByRole, queryByText, getByTestId } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
-            <GqlMockedProvider<AddDonationMutation>
+            <GqlMockedProvider<{ AddDonation: AddDonationMutation }>
               onCall={mutationSpy}
               mocks={{
                 GetDonationModal: {
@@ -72,15 +72,17 @@ describe('AddDonation', () => {
                       },
                     ],
                   },
-                  designationAccounts: {
-                    designationAccounts: [
-                      {
-                        id: '321',
-                        name: 'Cool Designation Account',
-                        active: true,
-                      },
-                    ],
-                  },
+                  designationAccounts: [
+                    {
+                      designationAccounts: [
+                        {
+                          id: '321',
+                          name: 'Cool Designation Account',
+                          active: true,
+                        },
+                      ],
+                    },
+                  ],
                 },
                 GetAccountListDonorAccounts: {
                   accountListDonorAccounts: [
@@ -114,28 +116,25 @@ describe('AddDonation', () => {
     // ).toBeInTheDocument();
 
     userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Partner Account' }),
+      getByRole('combobox', { hidden: true, name: 'Partner Account' }),
       'Cool',
     );
     // TODO Figure out why menus won't render in order to complete test for adding donation
     // await waitFor(() => expect(getByText('Cool Donor Account')).toBeVisible());
 
     userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Designation Account' }),
+      getByRole('combobox', { hidden: true, name: 'Designation Account' }),
       'Cool',
     );
-    // await waitFor(() =>
-    //   expect(getByText('Cool Designation Account')).toBeVisible(),
-    // );
+    await waitFor(() =>
+      expect(queryByText('Cool Designation Account (321)')).toBeInTheDocument(),
+    );
     userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Appeal' }),
+      getByRole('combobox', { hidden: true, name: 'Appeal' }),
       'Cool',
     );
     // await waitFor(() => expect(getByText('Cool appeal')).toBeVisible());
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Memo' }),
-      'cool memo',
-    );
+    userEvent.type(getByTestId('memo-label'), 'cool memo');
 
     // userEvent.click(getByText('Save'));
   });

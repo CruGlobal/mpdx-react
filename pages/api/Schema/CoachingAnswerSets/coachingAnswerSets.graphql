@@ -3,14 +3,22 @@ extend type Query {
     accountListId: ID!
     completed: Boolean
   ): [CoachingAnswerSet!]!
+
+  """
+  Return the most recent incomplete coaching answer set, creating a new one if necessary
+  """
+  currentCoachingAnswerSet(
+    accountListId: ID!
+    organizationId: ID!
+  ): CoachingAnswerSet!
 }
 
 type CoachingAnswerSet {
   id: ID!
-  answers: [CoachingAnswer!]
+  answers: [CoachingAnswer!]!
   completedAt: ISO8601DateTime
   createdAt: ISO8601DateTime!
-  questions: [CoachingQuestion!]
+  questions: [CoachingQuestion!]!
   updatedAt: ISO8601DateTime!
 }
 
@@ -18,6 +26,7 @@ type CoachingAnswer {
   id: ID!
   createdAt: ISO8601DateTime!
   response: String
+  question: CoachingQuestion!
   updatedAt: ISO8601DateTime!
 }
 
@@ -29,4 +38,16 @@ type CoachingQuestion {
   required: Boolean!
   responseOptions: [String!]
   updatedAt: ISO8601DateTime!
+}
+
+extend type Mutation {
+  saveCoachingAnswer(input: SaveCoachingAnswerInput!): CoachingAnswer!
+}
+
+input SaveCoachingAnswerInput {
+  answerSetId: String!
+  # May be null to create a new answer instead of updating an existing answer
+  answerId: String
+  response: String!
+  questionId: String!
 }

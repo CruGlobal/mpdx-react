@@ -13,6 +13,10 @@ import {
   ContactFilterStatusEnum,
   IdValue,
 } from '../../../../../graphql/types.generated';
+import {
+  ContactsContext,
+  ContactsType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { useContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 
@@ -51,7 +55,6 @@ const nullStatus = { id: 'NULL', value: '' };
 
 export const ContactFlowColumn: React.FC<Props> = ({
   statuses,
-  selectedFilters,
   title,
   color,
   accountListId,
@@ -59,11 +62,15 @@ export const ContactFlowColumn: React.FC<Props> = ({
   onContactSelected,
   changeContactStatus,
 }: Props) => {
+  const { sanitizedFilters } = React.useContext(
+    ContactsContext,
+  ) as ContactsType;
+
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
-        ...selectedFilters,
+        ...sanitizedFilters,
         status: statuses,
         wildcardSearch: searchTerm as string,
       },
@@ -76,7 +83,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
       constants?.constant.statuses?.find((constant) => constant.id === status),
     ) || [];
 
-  const CardContentRef = useRef<HTMLDivElement>();
+  const cardContentRef = useRef<HTMLDivElement>();
 
   const [{ canDrop }, drop] = useDrop(() => ({
     accept: 'contact',
@@ -85,97 +92,92 @@ export const ContactFlowColumn: React.FC<Props> = ({
     }),
   }));
 
-  return (
-    <>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <Card>
-          <Box
-            p={2}
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            data-testid="column-header"
-            borderBottom={`5px solid ${color}`}
-            height={theme.spacing(7)}
-          >
-            <Box width="80%">
-              <Typography
-                variant="h6"
-                style={{
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
-              >
-                {title}
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center">
-              <Typography>{data?.contacts.totalCount || 0}</Typography>
-            </Box>
-          </Box>
-          <CardContent
+  return loading && !data ? (
+    <CircularProgress />
+  ) : (
+    <Card>
+      <Box
+        p={2}
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        data-testid="column-header"
+        borderBottom={`5px solid ${color}`}
+        height={theme.spacing(7)}
+      >
+        <Box width="80%">
+          <Typography
+            variant="h6"
             style={{
-              position: 'relative',
-              height: 'calc(100vh - 260px)',
-              padding: 0,
-              background: theme.palette.cruGrayLight.main,
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
-            <Box
-              {...{ ref: drop }}
-              position="absolute"
-              width="100%"
-              height="100%"
-              top={0}
-              right={0}
-              display={canDrop ? 'grid' : 'none'}
-              gridTemplateRows={`repeat(${statuses.length},auto)`}
-            >
-              {statusesStructured.map((status) => (
-                <ContactFlowDropZone
-                  key={status?.id}
-                  status={status || nullStatus}
-                  changeContactStatus={changeContactStatus}
-                />
-              ))}
-            </Box>
-            <Box {...{ ref: CardContentRef }} width="100%" height="100%">
-              <InfiniteList
-                loading={loading}
-                data={data?.contacts.nodes}
-                totalCount={data?.contacts.totalCount}
-                itemContent={(_index, contact) => (
-                  <ContactFlowRow
-                    accountListId={accountListId}
-                    id={contact.id}
-                    name={contact.name}
-                    status={
-                      constants?.constant.statuses?.find(
-                        (constant) => constant.id === contact.status,
-                      ) || nullStatus
-                    }
-                    starred={contact.starred}
-                    onContactSelected={onContactSelected}
-                    columnWidth={CardContentRef.current?.offsetWidth}
-                    avatar={contact.avatar}
-                  />
-                )}
-                endReached={() =>
-                  data?.contacts.pageInfo.hasNextPage &&
-                  fetchMore({
-                    variables: { after: data.contacts.pageInfo.endCursor },
-                  })
+            {title}
+          </Typography>
+        </Box>
+        <Box display="flex" alignItems="center">
+          <Typography>{data?.contacts.totalCount || 0}</Typography>
+        </Box>
+      </Box>
+      <CardContent
+        style={{
+          position: 'relative',
+          height: 'calc(100vh - 260px)',
+          padding: 0,
+          background: theme.palette.cruGrayLight.main,
+        }}
+      >
+        <Box
+          {...{ ref: drop }}
+          position="absolute"
+          width="100%"
+          height="100%"
+          top={0}
+          right={0}
+          display={canDrop ? 'grid' : 'none'}
+          gridTemplateRows={`repeat(${statuses.length},auto)`}
+        >
+          {statusesStructured.map((status) => (
+            <ContactFlowDropZone
+              key={status?.id}
+              status={status || nullStatus}
+              changeContactStatus={changeContactStatus}
+            />
+          ))}
+        </Box>
+        <Box ref={cardContentRef} width="100%" height="100%">
+          <InfiniteList
+            loading={loading}
+            data={data?.contacts.nodes}
+            itemContent={(_index, contact) => (
+              <ContactFlowRow
+                accountListId={accountListId}
+                id={contact.id}
+                name={contact.name}
+                status={
+                  constants?.constant.statuses?.find(
+                    (constant) => constant.id === contact.status,
+                  ) || nullStatus
                 }
-                EmptyPlaceholder={<></>}
+                starred={contact.starred}
+                onContactSelected={onContactSelected}
+                columnWidth={cardContentRef.current?.offsetWidth}
+                avatar={contact.avatar}
               />
-            </Box>
-          </CardContent>
-        </Card>
-      )}
-    </>
+            )}
+            endReached={() =>
+              data?.contacts.pageInfo.hasNextPage &&
+              fetchMore({
+                variables: { after: data.contacts.pageInfo.endCursor },
+              })
+            }
+            EmptyPlaceholder={undefined}
+          />
+        </Box>
+      </CardContent>
+    </Card>
   );
 };

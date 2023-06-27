@@ -8,8 +8,8 @@ import {
 
 interface Props {
   filter: NumericRangeFilter;
-  value?: NumericRangeInput;
-  onUpdate: (value?: string) => void;
+  value?: NumericRangeInput | null;
+  onUpdate: (value?: NumericRangeInput) => void;
 }
 
 export const FilterListItemNumericRange: React.FC<Props> = ({
@@ -22,7 +22,13 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
   const valueMin = value?.min?.toString() || undefined;
   const valueMax = value?.max?.toString() || undefined;
 
-  const createRange = (start: string, end: string) => start + '..' + end;
+  const createRange = (
+    start: string | undefined,
+    end: string | undefined,
+  ): NumericRangeInput => ({
+    min: start ? parseFloat(start) : undefined,
+    max: end ? parseFloat(end) : undefined,
+  });
 
   return (
     <>
@@ -39,11 +45,7 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
           style={{ marginRight: '8px' }}
           value={valueMin || null}
           onChange={({ target: { value: min } }) =>
-            onUpdate(
-              !min
-                ? undefined
-                : createRange(min, valueMax && valueMax > min ? valueMax : min),
-            )
+            onUpdate(createRange(min, valueMax))
           }
         />
         <TextField
@@ -52,11 +54,7 @@ export const FilterListItemNumericRange: React.FC<Props> = ({
           style={{ marginLeft: '8px' }}
           value={valueMax || null}
           onChange={({ target: { value: max } }) =>
-            onUpdate(
-              !max
-                ? undefined
-                : createRange(valueMin && valueMin < max ? valueMin : max, max),
-            )
+            onUpdate(createRange(valueMin, max))
           }
         />
       </ListItem>

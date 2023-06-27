@@ -9,7 +9,7 @@ module.exports = {
   },
   locales: ['en'],
   output: 'public/locales/$LOCALE/$NAMESPACE.json',
-  input: ['src/**/*.{js,jsx,ts,tsx}'],
+  input: ['src/**/*.{js,jsx,ts,tsx}', 'pages/**/*.{jsx,tsx}'],
   verbose: true,
   nsSeparator: false,
   namespaceSeparator: false,

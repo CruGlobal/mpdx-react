@@ -1,0 +1,5 @@
+mutation DeleteCoachingAccountList($id: ID!) {
+  deleteAccountListCoach(input: { id: $id }) {
+    id
+  }
+}

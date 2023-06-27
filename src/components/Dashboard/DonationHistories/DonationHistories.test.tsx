@@ -2,6 +2,10 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import DonationHistories from '.';
 import TestRouter from '__tests__/util/TestRouter';
+import {
+  beforeTestResizeObserver,
+  afterTestResizeObserver,
+} from 'src/utils/tests/windowResizeObserver';
 
 const setTime = jest.fn();
 
@@ -87,6 +91,11 @@ describe('DonationHistories', () => {
         ],
         averageIgnoreCurrent: 1000,
       };
+      beforeTestResizeObserver();
+    });
+
+    afterEach(() => {
+      afterTestResizeObserver();
     });
 
     it('shows references', () => {

@@ -75,7 +75,11 @@ export const MassActionsCreateAppealModal: React.FC<
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            data-testid="CreateAppealModal"
+          >
             <DialogContent dividers>
               <FormControl fullWidth>
                 <TextField
@@ -84,7 +88,7 @@ export const MassActionsCreateAppealModal: React.FC<
                   onChange={handleChange('appeal')}
                   fullWidth
                   multiline
-                  inputProps={{ 'aria-label': 'Church' }}
+                  inputProps={{ 'aria-label': t('Appeal') }}
                 />
               </FormControl>
             </DialogContent>

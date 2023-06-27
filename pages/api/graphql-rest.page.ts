@@ -3,18 +3,28 @@ import {
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from '../../graphql/types.generated';
-import { FourteenMonthReportCurrencyType } from './graphql-rest.page.generated';
+import {
+  ContactFilterNewsletterEnum,
+  ReportContactFilterSetInput,
+  ContactFilterStatusEnum,
+  DateRangeInput,
+  FourteenMonthReportCurrencyType,
+  NumericRangeInput,
+  CoachingAnswerSet,
+} from './graphql-rest.page.generated';
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
-  CoachingAnswerSetData,
-  CoachingAnswerSetIncluded,
+  getCoachingAnswer,
+  getCoachingAnswerSet,
   getCoachingAnswerSets,
 } from './Schema/CoachingAnswerSets/dataHandler';
+import { readExistingAddresses } from './Schema/ContactPrimaryAddress/datahandler';
 import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
 } from './Schema/reports/fourteenMonth/datahandler';
+import { mapPartnerGivingAnalysisResponse } from './Schema/reports/partnerGivingAnalysis/datahandler';
 import {
   ExpectedMonthlyTotalResponse,
   mapExpectedMonthlyTotalReport,
@@ -55,6 +65,19 @@ import {
 import Cors from 'micro-cors';
 import { PageConfig, NextApiRequest } from 'next';
 import { ApolloServer } from 'apollo-server-micro';
+import {
+  DonationReponseData,
+  DonationReponseIncluded,
+  getDesignationDisplayNames,
+} from './Schema/donations/datahandler';
+import {
+  DestroyDonorAccount,
+  DestroyDonorAccountResponse,
+} from './Schema/Contacts/DonorAccounts/Destroy/datahander';
+
+function camelToSnake(str: string): string {
+  return str.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
+}
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -64,7 +87,7 @@ class MpdxRestApi extends RESTDataSource {
 
   willSendRequest(request: RequestOptions) {
     request.headers.set('Authorization', this.context.authHeader);
-    request.headers.set('content-type', 'application/vnd.api+json');
+    request.headers.set('Content-Type', 'application/vnd.api+json');
   }
 
   // Overridden to accept JSON API Content Type application/vnd.api+json
@@ -119,6 +142,23 @@ class MpdxRestApi extends RESTDataSource {
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
   }
 
+  async mergeContacts(loserContactIds: Array<string>, winnerContactId: string) {
+    const response = await this.post('contacts/merges/bulk', {
+      data: loserContactIds.map((loserId) => ({
+        data: {
+          type: 'contacts',
+          attributes: {
+            loser_id: loserId,
+            winner_id: winnerContactId,
+          },
+        },
+      })),
+    });
+
+    // Return the id of the winner
+    return response[0].data.id;
+  }
+
   async getAccountListAnalytics(
     accountListId: string,
     dateRange?: string | null,
@@ -171,33 +211,163 @@ class MpdxRestApi extends RESTDataSource {
 
   async getCoachingAnswerSets(
     accountListId: string,
-    completed?: boolean | null,
+    completed: boolean | null | undefined,
+    multiple: boolean,
   ) {
-    const {
-      data,
-      included,
-    }: {
-      data: CoachingAnswerSetData;
-      included: CoachingAnswerSetIncluded;
-    } = await this.get(
+    const response = await this.get(
       `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${
-        completed || false
+        completed ?? false
+      }${
+        multiple ? '' : '&filter[limit]=1'
       }&include=answers,questions&sort=-completed_at`,
     );
+    return getCoachingAnswerSets(response);
+  }
 
-    return getCoachingAnswerSets(data, included);
+  async getCurrentCoachingAnswerSet(
+    accountListId: string,
+    organizationId: string,
+  ): Promise<CoachingAnswerSet> {
+    // Try to find the first incomplete answer set
+    const [answerSet] = await this.getCoachingAnswerSets(
+      accountListId,
+      false,
+      false,
+    );
+    if (answerSet) {
+      return answerSet;
+    }
+
+    // Create a new answer set
+    const response = await this.post('coaching/answer_sets', {
+      data: {
+        type: 'coaching_answer_sets',
+        relationships: {
+          account_list: {
+            data: {
+              type: 'account_lists',
+              id: accountListId,
+            },
+          },
+          organization: {
+            data: {
+              type: 'organizations',
+              id: organizationId,
+            },
+          },
+        },
+      },
+      include: 'answers,questions',
+      fields: {
+        coaching_answer_sets:
+          'created_at,updated_at,completed_at,answers,questions',
+        answers: 'response',
+        questions: 'position,prompt,response_options,required',
+      },
+    });
+    return getCoachingAnswerSet(response);
+  }
+
+  async saveCoachingAnswer(
+    answerSetId: string,
+    questionId: string,
+    answerId: string | null,
+    response: string,
+  ) {
+    const body = {
+      data: {
+        type: 'coaching_answers',
+        attributes: {
+          response: response,
+        },
+      },
+      include: 'question',
+    };
+    const res = answerId
+      ? await this.put(`coaching/answers/${answerId}`, body)
+      : await this.post('coaching/answers', {
+          ...body,
+          data: {
+            ...body.data,
+            relationships: {
+              question: {
+                data: {
+                  type: 'coaching_questions',
+                  id: questionId,
+                },
+              },
+              answer_set: {
+                data: {
+                  type: 'coaching_answer_sets',
+                  id: answerSetId,
+                },
+              },
+            },
+          },
+        });
+    return getCoachingAnswer(res);
+  }
+
+  // TODO: This should be merged with the updateContact mutation by adding the ability to update
+  // the primaryMailingAddress field when we have API resources again
+  async setContactPrimaryAddress(
+    contactId: string,
+    primaryAddressId: string | null | undefined,
+  ) {
+    // Setting primary_mailing_address to true on one address doesn't set it to false on all the
+    // others, so we have to load all the existing addresses and update all of their
+    // primary_mailing_address attributes
+    const getAddressesResponse = await this.get(
+      `contacts/${contactId}?include=addresses`,
+    );
+    const addresses = readExistingAddresses(getAddressesResponse).map(
+      (address) => ({
+        ...address,
+        primaryMailingAddress: address.id === primaryAddressId,
+      }),
+    );
+    await this.put(`contacts/${contactId}`, {
+      included: addresses.map(({ id, primaryMailingAddress }) => ({
+        type: 'addresses',
+        id,
+        attributes: {
+          primary_mailing_address: primaryMailingAddress,
+        },
+      })),
+      data: {
+        type: 'contacts',
+        id: contactId,
+        attributes: { overwrite: true },
+        relationships: {
+          addresses: {
+            data: addresses.map(({ id }) => ({
+              type: 'addresses',
+              id,
+            })),
+          },
+        },
+      },
+    });
+    return {
+      addresses,
+    };
   }
 
   async getFourteenMonthReport(
     accountListId: string,
+    designationAccountId: string[] | null | undefined,
     currencyType: FourteenMonthReportCurrencyType,
   ) {
+    const designationAccountFilter =
+      designationAccountId && designationAccountId.length > 0
+        ? `&filter[designation_account_id=${designationAccountId.join(',')}`
+        : '';
     const { data }: { data: FourteenMonthReportResponse } = await this.get(
       `reports/${
         currencyType === 'salary'
           ? 'salary_currency_donations'
           : 'donor_currency_donations'
-      }?filter[account_list_id]=${accountListId}&filter[month_range]=${Interval.before(
+      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${Interval.before(
         DateTime.now().endOf('month'),
         Duration.fromObject({ months: 14 }).minus({ day: 1 }),
       )
@@ -207,11 +377,262 @@ class MpdxRestApi extends RESTDataSource {
     return mapFourteenMonthReport(data, currencyType);
   }
 
-  async getExpectedMonthlyTotalReport(accountListId: string) {
+  async getExpectedMonthlyTotalReport(
+    accountListId: string,
+    designationAccountId: string[] | null | undefined,
+  ) {
+    const designationAccountFilter =
+      designationAccountId && designationAccountId.length > 0
+        ? `&filter[designation_account_id=${designationAccountId.join(',')}`
+        : '';
     const { data }: { data: ExpectedMonthlyTotalResponse } = await this.get(
-      `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}`,
+      `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}${designationAccountFilter}`,
     );
     return mapExpectedMonthlyTotalReport(data);
+  }
+
+  async getPartnerGivingAnalysis(
+    accountListId: string,
+    page: number,
+    pageSize: number,
+    sortField: string,
+    sortAscending: boolean,
+    contactFilters: ReportContactFilterSetInput | null | undefined,
+  ) {
+    // Adapted from src/components/Shared/Filters/FilterPanel.tsx
+    // This code essentially does the reverse of the logic in setSelectedSavedFilter
+    const filters: Record<
+      string,
+      string | number | boolean | NumericRangeInput
+    > = {
+      account_list_id: accountListId,
+      any_tags: false,
+    };
+    Object.entries(contactFilters ?? {}).forEach(([key, value]) => {
+      if (value === null) {
+        return;
+      }
+
+      const snakedKey = camelToSnake(key);
+
+      switch (key) {
+        // Boolean
+        case 'addressHistoric':
+        case 'addressValid':
+        case 'anyTags':
+        case 'noAppeals':
+        case 'pledgeReceived':
+        case 'reverseAlmaMater':
+        case 'reverseAppeal':
+        case 'reverseChurch':
+        case 'reverseCity':
+        case 'reverseCountry':
+        case 'reverseDesignationAccountId':
+        case 'reverseDonation':
+        case 'reverseDonationAmount':
+        case 'reverseDonationPeriodAverage':
+        case 'reverseDonationPeriodCount':
+        case 'reverseDonationPeriodPercentRank':
+        case 'reverseDonationPeriodSum':
+        case 'reverseIds':
+        case 'reverseLikely':
+        case 'reverseLocale':
+        case 'reverseMetroArea':
+        case 'reversePledgeAmount':
+        case 'reversePledgeCurrency':
+        case 'reversePledgeFrequency':
+        case 'reversePrimaryAddress':
+        case 'reverseReferrer':
+        case 'reverseRegion':
+        case 'reverseRelatedTaskAction':
+        case 'reverseSource':
+        case 'reverseState':
+        case 'reverseStatus':
+        case 'reverseTimezone':
+        case 'reverseUserIds':
+        case 'starred':
+        case 'statusValid':
+        case 'tasksAllCompleted':
+          if (value === true) {
+            filters[snakedKey] = true;
+          }
+          break;
+
+        // DateRangeInput
+        case 'donationDate':
+        case 'createdAt':
+        case 'anniversary':
+        case 'birthday':
+        case 'gaveMoreThanPledgedRange':
+        case 'lateAt':
+        case 'nextAsk':
+        case 'pledgeAmountIncreasedRange':
+        case 'startedGivingRange':
+        case 'stoppedGivingRange':
+        case 'taskDueDate':
+        case 'updatedAt':
+          const dateRange = value as DateRangeInput;
+          filters[snakedKey] = `${dateRange.min ?? ''}..${dateRange.max ?? ''}`;
+          break;
+
+        // Multiselect
+        case 'almaMater':
+        case 'appeal':
+        case 'church':
+        case 'city':
+        case 'country':
+        case 'designationAccountId':
+        case 'donation':
+        case 'donationAmount':
+        case 'ids':
+        case 'likely':
+        case 'locale':
+        case 'metroArea':
+        case 'organizationId':
+        case 'pledgeAmount':
+        case 'pledgeCurrency':
+        case 'pledgeFrequency':
+        case 'primaryAddress':
+        case 'referrer':
+        case 'referrerIds':
+        case 'region':
+        case 'relatedTaskAction':
+        case 'source':
+        case 'state':
+        case 'timezone':
+        case 'userIds':
+          filters[snakedKey] = (value as string[]).join(',');
+          break;
+
+        // Newsletter
+        case 'newsletter':
+          const newsletterMap = new Map<ContactFilterNewsletterEnum, string>([
+            [ContactFilterNewsletterEnum.All, 'all'],
+            [ContactFilterNewsletterEnum.Both, 'both'],
+            [ContactFilterNewsletterEnum.Email, 'email'],
+            [ContactFilterNewsletterEnum.EmailOnly, 'email_only'],
+            [ContactFilterNewsletterEnum.None, 'none'],
+            [ContactFilterNewsletterEnum.NoValue, 'no_value'],
+            [ContactFilterNewsletterEnum.Physical, 'address'],
+            [ContactFilterNewsletterEnum.PhysicalOnly, 'address_only'],
+          ]);
+          filters[snakedKey] =
+            newsletterMap.get(value as ContactFilterNewsletterEnum) ?? '';
+          break;
+
+        // Status
+        case 'status':
+          const statusMap = new Map<ContactFilterStatusEnum, string>([
+            [ContactFilterStatusEnum.Active, 'active'],
+            [ContactFilterStatusEnum.Hidden, 'hidden'],
+            [ContactFilterStatusEnum.Null, 'null'],
+            [
+              ContactFilterStatusEnum.AppointmentScheduled,
+              'Appointment Scheduled',
+            ],
+            [ContactFilterStatusEnum.AskInFuture, 'Ask in Future'],
+            [ContactFilterStatusEnum.CallForDecision, 'Call for Decision'],
+            [
+              ContactFilterStatusEnum.ContactForAppointment,
+              'Contact for Appointment',
+            ],
+            [
+              ContactFilterStatusEnum.CultivateRelationship,
+              'Cultivate Relationship',
+            ],
+            [ContactFilterStatusEnum.ExpiredReferral, 'Expired Referral'],
+            [ContactFilterStatusEnum.NeverAsk, 'Never Ask'],
+            [ContactFilterStatusEnum.NeverContacted, 'Never Contacted'],
+            [ContactFilterStatusEnum.NotInterested, 'Not Interested'],
+            [ContactFilterStatusEnum.PartnerFinancial, 'Partner - Financial'],
+            [ContactFilterStatusEnum.PartnerPray, 'Partner - Pray'],
+            [ContactFilterStatusEnum.PartnerSpecial, 'Partner - Special'],
+            [ContactFilterStatusEnum.ResearchAbandoned, 'Research Abandoned'],
+            [ContactFilterStatusEnum.Unresponsive, 'Unresponsive'],
+          ]);
+          filters[snakedKey] = (value as ContactFilterStatusEnum[])
+            .map((status) => {
+              const translated = statusMap.get(status);
+              if (!translated) {
+                throw new Error(
+                  `Unrecognized ContactFilterStatusEnum value ${value}`,
+                );
+              }
+
+              return translated;
+            })
+            .join(',');
+          break;
+
+        // String[]
+        case 'contactType':
+        case 'tags':
+        case 'excludeTags':
+          filters[snakedKey] = (value as string[]).join(',');
+          break;
+
+        // String and NumericRangeInput
+        case 'addressLatLng':
+        case 'appealStatus':
+        case 'contactInfoAddr':
+        case 'contactInfoEmail':
+        case 'contactInfoFacebook':
+        case 'contactInfoMobile':
+        case 'contactInfoPhone':
+        case 'contactInfoWorkPhone':
+        case 'donationAmountRange':
+        case 'donationPeriodAverage':
+        case 'donationPeriodCount':
+        case 'donationPeriodPercentRank':
+        case 'donationPeriodSum':
+        case 'nameLike':
+        case 'notes':
+        case 'optOut':
+        case 'pledge':
+        case 'pledgeLateBy':
+        case 'wildcardSearch':
+          filters[snakedKey] = value as string | NumericRangeInput;
+          break;
+
+        default:
+          throw new Error(`Unrecognized filter key ${key}`);
+      }
+    });
+
+    const analysisPromise = this.post(
+      'reports/partner_giving_analysis',
+      {
+        data: {
+          type: 'partner_giving_analysis',
+        },
+        fields: {
+          contacts:
+            'donation_period_average,donation_period_count,donation_period_sum,last_donation_amount,last_donation_currency,last_donation_date,name,pledge_currency,total_donations',
+        },
+        filter: filters,
+        page,
+        per_page: pageSize,
+        sort: `${sortAscending ? '' : '-'}${camelToSnake(sortField)}`,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+          'X-HTTP-Method-Override': 'GET',
+        },
+      },
+    );
+    const countContactsPromise = this.get('contacts', {
+      'filter[account_list_id]': accountListId,
+      per_page: 0,
+    });
+    const [analysisResponse, countContactsResponse] = await Promise.all([
+      analysisPromise,
+      countContactsPromise,
+    ]);
+    return mapPartnerGivingAnalysisResponse(
+      analysisResponse,
+      countContactsResponse,
+    );
   }
 
   async getAccountListDonorAccounts(accountListId: string, searchTerm: string) {
@@ -308,6 +729,84 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateComment(data);
+  }
+
+  async getDesginationDisplayNames(
+    accountListId: string,
+    startDate: string | undefined | null,
+    endDate: string | undefined | null,
+  ) {
+    //'2022-11-01..2022-11-30'
+    const {
+      data,
+      included,
+    }: { data: DonationReponseData[]; included: DonationReponseIncluded[] } =
+      await this.get(
+        `account_lists/${accountListId}/donations?fields[designation_account]=display_name&filter[donation_date]=${startDate?.slice(
+          0,
+          10,
+        )}...${endDate?.slice(
+          0,
+          10,
+        )}&include=designation_account&per_page=10000`,
+      );
+    return getDesignationDisplayNames(data, included);
+  }
+
+  async destroyDonorAccount(contactId: string, donorAccountId: string) {
+    const { data }: { data: DestroyDonorAccountResponse } = await this.put(
+      `contacts/${contactId}`,
+      {
+        included: [
+          {
+            type: 'donor_accounts',
+            id: donorAccountId,
+            attributes: {
+              _destroy: '1',
+            },
+          },
+        ],
+        data: {
+          type: 'contacts',
+          id: contactId,
+          relationships: {
+            donor_accounts: {
+              data: [
+                {
+                  id: donorAccountId,
+                  type: 'donor_accounts',
+                },
+              ],
+            },
+          },
+        },
+      },
+    );
+    return DestroyDonorAccount(data);
+  }
+
+  async deleteTags(tagName: string, page: string) {
+    const { data } = await this.delete(
+      `${page}/tags/bulk`,
+      {
+        '0[name]': tagName,
+      },
+      {
+        body: JSON.stringify({
+          data: [
+            {
+              data: {
+                type: 'tags',
+                attributes: {
+                  name: tagName,
+                },
+              },
+            },
+          ],
+        }),
+      },
+    );
+    return data;
   }
 }
 

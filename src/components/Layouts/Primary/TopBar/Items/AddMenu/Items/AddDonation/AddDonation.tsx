@@ -22,18 +22,19 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { MobileDatePicker } from '@mui/x-date-pickers';
-import debounce from 'lodash/debounce';
 import { DonationCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
   useAddDonationMutation,
-  useGetAccountListDonorAccountsLazyQuery,
   useGetDonationModalQuery,
 } from './AddDonation.generated';
 import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface AddDonationProps {
   accountListId: string;
@@ -101,6 +102,7 @@ export const AddDonation = ({
   handleClose,
 }: AddDonationProps): ReactElement<AddDonationProps> => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const constants = useApiConstants();
   const isMobile = useMediaQuery((theme: Theme) =>
@@ -113,12 +115,13 @@ export const AddDonation = ({
     },
   });
 
-  const [addDonation, { loading: adding }] = useAddDonationMutation();
-
-  const [
-    searchForDonorAccounts,
-    { loading: loadingDonorAccounts, data: donorAccountData },
-  ] = useGetAccountListDonorAccountsLazyQuery();
+  const [addDonation, { loading: adding }] = useAddDonationMutation({
+    refetchQueries: [
+      'ContactDonationsList',
+      'GetContactDonations',
+      'GetDonationsTable',
+    ],
+  });
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
@@ -128,7 +131,7 @@ export const AddDonation = ({
     appealId: null,
     currency: data?.accountList.currency ?? '',
     designationAccountId: '',
-    donationDate: DateTime.local().startOf('hour').toISO(),
+    donationDate: DateTime.local().startOf('day').toISO(),
     donorAccountId: '',
     memo: null,
     motivation: null,
@@ -160,12 +163,6 @@ export const AddDonation = ({
     }
     handleClose();
   };
-
-  const handleDonorAccountSearch = debounce(
-    (searchTerm: string) =>
-      searchForDonorAccounts({ variables: { accountListId, searchTerm } }),
-    1000,
-  );
 
   if (loading) {
     return (
@@ -326,11 +323,9 @@ export const AddDonation = ({
                               !date ? null : setFieldValue('donationDate', date)
                             }
                             value={
-                              field.value
-                                ? DateTime.fromISO(field.value).toLocaleString()
-                                : null
+                              field.value ? DateTime.fromISO(field.value) : null
                             }
-                            inputFormat="MM/dd/yyyy"
+                            inputFormat={getDateFormatPattern(locale)}
                           />
                         </Box>
                       )}
@@ -389,58 +384,15 @@ export const AddDonation = ({
                     <Field name="donorAccountId">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <Autocomplete
-                            {...field}
-                            id="partner-account-input"
-                            loading={loadingDonorAccounts}
-                            options={
-                              (donorAccountData?.accountListDonorAccounts &&
-                                donorAccountData.accountListDonorAccounts.map(
-                                  ({ id }) => id,
-                                )) ??
-                              []
-                            }
-                            getOptionLabel={(donorAccountId): string => {
-                              const donorAccount =
-                                donorAccountData?.accountListDonorAccounts &&
-                                donorAccountData.accountListDonorAccounts.find(
-                                  ({ id }) => donorAccountId === id,
-                                );
-
-                              return donorAccount?.displayName ?? '';
-                            }}
-                            renderInput={(params): ReactElement => (
-                              <TextField
-                                {...params}
-                                size="small"
-                                variant="outlined"
-                                onChange={(e) =>
-                                  handleDonorAccountSearch(e.target.value)
-                                }
-                                InputProps={{
-                                  ...params.InputProps,
-                                  'aria-labelledby': 'partner-account-label',
-                                  endAdornment: (
-                                    <>
-                                      {loadingDonorAccounts && (
-                                        <CircularProgress
-                                          color="primary"
-                                          size={20}
-                                        />
-                                      )}
-                                      {params.InputProps.endAdornment}
-                                    </>
-                                  ),
-                                }}
-                              />
-                            )}
-                            value={field.value}
-                            onChange={(_, donorAccountId): void =>
+                          <DonorAccountAutocomplete
+                            accountListId={accountListId}
+                            onChange={(donorAccountId) =>
                               setFieldValue('donorAccountId', donorAccountId)
                             }
-                            isOptionEqualToValue={(option, value): boolean =>
-                              option === value
-                            }
+                            value={field.value}
+                            autocompleteId="partner-account-input"
+                            labelId="partner-account-label"
+                            size="small"
                           />
                         </Box>
                       )}
@@ -470,6 +422,8 @@ export const AddDonation = ({
                             {...field}
                             id="designation-account-input"
                             loading={loading}
+                            autoSelect
+                            autoHighlight
                             options={
                               (data?.designationAccounts &&
                                 data?.designationAccounts[0]?.designationAccounts.map(
@@ -483,7 +437,9 @@ export const AddDonation = ({
                                 data?.designationAccounts[0]?.designationAccounts.find(
                                   ({ id }) => id === accountId,
                                 );
-                              return account?.name ?? '';
+                              return account
+                                ? `${account?.name} (${account.id}) `
+                                : '';
                             }}
                             renderInput={(params): ReactElement => (
                               <TextField
@@ -543,6 +499,8 @@ export const AddDonation = ({
                             {...field}
                             id="appeal-input"
                             loading={loading}
+                            autoSelect
+                            autoHighlight
                             options={
                               (data?.accountList.appeals &&
                                 data.accountList.appeals.map(({ id }) => id)) ??
@@ -634,7 +592,11 @@ export const AddDonation = ({
               <Grid container item xs={12} spacing={1}>
                 <Grid item xs={12}>
                   <FormControl fullWidth size="small">
-                    <LogFormLabel htmlFor="memo-input" id="memo-label">
+                    <LogFormLabel
+                      data-testid="memo-label"
+                      htmlFor="memo-input"
+                      id="memo-label"
+                    >
                       {t('Memo')}
                     </LogFormLabel>
                     <FastField name="memo">

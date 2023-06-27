@@ -11,8 +11,12 @@ import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { currencyFormat } from '../../../../../lib/intlFormat/intlFormat';
+import {
+  currencyFormat,
+  dateFormat,
+} from '../../../../../lib/intlFormat/intlFormat';
 import { useContactDonationsListQuery } from './ContactDonationsList.generated';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface ContactDonationsListProp {
   accountListId: string;
@@ -41,6 +45,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
   });
 
   const { t } = useTranslation();
+  const locale = useLocale();
 
   return (
     <Box>
@@ -54,33 +59,40 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
         <>
           <Table role="table">
             <TableHead>
-              <TableCell>{t('Date')}</TableCell>
-              <TableCell>{t('Amount')}</TableCell>
-              <TableCell>{t('Converted Amount')}</TableCell>
+              <TableRow>
+                <TableCell>{t('Date')}</TableCell>
+                <TableCell>{t('Amount')}</TableCell>
+                <TableCell>{t('Converted Amount')}</TableCell>
+                <TableCell>{t('Method')}</TableCell>
+              </TableRow>
             </TableHead>
-            {data?.contact.donations.nodes ? (
-              data?.contact.donations.nodes.map((donation) => (
-                <TableRow key={donation.id}>
-                  <TableCell>
-                    {DateTime.fromISO(donation.donationDate).toLocaleString()}
-                  </TableCell>
-                  <TableCell>
-                    {currencyFormat(
-                      donation.amount.amount,
-                      donation.amount.currency,
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {currencyFormat(
-                      donation.amount.convertedAmount,
-                      donation.amount.convertedCurrency,
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <></>
-            )}
+            {data?.contact.donations.nodes
+              ? data?.contact.donations.nodes.map((donation) => (
+                  <TableRow key={donation.id}>
+                    <TableCell>
+                      {dateFormat(
+                        DateTime.fromISO(donation.donationDate),
+                        locale,
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {currencyFormat(
+                        donation.amount.amount,
+                        donation.amount.currency,
+                        locale,
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {currencyFormat(
+                        donation.amount.convertedAmount,
+                        donation.amount.convertedCurrency,
+                        locale,
+                      )}
+                    </TableCell>
+                    <TableCell>{donation.paymentMethod}</TableCell>
+                  </TableRow>
+                ))
+              : null}
           </Table>
           {!loading && data?.contact.donations.pageInfo.hasNextPage ? (
             <LoadMoreButton

@@ -4,11 +4,12 @@ export const ExpectedMonthlyTotalReportResolvers: Resolvers = {
   Query: {
     expectedMonthlyTotalReport: (
       _source,
-      { accountListId },
+      { accountListId, designationAccountId },
       { dataSources },
     ) => {
       return dataSources.mpdxRestApi.getExpectedMonthlyTotalReport(
         accountListId,
+        designationAccountId,
       );
     },
   },

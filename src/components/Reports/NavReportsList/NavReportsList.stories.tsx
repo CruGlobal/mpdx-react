@@ -9,6 +9,12 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <NavReportsList selectedId={selected} isOpen={true} onClose={() => {}} />
+    <NavReportsList
+      selectedId={selected}
+      isOpen={true}
+      onClose={() => {}}
+      designationAccounts={[]}
+      setDesignationAccounts={() => {}}
+    />
   );
 };

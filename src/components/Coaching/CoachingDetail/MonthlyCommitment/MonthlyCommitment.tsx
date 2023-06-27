@@ -19,6 +19,7 @@ import { useGetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated
 import AnimatedCard from 'src/components/AnimatedCard';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface MonthlyCommitmentProps {
   coachingId: string;
@@ -31,49 +32,51 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
   currencyCode = 'USD',
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const { data, loading } = useGetReportsPledgeHistoriesQuery({
     variables: { coachingId },
   });
 
-  const pledges = data?.reportPledgeHistories?.map((pledge) => {
-    const pledgeData: {
-      [key: string]: string | number;
-      startDate: string;
-      received: number;
-      committed: number;
-    } = {
-      startDate: DateTime.fromISO(
-        pledge?.startDate ? pledge.startDate : '',
-      ).toFormat('LLL yy'),
-      received: Math.round(pledge?.recieved ?? 0),
-      committed: Math.round(pledge?.pledged ?? 0),
-    };
-    return pledgeData;
-  });
+  const pledges =
+    data?.reportPledgeHistories?.map((pledge) => {
+      const startDate = pledge?.startDate
+        ? DateTime.fromISO(pledge.startDate)
+            .toJSDate()
+            .toLocaleDateString(locale, {
+              month: 'short',
+              year: '2-digit',
+            })
+        : '';
+      const received = Math.round(pledge?.recieved ?? 0);
+      const committed = Math.round(pledge?.pledged ?? 0);
+      return { startDate, received, committed };
+    }) ?? [];
 
   const averageCommitments =
-    (pledges?.reduce((sum, pledge) => sum + pledge.committed, 0) ?? 0) /
-      (pledges?.length ?? 1) ?? 0;
+    pledges.length > 0
+      ? pledges.reduce((sum, pledge) => sum + pledge.committed, 0) /
+        pledges.length
+      : 0;
 
   const domainMax = Math.max(
-    ...(pledges?.map((pledge) => pledge.received) || []),
-    ...(pledges?.map((pledge) => pledge.committed) || []),
-    goal ?? 0,
+    ...pledges.map((pledge) => pledge.received),
+    ...pledges.map((pledge) => pledge.committed),
+    goal,
   );
   return (
     <AnimatedCard>
       <CardHeader
         title={
           <Box>
-            <Typography>
+            <Typography data-testid="MonthlyCommitmentSummary">
               {t('Monthly Commitment Average') + ' '}
               <strong style={{ color: theme.palette.progressBarOrange.main }}>
-                {currencyFormat(averageCommitments, currencyCode)}
+                {currencyFormat(averageCommitments, currencyCode, locale)}
               </strong>
               {' | ' + t('Monthly Commitment Goal') + ': '}
               <strong style={{ color: theme.palette.mpdxBlue.main }}>
-                {currencyFormat(goal, currencyCode)}
+                {currencyFormat(goal, currencyCode, locale)}
               </strong>
             </Typography>
           </Box>

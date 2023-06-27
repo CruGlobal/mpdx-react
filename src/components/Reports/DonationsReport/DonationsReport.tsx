@@ -7,17 +7,21 @@ import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Heade
 import { MonthlyActivitySection } from './MonthlyActivity/MonthlyActivitySection';
 import { DonationsReportTable } from './Table/DonationsReportTable';
 
-interface Props {
+interface DonationReportsProps {
   accountListId: string;
+  designationAccounts?: string[];
   isNavListOpen: boolean;
   onNavListToggle: () => void;
+  onSelectContact: (contactId: string) => void;
   title: string;
 }
 
-export const DonationsReport: React.FC<Props> = ({
+export const DonationsReport: React.FC<DonationReportsProps> = ({
   accountListId,
+  designationAccounts,
   isNavListOpen,
   onNavListToggle,
+  onSelectContact,
   title,
 }) => {
   const [time, setTime] = useState(DateTime.now().startOf('month'));
@@ -45,10 +49,13 @@ export const DonationsReport: React.FC<Props> = ({
       <Container>
         <MonthlyActivitySection
           accountListId={accountListId}
+          designationAccounts={designationAccounts}
           setTime={setTime}
         />
         <DonationsReportTable
           accountListId={accountListId}
+          designationAccounts={designationAccounts}
+          onSelectContact={onSelectContact}
           time={time}
           setTime={setTime}
         />

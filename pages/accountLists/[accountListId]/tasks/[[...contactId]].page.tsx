@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
@@ -8,39 +8,40 @@ import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
+import theme from 'src/theme';
+import { suggestArticles } from 'src/lib/helpScout';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import Loading from '../../../../src/components/Loading';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import {
-  ResultEnum,
-  TaskFilterSetInput,
-} from '../../../../graphql/types.generated';
+import { TaskFilterSetInput } from '../../../../graphql/types.generated';
 import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
-import { ListHeader } from '../../../../src/components/Shared/Header/ListHeader';
+import {
+  headerHeight,
+  ListHeader,
+} from '../../../../src/components/Shared/Header/ListHeader';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
-import { ContactsPageProvider } from '../contacts/ContactsPageContext';
+import { ContactsProvider } from '../contacts/ContactsContext';
 import {
-  TasksDocument,
   useTaskFiltersQuery,
   useTasksQuery,
+  TaskFiltersQuery,
 } from './Tasks.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
-import { useGetTaskIdsForMassSelectionLazyQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
+import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import {
-  useMassActionsDeleteTasksMutation,
-  useMassActionsUpdateTasksMutation,
-} from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
-import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
-import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
-import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
-import { currentString, historicString } from 'src/utils/tasks/taskActivity';
+  TaskFilterTabsTypes,
+  taskFiltersTabs,
+} from '../../../../src/utils/tasks/taskFilterTabs';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+
+const buttonBarHeight = theme.spacing(6);
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -66,12 +67,36 @@ const TaskAddIcon = styled(AddIcon)(({ theme }) => ({
   color: theme.palette.info.main,
 }));
 
+export const tasksSavedFilters = (
+  filterData: TaskFiltersQuery | undefined,
+  accountListId: string | undefined,
+): UserOptionFragment[] => {
+  return (
+    filterData?.userOptions.filter((option) => {
+      let parsedJson: Record<string, string>;
+      try {
+        parsedJson = JSON.parse(option.value ?? '');
+      } catch (e) {
+        parsedJson = {};
+      }
+      return (
+        (option.key?.includes('saved_tasks_filter_') ||
+          option.key?.includes('graphql_saved_tasks_filter_')) &&
+        ((parsedJson.account_list_id === accountListId &&
+          !parsedJson.accountListId) ||
+          (parsedJson.accountListId === accountListId &&
+            !parsedJson.account_list_id))
+      );
+    }) ?? []
+  );
+};
+
 const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
-  const { enqueueSnackbar } = useSnackbar();
   const { query, push, replace, isReady, pathname } = useRouter();
   const { openTaskModal } = useTaskModal();
+  const { appName } = useGetAppSettings();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
@@ -89,6 +114,10 @@ const TasksPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
+  useEffect(() => {
+    suggestArticles('HS_TASKS_SUGGESTIONS');
+  }, []);
+
   //#region Filters
   const urlFilters =
     query?.filters && JSON.parse(decodeURI(query.filters as string));
@@ -98,35 +127,38 @@ const TasksPage: React.FC = () => {
     urlFilters ?? {},
   );
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
+  const sanitizedFilters = useMemo(
+    () => sanitizeFilters(activeFilters),
+    [activeFilters],
+  );
 
-  const [isCurrent, setIsCurrent] = React.useState(!activeFilters.completed);
+  const [taskType, setTaskType] = useState<TaskFilterTabsTypes>(
+    taskFiltersTabs[0].name,
+  );
 
-  useEffect(() => {
-    setIsCurrent(!activeFilters.completed);
-  }, [activeFilters]);
+  const setTaskTypeFilter = (type: TaskFilterTabsTypes): void => {
+    setTaskType(type);
+    const typeDetails = taskFiltersTabs.find((item) => item.name === type);
 
-  function setCurrentFilter(current: boolean): void {
-    if (current) {
-      setActiveFilters({
-        ...urlFilters,
-        completed: false,
-      });
-    } else {
-      setActiveFilters({
-        ...urlFilters,
-        completed: true,
-      });
-    }
-  }
+    setActiveFilters({
+      ...urlFilters,
+      ...typeDetails?.activeFiltersOptions,
+    });
+  };
+
+  const tasksFilter = useMemo(
+    () => ({
+      ...sanitizedFilters,
+      ...starredFilter,
+      wildcardSearch: searchTerm as string,
+    }),
+    [sanitizedFilters, starredFilter, searchTerm],
+  );
 
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
       accountListId: accountListId ?? '',
-      tasksFilter: {
-        ...activeFilters,
-        ...starredFilter,
-        wildcardSearch: searchTerm as string,
-      },
+      tasksFilter,
     },
     skip: !accountListId,
   });
@@ -137,65 +169,61 @@ const TasksPage: React.FC = () => {
       pathname,
       query: {
         ...oldQuery,
-        ...(Object.keys(activeFilters).length > 0
-          ? { filters: encodeURI(JSON.stringify(activeFilters)) }
+        ...(Object.keys(sanitizedFilters).length
+          ? { filters: encodeURI(JSON.stringify(sanitizedFilters)) }
           : undefined),
       },
     });
-  }, [activeFilters]);
+    if (!sanitizedFilters.completed && !sanitizedFilters.dateRange) {
+      setTaskType('All');
+    } else if (sanitizedFilters.dateRange === 'overdue') {
+      setTaskType('Overdue');
+    } else if (sanitizedFilters.completed) {
+      setTaskType('Completed');
+    } else if (sanitizedFilters.dateRange === 'today') {
+      setTaskType('Today');
+    } else if (sanitizedFilters.dateRange === 'upcoming') {
+      setTaskType('Upcoming');
+    } else if (sanitizedFilters.dateRange === 'no_date') {
+      setTaskType('NoDueDate');
+    }
+  }, [sanitizedFilters]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
 
-  const isFiltered =
-    Object.keys(activeFilters).length > 0 ||
-    Object.values(activeFilters).some(
-      (filter) => filter !== ([] as Array<string>),
-    );
+  const isFiltered = Object.keys(sanitizedFilters).length > 0;
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
   };
 
-  const savedFilters: UserOptionFragment[] =
-    filterData?.userOptions.filter(
-      (option) =>
-        (option.key?.includes('saved_tasks_filter_') ||
-          option.key?.includes('graphql_saved_tasks_filter_')) &&
-        (JSON.parse(option.value ?? '').account_list_id === accountListId ||
-          JSON.parse(option.value ?? '').accountListId === accountListId),
-    ) ?? [];
+  const savedFilters = tasksSavedFilters(filterData, accountListId);
   //#endregion
 
   //#region Mass Actions
-  const [getTaskIds, { data: taskIds, loading: loadingTaskIds }] =
-    useGetTaskIdsForMassSelectionLazyQuery();
 
-  // Only query when the filters or total count change and store data in state
-  const [allTaskIds, setAllTaskIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!loadingTaskIds && taskIds?.tasks.nodes) {
-      setAllTaskIds(taskIds?.tasks.nodes.map((task) => task.id));
-    }
-  }, [loadingTaskIds]);
-
-  useEffect(() => {
-    getTaskIds({
-      variables: {
-        accountListId,
-        first: data?.tasks?.totalCount ?? 0,
-        tasksFilters: activeFilters,
-      },
-    });
-  }, [activeFilters, searchTerm, starredFilter, data]);
+  const taskCount = data?.tasks.totalCount ?? 0;
+  const { data: allTasks } = useGetTaskIdsForMassSelectionQuery({
+    variables: {
+      accountListId,
+      first: taskCount,
+      tasksFilter,
+    },
+    skip: taskCount === 0,
+  });
+  const allTaskIds = useMemo(
+    () => allTasks?.tasks.nodes.map((task) => task.id) ?? [],
+    [allTasks],
+  );
 
   const {
     ids,
     selectionType,
     isRowChecked,
+    deselectAll,
     toggleSelectAll,
     toggleSelectionById,
   } = useMassSelection(
@@ -255,67 +283,13 @@ const TasksPage: React.FC = () => {
   );
   //#endregion
 
-  //#region mass actions
-
-  const [completeTasksModalOpen, setCompleteTasksModalOpen] = useState(false);
-  const [addTagsModalOpen, setAddTagsModalOpen] = useState(false);
-  const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
-  const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
-  const [removeTagsModalOpen, setRemoveTagsModalOpen] = useState(false);
-
-  const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
-  const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
-
-  const completeTasks = async () => {
-    const completedAt = DateTime.local().toISO();
-    await updateTasksMutation({
-      variables: {
-        accountListId: accountListId ?? '',
-        attributes: ids.map((id) => ({
-          id,
-          completedAt,
-          result: ResultEnum.Done,
-        })),
-      },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
-    });
-    enqueueSnackbar(t('Contact(s) completed successfully'), {
-      variant: 'success',
-    });
-    setCompleteTasksModalOpen(false);
-  };
-
-  const deleteTasks = async () => {
-    await deleteTasksMutation({
-      variables: {
-        accountListId: accountListId ?? '',
-        ids,
-      },
-      refetchQueries: [
-        {
-          query: TasksDocument,
-          variables: { accountListId },
-        },
-      ],
-    });
-    enqueueSnackbar(t('Contact(s) deleted successfully'), {
-      variant: 'success',
-    });
-    setDeleteTasksModalOpen(false);
-  };
-
-  //#endregion
-
   //#region JSX
   return (
     <>
       <Head>
-        <title>MPDX | {t('Tasks')}</title>
+        <title>
+          {appName} | {t('Tasks')}
+        </title>
       </Head>
       {accountListId ? (
         <WhiteBackground>
@@ -329,9 +303,7 @@ const TasksPage: React.FC = () => {
                   onClose={toggleFilterPanel}
                   onSelectedFiltersChanged={setActiveFilters}
                 />
-              ) : (
-                <></>
-              )
+              ) : undefined
             }
             leftOpen={filterPanelOpen}
             leftWidth="290px"
@@ -339,7 +311,7 @@ const TasksPage: React.FC = () => {
               <>
                 <ListHeader
                   page="task"
-                  activeFilters={Object.keys(activeFilters).length > 0}
+                  activeFilters={isFiltered}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
                   contactDetailsOpen={contactDetailsOpen}
@@ -350,14 +322,16 @@ const TasksPage: React.FC = () => {
                   starredFilter={starredFilter}
                   toggleStarredFilter={setStarredFilter}
                   headerCheckboxState={selectionType}
+                  massDeselectAll={deselectAll}
+                  selectedIds={ids}
                   buttonGroup={
                     <Hidden xsDown>
                       <TaskHeaderButton
-                        onClick={() => openTaskModal({})}
+                        onClick={() => openTaskModal({ view: 'add' })}
                         variant="text"
                         startIcon={<TaskAddIcon />}
                       >
-                        <Hidden mdUp>{t('Add')}</Hidden>
+                        <Hidden smUp>{t('Add')}</Hidden>
                         <Hidden smDown>{t('Add Task')}</Hidden>
                       </TaskHeaderButton>
                       <TaskHeaderButton
@@ -365,80 +339,38 @@ const TasksPage: React.FC = () => {
                         variant="text"
                         startIcon={<TaskCheckIcon />}
                       >
-                        <Hidden mdUp>{t('Log')}</Hidden>
+                        <Hidden smUp>{t('Log')}</Hidden>
                         <Hidden smDown>{t('Log Task')}</Hidden>
                       </TaskHeaderButton>
                     </Hidden>
                   }
-                  selectedIds={ids}
-                  openCompleteTasksModal={setCompleteTasksModalOpen}
-                  openDeleteTasksModal={setDeleteTasksModalOpen}
-                  openEditTasksModal={setEditTasksModalOpen}
-                  openTasksRemoveTagsModal={setRemoveTagsModalOpen}
-                  openTasksAddTagsModal={setAddTagsModalOpen}
                 />
-                {completeTasksModalOpen && (
-                  <MassActionsTasksConfirmationModal
-                    open={completeTasksModalOpen}
-                    action="complete"
-                    idsCount={ids.length}
-                    setOpen={setCompleteTasksModalOpen}
-                    onConfirm={completeTasks}
-                  />
-                )}
-                {addTagsModalOpen && (
-                  <MassActionsTasksAddTagsModal
-                    ids={ids}
-                    accountListId={accountListId}
-                    handleClose={() => setAddTagsModalOpen(false)}
-                  />
-                )}
-                {deleteTasksModalOpen && (
-                  <MassActionsTasksConfirmationModal
-                    open={deleteTasksModalOpen}
-                    action="delete"
-                    idsCount={ids.length}
-                    setOpen={setDeleteTasksModalOpen}
-                    onConfirm={deleteTasks}
-                  />
-                )}
-                {editTasksModalOpen && (
-                  <MassActionsEditTasksModal
-                    ids={ids}
-                    accountListId={accountListId}
-                    handleClose={() => setEditTasksModalOpen(false)}
-                  />
-                )}
-                {removeTagsModalOpen && (
-                  <MassActionsTasksRemoveTagsModal
-                    ids={ids}
-                    accountListId={accountListId}
-                    handleClose={() => setRemoveTagsModalOpen(false)}
-                  />
-                )}
                 <Box>
                   <TaskCurrentHistoryButtonGroup
                     variant="outlined"
-                    size="large"
+                    size="small"
+                    sx={{
+                      // Subtract out one unit of margin for both the top and the bottom
+                      height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
+                    }}
                   >
-                    <Button
-                      variant={isCurrent ? 'contained' : 'outlined'}
-                      onClick={() => setCurrentFilter(true)}
-                    >
-                      {currentString()}
-                    </Button>
-                    <Button
-                      variant={isCurrent ? 'outlined' : 'contained'}
-                      onClick={() => setCurrentFilter(false)}
-                    >
-                      {historicString()}
-                    </Button>
+                    {taskFiltersTabs.map((i) => (
+                      <Button
+                        variant={taskType === i.name ? 'contained' : 'outlined'}
+                        onClick={() => setTaskTypeFilter(i.name)}
+                        key={`btn-${i.name}`}
+                      >
+                        {i.translated ? t(i.uiName) : i.uiName}
+                      </Button>
+                    ))}
                   </TaskCurrentHistoryButtonGroup>
                   <InfiniteList
+                    data-foo="bar"
                     loading={loading}
-                    data={data?.tasks?.nodes}
-                    totalCount={data?.tasks?.totalCount}
-                    style={{ height: 'calc(100vh - 160px)' }}
+                    data={data?.tasks.nodes}
+                    style={{
+                      height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
+                    }}
                     itemContent={(index, task) => (
                       <Box key={index} flexDirection="row" width="100%">
                         <TaskRow
@@ -453,28 +385,28 @@ const TasksPage: React.FC = () => {
                     )}
                     groupBy={(item) => {
                       if (item.completedAt) {
-                        return t('Completed');
+                        return { order: 5, label: t('Completed') };
                       } else if (!item.startAt) {
-                        return t('No Due Date');
+                        return { order: 1, label: t('No Due Date') };
                       } else if (
                         DateTime.fromISO(item.startAt).hasSame(
                           DateTime.now(),
                           'day',
                         )
                       ) {
-                        return t('Today');
+                        return { order: 2, label: t('Today') };
                       } else if (
                         DateTime.now().startOf('day') >
                         DateTime.fromISO(item.startAt).startOf('day')
                       ) {
-                        return t('Overdue');
+                        return { order: 1, label: t('Overdue') };
                       } else if (
                         DateTime.now().startOf('day') <
                         DateTime.fromISO(item.startAt).startOf('day')
                       ) {
-                        return t('Upcoming');
+                        return { order: 3, label: t('Upcoming') };
                       }
-                      return t('No Due Date');
+                      return { order: 4, label: t('No Due Date') };
                     }}
                     endReached={() =>
                       data?.tasks?.pageInfo.hasNextPage &&
@@ -487,7 +419,7 @@ const TasksPage: React.FC = () => {
                         <NullState
                           page="task"
                           totalCount={data?.allTasks?.totalCount || 0}
-                          filtered={isFiltered}
+                          filtered={isFiltered || !!searchTerm}
                           changeFilters={setActiveFilters}
                         />
                       </Box>
@@ -498,17 +430,26 @@ const TasksPage: React.FC = () => {
             }
             rightPanel={
               contactDetailsId ? (
-                <ContactsPageProvider>
+                <ContactsProvider
+                  urlFilters={urlFilters}
+                  activeFilters={activeFilters}
+                  setActiveFilters={setActiveFilters}
+                  starredFilter={starredFilter}
+                  setStarredFilter={setStarredFilter}
+                  filterPanelOpen={filterPanelOpen}
+                  setFilterPanelOpen={setFilterPanelOpen}
+                  contactId={contactId}
+                  searchTerm={searchTerm}
+                >
                   <ContactsRightPanel
                     onClose={() => setContactFocus(undefined)}
                   />
-                </ContactsPageProvider>
-              ) : (
-                <></>
-              )
+                </ContactsProvider>
+              ) : undefined
             }
             rightOpen={contactDetailsOpen}
             rightWidth="60%"
+            headerHeight={headerHeight}
           />
         </WhiteBackground>
       ) : (

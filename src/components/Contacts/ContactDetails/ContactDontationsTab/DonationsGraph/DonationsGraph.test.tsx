@@ -16,7 +16,26 @@ const currency = 'USD';
 describe('Donations Graph', () => {
   it('test renderer', async () => {
     const { findByRole } = render(
-      <GqlMockedProvider<GetDonationsGraphQuery>>
+      <GqlMockedProvider<{ GetDonationsGraph: GetDonationsGraphQuery }>
+        mocks={{
+          GetDonationsGraph: {
+            accountList: {
+              currency: 'USD',
+            },
+            reportsDonationHistories: {
+              periods: [
+                {
+                  totals: [
+                    {
+                      currency: 'USD',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        }}
+      >
         <DonationsGraph
           accountListId={accountListId}
           donorAccountIds={donorAccountIds}
@@ -75,5 +94,36 @@ describe('Donations Graph', () => {
         ],
       }
     `);
+  });
+
+  it('renders gift averages', async () => {
+    const { findByRole } = render(
+      <GqlMockedProvider<{ GetDonationsGraph: GetDonationsGraphQuery }>
+        mocks={{
+          GetDonationsGraph: {
+            accountList: {
+              currency: 'CAD',
+            },
+            reportsDonationHistories: {
+              averageIgnoreCurrent: 100,
+              averageIgnoreCurrentAndZero: 200,
+              periods: [],
+            },
+          },
+        }}
+      >
+        <DonationsGraph
+          accountListId="accountListID"
+          donorAccountIds={['donorAccountId']}
+          convertedCurrency="USD"
+        />
+      </GqlMockedProvider>,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Average: CA$100 | Gift Average: CA$200',
+      }),
+    ).toBeInTheDocument();
   });
 });

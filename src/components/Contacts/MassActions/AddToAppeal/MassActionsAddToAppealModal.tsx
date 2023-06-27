@@ -19,6 +19,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
 interface MassActionsAddToAppealModalProps {
   ids: string[];
@@ -64,12 +65,15 @@ export const MassActionsAddToAppealModal: React.FC<
     handleClose();
   };
 
-  const { data: appeals, loading: loadingAppeals } =
-    useGetAppealsForMassActionQuery({
-      variables: {
-        accountListId,
-      },
-    });
+  const { data: appeals, fetchMore } = useGetAppealsForMassActionQuery({
+    variables: {
+      accountListId,
+    },
+  });
+  const { loading: loadingAppeals } = useFetchAllPages({
+    fetchMore,
+    pageInfo: appeals?.appeals.pageInfo,
+  });
 
   return (
     <Modal title={t('Add To Appeal')} isOpen={true} handleClose={handleClose}>
@@ -87,12 +91,18 @@ export const MassActionsAddToAppealModal: React.FC<
           isSubmitting,
           isValid,
         }): ReactElement => (
-          <form onSubmit={handleSubmit} noValidate>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            data-testid="AddToAppealModal"
+          >
             <DialogContent dividers>
               <FormControl fullWidth>
                 <Autocomplete
                   id="appeal"
                   value={appeal}
+                  autoSelect
+                  autoHighlight
                   options={
                     (appeals?.appeals.nodes &&
                       appeals?.appeals.nodes.map((appeal) => appeal.id)) ||
@@ -114,6 +124,7 @@ export const MassActionsAddToAppealModal: React.FC<
                     <TextField
                       {...params}
                       label={t('Appeal')}
+                      data-testid="appealTextInput"
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (

@@ -7,10 +7,18 @@ export default {
   title: 'Reports/ExpectedMonthlyTotal',
 };
 
+const title = 'Expected Monthly Total';
+const onNavListToggle = jest.fn();
+
 export const Default = (): ReactElement => {
   return (
-    <GqlMockedProvider<GetExpectedMonthlyTotalsQuery>>
-      <ExpectedMonthlyTotalReport accountListId={'abc'} />
+    <GqlMockedProvider>
+      <ExpectedMonthlyTotalReport
+        accountListId={'abc'}
+        isNavListOpen={true}
+        onNavListToggle={onNavListToggle}
+        title={title}
+      />
     </GqlMockedProvider>
   );
 };
@@ -33,8 +41,17 @@ export const Empty = (): ReactElement => {
   };
 
   return (
-    <GqlMockedProvider<GetExpectedMonthlyTotalsQuery> mocks={mocks}>
-      <ExpectedMonthlyTotalReport accountListId={'abc'} />
+    <GqlMockedProvider<{
+      GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
+    }>
+      mocks={mocks}
+    >
+      <ExpectedMonthlyTotalReport
+        accountListId={'abc'}
+        isNavListOpen={true}
+        onNavListToggle={onNavListToggle}
+        title={title}
+      />
     </GqlMockedProvider>
   );
 };

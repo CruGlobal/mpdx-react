@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   Theme,
   CardHeader,
@@ -23,6 +23,8 @@ import AnimatedCard from '../../../AnimatedCard';
 import { numberFormat } from '../../../../lib/intlFormat';
 import HandoffLink from '../../../HandoffLink';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
+import { WeeklyReportModal } from './WeeklyReportModal/WeeklyReportModal';
+import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -65,7 +67,8 @@ const StyledTableCell = withStyles(TableCell, () => ({
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   const { classes } = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const locale = useLocale();
 
   const [interval, setInterval] = useState(
     Interval.fromDateTimes(
@@ -74,7 +77,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     ),
   );
 
-  const { data, loading, refetch } = useGetWeeklyActivityQuery({
+  const { data, loading } = useGetWeeklyActivityQuery({
     variables: {
       accountListId,
       startOfWeek: interval.start.toISO(),
@@ -94,16 +97,19 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
 
   const intlDateFormat = (date: DateTime): string =>
     date
-      .setLocale(i18n.language)
-      .toLocaleString({ day: 'numeric', month: 'short' });
+      .toJSDate()
+      .toLocaleDateString(locale, { day: 'numeric', month: 'short' });
 
-  useEffect(() => {
-    refetch({
-      accountListId,
-      startOfWeek: interval.start.toISO(),
-      endOfWeek: interval.end.toISO(),
-    });
-  }, [interval]);
+  const [openWeeklyReportModal, setOpenWeeklyReportModal] =
+    useState<boolean>(false);
+
+  const onWeeklyReportOpen = () => {
+    setOpenWeeklyReportModal(true);
+  };
+
+  const onWeeklyReportClose = () => {
+    setOpenWeeklyReportModal(false);
+  };
 
   return (
     <AnimatedCard className={classes.card}>
@@ -163,7 +169,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                       data-testid="WeeklyActivitySkeletonLoading"
                     />
                   ) : (
-                    numberFormat(data.completedCalls.totalCount)
+                    numberFormat(data.completedCalls.totalCount, locale)
                   )}
                 </StyledTableCell>
                 <StyledTableCell
@@ -173,7 +179,10 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
-                    numberFormat(data.callsThatProducedAppointments.totalCount)
+                    numberFormat(
+                      data.callsThatProducedAppointments.totalCount,
+                      locale,
+                    )
                   )}
                 </StyledTableCell>
               </TableRow>
@@ -186,7 +195,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
-                    numberFormat(data.completedMessages.totalCount)
+                    numberFormat(data.completedMessages.totalCount, locale)
                   )}
                 </StyledTableCell>
                 <StyledTableCell
@@ -198,6 +207,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   ) : (
                     numberFormat(
                       data.messagesThatProducedAppointments.totalCount,
+                      locale,
                     )
                   )}
                 </StyledTableCell>
@@ -211,7 +221,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
-                    numberFormat(data.completedAppointments.totalCount)
+                    numberFormat(data.completedAppointments.totalCount, locale)
                   )}
                 </StyledTableCell>
                 <StyledTableCell></StyledTableCell>
@@ -225,7 +235,10 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                   {loading || !data ? (
                     <Skeleton variant="text" />
                   ) : (
-                    numberFormat(data.completedCorrespondence.totalCount)
+                    numberFormat(
+                      data.completedCorrespondence.totalCount,
+                      locale,
+                    )
                   )}
                 </StyledTableCell>
                 <StyledTableCell></StyledTableCell>
@@ -233,12 +246,20 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
             </TableBody>
           </Table>
         </TableContainer>
-        <CardActions>
+        <CardActions sx={{ justifyContent: 'space-between' }}>
           <HandoffLink path="/reports/coaching">
             <Button size="small" color="primary">
               {t('View Activity Detail')}
             </Button>
           </HandoffLink>
+          <Button size="small" color="primary" onClick={onWeeklyReportOpen}>
+            {t('Fill out weekly report')}
+          </Button>
+          <WeeklyReportModal
+            accountListId={accountListId}
+            open={openWeeklyReportModal}
+            onClose={onWeeklyReportClose}
+          />
         </CardActions>
       </motion.div>
     </AnimatedCard>

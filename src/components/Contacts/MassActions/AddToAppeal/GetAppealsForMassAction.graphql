@@ -1,9 +1,13 @@
-query GetAppealsForMassAction($accountListId: ID!) {
-  appeals(accountListId: $accountListId) {
+query GetAppealsForMassAction($accountListId: ID!, $after: String) {
+  appeals(accountListId: $accountListId, first: 25, after: $after) {
     nodes {
       id
       name
       contactIds
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }

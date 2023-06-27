@@ -10,6 +10,12 @@ if (process.env.secrets) {
   process.env.OKTA_CLIENT_SECRET = JSON.parse(
     process.env.secrets,
   ).OKTA_CLIENT_SECRET;
+  process.env.API_OAUTH_CLIENT_SECRET = JSON.parse(
+    process.env.secrets,
+  ).API_OAUTH_CLIENT_SECRET;
+  process.env.ROLLBAR_SERVER_ACCESS_TOKEN = JSON.parse(
+    process.env.secrets,
+  ).ROLLBAR_SERVER_ACCESS_TOKEN;
 }
 
 const prod = process.env.NODE_ENV === 'production';
@@ -47,15 +53,48 @@ module.exports = withPlugins([
       SITE_URL: siteUrl,
       CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
-      BEACON_TOKEN:
-        process.env.BEACON_TOKEN ?? '01b4f5f0-7fff-492a-b5ec-d536f3657d10',
+      BEACON_TOKEN: process.env.BEACON_TOKEN,
+      AUTH_PROVIDER: process.env.AUTH_PROVIDER ?? 'OKTA',
       OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
       OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
       OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
+      OKTA_SIGNOUT_REDIRECT_URL:
+        process.env.OKTA_SIGNOUT_REDIRECT_URL ?? 'https://mpdx.org/logout',
+      API_OAUTH_CLIENT_ID:
+        process.env.API_OAUTH_CLIENT_ID ??
+        '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',
+      API_OAUTH_CLIENT_SECRET: process.env.API_OAUTH_CLIENT_SECRET,
+      API_OAUTH_ISSUER_AUTHORIZATION_URL:
+        process.env.API_OAUTH_ISSUER_AUTHORIZATION_URL ??
+        'https://api.stage.mpdx.org/oauth/authorize',
+      API_OAUTH_ISSUER_TOKEN_URL:
+        process.env.API_OAUTH_ISSUER_TOKEN_URL ??
+        'https://api.stage.mpdx.org/oauth/token',
+      API_OAUTH_SCOPE: process.env.API_OAUTH_SCOPE ?? 'read write',
+      API_OAUTH_VISIBLE_NAME: process.env.API_OAUTH_VISIBLE_NAME ?? 'SSO',
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+      GOOGLE_TAG_MANAGER_CONTAINER_ID:
+        process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID,
       ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
       ONESKY_API_SECRET: process.env.ONESKY_API_SECRET,
       ONESKY_API_KEY: process.env.ONESKY_API_KEY,
+      APP_NAME: process.env.APP_NAME ?? 'MPDX',
+      ROLLBAR_SERVER_ACCESS_TOKEN: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
+      REWRITE_DOMAIN: process.env.REWRITE_DOMAIN ?? 'mpdx.org',
+      DATADOG_APP_ID: process.env.DATADOG_APP_ID,
+      DATADOG_CLIENT_TOKEN: process.env.DATADOG_CLIENT_TOKEN,
+      DATADOG_CONFIGURED: !!(
+        process.env.NODE_ENV === 'production' &&
+        process.env.DATADOG_APP_ID &&
+        process.env.DATADOG_CLIENT_TOKEN
+      ),
+      HS_CONTACTS_SUGGESTIONS: process.env.HS_CONTACTS_SUGGESTIONS,
+      HS_CONTACTS_CONTACT_SUGGESTIONS:
+        process.env.HS_CONTACTS_CONTACT_SUGGESTIONS,
+      HS_HOME_SUGGESTIONS: process.env.HS_HOME_SUGGESTIONS,
+      HS_REPORTS_SUGGESTIONS: process.env.HS_REPORTS_SUGGESTIONS,
+      HS_TASKS_SUGGESTIONS: process.env.HS_TASKS_SUGGESTIONS,
+      ALERT_MESSAGE: process.env.ALERT_MESSAGE,
     },
     experimental: {
       modularizeImports: {
@@ -86,16 +125,23 @@ module.exports = withPlugins([
           topLevelAwait: true,
         },
       };
-      config.module.rules.push({
-        test: /\.(graphql|gql)$/,
-        include: path.resolve(__dirname, '../'),
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'graphql-tag/loader',
-          },
-        ],
-      });
+      config.module.rules.push(
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: 'javascript/auto',
+        },
+        {
+          test: /\.(graphql|gql)$/,
+          include: path.resolve(__dirname, '../'),
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: 'graphql-tag/loader',
+            },
+          ],
+        },
+      );
 
       const fileLoaderRule = config.module.rules.find(
         (rule) => rule.test && rule.test.test('.svg'),

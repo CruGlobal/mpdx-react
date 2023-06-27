@@ -22,11 +22,13 @@ module.exports = {
     'import/no-anonymous-default-export': 'error',
     'import/dynamic-import-chunkname': 'error',
     eqeqeq: 'error',
+    'no-console': 'error',
     '@typescript-eslint/no-loss-of-precision': 'warn',
     '@typescript-eslint/no-unused-vars': [
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
+    'react/jsx-no-useless-fragment': 'error',
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
   },

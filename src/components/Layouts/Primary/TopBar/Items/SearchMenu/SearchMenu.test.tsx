@@ -6,6 +6,8 @@ import { StatusEnum } from '../../../../../../../graphql/types.generated';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import SearchMenu from './SearchMenu';
 import { GetSearchMenuContactsQuery } from './SearchMenu.generated';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from 'src/theme';
 
 const router = {
   pathname: '/accountLists/[accountListId]',
@@ -30,10 +32,12 @@ jest.mock('notistack', () => ({
 describe('SearchMenu', () => {
   it('default', async () => {
     const { getByRole, getByPlaceholderText } = render(
-      <GqlMockedProvider<GetSearchMenuContactsQuery>>
-        <TestRouter router={router}>
-          <SearchMenu />
-        </TestRouter>
+      <GqlMockedProvider>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <SearchMenu />
+          </TestRouter>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
     userEvent.click(getByRole('button'));
@@ -44,9 +48,9 @@ describe('SearchMenu', () => {
     );
   });
 
-  it.skip('handles searching', async () => {
+  it('handles searching', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
-      <GqlMockedProvider<GetSearchMenuContactsQuery>
+      <GqlMockedProvider<{ GetSearchMenuContacts: GetSearchMenuContactsQuery }>
         mocks={{
           GetSearchMenuContacts: {
             contacts: {
@@ -82,9 +86,11 @@ describe('SearchMenu', () => {
           },
         }}
       >
-        <TestRouter router={router}>
-          <SearchMenu />
-        </TestRouter>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <SearchMenu />
+          </TestRouter>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 
@@ -98,15 +104,16 @@ describe('SearchMenu', () => {
       getByPlaceholderText('Type something to start searching'),
       'Cool',
     );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await waitFor(() => expect(getByText('Cool, Guy')).toBeVisible());
     await waitFor(() => expect(getByText('Cool, Dude')).toBeVisible());
     await waitFor(() => expect(getByText('And 3 more')).toBeVisible());
     expect(getByText('Create a new contact for "Cool"')).toBeVisible();
   });
 
-  it.skip('handles clicking search result', async () => {
+  it('handles clicking search result', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
-      <GqlMockedProvider<GetSearchMenuContactsQuery>
+      <GqlMockedProvider<{ GetSearchMenuContacts: GetSearchMenuContactsQuery }>
         mocks={{
           GetSearchMenuContacts: {
             contacts: {
@@ -126,9 +133,11 @@ describe('SearchMenu', () => {
           },
         }}
       >
-        <TestRouter router={router}>
-          <SearchMenu />
-        </TestRouter>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <SearchMenu />
+          </TestRouter>
+        </ThemeProvider>
       </GqlMockedProvider>,
     );
 
@@ -142,6 +151,7 @@ describe('SearchMenu', () => {
       getByPlaceholderText('Type something to start searching'),
       'Cool',
     );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await waitFor(() => expect(getByText('Cool, Guy')).toBeVisible());
     await waitFor(() => expect(getByText('Cool, Dude')).toBeVisible());
     expect(getByText('Create a new contact for "Cool"')).toBeVisible();
@@ -152,7 +162,7 @@ describe('SearchMenu', () => {
 
 it('handles creating a new contact', async () => {
   const { getByRole, getByPlaceholderText, getByText } = render(
-    <GqlMockedProvider<GetSearchMenuContactsQuery>
+    <GqlMockedProvider<{ GetSearchMenuContacts: GetSearchMenuContactsQuery }>
       mocks={{
         GetSearchMenuContacts: {
           contacts: {
@@ -179,9 +189,11 @@ it('handles creating a new contact', async () => {
         },
       }}
     >
-      <TestRouter router={router}>
-        <SearchMenu />
-      </TestRouter>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <SearchMenu />
+        </TestRouter>
+      </ThemeProvider>
     </GqlMockedProvider>,
   );
 

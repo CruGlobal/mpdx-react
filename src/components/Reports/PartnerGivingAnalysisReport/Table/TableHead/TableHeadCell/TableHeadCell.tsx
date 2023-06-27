@@ -34,7 +34,11 @@ export const TableHeadCell: React.FC<
   PartnerGivingAnalysisReportTableCellProps
 > = ({ isActive, align, children, direction, sortDirection, onClick }) => {
   return (
-    <TableCell align={align} sortDirection={sortDirection}>
+    <TableCell
+      align={align}
+      sortDirection={sortDirection}
+      sx={{ fontSize: '1.15em' }}
+    >
       <TableSortLabel active={isActive} direction={direction} onClick={onClick}>
         {children}
         {isActive && (

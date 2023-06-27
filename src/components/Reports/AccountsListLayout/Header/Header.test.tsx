@@ -17,30 +17,30 @@ describe('AccountsListHeader', () => {
           isNavListOpen={true}
           title={title}
           onNavListToggle={onNavListToggle}
-          totalBalance={totalBalance}
+          rightExtra={totalBalance}
         />
       </ThemeProvider>,
     );
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(getByText(`Balance: ${totalBalance}`)).toBeInTheDocument();
+    expect(getByText('CA111')).toBeInTheDocument();
     userEvent.click(
       getByRole('button', { hidden: true, name: 'Toggle Filter Panel' }),
     );
   });
 
-  it('should not render total balance if undefined', async () => {
+  it('should not render rightExtra if undefined', async () => {
     const { queryByText } = render(
       <ThemeProvider theme={theme}>
         <Header
           isNavListOpen={true}
           title={title}
           onNavListToggle={onNavListToggle}
-          totalBalance={undefined}
+          rightExtra={undefined}
         />
       </ThemeProvider>,
     );
 
-    expect(queryByText(`Balance: ${totalBalance}`)).toBeNull();
+    expect(queryByText('CA111')).toBeNull();
   });
 });

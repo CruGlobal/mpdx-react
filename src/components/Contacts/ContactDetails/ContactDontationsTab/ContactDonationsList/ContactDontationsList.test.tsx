@@ -38,10 +38,11 @@ describe('ContactDonationsList', () => {
 
   it('test Renderer', async () => {
     const { findByRole, getByRole } = render(
-      <GqlMockedProvider<ContactDonationsListQuery>
+      <GqlMockedProvider<{ ContactDonationsList: ContactDonationsListQuery }>
         mocks={{
           ContactDonationsList: {
             contact: {
+              id: contactId,
               donations: {
                 nodes: [...Array(13)].map((x, i) => {
                   return {
@@ -55,6 +56,9 @@ describe('ContactDonationsList', () => {
                     },
                   };
                 }),
+                pageInfo: {
+                  hasNextPage: true,
+                },
               },
             },
           },

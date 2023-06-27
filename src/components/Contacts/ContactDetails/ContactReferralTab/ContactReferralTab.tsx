@@ -19,6 +19,9 @@ import Add from '@mui/icons-material/Add';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0),
@@ -60,14 +63,19 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   contactId,
   onContactSelected,
 }) => {
-  const { data, loading } = useContactReferralTabQuery({
+  const { data, fetchMore } = useContactReferralTabQuery({
     variables: {
       accountListId: accountListId,
       contactId: contactId,
     },
   });
+  useFetchAllPages({
+    fetchMore,
+    pageInfo: data?.contact.contactReferralsByMe.pageInfo,
+  });
 
   const { t } = useTranslation();
+  const locale = useLocale();
   const [modalContactReferralOpen, setModalContactReferralOpen] =
     useState(false);
 
@@ -81,7 +89,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
 
   return (
     <ContactReferralContainer>
-      {loading ? (
+      {!data ? (
         <>
           <ContactReferralLoadingPlaceHolder />
           <ContactReferralLoadingPlaceHolder />
@@ -92,7 +100,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
           <Box width="100%" mb={2} justifyContent="end" display="flex">
             <AddButton onClick={handleModalOpen}>
               <Add />
-              Add Referral
+              {t('Add Referrals')}
             </AddButton>
           </Box>
           <TableContainer component={Paper}>
@@ -118,7 +126,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                         </TableCell>
                         <TableCell>
                           <Typography>
-                            {DateTime.fromISO(createdAt).toLocaleString()}
+                            {dateFormat(DateTime.fromISO(createdAt), locale)}
                           </Typography>
                         </TableCell>
                       </TableRow>
@@ -140,14 +148,11 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
             fullWidth
             size={'xl'} // TODO: Expand logic as more menu modals are added
           >
-            {
-              <CreateMultipleContacts
-                accountListId={accountListId ?? ''}
-                handleClose={handleModalClose}
-                referrals
-                contactId={contactId}
-              />
-            }
+            <CreateMultipleContacts
+              accountListId={accountListId ?? ''}
+              handleClose={handleModalClose}
+              referredById={contactId}
+            />
           </Modal>
         </>
       )}

@@ -19,7 +19,6 @@ import {
 import { styled } from '@mui/material/styles';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -33,6 +32,7 @@ import {
   ContactReferralToMeInput,
   ContactUpdateInput,
   PledgeFrequencyEnum,
+  SendNewsletterEnum,
   StatusEnum,
 } from '../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
@@ -44,6 +44,11 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -59,6 +64,22 @@ const CheckboxLabel = styled(FormControlLabel)({
   margin: 'none',
 });
 
+const TextFieldInteractive = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'isDisabled',
+})<{ isDisabled?: boolean }>(({ isDisabled }) => ({
+  '& input.MuiInputBase-input, & fieldset': {
+    opacity: isDisabled ? '0.4' : '1',
+  },
+}));
+
+const SelectInteractive = styled(Select, {
+  shouldForwardProp: (prop) => prop !== 'isDisabled',
+})<{ isDisabled?: boolean }>(({ isDisabled }) => ({
+  '& MuiSelect-select, & fieldset': {
+    opacity: isDisabled ? '0.4' : '1',
+  },
+}));
+
 interface EditPartnershipInfoModalProps {
   contact: ContactDonorAccountsFragment;
   handleClose: () => void;
@@ -68,6 +89,7 @@ export const EditPartnershipInfoModal: React.FC<
   EditPartnershipInfoModalProps
 > = ({ contact, handleClose }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
   const [referredByName, setReferredByName] = useState('');
@@ -103,17 +125,25 @@ export const EditPartnershipInfoModal: React.FC<
       | 'pledgeStartDate'
       | 'nextAsk'
       | 'noAppeals'
+      | 'sendNewsletter'
       | 'contactReferralsToMe'
     >
   > = yup.object({
     id: yup.string().required(),
-    status: yup.mixed<StatusEnum>().oneOf(Object.values(StatusEnum)).nullable(),
+    status: yup
+      .mixed<StatusEnum | null>()
+      .oneOf([...Object.values(StatusEnum), null])
+      .nullable(),
     pledgeAmount: yup.number().moreThan(-1).nullable(),
     pledgeStartDate: yup.string().nullable(),
     pledgeReceived: yup.boolean().default(false).nullable(),
     pledgeCurrency: yup.string().nullable(),
     nextAsk: yup.string().nullable(),
     noAppeals: yup.boolean().default(false).nullable(),
+    sendNewsletter: yup
+      .mixed<SendNewsletterEnum>()
+      .oneOf(Object.values(SendNewsletterEnum))
+      .nullable(),
     pledgeFrequency: yup.mixed<PledgeFrequencyEnum>().nullable(),
     contactReferralsToMe: yup
       .array()
@@ -259,12 +289,10 @@ export const EditPartnershipInfoModal: React.FC<
     status: StatusEnum,
     setFieldValue: (name: string, value: StatusEnum | number | null) => void,
   ) => {
+    setFieldValue('status', status);
     if (status !== StatusEnum.PartnerFinancial) {
-      setFieldValue('status', status);
       setFieldValue('pledgeAmount', 0);
       setFieldValue('pledgeFrequency', null);
-    } else {
-      setFieldValue('status', status);
     }
   };
 
@@ -285,6 +313,7 @@ export const EditPartnershipInfoModal: React.FC<
           pledgeStartDate: contact.pledgeStartDate,
           nextAsk: contact.nextAsk,
           noAppeals: contact.noAppeals,
+          sendNewsletter: contact.sendNewsletter ?? SendNewsletterEnum.None,
           contactReferralsToMe: contactReferrals,
         }}
         validationSchema={contactPartnershipSchema}
@@ -300,6 +329,7 @@ export const EditPartnershipInfoModal: React.FC<
             pledgeStartDate,
             nextAsk,
             noAppeals,
+            sendNewsletter,
             contactReferralsToMe,
           },
           handleSubmit,
@@ -311,7 +341,7 @@ export const EditPartnershipInfoModal: React.FC<
         }) => (
           <form onSubmit={handleSubmit} noValidate>
             {errors.pledgeFrequency}
-            <DialogContent dividers>
+            <DialogContent dividers sx={{ maxHeight: '60vh' }}>
               <ContactInputWrapper>
                 <FormControl fullWidth>
                   <InputLabel id="status-select-label">
@@ -343,15 +373,16 @@ export const EditPartnershipInfoModal: React.FC<
                   >
                     {Object.values(StatusEnum).map((value) => (
                       <MenuItem key={value} value={value}>
-                        {t(value)}
+                        {getLocalizedContactStatus(t, value)}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <TextField
+                <TextFieldInteractive
                   label={t('Amount')}
+                  isDisabled={status !== StatusEnum.PartnerFinancial}
                   value={pledgeAmount}
                   type="number"
                   disabled={status !== StatusEnum.PartnerFinancial}
@@ -425,40 +456,42 @@ export const EditPartnershipInfoModal: React.FC<
                   <InputLabel id="frequency-select-label">
                     {t('Frequency')}
                   </InputLabel>
-                  <Select
+                  <SelectInteractive
                     label={t('Frequency')}
                     labelId="frequency-select-label"
                     value={pledgeFrequency ?? ''}
+                    isDisabled={status !== StatusEnum.PartnerFinancial}
                     disabled={status !== StatusEnum.PartnerFinancial}
                     aria-readonly={status !== StatusEnum.PartnerFinancial}
                     onChange={(e) =>
                       setFieldValue('pledgeFrequency', e.target.value)
                     }
-                    IconComponent={() =>
-                      status !== StatusEnum.PartnerFinancial ? (
-                        <Tooltip
-                          title={
-                            <Typography>
-                              {t(
-                                'Commitments can only be set if status is Partner - Financial',
-                              )}
-                            </Typography>
-                          }
-                        >
-                          <InfoIcon />
-                        </Tooltip>
-                      ) : (
-                        <ArrowDropDownIcon />
-                      )
+                    IconComponent={
+                      status !== StatusEnum.PartnerFinancial
+                        ? () => (
+                            <Tooltip
+                              sx={{ marginRight: '14px' }}
+                              title={
+                                <Typography>
+                                  {t(
+                                    'Commitments can only be set if status is Partner - Financial',
+                                  )}
+                                </Typography>
+                              }
+                            >
+                              <InfoIcon />
+                            </Tooltip>
+                          )
+                        : undefined
                     }
                   >
                     <MenuItem value={''} disabled></MenuItem>
                     {Object.values(PledgeFrequencyEnum).map((value) => (
                       <MenuItem key={value} value={value}>
-                        {t(value)}
+                        {getLocalizedPledgeFrequency(t, value)}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SelectInteractive>
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
@@ -484,18 +517,39 @@ export const EditPartnershipInfoModal: React.FC<
                     setFieldValue('pledgeStartDate', date)
                   }
                   value={
-                    pledgeStartDate
-                      ? DateTime.fromISO(pledgeStartDate).toLocaleString()
-                      : null
+                    pledgeStartDate ? DateTime.fromISO(pledgeStartDate) : null
                   }
-                  inputFormat="MM/dd/yyyy"
+                  inputFormat={getDateFormatPattern(locale)}
                   label={t('Start Date')}
                 />
+              </ContactInputWrapper>
+              <ContactInputWrapper>
+                <FormControl fullWidth>
+                  <InputLabel>{t('Newsletter')}</InputLabel>
+                  <Select
+                    label={t('Newsletter')}
+                    value={sendNewsletter}
+                    onChange={(e) =>
+                      setFieldValue(
+                        'sendNewsletter',
+                        e.target.value as SendNewsletterEnum,
+                      )
+                    }
+                  >
+                    {Object.values(SendNewsletterEnum).map((value) => (
+                      <MenuItem key={value} value={value}>
+                        {getLocalizedSendNewsletter(t, value)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
                 <Autocomplete
                   multiple
                   filterSelectedOptions
+                  autoSelect
+                  autoHighlight
                   options={
                     (filteredContacts &&
                       [...currentContacts, ...filteredContacts]
@@ -556,10 +610,8 @@ export const EditPartnershipInfoModal: React.FC<
                   onChange={(date) =>
                     !date ? null : setFieldValue('nextAsk', date)
                   }
-                  value={
-                    nextAsk ? DateTime.fromISO(nextAsk).toLocaleString() : null
-                  }
-                  inputFormat="MM/dd/yyyy"
+                  value={nextAsk ? DateTime.fromISO(nextAsk) : null}
+                  inputFormat={getDateFormatPattern(locale)}
                   label={t('Next Ask Increase')}
                 />
               </ContactInputWrapper>
@@ -567,14 +619,14 @@ export const EditPartnershipInfoModal: React.FC<
                 <CheckboxLabel
                   control={
                     <Checkbox
-                      checked={pledgeReceived}
+                      checked={Boolean(pledgeReceived)}
                       onChange={() =>
                         setFieldValue('pledgeReceived', !pledgeReceived)
                       }
                       color="secondary"
                     />
                   }
-                  label={t('Commitment Recieved')}
+                  label={t('Commitment Received')}
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>

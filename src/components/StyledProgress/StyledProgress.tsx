@@ -3,6 +3,7 @@ import { Theme, Box } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import Skeleton from '@mui/material/Skeleton';
 import { percentageFormat } from '../../lib/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   box: {
@@ -48,6 +49,7 @@ const StyledProgress = ({
   primary = 0,
   secondary = 0,
 }: Props): ReactElement => {
+  const locale = useLocale();
   const { classes } = useStyles();
 
   return (
@@ -61,12 +63,16 @@ const StyledProgress = ({
       ) : (
         <>
           <Box
-            style={{ width: percentageFormat(secondary) }}
+            style={{
+              width: percentageFormat(secondary, locale).replace('\xa0', ''),
+            }}
             className={[classes.progress, classes.secondary].join(' ')}
             data-testid="styledProgressSecondary"
           />
           <Box
-            style={{ width: percentageFormat(primary) }}
+            style={{
+              width: percentageFormat(primary, locale).replace('\xa0', ''),
+            }}
             className={[classes.progress, classes.primary].join(' ')}
             data-testid="styledProgressPrimary"
           />

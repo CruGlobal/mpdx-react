@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import theme from '../../../../../../theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import { clearDataDogUser } from 'src/hooks/useDataDog';
 import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
@@ -197,7 +198,11 @@ export const ProfileMenuPanel: React.FC = () => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() => signOut()}
+            onClick={() =>
+              signOut({ callbackUrl: 'signOut' }).then(() => {
+                clearDataDogUser();
+              })
+            }
           >
             {t('Sign Out')}
           </Button>

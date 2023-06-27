@@ -1,12 +1,16 @@
 fragment ContactOther on Contact {
   id
-  name
   preferredContactMethod
   locale
   timezone
   churchName
   website
-  contactReferralsToMe {
+  user {
+    id
+    firstName
+    lastName
+  }
+  contactReferralsToMe(first: 10) {
     nodes {
       id
       referredBy {

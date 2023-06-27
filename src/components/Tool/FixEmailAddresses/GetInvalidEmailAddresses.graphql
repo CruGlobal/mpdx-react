@@ -1,7 +1,9 @@
 query GetInvalidEmailAddresses($accountListId: ID!) {
+  # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
   people(
     accountListId: $accountListId
     peopleFilter: { emailAddressValid: false }
+    first: 50
   ) {
     nodes {
       ...PersonInvalidEmail
@@ -13,7 +15,7 @@ fragment PersonInvalidEmail on Person {
   id
   firstName
   lastName
-  emailAddresses {
+  emailAddresses(first: 25) {
     nodes {
       ...PersonEmailAddress
     }

@@ -9,16 +9,16 @@ export interface DesignationAccountsResponse {
   attributes: {
     active: true;
     balance: string;
-    balance_updated_at: string;
+    balance_updated_at: string | null;
     converted_balance: number;
     created_at: string;
     currency: string;
     currency_symbol: string;
-    designation_number: string;
+    designation_number: string | null;
     display_name: string;
     exchange_rate: number;
     legacy_designation_number: null;
-    name: string;
+    name: string | null;
     organization_name: string;
     updated_at: string | null;
     updated_in_db_at: string | null;
@@ -49,11 +49,11 @@ const createDesignationAccount = (
   account: DesignationAccountsResponse,
 ): DesignationAccountRest => ({
   active: account.attributes.active,
-  balanceUpdatedAt: account.attributes.balance_updated_at,
+  balanceUpdatedAt: account.attributes.balance_updated_at ?? '',
   currency: account.attributes.currency,
   designationNumber: account.attributes.designation_number,
   id: account.id,
-  name: account.attributes.name,
+  name: account.attributes.name ?? '',
   convertedBalance: account.attributes.converted_balance,
 });
 

@@ -1,0 +1,5 @@
+mutation DeleteTag($tagName: String!, $page: String!) {
+  deleteTags(input: { tagName: $tagName, page: $page }) {
+    id
+  }
+}

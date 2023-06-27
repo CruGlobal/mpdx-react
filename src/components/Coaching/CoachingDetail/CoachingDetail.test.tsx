@@ -9,6 +9,10 @@ import { CoachingDetail } from './CoachingDetail';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import TestRouter from '__tests__/util/TestRouter';
+import {
+  beforeTestResizeObserver,
+  afterTestResizeObserver,
+} from 'src/utils/tests/windowResizeObserver';
 
 const push = jest.fn();
 
@@ -20,10 +24,17 @@ const router = {
 
 const coachingId = 'coaching-id';
 describe('LoadCoachingDetail', () => {
+  beforeEach(() => {
+    beforeTestResizeObserver();
+  });
+
+  afterEach(() => {
+    afterTestResizeObserver();
+  });
   it('view', async () => {
     const { findByText } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<LoadCoachingDetailQuery>
+        <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
           mocks={{
             LoadCoachingDetail: {
               coachingAccountList: {
@@ -46,7 +57,7 @@ describe('LoadCoachingDetail', () => {
   it('null goal', async () => {
     const { findByText } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<LoadCoachingDetailQuery>
+        <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
           mocks={{
             LoadCoachingDetail: {
               coachingAccountList: {
@@ -70,7 +81,7 @@ describe('LoadCoachingDetail', () => {
   it('view isAccountList', async () => {
     const { findByText } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<LoadCoachingDetailQuery>
+        <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
           mocks={{
             LoadAccountListCoachingDetail: {
               accountList: {
@@ -93,7 +104,7 @@ describe('LoadCoachingDetail', () => {
   it('null goal isAccountList', async () => {
     const { findByText } = render(
       <TestRouter router={router}>
-        <GqlMockedProvider<LoadCoachingDetailQuery>
+        <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
           mocks={{
             LoadAccountListCoachingDetail: {
               accountList: {

@@ -28,8 +28,6 @@ import {
   ResultEnum,
   TaskUpdateInput,
 } from '../../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../../Modal/TaskModalTask.generated';
-import { GetThisWeekDocument } from '../../../../Dashboard/ThisWeek/GetThisWeek.generated';
 import { useGetDataForTaskModalQuery } from '../../../Modal/Form/TaskModal.generated';
 import theme from '../../../../../../src/theme';
 import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
@@ -43,6 +41,12 @@ import {
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
+import { dispatch } from 'src/lib/analytics';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { useLocale } from 'src/hooks/useLocale';
 
 const taskSchema: yup.SchemaOf<
   Pick<
@@ -50,7 +54,7 @@ const taskSchema: yup.SchemaOf<
     'id' | 'result' | 'nextAction' | 'tagList' | 'completedAt'
   >
 > = yup.object({
-  id: yup.string(),
+  id: yup.string().required(),
   result: yup.mixed<ResultEnum>().required(),
   nextAction: yup.mixed<ActivityTypeEnum>(),
   tagList: yup.array().of(yup.string()).default([]),
@@ -71,10 +75,11 @@ const TaskModalCompleteForm = ({
   const initialTask: TaskUpdateInput = {
     id: task.id,
     completedAt: task.completedAt || DateTime.local().toISO(),
-    result: ResultEnum.None,
+    result: ResultEnum.Completed,
     tagList: task.tagList,
   };
   const { t } = useTranslation();
+  const locale = useLocale();
   const [commentBody, changeCommentBody] = useState('');
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
@@ -84,38 +89,30 @@ const TaskModalCompleteForm = ({
   });
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
+  const { update } = useUpdateTasksQueries();
   const onSubmit = async (attributes: TaskUpdateInput): Promise<void> => {
     const body = commentBody.trim();
-    const endOfDay = DateTime.local().endOf('day');
-    await updateTask({
-      variables: { accountListId, attributes },
-      update: (_cache, { data }) => {
-        if (data?.updateTask?.task.id && body !== '') {
-          const id = uuidv4();
-
-          createTaskComment({
-            variables: {
-              accountListId,
-              taskId: data.updateTask.task.id,
-              attributes: { id, body },
-            },
-          });
-        }
-      },
-      refetchQueries: [
-        {
-          query: GetThisWeekDocument,
+    const mutations = [
+      updateTask({
+        variables: { accountListId, attributes },
+        refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
+      }),
+    ];
+    if (body !== '') {
+      mutations.push(
+        createTaskComment({
           variables: {
             accountListId,
-            endOfDay: endOfDay.toISO(),
-            today: endOfDay.toISODate(),
-            threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
-            twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
+            taskId: task.id,
+            attributes: { id: uuidv4(), body },
           },
-        },
-      ],
-    });
+        }),
+      );
+    }
+    await Promise.all(mutations);
+    update();
 
+    dispatch('mpdx-task-completed');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     onClose();
     if (
@@ -123,6 +120,7 @@ const TaskModalCompleteForm = ({
       attributes.nextAction !== ActivityTypeEnum.None
     ) {
       openTaskModal({
+        view: 'add',
         defaultValues: {
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
@@ -134,8 +132,12 @@ const TaskModalCompleteForm = ({
     }
   };
 
-  const availableResults = possibleResults(task);
-  const availableNextActions = possibleNextActions(task);
+  const availableResults = task.activityType
+    ? possibleResults(task.activityType)
+    : [];
+  const availableNextActions = task.activityType
+    ? possibleNextActions(task.activityType)
+    : [];
 
   return (
     <Formik
@@ -151,7 +153,7 @@ const TaskModalCompleteForm = ({
         isValid,
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
-          <DialogContent dividers>
+          <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
@@ -185,7 +187,7 @@ const TaskModalCompleteForm = ({
                             </InputAdornment>
                           ),
                         }}
-                        inputFormat="MMM dd, yyyy"
+                        inputFormat={getDateFormatPattern(locale)}
                         closeOnSelect
                         label={t('Completed Date')}
                         value={completedAt}
@@ -233,7 +235,7 @@ const TaskModalCompleteForm = ({
                     >
                       {availableResults.map((val) => (
                         <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
+                          {getLocalizedResultString(t, val)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -243,21 +245,38 @@ const TaskModalCompleteForm = ({
               {availableNextActions.length > 0 && (
                 <Grid item>
                   <FormControl fullWidth>
-                    <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
-                    <Select
-                      label={t('Next Action')}
-                      labelId="nextAction"
-                      value={nextAction}
-                      onChange={(e) =>
-                        setFieldValue('nextAction', e.target.value)
+                    <Autocomplete
+                      openOnFocus
+                      autoHighlight
+                      value={
+                        nextAction === null || typeof nextAction === 'undefined'
+                          ? ''
+                          : nextAction
                       }
-                    >
-                      {availableNextActions.map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {t(val) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      // Sort none to top
+                      options={availableNextActions.sort((a) =>
+                        a === ActivityTypeEnum.None ? -1 : 1,
+                      )}
+                      getOptionLabel={(activity) => {
+                        if (activity === ActivityTypeEnum.None) {
+                          return t('None');
+                        } else {
+                          return getLocalizedTaskType(
+                            t,
+                            activity as ActivityTypeEnum,
+                          );
+                        }
+                      }}
+                      renderInput={(params): ReactElement => (
+                        <TextField {...params} label={t('Next Action')} />
+                      )}
+                      onChange={(_, activity): void => {
+                        setFieldValue(
+                          'nextAction',
+                          activity === ActivityTypeEnum.None ? null : activity,
+                        );
+                      }}
+                    />
                   </FormControl>
                 </Grid>
               )}
@@ -265,6 +284,7 @@ const TaskModalCompleteForm = ({
               <Grid item>
                 <Autocomplete
                   multiple
+                  autoHighlight
                   freeSolo
                   renderTags={(value, getTagProps): ReactElement[] =>
                     value.map((option, index) => (

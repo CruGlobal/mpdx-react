@@ -1,0 +1,22 @@
+extend type Mutation {
+  setContactPrimaryAddress(
+    input: ContactPrimaryAddressInput!
+  ): ContactPrimaryAddress!
+}
+
+input ContactPrimaryAddressInput {
+  contactId: ID!
+  # If primaryAddressId is null, no address will be primary
+  primaryAddressId: ID
+}
+
+# If we could set @key(fields: "upc") on the Address type in the Rails API, then we could add
+# primaryMailingAddress to it, but since we can't, we're creating a new type here
+type AddressWithPrimary {
+  id: ID!
+  primaryMailingAddress: Boolean!
+}
+
+type ContactPrimaryAddress {
+  addresses: [AddressWithPrimary!]!
+}

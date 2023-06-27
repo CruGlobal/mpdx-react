@@ -120,24 +120,20 @@ const AppealDetailsReceived = ({ appeal }: Props): ReactElement => {
     );
     setAppealState({ ...appealState, selected: [...temp] });
   };
-  return (
-    <>
-      {appeal.received.length > 0 ? (
-        <Box component="div" className={classes.container}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            checkboxSelection
-            pageSize={25}
-            rowsPerPageOptions={[10, 25, 50, 100]}
-            disableSelectionOnClick
-            onSelectionModelChange={updateSelected}
-          />
-        </Box>
-      ) : (
-        <AppealDetailsNoData />
-      )}
-    </>
+  return appeal.received.length > 0 ? (
+    <Box component="div" className={classes.container}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        checkboxSelection
+        pageSize={25}
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        disableSelectionOnClick
+        onSelectionModelChange={updateSelected}
+      />
+    </Box>
+  ) : (
+    <AppealDetailsNoData />
   );
 };
 

@@ -68,9 +68,8 @@ export const MassActionsAddTagsModal: React.FC<
   const { data: contactsForTags } = useGetContactsForAddingTagsQuery({
     variables: {
       accountListId,
-      contactsFilters: {
-        ids,
-      },
+      contactIds: ids,
+      numContactIds: ids.length,
     },
   });
 
@@ -152,6 +151,8 @@ export const MassActionsAddTagsModal: React.FC<
                 </NewTagInstructions>
                 <Autocomplete
                   multiple
+                  autoSelect
+                  autoHighlight
                   freeSolo
                   fullWidth
                   loading={loading}

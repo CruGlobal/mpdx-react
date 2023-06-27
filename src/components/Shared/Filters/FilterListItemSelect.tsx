@@ -24,6 +24,7 @@ export const FilterListItemSelect: React.FC<Props> = ({
       <FormControl style={{ flex: 'auto' }}>
         <InputLabel>{filter.title}</InputLabel>
         <Select
+          label={filter.title}
           value={value}
           onChange={(e) => onUpdate(e.target.value as string)}
         >

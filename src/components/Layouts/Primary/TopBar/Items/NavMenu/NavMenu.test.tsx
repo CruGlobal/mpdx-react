@@ -65,7 +65,13 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', {
         hidden: true,
-        name: '14 Month Report',
+        name: '14 Month Partner Report',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', {
+        hidden: true,
+        name: '14 Month Salary Report',
       }),
     ).toBeInTheDocument();
     expect(
@@ -123,7 +129,13 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', {
         hidden: true,
-        name: '14 Month Report',
+        name: '14 Month Partner Report',
+      }),
+    ).not.toBeVisible();
+    expect(
+      getByRole('menuitem', {
+        hidden: true,
+        name: '14 Month Salary Report',
       }),
     ).not.toBeVisible();
     expect(
@@ -175,7 +187,9 @@ describe('NavMenu', () => {
     const { queryByTestId, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetToolNotificationsQuery>
+          <GqlMockedProvider<{
+            GetToolNotifications: GetToolNotificationsQuery;
+          }>
             mocks={{
               GetToolNotifications: {
                 contacts: {
@@ -216,7 +230,9 @@ describe('NavMenu', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetToolNotificationsQuery>
+          <GqlMockedProvider<{
+            GetToolNotifications: GetToolNotificationsQuery;
+          }>
             mocks={{
               GetToolNotifications: {
                 contacts: {
@@ -258,7 +274,9 @@ describe('NavMenu', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<GetToolNotificationsQuery>
+          <GqlMockedProvider<{
+            GetToolNotifications: GetToolNotificationsQuery;
+          }>
             mocks={{
               GetToolNotifications: {
                 contacts: {

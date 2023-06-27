@@ -23,6 +23,7 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
         );
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error('Error adding Authorization header', e);
     }
   }
