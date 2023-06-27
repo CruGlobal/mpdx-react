@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 //import { styled } from '@mui/material/styles';
 import { SettingsWrapper } from './wrapper';
-import { PersPrefInfo } from '../../../../src/components/Settings/preferences/info/PreferencesInfo';
+import { ProfileInfo } from '../../../../src/components/Settings/preferences/info/ProfileInfo';
 import { PersPrefGroup } from '../../../../src/components/Settings/preferences/accordions/PreferencesGroup';
 import { PersPrefItem } from '../../../../src/components/Settings/preferences/accordions/PreferencesItem';
 import { PersPrefFormWrapper } from '../../../../src/components/Settings/preferences/forms/PreferencesFormWrapper';
@@ -26,7 +26,9 @@ import {
   options,
   localeOptions,
   options2,
+  profile2,
 } from '../../../../src/components/Settings/preferences/DemoContent';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 //import { useLocale } from 'src/hooks/useLocale';
 
@@ -34,6 +36,7 @@ const Preferences: React.FC = () => {
   const { t } = useTranslation();
   const [expandedPanel, setExpandedPanel] = useState('');
   //const locale = useLocale();
+  const accountListId = useAccountListId() ?? '';
 
   const handleAccordionChange = (panel: string) => {
     setExpandedPanel(expandedPanel === panel ? '' : panel);
@@ -44,7 +47,7 @@ const Preferences: React.FC = () => {
       pageTitle={t('Personal Preferences')}
       pageHeading={t('Preferences')}
     >
-      <PersPrefInfo />
+      <ProfileInfo accountListId={accountListId} profile={profile2} />
 
       <PersPrefGroup title={t('Personal Preferences')}>
         {/* Language */}

@@ -65,6 +65,100 @@ export const profile = {
   websites: ['https://cru.org'],
 };
 
+export const profile2 = {
+  emailAddresses: {
+    nodes: [
+      {
+        email: 'test1234@test.com',
+        primary: true,
+        historic: false,
+        location: 'Work',
+        source: 'MPDX',
+      },
+      {
+        email: 'secondemail@test.com',
+        location: 'Personal',
+        primary: false,
+        historic: false,
+        source: 'MPDX',
+      },
+    ],
+  },
+  phoneNumbers: {
+    nodes: [
+      {
+        number: '777-777-7777',
+        location: 'Mobile',
+        primary: true,
+        historic: false,
+        source: 'MPDX',
+      },
+      {
+        number: '999-999-9999',
+        location: 'Work',
+        primary: false,
+        historic: false,
+        source: 'MPDX',
+      },
+    ],
+  },
+  facebookAccounts: {
+    nodes: [
+      {
+        username: 'test guy',
+      },
+      {
+        username: 'test guy 2',
+      },
+    ],
+  },
+  twitterAccounts: {
+    nodes: [
+      {
+        screenName: '@testguy',
+      },
+      {
+        screenName: '@testguy2',
+      },
+    ],
+  },
+  linkedinAccounts: {
+    nodes: [
+      {
+        publicUrl: 'Test Guy',
+      },
+      {
+        publicUrl: 'Test Guy 2',
+      },
+    ],
+  },
+  websites: {
+    nodes: [
+      {
+        url: 'testguy.com',
+      },
+      {
+        url: 'testguy2.com',
+      },
+    ],
+  },
+  optoutEnewsletter: false,
+  anniversaryDay: 1,
+  anniversaryMonth: 1,
+  anniversaryYear: 1990,
+  birthdayDay: 1,
+  birthdayMonth: 1,
+  birthdayYear: 1990,
+  maritalStatus: 'Engaged',
+  gender: 'Male',
+  deceased: false,
+  id: '01',
+  firstName: 'Jack',
+  lastName: 'Sparrow',
+  title: 'Mr.',
+  suffix: '',
+};
+
 export const language = [
   ['en-US', 'US English'],
   ['ar', 'Arabic (العربية)'],
