@@ -72,6 +72,27 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
+const serverErrorLink = onError(({ graphQLErrors, networkError }) => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const Rollbar = require('rollbar');
+  const rollbar = new Rollbar({
+    accessToken: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
+    environment: 'react_development_server',
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+  });
+
+  if (graphQLErrors) {
+    graphQLErrors.map(({ message, extensions }) => {
+      rollbar.error(message, extensions);
+    });
+  }
+
+  if (networkError) {
+    rollbar.error(networkError);
+  }
+});
+
 if (process.browser && process.env.NODE_ENV === 'production') {
   persistCache({
     cache,
@@ -104,7 +125,7 @@ export const ssrClient = (
   });
 
   return new ApolloClient({
-    link: errorLink.concat(httpLink),
+    link: serverErrorLink.concat(httpLink),
     ssrMode: true,
     assumeImmutableResults: true,
     cache: new InMemoryCache({
