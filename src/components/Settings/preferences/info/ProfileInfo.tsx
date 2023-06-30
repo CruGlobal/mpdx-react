@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { Theme, styled, useTheme } from '@mui/material/styles';
 import { Edit } from '@mui/icons-material';
-// import { profile } from '../DemoContent';
+import { profile2 } from '../DemoContent';
 //import { PersPrefModal } from '../modals/PreferencesModal';
 // import { PersPrefContactMethods } from './PreferencesContactMethods';
 // import { PersPrefAnniversary } from './PreferencesAnniversary';
@@ -18,6 +18,7 @@ import { Edit } from '@mui/icons-material';
 import { ProfileModal } from 'src/components/Modals/ProfileModal/ProfileModal';
 import Email from '@mui/icons-material/Email';
 import Phone from '@mui/icons-material/Phone';
+//import { ContactDetailsTabQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/ContactDetailsTab.generated';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -62,9 +63,14 @@ const ContactPersonIconContainer = styled(Box)(() => ({
   marginRight: '15px',
 }));
 
-export const ProfileInfo: React.FC = ({ accountListId, profile }) => {
-  const { t } = useTranslation();
+interface ProfileInfoProps {
+  //profile: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  accountListId: string;
+}
 
+export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
+  const { t } = useTranslation();
+  const profile = profile2;
   const theme = useTheme<Theme>();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -90,17 +96,17 @@ export const ProfileInfo: React.FC = ({ accountListId, profile }) => {
         {/* Avatar */}
         <StyledAvatar
           src={profile.avatar}
-          alt={`${profile.first_name} ${profile.last_name}`}
+          alt={`${profile.firstName} ${profile.lastName}`}
         />
 
         {/* Name */}
         <Typography component="h3" variant="h5">
-          {t(profile.title)} {profile.firstName} {profile.lastName}{' '}
-          {t(profile.suffix)}
+          {profile.title} {profile.firstName} {profile.lastName}{' '}
+          {profile.suffix}
         </Typography>
 
         {/* Work */}
-        {(profile.occupation || profile.employer) && (
+        {(profile?.occupation || profile?.employer) && (
           <Typography component="h4">
             {`${profile.occupation} ${
               profile.occupation && profile.employer ? '-' : ''
@@ -175,7 +181,6 @@ export const ProfileInfo: React.FC = ({ accountListId, profile }) => {
       {/* Edit Info Modal */}
       {editProfileModalOpen ? (
         <ProfileModal
-          person={profile}
           accountListId={accountListId}
           handleClose={() => setEditProfileModalOpen(false)}
         />

@@ -1,12 +1,12 @@
 import { Box, Typography } from '@mui/material';
 import React from 'react';
 
-interface PersPrefGroupProps {
+interface PreferencesGroupProps {
   title: string;
   children?: React.ReactNode;
 }
 
-export const PersPrefGroup: React.FC<PersPrefGroupProps> = ({
+export const PreferencesGroup: React.FC<PreferencesGroupProps> = ({
   title,
   children,
 }) => {

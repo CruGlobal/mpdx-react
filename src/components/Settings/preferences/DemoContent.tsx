@@ -1,4 +1,4 @@
-export const profile = {
+export const info = {
   id: '1',
   alma_mater: 'Sac State',
   anniversary_day: 18,
@@ -74,6 +74,7 @@ export const profile2 = {
         historic: false,
         location: 'Work',
         source: 'MPDX',
+        id: '1',
       },
       {
         email: 'secondemail@test.com',
@@ -81,6 +82,7 @@ export const profile2 = {
         primary: false,
         historic: false,
         source: 'MPDX',
+        id: '2',
       },
     ],
   },
@@ -92,6 +94,7 @@ export const profile2 = {
         primary: true,
         historic: false,
         source: 'MPDX',
+        id: '1',
       },
       {
         number: '999-999-9999',
@@ -99,6 +102,7 @@ export const profile2 = {
         primary: false,
         historic: false,
         source: 'MPDX',
+        id: '2',
       },
     ],
   },
@@ -106,9 +110,11 @@ export const profile2 = {
     nodes: [
       {
         username: 'test guy',
+        id: '1',
       },
       {
         username: 'test guy 2',
+        id: '2',
       },
     ],
   },
@@ -116,9 +122,11 @@ export const profile2 = {
     nodes: [
       {
         screenName: '@testguy',
+        id: '1',
       },
       {
         screenName: '@testguy2',
+        id: '2',
       },
     ],
   },
@@ -126,9 +134,11 @@ export const profile2 = {
     nodes: [
       {
         publicUrl: 'Test Guy',
+        id: '1',
       },
       {
         publicUrl: 'Test Guy 2',
+        id: '2',
       },
     ],
   },
@@ -136,9 +146,11 @@ export const profile2 = {
     nodes: [
       {
         url: 'testguy.com',
+        id: '1',
       },
       {
         url: 'testguy2.com',
+        id: '2',
       },
     ],
   },
@@ -156,7 +168,12 @@ export const profile2 = {
   firstName: 'Jack',
   lastName: 'Sparrow',
   title: 'Mr.',
-  suffix: '',
+  suffix: 'Sr.',
+  avatar: '',
+  legalFirstName: '',
+  almaMater: '',
+  employer: '',
+  occupation: '',
 };
 
 export const language = [

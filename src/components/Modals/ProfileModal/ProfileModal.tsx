@@ -20,14 +20,13 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
-import { ContactDetailsTabQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/ContactDetailsTab.generated';
+//import { ContactDetailsTabQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/ContactDetailsTab.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import { PersonName } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonName/PersonName';
 import { PersonPhoneNumber } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonPhoneNumber/PersonPhoneNumber';
 import { PersonEmail } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonEmail/PersonEmail';
 import { PersonBirthday } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonBirthday/PersonBirthday';
 import { PersonShowMore } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonShowMore/PersonShowMore';
-//import { useUpdatePersonMutation } from './PersonModal.generated';
 // import {
 //   ContactDetailContext,
 //   ContactDetailsType,
@@ -40,6 +39,11 @@ import {
   uploadAvatar,
   validateAvatar,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/uploadAvatar';
+import {
+  useCreatePersonMutation,
+  useUpdatePersonMutation,
+} from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
+import { profile2 } from '../../Settings/preferences/DemoContent';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -84,8 +88,8 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 }));
 
 interface ProfileModalProps {
-  person?: ContactDetailsTabQuery['contact']['people']['nodes'][0];
-  contactId: string;
+  //person: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  contactId?: string;
   accountListId: string;
   handleClose: () => void;
 }
@@ -99,8 +103,7 @@ export interface NewSocial {
 }
 
 export const ProfileModal: React.FC<ProfileModalProps> = ({
-  person,
-  //accountListId,
+  accountListId,
   handleClose,
 }) => {
   const { t } = useTranslation();
@@ -108,6 +111,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
 
   const client = useApolloClient();
+  const person = profile2;
+  const [createPerson] = useCreatePersonMutation();
+  //const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
 
   const [avatar, setAvatar] = useState<{ file: File; blobUrl: string } | null>(
     null,
@@ -135,7 +141,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
     setAvatar({ file, blobUrl: URL.createObjectURL(file) });
   };
 
-  //const [updatePerson] = useUpdatePersonMutation();
+  const [updatePerson] = useUpdatePersonMutation();
 
   const personSchema: yup.SchemaOf<
     Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
@@ -211,6 +217,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
     employer: yup.string().nullable(),
     occupation: yup.string().nullable(),
     legalFirstName: yup.string().nullable(),
+    deceased: yup.boolean().nullable(),
+    optoutEnewsletter: yup.boolean().nullable(),
   });
 
   const personPhoneNumberSources = person?.phoneNumbers.nodes.map(
@@ -372,12 +380,12 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
         }
       }
 
-      // await updatePerson({
-      //   variables: {
-      //     accountListId,
-      //     attributes,
-      //   },
-      // });
+      await updatePerson({
+        variables: {
+          accountListId,
+          attributes,
+        },
+      });
 
       if (file) {
         // Update the contact's avatar since it is based on the primary person's avatar

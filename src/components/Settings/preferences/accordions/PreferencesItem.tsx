@@ -51,7 +51,7 @@ const StyledAccordionDetails = styled(Box)(({ theme }) => ({
   },
 }));
 
-interface PersPrefItemProps {
+interface PreferencesItemProps {
   onAccordionChange: (label: string) => void;
   expandedPanel: string;
   label: string;
@@ -59,7 +59,7 @@ interface PersPrefItemProps {
   children?: React.ReactNode;
 }
 
-export const PersPrefItem: React.FC<PersPrefItemProps> = ({
+export const PreferencesItem: React.FC<PreferencesItemProps> = ({
   onAccordionChange,
   expandedPanel,
   label,
