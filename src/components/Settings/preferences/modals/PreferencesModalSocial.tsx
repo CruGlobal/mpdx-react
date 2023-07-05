@@ -7,7 +7,7 @@ import { Facebook, Language, LinkedIn, Twitter } from '@mui/icons-material';
 import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,
-} from '../shared/PersPrefForms';
+} from '../shared/PreferencesForms';
 import { info } from '../DemoContent';
 import {
   AddButtonBox,
@@ -16,7 +16,7 @@ import {
   SectionHeading,
   StyledGridContainer,
   StyledGridItem,
-} from './PersPrefModalShared';
+} from './PreferencesModalShared';
 
 const StyledButton = styled(Button)(({ theme }) => ({
   [theme.breakpoints.down('xs')]: {

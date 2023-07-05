@@ -1,48 +1,59 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Checkbox, FormControlLabel, MenuItem } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { PreferencesWrapper } from './wrapper';
-import { PersPrefInfo } from './personal/info/PersPrefInfo';
-import { PersPrefGroup } from './personal/accordions/PersPrefGroup';
-import { PersPrefItem } from './personal/accordions/PersPrefItem';
-import { PersPrefFormWrapper } from './personal/forms/PersPrefFormWrapper';
-import { PersPrefSelect } from './personal/forms/PersPrefSelect';
+import {
+  //Box,
+  Checkbox,
+  FormControlLabel,
+  MenuItem,
+  Grid,
+  TextField,
+  InputAdornment,
+} from '@mui/material';
+//import { styled } from '@mui/material/styles';
+import { SettingsWrapper } from './wrapper';
+import { ProfileInfo } from '../../../../src/components/Settings/preferences/info/ProfileInfo';
+import { PreferencesGroup } from '../../../../src/components/Settings/preferences/accordions/PreferencesGroup';
+import { PreferencesItem } from '../../../../src/components/Settings/preferences/accordions/PreferencesItem';
+import { PersPrefFormWrapper } from '../../../../src/components/Settings/preferences/forms/PreferencesFormWrapper';
+import { PersPrefSelect } from '../../../../src/components/Settings/preferences/forms/PreferencesSelect';
 import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,
   StyledSelect,
-} from './personal/shared/PersPrefForms';
-import { language, locale, options, options2 } from './personal/DemoContent';
+} from '../../../../src/components/Settings/preferences/shared/PreferencesForms';
+import {
+  language,
+  options,
+  localeOptions,
+  options2,
+} from '../../../../src/components/Settings/preferences/DemoContent';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
-const StyledColumnsWrapper = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-  '& .MuiFormControl-root': {
-    width: `calc(50% - ${theme.spacing(1)}px)`,
-    '&:nth-child(2n)': {
-      marginLeft: theme.spacing(2),
-    },
-  },
-}));
+import { useLocale } from 'src/hooks/useLocale';
 
-const PersonalPreferences: React.FC = () => {
+const Preferences: React.FC = () => {
   const { t } = useTranslation();
   const [expandedPanel, setExpandedPanel] = useState('');
+  const locale = useLocale();
+  const accountListId = useAccountListId() ?? '';
 
   const handleAccordionChange = (panel: string) => {
     setExpandedPanel(expandedPanel === panel ? '' : panel);
   };
 
   return (
-    <PreferencesWrapper
-      pageTitle={t('Personal Preferences')}
+    <SettingsWrapper
+      pageTitle={t('Preferences')}
       pageHeading={t('Preferences')}
     >
-      <PersPrefInfo />
+      <ProfileInfo accountListId={accountListId} />
 
-      <PersPrefGroup title={t('Personal Preferences')}>
+      <PreferencesGroup title={t('Personal Preferences')}>
         {/* Language */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Language')}
@@ -72,10 +83,10 @@ const PersonalPreferences: React.FC = () => {
               selectOptions={options2}
             />
           </PersPrefFormWrapper>
-        </PersPrefItem>
+        </PreferencesItem>
 
         {/* Locale */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Locale')}
@@ -85,11 +96,11 @@ const PersonalPreferences: React.FC = () => {
             <PersPrefFieldWrapper
               labelText={t('Locale')}
               helperText={t(
-                'The locale determines how numbers, dates and other information areformatted in MPDX.',
+                'The locale determines how numbers, dates and other information are formatted in MPDX.',
               )}
             >
               <StyledSelect value="en">
-                {locale.map(([localeCode, localeName], index) => (
+                {localeOptions.map(([localeCode, localeName], index) => (
                   <MenuItem value={localeCode} key={index}>
                     {t(localeName)}
                   </MenuItem>
@@ -97,10 +108,10 @@ const PersonalPreferences: React.FC = () => {
               </StyledSelect>
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
+        </PreferencesItem>
 
         {/* Default Account */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Default Account')}
@@ -122,10 +133,10 @@ const PersonalPreferences: React.FC = () => {
               </StyledSelect>
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
+        </PreferencesItem>
 
         {/* Timezone */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Timezone')}
@@ -147,10 +158,10 @@ const PersonalPreferences: React.FC = () => {
               </StyledSelect>
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
+        </PreferencesItem>
 
         {/* Time to Send Notifications */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Time to Send Notifications')}
@@ -172,12 +183,12 @@ const PersonalPreferences: React.FC = () => {
               </StyledSelect>
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
-      </PersPrefGroup>
+        </PreferencesItem>
+      </PreferencesGroup>
 
-      <PersPrefGroup title={t('Account Preferences')}>
+      <PreferencesGroup title={t('Account Preferences')}>
         {/* Account Name */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Account Name')}
@@ -193,10 +204,10 @@ const PersonalPreferences: React.FC = () => {
               <StyledOutlinedInput />
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
+        </PreferencesItem>
 
         {/* Monthly Goal */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Monthly Goal')}
@@ -212,10 +223,10 @@ const PersonalPreferences: React.FC = () => {
               <StyledOutlinedInput />
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
+        </PreferencesItem>
 
         {/* Home Country */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Home Country')}
@@ -237,10 +248,10 @@ const PersonalPreferences: React.FC = () => {
               </StyledSelect>
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
+        </PreferencesItem>
 
         {/* Default Currency */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Default Currency')}
@@ -257,10 +268,10 @@ const PersonalPreferences: React.FC = () => {
               </StyledSelect>
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
+        </PreferencesItem>
 
         {/* Early Adopter */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('Early Adopter')}
@@ -279,24 +290,50 @@ const PersonalPreferences: React.FC = () => {
               />
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
+        </PreferencesItem>
 
         {/* MPD Info */}
-        <PersPrefItem
+        <PreferencesItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           label={t('MPD Info')}
           value=""
         >
           <PersPrefFormWrapper>
-            <StyledColumnsWrapper>
-              <PersPrefFieldWrapper labelText={t('Start Date')}>
-                <StyledOutlinedInput />
-              </PersPrefFieldWrapper>
-              <PersPrefFieldWrapper labelText={t('End Date')}>
-                <StyledOutlinedInput />
-              </PersPrefFieldWrapper>
-            </StyledColumnsWrapper>
+            {/* <StyledColumnsWrapper> */}
+            <Grid container spacing={1}>
+              <Grid item xs={6} spacing={3}>
+                <MobileDatePicker
+                  renderInput={(params) => (
+                    <TextField
+                      fullWidth
+                      inputProps={{ 'aria-label': t('Start Date') }}
+                      {...params}
+                    />
+                  )}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment
+                        aria-label="change start date"
+                        position="end"
+                      >
+                        <CalendarToday />
+                      </InputAdornment>
+                    ),
+                  }}
+                  onChange={(): void => undefined}
+                  value={null}
+                  inputFormat={getDateFormatPattern(locale)}
+                  label={t('Start Date')}
+                />
+              </Grid>
+              <Grid item xs={6} spacing={3}>
+                <PersPrefFieldWrapper labelText={t('End Date')}>
+                  <StyledOutlinedInput />
+                </PersPrefFieldWrapper>
+              </Grid>
+            </Grid>
+            {/* </StyledColumnsWrapper> */}
             <PersPrefFieldWrapper
               labelText={t('New Recurring Commitment Goal')}
               helperText={t(
@@ -306,10 +343,10 @@ const PersonalPreferences: React.FC = () => {
               <StyledOutlinedInput />
             </PersPrefFieldWrapper>
           </PersPrefFormWrapper>
-        </PersPrefItem>
-      </PersPrefGroup>
-    </PreferencesWrapper>
+        </PreferencesItem>
+      </PreferencesGroup>
+    </SettingsWrapper>
   );
 };
 
-export default PersonalPreferences;
+export default Preferences;

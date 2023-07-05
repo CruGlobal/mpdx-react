@@ -7,9 +7,9 @@ import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,
   StyledSelect,
-} from '../shared/PersPrefForms';
+} from '../shared/PreferencesForms';
 import { info } from '../DemoContent';
-import { SectionHeading, StyledGridContainer } from './PersPrefModalShared';
+import { SectionHeading, StyledGridContainer } from './PreferencesModalShared';
 
 const StyledGridContainerMobile = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down('xs')]: {

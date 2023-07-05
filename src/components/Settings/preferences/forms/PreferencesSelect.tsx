@@ -1,6 +1,6 @@
 import React from 'react';
 import { MenuItem } from '@mui/material';
-import { PersPrefInput, PersPrefInputProps } from './PersPrefInput';
+import { PersPrefInput, PersPrefInputProps } from './PreferencesInput';
 
 interface PersPrefSelectProps extends PersPrefInputProps {
   selectOptions: Array<{ label: string; value: string }>;

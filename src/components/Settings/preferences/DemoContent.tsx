@@ -1,4 +1,5 @@
 export const info = {
+  id: '1',
   alma_mater: 'Sac State',
   anniversary_day: 18,
   anniversary_month: 10,
@@ -64,6 +65,117 @@ export const info = {
   websites: ['https://cru.org'],
 };
 
+export const profile2 = {
+  emailAddresses: {
+    nodes: [
+      {
+        email: 'test1234@test.com',
+        primary: true,
+        historic: false,
+        location: 'Work',
+        source: 'MPDX',
+        id: '1',
+      },
+      {
+        email: 'secondemail@test.com',
+        location: 'Personal',
+        primary: false,
+        historic: false,
+        source: 'MPDX',
+        id: '2',
+      },
+    ],
+  },
+  phoneNumbers: {
+    nodes: [
+      {
+        number: '777-777-7777',
+        location: 'Mobile',
+        primary: true,
+        historic: false,
+        source: 'MPDX',
+        id: '1',
+      },
+      {
+        number: '999-999-9999',
+        location: 'Work',
+        primary: false,
+        historic: false,
+        source: 'MPDX',
+        id: '2',
+      },
+    ],
+  },
+  facebookAccounts: {
+    nodes: [
+      {
+        username: 'test guy',
+        id: '1',
+      },
+      {
+        username: 'test guy 2',
+        id: '2',
+      },
+    ],
+  },
+  twitterAccounts: {
+    nodes: [
+      {
+        screenName: '@testguy',
+        id: '1',
+      },
+      {
+        screenName: '@testguy2',
+        id: '2',
+      },
+    ],
+  },
+  linkedinAccounts: {
+    nodes: [
+      {
+        publicUrl: 'Test Guy',
+        id: '1',
+      },
+      {
+        publicUrl: 'Test Guy 2',
+        id: '2',
+      },
+    ],
+  },
+  websites: {
+    nodes: [
+      {
+        url: 'testguy.com',
+        id: '1',
+      },
+      {
+        url: 'testguy2.com',
+        id: '2',
+      },
+    ],
+  },
+  optoutEnewsletter: false,
+  anniversaryDay: 1,
+  anniversaryMonth: 1,
+  anniversaryYear: 1990,
+  birthdayDay: 1,
+  birthdayMonth: 1,
+  birthdayYear: 1990,
+  maritalStatus: 'Engaged',
+  gender: 'Male',
+  deceased: false,
+  id: '01',
+  firstName: 'Jack',
+  lastName: 'Sparrow',
+  title: 'Mr.',
+  suffix: 'Sr.',
+  avatar: '',
+  legalFirstName: '',
+  almaMater: '',
+  employer: '',
+  occupation: '',
+};
+
 export const language = [
   ['en-US', 'US English'],
   ['ar', 'Arabic (العربية)'],
@@ -88,7 +200,7 @@ export const language = [
   ['vi', 'Vietnamese (Tiếng Việt)'],
 ];
 
-export const locale = [
+export const localeOptions = [
   ['af', 'Afrikaans (af) (Afrikaans - af)'],
   ['sq', 'Albanian (sq) (shqip - sq)'],
   ['ar', 'Arabic (ar) (العربية - ar)'],

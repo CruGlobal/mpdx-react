@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -7,8 +8,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { ExpandMore } from '@mui/icons-material';
-import React from 'react';
-import { accordionShared } from '../shared/PersPrefShared';
+import { accordionShared } from '../shared/PreferencesShared';
 
 const StyledAccordion = styled(Accordion)(() => ({
   overflow: 'hidden',
@@ -51,7 +51,7 @@ const StyledAccordionDetails = styled(Box)(({ theme }) => ({
   },
 }));
 
-interface PersPrefItemProps {
+interface PreferencesItemProps {
   onAccordionChange: (label: string) => void;
   expandedPanel: string;
   label: string;
@@ -59,7 +59,7 @@ interface PersPrefItemProps {
   children?: React.ReactNode;
 }
 
-export const PersPrefItem: React.FC<PersPrefItemProps> = ({
+export const PreferencesItem: React.FC<PreferencesItemProps> = ({
   onAccordionChange,
   expandedPanel,
   label,

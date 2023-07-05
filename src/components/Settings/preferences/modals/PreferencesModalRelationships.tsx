@@ -10,12 +10,12 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { AddCircle, Search } from '@mui/icons-material';
-import Modal from '../../../../../../src/components/common/Modal/Modal';
+import Modal from '../../../common/Modal/Modal';
 import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,
   StyledSelect,
-} from '../shared/PersPrefForms';
+} from '../shared/PreferencesForms';
 import { info } from '../DemoContent';
 import {
   AddButtonBox,
@@ -24,7 +24,7 @@ import {
   SectionHeading,
   StyledGridContainer,
   StyledGridItem,
-} from './PersPrefModalShared';
+} from './PreferencesModalShared';
 import {
   SubmitButton,
   CancelButton,
@@ -52,11 +52,7 @@ const RelationshipModal: React.FC<RelationshipModalProps> = ({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      title={t('Person')}
-      handleClose={handleClose}
-    >
+    <Modal isOpen={isOpen} title={t('Person')} handleClose={handleClose}>
       <form>
         <DialogContent dividers>
           <PersPrefFieldWrapper labelText={t('Select Person')}>
@@ -65,9 +61,7 @@ const RelationshipModal: React.FC<RelationshipModalProps> = ({
         </DialogContent>
         <DialogActions>
           <CancelButton onClick={handleClose} />
-          <SubmitButton>
-            {t('Save')}
-          </SubmitButton>
+          <SubmitButton>{t('Save')}</SubmitButton>
         </DialogActions>
       </form>
     </Modal>

@@ -41,6 +41,7 @@ const OptOutENewsletterLabel = styled(FormControlLabel)(() => ({
 }));
 
 interface PersonEmailProps {
+  showOptOutENewsletter?: boolean;
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
   sources:
     | {
@@ -51,6 +52,7 @@ interface PersonEmailProps {
 }
 
 export const PersonEmail: React.FC<PersonEmailProps> = ({
+  showOptOutENewsletter = false,
   formikProps,
   sources,
 }) => {
@@ -130,18 +132,23 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
                   </Button>
                 </Grid>
                 <Grid container item xs={6} alignItems="center">
-                  <OptOutENewsletterLabel
-                    control={
-                      <Checkbox
-                        color="secondary"
-                        checked={!!optoutEnewsletter}
-                        onChange={() =>
-                          setFieldValue('optoutEnewsletter', !optoutEnewsletter)
-                        }
-                      />
-                    }
-                    label={t('Opt-out of Email Newsletter')}
-                  />
+                  {showOptOutENewsletter && (
+                    <OptOutENewsletterLabel
+                      control={
+                        <Checkbox
+                          color="secondary"
+                          checked={!!optoutEnewsletter}
+                          onChange={() =>
+                            setFieldValue(
+                              'optoutEnewsletter',
+                              !optoutEnewsletter,
+                            )
+                          }
+                        />
+                      }
+                      label={t('Opt-out of Email Newsletter')}
+                    />
+                  )}
                 </Grid>
               </Grid>
             </ModalSectionContainer>

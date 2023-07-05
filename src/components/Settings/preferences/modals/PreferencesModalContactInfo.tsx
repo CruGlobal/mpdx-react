@@ -15,7 +15,7 @@ import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,
   StyledSelect,
-} from '../shared/PersPrefForms';
+} from '../shared/PreferencesForms';
 import { info } from '../DemoContent';
 import {
   AddButtonBox,
@@ -27,7 +27,7 @@ import {
   StyledDivider,
   StyledGridContainer,
   StyledGridItem,
-} from './PersPrefModalShared';
+} from './PreferencesModalShared';
 
 const SharedFieldHoverStyles = ({ theme }: { theme: Theme }) => ({
   '&:hover': {
