@@ -6,6 +6,7 @@ import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import HandoffLink from 'src/components/HandoffLink';
+import { NavTypeEnum } from '../MultiPageMenu';
 
 interface ReportOption {
   id: string;
@@ -16,9 +17,15 @@ interface ReportOption {
 interface Props {
   item: ReportOption;
   isSelected: boolean;
+  navType: NavTypeEnum;
 }
 
-export const Item: React.FC<Props> = ({ item, isSelected, ...rest }) => {
+export const Item: React.FC<Props> = ({
+  item,
+  isSelected,
+  navType,
+  ...rest
+}) => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
 
@@ -37,11 +44,11 @@ export const Item: React.FC<Props> = ({ item, isSelected, ...rest }) => {
   );
 
   if (item.id === 'coaching') {
-    return <HandoffLink path="/reports/coaching">{children}</HandoffLink>;
+    return <HandoffLink path={`/${navType}/coaching`}>{children}</HandoffLink>;
   } else {
     return (
       <NextLink
-        href={`/accountLists/${accountListId}/reports/${item.id}`}
+        href={`/accountLists/${accountListId}/${navType}/${item.id}`}
         scroll={false}
       >
         {children}

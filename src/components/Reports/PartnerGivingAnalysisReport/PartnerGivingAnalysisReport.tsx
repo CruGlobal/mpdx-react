@@ -6,7 +6,10 @@ import React, { useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
-import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
+import {
+  MultiPageHeader,
+  HeaderTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import type { Order } from '../Reports.type';
 import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
@@ -123,10 +126,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 
   return (
     <Box>
-      <Header
+      <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={title}
+        headerType={HeaderTypeEnum.Report}
       />
       <Actions
         query={query}

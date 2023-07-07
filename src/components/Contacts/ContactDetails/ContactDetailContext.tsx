@@ -20,10 +20,6 @@ export type ContactDetailsType = {
   setEditingAddressId: React.Dispatch<React.SetStateAction<string | undefined>>;
   addAddressModalOpen: boolean;
   setAddAddressModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  personEditShowMore: boolean;
-  setPersonEditShowMore: React.Dispatch<React.SetStateAction<boolean>>;
-  removeDialogOpen: boolean;
-  handleRemoveDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   editPersonModalOpen: string | undefined;
   setEditPersonModalOpen: React.Dispatch<
     React.SetStateAction<string | undefined>
@@ -72,9 +68,6 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
     setSelectedTabKey(newKey);
   };
 
-  const [personEditShowMore, setPersonEditShowMore] = useState(false);
-  const [removeDialogOpen, handleRemoveDialogOpen] = useState(false);
-
   const [editPersonModalOpen, setEditPersonModalOpen] = useState<string>();
   const [createPersonModalOpen, setCreatePersonModalOpen] = useState(false);
 
@@ -105,10 +98,6 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
         selectedTabKey: selectedTabKey,
         setSelectedTabKey: setSelectedTabKey,
         handleTabChange: handleTabChange,
-        personEditShowMore: personEditShowMore,
-        setPersonEditShowMore: setPersonEditShowMore,
-        removeDialogOpen: removeDialogOpen,
-        handleRemoveDialogOpen: handleRemoveDialogOpen,
         editPersonModalOpen: editPersonModalOpen,
         setEditPersonModalOpen: setEditPersonModalOpen,
         createPersonModalOpen: createPersonModalOpen,

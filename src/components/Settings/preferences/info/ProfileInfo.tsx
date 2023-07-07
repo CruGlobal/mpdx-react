@@ -15,7 +15,8 @@ import { profile2 } from '../DemoContent';
 // import { PersPrefContactMethods } from './PreferencesContactMethods';
 // import { PersPrefAnniversary } from './PreferencesAnniversary';
 // import { PersPrefSocials } from './PreferencesSocials';
-import { ProfileModal } from 'src/components/Modals/ProfileModal/ProfileModal';
+import { PersonModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
+// import { ProfileModal } from 'src/components/Modals/ProfileModal/ProfileModal';
 import Email from '@mui/icons-material/Email';
 import Phone from '@mui/icons-material/Phone';
 //import { ContactDetailsTabQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/ContactDetailsTab.generated';
@@ -180,9 +181,11 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
 
       {/* Edit Info Modal */}
       {editProfileModalOpen ? (
-        <ProfileModal
+        <PersonModal
           accountListId={accountListId}
           handleClose={() => setEditProfileModalOpen(false)}
+          userProfile={true}
+          contactId=""
         />
       ) : null}
     </ProfileInfoWrapper>

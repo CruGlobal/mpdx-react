@@ -1,15 +1,17 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-
-const PageHeadingWrapper = styled(Box)(({ theme }) => ({
-  color: theme.palette.common.white,
-  backgroundColor: theme.palette.primary.main,
-  paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(3),
-}));
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import {
+  MultiPageHeader,
+  HeaderTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 
 const PageContentWrapper = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(3),
@@ -28,6 +30,11 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
   children,
 }) => {
   const { appName } = useGetAppSettings();
+  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const handleNavListToggle = () => {
+    setNavListOpen(!isNavListOpen);
+  };
+
   return (
     <>
       <Head>
@@ -36,12 +43,31 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
         </title>
       </Head>
       <Box component="main">
-        <PageHeadingWrapper>
-          <Container maxWidth="lg">
-            <Typography variant="h4">{pageHeading}</Typography>
-          </Container>
-        </PageHeadingWrapper>
-        <PageContentWrapper maxWidth="lg">{children}</PageContentWrapper>
+        <SidePanelsLayout
+          isScrollBox={false}
+          leftPanel={
+            <MultiPageMenu
+              isOpen={isNavListOpen}
+              selectedId="responsibilityCenters"
+              onClose={handleNavListToggle}
+              navType={NavTypeEnum.Settings}
+            />
+          }
+          leftOpen={isNavListOpen}
+          leftWidth="290px"
+          mainContent={
+            <>
+              <MultiPageHeader
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={pageHeading}
+                rightExtra={null}
+                headerType={HeaderTypeEnum.Settings}
+              />
+              <PageContentWrapper maxWidth="lg">{children}</PageContentWrapper>
+            </>
+          }
+        />
       </Box>
     </>
   );

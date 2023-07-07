@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  //Box,
   Checkbox,
   FormControlLabel,
   MenuItem,
@@ -9,7 +8,6 @@ import {
   TextField,
   InputAdornment,
 } from '@mui/material';
-//import { styled } from '@mui/material/styles';
 import { SettingsWrapper } from './wrapper';
 import { ProfileInfo } from '../../../../src/components/Settings/preferences/info/ProfileInfo';
 import { PreferencesGroup } from '../../../../src/components/Settings/preferences/accordions/PreferencesGroup';
@@ -31,6 +29,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { suggestArticles } from 'src/lib/helpScout';
 
 import { useLocale } from 'src/hooks/useLocale';
 
@@ -39,6 +38,10 @@ const Preferences: React.FC = () => {
   const [expandedPanel, setExpandedPanel] = useState('');
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
+
+  useEffect(() => {
+    suggestArticles('HS_SETTINGS_PREFERENCES_SUGGESTIONS');
+  }, []);
 
   const handleAccordionChange = (panel: string) => {
     setExpandedPanel(expandedPanel === panel ? '' : panel);

@@ -10,7 +10,10 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ExpectedMonthlyTotalReport } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReport';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 
 const ExpectedMonthlyTotalReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -43,12 +46,13 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
-              <NavReportsList
+              <MultiPageMenu
                 isOpen={isNavListOpen}
                 selectedId="expectedMonthlyTotal"
                 onClose={handleNavListToggle}
                 designationAccounts={designationAccounts}
                 setDesignationAccounts={setDesignationAccounts}
+                navType={NavTypeEnum.Reports}
               />
             }
             leftOpen={isNavListOpen}

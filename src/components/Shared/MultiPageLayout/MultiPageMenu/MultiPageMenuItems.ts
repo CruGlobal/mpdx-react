@@ -34,3 +34,26 @@ export const ReportNavItems = [
     title: 'Coaching',
   },
 ];
+
+export const SettingsNavItems = [
+  {
+    id: 'preferences',
+    title: 'Preferences',
+  },
+  {
+    id: 'notifications',
+    title: 'Notifications',
+  },
+  {
+    id: 'connectServices',
+    title: 'Connect Services',
+  },
+  {
+    id: 'manageAccounts',
+    title: 'Manage Accounts',
+  },
+  {
+    id: 'manageCoaches',
+    title: 'Manage Coaches',
+  },
+];

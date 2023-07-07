@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
-import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
+import {
+  MultiPageHeader,
+  HeaderTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
 import { useDesignationAccountsQuery } from './GetDesignationAccounts.generated';
 import { useSetActiveDesignationAccountMutation } from './SetActiveDesignationAccount.generated';
@@ -85,11 +88,12 @@ export const DesignationAccountsReport: React.FC<Props> = ({
 
   return (
     <Box>
-      <Header
+      <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={title}
         rightExtra={balanceNode}
+        headerType={HeaderTypeEnum.Report}
       />
       {loading ? (
         <Box

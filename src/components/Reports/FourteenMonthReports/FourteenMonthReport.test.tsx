@@ -382,7 +382,7 @@ describe('FourteenMonthReport', () => {
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
-    expect(queryByTestId('ReportNavList')).toBeNull();
+    expect(queryByTestId('MultiPageMenu')).toBeNull();
   });
 
   it('filters report by designation account', async () => {

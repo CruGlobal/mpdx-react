@@ -150,7 +150,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(getByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
-    expect(queryByTestId('ReportNavList')).toBeNull();
+    expect(queryByTestId('MultiPageMenu')).toBeNull();
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
