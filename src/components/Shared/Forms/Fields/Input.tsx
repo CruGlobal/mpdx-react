@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField, TextFieldProps } from '@mui/material';
 
-export interface TextInputProps {
+export interface InputProps {
   children?: TextFieldProps['children'];
   disabled?: TextFieldProps['disabled'];
   error?: TextFieldProps['error'];
@@ -13,7 +13,7 @@ export interface TextInputProps {
   value?: TextFieldProps['value'];
 }
 
-export const TextInput: React.FC<TextInputProps> = ({
+export const Input: React.FC<InputProps> = ({
   children,
   disabled = false,
   error = false,
