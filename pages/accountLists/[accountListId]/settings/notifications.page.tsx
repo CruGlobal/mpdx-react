@@ -5,7 +5,7 @@ import { SettingsWrapper } from './wrapper';
 import { suggestArticles } from 'src/lib/helpScout';
 import { NotificationsTable } from 'src/components/Settings/notifications/NotificationsTable';
 
-const Preferences: React.FC = () => {
+const Notifications: React.FC = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -38,4 +38,4 @@ const Preferences: React.FC = () => {
   );
 };
 
-export default Preferences;
+export default Notifications;
