@@ -10,7 +10,7 @@ export interface SearchBoxProps {
   onChange: (searchTerm: string) => void;
   searchTerm?: string | string[];
   placeholder?: string;
-  page: 'task' | 'contact';
+  showContactSearchIcon: boolean;
 }
 
 export const AccountSearchIcon = styled(Icon)(({ theme }) => ({
@@ -27,7 +27,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
   onChange,
   searchTerm,
   placeholder,
-  page,
+  showContactSearchIcon,
 }) => {
   const { t } = useTranslation();
   const [currentSearchTerm, setSearchTerm] = useState(searchTerm ?? '');
@@ -47,7 +47,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            {page === 'contact' ? (
+            {showContactSearchIcon ? (
               <Icon path={mdiAccountSearch} size={1} />
             ) : (
               <SearchIcon />

@@ -490,6 +490,7 @@ describe('ListHeader', () => {
           contactDetailsOpen={false}
           contactsView={TableViewModeEnum.List}
           totalItems={100}
+          showShowingCount={true}
           {...mockedProps}
         />
       </MocksProviders>,
@@ -541,5 +542,63 @@ describe('ListHeader', () => {
         >
       ).mock.lastCall?.[0].selectedIdCount,
     ).toBe(100);
+  });
+
+  describe('Report', () => {
+    it('does not render the total count or map/list view icons', async () => {
+      const { queryByText, getByPlaceholderText, queryByTestId } = render(
+        <MocksProviders>
+          <ListHeader
+            selectedIds={[]}
+            page="report"
+            activeFilters={false}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            contactDetailsOpen={false}
+            totalItems={100}
+            {...mockedProps}
+          />
+        </MocksProviders>,
+      );
+      expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+      expect(queryByText('Actions')).not.toBeInTheDocument();
+      expect(queryByTestId('star-filter-button')).not.toBeInTheDocument();
+      expect(queryByText('Showing', { exact: false })).not.toBeInTheDocument();
+      expect(queryByTestId('list-button')).not.toBeInTheDocument();
+    });
+
+    it('display mass actions menu when an contact is checked', async () => {
+      const { queryByText, getByText, getByRole } = render(
+        <MocksProviders>
+          <ListHeader
+            selectedIds={selectedIds}
+            page="report"
+            activeFilters={false}
+            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            filterPanelOpen={false}
+            contactDetailsOpen={false}
+            totalItems={100}
+            {...mockedProps}
+          />
+        </MocksProviders>,
+      );
+
+      const checkbox = getByRole('checkbox');
+      userEvent.click(checkbox);
+      expect(onCheckAllItems).toHaveBeenCalled();
+      expect(toggleFilterPanel).not.toHaveBeenCalled();
+      expect(onSearchTermChanged).not.toHaveBeenCalled();
+
+      expect(queryByText('Add Tags')).not.toBeInTheDocument();
+      const actions = getByText('Actions');
+      userEvent.click(actions);
+      expect(getByText('Add Tags')).toBeInTheDocument();
+      userEvent.click(getByText('Add Tags'));
+      expect(
+        queryByText(
+          'Create New Tags (separate multiple tags with Enter key) *',
+        ),
+      ).toBeInTheDocument();
+    });
   });
 });

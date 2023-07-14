@@ -117,11 +117,13 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
             mainContent={
               <PartnerGivingAnalysisReport
                 accountListId={accountListId}
+                activeFilters={activeFilters}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 onSelectContact={handleSelectContact}
                 title={t('Partner Giving Analysis')}
                 contactFilters={debouncedFilters}
+                contactDetailsOpen={!!selectedContactId}
               />
             }
             rightPanel={

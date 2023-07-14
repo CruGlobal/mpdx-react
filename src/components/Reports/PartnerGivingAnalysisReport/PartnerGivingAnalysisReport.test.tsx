@@ -6,17 +6,34 @@ import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisRepo
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
 const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
 const onSelectContact = jest.fn();
+const activeFilters = {};
 const defaultProps = {
   accountListId,
   title,
   onNavListToggle,
   onSelectContact,
+  contactDetailsOpen: false,
+  activeFilters,
 };
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 jest.mock('next/router', () => ({
   useRouter: () => {
@@ -29,6 +46,7 @@ jest.mock('next/router', () => ({
 
 type Mocks = {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+  GetIdsForMassSelection?: GetIdsForMassSelectionQuery;
 };
 
 const mocks: Mocks = {
@@ -60,13 +78,109 @@ const mocks: Mocks = {
           totalDonations: 13118.42,
         },
         {
-          donationPeriodAverage: 86.4682954545454545,
+          donationPeriodAverage: 86.4684354186,
           donationPeriodCount: 221,
           donationPeriodSum: 25218.42,
           lastDonationAmount: 150.92,
           lastDonationCurrency: 'CAD',
           lastDonationDate: '2021-08-07',
           id: '03',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '04',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '05',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '06',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '07',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '08',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '09',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '10',
+          name: 'Jasmine (Princess)',
+          pledgeCurrency: 'CAD',
+          totalDonations: 25218.42,
+        },
+        {
+          donationPeriodAverage: 86.46,
+          donationPeriodCount: 221,
+          donationPeriodSum: 25218.42,
+          lastDonationAmount: 150.92,
+          lastDonationCurrency: 'CAD',
+          lastDonationDate: '2021-08-07',
+          id: '11',
           name: 'Jasmine (Princess)',
           pledgeCurrency: 'CAD',
           totalDonations: 25218.42,
@@ -78,7 +192,22 @@ const mocks: Mocks = {
         totalItems: 120,
         totalPages: 12,
       },
-      totalContacts: 300,
+      totalContacts: 11,
+    },
+  },
+  GetIdsForMassSelection: {
+    contacts: {
+      nodes: [
+        {
+          id: '01',
+        },
+        {
+          id: '02',
+        },
+        {
+          id: '03',
+        },
+      ],
     },
   },
 };
@@ -121,7 +250,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     expect(getByRole('table')).toBeInTheDocument();
     expect(getAllByTestId('PartnerGivingAnalysisReportTableRow').length).toBe(
-      3,
+      11,
     );
     expect(getByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
   });
@@ -217,11 +346,12 @@ describe('PartnerGivingAnalysisReport', () => {
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
       ).not.toBeInTheDocument();
     });
+
     expect(
-      mutationSpy.mock.calls[1][0].operation.variables.input.sortField,
+      mutationSpy.mock.calls[2][0].operation.variables.input.sortField,
     ).toEqual('donationPeriodCount');
     expect(
-      mutationSpy.mock.calls[1][0].operation.variables.input.sortDirection,
+      mutationSpy.mock.calls[2][0].operation.variables.input.sortDirection,
     ).toEqual('ASCENDING');
 
     userEvent.click(getByText('Gift Count'));
@@ -230,11 +360,12 @@ describe('PartnerGivingAnalysisReport', () => {
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
       ).not.toBeInTheDocument();
     });
+
     expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.sortField,
+      mutationSpy.mock.calls[3][0].operation.variables.input.sortField,
     ).toEqual('donationPeriodCount');
     expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.sortDirection,
+      mutationSpy.mock.calls[3][0].operation.variables.input.sortDirection,
     ).toEqual('DESCENDING');
 
     userEvent.click(getByText('Gift Average'));
@@ -244,10 +375,10 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
     expect(
-      mutationSpy.mock.calls[3][0].operation.variables.input.sortField,
+      mutationSpy.mock.calls[4][0].operation.variables.input.sortField,
     ).toEqual('donationPeriodAverage');
     expect(
-      mutationSpy.mock.calls[3][0].operation.variables.input.sortDirection,
+      mutationSpy.mock.calls[4][0].operation.variables.input.sortDirection,
     ).toEqual('ASCENDING');
   });
 
@@ -272,7 +403,7 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    userEvent.type(getByPlaceholderText('Search contacts'), 'John');
+    userEvent.type(getByPlaceholderText('Search Contacts'), 'John');
     await waitFor(() => {
       expect(
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
@@ -285,13 +416,13 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[1][0].operation.variables.input.contactFilters,
+      mutationSpy.mock.calls[2][0].operation.variables.input.contactFilters,
     ).toEqual({ nameLike: '%John%' });
   });
 
   it('sets the pagination limit', async () => {
     const mutationSpy = jest.fn();
-    const { getByRole, queryByTestId } = render(
+    const { getByRole, queryByTestId, getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
           GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
@@ -318,8 +449,18 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[1][0].operation.variables.input.pageSize,
+      mutationSpy.mock.calls[2][0].operation.variables.input.pageSize,
     ).toBe(50);
+
+    userEvent.selectOptions(getByRole('combobox'), '10');
+    userEvent.click(getByTestId('KeyboardArrowRightIcon'));
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    expect(getByText('11–20 of 120')).toBeInTheDocument();
   });
 
   it('selects and unselects all', async () => {
@@ -348,6 +489,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     // Select all
     userEvent.click(getAllByRole('checkbox')[0]);
+    expect(getAllByRole('checkbox')[0]).toBeChecked();
     expect(getAllByRole('checkbox')[1]).toBeChecked();
     expect(getAllByRole('checkbox')[2]).toBeChecked();
     expect(getAllByRole('checkbox')[3]).toBeChecked();
@@ -367,6 +509,14 @@ describe('PartnerGivingAnalysisReport', () => {
     userEvent.click(getAllByRole('checkbox')[1]);
     userEvent.click(getAllByRole('checkbox')[2]);
     userEvent.click(getAllByRole('checkbox')[3]);
+    userEvent.click(getAllByRole('checkbox')[4]);
+    userEvent.click(getAllByRole('checkbox')[5]);
+    userEvent.click(getAllByRole('checkbox')[6]);
+    userEvent.click(getAllByRole('checkbox')[7]);
+    userEvent.click(getAllByRole('checkbox')[8]);
+    userEvent.click(getAllByRole('checkbox')[9]);
+    userEvent.click(getAllByRole('checkbox')[10]);
+    userEvent.click(getAllByRole('checkbox')[11]);
     expect(getAllByRole('checkbox')[0]).toBeChecked();
 
     // Deselect all individually
@@ -376,7 +526,7 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(getAllByRole('checkbox')[0]).not.toBeChecked();
   });
 
-  it('contact names are clickable', async () => {
+  it('can click on contact names', async () => {
     const mutationSpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>

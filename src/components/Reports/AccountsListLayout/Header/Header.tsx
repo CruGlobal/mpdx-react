@@ -6,6 +6,7 @@ import theme from 'src/theme';
 import FilterList from '@mui/icons-material/FilterList';
 
 interface AccountsListHeaderProps {
+  showNavListButton?: boolean;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -15,7 +16,6 @@ interface AccountsListHeaderProps {
 const StickyHeader = styled(Box)(({}) => ({
   position: 'sticky',
   top: 0,
-  height: 96,
 }));
 
 const NavListButton = styled(IconButton, {
@@ -40,6 +40,7 @@ export const AccountsListHeader: FC<AccountsListHeaderProps> = ({
   rightExtra,
   isNavListOpen,
   onNavListToggle,
+  showNavListButton = true,
 }) => {
   const { t } = useTranslation();
 
@@ -51,9 +52,11 @@ export const AccountsListHeader: FC<AccountsListHeaderProps> = ({
         alignItems="center"
         sx={{ lineHeight: 1.1 }}
       >
-        <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
-          <NavListIcon titleAccess={t('Toggle Filter Panel')} />
-        </NavListButton>
+        {showNavListButton && (
+          <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
+            <NavListIcon titleAccess={t('Toggle Filter Panel')} />
+          </NavListButton>
+        )}
         <Typography variant="h5" sx={{ flex: 1 }}>
           {title}
         </Typography>
