@@ -211,7 +211,7 @@ export const NotificationsTable: React.FC = () => {
                 }
               >
                 <SelectAllBox>
-                  {appSelectAll ? t('select all') : t('deselect all')}
+                  {appSelectAll ? t('deselect all') : t('select all')}
                 </SelectAllBox>
               </StyledTableHeadSelectCell>
               <StyledTableHeadSelectCell
@@ -225,7 +225,7 @@ export const NotificationsTable: React.FC = () => {
                 }
               >
                 <SelectAllBox>
-                  {emailSelectAll ? t('select all') : t('deselect all')}
+                  {emailSelectAll ? t('deselect all') : t('select all')}
                 </SelectAllBox>
               </StyledTableHeadSelectCell>
               <StyledTableHeadSelectCell
@@ -239,7 +239,7 @@ export const NotificationsTable: React.FC = () => {
                 }
               >
                 <SelectAllBox>
-                  {taskSelectAll ? t('select all') : t('deselect all')}
+                  {taskSelectAll ? t('deselect all') : t('select all')}
                 </SelectAllBox>
               </StyledTableHeadSelectCell>
             </TableRow>
