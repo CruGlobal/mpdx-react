@@ -76,7 +76,7 @@ const AccordionLImageDetails = styled(Box)(() => ({
 }));
 
 const AccordionLeftDetailsImage = styled(Box)(() => ({
-  maxWidth: '100px',
+  maxWidth: '200px',
   ' & > img': {
     width: '100%',
   },
