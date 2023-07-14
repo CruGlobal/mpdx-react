@@ -13,7 +13,6 @@ import { ProfileInfo } from '../../../../src/components/Settings/preferences/inf
 import { PreferencesGroup } from '../../../../src/components/Settings/preferences/accordions/PreferencesGroup';
 import { PreferencesItem } from '../../../../src/components/Settings/preferences/accordions/PreferencesItem';
 import { PersPrefFormWrapper } from '../../../../src/components/Settings/preferences/forms/PreferencesFormWrapper';
-import { PersPrefSelect } from '../../../../src/components/Settings/preferences/forms/PreferencesSelect';
 import {
   PersPrefFieldWrapper,
   StyledOutlinedInput,
@@ -23,7 +22,6 @@ import {
   language,
   options,
   localeOptions,
-  options2,
 } from '../../../../src/components/Settings/preferences/DemoContent';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { MobileDatePicker } from '@mui/x-date-pickers';
@@ -32,6 +30,8 @@ import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { suggestArticles } from 'src/lib/helpScout';
 
 import { useLocale } from 'src/hooks/useLocale';
+import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
 
 const Preferences: React.FC = () => {
   const { t } = useTranslation();
@@ -45,6 +45,11 @@ const Preferences: React.FC = () => {
 
   const handleAccordionChange = (panel: string) => {
     setExpandedPanel(expandedPanel === panel ? '' : panel);
+  };
+
+  const handleSubmit = () => {
+    // eslint-disable-next-line no-console
+    console.log('handleSubmithandleSubmit');
   };
 
   return (
@@ -62,8 +67,12 @@ const Preferences: React.FC = () => {
           label={t('Language')}
           value={t('US English')}
         >
-          <PersPrefFormWrapper>
-            <PersPrefFieldWrapper
+          <FormWrapper
+            onSubmit={handleSubmit}
+            isValid={true}
+            isSubmitting={false}
+          >
+            <FieldWrapper
               labelText={t('Language')}
               helperText={t(
                 'The language determines your default language for MPDX.',
@@ -76,16 +85,8 @@ const Preferences: React.FC = () => {
                   </MenuItem>
                 ))}
               </StyledSelect>
-            </PersPrefFieldWrapper>
-            <PersPrefSelect
-              label={t('Language')}
-              helperText={t(
-                'The language determines your default language for MPDX.',
-              )}
-              value="opt1"
-              selectOptions={options2}
-            />
-          </PersPrefFormWrapper>
+            </FieldWrapper>
+          </FormWrapper>
         </PreferencesItem>
 
         {/* Locale */}
@@ -304,35 +305,59 @@ const Preferences: React.FC = () => {
         >
           <PersPrefFormWrapper>
             {/* <StyledColumnsWrapper> */}
-            <Grid container spacing={1}>
+            <Grid container spacing={1} mb={2}>
               <Grid item xs={6} spacing={3}>
-                <MobileDatePicker
-                  renderInput={(params) => (
-                    <TextField
-                      fullWidth
-                      inputProps={{ 'aria-label': t('Start Date') }}
-                      {...params}
-                    />
-                  )}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment
-                        aria-label="change start date"
-                        position="end"
-                      >
-                        <CalendarToday />
-                      </InputAdornment>
-                    ),
-                  }}
-                  onChange={(): void => undefined}
-                  value={null}
-                  inputFormat={getDateFormatPattern(locale)}
-                  label={t('Start Date')}
-                />
+                <PersPrefFieldWrapper labelText={t('Start Date')}>
+                  <MobileDatePicker
+                    renderInput={(params) => (
+                      <TextField
+                        fullWidth
+                        inputProps={{ 'aria-label': t('Start Date') }}
+                        {...params}
+                      />
+                    )}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment
+                          aria-label="change start date"
+                          position="end"
+                        >
+                          <CalendarToday />
+                        </InputAdornment>
+                      ),
+                    }}
+                    onChange={(): void => undefined}
+                    value={null}
+                    inputFormat={getDateFormatPattern(locale)}
+                    label={t('Start Date')}
+                  />
+                </PersPrefFieldWrapper>
               </Grid>
               <Grid item xs={6} spacing={3}>
                 <PersPrefFieldWrapper labelText={t('End Date')}>
-                  <StyledOutlinedInput />
+                  <MobileDatePicker
+                    renderInput={(params) => (
+                      <TextField
+                        fullWidth
+                        inputProps={{ 'aria-label': t('End Date') }}
+                        {...params}
+                      />
+                    )}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment
+                          aria-label="change end date"
+                          position="end"
+                        >
+                          <CalendarToday />
+                        </InputAdornment>
+                      ),
+                    }}
+                    onChange={(): void => undefined}
+                    value={null}
+                    inputFormat={getDateFormatPattern(locale)}
+                    label={t('End Date')}
+                  />
                 </PersPrefFieldWrapper>
               </Grid>
             </Grid>
