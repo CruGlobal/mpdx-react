@@ -30,6 +30,7 @@ import {
   ReportContactFilterSetInput,
   ResultEnum,
   TaskFilterSetInput,
+  ContactFilterNotesInput,
 } from '../../../../graphql/types.generated';
 import {
   FilterPanelGroupFragment,
@@ -175,9 +176,13 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [showAll, setShowAll] = useState(false);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
+      let filterValue = value;
+      if (name === 'notes') {
+        filterValue = { wildcardNoteSearch: value } as ContactFilterNotesInput;
+      }
       const newFilters: FilterInput = {
         ...selectedFilters,
-        [name]: value,
+        [name]: filterValue,
       };
       onSelectedFiltersChanged(newFilters);
     } else {
@@ -637,9 +642,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'pledgeLateBy':
               case 'primaryAddress':
               case 'wildcardSearch':
-                if (key === 'notes') {
-                  value = value['wildcard_note_search'];
-                }
                 if (key === 'donationAmountRange') {
                   value['min'] = Number(value['min']);
                   value['max'] = Number(value['max']);
@@ -820,7 +822,20 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                     <FilterListItem
                                       key={filterKeyCamel}
                                       filter={filter}
-                                      value={selectedFilters[filterKeyCamel]}
+                                      value={
+                                        selectedFilters[filterKeyCamel] &&
+                                        (
+                                          selectedFilters[
+                                            filterKeyCamel
+                                          ] as ContactFilterNotesInput
+                                        ).wildcardNoteSearch
+                                          ? (
+                                              selectedFilters[
+                                                filterKeyCamel
+                                              ] as ContactFilterNotesInput
+                                            ).wildcardNoteSearch
+                                          : selectedFilters[filterKeyCamel]
+                                      }
                                       onUpdate={(value) =>
                                         updateSelectedFilter(
                                           filterKeyCamel,

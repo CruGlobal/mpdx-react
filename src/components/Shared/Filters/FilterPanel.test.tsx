@@ -259,7 +259,7 @@ describe('FilterPanel', () => {
           max: '2021-12-22',
           min: '2021-11-30',
         },
-        notes: 'note1',
+        notes: { wildcardNoteSearch: 'note1' },
         optOut: 'No',
         overdue: true,
         pledgeAmount: ['35.0', '40.0'],
