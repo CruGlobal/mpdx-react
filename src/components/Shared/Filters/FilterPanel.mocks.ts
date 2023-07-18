@@ -63,6 +63,20 @@ export const mockTagsFilter: MultiselectFilter = {
   ],
 };
 
+export const mockNoteSearchFilter: TextFilter = {
+  __typename: 'TextFilter',
+  filterKey: 'notes',
+  title: 'Notes',
+  options: [
+    {
+      __typename: 'FilterOption',
+      name: 'notes',
+      placeholder: 'Notes',
+      value: 'test',
+    },
+  ],
+};
+
 export const filterPanelDefaultMock = gqlMock<FilterPanelGroupFragment>(
   FilterPanelGroupFragmentDoc,
   {
@@ -116,6 +130,17 @@ export const filterPanelZeroTagsMock = gqlMock<FilterPanelGroupFragment>(
   },
 );
 
+export const filterPanelNoteSearchMock = gqlMock<FilterPanelGroupFragment>(
+  FilterPanelGroupFragmentDoc,
+  {
+    mocks: {
+      name: 'Search Notes',
+      featured: false,
+      filters: [mockNoteSearchFilter],
+    },
+  },
+);
+
 export const savedFiltersMock = gqlMock<UserOptionFragment>(
   UserOptionFragmentDoc,
   {
@@ -148,6 +173,18 @@ export const savedFiltersMockThree = gqlMock<UserOptionFragment>(
       key: 'saved_contacts_filter_My_Cool_Filter',
       value:
         '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"pledgeReceived": "default", "addressLatLng": "test1", "appealStatus": "test1", "contactAppeal": "test1", "newsletter": "none", "contactNewsletter": "physical", "donation_amount_range": {"min": "0", "max": "2000.45"}},"tags":null,"exclude_tags":null,"wildcard_search":""}',
+    },
+  },
+);
+
+export const noteSearchSavedFilterMock = gqlMock<UserOptionFragment>(
+  UserOptionFragmentDoc,
+  {
+    mocks: {
+      id: '123',
+      key: 'graphql_saved_contacts_filter_note_search',
+      value:
+        '{"notes": {"wildcardNoteSearch": "test"}, "accountListId":"08bb09d1-3b62-4690-9596-b625b8af4750"}',
     },
   },
 );
