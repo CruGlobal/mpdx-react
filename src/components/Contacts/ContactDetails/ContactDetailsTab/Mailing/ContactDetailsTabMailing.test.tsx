@@ -33,7 +33,7 @@ const data: ContactMailingFragment = {
         primaryMailingAddress: true,
         region: null,
         source: 'MPDX',
-        state: 'FL',
+        state: null,
         street: '100 Lake Hart Dr',
         createdAt: new Date(2023, 0, 1).toISOString(),
       },
@@ -61,5 +61,48 @@ describe('ContactDetailsTabMailing', () => {
     );
 
     expect(getByText('Source: MPDX (Jan 1, 2023)')).toBeInTheDocument();
+  });
+
+  it('does not show state if not present', () => {
+    const { getByText } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <ContactsPage>
+              <ContactDetailProvider>
+                <ContactDetailsTabMailing
+                  accountListId={accountListId}
+                  data={data}
+                />
+              </ContactDetailProvider>
+            </ContactsPage>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+
+    expect(getByText('Orlando, 32832')).toBeInTheDocument();
+  });
+
+  it('shows state if present', () => {
+    data.addresses.nodes[0].state = 'FL';
+    const { getByText } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <ContactsPage>
+              <ContactDetailProvider>
+                <ContactDetailsTabMailing
+                  accountListId={accountListId}
+                  data={data}
+                />
+              </ContactDetailProvider>
+            </ContactsPage>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+
+    expect(getByText('Orlando, FL 32832')).toBeInTheDocument();
   });
 });
