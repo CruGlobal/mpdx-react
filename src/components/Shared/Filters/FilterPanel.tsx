@@ -642,6 +642,12 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'pledgeLateBy':
               case 'primaryAddress':
               case 'wildcardSearch':
+                if (key === 'notes' && (value as any)?.wildcard_note_search) {
+                  (value as any).wildcardNoteSearch = (
+                    value as any
+                  ).wildcard_note_search;
+                  delete (value as any).wildcard_note_search;
+                }
                 if (key === 'donationAmountRange') {
                   value['min'] = Number(value['min']);
                   value['max'] = Number(value['max']);

@@ -182,6 +182,18 @@ export const noteSearchSavedFilterMock = gqlMock<UserOptionFragment>(
   {
     mocks: {
       id: '123',
+      key: 'saved_contacts_filter_note_search',
+      value:
+        '{"any_tags":false,"account_list_id":"08bb09d1-3b62-4690-9596-b625b8af4750","params":{"notes": {"wildcard_note_search": "test note search"}},"tags":null,"exclude_tags":null,"wildcard_search":""}',
+    },
+  },
+);
+
+export const noteSearchSavedGraphQLFilterMock = gqlMock<UserOptionFragment>(
+  UserOptionFragmentDoc,
+  {
+    mocks: {
+      id: '123',
       key: 'graphql_saved_contacts_filter_note_search',
       value:
         '{"notes": {"wildcardNoteSearch": "test"}, "accountListId":"08bb09d1-3b62-4690-9596-b625b8af4750"}',

@@ -14,6 +14,7 @@ import {
   filterPanelTagsMock,
   filterPanelZeroTagsMock,
   noteSearchSavedFilterMock,
+  noteSearchSavedGraphQLFilterMock,
   savedFiltersMock,
   savedFiltersMockThree,
   savedFiltersMockTwo,
@@ -851,6 +852,34 @@ describe('FilterPanel', () => {
       expect(getByText('Filter')).toBeVisible();
     });
 
+    it('opens and selects a note Graph QL search saved filter', async () => {
+      const { getByText, queryByTestId } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[noteSearchSavedGraphQLFilterMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      userEvent.click(getByText('Saved Filters'));
+      expect(getByText('note search')).toBeVisible();
+      userEvent.click(getByText('note search'));
+      await waitFor(() =>
+        expect(onSelectedFiltersChanged.mock.calls[2][0]).toEqual({
+          notes: { wildcardNoteSearch: 'test' },
+        }),
+      );
+    });
+
     it('opens and selects a note search saved filter', async () => {
       const { getByText, queryByTestId } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -872,9 +901,15 @@ describe('FilterPanel', () => {
       userEvent.click(getByText('Saved Filters'));
       expect(getByText('note search')).toBeVisible();
       userEvent.click(getByText('note search'));
-      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
-        notes: { wildcardNoteSearch: 'test' },
-      });
+      await waitFor(() =>
+        expect(onSelectedFiltersChanged.mock.calls[1][0]).toEqual({
+          anyTags: false,
+          notes: { wildcardNoteSearch: 'test note search' },
+          tags: null,
+          excludeTags: null,
+          wildcardSearch: '',
+        }),
+      );
     });
 
     it('closes panel', async () => {
