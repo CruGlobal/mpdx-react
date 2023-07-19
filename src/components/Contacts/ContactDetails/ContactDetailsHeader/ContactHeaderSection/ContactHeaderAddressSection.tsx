@@ -59,7 +59,7 @@ export const ContactHeaderAddressSection = ({
             <Typography
               style={{ display: 'inline-block' }}
               variant="subtitle1"
-            >{`${city}, ${state} ${postalCode}`}</Typography>{' '}
+            >{`${city}, ${state ?? ''} ${postalCode}`}</Typography>{' '}
             <Link
               href={mapURL.replaceAll(' ', '+')}
               target="_blank"
