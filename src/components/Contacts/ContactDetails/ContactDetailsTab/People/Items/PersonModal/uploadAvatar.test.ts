@@ -19,6 +19,9 @@ describe('uploadAvatar', () => {
   const largeFile = new File([new ArrayBuffer(2_000_000)], 'image.png', {
     type: 'image/png',
   });
+  const avifFile = new File(['contents'], 'image.avif', {
+    type: 'image/avif',
+  });
 
   it('uploads the image', () => {
     return expect(
@@ -48,6 +51,18 @@ describe('uploadAvatar', () => {
         t,
       }),
     ).rejects.toThrow('Cannot upload avatar: file size cannot exceed 1MB');
+  });
+
+  it('rejects files that are of type AVIF', () => {
+    return expect(
+      uploadAvatar({
+        personId: 'person-1',
+        file: avifFile,
+        t,
+      }),
+    ).rejects.toThrow(
+      'Cannot upload avatar: Unfortunately we do not support AVIF files.',
+    );
   });
 
   it('handles server errors', () => {
