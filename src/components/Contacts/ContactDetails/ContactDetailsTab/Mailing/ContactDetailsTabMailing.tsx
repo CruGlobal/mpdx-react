@@ -190,6 +190,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                         ? 'line-through'
                         : 'none',
                     }}
+                    data-testid="NonPrimaryAddresses"
                   >
                     <ContactAddressRowContainer>
                       <Typography variant="subtitle1">
