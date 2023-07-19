@@ -47,8 +47,9 @@ export const ContactHeaderAddressSection = ({
   } else if (envelope && primaryAddress) {
     const { street, city, state, postalCode } = primaryAddress;
 
-    if (street && city && state && postalCode) {
-      const mapURL = `https://www.google.com/maps/search/?api=1&query=${street}%2C+${city}%2C+${state}+${postalCode}`;
+    if (street && city && postalCode) {
+      const additionalOptions = state ? `${state}+${postalCode}` : postalCode;
+      const mapURL = `https://www.google.com/maps/search/?api=1&query=${street}%2C+${city}%2C+${additionalOptions}`;
 
       return (
         <ContactHeaderSection icon={<LocationIcon />}>
