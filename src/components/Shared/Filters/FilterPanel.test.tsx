@@ -912,6 +912,44 @@ describe('FilterPanel', () => {
       );
     });
 
+    it('checks that filter names are set correctly', async () => {
+      const { getByText, queryByTestId, getByDisplayValue } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelNoteSearchMock]}
+                savedFilters={[]}
+                selectedFilters={{
+                  status: [ContactFilterStatusEnum.ContactForAppointment],
+                  notes: {
+                    wildcardNoteSearch: 'Test 1',
+                  },
+                }}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      const searchNotes = getByText('Search Notes (1)');
+      await waitFor(() => expect(searchNotes).toBeInTheDocument());
+      userEvent.click(searchNotes);
+      await waitFor(() =>
+        expect(getByDisplayValue('Test 1')).toBeInTheDocument(),
+      );
+
+      const groupOne = getByText('Group 1 (1)');
+      await waitFor(() => expect(groupOne).toBeInTheDocument());
+      userEvent.click(groupOne);
+      await waitFor(() =>
+        expect(getByText('Contact for Appointment')).toBeInTheDocument(),
+      );
+    });
+
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
         <GqlMockedProvider>

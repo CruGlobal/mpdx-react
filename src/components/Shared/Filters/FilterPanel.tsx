@@ -643,7 +643,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'primaryAddress':
               case 'wildcardSearch':
                 if (key === 'notes' && (value as any)?.wildcard_note_search) {
-                  (value as any).wildcardNoteSearch = (
+                  (value as ContactFilterNotesInput).wildcardNoteSearch = (
                     value as any
                   ).wildcard_note_search;
                   delete (value as any).wildcard_note_search;
@@ -824,24 +824,21 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                       filterKey,
                                     ) as FilterKey;
 
+                                  const filterValue =
+                                    selectedFilters[filterKeyCamel] || '';
+
+                                  const FilterListItemValue = (
+                                    filterValue as ContactFilterNotesInput
+                                  ).wildcardNoteSearch
+                                    ? (filterValue as ContactFilterNotesInput)
+                                        .wildcardNoteSearch
+                                    : filterValue;
+
                                   return (
                                     <FilterListItem
                                       key={filterKeyCamel}
                                       filter={filter}
-                                      value={
-                                        selectedFilters[filterKeyCamel] &&
-                                        (
-                                          selectedFilters[
-                                            filterKeyCamel
-                                          ] as ContactFilterNotesInput
-                                        ).wildcardNoteSearch
-                                          ? (
-                                              selectedFilters[
-                                                filterKeyCamel
-                                              ] as ContactFilterNotesInput
-                                            ).wildcardNoteSearch
-                                          : selectedFilters[filterKeyCamel]
-                                      }
+                                      value={FilterListItemValue}
                                       onUpdate={(value) =>
                                         updateSelectedFilter(
                                           filterKeyCamel,
