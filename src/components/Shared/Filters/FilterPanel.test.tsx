@@ -187,9 +187,19 @@ describe('FilterPanel', () => {
       userEvent.click(getByText(filterPanelNoteSearchMock.name));
       await waitFor(() => expect(getAllByText('Notes')).toHaveLength(2));
       userEvent.type(getByRole('textbox'), 'test');
-      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
-        notes: { wildcardNoteSearch: 'test' },
-      });
+      expect(onSelectedFiltersChanged).toHaveBeenCalledTimes(4);
+      expect(
+        onSelectedFiltersChanged.mock.calls[0][0].notes.wildcardNoteSearch,
+      ).toEqual('t');
+      expect(
+        onSelectedFiltersChanged.mock.calls[1][0].notes.wildcardNoteSearch,
+      ).toEqual('e');
+      expect(
+        onSelectedFiltersChanged.mock.calls[2][0].notes.wildcardNoteSearch,
+      ).toEqual('s');
+      expect(
+        onSelectedFiltersChanged.mock.calls[3][0].notes.wildcardNoteSearch,
+      ).toEqual('t');
     });
 
     it('should display a selected filter', async () => {
