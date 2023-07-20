@@ -5,26 +5,12 @@ import { suggestArticles } from 'src/lib/helpScout';
 
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
-import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledOutlinedInput } from 'src/components/Shared/Forms/Field';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
-import {
-  Grid,
-  Box,
-  Button,
-  IconButton,
-  Typography,
-  Card,
-  Divider,
-  List,
-  ListItemText,
-  Alert,
-} from '@mui/material';
+import { Button, Typography, List, ListItemText, Alert } from '@mui/material';
 import { StyledFormLabel } from '../../../../src/components/Shared/Forms/Field';
-import theme from 'src/theme';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { TheKeyAccordian } from 'src/components/Settings/connectServices/TheKeyAccordian';
+import { OrganizationAccordian } from 'src/components/Settings/connectServices/Organization/OrganizationAccordian';
 
 const StyledListItem = styled(ListItemText)(() => ({
   display: 'list-item',
@@ -37,15 +23,6 @@ const StyledList = styled(List)(({ theme }) => ({
 
 const StyledServicesButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),
-}));
-
-const OrganizationDeleteIconButton = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.cruGrayMedium.main,
-  position: 'right',
-  '&:disabled': {
-    cursor: 'not-allowed',
-    pointerEvents: 'all',
-  },
 }));
 
 const ConnectServices: React.FC = () => {
@@ -64,11 +41,6 @@ const ConnectServices: React.FC = () => {
     setExpandedPanel(expandedPanel === panel ? '' : panel);
   };
 
-  const handleSubmit = () => {
-    // eslint-disable-next-line no-console
-    console.log('handleSubmithandleSubmit');
-  };
-
   const sendListToChalkLine = () => {
     // eslint-disable-next-line no-console
     console.log('Sending newsletter list to Chalk Line');
@@ -80,98 +52,14 @@ const ConnectServices: React.FC = () => {
       pageHeading={t('Connect Services')}
     >
       <AccordionGroup title={t('')}>
-        <AccordionItem
-          onAccordionChange={handleAccordionChange}
+        <TheKeyAccordian
+          handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          label={t('The Key / Relay')}
-          value={''}
-          image={
-            <img
-              src="https://mpdx.org/f9a1f0e0afe640e0f704099d96503be5.png"
-              alt="The Key"
-            />
-          }
-        >
-          <FormWrapper
-            onSubmit={handleSubmit}
-            isValid={true}
-            isSubmitting={false}
-          >
-            <FieldWrapper labelText={t('Email Address')} helperText={''}>
-              <StyledOutlinedInput />
-            </FieldWrapper>
-          </FormWrapper>
-        </AccordionItem>
-        <AccordionItem
-          onAccordionChange={handleAccordionChange}
+        />
+        <OrganizationAccordian
+          handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          label={t('Organization')}
-          value={''}
-          image={
-            <img
-              src="https://mpdx.org/681865a8b19bbf7a86ee68825106de3f.png"
-              alt="Organization"
-            />
-          }
-        >
-          <Typography>
-            Add or change the organizations that sync donation information with
-            this MPDX account. Removing an organization will not remove past
-            information, but will prevent future donations and contacts from
-            syncing.
-          </Typography>
-          <Card>
-            <Box
-              sx={{
-                p: 1,
-                pl: 2,
-                background: theme.palette.cruGrayLight.main,
-                justifyContent: 'space-between',
-                display: 'flex',
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <Typography fontWeight={700}>Organization 1</Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <StyledServicesButton
-                  variant="contained"
-                  size="small"
-                  sx={{ m: 0 }}
-                >
-                  Sync
-                </StyledServicesButton>
-                <OrganizationDeleteIconButton>
-                  <DeleteIcon />
-                </OrganizationDeleteIconButton>
-              </Box>
-            </Box>
-            <Divider />
-            <Box sx={{ p: 2, display: 'flex' }}>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  Last Updated
-                </Grid>
-                <Grid item xs={6}>
-                  2023-07-13
-                </Grid>
-              </Grid>
-            </Box>
-          </Card>
-          <StyledServicesButton variant="outlined">
-            Add Account
-          </StyledServicesButton>
-        </AccordionItem>
+        />
       </AccordionGroup>
       <AccordionGroup title={t('External Services')}>
         <AccordionItem
