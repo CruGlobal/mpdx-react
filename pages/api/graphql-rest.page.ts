@@ -11,6 +11,7 @@ import {
   FourteenMonthReportCurrencyType,
   NumericRangeInput,
   CoachingAnswerSet,
+  ContactFilterNotesInput,
 } from './graphql-rest.page.generated';
 import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
@@ -403,7 +404,7 @@ class MpdxRestApi extends RESTDataSource {
     // This code essentially does the reverse of the logic in setSelectedSavedFilter
     const filters: Record<
       string,
-      string | number | boolean | NumericRangeInput
+      string | number | boolean | NumericRangeInput | ContactFilterNotesInput
     > = {
       account_list_id: accountListId,
       any_tags: false,
@@ -591,13 +592,23 @@ class MpdxRestApi extends RESTDataSource {
         case 'pledge':
         case 'pledgeLateBy':
         case 'wildcardSearch':
-          filters[snakedKey] = value as string | NumericRangeInput;
+          filters[snakedKey] = value as
+            | string
+            | NumericRangeInput
+            | ContactFilterNotesInput;
           break;
 
         default:
           throw new Error(`Unrecognized filter key ${key}`);
       }
     });
+    // Switch wildcardNoteSearch to wildcard_note_search for API
+    if ((filters.notes as ContactFilterNotesInput)?.wildcardNoteSearch) {
+      filters.notes = {
+        wildcard_note_search:
+          (filters.notes as ContactFilterNotesInput).wildcardNoteSearch ?? '',
+      };
+    }
 
     const analysisPromise = this.post(
       'reports/partner_giving_analysis',

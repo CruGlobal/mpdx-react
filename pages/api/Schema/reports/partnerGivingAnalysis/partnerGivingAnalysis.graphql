@@ -62,6 +62,7 @@ enum ContactFilterPledgeReceivedEnum {
 
 input ContactFilterNotesInput {
   wildcardNoteSearch: String
+  wildcard_note_search: String
 }
 
 input ReportContactFilterSetInput {

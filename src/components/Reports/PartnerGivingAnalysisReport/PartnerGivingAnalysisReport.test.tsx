@@ -6,7 +6,7 @@ import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisRepo
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
 const accountListId = '111';
 const title = 'test title';
@@ -46,7 +46,7 @@ jest.mock('next/router', () => ({
 
 type Mocks = {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-  GetIdsForMassSelection?: GetIdsForMassSelectionQuery;
+  GetPartnerGivingAnalysisIdsForMassSelection?: GetPartnerGivingAnalysisIdsForMassSelectionQuery;
 };
 
 const mocks: Mocks = {
@@ -195,9 +195,9 @@ const mocks: Mocks = {
       totalContacts: 11,
     },
   },
-  GetIdsForMassSelection: {
-    contacts: {
-      nodes: [
+  GetPartnerGivingAnalysisIdsForMassSelection: {
+    partnerGivingAnalysisReport: {
+      contacts: [
         {
           id: '01',
         },
