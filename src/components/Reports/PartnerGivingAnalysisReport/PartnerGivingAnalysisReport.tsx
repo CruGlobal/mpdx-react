@@ -1,27 +1,26 @@
-import {
-  ContactFilterSetInput,
-  PartnerGivingAnalysisReportContact,
-  SortDirection,
-} from '../../../../graphql/types.generated';
 import React, { useMemo, useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
-import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
+import { useMassSelection } from 'src/hooks/useMassSelection';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import {
+  ReportContactFilterSetInput,
+  PartnerGivingAnalysisReportContact,
+  SortDirection,
+} from '../../../../graphql/types.generated';
 import type { Order } from '../Reports.type';
 import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
+import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
-import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { ListHeader } from 'src/components/Shared/Header/ListHeader';
-import { useMassSelection } from 'src/hooks/useMassSelection';
-import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 
 interface Props {
   accountListId: string;
   isNavListOpen: boolean;
-  activeFilters?: ContactFilterSetInput;
+  activeFilters?: ReportContactFilterSetInput;
   contactDetailsOpen: boolean;
   onNavListToggle: () => void;
   onSelectContact: (contactId: string) => void;
@@ -77,16 +76,25 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const contacts = data?.partnerGivingAnalysisReport.contacts ?? [];
 
   const contactCount = data?.partnerGivingAnalysisReport?.totalContacts ?? 0;
-  const { data: allContacts } = useGetIdsForMassSelectionQuery({
-    variables: {
-      accountListId,
-      first: contactCount,
-      contactsFilters: contactFilters,
-    },
-    skip: contactCount === 0,
-  });
+  const { data: allContacts } =
+    useGetPartnerGivingAnalysisIdsForMassSelectionQuery({
+      variables: {
+        input: {
+          accountListId,
+          page: 1,
+          pageSize: contactCount,
+          sortField: '',
+          sortDirection: SortDirection.Ascending,
+          contactFilters,
+        },
+      },
+      skip: contactCount === 0,
+    });
   const allContactIds = useMemo(
-    () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
+    () =>
+      allContacts?.partnerGivingAnalysisReport?.contacts.map(
+        (contact) => contact.id,
+      ) ?? [],
     [allContacts],
   );
 

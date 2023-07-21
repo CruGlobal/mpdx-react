@@ -227,6 +227,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     occupation: yup.string().nullable(),
     legalFirstName: yup.string().nullable(),
     deceased: yup.boolean().default(false),
+    defaultAccountList: yup.string().nullable(),
   });
 
   const personPhoneNumberSources = person?.phoneNumbers.nodes.map(

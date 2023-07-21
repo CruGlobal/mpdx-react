@@ -9,9 +9,12 @@ import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import {
   filterPanelDefaultMock,
   filterPanelFeaturedMock,
+  filterPanelNoteSearchMock,
   filterPanelSlidersMock,
   filterPanelTagsMock,
   filterPanelZeroTagsMock,
+  noteSearchSavedFilterMock,
+  noteSearchSavedGraphQLFilterMock,
   savedFiltersMock,
   savedFiltersMockThree,
   savedFiltersMockTwo,
@@ -149,6 +152,56 @@ describe('FilterPanel', () => {
       });
     });
 
+    it('opens and uses a note search filter', async () => {
+      const {
+        getByTestId,
+        getByText,
+        queryByTestId,
+        queryAllByTestId,
+        getByRole,
+        getAllByText,
+      } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelNoteSearchMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+      userEvent.click(getByTestId('FilterListItemShowAll'));
+
+      await waitFor(() =>
+        expect(getByText('Search Notes')).toBeInTheDocument(),
+      );
+      userEvent.click(getByText(filterPanelNoteSearchMock.name));
+      await waitFor(() => expect(getAllByText('Notes')).toHaveLength(2));
+      userEvent.type(getByRole('textbox'), 'test');
+      expect(onSelectedFiltersChanged).toHaveBeenCalledTimes(4);
+      expect(
+        onSelectedFiltersChanged.mock.calls[0][0].notes.wildcardNoteSearch,
+      ).toEqual('t');
+      expect(
+        onSelectedFiltersChanged.mock.calls[1][0].notes.wildcardNoteSearch,
+      ).toEqual('e');
+      expect(
+        onSelectedFiltersChanged.mock.calls[2][0].notes.wildcardNoteSearch,
+      ).toEqual('s');
+      expect(
+        onSelectedFiltersChanged.mock.calls[3][0].notes.wildcardNoteSearch,
+      ).toEqual('t');
+    });
+
     it('should display a selected filter', async () => {
       const {
         getByTestId,
@@ -259,7 +312,7 @@ describe('FilterPanel', () => {
           max: '2021-12-22',
           min: '2021-11-30',
         },
-        notes: 'note1',
+        notes: { wildcardNoteSearch: 'note1' },
         optOut: 'No',
         overdue: true,
         pledgeAmount: ['35.0', '40.0'],
@@ -807,6 +860,104 @@ describe('FilterPanel', () => {
         status: ['ASK_IN_FUTURE', 'CONTACT_FOR_APPOINTMENT'],
       });
       expect(getByText('Filter')).toBeVisible();
+    });
+
+    it('opens and selects a note Graph QL search saved filter', async () => {
+      const { getByText, queryByTestId } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[noteSearchSavedGraphQLFilterMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      userEvent.click(getByText('Saved Filters'));
+      expect(getByText('note search')).toBeVisible();
+      userEvent.click(getByText('note search'));
+      await waitFor(() =>
+        expect(onSelectedFiltersChanged.mock.calls[2][0]).toEqual({
+          notes: { wildcardNoteSearch: 'test' },
+        }),
+      );
+    });
+
+    it('opens and selects a note search saved filter', async () => {
+      const { getByText, queryByTestId } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                savedFilters={[noteSearchSavedFilterMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      userEvent.click(getByText('Saved Filters'));
+      expect(getByText('note search')).toBeVisible();
+      userEvent.click(getByText('note search'));
+      await waitFor(() =>
+        expect(onSelectedFiltersChanged.mock.calls[1][0]).toEqual({
+          anyTags: false,
+          notes: { wildcardNoteSearch: 'test note search' },
+          tags: null,
+          excludeTags: null,
+          wildcardSearch: '',
+        }),
+      );
+    });
+
+    it('checks that filter names are set correctly', async () => {
+      const { getByText, queryByTestId, getByDisplayValue } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <FilterPanel
+                filters={[filterPanelDefaultMock, filterPanelNoteSearchMock]}
+                savedFilters={[]}
+                selectedFilters={{
+                  status: [ContactFilterStatusEnum.ContactForAppointment],
+                  notes: {
+                    wildcardNoteSearch: 'Test 1',
+                  },
+                }}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      const searchNotes = getByText('Search Notes (1)');
+      await waitFor(() => expect(searchNotes).toBeInTheDocument());
+      userEvent.click(searchNotes);
+      await waitFor(() =>
+        expect(getByDisplayValue('Test 1')).toBeInTheDocument(),
+      );
+
+      const groupOne = getByText('Group 1 (1)');
+      await waitFor(() => expect(groupOne).toBeInTheDocument());
+      userEvent.click(groupOne);
+      await waitFor(() =>
+        expect(getByText('Contact for Appointment')).toBeInTheDocument(),
+      );
     });
 
     it('closes panel', async () => {
