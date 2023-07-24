@@ -44,6 +44,12 @@ const ConnectServices: React.FC = () => {
   const sendListToChalkLine = () => {
     // eslint-disable-next-line no-console
     console.log('Sending newsletter list to Chalk Line');
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('foo');
+      }, 300);
+    });
   };
 
   return (

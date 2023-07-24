@@ -40,7 +40,7 @@ const WarningBox = styled(Box)(() => ({
 
 const StyledTypography = styled(Typography)(() => ({
   marginTop: '10px',
-  color: theme.palette.mpdxYellow.contrastText,
+  color: theme.palette.mpdxYellow.dark,
 }));
 
 enum warningEnum {

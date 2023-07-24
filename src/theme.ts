@@ -92,7 +92,7 @@ const theme = createTheme({
     },
     mpdxYellow: {
       main: mpdxColors.yellow,
-      contrastText: '#8a6d3b',
+      dark: '#8a6d3b',
     },
     mpdxRed: {
       main: mpdxColors.red,

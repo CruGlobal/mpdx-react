@@ -25,9 +25,10 @@ const StyledServicesButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),
 }));
 
-const OrganizationDeleteIconButton = styled(IconButton)(({ theme }) => ({
+const OrganizationDeleteIconButton = styled(IconButton)(() => ({
   color: theme.palette.cruGrayMedium.main,
-  position: 'right',
+  position: 'absolute',
+  right: 0,
   '&:disabled': {
     cursor: 'not-allowed',
     pointerEvents: 'all',
