@@ -19,19 +19,15 @@ import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 interface PartnerGivingAnalysisReportTableProps {
   onClick: (contactId: string) => void;
-  onSelectOne: (
-    event: React.ChangeEvent<HTMLInputElement>,
-    contactId: string,
-  ) => void;
-  onSelectAll: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSelectOne: (contactId: string) => void;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof Contact,
   ) => void;
   contacts: Contact[];
-  selectedContacts: Array<string>;
   order: Order;
   orderBy: string | null;
+  isRowChecked: (id: string) => boolean;
 }
 
 const StickyTableContainer = styled(TableContainer)(() => ({
@@ -44,6 +40,7 @@ const StickyTable = styled(Table)(({}) => ({
 
 const TableCell = styled(TableCellMui)({
   fontSize: '1.15em',
+  align: 'left',
 });
 
 const ContactName = styled(Typography)(({ theme }) => ({
@@ -64,9 +61,8 @@ export const PartnerGivingAnalysisReportTable: FC<
   contacts,
   onClick,
   onRequestSort,
-  onSelectAll,
   onSelectOne,
-  selectedContacts,
+  isRowChecked,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -79,12 +75,6 @@ export const PartnerGivingAnalysisReportTable: FC<
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
-
-  const isSelectedSome =
-    selectedContacts.length > 0 && selectedContacts.length < contacts.length;
-
-  const isSelectedAll = selectedContacts?.length === contacts.length;
-
   return (
     <StickyTableContainer>
       <StickyTable
@@ -123,17 +113,12 @@ export const PartnerGivingAnalysisReportTable: FC<
               label: t('Lifetime Total'),
             },
           ]}
-          isSelectedAll={isSelectedAll}
-          isSelectedSome={isSelectedSome}
           order={order}
           orderBy={orderBy}
           onRequestSort={onRequestSort}
-          onSelectAll={onSelectAll}
         />
         <TableBody>
           {contacts?.map((contact) => {
-            const isContactSelected = selectedContacts?.includes(contact.id);
-
             return (
               <TableRow
                 key={contact.id}
@@ -142,9 +127,9 @@ export const PartnerGivingAnalysisReportTable: FC<
               >
                 <TableCell padding="checkbox">
                   <Checkbox
-                    checked={isContactSelected}
-                    onChange={(event) => onSelectOne(event, contact.id)}
-                    value={isContactSelected}
+                    checked={isRowChecked(contact.id)}
+                    onChange={() => onSelectOne(contact.id)}
+                    value={contact.id}
                   />
                 </TableCell>
                 <TableCell>
@@ -152,34 +137,32 @@ export const PartnerGivingAnalysisReportTable: FC<
                     {contact.name}
                   </ContactName>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {formatCurrency(
                     contact.donationPeriodSum,
                     contact.pledgeCurrency,
                   )}
                 </TableCell>
-                <TableCell align="center">
-                  {contact.donationPeriodCount}
-                </TableCell>
-                <TableCell align="center">
+                <TableCell>{contact.donationPeriodCount}</TableCell>
+                <TableCell>
                   {formatCurrency(
                     contact.donationPeriodAverage,
                     contact.pledgeCurrency,
                   )}
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {formatCurrency(
                     contact.lastDonationAmount,
                     contact.lastDonationCurrency,
                   )}
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {dateFormatShort(
                     DateTime.fromISO(contact.lastDonationDate),
                     locale,
                   )}
                 </TableCell>
-                <TableCell align="center">
+                <TableCell>
                   {formatCurrency(
                     contact.totalDonations,
                     contact.pledgeCurrency,

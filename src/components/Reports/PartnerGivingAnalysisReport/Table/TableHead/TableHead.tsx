@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
-import { Checkbox, TableCell, TableHead, TableRow } from '@mui/material';
-// import { PartnerGivingAnalysisReportQuery } from '../../../GetPartnerGivingAnalysisReport.generated';
+import { TableCell, TableHead, TableRow } from '@mui/material';
 import type { Order } from '../../../Reports.type';
 import type { Contact } from '../../PartnerGivingAnalysisReport';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
@@ -11,29 +10,18 @@ export type Item = {
 };
 
 export interface PartnerGivingAnalysisReportTableHeadProps {
-  isSelectedAll: boolean;
-  isSelectedSome: boolean;
   items: Item[];
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof Contact,
   ) => void;
-  onSelectAll: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string | null;
 }
 
 export const PartnerGivingAnalysisReportTableHead: FC<
   PartnerGivingAnalysisReportTableHeadProps
-> = ({
-  isSelectedAll,
-  isSelectedSome,
-  items,
-  order,
-  orderBy,
-  onRequestSort,
-  onSelectAll,
-}) => {
+> = ({ items, order, orderBy, onRequestSort }) => {
   const createSortHandler =
     (property: keyof Contact) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
@@ -42,17 +30,11 @@ export const PartnerGivingAnalysisReportTableHead: FC<
   return (
     <TableHead data-testid="PartnerGivingAnalysisReportTableHead">
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            checked={isSelectedAll}
-            indeterminate={isSelectedSome}
-            onChange={onSelectAll}
-          />
-        </TableCell>
+        <TableCell padding="checkbox"></TableCell>
         {items.map((item) => (
           <TableHeadCell
             key={item.id}
-            align="center"
+            align="left"
             isActive={orderBy === item.id}
             sortDirection={orderBy === item.id ? order : false}
             direction={orderBy === item.id ? order : 'asc'}

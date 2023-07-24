@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { ContactFilterSetInput } from '../../graphql/types.generated';
+import {
+  ContactFilterSetInput,
+  ReportContactFilterSetInput,
+} from '../../graphql/types.generated';
 import { ListHeaderCheckBoxState } from '../components/Shared/Header/ListHeader';
 
 export const useMassSelection = (
   totalCount: number,
   idsList: string[],
-  activeFilters?: ContactFilterSetInput,
+  activeFilters?: ContactFilterSetInput | ReportContactFilterSetInput,
   wildcardSearch?: string,
   starredFilter?: ContactFilterSetInput,
 ): {

@@ -93,6 +93,7 @@ export const getPersonSchema = (
     occupation: yup.string().nullable(),
     legalFirstName: yup.string().nullable(),
     deceased: yup.boolean().default(false),
+    defaultAccountList: yup.string().nullable(),
   });
 
   const personPhoneNumbers = person?.phoneNumbers.nodes.map((phoneNumber) => {

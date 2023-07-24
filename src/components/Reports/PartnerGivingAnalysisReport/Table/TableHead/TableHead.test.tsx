@@ -6,7 +6,6 @@ import { PartnerGivingAnalysisReportTableHead, Item } from './TableHead';
 import theme from 'src/theme';
 
 const onRequestSort = jest.fn();
-const onSelectAll = jest.fn();
 
 const order = 'asc';
 const orderBy = 'giftTotal';
@@ -17,13 +16,10 @@ describe('PartnerGivingAnalysisReportTableHead', () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <PartnerGivingAnalysisReportTableHead
-          isSelectedAll={false}
-          isSelectedSome={false}
           items={items}
           order={order}
           orderBy={orderBy}
           onRequestSort={onRequestSort}
-          onSelectAll={onSelectAll}
         />
       </ThemeProvider>,
     );
@@ -37,13 +33,10 @@ describe('PartnerGivingAnalysisReportTableHead', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <PartnerGivingAnalysisReportTableHead
-          isSelectedAll={false}
-          isSelectedSome={false}
           items={items}
           order={order}
           orderBy={orderBy}
           onRequestSort={onRequestSort}
-          onSelectAll={onSelectAll}
         />
       </ThemeProvider>,
     );

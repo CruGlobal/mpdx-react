@@ -204,7 +204,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               onChange={toggleSelectAll}
             />
             <SearchBox
-              page="task"
+              showContactSearchIcon={false}
               onChange={setSearchTerm}
               placeholder={t('Search Tasks')}
             />

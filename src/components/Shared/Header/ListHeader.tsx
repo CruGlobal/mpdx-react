@@ -81,10 +81,11 @@ export enum ListHeaderCheckBoxState {
 export enum PageEnum {
   Contact = 'contact',
   Task = 'task',
+  Report = 'report',
 }
 
 interface ListHeaderProps {
-  page: 'contact' | 'task';
+  page: 'contact' | 'task' | 'report';
   activeFilters: boolean;
   headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
@@ -96,12 +97,13 @@ interface ListHeaderProps {
   searchTerm?: string | string[];
   totalItems?: number;
   buttonGroup?: ReactElement;
-  starredFilter: ContactFilterSetInput | TaskFilterSetInput;
-  toggleStarredFilter: (
+  starredFilter?: ContactFilterSetInput | TaskFilterSetInput;
+  toggleStarredFilter?: (
     filter: ContactFilterSetInput | TaskFilterSetInput,
   ) => void;
   selectedIds: string[];
   massDeselectAll?: () => void;
+  showShowingCount?: boolean;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -121,6 +123,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   contactsView,
   selectedIds,
   massDeselectAll,
+  showShowingCount = false,
 }) => {
   const { t } = useTranslation();
 
@@ -151,16 +154,16 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           )}
         </FilterButton>
         <SearchBox
-          page={page}
+          showContactSearchIcon={page === 'task' ? false : true}
           searchTerm={searchTerm}
           onChange={onSearchTermChanged}
           placeholder={
-            page === 'contact' ? t('Search Contacts') : t('Search Tasks')
+            page === 'task' ? t('Search Tasks') : t('Search Contacts')
           }
         />
         <Hidden smDown>
           <ItemsShowingText data-testid="showing-text">
-            {contactsView === TableViewModeEnum.List
+            {showShowingCount
               ? t('Showing {{count}}', { count: totalItems })
               : ''}
           </ItemsShowingText>
@@ -176,6 +179,17 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             selectedIds={selectedIds}
           />
         )}
+        {page === 'report' && (
+          <Box mr={2}>
+            <ContactsMassActionsDropdown
+              filterPanelOpen={filterPanelOpen}
+              contactDetailsOpen={contactDetailsOpen}
+              buttonGroup={buttonGroup}
+              contactsView={contactsView}
+              selectedIds={selectedIds}
+            />
+          </Box>
+        )}
         {page === 'task' && (
           <TasksMassActionsDropdown
             buttonGroup={buttonGroup}
@@ -189,13 +203,15 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           />
         )}
 
-        {/* This hidden doesn't remove from document */}
-        <Hidden smDown>
-          <StarFilterButton
-            starredFilter={starredFilter}
-            toggleStarredFilter={toggleStarredFilter}
-          />
-        </Hidden>
+        {starredFilter && toggleStarredFilter && (
+          // This hidden doesn't remove from document
+          <Hidden smDown>
+            <StarFilterButton
+              starredFilter={starredFilter}
+              toggleStarredFilter={toggleStarredFilter}
+            />
+          </Hidden>
+        )}
       </HeaderWrapInner>
     </HeaderWrap>
   );

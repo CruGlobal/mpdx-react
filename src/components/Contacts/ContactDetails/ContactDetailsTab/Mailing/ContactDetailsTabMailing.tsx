@@ -140,7 +140,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   }}
                 >
                   <Typography variant="subtitle1">
-                    {`${primaryAddress.city}, ${primaryAddress.state} ${primaryAddress.postalCode}`}
+                    {`${primaryAddress.city}, ${primaryAddress.state ?? ''} ${
+                      primaryAddress.postalCode
+                    }`}
                   </Typography>
                 </ContactAddressRowContainer>
                 <ContactAddressRowContainer>
@@ -188,6 +190,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                         ? 'line-through'
                         : 'none',
                     }}
+                    data-testid="NonPrimaryAddresses"
                   >
                     <ContactAddressRowContainer>
                       <Typography variant="subtitle1">
@@ -203,7 +206,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                       </AddressEditIconContainer>
                     </ContactAddressRowContainer>
                     <Typography variant="subtitle1">
-                      {`${address.city}, ${address.state} ${address.postalCode}`}
+                      {`${address.city}, ${address.state ?? ''} ${
+                        address.postalCode
+                      }`}
                     </Typography>
                     <Typography variant="subtitle1">
                       {address.country}

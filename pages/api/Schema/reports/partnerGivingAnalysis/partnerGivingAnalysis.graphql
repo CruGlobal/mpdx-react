@@ -60,6 +60,11 @@ enum ContactFilterPledgeReceivedEnum {
   RECEIVED
 }
 
+input ContactFilterNotesInput {
+  wildcardNoteSearch: String
+  wildcard_note_search: String
+}
+
 input ReportContactFilterSetInput {
   """
   Filter by Address No Longer Valid; Accepts values 'true', or 'false'
@@ -255,7 +260,7 @@ input ReportContactFilterSetInput {
   Filter contacts with note contents; accepts hash with wildcard_note_search
   parameter { "wildcard_note_search": "value to search by" }
   """
-  notes: String
+  notes: ContactFilterNotesInput
 
   """
   Filter where at least one contact person has opted out from email; Accepts values 'Yes', or 'No'

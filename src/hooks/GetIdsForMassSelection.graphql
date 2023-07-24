@@ -29,3 +29,13 @@ query GetTaskIdsForMassSelection(
     }
   }
 }
+
+query GetPartnerGivingAnalysisIdsForMassSelection(
+  $input: PartnerGivingAnalysisReportInput!
+) {
+  partnerGivingAnalysisReport(input: $input) {
+    contacts {
+      id
+    }
+  }
+}

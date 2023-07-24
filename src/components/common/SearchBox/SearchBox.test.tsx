@@ -11,7 +11,7 @@ it('starts without value', () => {
   const { getByRole } = render(
     <ThemeProvider theme={theme}>
       <SearchBox
-        page="contact"
+        showContactSearchIcon={true}
         placeholder={placeholderText}
         onChange={() => {}}
       />
@@ -32,7 +32,7 @@ it('triggers onChange', async () => {
   const { getByRole } = render(
     <ThemeProvider theme={theme}>
       <SearchBox
-        page="task"
+        showContactSearchIcon={false}
         placeholder={placeholderText}
         onChange={onChange}
       />
