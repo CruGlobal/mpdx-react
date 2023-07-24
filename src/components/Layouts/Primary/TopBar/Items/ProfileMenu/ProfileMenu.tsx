@@ -229,22 +229,20 @@ const ProfileMenu = (): ReactElement => {
         >
           <ListItemText primary={t('Preferences')} />
         </MenuItem>
-        {/* Keeping the original Preferences link because I'm not certain I've set the new one up properly */}
-        {/* <HandoffLink path="/preferences/personal">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Preferences')} />
-          </MenuItem>
-        </HandoffLink> */}
-        <HandoffLink path="/preferences/notifications">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Notifications')} />
-          </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/integrations">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Connect Services')} />
-          </MenuItem>
-        </HandoffLink>
+        <MenuItem
+          onClick={handleProfileMenuClose}
+          component="a"
+          href={`/accountLists/${accountListId}/settings/notifications`}
+        >
+          <ListItemText primary={t('Notifications')} />
+        </MenuItem>
+        <MenuItem
+          onClick={handleProfileMenuClose}
+          component="a"
+          href={`/accountLists/${accountListId}/settings/connectServices`}
+        >
+          <ListItemText primary={t('Connect Services')} />
+        </MenuItem>
         <HandoffLink path="/preferences/accounts">
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Manage Accounts')} />

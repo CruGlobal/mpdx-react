@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { OrganizationAddAccountModal } from './OrganizationAddAccountModal';
+import { useGetUsersOrganizationsQuery } from './Organizations.generated';
 
 interface OrganizationAccordianProps {
   handleAccordionChange: (panel: string) => void;
@@ -39,7 +40,10 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
 }) => {
   const { t } = useTranslation();
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+  const { data, loading } = useGetUsersOrganizationsQuery();
+  const organizations = data?.user.administrativeOrganizations.nodes;
 
+  // console.log('organizations', organizations);
   return (
     <AccordionItem
       onAccordionChange={handleAccordionChange}
@@ -61,56 +65,70 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
         MPDX account. Removing an organization will not remove past information,
         but will prevent future donations and contacts from syncing.
       </Typography>
-      <Card>
-        <Box
-          sx={{
-            p: 1,
-            pl: 2,
-            background: theme.palette.cruGrayLight.main,
-            justifyContent: 'space-between',
-            display: 'flex',
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <Typography fontWeight={700}>Organization 1</Typography>
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <StyledServicesButton
-              variant="contained"
-              size="small"
-              sx={{ m: 0 }}
-            >
-              Sync
-            </StyledServicesButton>
-            <OrganizationDeleteIconButton>
-              <DeleteIcon />
-            </OrganizationDeleteIconButton>
-          </Box>
+
+      {!loading && !organizations?.length && (
+        <Typography variant="h5" style={{ marginTop: '20px' }}>
+          Let&apos;s start by connecting to your first organization
+        </Typography>
+      )}
+
+      {!loading && !!organizations?.length && (
+        <Box>
+          {organizations.map((organization, idx) => (
+            <Card key={`organization-${idx}`}>
+              <Box
+                sx={{
+                  p: 1,
+                  pl: 2,
+                  background: theme.palette.cruGrayLight.main,
+                  justifyContent: 'space-between',
+                  display: 'flex',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography fontWeight={700}>Organization 1</Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <StyledServicesButton
+                    variant="contained"
+                    size="small"
+                    sx={{ m: 0 }}
+                  >
+                    Sync
+                  </StyledServicesButton>
+                  <OrganizationDeleteIconButton>
+                    <DeleteIcon />
+                  </OrganizationDeleteIconButton>
+                </Box>
+              </Box>
+              <Divider />
+              <Box sx={{ p: 2, display: 'flex' }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    Last Updated
+                  </Grid>
+                  <Grid item xs={6}>
+                    2023-07-13
+                  </Grid>
+                </Grid>
+              </Box>
+            </Card>
+          ))}
         </Box>
-        <Divider />
-        <Box sx={{ p: 2, display: 'flex' }}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              Last Updated
-            </Grid>
-            <Grid item xs={6}>
-              2023-07-13
-            </Grid>
-          </Grid>
-        </Box>
-      </Card>
+      )}
+
       <StyledServicesButton
-        variant="outlined"
+        variant={!!organizations?.length ? 'outlined' : 'contained'}
         onClick={() => setShowAddAccountModal(true)}
       >
         Add Account

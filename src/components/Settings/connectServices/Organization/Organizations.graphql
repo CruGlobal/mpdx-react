@@ -1,6 +1,20 @@
 query getOrganizations {
   organizations {
-    name
     id
+    name
+    apiClass
+    oauth
+    giftAidPercentage
+  }
+}
+
+query GetUsersOrganizations {
+  user {
+    administrativeOrganizations(first: 25) {
+      nodes {
+        name
+        id
+      }
+    }
   }
 }
