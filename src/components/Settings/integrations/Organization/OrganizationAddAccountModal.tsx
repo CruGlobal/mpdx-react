@@ -26,6 +26,7 @@ import {
   getOrganizationType,
   OrganizationTypesEnum,
 } from './OrganizationAccordian';
+import { oAuth } from './OrganizationService';
 
 interface OrganizationAddAccountModalProps {
   handleClose: () => void;
@@ -51,13 +52,27 @@ export const OrganizationAddAccountModal: React.FC<
   OrganizationAddAccountModalProps
 > = ({ handleClose }) => {
   const { t } = useTranslation();
-  const [showWarning, setShowWarning] = useState<OrganizationTypesEnum>();
+  const [organizationType, setOrganizationType] =
+    useState<OrganizationTypesEnum>();
   const { data: organizations, loading } = useGetOrganizationsQuery();
 
-  const onSubmit = (attributes) => {
-    // TODO
-    return attributes;
+  const onSubmit = async (attributes) => {
+    const { apiClass, oauth, id } = attributes.selectedOrganization;
+    const type = getOrganizationType(apiClass, oauth);
+
+    if (type === OrganizationTypesEnum.OAUTH) {
+      window.location.href = await oAuth(id);
+      return;
+    }
+    if (type === OrganizationTypesEnum.LOGIN) {
+      // TODO - Add GraphQl to Update account by Mutating organization
+      return;
+    }
+
+    // TODO - Add GraphQl to creating an account by Mutating organization
+
     handleClose();
+    return;
   };
 
   const showOrganizationHelp = () => {
@@ -85,7 +100,7 @@ export const OrganizationAddAccountModal: React.FC<
       .string()
       .when('selectedOrganization', (organization, schema) => {
         if (
-          getOrganizationType(organization.apiClass, organization.oauth) ===
+          getOrganizationType(organization?.apiClass, organization?.oauth) ===
           OrganizationTypesEnum.LOGIN
         ) {
           return schema.required('Must enter username');
@@ -96,7 +111,7 @@ export const OrganizationAddAccountModal: React.FC<
       .string()
       .when('selectedOrganization', (organization, schema) => {
         if (
-          getOrganizationType(organization.apiClass, organization.oauth) ===
+          getOrganizationType(organization?.apiClass, organization?.oauth) ===
           OrganizationTypesEnum.LOGIN
         ) {
           return schema.required('Must enter password');
@@ -138,7 +153,7 @@ export const OrganizationAddAccountModal: React.FC<
                 loading={loading}
                 value={selectedOrganization}
                 onChange={(_, value) => {
-                  setShowWarning(
+                  setOrganizationType(
                     getOrganizationType(value?.apiClass, value?.oauth),
                   );
                   setFieldValue('selectedOrganization', value);
@@ -171,7 +186,7 @@ export const OrganizationAddAccountModal: React.FC<
               </Button>
             )}
 
-            {showWarning === OrganizationTypesEnum.MINISTRY && (
+            {organizationType === OrganizationTypesEnum.MINISTRY && (
               <WarningBox>
                 <Typography
                   variant="h6"
@@ -226,7 +241,7 @@ export const OrganizationAddAccountModal: React.FC<
               </WarningBox>
             )}
 
-            {showWarning === OrganizationTypesEnum.OAUTH && (
+            {organizationType === OrganizationTypesEnum.OAUTH && (
               <WarningBox>
                 <Typography color={theme.palette.mpdxYellow.contrastText}>
                   {t(
@@ -236,7 +251,7 @@ export const OrganizationAddAccountModal: React.FC<
               </WarningBox>
             )}
 
-            {showWarning === OrganizationTypesEnum.LOGIN && (
+            {organizationType === OrganizationTypesEnum.LOGIN && (
               <>
                 <StyledBox marginTop={4}>
                   <FieldWrapper>
@@ -271,7 +286,10 @@ export const OrganizationAddAccountModal: React.FC<
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
               <SubmitButton disabled={!isValid || isSubmitting}>
-                {t('Add Account')}
+                {organizationType !== OrganizationTypesEnum.OAUTH &&
+                  t('Add Account')}
+                {organizationType === OrganizationTypesEnum.OAUTH &&
+                  t('Connect')}
               </SubmitButton>
             </DialogActions>
           </form>

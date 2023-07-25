@@ -51,6 +51,7 @@ module.exports = withPlugins([
       REST_API_URL:
         process.env.REST_API_URL ?? 'https://api.stage.mpdx.org/api/v2/',
       SITE_URL: siteUrl,
+      OAUTH_URL: process.env.OAUTH_URL ?? 'https://auth.stage.mpdx.org',
       CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
       BEACON_TOKEN: process.env.BEACON_TOKEN,

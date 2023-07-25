@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 import { Button, Typography, List, ListItemText, Alert } from '@mui/material';
 import { StyledFormLabel } from '../../../../src/components/Shared/Forms/Field';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { TheKeyAccordian } from 'src/components/Settings/integrations/TheKeyAccordian';
+import { TheKeyAccordian } from 'src/components/Settings/integrations/Key/TheKeyAccordian';
 import { OrganizationAccordian } from 'src/components/Settings/integrations/Organization/OrganizationAccordian';
 
 const StyledListItem = styled(ListItemText)(() => ({
@@ -55,7 +55,7 @@ const Integrations: React.FC = () => {
       pageTitle={t('Connect Services')}
       pageHeading={t('Connect Services')}
     >
-      <AccordionGroup title={t('')}>
+      <AccordionGroup title="">
         <TheKeyAccordian
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}

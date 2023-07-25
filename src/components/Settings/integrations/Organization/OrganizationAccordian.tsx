@@ -19,6 +19,7 @@ import { OrganizationAddAccountModal } from './OrganizationAddAccountModal';
 import { OrganizationImportDataSyncModal } from './OrganizationImportDataSyncModal';
 import { useGetUsersOrganizationsQuery } from './Organizations.generated';
 import { Organization } from '../../../../../graphql/types.generated';
+import { oAuth, sync } from './OrganizationService';
 
 interface OrganizationAccordianProps {
   handleAccordionChange: (panel: string) => void;
@@ -80,12 +81,36 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
   const [selectedOrganization, setSelectedOrganization] =
     useState<Omit<Organization, 'createdAt' | 'updatedAt'>>();
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
-  const [showSyncAccountModal, setShowSyncAccountModal] = useState(false);
   const [showImportDataSyncModal, setShowImportDataSyncModal] = useState(false);
-  const [showReconnectModal, setShowReconnectModal] = useState(false);
 
   const { data, loading } = useGetUsersOrganizationsQuery();
   const organizations = data?.userOrganizationAccounts;
+
+  const handleReconnect = async (organizationId) => {
+    // TODO
+    await oAuth(organizationId);
+  };
+
+  const handleSync = async (
+    organization: Omit<Organization, 'createdAt' | 'updatedAt'>,
+  ) => {
+    // TODO
+    await sync();
+    return organization;
+  };
+
+  const handleEdit = async (
+    organization: Omit<Organization, 'createdAt' | 'updatedAt'>,
+  ) => {
+    // TODO
+    return organization;
+  };
+  const handleDelete = async (
+    organization: Omit<Organization, 'createdAt' | 'updatedAt'>,
+  ) => {
+    // TODO
+    return organization;
+  };
 
   return (
     <AccordionItem
@@ -158,7 +183,7 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
                           sx={{ m: '0 0 0 10px' }}
                           onClick={() => {
                             setSelectedOrganization(organization);
-                            setShowSyncAccountModal(true);
+                            handleSync(organization);
                           }}
                         >
                           Sync
@@ -184,20 +209,21 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
                           variant="contained"
                           size="small"
                           sx={{ m: '0 0 0 10px' }}
-                          onClick={() => {
-                            setSelectedOrganization(organization);
-                            setShowReconnectModal(true);
-                          }}
+                          onClick={() => handleReconnect(organization.id)}
                         >
                           Reconnect
                         </StyledServicesButton>
                       )}
                       {type === OrganizationTypesEnum.LOGIN && (
-                        <OrganizationDeleteIconButton>
+                        <OrganizationDeleteIconButton
+                          onClick={() => handleEdit(organization)}
+                        >
                           <Edit />
                         </OrganizationDeleteIconButton>
                       )}
-                      <OrganizationDeleteIconButton>
+                      <OrganizationDeleteIconButton
+                        onClick={() => handleDelete(organization)}
+                      >
                         <DeleteIcon />
                       </OrganizationDeleteIconButton>
                     </Box>
@@ -246,20 +272,10 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
           handleClose={() => setShowAddAccountModal(false)}
         />
       )}
-      {showSyncAccountModal && (
-        <OrganizationAddAccountModal
-          handleClose={() => setShowSyncAccountModal(false)}
-        />
-      )}
       {showImportDataSyncModal && (
         <OrganizationImportDataSyncModal
           handleClose={() => setShowImportDataSyncModal(false)}
           organization={selectedOrganization}
-        />
-      )}
-      {showReconnectModal && (
-        <OrganizationAddAccountModal
-          handleClose={() => setShowSyncAccountModal(false)}
         />
       )}
     </AccordionItem>

@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
+import { Box, TextField } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledOutlinedInput } from 'src/components/Shared/Forms/Field';
+import { useGetKeyAccountsQuery } from './Key.generated';
 
 interface TheKeyAccordianProps {
   handleAccordionChange: (panel: string) => void;
@@ -14,11 +15,8 @@ export const TheKeyAccordian: React.FC<TheKeyAccordianProps> = ({
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-
-  const handleSubmit = () => {
-    return;
-  };
-
+  const { data, loading } = useGetKeyAccountsQuery();
+  const keyAccounts = data?.user?.keyAccounts;
   return (
     <AccordionItem
       onAccordionChange={handleAccordionChange}
@@ -32,11 +30,19 @@ export const TheKeyAccordian: React.FC<TheKeyAccordianProps> = ({
         />
       }
     >
-      <FormWrapper onSubmit={handleSubmit} isValid={true} isSubmitting={false}>
-        <FieldWrapper labelText={t('Email Address')} helperText={''}>
-          <StyledOutlinedInput />
-        </FieldWrapper>
-      </FormWrapper>
+      {loading && <Skeleton height="90px" />}
+      {!loading &&
+        keyAccounts?.map((account, idx) => (
+          <Box style={{ marginTop: '20px' }} key={`email-${idx}`}>
+            <FieldWrapper>
+              <TextField
+                label={t('Email Address')}
+                value={account.email}
+                disabled={true}
+              />
+            </FieldWrapper>
+          </Box>
+        ))}
     </AccordionItem>
   );
 };
