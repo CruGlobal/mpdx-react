@@ -22,6 +22,10 @@ import { useGetOrganizationsQuery } from './Organizations.generated';
 import { showArticle, variables } from 'src/lib/helpScout';
 import { Organization } from '../../../../../graphql/types.generated';
 import theme from 'src/theme';
+import {
+  getOrganizationType,
+  OrganizationTypesEnum,
+} from './OrganizationAccordian';
 
 interface OrganizationAddAccountModalProps {
   handleClose: () => void;
@@ -43,48 +47,17 @@ const StyledTypography = styled(Typography)(() => ({
   color: theme.palette.mpdxYellow.dark,
 }));
 
-enum warningEnum {
-  MINISTRY = 'ministry',
-  LOGIN = 'login',
-  OAUTH = 'oauth',
-}
-
 export const OrganizationAddAccountModal: React.FC<
   OrganizationAddAccountModalProps
 > = ({ handleClose }) => {
   const { t } = useTranslation();
-  const [showWarning, setShowWarning] = useState<warningEnum>();
+  const [showWarning, setShowWarning] = useState<OrganizationTypesEnum>();
   const { data: organizations, loading } = useGetOrganizationsQuery();
 
   const onSubmit = (attributes) => {
+    // TODO
     return attributes;
     handleClose();
-  };
-
-  const handleOrganizationChange = (apiClass, oauth) => {
-    const ministryAccount = [
-      'Siebel',
-      'Remote::Import::OrganizationAccountService',
-    ];
-    const loginRequired = [
-      'DataServer',
-      'DataServerPtc',
-      'DataServerNavigators',
-      'DataServerStumo',
-    ];
-
-    if (apiClass) {
-      let warning: warningEnum | undefined = undefined;
-      if (ministryAccount.indexOf(apiClass) !== -1) {
-        warning = warningEnum.MINISTRY;
-      } else if (loginRequired.indexOf(apiClass) !== -1 && !oauth) {
-        warning = warningEnum.LOGIN;
-      } else if (oauth) {
-        warning = warningEnum.OAUTH;
-      }
-      setShowWarning(warning);
-      return warning;
-    }
   };
 
   const showOrganizationHelp = () => {
@@ -112,10 +85,8 @@ export const OrganizationAddAccountModal: React.FC<
       .string()
       .when('selectedOrganization', (organization, schema) => {
         if (
-          handleOrganizationChange(
-            organization.apiClass,
-            organization.oauth,
-          ) === warningEnum.LOGIN
+          getOrganizationType(organization.apiClass, organization.oauth) ===
+          OrganizationTypesEnum.LOGIN
         ) {
           return schema.required('Must enter username');
         }
@@ -125,10 +96,8 @@ export const OrganizationAddAccountModal: React.FC<
       .string()
       .when('selectedOrganization', (organization, schema) => {
         if (
-          handleOrganizationChange(
-            organization.apiClass,
-            organization.oauth,
-          ) === warningEnum.LOGIN
+          getOrganizationType(organization.apiClass, organization.oauth) ===
+          OrganizationTypesEnum.LOGIN
         ) {
           return schema.required('Must enter password');
         }
@@ -169,7 +138,9 @@ export const OrganizationAddAccountModal: React.FC<
                 loading={loading}
                 value={selectedOrganization}
                 onChange={(_, value) => {
-                  handleOrganizationChange(value?.apiClass, value?.oauth);
+                  setShowWarning(
+                    getOrganizationType(value?.apiClass, value?.oauth),
+                  );
                   setFieldValue('selectedOrganization', value);
                 }}
                 options={
@@ -200,7 +171,7 @@ export const OrganizationAddAccountModal: React.FC<
               </Button>
             )}
 
-            {showWarning === warningEnum.MINISTRY && (
+            {showWarning === OrganizationTypesEnum.MINISTRY && (
               <WarningBox>
                 <Typography
                   variant="h6"
@@ -255,7 +226,7 @@ export const OrganizationAddAccountModal: React.FC<
               </WarningBox>
             )}
 
-            {showWarning === warningEnum.OAUTH && (
+            {showWarning === OrganizationTypesEnum.OAUTH && (
               <WarningBox>
                 <Typography color={theme.palette.mpdxYellow.contrastText}>
                   {t(
@@ -265,7 +236,7 @@ export const OrganizationAddAccountModal: React.FC<
               </WarningBox>
             )}
 
-            {showWarning === warningEnum.LOGIN && (
+            {showWarning === OrganizationTypesEnum.LOGIN && (
               <>
                 <StyledBox marginTop={4}>
                   <FieldWrapper>

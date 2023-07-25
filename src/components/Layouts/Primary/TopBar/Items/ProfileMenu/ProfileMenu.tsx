@@ -130,6 +130,15 @@ const ProfileMenu = (): ReactElement => {
     ? !!(accountListId && data.accountLists.nodes.length > 1)
     : false;
 
+  let accountListIdFallback = accountListId;
+  if (!accountListIdFallback) {
+    if (data?.accountLists?.nodes.length === 1) {
+      accountListIdFallback = data.accountLists.nodes[0]?.id;
+    } else if (data?.user.defaultAccountList) {
+      accountListIdFallback = data.user.defaultAccountList;
+    }
+  }
+
   return (
     <>
       <ProfileName
@@ -225,21 +234,21 @@ const ProfileMenu = (): ReactElement => {
         <MenuItem
           onClick={handleProfileMenuClose}
           component="a"
-          href={`/accountLists/${accountListId}/settings/preferences`}
+          href={`/accountLists/${accountListIdFallback}/settings/preferences`}
         >
           <ListItemText primary={t('Preferences')} />
         </MenuItem>
         <MenuItem
           onClick={handleProfileMenuClose}
           component="a"
-          href={`/accountLists/${accountListId}/settings/notifications`}
+          href={`/accountLists/${accountListIdFallback}/settings/notifications`}
         >
           <ListItemText primary={t('Notifications')} />
         </MenuItem>
         <MenuItem
           onClick={handleProfileMenuClose}
           component="a"
-          href={`/accountLists/${accountListId}/settings/connectServices`}
+          href={`/accountLists/${accountListIdFallback}/settings/integrations`}
         >
           <ListItemText primary={t('Connect Services')} />
         </MenuItem>

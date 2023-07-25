@@ -9,12 +9,15 @@ query getOrganizations {
 }
 
 query GetUsersOrganizations {
-  user {
-    administrativeOrganizations(first: 25) {
-      nodes {
-        name
-        id
-      }
+  userOrganizationAccounts {
+    organization {
+      apiClass
+      id
+      name
+      oauth
     }
+    latestDonationDate
+    lastDownloadedAt
+    username
   }
 }

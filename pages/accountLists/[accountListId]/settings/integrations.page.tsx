@@ -9,8 +9,8 @@ import { styled } from '@mui/material/styles';
 import { Button, Typography, List, ListItemText, Alert } from '@mui/material';
 import { StyledFormLabel } from '../../../../src/components/Shared/Forms/Field';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { TheKeyAccordian } from 'src/components/Settings/connectServices/TheKeyAccordian';
-import { OrganizationAccordian } from 'src/components/Settings/connectServices/Organization/OrganizationAccordian';
+import { TheKeyAccordian } from 'src/components/Settings/integrations/TheKeyAccordian';
+import { OrganizationAccordian } from 'src/components/Settings/integrations/Organization/OrganizationAccordian';
 
 const StyledListItem = styled(ListItemText)(() => ({
   display: 'list-item',
@@ -25,11 +25,9 @@ const StyledServicesButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),
 }));
 
-const ConnectServices: React.FC = () => {
+const Integrations: React.FC = () => {
   const { t } = useTranslation();
   const [expandedPanel, setExpandedPanel] = useState('');
-  // const [isValid, setIsValid] = useState(false);
-  // const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [confirmingChalkLine, setConfirmingChalkLine] = useState(false);
 
@@ -217,4 +215,4 @@ const ConnectServices: React.FC = () => {
   );
 };
 
-export default ConnectServices;
+export default Integrations;
