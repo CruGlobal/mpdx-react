@@ -209,10 +209,15 @@ const ContactFlowSetupPage: React.FC = () => {
                 style={{ overflowX: 'auto' }}
                 gridAutoColumns="300px"
               >
-                {flowOptions.map((column, index) => (
-                  <Box width={'100%'} minWidth={300} p={2} key={index}>
+                {flowOptions.map((column, idx) => (
+                  <Box
+                    width={'100%'}
+                    minWidth={300}
+                    p={2}
+                    key={`flow-column-${column.id ?? idx}`}
+                  >
                     <ContactFlowSetupColumn
-                      index={index}
+                      index={idx}
                       loading={loading}
                       accountListId={accountListId}
                       title={column.name}
