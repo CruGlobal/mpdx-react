@@ -8,7 +8,6 @@ import {
   MenuItem,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,15 +35,14 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
   handleClose,
 }) => {
   const { t } = useTranslation();
-  const { data: sessionData } = useSession();
-  const token = sessionData?.user?.apiToken ?? '';
   const { enqueueSnackbar } = useSnackbar();
 
   const onSubmit = async ({ template, sort }) => {
     try {
-      await exportRest(accountListId, ids, token, 'pdf', true, template, sort);
+      await exportRest(accountListId, ids, 'pdf', true, template, sort);
     } catch (err) {
-      enqueueSnackbar(JSON.stringify(err), {
+      const error = (err as Error)?.message ?? JSON.stringify(err);
+      enqueueSnackbar(error, {
         variant: 'error',
       });
     }
