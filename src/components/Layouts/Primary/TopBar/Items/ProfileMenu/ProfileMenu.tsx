@@ -139,7 +139,7 @@ const ProfileMenu = (): ReactElement => {
         if (res.status === 'failed')
           throw new Error('Failed to stop impersonating');
 
-        enqueueSnackbar(t('Redirecting you to old UI'), {
+        enqueueSnackbar(t('Redirecting you to the legacy MPDX"'), {
           variant: 'success',
         });
         const url = new URL(
