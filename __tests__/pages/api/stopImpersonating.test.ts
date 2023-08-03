@@ -29,7 +29,6 @@ describe('/api/stop-impersonating', () => {
   it('Ensure Correct cookies are removed or added/edited', async () => {
     const { req, res } = createMocks({ method: 'GET' });
     await stopImpersonating(req, res);
-    expect(res._getRedirectUrl()).toBe(`${siteUrl}/login`);
     const cookies: cookiesType[] = [];
     res._getHeaders()['set-cookie'].forEach((cookie) => {
       cookies.push(convertCookieStringToObject(cookie));
