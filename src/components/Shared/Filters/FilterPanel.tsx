@@ -17,8 +17,10 @@ import {
 import { useTheme, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Close from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { filter } from 'lodash';
+import { useSnackbar } from 'notistack';
 import {
   ActivityTypeEnum,
   ContactFilterNewsletterEnum,
@@ -41,6 +43,11 @@ import { FilterListItem } from './FilterListItem';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { useDeleteUserOptionMutation } from './DeleteSavedFilter.generated';
+import {
+  GetUserOptionsDocument,
+  GetUserOptionsQuery,
+} from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
@@ -174,6 +181,8 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [deleteUserOption] = useDeleteUserOptionMutation();
+  const { enqueueSnackbar } = useSnackbar();
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
       let filterValue = value;
@@ -684,6 +693,38 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     }
   };
 
+  const deleteSavedFilter = async (filter: UserOptionFragment) => {
+    await deleteUserOption({
+      variables: {
+        input: {
+          id: filter.id,
+        },
+      },
+      update: (cache) => {
+        const query = {
+          query: GetUserOptionsDocument,
+        };
+        const dataFromCache = cache.readQuery<GetUserOptionsQuery>(query);
+        if (dataFromCache) {
+          const filteredOutDeleted = dataFromCache.userOptions.filter(
+            (option) => option.id !== filter.id,
+          );
+
+          cache.writeQuery({
+            ...query,
+            data: {
+              userOptions: filteredOutDeleted,
+            },
+          });
+        }
+
+        enqueueSnackbar(t('Saved Filter Deleted!'), {
+          variant: 'success',
+        });
+      },
+    });
+  };
+
   const tagsFilters =
     (
       filters.find((filter) => filter?.filters[0]?.filterKey === 'tags')
@@ -769,9 +810,19 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                               <ListItem
                                 key={filter.id}
                                 button
-                                onClick={() => setSelectedSavedFilter(filter)}
+                                secondaryAction={
+                                  <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    data-testid="deleteSavedFilter"
+                                    onClick={() => deleteSavedFilter(filter)}
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                }
                               >
                                 <ListItemText
+                                  onClick={() => setSelectedSavedFilter(filter)}
                                   primary={filterName}
                                   primaryTypographyProps={{
                                     variant: 'subtitle1',

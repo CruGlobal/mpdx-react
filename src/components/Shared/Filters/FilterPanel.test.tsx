@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { render, waitFor, within } from '@testing-library/react';
+import { render, waitFor, within, act } from '@testing-library/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -558,6 +558,54 @@ describe('FilterPanel', () => {
         wildcardSearch: '',
       });
       expect(getByText('Filter')).toBeVisible();
+    });
+
+    it('deletes saved filter', async () => {
+      const mutationSpy = jest.fn();
+
+      const { getByText, getByTestId, queryByTestId, queryAllByTestId } =
+        render(
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <FilterPanel
+                  filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                  savedFilters={[savedFiltersMockThree]}
+                  selectedFilters={{}}
+                  onClose={onClose}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>,
+        );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+
+      expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+      userEvent.click(getByText('Saved Filters'));
+      expect(getByText('My Cool Filter')).toBeVisible();
+
+      await act(async () => {
+        expect(getByTestId('deleteSavedFilter')).toBeVisible();
+        userEvent.click(getByTestId('deleteSavedFilter'));
+        await waitFor(() => {
+          expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
+            operationName: 'DeleteUserOption',
+            variables: {
+              input: {
+                id: '123',
+              },
+            },
+          });
+        });
+        await waitFor(() =>
+          expect(mockEnqueue).toHaveBeenCalledWith('Saved Filter Deleted!', {
+            variant: 'success',
+          }),
+        );
+      });
     });
 
     it('closes panel', async () => {
