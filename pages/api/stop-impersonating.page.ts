@@ -17,9 +17,13 @@ const mpdxWebHandoff = async (
       `mpdx-handoff.redirect-url=${redirectUrl}; ${cookieDefaultInfo}`,
       `mpdx-handoff.token=${jwtToken?.impersonatorApiToken}; ${cookieDefaultInfo}`,
     ]);
-    res.redirect(`${process.env.SITE_URL}/login`);
+    res.status(200).send({
+      status: 'success',
+    });
   } catch (err) {
-    res.redirect(redirectUrl);
+    res.status(201).send({
+      status: 'failed',
+    });
   }
 };
 
