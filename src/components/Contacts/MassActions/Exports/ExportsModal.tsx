@@ -1,5 +1,4 @@
 import { Button, Grid, Typography, Box, CircularProgress } from '@mui/material';
-import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,8 +38,6 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
   openMailMergedLabelModal,
 }) => {
   const { t } = useTranslation();
-  const { data: sessionData } = useSession();
-  const token = sessionData?.user?.apiToken ?? '';
   const { enqueueSnackbar } = useSnackbar();
   const [exporting, setExporting] = useState<
     'mail_merge' | 'advanced_csv' | 'advanced_xlsx' | null
@@ -53,9 +50,10 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
       } else {
         setExporting('advanced_xlsx');
       }
-      await exportRest(accountListId, ids, token, fileType, mailing);
+      await exportRest(accountListId, ids, fileType, mailing);
     } catch (err) {
-      enqueueSnackbar(JSON.stringify(err), {
+      const error = (err as Error)?.message ?? JSON.stringify(err);
+      enqueueSnackbar(error, {
         variant: 'error',
       });
     } finally {
