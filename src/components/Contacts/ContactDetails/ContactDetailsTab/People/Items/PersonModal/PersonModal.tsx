@@ -48,6 +48,10 @@ import {
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { uploadAvatar, validateAvatar } from './uploadAvatar';
+import {
+  GetContactDetailsHeaderDocument,
+  GetContactDetailsHeaderQuery,
+} from '../../../../ContactDetailsHeader/ContactDetailsHeader.generated';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -439,31 +443,42 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         client.refetchQueries({ include: ['GetContactDetailsHeader'] });
       }
 
-      // If Deceased remove from Greeting and envolope
+      // Update contact's name and greetings if person deceased
       if (
         fields.deceased &&
         !person?.deceased &&
         contactData &&
         fields.firstName
       ) {
-        const { greeting, envelopeGreeting } = contactData;
+        const { greeting, envelopeGreeting, name } = contactData;
         if (greeting && envelopeGreeting) {
-          const removeNameFromGreetings = (greeting) => {
-            let newGreeting = greeting.replace(fields.firstName, '');
+          const removeNameFromGreetings = (
+            greeting,
+            startsWithRegex: RegExp | null = null,
+            startsWithReplace: string | null = null,
+          ) => {
+            let newGreeting = greeting;
+            const nameWithAnd = new RegExp(` and ${fields.firstName}`);
+            if (nameWithAnd.test(greeting)) {
+              newGreeting = newGreeting.replace(nameWithAnd, '');
+            } else {
+              newGreeting = newGreeting.replace(fields.firstName, '');
+            }
             const endsWith = / and $/;
-            const startsWith = /^ and /;
+            const startsWith = startsWithRegex ?? /^ and /;
             const hasDoubleAnd = / and  and /;
-            if (endsWith.test(newGreeting))
-              newGreeting = newGreeting.replace(endsWith, '');
-            if (startsWith.test(newGreeting))
-              newGreeting = newGreeting.replace(startsWith, '');
-            if (hasDoubleAnd.test(newGreeting))
-              newGreeting = newGreeting.replace(hasDoubleAnd, ' and ');
+            newGreeting = newGreeting.replace(endsWith, '');
+            newGreeting = newGreeting.replace(
+              startsWith,
+              startsWithReplace ?? '',
+            );
+            newGreeting = newGreeting.replace(hasDoubleAnd, ' and ');
             return newGreeting;
           };
 
           const newGreeting = removeNameFromGreetings(greeting);
           const newEnvelopeGreeting = removeNameFromGreetings(envelopeGreeting);
+          const newName = removeNameFromGreetings(name, /,\s{1,}and /, ', ');
 
           await editMailingInfo({
             variables: {
@@ -472,13 +487,35 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                 id: contactId,
                 greeting: newGreeting,
                 envelopeGreeting: newEnvelopeGreeting,
+                name: newName,
               },
+            },
+            update: (cache) => {
+              const query = {
+                query: GetContactDetailsHeaderDocument,
+                variables: { accountListId, contactId },
+              };
+              const dataFromCache =
+                cache.readQuery<GetContactDetailsHeaderQuery>(query);
+              if (dataFromCache) {
+                const data = {
+                  ...dataFromCache,
+                  contact: {
+                    ...dataFromCache.contact,
+                    name: newName,
+                  },
+                };
+                cache.writeQuery({ ...query, data });
+              }
             },
           });
 
-          enqueueSnackbar(t("Updated contact's Greeting information"), {
-            variant: 'success',
-          });
+          enqueueSnackbar(
+            t("Updated contact's name and greeting information"),
+            {
+              variant: 'success',
+            },
+          );
         }
       }
 
