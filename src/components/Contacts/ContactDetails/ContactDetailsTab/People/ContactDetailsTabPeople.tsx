@@ -269,6 +269,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             contactId={id}
             accountListId={accountListId}
             handleClose={() => setEditPersonModalOpen(undefined)}
+            contactData={data}
           />
         ) : null}
       </ContactPersonContainer>
@@ -334,6 +335,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
           contactId={id}
           accountListId={accountListId}
           handleClose={() => setCreatePersonModalOpen(false)}
+          contactData={data}
         />
       ) : null}
       {mergePeopleModalOpen ? (

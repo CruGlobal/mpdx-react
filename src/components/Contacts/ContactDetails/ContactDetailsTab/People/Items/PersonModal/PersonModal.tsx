@@ -20,6 +20,7 @@ import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../../ContactDetailsTab.generated';
+import { ContactPeopleFragment } from '../../ContactPeople.generated';
 import Modal from '../../../../../../common/Modal/Modal';
 import {
   PersonCreateInput,
@@ -36,6 +37,7 @@ import {
   useDeletePersonMutation,
   useUpdatePersonMutation,
 } from './PersonModal.generated';
+import { useEditMailingInfoMutation } from '../../../Mailing/EditMailingInfoModal/EditMailingInfoModal.generated';
 import {
   ContactDetailContext,
   ContactDetailsType,
@@ -94,6 +96,7 @@ interface PersonModalProps {
   contactId: string;
   accountListId: string;
   handleClose: () => void;
+  contactData?: ContactPeopleFragment;
 }
 
 export interface NewSocial {
@@ -109,6 +112,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   contactId,
   accountListId,
   handleClose,
+  contactData,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -150,6 +154,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [updatePerson] = useUpdatePersonMutation();
   const [createPerson] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
+  const [editMailingInfo] = useEditMailingInfoMutation();
 
   const personSchema: yup.SchemaOf<
     Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
@@ -432,6 +437,49 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       if (file) {
         // Update the contact's avatar since it is based on the primary person's avatar
         client.refetchQueries({ include: ['GetContactDetailsHeader'] });
+      }
+
+      // If Deceased remove from Greeting and envolope
+      if (
+        fields.deceased &&
+        !person?.deceased &&
+        contactData &&
+        fields.firstName
+      ) {
+        const { greeting, envelopeGreeting } = contactData;
+        if (greeting && envelopeGreeting) {
+          const removeNameFromGreetings = (greeting) => {
+            let newGreeting = greeting.replace(fields.firstName, '');
+            const endsWith = / and $/;
+            const startsWith = /^ and /;
+            const hasDoubleAnd = / and  and /;
+            if (endsWith.test(newGreeting))
+              newGreeting = newGreeting.replace(endsWith, '');
+            if (startsWith.test(newGreeting))
+              newGreeting = newGreeting.replace(startsWith, '');
+            if (hasDoubleAnd.test(newGreeting))
+              newGreeting = newGreeting.replace(hasDoubleAnd, ' and ');
+            return newGreeting;
+          };
+
+          const newGreeting = removeNameFromGreetings(greeting);
+          const newEnvelopeGreeting = removeNameFromGreetings(envelopeGreeting);
+
+          await editMailingInfo({
+            variables: {
+              accountListId,
+              attributes: {
+                id: contactId,
+                greeting: newGreeting,
+                envelopeGreeting: newEnvelopeGreeting,
+              },
+            },
+          });
+
+          enqueueSnackbar(t("Updated contact's Greeting information"), {
+            variant: 'success',
+          });
+        }
       }
 
       enqueueSnackbar(t('Person updated successfully'), {
