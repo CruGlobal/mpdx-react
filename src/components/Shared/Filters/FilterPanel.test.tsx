@@ -560,6 +560,43 @@ describe('FilterPanel', () => {
       expect(getByText('Filter')).toBeVisible();
     });
 
+    it('deletes saved filter', async () => {
+      const mutationSpy = jest.fn();
+
+      const { getByText, getByTestId, queryByTestId, queryAllByTestId } =
+        render(
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <FilterPanel
+                  filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                  savedFilters={[savedFiltersMockThree]}
+                  selectedFilters={{}}
+                  onClose={onClose}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>,
+        );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+
+      expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+      userEvent.click(getByText('Saved Filters'));
+      expect(getByText('My Cool Filter')).toBeVisible();
+
+      expect(getByTestId('deleteSavedFilter')).toBeVisible();
+      userEvent.click(getByTestId('deleteSavedFilter'));
+
+      await waitFor(() =>
+        expect(getByText('Delete Saved filter')).toBeVisible(),
+      );
+      userEvent.click(getByText('No'));
+      expect(getByText('Delete Saved filter')).not.toBeVisible();
+    });
+
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
         <GqlMockedProvider>

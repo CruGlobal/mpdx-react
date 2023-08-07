@@ -1,0 +1,5 @@
+mutation DeleteUserOption($input: UserOptionDeleteMutationInput!) {
+  deleteUserOption(input: $input) {
+    id
+  }
+}
