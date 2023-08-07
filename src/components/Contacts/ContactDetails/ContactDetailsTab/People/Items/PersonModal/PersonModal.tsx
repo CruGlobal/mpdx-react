@@ -494,15 +494,17 @@ export const PersonModal: React.FC<PersonModalProps> = ({
             name: newName,
           };
 
+          const newPrimaryContact =
+            contactData.primaryPerson?.id === person?.id
+              ? contactData.people.nodes.find(
+                  (people) => people.id !== person?.id && !people.deceased,
+                )
+              : undefined;
           if (
             contactData.primaryPerson?.id === person?.id &&
-            contactData.people.nodes.find(
-              (people) => people.id !== person?.id && !people.deceased,
-            )?.id
+            newPrimaryContact?.id
           ) {
-            attributes.primaryPersonId = contactData.people.nodes.find(
-              (people) => people.id !== person?.id,
-            )?.id;
+            attributes.primaryPersonId = newPrimaryContact?.id;
           }
 
           await editMailingInfo({
@@ -526,6 +528,39 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   },
                 };
                 cache.writeQuery({ ...query, data });
+              }
+
+              if (attributes.primaryPersonId) {
+                const ContactDetailsTabQuery = {
+                  query: ContactDetailsTabDocument,
+                  variables: {
+                    accountListId,
+                    contactId,
+                  },
+                };
+                const ContactDetailsTabDataCache =
+                  cache.readQuery<ContactDetailsTabQuery>(
+                    ContactDetailsTabQuery,
+                  );
+
+                if (ContactDetailsTabDataCache) {
+                  const data = {
+                    ...ContactDetailsTabDataCache,
+                    contact: {
+                      ...ContactDetailsTabDataCache.contact,
+                      primaryPerson: newPrimaryContact,
+                    },
+                  };
+                  cache.writeQuery({ ...ContactDetailsTabQuery, data });
+                }
+                enqueueSnackbar(
+                  t('Switched primary contact to {{name}}', {
+                    name: newPrimaryContact?.firstName,
+                  }),
+                  {
+                    variant: 'success',
+                  },
+                );
               }
             },
           });

@@ -157,11 +157,18 @@ describe('PersonModal - Saving Deceased', () => {
     userEvent.click(getByLabelText('Deceased'));
     userEvent.click(getByText('Save'));
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
         variant: 'success',
-      }),
-    );
+      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        "Updated contact's name and greeting information",
+        {
+          variant: 'success',
+        },
+      );
+    });
+
     const { operation } = mutationSpy.mock.calls[0][0];
     expect(operation.variables.attributes.deceased).toEqual(true);
 
@@ -199,11 +206,18 @@ describe('PersonModal - Saving Deceased', () => {
     userEvent.click(getByLabelText('Deceased'));
     userEvent.click(getByText('Save'));
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
         variant: 'success',
-      }),
-    );
+      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        "Updated contact's name and greeting information",
+        {
+          variant: 'success',
+        },
+      );
+    });
+
     const { operation } = mutationSpy.mock.calls[0][0];
     expect(operation.variables.attributes.deceased).toEqual(true);
 
@@ -241,11 +255,24 @@ describe('PersonModal - Saving Deceased', () => {
     userEvent.click(getByLabelText('Deceased'));
     userEvent.click(getByText('Save'));
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
         variant: 'success',
-      }),
-    );
+      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        "Updated contact's name and greeting information",
+        {
+          variant: 'success',
+        },
+      );
+      expect(mockEnqueue).not.toHaveBeenCalledWith(
+        'Switched primary contact to Jack',
+        {
+          variant: 'success',
+        },
+      );
+    });
+
     const { operation } = mutationSpy.mock.calls[0][0];
     expect(operation.variables.attributes.deceased).toEqual(true);
 
@@ -284,11 +311,23 @@ describe('PersonModal - Saving Deceased', () => {
     userEvent.click(getByLabelText('Deceased'));
     userEvent.click(getByText('Save'));
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
         variant: 'success',
-      }),
-    );
+      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        "Updated contact's name and greeting information",
+        {
+          variant: 'success',
+        },
+      );
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Switched primary contact to Jack',
+        {
+          variant: 'success',
+        },
+      );
+    });
 
     const { operation: EditMailingInfoOperation } =
       mutationSpy.mock.calls[1][0];
