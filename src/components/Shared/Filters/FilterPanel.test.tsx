@@ -593,6 +593,8 @@ describe('FilterPanel', () => {
       await waitFor(() =>
         expect(getByText('Delete Saved filter')).toBeVisible(),
       );
+      userEvent.click(getByText('No'));
+      expect(getByText('Delete Saved filter')).not.toBeVisible();
     });
 
     it('closes panel', async () => {
