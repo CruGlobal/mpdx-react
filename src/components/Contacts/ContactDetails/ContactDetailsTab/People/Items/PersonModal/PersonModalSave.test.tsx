@@ -29,83 +29,58 @@ const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
     people: {
       nodes: [
         {
+          id: '01234',
           firstName: 'Jill',
           deceased: false,
           emailAddresses: {
-            nodes: [
-              {
-                email: 'test1234@test.com',
-                primary: true,
-                historic: false,
-                location: 'Work',
-                source: 'MPDX',
-              },
-              {
-                email: 'secondemail@test.com',
-                location: 'Personal',
-                primary: false,
-                historic: false,
-                source: 'MPDX',
-              },
-            ],
+            nodes: [],
           },
           phoneNumbers: {
-            nodes: [
-              {
-                number: '777-777-7777',
-                location: 'Mobile',
-                primary: true,
-                historic: false,
-                source: 'MPDX',
-              },
-              {
-                number: '999-999-9999',
-                location: 'Work',
-                primary: false,
-                historic: false,
-                source: 'MPDX',
-              },
-            ],
+            nodes: [],
           },
           facebookAccounts: {
-            nodes: [
-              {
-                username: 'test guy',
-              },
-              {
-                username: 'test guy 2',
-              },
-            ],
+            nodes: [],
           },
           twitterAccounts: {
-            nodes: [
-              {
-                screenName: '@testguy',
-              },
-              {
-                screenName: '@testguy2',
-              },
-            ],
+            nodes: [],
           },
           linkedinAccounts: {
-            nodes: [
-              {
-                publicUrl: 'Test Guy',
-              },
-              {
-                publicUrl: 'Test Guy 2',
-              },
-            ],
+            nodes: [],
           },
           websites: {
-            nodes: [
-              {
-                url: 'testguy.com',
-              },
-              {
-                url: 'testguy2.com',
-              },
-            ],
+            nodes: [],
+          },
+          optoutEnewsletter: false,
+          anniversaryDay: 1,
+          anniversaryMonth: 1,
+          anniversaryYear: 1990,
+          birthdayDay: 1,
+          birthdayMonth: 1,
+          birthdayYear: 1990,
+          maritalStatus: 'Engaged',
+          gender: 'Male',
+        },
+        {
+          id: '56789',
+          firstName: 'Jack',
+          deceased: false,
+          emailAddresses: {
+            nodes: [],
+          },
+          phoneNumbers: {
+            nodes: [],
+          },
+          facebookAccounts: {
+            nodes: [],
+          },
+          twitterAccounts: {
+            nodes: [],
+          },
+          linkedinAccounts: {
+            nodes: [],
+          },
+          websites: {
+            nodes: [],
           },
           optoutEnewsletter: false,
           anniversaryDay: 1,
@@ -290,5 +265,37 @@ describe('PersonModal - Saving Deceased', () => {
     expect(
       EditMailingInfoOperation.variables.attributes.envelopeGreeting,
     ).toEqual('Bill and Jack Hill');
+  });
+
+  it('sets the new primary contact as Jill is the primary contact', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByLabelText } = render(
+      components(mutationSpy, {
+        id: '123-456',
+        primaryPerson: mockPerson,
+        name: 'Hill, Bill and Jill and Jack',
+        people: mock.people,
+        greeting: 'Bill and Jill and Jack',
+        envelopeGreeting: 'Bill and Jill and Jack Hill',
+      }),
+    );
+    expect(getByText('Edit Person')).toBeInTheDocument();
+    userEvent.click(getByText('Show More'));
+    userEvent.click(getByLabelText('Deceased'));
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Person updated successfully', {
+        variant: 'success',
+      }),
+    );
+
+    const { operation: EditMailingInfoOperation } =
+      mutationSpy.mock.calls[1][0];
+
+    expect(EditMailingInfoOperation.operationName).toEqual('EditMailingInfo');
+    expect(
+      EditMailingInfoOperation.variables.attributes.primaryPersonId,
+    ).toEqual(mock.people.nodes[1].id);
   });
 });

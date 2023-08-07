@@ -480,15 +480,35 @@ export const PersonModal: React.FC<PersonModalProps> = ({
           const newEnvelopeGreeting = removeNameFromGreetings(envelopeGreeting);
           const newName = removeNameFromGreetings(name, /,\s{1,}and /, ', ');
 
+          interface attributes {
+            id: string;
+            greeting: any;
+            envelopeGreeting: any;
+            name: any;
+            primaryPersonId?: string;
+          }
+          const attributes: attributes = {
+            id: contactId,
+            greeting: newGreeting,
+            envelopeGreeting: newEnvelopeGreeting,
+            name: newName,
+          };
+
+          if (
+            contactData.primaryPerson?.id === person?.id &&
+            contactData.people.nodes.find(
+              (people) => people.id !== person?.id && !people.deceased,
+            )?.id
+          ) {
+            attributes.primaryPersonId = contactData.people.nodes.find(
+              (people) => people.id !== person?.id,
+            )?.id;
+          }
+
           await editMailingInfo({
             variables: {
               accountListId,
-              attributes: {
-                id: contactId,
-                greeting: newGreeting,
-                envelopeGreeting: newEnvelopeGreeting,
-                name: newName,
-              },
+              attributes,
             },
             update: (cache) => {
               const query = {
