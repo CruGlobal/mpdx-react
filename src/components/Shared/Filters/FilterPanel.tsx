@@ -20,7 +20,6 @@ import Close from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { filter } from 'lodash';
-import { useSnackbar } from 'notistack';
 import {
   ActivityTypeEnum,
   ContactFilterNewsletterEnum,
@@ -41,13 +40,9 @@ import {
 import { FilterListItemShowAll } from './FilterListItemShowAll';
 import { FilterListItem } from './FilterListItem';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
+import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { useDeleteUserOptionMutation } from './DeleteSavedFilter.generated';
-import {
-  GetUserOptionsDocument,
-  GetUserOptionsQuery,
-} from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
@@ -180,9 +175,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const { t } = useTranslation();
 
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
+  const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [deleteUserOption] = useDeleteUserOptionMutation();
-  const { enqueueSnackbar } = useSnackbar();
+  const [filterToBeDeleted, setFilterToBeDeleted] =
+    useState<UserOptionFragment | null>(null);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
       let filterValue = value;
@@ -693,36 +689,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     }
   };
 
-  const deleteSavedFilter = async (filter: UserOptionFragment) => {
-    await deleteUserOption({
-      variables: {
-        input: {
-          id: filter.id,
-        },
-      },
-      update: (cache) => {
-        const query = {
-          query: GetUserOptionsDocument,
-        };
-        const dataFromCache = cache.readQuery<GetUserOptionsQuery>(query);
-        if (dataFromCache) {
-          const filteredOutDeleted = dataFromCache.userOptions.filter(
-            (option) => option.id !== filter.id,
-          );
-
-          cache.writeQuery({
-            ...query,
-            data: {
-              userOptions: filteredOutDeleted,
-            },
-          });
-        }
-
-        enqueueSnackbar(t('Saved Filter Deleted!'), {
-          variant: 'success',
-        });
-      },
-    });
+  const handleDeleteSavedFilter = async (filter: UserOptionFragment) => {
+    setFilterToBeDeleted(filter);
+    setDeleteFilterModalOpen(true);
   };
 
   const tagsFilters =
@@ -815,7 +784,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                     edge="end"
                                     aria-label="delete"
                                     data-testid="deleteSavedFilter"
-                                    onClick={() => deleteSavedFilter(filter)}
+                                    onClick={() =>
+                                      handleDeleteSavedFilter(filter)
+                                    }
                                   >
                                     <DeleteIcon />
                                   </IconButton>
@@ -932,6 +903,13 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         currentFilters={selectedFilters}
         currentSavedFilters={savedFilters}
       />
+      {filterToBeDeleted && (
+        <DeleteFilterModal
+          isOpen={deleteFilterModalOpen}
+          handleClose={() => setDeleteFilterModalOpen(false)}
+          filter={filterToBeDeleted}
+        />
+      )}
     </Box>
   );
 };
