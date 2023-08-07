@@ -193,7 +193,12 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
         <ContactPersonTextContainer>
           {/* Heading Section */}
           <ContactPersonRowContainer>
-            <ContactPersonNameText variant="h6">
+            <ContactPersonNameText
+              variant="h6"
+              style={{
+                textDecoration: person.deceased ? 'line-through' : '',
+              }}
+            >
               {`${person.firstName} ${person.lastName}`}
             </ContactPersonNameText>
             {primaryPerson?.id === person.id ? (
@@ -264,6 +269,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             contactId={id}
             accountListId={accountListId}
             handleClose={() => setEditPersonModalOpen(undefined)}
+            contactData={data}
           />
         ) : null}
       </ContactPersonContainer>
@@ -329,6 +335,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
           contactId={id}
           accountListId={accountListId}
           handleClose={() => setCreatePersonModalOpen(false)}
+          contactData={data}
         />
       ) : null}
       {mergePeopleModalOpen ? (
