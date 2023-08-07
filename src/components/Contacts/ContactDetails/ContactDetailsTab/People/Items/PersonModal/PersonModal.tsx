@@ -443,7 +443,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         client.refetchQueries({ include: ['GetContactDetailsHeader'] });
       }
 
-      // Update contact's name and greetings if person deceased
+      // If deceased - Update contact's name, greetings & primary contact
       if (
         fields.deceased &&
         !person?.deceased &&
@@ -475,7 +475,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
             newGreeting = newGreeting.replace(hasDoubleAnd, ' and ');
             return newGreeting;
           };
-
+          // Updating contact's name and greetings
           const newGreeting = removeNameFromGreetings(greeting);
           const newEnvelopeGreeting = removeNameFromGreetings(envelopeGreeting);
           const newName = removeNameFromGreetings(name, /,\s{1,}and /, ', ');
@@ -493,7 +493,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
             envelopeGreeting: newEnvelopeGreeting,
             name: newName,
           };
-
+          // Updating contact's primary contact if deceased is current primary contact.
           const newPrimaryContact =
             contactData.primaryPerson?.id === person?.id
               ? contactData.people.nodes.find(
