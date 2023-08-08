@@ -144,7 +144,9 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       items: ToolsList.flatMap((toolsGroup) => [
         ...toolsGroup.items.map((tool) => ({
           title: tool.tool,
-          href: `https://mpdx.org/tools/${toolsRedirectLinks[tool.id]}`,
+          href: `https://${process.env.REWRITE_DOMAIN}/tools/${
+            toolsRedirectLinks[tool.id]
+          }`,
         })),
       ]),
     },
