@@ -43,8 +43,7 @@ describe('/api/handoff', () => {
         jest.resetModules();
         process.env = {
           ...OLD_ENV,
-          REWRITE_DOMAIN: 'mpdx.org',
-          NODE_ENV: 'development',
+          REWRITE_DOMAIN: 'stage.mpdx.org',
         };
       });
 
@@ -153,7 +152,6 @@ describe('/api/handoff', () => {
         process.env = {
           ...OLD_ENV,
           REWRITE_DOMAIN: 'mpdx.org',
-          NODE_ENV: 'production',
         };
       });
 
