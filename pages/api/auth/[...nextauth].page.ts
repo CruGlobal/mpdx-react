@@ -214,15 +214,13 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         }
       },
       session: ({ session, token }) => {
-        const { apiToken, userID, impersonating, impersonatorApiToken } = token;
+        const { userID, impersonating } = token;
         return {
           ...session,
           user: {
             ...session.user,
-            apiToken: apiToken as string,
             userID: userID as string,
             impersonating: impersonating as boolean,
-            impersonatorApiToken: impersonatorApiToken as string,
           },
         };
       },

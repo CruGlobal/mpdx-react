@@ -20,6 +20,7 @@ import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../../ContactDetailsTab.generated';
+import { ContactPeopleFragment } from '../../ContactPeople.generated';
 import Modal from '../../../../../../common/Modal/Modal';
 import {
   PersonCreateInput,
@@ -36,6 +37,7 @@ import {
   useDeletePersonMutation,
   useUpdatePersonMutation,
 } from './PersonModal.generated';
+import { useEditMailingInfoMutation } from '../../../Mailing/EditMailingInfoModal/EditMailingInfoModal.generated';
 import {
   ContactDetailContext,
   ContactDetailsType,
@@ -46,6 +48,10 @@ import {
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { uploadAvatar, validateAvatar } from './uploadAvatar';
+import {
+  GetContactDetailsHeaderDocument,
+  GetContactDetailsHeaderQuery,
+} from '../../../../ContactDetailsHeader/ContactDetailsHeader.generated';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -94,6 +100,7 @@ interface PersonModalProps {
   contactId: string;
   accountListId: string;
   handleClose: () => void;
+  contactData?: ContactPeopleFragment;
 }
 
 export interface NewSocial {
@@ -109,6 +116,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   contactId,
   accountListId,
   handleClose,
+  contactData,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -150,6 +158,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [updatePerson] = useUpdatePersonMutation();
   const [createPerson] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
+  const [editMailingInfo] = useEditMailingInfoMutation();
 
   const personSchema: yup.SchemaOf<
     Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
@@ -432,6 +441,137 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       if (file) {
         // Update the contact's avatar since it is based on the primary person's avatar
         client.refetchQueries({ include: ['GetContactDetailsHeader'] });
+      }
+
+      // If deceased - Update contact's name, greetings & primary contact
+      if (
+        fields.deceased &&
+        !person?.deceased &&
+        contactData &&
+        fields.firstName
+      ) {
+        const { greeting, envelopeGreeting, name } = contactData;
+        if (greeting && envelopeGreeting) {
+          const removeNameFromGreetings = (
+            greeting,
+            startsWithRegex: RegExp | null = null,
+            startsWithReplace: string | null = null,
+          ) => {
+            let newGreeting = greeting;
+            const nameWithAnd = new RegExp(` and ${fields.firstName}`);
+            if (nameWithAnd.test(greeting)) {
+              newGreeting = newGreeting.replace(nameWithAnd, '');
+            } else {
+              newGreeting = newGreeting.replace(fields.firstName, '');
+            }
+            const endsWith = / and $/;
+            const startsWith = startsWithRegex ?? /^ and /;
+            const hasDoubleAnd = / and  and /;
+            newGreeting = newGreeting.replace(endsWith, '');
+            newGreeting = newGreeting.replace(
+              startsWith,
+              startsWithReplace ?? '',
+            );
+            newGreeting = newGreeting.replace(hasDoubleAnd, ' and ');
+            return newGreeting;
+          };
+          // Updating contact's name and greetings
+          const newGreeting = removeNameFromGreetings(greeting);
+          const newEnvelopeGreeting = removeNameFromGreetings(envelopeGreeting);
+          const newName = removeNameFromGreetings(name, /,\s{1,}and /, ', ');
+
+          interface attributes {
+            id: string;
+            greeting: any;
+            envelopeGreeting: any;
+            name: any;
+            primaryPersonId?: string;
+          }
+          const attributes: attributes = {
+            id: contactId,
+            greeting: newGreeting,
+            envelopeGreeting: newEnvelopeGreeting,
+            name: newName,
+          };
+          // Updating contact's primary contact if deceased is current primary contact.
+          const newPrimaryContact =
+            contactData.primaryPerson?.id === person?.id
+              ? contactData.people.nodes.find(
+                  (people) => people.id !== person?.id && !people.deceased,
+                )
+              : undefined;
+          if (
+            contactData.primaryPerson?.id === person?.id &&
+            newPrimaryContact?.id
+          ) {
+            attributes.primaryPersonId = newPrimaryContact?.id;
+          }
+
+          await editMailingInfo({
+            variables: {
+              accountListId,
+              attributes,
+            },
+            update: (cache) => {
+              const query = {
+                query: GetContactDetailsHeaderDocument,
+                variables: { accountListId, contactId },
+              };
+              const dataFromCache =
+                cache.readQuery<GetContactDetailsHeaderQuery>(query);
+              if (dataFromCache) {
+                const data = {
+                  ...dataFromCache,
+                  contact: {
+                    ...dataFromCache.contact,
+                    name: newName,
+                  },
+                };
+                cache.writeQuery({ ...query, data });
+              }
+
+              if (attributes.primaryPersonId) {
+                const ContactDetailsTabQuery = {
+                  query: ContactDetailsTabDocument,
+                  variables: {
+                    accountListId,
+                    contactId,
+                  },
+                };
+                const ContactDetailsTabDataCache =
+                  cache.readQuery<ContactDetailsTabQuery>(
+                    ContactDetailsTabQuery,
+                  );
+
+                if (ContactDetailsTabDataCache) {
+                  const data = {
+                    ...ContactDetailsTabDataCache,
+                    contact: {
+                      ...ContactDetailsTabDataCache.contact,
+                      primaryPerson: newPrimaryContact,
+                    },
+                  };
+                  cache.writeQuery({ ...ContactDetailsTabQuery, data });
+                }
+                enqueueSnackbar(
+                  t('Switched primary contact to {{name}}', {
+                    name: newPrimaryContact?.firstName,
+                  }),
+                  {
+                    variant: 'success',
+                  },
+                );
+              }
+            },
+          });
+
+          enqueueSnackbar(
+            t("Updated contact's name and greeting information"),
+            {
+              variant: 'success',
+            },
+          );
+        }
       }
 
       enqueueSnackbar(t('Person updated successfully'), {

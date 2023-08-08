@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -30,42 +29,82 @@ jest.mock('notistack', () => ({
   },
 }));
 
+const mutationSpy = jest.fn();
+const Components = () => (
+  <ThemeProvider theme={theme}>
+    <GqlMockedProvider onCall={mutationSpy}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <MailMergedLabelModal
+            ids={selectedIds}
+            accountListId={accountListId}
+            handleClose={handleClose}
+          />
+        </SnackbarProvider>
+      </LocalizationProvider>
+    </GqlMockedProvider>
+  </ThemeProvider>
+);
+
 describe('MailMergedLabelModal', () => {
   beforeEach(() => {
-    (useSession as jest.Mock).mockReturnValue({
-      data: {
-        user: {
-          apiToken: 'someToken1234',
-        },
-      },
-      status: 'authenticated',
-    });
+    mutationSpy.mockReset();
     exportRest as jest.Mock;
     handleClose.mockClear();
   });
   it('Clicks on export action', async () => {
-    const mutationSpy = jest.fn();
-    const { queryByTestId, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <SnackbarProvider>
-              <MailMergedLabelModal
-                ids={selectedIds}
-                accountListId={accountListId}
-                handleClose={handleClose}
-              />
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { queryByTestId, queryByText } = render(<Components />);
     await waitFor(() =>
       expect(queryByTestId('MailMergedLabel')).toBeInTheDocument(),
     );
     await waitFor(() => expect(exportRest).not.toHaveBeenCalled());
     userEvent.click(queryByText('Export') as HTMLInputElement);
     await waitFor(() => expect(exportRest).toHaveBeenCalled());
+    await waitFor(() => {
+      expect(mockEnqueue).not.toHaveBeenCalled();
+    });
     await waitFor(() => expect(handleClose).toHaveBeenCalled());
+  });
+});
+
+describe('MailMergedLabelModal when exportRest errors', () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const exportRest = require('../exportRest');
+  beforeEach(() => {
+    handleClose.mockClear();
+  });
+
+  it('Stringifies JSON Error', async () => {
+    exportRest.exportRest.mockImplementation(() =>
+      Promise.reject('Error happened'),
+    );
+    const { queryByTestId, queryByText } = render(<Components />);
+    await waitFor(() =>
+      expect(queryByTestId('MailMergedLabel')).toBeInTheDocument(),
+    );
+    expect(mockEnqueue).not.toHaveBeenCalledWith();
+    userEvent.click(queryByText('Export') as HTMLInputElement);
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('"Error happened"', {
+        variant: 'error',
+      }),
+    );
+  });
+
+  it('Returns Error message', async () => {
+    exportRest.exportRest.mockImplementation(() =>
+      Promise.reject(new Error('Authenication missing')),
+    );
+    const { queryByTestId, queryByText } = render(<Components />);
+    await waitFor(() =>
+      expect(queryByTestId('MailMergedLabel')).toBeInTheDocument(),
+    );
+    expect(mockEnqueue).not.toHaveBeenCalledWith();
+    userEvent.click(queryByText('Export') as HTMLInputElement);
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Authenication missing', {
+        variant: 'error',
+      }),
+    );
   });
 });
