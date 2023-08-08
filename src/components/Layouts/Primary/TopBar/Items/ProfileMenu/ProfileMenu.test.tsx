@@ -244,7 +244,7 @@ describe('ProfileMenu while Impersonating', () => {
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
-        'Redirecting you to the legacy MPDX"',
+        'Stopping Impersonating and redirecting you to the legacy MPDX',
         {
           variant: 'success',
         },
@@ -253,44 +253,8 @@ describe('ProfileMenu while Impersonating', () => {
 
     await waitFor(() =>
       expect(window.location.href).toEqual(
-        `${process.env.SITE_URL}/api/handoff?accountListId=1&userId=user-1&path=%2Flogout`,
+        `${process.env.SITE_URL}/api/stop-impersonating?accountListId=1&userId=user-1&path=%2Flogout`,
       ),
-    );
-  });
-
-  it('Should return an error while trying to remove impersonating cookies', async () => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponses([
-      JSON.stringify({ status: 'failed' }),
-      { status: 201 },
-    ]);
-
-    const { getByTestId, getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <TestRouter router={router}>
-            <ProfileMenu />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
-    );
-    await waitFor(() =>
-      expect(getByText('Impersonating John Smith')).toBeInTheDocument(),
-    );
-    expect(queryByTestId('accountListName')).not.toBeInTheDocument();
-    userEvent.click(getByTestId('profileMenuButton'));
-    await waitFor(() =>
-      expect(queryByTestId('profileMenu')).toBeInTheDocument(),
-    );
-    await waitFor(() =>
-      expect(getByText(/stop impersonating/i)).toBeInTheDocument(),
-    );
-    userEvent.click(getByText(/stop impersonating/i));
-
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Failed to stop impersonating', {
-        variant: 'error',
-      }),
     );
   });
 });

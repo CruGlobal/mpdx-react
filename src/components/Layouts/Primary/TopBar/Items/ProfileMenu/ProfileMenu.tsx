@@ -133,28 +133,21 @@ const ProfileMenu = (): ReactElement => {
     : false;
 
   const handleStopImpersonating = async () => {
-    fetch('/api/stop-impersonating')
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.status === 'failed')
-          throw new Error('Failed to stop impersonating');
-
-        enqueueSnackbar(t('Redirecting you to the legacy MPDX"'), {
-          variant: 'success',
-        });
-        const url = new URL(
-          `${process.env.SITE_URL || window.location.origin}/api/handoff`,
-        );
-        url.searchParams.append('accountListId', accountListId ?? '');
-        url.searchParams.append('userId', data?.user?.id ?? '');
-        url.searchParams.append('path', '/logout');
-        window.location.href = url.href;
-      })
-      .catch((err) => {
-        enqueueSnackbar(t(err.message), {
-          variant: 'error',
-        });
-      });
+    enqueueSnackbar(
+      t('Stopping Impersonating and redirecting you to the legacy MPDX'),
+      {
+        variant: 'success',
+      },
+    );
+    const url = new URL(
+      `${
+        process.env.SITE_URL || window.location.origin
+      }/api/stop-impersonating`,
+    );
+    url.searchParams.append('accountListId', accountListId ?? '');
+    url.searchParams.append('userId', data?.user?.id ?? '');
+    url.searchParams.append('path', '/logout');
+    window.location.href = url.href;
   };
 
   return (

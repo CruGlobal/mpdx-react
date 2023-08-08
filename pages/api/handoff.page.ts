@@ -40,8 +40,8 @@ export const returnRedirectUrl = async (req: NextApiRequest) => {
 
       const url = new URL(
         process.env.NODE_ENV === 'production'
-          ? `http://${process.env.REWRITE_DOMAIN}/handoff`
-          : `http://stage.${process.env.REWRITE_DOMAIN}/handoff`,
+          ? `https://${process.env.REWRITE_DOMAIN}/handoff`
+          : `https://stage.${process.env.REWRITE_DOMAIN}/handoff`,
       );
 
       url.searchParams.append('accessToken', jwtToken.apiToken);
@@ -52,10 +52,10 @@ export const returnRedirectUrl = async (req: NextApiRequest) => {
     } else if (jwtToken && req.query.auth === 'true') {
       const url = new URL(
         process.env.NODE_ENV === 'production'
-          ? `http://auth.${process.env.REWRITE_DOMAIN}/${path
+          ? `https://auth.${process.env.REWRITE_DOMAIN}/${path
               .toString()
               .replace(/^\/+/, '')}`
-          : `http://auth.stage.${process.env.REWRITE_DOMAIN}/${path
+          : `https://auth.stage.${process.env.REWRITE_DOMAIN}/${path
               .toString()
               .replace(/^\/+/, '')}`,
       );
