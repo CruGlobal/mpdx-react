@@ -1,7 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { taskFiltersTabs } from '../../src/utils/tasks/taskFilterTabs';
-import { cookieDefaultInfo, nextAuthSessionCookie } from './utils/cookies';
+import {
+  cookieDefaultInfo,
+  clearNextAuthSessionCookies,
+} from './utils/cookies';
 
 interface defineRedirectUrlProps {
   accountListId: string;
@@ -86,7 +89,7 @@ const mpdxWebHandoff = async (
       // We can force the user to logout, but OKTA caches and will auto log the previous user in.
       // To solve this problem we store the JWT as a HTTP cookie which we use on login in [...nextauth].page.ts
       cookies.push(
-        nextAuthSessionCookie,
+        ...clearNextAuthSessionCookies,
         `mpdx-handoff.accountConflictUserId=${userId}; ${cookieDefaultInfo}`,
         `mpdx-handoff.redirect-url=${redirectUrl}; ${cookieDefaultInfo}`,
         `mpdx-handoff.token=${token}; ${cookieDefaultInfo}`,
