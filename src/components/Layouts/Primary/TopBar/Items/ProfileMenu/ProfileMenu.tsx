@@ -26,7 +26,6 @@ import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
 import theme from '../../../../../../theme';
 import ProfileName from './ProfileName';
-import client from 'src/lib/client';
 
 const AccountName = styled(Typography)(({ theme }) => ({
   color: theme.palette.common.white,
@@ -140,7 +139,7 @@ const ProfileMenu = (): ReactElement => {
         variant: 'success',
       },
     );
-    client.clearStore();
+    window.localStorage.clear();
     const url = new URL(
       `${
         process.env.SITE_URL || window.location.origin
