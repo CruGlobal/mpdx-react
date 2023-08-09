@@ -1,23 +1,28 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { cookieDefaultInfo, nextAuthSessionCookie } from './utils/cookies';
+import {
+  cookieDefaultInfo,
+  clearNextAuthSessionCookies,
+} from './utils/cookies';
+import { returnRedirectUrl } from './handoff.page';
 
-const redirectUrl = `${process.env.SITE_URL}/`;
 const mpdxWebHandoff = async (
   req: NextApiRequest,
   res: NextApiResponse,
 ): Promise<void> => {
+  const redirectUrl = `${process.env.SITE_URL}/`;
   try {
     const jwtToken = (await getToken({
       req,
       secret: process.env.JWT_SECRET as string,
     })) as { impersonatorApiToken: string } | null;
     res.setHeader('Set-Cookie', [
-      nextAuthSessionCookie,
+      ...clearNextAuthSessionCookies,
       `mpdx-handoff.redirect-url=${redirectUrl}; ${cookieDefaultInfo}`,
       `mpdx-handoff.token=${jwtToken?.impersonatorApiToken}; ${cookieDefaultInfo}`,
     ]);
-    res.redirect(`${process.env.SITE_URL}/login`);
+    const handoffRedirectUrl = await returnRedirectUrl(req);
+    res.redirect(handoffRedirectUrl);
   } catch (err) {
     res.redirect(redirectUrl);
   }

@@ -9,6 +9,7 @@ describe('HandoffLink', () => {
   let open: jest.Mock;
   let originalOpen: Window['open'];
   const useRouter = jest.spyOn(nextRouter, 'useRouter');
+  const rewriteDomain = process.env.REWRITE_DOMAIN;
 
   beforeEach(() => {
     open = jest.fn();
@@ -39,7 +40,7 @@ describe('HandoffLink', () => {
     const linkElement = getByRole('link', { hidden: true, name: 'Link' });
     expect(linkElement).toHaveAttribute(
       'href',
-      'https://stage.mpdx.org/contacts',
+      `https://${rewriteDomain}/contacts`,
     );
     userEvent.click(linkElement);
     // TODO investigate why the user is undefined when click fires
@@ -62,7 +63,7 @@ describe('HandoffLink', () => {
     const linkElement = getByRole('link', { hidden: true, name: 'Link' });
     expect(linkElement).toHaveAttribute(
       'href',
-      'https://auth.stage.mpdx.org/contacts',
+      `https://auth.${rewriteDomain}/contacts`,
     );
     userEvent.click(linkElement);
     expect(open).toHaveBeenCalledWith(
@@ -85,7 +86,7 @@ describe('HandoffLink', () => {
     const linkElement = getByRole('link', { hidden: true, name: 'Link' });
     expect(linkElement).toHaveAttribute(
       'href',
-      'https://stage.mpdx.org/contacts',
+      `https://${rewriteDomain}/contacts`,
     );
     userEvent.click(linkElement);
     expect(handleClick).toHaveBeenCalled();
@@ -127,7 +128,11 @@ describe('HandoffLink', () => {
       );
       expect(getByRole('link', { hidden: true, name: 'Link' })).toHaveAttribute(
         'href',
-        'https://mpdx.org/contacts',
+        `https://${rewriteDomain}/contacts`,
+      );
+      expect(getByRole('link', { hidden: true, name: 'Link' })).toHaveAttribute(
+        'target',
+        `_blank`,
       );
     });
 
@@ -141,7 +146,7 @@ describe('HandoffLink', () => {
       );
       expect(getByRole('link', { hidden: true, name: 'Link' })).toHaveAttribute(
         'href',
-        'https://auth.mpdx.org/contacts',
+        `https://auth.${rewriteDomain}/contacts`,
       );
     });
   });

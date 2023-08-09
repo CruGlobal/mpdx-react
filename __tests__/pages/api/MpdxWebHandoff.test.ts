@@ -2,7 +2,6 @@ import { createMocks } from 'node-mocks-http';
 import { getToken } from 'next-auth/jwt';
 import mpdxWebHandoff from '../../../pages/api/mpdx-web-handoff.page';
 import { taskFiltersTabs } from '../../../src/utils/tasks/taskFilterTabs';
-import { nextAuthSessionCookieName } from 'pages/api/utils/cookies';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
 
@@ -119,12 +118,14 @@ describe('/api/mpdx-web-handoff', () => {
       );
       const cookies = grabCookies(res._getHeaders()['set-cookie']);
 
-      expect(cookies.length).toBe(4);
-      expect(cookies[0][nextAuthSessionCookieName]).toBe('');
+      expect(cookies.length).toBe(5);
+      expect(cookies[0]['__Secure-next-auth.session-token']).toBe('');
+      expect(cookies[1]['next-auth.session-token']).toBe('');
       expect(cookies[0]['Max-Age']).toBe('0');
-      expect(cookies[1]['mpdx-handoff.accountConflictUserId']).toBe(userTwoId);
-      expect(cookies[2]['mpdx-handoff.redirect-url']).toBe(redirectUrl);
-      expect(cookies[3]['mpdx-handoff.token']).toBe(userTwoToken);
+      expect(cookies[1]['Max-Age']).toBe('0');
+      expect(cookies[2]['mpdx-handoff.accountConflictUserId']).toBe(userTwoId);
+      expect(cookies[3]['mpdx-handoff.redirect-url']).toBe(redirectUrl);
+      expect(cookies[4]['mpdx-handoff.token']).toBe(userTwoToken);
     });
 
     it('New user - Same token - Shouldnt remove prev user', async () => {
@@ -143,12 +144,14 @@ describe('/api/mpdx-web-handoff', () => {
       );
       const cookies = grabCookies(res._getHeaders()['set-cookie']);
 
-      expect(cookies.length).toBe(4);
-      expect(cookies[0][nextAuthSessionCookieName]).toBe('');
+      expect(cookies.length).toBe(5);
+      expect(cookies[0]['__Secure-next-auth.session-token']).toBe('');
+      expect(cookies[1]['next-auth.session-token']).toBe('');
       expect(cookies[0]['Max-Age']).toBe('0');
-      expect(cookies[1]['mpdx-handoff.accountConflictUserId']).toBe(userTwoId);
-      expect(cookies[2]['mpdx-handoff.redirect-url']).toBe(redirectUrl);
-      expect(cookies[3]['mpdx-handoff.token']).toBe(userOneToken);
+      expect(cookies[1]['Max-Age']).toBe('0');
+      expect(cookies[2]['mpdx-handoff.accountConflictUserId']).toBe(userTwoId);
+      expect(cookies[3]['mpdx-handoff.redirect-url']).toBe(redirectUrl);
+      expect(cookies[4]['mpdx-handoff.token']).toBe(userOneToken);
     });
 
     it('Impersonate user - Loggout prev user', async () => {
@@ -168,13 +171,15 @@ describe('/api/mpdx-web-handoff', () => {
       );
       const cookies = grabCookies(res._getHeaders()['set-cookie']);
 
-      expect(cookies.length).toBe(5);
-      expect(cookies[0][nextAuthSessionCookieName]).toBe('');
+      expect(cookies.length).toBe(6);
+      expect(cookies[0]['__Secure-next-auth.session-token']).toBe('');
+      expect(cookies[1]['next-auth.session-token']).toBe('');
       expect(cookies[0]['Max-Age']).toBe('0');
-      expect(cookies[1]['mpdx-handoff.accountConflictUserId']).toBe(userTwoId);
-      expect(cookies[2]['mpdx-handoff.redirect-url']).toBe(redirectUrl);
-      expect(cookies[3]['mpdx-handoff.token']).toBe(userTwoToken);
-      expect(cookies[4]['mpdx-handoff.impersonate']).toBe(userTwoImpersonate);
+      expect(cookies[1]['Max-Age']).toBe('0');
+      expect(cookies[2]['mpdx-handoff.accountConflictUserId']).toBe(userTwoId);
+      expect(cookies[3]['mpdx-handoff.redirect-url']).toBe(redirectUrl);
+      expect(cookies[4]['mpdx-handoff.token']).toBe(userTwoToken);
+      expect(cookies[5]['mpdx-handoff.impersonate']).toBe(userTwoImpersonate);
     });
 
     it('New user - Same token - Should logout prev user', async () => {

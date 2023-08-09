@@ -48,7 +48,10 @@ describe('Appeals', () => {
     ).toContain('MuiSkeleton-root');
     expect(
       getByRole('link', { hidden: true, name: 'View All' }),
-    ).toHaveAttribute('href', 'https://stage.mpdx.org/tools/appeals');
+    ).toHaveAttribute(
+      'href',
+      `https://${process.env.REWRITE_DOMAIN}/tools/appeals`,
+    );
   });
 
   it('props', () => {

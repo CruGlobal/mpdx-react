@@ -27,9 +27,7 @@ const HandoffLink = ({ path, auth, children }: Props): ReactElement => {
   const child = Children.only(children) as ReactElement;
 
   const childProps = {
-    href: `https://${auth ? 'auth.' : ''}${
-      process.env.SITE_URL === 'https://next.mpdx.org' ? '' : 'stage.'
-    }mpdx.org${path}`,
+    href: `https://${auth ? 'auth.' : ''}${process.env.REWRITE_DOMAIN + path}`,
     target: '_blank',
     onClick: (e: React.MouseEvent) => {
       if (child.props && typeof child.props.onClick === 'function') {

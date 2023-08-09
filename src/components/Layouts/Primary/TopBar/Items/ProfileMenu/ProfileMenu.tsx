@@ -15,10 +15,11 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useSnackbar } from 'notistack';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import HandoffLink from '../../../../../HandoffLink';
@@ -111,6 +112,7 @@ const ProfileMenu = (): ReactElement => {
   const { t } = useTranslation();
   const router = useRouter();
   const { data: session } = useSession();
+  const { enqueueSnackbar } = useSnackbar();
   const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
   const { data } = useGetTopBarQuery();
@@ -129,6 +131,25 @@ const ProfileMenu = (): ReactElement => {
   const hasSelectedAccount = data?.accountLists?.nodes
     ? !!(accountListId && data.accountLists.nodes.length > 1)
     : false;
+
+  const handleStopImpersonating = async () => {
+    enqueueSnackbar(
+      t('Stopping Impersonating and redirecting you to the legacy MPDX'),
+      {
+        variant: 'success',
+      },
+    );
+    window.localStorage.clear();
+    const url = new URL(
+      `${
+        process.env.SITE_URL || window.location.origin
+      }/api/stop-impersonating`,
+    );
+    url.searchParams.append('accountListId', accountListId ?? '');
+    url.searchParams.append('userId', data?.user?.id ?? '');
+    url.searchParams.append('path', '/logout');
+    window.location.href = url.href;
+  };
 
   return (
     <>
@@ -281,7 +302,7 @@ const ProfileMenu = (): ReactElement => {
             <ImpersonatingMenuButton
               variant="outlined"
               color="inherit"
-              href="/api/stop-impersonating"
+              onClick={handleStopImpersonating}
             >
               {t('Stop Impersonating')}
             </ImpersonatingMenuButton>
