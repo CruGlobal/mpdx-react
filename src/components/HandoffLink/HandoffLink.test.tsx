@@ -130,6 +130,10 @@ describe('HandoffLink', () => {
         'href',
         `https://${rewriteDomain}/contacts`,
       );
+      expect(getByRole('link', { hidden: true, name: 'Link' })).toHaveAttribute(
+        'target',
+        `_blank`,
+      );
     });
 
     it('default auth', async () => {
