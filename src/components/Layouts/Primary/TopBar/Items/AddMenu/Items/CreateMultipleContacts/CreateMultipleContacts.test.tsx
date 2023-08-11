@@ -48,7 +48,7 @@ describe('CreateMultipleContacts', () => {
     expect(queryByText('First')).toBeInTheDocument();
     expect(queryByText('Spouse')).toBeInTheDocument();
     expect(queryByText('Last')).toBeInTheDocument();
-    expect(queryByText('Address')).toBeInTheDocument();
+    expect(queryByText('Street Address')).toBeInTheDocument();
     expect(queryByText('Phone')).toBeInTheDocument();
     expect(queryByText('Email')).toBeInTheDocument();
   });
