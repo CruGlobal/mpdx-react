@@ -19,6 +19,7 @@ export const returnRedirectUrl = async (req: NextApiRequest) => {
     })) as { apiToken: string; userID: string } | null;
 
     const path = req.query.path ?? '';
+    const HTTP = process.env.NODE_ENV === 'production' ? 'https://' : 'http://';
 
     if (jwtToken && req.query.auth !== 'true') {
       const client = await ssrClient(jwtToken.apiToken);
@@ -38,7 +39,7 @@ export const returnRedirectUrl = async (req: NextApiRequest) => {
       }
       const userId = req.query.userId || jwtToken.userID;
 
-      const url = new URL(`https://${process.env.REWRITE_DOMAIN}/handoff`);
+      const url = new URL(`${HTTP + process.env.REWRITE_DOMAIN}/handoff`);
 
       url.searchParams.append('accessToken', jwtToken.apiToken);
       url.searchParams.append('accountListId', defaultAccountID.toString());
@@ -47,7 +48,7 @@ export const returnRedirectUrl = async (req: NextApiRequest) => {
       return url.href;
     } else if (jwtToken && req.query.auth === 'true') {
       const url = new URL(
-        `https://auth.${process.env.REWRITE_DOMAIN}/${path
+        `${HTTP}auth.${process.env.REWRITE_DOMAIN}/${path
           .toString()
           .replace(/^\/+/, '')}`,
       );
