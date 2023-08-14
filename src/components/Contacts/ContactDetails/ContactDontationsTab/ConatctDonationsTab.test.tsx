@@ -32,9 +32,7 @@ describe('ContactDonationsTab', () => {
         "contactId": "contact-id-1",
       }
     `);
-    expect(result.current.data?.contact.name).toMatchInlineSnapshot(
-      `"Button Army"`,
-    );
+    expect(result.current.data?.contact.name).toMatchInlineSnapshot(`"Tiger"`);
   });
   it('test renderer', async () => {
     const { findByRole } = render(
