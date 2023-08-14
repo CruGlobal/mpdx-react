@@ -158,7 +158,10 @@ export const EditPartnershipInfoModal: React.FC<
         }),
       )
       .default([]),
-    likelyToGive: yup.string().nullable(),
+    likelyToGive: yup
+      .mixed<LikelyToGiveEnum>()
+      .oneOf(Object.values(LikelyToGiveEnum))
+      .nullable(),
   });
 
   const onSubmit = async (
