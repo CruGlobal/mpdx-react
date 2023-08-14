@@ -36,6 +36,7 @@ fragment ContactDonorAccounts on Contact {
   sendNewsletter
   status
   source
+  likelyToGive
   lastDonation {
     ...ContactDonation
   }
