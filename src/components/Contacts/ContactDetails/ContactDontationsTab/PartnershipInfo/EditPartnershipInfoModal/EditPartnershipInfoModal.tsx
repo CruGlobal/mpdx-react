@@ -466,42 +466,22 @@ export const EditPartnershipInfoModal: React.FC<
                   <InputLabel id="currency-select-label">
                     {t('Likely To Give')}
                   </InputLabel>
-                  {pledgeCurrencies && (
-                    <Select
-                      label={t('Likely To Give')}
-                      labelId="LikelyToGive"
-                      value={likelyToGive ?? ''}
-                      onChange={(e) =>
-                        setFieldValue(
-                          'likelyToGive',
-                          e.target.value as LikelyToGiveEnum,
-                        )
-                      }
-                      MenuProps={{
-                        anchorOrigin: {
-                          vertical: 'bottom',
-                          horizontal: 'left',
-                        },
-                        transformOrigin: {
-                          vertical: 'top',
-                          horizontal: 'left',
-                        },
-                        PaperProps: {
-                          style: {
-                            maxHeight: '300px',
-                            overflow: 'auto',
-                          },
-                        },
-                      }}
-                    >
-                      <MenuItem value={''} disabled></MenuItem>
-                      {Object.values(LikelyToGiveEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedLikelyToGive(t, val)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
+                  <Select
+                    label={t('Likely To Give')}
+                    value={likelyToGive ?? ''}
+                    onChange={(e) =>
+                      setFieldValue(
+                        'likelyToGive',
+                        e.target.value as LikelyToGiveEnum,
+                      )
+                    }
+                  >
+                    {Object.values(LikelyToGiveEnum).map((val) => (
+                      <MenuItem key={val} value={val}>
+                        {getLocalizedLikelyToGive(t, val)}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>

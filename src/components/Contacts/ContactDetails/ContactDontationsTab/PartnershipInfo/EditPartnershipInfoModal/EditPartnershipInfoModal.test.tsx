@@ -9,6 +9,7 @@ import {
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
+  LikelyToGiveEnum,
 } from '../../../../../../../graphql/types.generated';
 import {
   gqlMock,
@@ -53,6 +54,7 @@ const contactMock = gqlMock<ContactDonorAccountsFragment>(
           },
         ],
       },
+      likelyToGive: LikelyToGiveEnum.Likely,
     },
   },
 );
@@ -357,6 +359,50 @@ describe('EditPartnershipInfoModal', () => {
       ),
     );
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing Likely to give', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <EditPartnershipInfoModal
+                contact={contactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    mutationSpy.mockClear();
+
+    userEvent.click(getByRole('button', { name: 'Likely' }));
+    userEvent.click(getByRole('option', { name: 'Most Likely' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+    expect(mutationSpy.mock.lastCall).toMatchObject([
+      {
+        operation: {
+          operationName: 'UpdateContactPartnership',
+          variables: {
+            attributes: {
+              likelyToGive: 'MOST_LIKELY',
+            },
+          },
+        },
+      },
+    ]);
   });
 
   it('should handle editing start date', async () => {
