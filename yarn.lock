@@ -2723,14 +2723,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@brainly/onesky-utils@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "@brainly/onesky-utils@npm:1.4.1"
+"@brainly/onesky-utils@npm:1.4.2":
+  version: 1.4.2
+  resolution: "@brainly/onesky-utils@npm:1.4.2"
   dependencies:
     md5: ^2.0.0
     request: ^2.88.0
     request-promise: ^4.2.2
-  checksum: 031a55010019987379e8de8ebd5bcfd0543c4d4e30aedab3126a2bf6e20058473d9d3ce64968459cf1169dd7ae2770dab891b28c4f38e4c6011f445c62a914e8
+  checksum: 543084f389e74920595ea57f1f114accdee7820cea2dbecde6129d2179faf315094f18b984f7ca3a243dc4228f24f5c6f3e65625a87702842daf113ecb9b7d8c
   languageName: node
   linkType: hard
 
@@ -18100,7 +18100,7 @@ __metadata:
     "@apollo/subgraph": ^2.1.3
     "@babel/core": ^7.20.5
     "@babel/node": ^7.19.1
-    "@brainly/onesky-utils": ^1.4.1
+    "@brainly/onesky-utils": 1.4.2
     "@date-io/luxon": ^2.16.0
     "@emotion/react": ^11.10.4
     "@emotion/styled": ^11.10.4
