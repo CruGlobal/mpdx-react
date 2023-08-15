@@ -9,6 +9,7 @@ interface FormWrapperProps {
   isSubmitting: boolean;
   formAttrs?: { action?: string; method?: string };
   children: React.ReactNode;
+  buttonText?: string;
 }
 
 export const FormWrapper: React.FC<FormWrapperProps> = ({
@@ -17,6 +18,7 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
   isSubmitting,
   formAttrs = {},
   children,
+  buttonText = 'Save',
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -33,7 +35,7 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
         type="submit"
         disabled={!isValid || isSubmitting}
       >
-        {t('Save')}
+        {t(buttonText)}
       </Button>
     </form>
   );
