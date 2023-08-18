@@ -34,6 +34,7 @@ import {
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
+  LikelyToGiveEnum,
 } from '../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import {
@@ -49,6 +50,7 @@ import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPle
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useLocale } from 'src/hooks/useLocale';
+import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -127,6 +129,7 @@ export const EditPartnershipInfoModal: React.FC<
       | 'noAppeals'
       | 'sendNewsletter'
       | 'contactReferralsToMe'
+      | 'likelyToGive'
     >
   > = yup.object({
     id: yup.string().required(),
@@ -155,6 +158,10 @@ export const EditPartnershipInfoModal: React.FC<
         }),
       )
       .default([]),
+    likelyToGive: yup
+      .mixed<LikelyToGiveEnum>()
+      .oneOf(Object.values(LikelyToGiveEnum))
+      .nullable(),
   });
 
   const onSubmit = async (
@@ -170,6 +177,7 @@ export const EditPartnershipInfoModal: React.FC<
       | 'nextAsk'
       | 'noAppeals'
       | 'contactReferralsToMe'
+      | 'likelyToGive'
     >,
   ) => {
     const removedReferrals = contact.contactReferralsToMe.nodes
@@ -315,6 +323,7 @@ export const EditPartnershipInfoModal: React.FC<
           noAppeals: contact.noAppeals,
           sendNewsletter: contact.sendNewsletter ?? SendNewsletterEnum.None,
           contactReferralsToMe: contactReferrals,
+          likelyToGive: contact.likelyToGive,
         }}
         validationSchema={contactPartnershipSchema}
         onSubmit={onSubmit}
@@ -331,6 +340,7 @@ export const EditPartnershipInfoModal: React.FC<
             noAppeals,
             sendNewsletter,
             contactReferralsToMe,
+            likelyToGive,
           },
           handleSubmit,
           handleChange,
@@ -449,6 +459,29 @@ export const EditPartnershipInfoModal: React.FC<
                       )}
                     </Select>
                   )}
+                </FormControl>
+              </ContactInputWrapper>
+              <ContactInputWrapper>
+                <FormControl fullWidth>
+                  <InputLabel id="currency-select-label">
+                    {t('Likely To Give')}
+                  </InputLabel>
+                  <Select
+                    label={t('Likely To Give')}
+                    value={likelyToGive ?? ''}
+                    onChange={(e) =>
+                      setFieldValue(
+                        'likelyToGive',
+                        e.target.value as LikelyToGiveEnum,
+                      )
+                    }
+                  >
+                    {Object.values(LikelyToGiveEnum).map((val) => (
+                      <MenuItem key={val} value={val}>
+                        {getLocalizedLikelyToGive(t, val)}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
