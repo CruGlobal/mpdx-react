@@ -1,0 +1,27 @@
+extend type Query {
+  getGoogleAccountIntegrations(
+    input: GetGoogleAccountIntegrationsInput!
+  ): [GoogleAccountIntegration]!
+}
+
+input GetGoogleAccountIntegrationsInput {
+  googleAccountId: ID!
+  accountListId: ID!
+}
+
+type GoogleAccountIntegration {
+  calendar_id: String!
+  calendar_integration: Boolean!
+  calendar_integrations: [String]!
+  calendar_name: String
+  calendars: [GoogleAccountIntegrationCalendars]!
+  created_at: String!
+  updated_at: String!
+  id: String!
+  updated_in_db_at: String!
+}
+
+type GoogleAccountIntegrationCalendars {
+  id: String!
+  name: String!
+}

@@ -25,7 +25,7 @@ export const TheKeyAccordian: React.FC<TheKeyAccordianProps> = ({
       value={''}
       image={
         <img
-          src="https://mpdx.org/f9a1f0e0afe640e0f704099d96503be5.png"
+          src="/images/settings-preferences-intergrations-key.png"
           alt="The Key"
         />
       }

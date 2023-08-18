@@ -1,0 +1,17 @@
+extend type Query {
+  getGoogleAccounts: [GoogleAccountAttributes]!
+}
+
+type GoogleAccountAttributes {
+  created_at: String!
+  email: String!
+  expires_at: String!
+  last_download: String
+  last_email_sync: String
+  primary: Boolean!
+  id: ID!
+  remote_id: String!
+  token_expired: Boolean!
+  updated_at: String!
+  updated_in_db_at: String!
+}

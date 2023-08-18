@@ -1,0 +1,9 @@
+extend type Query {
+  syncGoogleAccount(input: SyncGoogleAccountInput!): String
+}
+
+input SyncGoogleAccountInput {
+  googleAccountId: ID!
+  googleIntegrationId: ID!
+  integrationName: String!
+}

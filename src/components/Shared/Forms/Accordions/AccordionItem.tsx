@@ -63,22 +63,49 @@ const AccordionLeftDetails = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     width: 'calc((100% - 36px) * 0.338)',
   },
+  [theme.breakpoints.down('md')]: {
+    width: '200px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    marginBottom: '10px',
+    width: '100%',
+  },
 }));
 
 const AccordionRightDetails = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     width: 'calc((100% - 36px) * 0.661)',
   },
+  [theme.breakpoints.down('md')]: {
+    width: 'calc(100% - 200px)',
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
+  },
 }));
 
-const AccordionLImageDetails = styled(Box)(() => ({
+const AccordionLImageDetails = styled(Box)(({ theme }) => ({
   display: 'flex',
+  [theme.breakpoints.down('sm')]: {
+    flexWrap: 'wrap',
+  },
 }));
 
-const AccordionLeftDetailsImage = styled(Box)(() => ({
+const AccordionLeftDetailsImage = styled(Box)(({ theme }) => ({
   maxWidth: '200px',
   ' & > img': {
     width: '100%',
+  },
+
+  [theme.breakpoints.down('md')]: {
+    ' & > img': {
+      maxWidth: '150px',
+    },
+  },
+  [theme.breakpoints.down('sm')]: {
+    ' & > img': {
+      maxWidth: '100px',
+    },
   },
 }));
 

@@ -11,6 +11,7 @@ import { StyledFormLabel } from '../../../../src/components/Shared/Forms/Field';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { TheKeyAccordian } from 'src/components/Settings/integrations/Key/TheKeyAccordian';
 import { OrganizationAccordian } from 'src/components/Settings/integrations/Organization/OrganizationAccordian';
+import { GoogleAccordian } from 'src/components/Settings/integrations/Google/GoogleAccordian';
 
 const StyledListItem = styled(ListItemText)(() => ({
   display: 'list-item',
@@ -66,45 +67,10 @@ const Integrations: React.FC = () => {
         />
       </AccordionGroup>
       <AccordionGroup title={t('External Services')}>
-        <AccordionItem
-          onAccordionChange={handleAccordionChange}
+        <GoogleAccordian
+          handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          label={t('Google')}
-          value={''}
-          image={
-            <img
-              src="https://mpdx.org/77c26b7f4808b300a0fd19e292884395.png"
-              alt="Google"
-            />
-          }
-        >
-          <StyledFormLabel>Google Integration Overview</StyledFormLabel>
-          <Typography>
-            Google’s suite of tools are great at connecting you to your Ministry
-            Partners.
-          </Typography>
-          <Typography mt={2}>
-            By synchronizing your Google services with MPDX, you will be able
-            to:
-          </Typography>
-          <StyledList>
-            <StyledListItem>
-              See MPDX tasks in your Google Calendar
-            </StyledListItem>
-            <StyledListItem>Import Google Contacts into MPDX</StyledListItem>
-            <StyledListItem>
-              Keep your Contacts in sync with your Google Contacts
-            </StyledListItem>
-          </StyledList>
-          <Typography>
-            Connect your Google account to begin, and then setup specific
-            settings for Google Calendar and Contacts. MPDX leaves you in
-            control of how each service stays in sync.
-          </Typography>
-          <StyledServicesButton variant="outlined">
-            {t('Add Account')}
-          </StyledServicesButton>
-        </AccordionItem>
+        />
         <AccordionItem
           onAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}

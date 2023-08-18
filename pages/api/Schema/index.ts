@@ -45,6 +45,18 @@ import DestroyDonorAccountTypeDefs from './Contacts/DonorAccounts/Destroy/destro
 import { DestroyDonorAccountResolvers } from './Contacts/DonorAccounts/Destroy/resolvers';
 import DeleteTagsTypeDefs from './Tags/Delete/deleteTags.graphql';
 import { DeleteTagsResolvers } from './Tags/Delete/resolvers';
+// account
+import GetGoogleAccountsTypeDefs from './Settings/Preferences/Intergrations/Google/getGoogleAccounts/getGoogleAccounts.graphql';
+import { GetGoogleAccountsResolvers } from './Settings/Preferences/Intergrations/Google/getGoogleAccounts/resolvers';
+// account integrations
+import GetGoogleAccountIntegrationsTypeDefs from './Settings/Preferences/Intergrations/Google/getGoogleAccountIntegrations/getGoogleAccountIntegrations.graphql';
+import { GetGoogleAccountIntegrationsResolvers } from './Settings/Preferences/Intergrations/Google/getGoogleAccountIntegrations/resolvers';
+// save
+import UpdateGoogleIntegrationTypeDefs from './Settings/Preferences/Intergrations/Google/updateGoogleIntegration/updateGoogleIntegration.graphql';
+import { UpdateGoogleIntegrationResolvers } from './Settings/Preferences/Intergrations/Google/updateGoogleIntegration/resolvers';
+// sync
+import SyncGoogleIntegrationTypeDefs from './Settings/Preferences/Intergrations/Google/syncGoogleIntegration/syncGoogleIntegration.graphql';
+import { SyncGoogleIntegrationResolvers } from './Settings/Preferences/Intergrations/Google/syncGoogleIntegration/resolvers';
 
 const schema = buildSubgraphSchema([
   {
@@ -126,6 +138,22 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: DeleteTagsTypeDefs,
     resolvers: DeleteTagsResolvers,
+  },
+  {
+    typeDefs: GetGoogleAccountsTypeDefs,
+    resolvers: GetGoogleAccountsResolvers,
+  },
+  {
+    typeDefs: GetGoogleAccountIntegrationsTypeDefs,
+    resolvers: GetGoogleAccountIntegrationsResolvers,
+  },
+  {
+    typeDefs: UpdateGoogleIntegrationTypeDefs,
+    resolvers: UpdateGoogleIntegrationResolvers,
+  },
+  {
+    typeDefs: SyncGoogleIntegrationTypeDefs,
+    resolvers: SyncGoogleIntegrationResolvers,
   },
 ]);
 

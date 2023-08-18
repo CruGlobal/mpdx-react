@@ -129,7 +129,7 @@ const SearchMenu = (): ReactElement => {
     {
       name: t('Preferences - Connect Services'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/preferences/connectServices`,
+      link: `/accountLists/${accountListId}/preferences/integrations`,
     },
     {
       name: t('Reports - Donations'),

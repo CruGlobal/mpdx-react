@@ -75,6 +75,19 @@ import {
   DestroyDonorAccount,
   DestroyDonorAccountResponse,
 } from './Schema/Contacts/DonorAccounts/Destroy/datahander';
+import {
+  GetGoogleAccounts,
+  GetGoogleAccountsResponse,
+} from './Schema/Settings/Preferences/Intergrations/Google/getGoogleAccounts/datahandler';
+import {
+  GetGoogleAccountIntegrationsResponse,
+  GetGoogleAccountIntegrations,
+} from './Schema/Settings/Preferences/Intergrations/Google/getGoogleAccountIntegrations/datahandler';
+import { SyncGoogleIntegration } from './Schema/Settings/Preferences/Intergrations/Google/syncGoogleIntegration/datahandler';
+import {
+  UpdateGoogleIntegrationResponse,
+  UpdateGoogleIntegration,
+} from './Schema/Settings/Preferences/Intergrations/Google/updateGoogleIntegration/datahandler';
 
 function camelToSnake(str: string): string {
   return str.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
@@ -818,6 +831,61 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return data;
+  }
+
+  async getGoogleAccounts() {
+    const { data }: { data: GetGoogleAccountsResponse[] } = await this.get(
+      'user/google_accounts',
+      {
+        sort: 'created_at',
+        include: 'contact_groups',
+      },
+    );
+    return GetGoogleAccounts(data);
+  }
+
+  async getGoogleAccountIntegrations(
+    googleAccountId: string,
+    accountListId: string,
+  ) {
+    const { data }: { data: GetGoogleAccountIntegrationsResponse[] } =
+      await this.get(
+        `user/google_accounts/${googleAccountId}/google_integrations?${encodeURI(
+          `filter[account_list_id]=${accountListId}`,
+        )}`,
+      );
+    return GetGoogleAccountIntegrations(data);
+  }
+
+  async syncGoogleIntegration(
+    googleAccountId,
+    googleIntegrationId,
+    integrationName,
+  ) {
+    const { data }: { data: string } = await this.get(
+      `user/google_accounts/${googleAccountId}/google_integrations/${googleIntegrationId}/sync?integration=${integrationName}`,
+    );
+    return SyncGoogleIntegration(data);
+  }
+
+  async updateGoogleIntegration(
+    googleAccountId,
+    googleIntegrationId,
+    googleIntegration,
+  ) {
+    const { data }: { data: UpdateGoogleIntegrationResponse } = await this.put(
+      `user/google_accounts/${googleAccountId}/google_integrations/${googleIntegrationId}`,
+      {
+        data: {
+          attributes: {
+            ...googleIntegration,
+          },
+          id: googleIntegrationId,
+          type: 'google_integrations',
+        },
+      },
+    );
+    return UpdateGoogleIntegration(data);
   }
 }
 
