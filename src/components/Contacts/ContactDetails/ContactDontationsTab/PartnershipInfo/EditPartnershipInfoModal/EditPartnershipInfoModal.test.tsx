@@ -59,6 +59,28 @@ const contactMock = gqlMock<ContactDonorAccountsFragment>(
   },
 );
 
+const newContactMock = gqlMock<ContactDonorAccountsFragment>(
+  ContactDonorAccountsFragmentDoc,
+  {
+    mocks: {
+      status: null,
+      nextAsk: null,
+      pledgeCurrency: null,
+      pledgeStartDate: null,
+      pledgeFrequency: null,
+      pledgeAmount: null,
+      pledgeReceived: false,
+      sendNewsletter: null,
+      noAppeals: true,
+      lastDonation: null,
+      contactReferralsToMe: {
+        nodes: [],
+      },
+      likelyToGive: null,
+    },
+  },
+);
+
 const contactMockNoReferrals: ContactDonorAccountsFragment = {
   ...contactMock,
   contactReferralsToMe: { nodes: [] },
@@ -145,6 +167,38 @@ describe('EditPartnershipInfoModal', () => {
 
     expect(getByText('Edit Partnership')).toBeInTheDocument();
     userEvent.click(getByText('Cancel'));
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should save when only status is inputted', async () => {
+    const { getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <EditPartnershipInfoModal
+                contact={newContactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    const statusInput = getByLabelText('Status');
+
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask In Future'));
+
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
     expect(handleClose).toHaveBeenCalled();
   });
 
