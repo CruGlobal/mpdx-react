@@ -98,7 +98,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@brainly/onesky-utils": "^1.4.1",
+    "@brainly/onesky-utils": "1.4.2",
     "@graphql-codegen/add": "^3.2.1",
     "@graphql-codegen/cli": "^2.16.4",
     "@graphql-codegen/fragment-matcher": "^3.3.1",
