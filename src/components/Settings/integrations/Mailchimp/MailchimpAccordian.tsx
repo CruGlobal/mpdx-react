@@ -81,7 +81,6 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
     },
     skip: !accountListId,
   });
-  // console.log('getMailchimpAccount', data);
 
   const mailchimpAccount = data?.getMailchimpAccount[0];
 
@@ -200,7 +199,7 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
       }
     >
       {loading && <Skeleton height="90px" />}
-      {!loading && !mailchimpAccount?.active && (
+      {!loading && !mailchimpAccount && (
         <>
           <StyledFormLabel>MailChimp Overview</StyledFormLabel>
           <Typography>
@@ -316,16 +315,18 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
               </Formik>
             )}
 
-            {!mailchimpAccount?.listsPresent && mailchimpAccount?.listsLink && (
+            {!mailchimpAccount?.listsPresent && (
               <Box>
                 <Typography>
                   {t(
                     'You need to create a list on Mail Chimp that MPDX can use for your newsletter.',
                   )}
                 </Typography>
-                <Button href={mailchimpAccount.listsLink} target="_blank">
-                  {t('Go to MailChimp to create a list.')}
-                </Button>
+                {mailchimpAccount?.listsLink && (
+                  <Button href={mailchimpAccount.listsLink} target="_blank">
+                    {t('Go to MailChimp to create a list.')}
+                  </Button>
+                )}
               </Box>
             )}
           </Box>
