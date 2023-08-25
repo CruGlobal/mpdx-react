@@ -3,15 +3,15 @@ extend type Query {
 }
 
 type GoogleAccountAttributes {
-  created_at: String!
+  createdAt: String!
   email: String!
-  expires_at: String!
-  last_download: String
-  last_email_sync: String
+  expiresAt: String!
+  lastDownload: String
+  lastEmailSync: String
   primary: Boolean!
   id: ID!
-  remote_id: String!
-  token_expired: Boolean!
-  updated_at: String!
-  updated_in_db_at: String!
+  remoteId: String!
+  tokenExpired: Boolean!
+  updatedAt: String!
+  updatedInDbAt: String!
 }

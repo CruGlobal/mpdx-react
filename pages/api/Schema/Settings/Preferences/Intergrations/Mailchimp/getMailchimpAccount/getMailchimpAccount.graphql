@@ -1,0 +1,29 @@
+extend type Query {
+  getMailchimpAccount(input: MailchimpAccountInput!): MailchimpAccount
+}
+
+input MailchimpAccountInput {
+  accountListId: ID!
+}
+
+type MailchimpAccount {
+  id: ID!
+  active: Boolean!
+  autoLogCampaigns: Boolean!
+  createdAt: String
+  listsAvailableForNewsletters: [listsAvailableForNewsletters]
+  listsLink: String!
+  listsPresent: Boolean!
+  primaryListId: ID
+  primaryListName: String
+  updatedAt: String!
+  updatedInDbAt: String!
+  valid: Boolean!
+  validateKey: Boolean!
+  validationError: String
+}
+
+type listsAvailableForNewsletters {
+  id: ID!
+  name: String!
+}

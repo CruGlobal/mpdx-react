@@ -1,3 +1,5 @@
+import { snakeToCamel } from 'src/lib/snakeToCamel';
+
 export interface GetGoogleAccountsResponse {
   attributes: Omit<GetGoogleAccountAttributes, 'id'>;
   id: string;
@@ -23,10 +25,29 @@ export interface GetGoogleAccountAttributes {
   updated_in_db_at: string;
 }
 
+interface GetGoogleAccountAttributesCamel {
+  id: string;
+  createdAt: string;
+  email: string;
+  expiresAt: string;
+  lastDownload: string;
+  lastEmailSync: string;
+  primary: boolean;
+  remoteId: string;
+  tokenExpired: boolean;
+  updatedAt: string;
+  updatedInDbAt: string;
+}
+
 export const GetGoogleAccounts = (
   data: GetGoogleAccountsResponse[],
-): GetGoogleAccountAttributes[] => {
-  return data.reduce((prev: GetGoogleAccountAttributes[], current) => {
-    return prev.concat([{ id: current.id, ...current.attributes }]);
+): GetGoogleAccountAttributesCamel[] => {
+  return data.reduce((prev: GetGoogleAccountAttributesCamel[], current) => {
+    const attributes = {} as Omit<GetGoogleAccountAttributesCamel, 'id'>;
+    Object.keys(current.attributes).map((key) => {
+      attributes[snakeToCamel(key)] = current.attributes[key];
+    });
+
+    return prev.concat([{ id: current.id, ...attributes }]);
   }, []);
 };

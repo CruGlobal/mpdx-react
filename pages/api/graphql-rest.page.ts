@@ -1,3 +1,13 @@
+import { DateTime, Duration, Interval } from 'luxon';
+import {
+  RequestOptions,
+  Response,
+  RESTDataSource,
+} from 'apollo-datasource-rest';
+import Cors from 'micro-cors';
+import { PageConfig, NextApiRequest } from 'next';
+import { ApolloServer } from 'apollo-server-micro';
+import schema from './Schema';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -13,7 +23,6 @@ import {
   CoachingAnswerSet,
   ContactFilterNotesInput,
 } from './graphql-rest.page.generated';
-import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
   getCoachingAnswer,
@@ -57,15 +66,6 @@ import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/d
 import { getAccountListCoachUsers } from './Schema/AccountListCoachUser/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
 import { getReportsPledgeHistories } from './Schema/reports/pledgeHistories/dataHandler';
-import { DateTime, Duration, Interval } from 'luxon';
-import {
-  RequestOptions,
-  Response,
-  RESTDataSource,
-} from 'apollo-datasource-rest';
-import Cors from 'micro-cors';
-import { PageConfig, NextApiRequest } from 'next';
-import { ApolloServer } from 'apollo-server-micro';
 import {
   DonationReponseData,
   DonationReponseIncluded,
@@ -88,9 +88,21 @@ import {
   UpdateGoogleIntegrationResponse,
   UpdateGoogleIntegration,
 } from './Schema/Settings/Preferences/Intergrations/Google/updateGoogleIntegration/datahandler';
+import { DeleteGoogleAccount } from './Schema/Settings/Preferences/Intergrations/Google/deleteGoogleAccount/datahandler';
+import {
+  CreateGoogleIntegrationResponse,
+  CreateGoogleIntegration,
+} from './Schema/Settings/Preferences/Intergrations/Google/createGoogleIntegration/datahandler';
+
+import {
+  GetMailchimpAccountResponse,
+  GetMailchimpAccount,
+} from './Schema/Settings/Preferences/Intergrations/Mailchimp/getMailchimpAccount/datahandler';
+import { SyncMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/syncMailchimpAccount/datahandler';
+import { DeleteMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/datahandler';
 
 function camelToSnake(str: string): string {
-  return str.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 }
 
 class MpdxRestApi extends RESTDataSource {
@@ -833,6 +845,10 @@ class MpdxRestApi extends RESTDataSource {
     return data;
   }
 
+  // Google Integration
+  //
+  //
+
   async getGoogleAccounts() {
     const { data }: { data: GetGoogleAccountsResponse[] } = await this.get(
       'user/google_accounts',
@@ -868,17 +884,53 @@ class MpdxRestApi extends RESTDataSource {
     return SyncGoogleIntegration(data);
   }
 
+  async createGoogleIntegration(
+    googleAccountId,
+    googleIntegration,
+    accountListID,
+  ) {
+    const attributes = {};
+    Object.keys(googleIntegration).map((key) => {
+      attributes[camelToSnake(key)] = googleIntegration[key];
+    });
+    const { data }: { data: CreateGoogleIntegrationResponse } = await this.post(
+      `user/google_accounts/${googleAccountId}/google_integrations`,
+      {
+        data: {
+          attributes: {
+            ...attributes,
+          },
+          relationships: {
+            account_list: {
+              data: {
+                type: 'account_lists',
+                id: accountListID,
+              },
+            },
+          },
+          type: 'google_integrations',
+        },
+      },
+    );
+    return CreateGoogleIntegration(data);
+  }
+
   async updateGoogleIntegration(
     googleAccountId,
     googleIntegrationId,
     googleIntegration,
   ) {
+    const attributes = {};
+    Object.keys(googleIntegration).map((key) => {
+      attributes[camelToSnake(key)] = googleIntegration[key];
+    });
+
     const { data }: { data: UpdateGoogleIntegrationResponse } = await this.put(
       `user/google_accounts/${googleAccountId}/google_integrations/${googleIntegrationId}`,
       {
         data: {
           attributes: {
-            ...googleIntegration,
+            ...attributes,
           },
           id: googleIntegrationId,
           type: 'google_integrations',
@@ -886,6 +938,71 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return UpdateGoogleIntegration(data);
+  }
+
+  async deleteGoogleAccount(accountId) {
+    await this.delete(
+      `user/google_accounts/${accountId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'google_accounts',
+          },
+        }),
+      },
+    );
+    return DeleteGoogleAccount();
+  }
+
+  // Mailchimp Integration
+  //
+  //
+  async getMailchimpAccount(accountListId) {
+    try {
+      const { data }: { data: GetMailchimpAccountResponse } = await this.get(
+        `account_lists/${accountListId}/mail_chimp_account`,
+      );
+      return GetMailchimpAccount(data);
+    } catch {
+      return GetMailchimpAccount(null);
+    }
+  }
+
+  async updateMailchimpAccount(
+    accountListId,
+    mailchimpAccountId,
+    mailchimpAccount,
+  ) {
+    const attributes = {};
+    Object.keys(mailchimpAccount).map((key) => {
+      attributes[camelToSnake(key)] = mailchimpAccount[key];
+    });
+
+    const { data }: { data: UpdateGoogleIntegrationResponse } = await this.put(
+      `account_lists/${accountListId}/mail_chimp_account`,
+      {
+        data: {
+          attributes: {
+            overwrite: true,
+            ...attributes,
+          },
+          id: mailchimpAccountId,
+          type: 'mail_chimp_accounts',
+        },
+      },
+    );
+    return UpdateGoogleIntegration(data);
+  }
+
+  async syncMailchimpAccount(accountListId) {
+    await this.get(`account_lists/${accountListId}/mail_chimp_account/sync`);
+    return SyncMailchimpAccount();
+  }
+
+  async deleteMailchimpAccount(accountListId) {
+    await this.delete(`account_lists/${accountListId}/mail_chimp_account`);
+    return DeleteMailchimpAccount();
   }
 }
 

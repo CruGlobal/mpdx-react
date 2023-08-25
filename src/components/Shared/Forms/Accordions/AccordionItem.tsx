@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -128,10 +128,14 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   fullWidth = false,
   image,
 }) => {
+  const expanded = useMemo(
+    () => expandedPanel.toLowerCase() === label.toLowerCase(),
+    [expandedPanel, label],
+  );
   return (
     <StyledAccordion
       onChange={() => onAccordionChange(label)}
-      expanded={expandedPanel === label}
+      expanded={expanded}
       disableGutters
     >
       <StyledAccordionSummary expandIcon={<ExpandMore />}>

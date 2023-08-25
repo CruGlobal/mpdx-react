@@ -1,9 +1,9 @@
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 
-export interface UpdateGoogleIntegrationResponse {
+export interface CreateGoogleIntegrationResponse {
   id: string;
   type: string;
-  attributes: Omit<SaveGoogleIntegrationAttributes, 'id'>;
+  attributes: Omit<CreateGoogleIntegrationAttributes, 'id'>;
   relationships: relationships;
 }
 
@@ -12,7 +12,7 @@ type relationships = {
   google_account: object[];
 };
 
-export interface SaveGoogleIntegrationAttributes {
+export interface CreateGoogleIntegrationAttributes {
   calendar_id: string;
   calendar_integration: boolean;
   calendar_integrations: string[];
@@ -24,7 +24,7 @@ export interface SaveGoogleIntegrationAttributes {
   updated_in_db_at: string;
 }
 
-interface GetGoogleAccountIntegrationAttributesCamel {
+interface CreateGoogleIntegrationAttributesCamel {
   calendarId: string;
   calendarIntegration: boolean;
   calendarIntegrations: string[];
@@ -40,13 +40,10 @@ type calendars = {
   name: string;
 };
 
-export const UpdateGoogleIntegration = (
-  data: UpdateGoogleIntegrationResponse,
-): GetGoogleAccountIntegrationAttributesCamel => {
-  const attributes = {} as Omit<
-    GetGoogleAccountIntegrationAttributesCamel,
-    'id'
-  >;
+export const CreateGoogleIntegration = (
+  data: CreateGoogleIntegrationResponse,
+): CreateGoogleIntegrationAttributesCamel => {
+  const attributes = {} as Omit<CreateGoogleIntegrationAttributesCamel, 'id'>;
   Object.keys(data.attributes).map((key) => {
     attributes[snakeToCamel(key)] = data.attributes[key];
   });

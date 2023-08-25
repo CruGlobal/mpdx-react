@@ -1,4 +1,4 @@
-extend type Query {
+extend type Mutation {
   syncGoogleAccount(input: SyncGoogleAccountInput!): String
 }
 

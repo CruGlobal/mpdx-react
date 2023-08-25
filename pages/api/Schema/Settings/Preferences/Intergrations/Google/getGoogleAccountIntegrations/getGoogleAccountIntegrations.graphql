@@ -10,15 +10,15 @@ input GetGoogleAccountIntegrationsInput {
 }
 
 type GoogleAccountIntegration {
-  calendar_id: String!
-  calendar_integration: Boolean!
-  calendar_integrations: [String]!
-  calendar_name: String
+  calendarId: String
+  calendarIntegration: Boolean
+  calendarIntegrations: [String]!
+  calendarName: String
   calendars: [GoogleAccountIntegrationCalendars]!
-  created_at: String!
-  updated_at: String!
+  createdAt: String!
+  updatedAt: String!
   id: String!
-  updated_in_db_at: String!
+  updatedInDbAt: String!
 }
 
 type GoogleAccountIntegrationCalendars {

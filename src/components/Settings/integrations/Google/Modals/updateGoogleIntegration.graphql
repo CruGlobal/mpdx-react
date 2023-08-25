@@ -1,16 +1,16 @@
 mutation UpdateGoogleIntegration($input: UpdateGoogleIntegrationInput!) {
   updateGoogleIntegration(input: $input) {
-    calendar_id
-    calendar_integration
-    calendar_integrations
-    calendar_name
+    calendarId
+    calendarIntegration
+    calendarIntegrations
+    calendarName
     calendars {
       id
       name
     }
-    created_at
-    updated_at
+    createdAt
+    updatedAt
     id
-    updated_in_db_at
+    updatedInDbAt
   }
 }

@@ -41,6 +41,7 @@ import { FilterListItem } from './FilterListItem';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { snakeToCamel } from 'src/lib/snakeToCamel';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
@@ -56,18 +57,6 @@ export type FilterValue =
   | ContactFilterValue
   | TaskFilterValue
   | ReportContactFilterValue;
-
-export const snakeToCamel = (inputKey: string): string => {
-  const stringParts = inputKey.split('_');
-
-  return stringParts.reduce((outputKey, part, index) => {
-    if (index === 0) {
-      return part;
-    }
-
-    return `${outputKey}${part.charAt(0).toUpperCase()}${part.slice(1)}`;
-  }, '');
-};
 
 const ReverseFiltersOptions = {
   alma_mater: 'reverseAlmaMater',

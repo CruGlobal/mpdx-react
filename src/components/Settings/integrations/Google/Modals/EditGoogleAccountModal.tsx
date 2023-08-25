@@ -1,37 +1,39 @@
-import React, { useState, ReactElement } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { styled } from '@mui/material/styles';
 import {
+  DialogContent,
   DialogActions,
   Typography,
   Tabs,
   Tab,
-  Select,
-  MenuItem,
+  Box,
+  Skeleton,
+  Button,
 } from '@mui/material';
-import { Box } from '@mui/system';
 import Modal from 'src/components/common/Modal/Modal';
 import {
   SubmitButton,
   CancelButton,
+  ActionButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import {
-  GoogleAccountAttributes,
-  GoogleAccountIntegration,
-} from '../../../../../../graphql/types.generated';
+import { GoogleAccountAttributes } from '../../../../../../graphql/types.generated';
 import {
   useGetGoogleAccountIntegrationsQuery,
   GetGoogleAccountIntegrationsDocument,
   GetGoogleAccountIntegrationsQuery,
-} from './getGoogleAccountIntegrations.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+  useCreateGoogleIntegrationMutation,
+} from './googleIntegrations.generated';
+import { useSyncGoogleAccountMutation } from '../googleAccounts.generated';
 import { useUpdateGoogleIntegrationMutation } from './updateGoogleIntegration.generated';
-import { useSnackbar } from 'notistack';
-import { Formik } from 'formik';
-import * as yup from 'yup';
+import { EditGoogleIntegrationForm } from './EditGoogleIntegrationForm';
 
 interface EditGoogleAccountModalProps {
   handleClose: () => void;
   account: GoogleAccountAttributes;
+  oAuth: string;
 }
 
 enum tabs {
@@ -39,9 +41,14 @@ enum tabs {
   setup = 'setup',
 }
 
+const StyledDialogActions = styled(DialogActions)(() => ({
+  justifyContent: 'space-between',
+}));
+
 export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
   account,
   handleClose,
+  oAuth,
 }) => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,133 +57,107 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
 
   const [updateGoogleIntegration] = useUpdateGoogleIntegrationMutation();
-  const { data } = useGetGoogleAccountIntegrationsQuery({
+  const [createGoogleIntegration] = useCreateGoogleIntegrationMutation();
+  const [syncGoogleAccountQuery] = useSyncGoogleAccountMutation();
+  const {
+    data,
+    loading,
+    refetch: refetchGoogleIntegrations,
+  } = useGetGoogleAccountIntegrationsQuery({
     variables: {
       input: {
         googleAccountId: account.id,
         accountListId: accountListId ?? '',
       },
-      skip: !accountListId,
     },
+    skip: !accountListId,
   });
 
   const googleAccountDetails = data?.getGoogleAccountIntegrations[0];
-
-  // console.log('googleAccountDetails', googleAccountDetails);
 
   const handleTabChange = (_, tab) => {
     setTabSelected(tab);
   };
 
-  const handleEnableCalendarIntegration = async (integration) => {
-    if (!googleAccountDetails?.id || !account?.id || !integration) return;
+  const handleToogleCalendarIntegration = async (
+    enableIntegration: boolean,
+  ) => {
+    if (!tabSelected) return;
     setIsSubmitting(true);
-    await updateGoogleIntegration({
-      variables: {
-        input: {
-          googleAccountId: account.id,
-          googleIntegrationId: googleAccountDetails.id,
-          googleIntegration: {
-            [`${integration}_integration`]: true,
-            overwrite: true,
+
+    if (!googleAccountDetails && enableIntegration) {
+      // Create Google Integration
+      await createGoogleIntegration({
+        variables: {
+          input: {
+            googleAccountId: account.id,
+            accountListID: accountListId ?? '',
+            googleIntegration: {
+              [`${tabSelected}Integration`]: enableIntegration,
+            },
           },
         },
-      },
-      update: (cache) => {
-        const query = {
-          query: GetGoogleAccountIntegrationsDocument,
-          variables: {
+        update: () => refetchGoogleIntegrations(),
+      });
+    } else if (googleAccountDetails) {
+      // Update Google Inetgration
+      await updateGoogleIntegration({
+        variables: {
+          input: {
             googleAccountId: account.id,
-            accountListId,
+            googleIntegrationId: googleAccountDetails.id,
+            googleIntegration: {
+              [`${tabSelected}Integration`]: enableIntegration,
+              overwrite: true,
+            },
           },
-        };
-        const dataFromCache =
-          cache.readQuery<GetGoogleAccountIntegrationsQuery>(query);
-
-        if (dataFromCache) {
-          const data = {
-            ...dataFromCache,
-            [`${integration}_integration`]: true,
+        },
+        update: (cache) => {
+          const query = {
+            query: GetGoogleAccountIntegrationsDocument,
+            variables: {
+              googleAccountId: account.id,
+              accountListId,
+            },
           };
-          cache.writeQuery({ ...query, data });
-        }
-      },
-    });
+          const dataFromCache =
+            cache.readQuery<GetGoogleAccountIntegrationsQuery>(query);
 
-    enqueueSnackbar(t('Enabled Google Calendar Integration!'), {
-      variant: 'success',
-    });
+          if (dataFromCache) {
+            const data = {
+              ...dataFromCache,
+              [`${tabSelected}Integration`]: enableIntegration,
+            };
+            cache.writeQuery({ ...query, data });
+          }
+        },
+      });
+    } else {
+      return;
+    }
+
+    enqueueSnackbar(
+      enableIntegration
+        ? t('Enabled Google Calendar Integration!')
+        : t('Disabled Google Calendar Integration!'),
+      {
+        variant: 'success',
+      },
+    );
     setIsSubmitting(false);
   };
 
-  const IntegrationSchema: yup.SchemaOf<
-    Omit<
-      GoogleAccountIntegration,
-      'created_at' | 'updated_at' | 'updated_in_db_at' | '__typename'
-    >
-  > = yup.object({
-    id: yup.string().required(),
-    calendar_id: yup.string().required(),
-    calendar_integration: yup.boolean().required(),
-    calendar_integrations: yup.array().of(yup.string().required()).required(),
-    calendar_name: yup.string().nullable(),
-    calendars: yup
-      .array()
-      .of(
-        yup.object({
-          __typename: yup
-            .string()
-            .equals(['GoogleAccountIntegrationCalendars']),
-          id: yup.string().required(),
-          name: yup.string().required(),
-        }),
-      )
-      .required(),
-  });
-
-  const onSubmit = async (
-    attributes: Omit<
-      GoogleAccountIntegration,
-      'created_at' | 'updated_at' | 'updated_in_db_at' | '__typename'
-    >,
-  ) => {
-    const googleIntegration = {
-      calendar_id: attributes.calendar_id,
-      calendar_integrations: attributes.calendar_integrations,
-    };
-    await updateGoogleIntegration({
+  const handleSyncCalendar = async () => {
+    await syncGoogleAccountQuery({
       variables: {
         input: {
           googleAccountId: account.id,
           googleIntegrationId: googleAccountDetails?.id ?? '',
-          googleIntegration: {
-            ...googleIntegration,
-            overwrite: true,
-          },
+          integrationName: tabs.calendar,
         },
       },
-      update: (cache) => {
-        const query = {
-          query: GetGoogleAccountIntegrationsDocument,
-          variables: {
-            googleAccountId: account.id,
-            accountListId,
-          },
-        };
-        const dataFromCache =
-          cache.readQuery<GetGoogleAccountIntegrationsQuery>(query);
-
-        if (dataFromCache) {
-          const data = {
-            ...dataFromCache,
-            ...googleIntegration,
-          };
-          cache.writeQuery({ ...query, data });
-        }
-      },
     });
-
-    enqueueSnackbar(t('Updated Google Calendar Integration!'), {
+    enqueueSnackbar(t('Successfully Synced Calendar!'), {
       variant: 'success',
     });
   };
@@ -188,7 +169,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
       handleClose={handleClose}
       size={'sm'}
     >
-      <Box sx={{ p: 2 }}>
+      <DialogContent>
         <Typography>
           {t('You are currently editing settings for {{email}}', {
             email: account.email,
@@ -216,89 +197,27 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
           </Tabs>
         </Box>
 
-        {googleAccountDetails?.calendar_integration &&
+        {loading && googleAccountDetails?.calendarIntegration && (
+          <>
+            <Skeleton height="90px" />
+            <Skeleton height="300px" />
+          </>
+        )}
+
+        {!loading &&
+          googleAccountDetails?.calendarIntegration &&
           tabSelected === tabs.calendar && (
-            <>
-              <Typography>
-                {t('Choose a calendar for MPDX to push tasks to:')}
-              </Typography>
-
-              <Formik
-                initialValues={{
-                  calendar_id: googleAccountDetails.calendar_id,
-                  id: googleAccountDetails.id,
-                  calendar_integration:
-                    googleAccountDetails.calendar_integration,
-                  calendar_integrations:
-                    googleAccountDetails.calendar_integrations,
-                  calendar_name: googleAccountDetails.calendar_name,
-                  calendars: googleAccountDetails.calendars,
-                }}
-                validationSchema={IntegrationSchema}
-                onSubmit={onSubmit}
-              >
-                {({
-                  values: {
-                    // id,
-                    calendar_id,
-                    // calendar_integration,
-                    // calendar_integrations,
-                    // calendar_name,
-                    calendars,
-                  },
-                  // handleChange,
-                  handleSubmit,
-                  setFieldValue,
-                  isSubmitting,
-                  isValid,
-                  // errors,
-                  // initialErrors,
-                }): ReactElement => (
-                  <form onSubmit={handleSubmit}>
-                    {/* {console.log('-----------------___________---------------')}
-                  {console.log('id', id)}
-                  {console.log('calendar_id', calendar_id)}
-                  {console.log('calendar_integration', calendar_integration)}
-                  {console.log('calendar_integrations', calendar_integrations)}
-                  {console.log('calendar_name', calendar_name)}
-                  {console.log('calendars', calendars)}
-                  {console.log('errors', errors)}
-                  {console.log('initialErrors', initialErrors)} */}
-                    <Box>
-                      <Select
-                        value={calendar_id}
-                        onChange={(e) =>
-                          setFieldValue('calendar_id', e.target.value)
-                        }
-                        style={{
-                          width: '100%',
-                        }}
-                      >
-                        {calendars.map((calendar) => (
-                          <MenuItem key={calendar?.id} value={calendar?.id}>
-                            {calendar?.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </Box>
-
-                    <DialogActions>
-                      <SubmitButton disabled={!isValid || isSubmitting}>
-                        {t('Update')}
-                      </SubmitButton>
-                    </DialogActions>
-                  </form>
-                )}
-              </Formik>
-
-              {/* 
-              // Update button
-              // Sync button - Different than Update
-            */}
-            </>
+            <EditGoogleIntegrationForm
+              googleAccountDetails={googleAccountDetails}
+              loading={loading}
+              setIsSubmitting={setIsSubmitting}
+              account={account}
+              handleToogleCalendarIntegration={handleToogleCalendarIntegration}
+            />
           )}
 
-        {!googleAccountDetails?.calendar_integration &&
+        {!loading &&
+          !googleAccountDetails?.calendarIntegration &&
           tabSelected === tabs.calendar && (
             <Typography>
               {t(`MPDX can automatically update your google calendar with your tasks.
@@ -318,19 +237,43 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
             )}
           </Typography>
         )}
-      </Box>
+      </DialogContent>
 
-      <DialogActions>
-        <CancelButton onClick={handleClose} disabled={isSubmitting} />
-        {tabSelected === tabs.calendar && (
-          <SubmitButton
-            disabled={isSubmitting}
-            onClick={() => handleEnableCalendarIntegration(tabs.calendar)}
-          >
-            {t('Enable Calendar Integration')}
-          </SubmitButton>
+      {tabSelected === tabs.calendar &&
+        !googleAccountDetails?.calendarIntegration && (
+          <StyledDialogActions>
+            <CancelButton onClick={handleClose} disabled={isSubmitting} />
+            <SubmitButton
+              disabled={isSubmitting}
+              onClick={() => handleToogleCalendarIntegration(true)}
+            >
+              {t('Enable Calendar Integration')}
+            </SubmitButton>
+          </StyledDialogActions>
         )}
-      </DialogActions>
+      {tabSelected === tabs.calendar &&
+        googleAccountDetails?.calendarIntegration && (
+          <StyledDialogActions>
+            <CancelButton
+              onClick={handleClose}
+              disabled={isSubmitting}
+              variant="contained"
+            />
+            <ActionButton disabled={isSubmitting} onClick={handleSyncCalendar}>
+              {t('Sync Calendar')}
+            </ActionButton>
+          </StyledDialogActions>
+        )}
+      {tabSelected === tabs.setup && googleAccountDetails?.calendarIntegration && (
+        <StyledDialogActions>
+          <CancelButton
+            onClick={handleClose}
+            disabled={isSubmitting}
+            variant="contained"
+          />
+          <Button href={oAuth}>{t('Refresh Google Account')}</Button>
+        </StyledDialogActions>
+      )}
     </Modal>
   );
 };

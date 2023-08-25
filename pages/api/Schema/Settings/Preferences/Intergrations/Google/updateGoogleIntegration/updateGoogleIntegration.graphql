@@ -9,21 +9,3 @@ input UpdateGoogleIntegrationInput {
   googleIntegrationId: ID!
   googleIntegration: GoogleAccountIntegrationInput!
 }
-
-input GoogleAccountIntegrationInput {
-  overwrite: Boolean
-  calendar_integration: Boolean
-  calendar_id: String
-  calendar_integrations: [String]
-  calendar_name: String
-  calendars: [GoogleAccountIntegrationCalendarsInput]
-  created_at: String
-  updated_at: String
-  id: String
-  updated_in_db_at: String
-}
-
-input GoogleAccountIntegrationCalendarsInput {
-  id: String!
-  name: String!
-}

@@ -1,7 +1,7 @@
 import { Resolvers } from '../../../../../../graphql-rest.page.generated';
 
 const SyncGoogleIntegrationResolvers: Resolvers = {
-  Query: {
+  Mutation: {
     syncGoogleIntegration: async (
       _source,
       { input: { googleAccountId, googleIntegrationId, integrationName } },
