@@ -81,7 +81,9 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
     },
     skip: !accountListId,
   });
-  const mailchimpAccount = data?.getMailchimpAccount;
+  // console.log('getMailchimpAccount', data);
+
+  const mailchimpAccount = data?.getMailchimpAccount[0];
 
   useEffect(() => {
     setOAuth(
@@ -132,6 +134,7 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
         }
       },
     });
+    setShowSettings(false);
     enqueueSnackbar(
       t(
         'Your MailChimp sync has been started. This process may take up to 4 hours to complete.',

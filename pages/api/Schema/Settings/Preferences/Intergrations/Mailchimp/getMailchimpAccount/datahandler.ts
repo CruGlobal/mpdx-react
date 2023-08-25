@@ -47,14 +47,18 @@ interface GetMailchimpAccountCamel {
 
 export const GetMailchimpAccount = (
   data: GetMailchimpAccountResponse | null,
-): GetMailchimpAccountCamel | null => {
-  if (!data) return data;
+): GetMailchimpAccountCamel[] => {
+  // Returning inside an array so I can mock an empty response from GraphQL
+  // without the test thinking I want it to create custom random test data.
+  if (!data) return [];
   const attributes = {} as Omit<GetMailchimpAccountCamel, 'id'>;
   Object.keys(data.attributes).map((key) => {
     attributes[snakeToCamel(key)] = data.attributes[key];
   });
-  return {
-    id: data.id,
-    ...attributes,
-  };
+  return [
+    {
+      id: data.id,
+      ...attributes,
+    },
+  ];
 };

@@ -100,6 +100,10 @@ import {
 } from './Schema/Settings/Preferences/Intergrations/Mailchimp/getMailchimpAccount/datahandler';
 import { SyncMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/syncMailchimpAccount/datahandler';
 import { DeleteMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/datahandler';
+import {
+  UpdateMailchimpAccount,
+  UpdateMailchimpAccountResponse,
+} from './Schema/Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/datahandler';
 
 function camelToSnake(str: string): string {
   return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -979,7 +983,7 @@ class MpdxRestApi extends RESTDataSource {
       attributes[camelToSnake(key)] = mailchimpAccount[key];
     });
 
-    const { data }: { data: UpdateGoogleIntegrationResponse } = await this.put(
+    const { data }: { data: UpdateMailchimpAccountResponse } = await this.put(
       `account_lists/${accountListId}/mail_chimp_account`,
       {
         data: {
@@ -992,7 +996,7 @@ class MpdxRestApi extends RESTDataSource {
         },
       },
     );
-    return UpdateGoogleIntegration(data);
+    return UpdateMailchimpAccount(data);
   }
 
   async syncMailchimpAccount(accountListId) {

@@ -1,4 +1,4 @@
-import { snakeToCamel } from 'src/lib/snakeToCamel';
+import { snakeToCamel } from '../../../../../../../../src//lib/snakeToCamel';
 
 export interface UpdateMailchimpAccountResponse {
   attributes: Omit<UpdateMailchimpAccount, 'id'>;
@@ -11,7 +11,7 @@ export interface UpdateMailchimpAccount {
   active: boolean;
   auto_log_campaigns: boolean;
   created_at: string;
-  lists_available_for_newsletters: UpdateMailchimpAccountNewsletters;
+  lists_available_for_newsletters?: UpdateMailchimpAccountNewsletters[];
   lists_link: string;
   lists_present: boolean;
   primary_list_id: string;
@@ -33,7 +33,7 @@ interface UpdateMailchimpAccountCamel {
   active: boolean;
   autoLogCampaigns: boolean;
   createdAt: string;
-  listsAvailableForNewsletters: UpdateMailchimpAccountNewsletters;
+  listsAvailableForNewsletters?: UpdateMailchimpAccountNewsletters[];
   listsLink: string;
   listsPresent: boolean;
   primaryListId: string;
