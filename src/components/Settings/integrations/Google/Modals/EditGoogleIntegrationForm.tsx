@@ -16,10 +16,7 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import {
-  GoogleAccountAttributes,
-  GoogleAccountIntegration,
-} from '../../../../../../graphql/types.generated';
+import { GoogleAccountIntegration } from '../../../../../../graphql/types.generated';
 import {
   SubmitButton,
   DeleteButton,
@@ -30,16 +27,19 @@ import {
   useGetIntegrationActivitiesQuery,
 } from './googleIntegrations.generated';
 import { useUpdateGoogleIntegrationMutation } from './updateGoogleIntegration.generated';
+import { GoogleAccountAttributesSlimmed } from '../GoogleAccordian';
 
+type GoogleAccountIntegrationSlimmed = Pick<
+  GoogleAccountIntegration,
+  'calendarId' | 'id' | 'calendarIntegrations' | 'calendars'
+>;
 interface EditGoogleIntegrationFormProps {
-  account: GoogleAccountAttributes;
-  googleAccountDetails: Pick<
-    GoogleAccountIntegration,
-    'calendarId' | 'id' | 'calendarIntegrations' | 'calendars'
-  >;
+  account: GoogleAccountAttributesSlimmed;
+  googleAccountDetails: GoogleAccountIntegrationSlimmed;
   loading: boolean;
   setIsSubmitting: (boolean) => void;
   handleToogleCalendarIntegration: (boolean) => void;
+  handleClose: () => void;
 }
 
 const StyledBox = styled(Box)(() => ({
@@ -64,6 +64,7 @@ export const EditGoogleIntegrationForm: React.FC<
   loading,
   setIsSubmitting,
   handleToogleCalendarIntegration,
+  handleClose,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -74,35 +75,26 @@ export const EditGoogleIntegrationForm: React.FC<
   const { data: actvitiesData } = useGetIntegrationActivitiesQuery();
   const actvities = actvitiesData?.constant?.activities;
 
-  const IntegrationSchema: yup.SchemaOf<
-    Pick<
-      GoogleAccountIntegration,
-      'calendarId' | 'id' | 'calendarIntegrations' | 'calendars'
-    >
-  > = yup.object({
-    id: yup.string().required(),
-    calendarId: yup.string().required(),
-    calendarIntegrations: yup.array().of(yup.string().required()).required(),
-    calendars: yup
-      .array()
-      .of(
-        yup.object({
-          __typename: yup
-            .string()
-            .equals(['GoogleAccountIntegrationCalendars']),
-          id: yup.string().required(),
-          name: yup.string().required(),
-        }),
-      )
-      .required(),
-  });
+  const IntegrationSchema: yup.SchemaOf<GoogleAccountIntegrationSlimmed> =
+    yup.object({
+      id: yup.string().required(),
+      calendarId: yup.string().required(),
+      calendarIntegrations: yup.array().of(yup.string().required()).required(),
+      calendars: yup
+        .array()
+        .of(
+          yup.object({
+            __typename: yup
+              .string()
+              .equals(['GoogleAccountIntegrationCalendars']),
+            id: yup.string().required(),
+            name: yup.string().required(),
+          }),
+        )
+        .required(),
+    });
 
-  const onSubmit = async (
-    attributes: Pick<
-      GoogleAccountIntegration,
-      'calendarId' | 'id' | 'calendarIntegrations' | 'calendars'
-    >,
-  ) => {
+  const onSubmit = async (attributes: GoogleAccountIntegrationSlimmed) => {
     setIsSubmitting(true);
     const googleIntegration = {
       calendarId: attributes.calendarId,
@@ -144,6 +136,7 @@ export const EditGoogleIntegrationForm: React.FC<
     enqueueSnackbar(t('Updated Google Calendar Integration!'), {
       variant: 'success',
     });
+    handleClose();
   };
 
   return (
@@ -206,7 +199,7 @@ export const EditGoogleIntegrationForm: React.FC<
                 <StyledBox>
                   {actvities?.map((activity) => {
                     if (!activity?.id || !activity?.value) return null;
-                    const activityId = `${activity.value} Checkbox`;
+                    const activityId = `${activity.value}-Checkbox`;
                     const isChecked = calendarIntegrations.includes(
                       activity?.id ?? '',
                     );
@@ -216,7 +209,7 @@ export const EditGoogleIntegrationForm: React.FC<
                         control={
                           <Checkbox
                             data-testid={activityId}
-                            name={activityId.replace(/ /g, '')}
+                            name={activityId}
                             checked={isChecked}
                             onChange={(_, value) => {
                               let newCalendarInetgrations;

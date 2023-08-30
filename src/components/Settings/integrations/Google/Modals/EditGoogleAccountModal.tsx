@@ -19,7 +19,7 @@ import {
   CancelButton,
   ActionButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GoogleAccountAttributes } from '../../../../../../graphql/types.generated';
+import { GoogleAccountAttributesSlimmed } from '../GoogleAccordian';
 import {
   useGetGoogleAccountIntegrationsQuery,
   GetGoogleAccountIntegrationsDocument,
@@ -32,7 +32,7 @@ import { EditGoogleIntegrationForm } from './EditGoogleIntegrationForm';
 
 interface EditGoogleAccountModalProps {
   handleClose: () => void;
-  account: GoogleAccountAttributes;
+  account: GoogleAccountAttributesSlimmed;
   oAuth: string;
 }
 
@@ -213,6 +213,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
               setIsSubmitting={setIsSubmitting}
               account={account}
               handleToogleCalendarIntegration={handleToogleCalendarIntegration}
+              handleClose={handleClose}
             />
           )}
 
@@ -264,14 +265,16 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
             </ActionButton>
           </StyledDialogActions>
         )}
-      {tabSelected === tabs.setup && googleAccountDetails?.calendarIntegration && (
+      {tabSelected === tabs.setup && (
         <StyledDialogActions>
           <CancelButton
             onClick={handleClose}
             disabled={isSubmitting}
             variant="contained"
           />
-          <Button href={oAuth}>{t('Refresh Google Account')}</Button>
+          <Button href={oAuth} variant="contained">
+            {t('Refresh Google Account')}
+          </Button>
         </StyledDialogActions>
       )}
     </Modal>

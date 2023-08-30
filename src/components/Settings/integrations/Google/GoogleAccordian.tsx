@@ -77,6 +77,11 @@ const Right = styled(Box)(() => ({
   width: '120px',
 }));
 
+export type GoogleAccountAttributesSlimmed = Pick<
+  GoogleAccountAttributes,
+  'id' | 'email' | 'primary' | 'remoteId' | 'tokenExpired'
+>;
+
 export const GoogleAccordian: React.FC<GoogleAccordianProps> = ({
   handleAccordionChange,
   expandedPanel,
@@ -85,7 +90,7 @@ export const GoogleAccordian: React.FC<GoogleAccordianProps> = ({
   const [openEditGoogleAccount, setOpenEditGoogleAccount] = useState(false);
   const [openDeleteGoogleAccount, setOpenDeleteGoogleAccount] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<
-    GoogleAccountAttributes | undefined
+    GoogleAccountAttributesSlimmed | undefined
   >();
   const { data, loading } = useGoogleAccountsQuery({
     skip: !expandedPanel,

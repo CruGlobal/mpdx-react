@@ -8,16 +8,16 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GoogleAccountAttributes } from '../../../../../../graphql/types.generated';
 import {
   useDeleteGoogleAccountMutation,
   GoogleAccountsDocument,
   GoogleAccountsQuery,
 } from '../googleAccounts.generated';
+import { GoogleAccountAttributesSlimmed } from '../GoogleAccordian';
 
 interface DeleteGoogleAccountModalProps {
   handleClose: () => void;
-  account: GoogleAccountAttributes;
+  account: GoogleAccountAttributesSlimmed;
 }
 
 const StyledDialogActions = styled(DialogActions)(() => ({
