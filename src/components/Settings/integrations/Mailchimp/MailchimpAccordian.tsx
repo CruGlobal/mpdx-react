@@ -82,7 +82,9 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
     skip: !accountListId,
   });
 
-  const mailchimpAccount = data?.getMailchimpAccount[0];
+  const mailchimpAccount = data?.getMailchimpAccount
+    ? data.getMailchimpAccount[0]
+    : null;
 
   useEffect(() => {
     setOAuth(

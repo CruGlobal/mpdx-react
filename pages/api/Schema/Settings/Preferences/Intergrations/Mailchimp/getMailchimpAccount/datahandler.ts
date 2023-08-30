@@ -33,7 +33,7 @@ interface GetMailchimpAccountCamel {
   active: boolean;
   autoLogCampaigns: boolean;
   createdAt: string;
-  listsAvailableForNewsletters: GetMailchimpAccountNewsletters;
+  listsAvailableForNewsletters: GetMailchimpAccountNewsletters[];
   listsLink: string;
   listsPresent: boolean;
   primaryListId: string;

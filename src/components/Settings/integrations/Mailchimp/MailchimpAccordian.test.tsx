@@ -8,6 +8,7 @@ import theme from '../../../../theme';
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations.page';
 import { MailchimpAccordian } from './MailchimpAccordian';
 import { GetMailchimpAccountQuery } from './MailchimpAccount.generated';
+import * as Types from '../../../../../graphql/types.generated';
 
 jest.mock('next-auth/react');
 
@@ -45,7 +46,7 @@ const Components = (children: React.ReactElement) => (
   </SnackbarProvider>
 );
 
-const standardMailchimpAccount = {
+const standardMailchimpAccount: Types.MailchimpAccount = {
   __typename: 'MailchimpAccount',
   id: '123456789',
   active: true,
