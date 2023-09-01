@@ -104,6 +104,13 @@ import {
   UpdateMailchimpAccount,
   UpdateMailchimpAccountResponse,
 } from './Schema/Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/datahandler';
+import {
+  GetPrayerlettersAccountResponse,
+  GetPrayerlettersAccount,
+} from './Schema/Settings/Preferences/Intergrations/Prayerletters/getPrayerlettersAccount/datahandler';
+import { SyncPrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/datahandler';
+import { DeletePrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/datahandler';
+import { SendToChalkline } from './Schema/Settings/Preferences/Intergrations/Chalkine/sendToChalkline/datahandler';
 
 function camelToSnake(str: string): string {
   return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -963,6 +970,7 @@ class MpdxRestApi extends RESTDataSource {
   //
   //
   async getMailchimpAccount(accountListId) {
+    // Catch since it will return an error if no account found
     try {
       const { data }: { data: GetMailchimpAccountResponse } = await this.get(
         `account_lists/${accountListId}/mail_chimp_account`,
@@ -1007,6 +1015,45 @@ class MpdxRestApi extends RESTDataSource {
   async deleteMailchimpAccount(accountListId) {
     await this.delete(`account_lists/${accountListId}/mail_chimp_account`);
     return DeleteMailchimpAccount();
+  }
+
+  // Prayerletters Integration
+  //
+  //
+  async getPrayerlettersAccount(accountListId) {
+    // Catch since it will return an error if no account found
+    try {
+      const { data }: { data: GetPrayerlettersAccountResponse } =
+        await this.get(`account_lists/${accountListId}/prayer_letters_account`);
+      return GetPrayerlettersAccount(data);
+    } catch {
+      return GetPrayerlettersAccount(null);
+    }
+  }
+
+  async syncPrayerlettersAccount(accountListId) {
+    await this.get(
+      `account_lists/${accountListId}/prayer_letters_account/sync`,
+    );
+    return SyncPrayerlettersAccount();
+  }
+
+  async deletePrayerlettersAccount(accountListId) {
+    await this.delete(`account_lists/${accountListId}/prayer_letters_account`);
+    return DeletePrayerlettersAccount();
+  }
+
+  // Chalkline Integration
+  //
+  //
+
+  async sendToChalkline(accountListId) {
+    await this.post(`account_lists/${accountListId}/chalkline_mail`, {
+      data: {
+        type: 'chalkline_mails',
+      },
+    });
+    return SendToChalkline();
   }
 }
 

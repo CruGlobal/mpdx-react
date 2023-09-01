@@ -1,0 +1,13 @@
+extend type Query {
+  getPrayerlettersAccount(
+    input: PrayerlettersAccountInput!
+  ): [PrayerlettersAccount]
+}
+
+input PrayerlettersAccountInput {
+  accountListId: ID!
+}
+
+type PrayerlettersAccount {
+  validToken: Boolean!
+}

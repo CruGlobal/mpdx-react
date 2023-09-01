@@ -45,7 +45,7 @@ export const SettingsNavItems = [
     title: 'Notifications',
   },
   {
-    id: 'connectServices',
+    id: 'integrations',
     title: 'Connect Services',
   },
   {

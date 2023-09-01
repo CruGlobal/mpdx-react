@@ -1,0 +1,3 @@
+mutation SendToChalkline($input: SendToChalklineInput!) {
+  sendToChalkline(input: $input)
+}

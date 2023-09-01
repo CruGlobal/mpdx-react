@@ -19,5 +19,58 @@ query GetUsersOrganizations {
     latestDonationDate
     lastDownloadedAt
     username
+    id
+  }
+}
+
+mutation DeleteOrganizationAccount(
+  $input: OrganizationAccountDeleteMutationInput!
+) {
+  deleteOrganizationAccount(input: $input) {
+    clientMutationId
+    id
+  }
+}
+
+mutation CreateOrganizationAccount(
+  $input: OrganizationAccountCreateMutationInput!
+) {
+  createOrganizationAccount(input: $input) {
+    clientMutationId
+    organizationAccount {
+      username
+      password
+      person {
+        id
+      }
+    }
+  }
+}
+
+mutation SyncOrganizationAccount(
+  $input: OrganizationAccountSyncMutationInput!
+) {
+  syncOrganizationAccount(input: $input) {
+    organizationAccount {
+      id
+    }
+  }
+}
+
+mutation UpdateOrganizationAccount(
+  $input: OrganizationAccountUpdateMutationInput!
+) {
+  updateOrganizationAccount(input: $input) {
+    organizationAccount {
+      id
+      organization {
+        name
+        id
+        apiClass
+        oauth
+      }
+      lastDownloadedAt
+      lastDownload
+    }
   }
 }

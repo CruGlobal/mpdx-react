@@ -27,18 +27,20 @@ import {
   GetMailchimpAccountDocument,
   GetMailchimpAccountQuery,
   useSyncMailchimpAccountMutation,
-  useDeleteMailchimpAccountMutation,
 } from './MailchimpAccount.generated';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import {
-  StyledListItem,
-  StyledList,
-  StyledServicesButton,
   IntegrationsContext,
   IntegrationsContextType,
 } from 'pages/accountLists/[accountListId]/settings/integrations.page';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { DeleteMailchimpAccountModal } from './Modals/DeleteMailchimpModal';
+import {
+  StyledListItem,
+  StyledList,
+  StyledServicesButton,
+} from '../integrationsHelper';
 
 interface MailchimpAccordianProps {
   handleAccordionChange: (panel: string) => void;
@@ -61,6 +63,7 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
   const { t } = useTranslation();
   const [oAuth, setOAuth] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { apiToken } = useContext(
     IntegrationsContext,
@@ -68,7 +71,6 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
   const accountListId = useAccountListId();
   const [updateMailchimpAccount] = useUpdateMailchimpAccountMutation();
   const [syncMailchimpAccount] = useSyncMailchimpAccountMutation();
-  const [deleteMailchimpAccount] = useDeleteMailchimpAccountMutation();
   const {
     data,
     loading,
@@ -134,16 +136,18 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
           cache.writeQuery({ ...query, data });
         }
       },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t(
+            'Your MailChimp sync has been started. This process may take up to 4 hours to complete.',
+          ),
+          {
+            variant: 'success',
+          },
+        );
+      },
     });
     setShowSettings(false);
-    enqueueSnackbar(
-      t(
-        'Your MailChimp sync has been started. This process may take up to 4 hours to complete.',
-      ),
-      {
-        variant: 'success',
-      },
-    );
   };
 
   const handleSync = async () => {
@@ -165,18 +169,10 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
   };
   const handleShowSettings = () => setShowSettings(true);
 
-  const handleDisconnect = async () => {
-    await deleteMailchimpAccount({
-      variables: {
-        input: {
-          accountListId: accountListId ?? '',
-        },
-      },
-      update: () => refetchGetMailchimpAccount(),
-    });
-    enqueueSnackbar(t('MPDX removed your integration with MailChimp'), {
-      variant: 'success',
-    });
+  const handleDisconnect = async () => setShowDeleteModal(true);
+
+  const handleDeleteModalClose = () => {
+    setShowDeleteModal(false);
   };
 
   const availableNewsletterLists = useMemo(() => {
@@ -381,6 +377,14 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
             </StyledButton>
           </Box>
         )}
+
+      {showDeleteModal && (
+        <DeleteMailchimpAccountModal
+          accountListId={accountListId ?? ''}
+          handleClose={handleDeleteModalClose}
+          refetchMailchimpAccount={refetchGetMailchimpAccount}
+        />
+      )}
     </AccordionItem>
   );
 };

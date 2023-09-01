@@ -34,6 +34,24 @@ import { SyncMailchimpAccountResolvers } from '../Settings/Preferences/Intergrat
 import DeleteMailchimpAccountTypeDefs from '../Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/deleteMailchimpAccount.graphql';
 import { DeleteMailchimpAccountResolvers } from '../Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/resolvers';
 
+// Prayerletters INTEGRATION
+//
+// Get Account
+import GetPrayerlettersAccountTypeDefs from '../Settings/Preferences/Intergrations/Prayerletters/getPrayerlettersAccount/getPrayerlettersAccount.graphql';
+import { GetPrayerlettersAccountResolvers } from '../Settings/Preferences/Intergrations/Prayerletters/getPrayerlettersAccount/resolvers';
+// Sync Account
+import SyncPrayerlettersAccountTypeDefs from '../Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/syncPrayerlettersAccount.graphql';
+import { SyncPrayerlettersAccountResolvers } from '../Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/resolvers';
+// Delete Account
+import DeletePrayerlettersAccountTypeDefs from '../Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/deletePrayerlettersAccount.graphql';
+import { DeletePrayerlettersAccountResolvers } from '../Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/resolvers';
+
+// Chalkkine INTEGRATION
+//
+// Get Account
+import SendToChalklineTypeDefs from '../Settings/Preferences/Intergrations/Chalkine/sendToChalkline/sendToChalkline.graphql';
+import { SendToChalklineResolvers } from '../Settings/Preferences/Intergrations/Chalkine/sendToChalkline/resolvers';
+
 export const integrationSchema = [
   {
     typeDefs: GetGoogleAccountsTypeDefs,
@@ -74,5 +92,21 @@ export const integrationSchema = [
   {
     typeDefs: DeleteMailchimpAccountTypeDefs,
     resolvers: DeleteMailchimpAccountResolvers,
+  },
+  {
+    typeDefs: GetPrayerlettersAccountTypeDefs,
+    resolvers: GetPrayerlettersAccountResolvers,
+  },
+  {
+    typeDefs: SyncPrayerlettersAccountTypeDefs,
+    resolvers: SyncPrayerlettersAccountResolvers,
+  },
+  {
+    typeDefs: DeletePrayerlettersAccountTypeDefs,
+    resolvers: DeletePrayerlettersAccountResolvers,
+  },
+  {
+    typeDefs: SendToChalklineTypeDefs,
+    resolvers: SendToChalklineResolvers,
   },
 ];

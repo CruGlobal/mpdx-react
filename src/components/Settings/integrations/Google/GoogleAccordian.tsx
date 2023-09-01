@@ -1,15 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  List,
-  ListItemText,
-  IconButton,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Card, IconButton, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
@@ -27,23 +18,16 @@ import {
   IntegrationsContextType,
 } from 'pages/accountLists/[accountListId]/settings/integrations.page';
 import HandoffLink from 'src/components/HandoffLink';
+import {
+  StyledListItem,
+  StyledList,
+  StyledServicesButton,
+} from '../integrationsHelper';
 
 interface GoogleAccordianProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
 }
-
-const StyledListItem = styled(ListItemText)(() => ({
-  display: 'list-item',
-}));
-const StyledList = styled(List)(({ theme }) => ({
-  listStyleType: 'disc',
-  paddingLeft: theme.spacing(4),
-}));
-
-const StyledServicesButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-}));
 
 const EditIconButton = styled(IconButton)(() => ({
   color: theme.palette.primary.main,

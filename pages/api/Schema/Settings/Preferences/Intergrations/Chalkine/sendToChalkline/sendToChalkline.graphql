@@ -1,0 +1,7 @@
+extend type Mutation {
+  sendToChalkline(input: SendToChalklineInput!): String!
+}
+
+input SendToChalklineInput {
+  accountListId: ID!
+}

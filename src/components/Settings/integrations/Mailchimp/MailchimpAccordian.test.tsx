@@ -338,6 +338,18 @@ describe('MailchimpAccount', () => {
       );
 
       await waitFor(() => {
+        expect(
+          getByText('Confirm to Disconnect Mailchimp Account'),
+        ).toBeInTheDocument();
+      });
+
+      userEvent.click(
+        getByRole('button', {
+          name: /confirm/i,
+        }),
+      );
+
+      await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
           'MPDX removed your integration with MailChimp',
           {
