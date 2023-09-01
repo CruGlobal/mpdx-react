@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import {
   Grid,
   Box,
-  Button,
   IconButton,
   Typography,
   Card,
@@ -15,20 +14,24 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Edit from '@mui/icons-material/Edit';
 import { styled } from '@mui/material/styles';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { OrganizationAddAccountModal } from './OrganizationAddAccountModal';
-import { OrganizationImportDataSyncModal } from './OrganizationImportDataSyncModal';
-import { useGetUsersOrganizationsQuery } from './Organizations.generated';
-import { Organization } from '../../../../../graphql/types.generated';
-import { oAuth, sync } from './OrganizationService';
+import { OrganizationAddAccountModal } from './Modals/OrganizationAddAccountModal';
+import { OrganizationImportDataSyncModal } from './Modals/OrganizationImportDataSyncModal';
+import {
+  useGetUsersOrganizationsQuery,
+  useDeleteOrganizationAccountMutation,
+  useSyncOrganizationAccountMutation,
+} from './Organizations.generated';
+import { oAuth } from './OrganizationService';
+import { useSnackbar } from 'notistack';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
+import { StyledServicesButton } from '../integrationsHelper';
 
 interface OrganizationAccordianProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
 }
-
-const StyledServicesButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-}));
 
 const OrganizationDeleteIconButton = styled(IconButton)(() => ({
   color: theme.palette.cruGrayMedium.main,
@@ -78,12 +81,22 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-  const [selectedOrganization, setSelectedOrganization] =
-    useState<Omit<Organization, 'createdAt' | 'updatedAt'>>();
+  const accountListId = useAccountListId();
+  const { enqueueSnackbar } = useSnackbar();
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
   const [showImportDataSyncModal, setShowImportDataSyncModal] = useState(false);
+  const [showDeleteOrganizationModal, setShowDeleteOrganizationModal] =
+    useState(false);
+  const [showEditOrganizationModal, setShowEditOrganizationModal] =
+    useState(false);
+  const [deleteOrganizationAccount] = useDeleteOrganizationAccountMutation();
+  const [syncOrganizationAccount] = useSyncOrganizationAccountMutation();
 
-  const { data, loading } = useGetUsersOrganizationsQuery();
+  const {
+    data,
+    loading,
+    refetch: refetchOrganizations,
+  } = useGetUsersOrganizationsQuery();
   const organizations = data?.userOrganizationAccounts;
 
   const handleReconnect = async (organizationId) => {
@@ -91,25 +104,55 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
     await oAuth(organizationId);
   };
 
-  const handleSync = async (
-    organization: Omit<Organization, 'createdAt' | 'updatedAt'>,
-  ) => {
-    // TODO
-    await sync();
-    return organization;
+  const handleSync = async (accountId: string) => {
+    await syncOrganizationAccount({
+      variables: {
+        input: {
+          id: accountId,
+        },
+      },
+      onError: () => {
+        enqueueSnackbar(t("MPDX couldn't sync your organization account"), {
+          variant: 'error',
+        });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t(
+            'MPDX started syncing your organization account. This will occur in the background over the next 24-hours.',
+          ),
+          {
+            variant: 'success',
+          },
+        );
+      },
+    });
   };
 
-  const handleEdit = async (
-    organization: Omit<Organization, 'createdAt' | 'updatedAt'>,
-  ) => {
-    // TODO
-    return organization;
-  };
-  const handleDelete = async (
-    organization: Omit<Organization, 'createdAt' | 'updatedAt'>,
-  ) => {
-    // TODO
-    return organization;
+  const handleDelete = async (accountId: string) => {
+    await deleteOrganizationAccount({
+      variables: {
+        input: {
+          id: accountId,
+        },
+      },
+      update: () => refetchOrganizations(),
+      onError: () => {
+        enqueueSnackbar(
+          t(
+            "MPDX couldn't save your configuration changes for that organization",
+          ),
+          {
+            variant: 'error',
+          },
+        );
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('MPDX removed your organization integration'), {
+          variant: 'success',
+        });
+      },
+    });
   };
 
   return (
@@ -143,7 +186,7 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
       {!loading && !!organizations?.length && (
         <Box style={{ marginTop: '20px' }}>
           {organizations.map(
-            ({ organization, lastDownloadedAt, latestDonationDate }) => {
+            ({ organization, lastDownloadedAt, latestDonationDate, id }) => {
               const type = getOrganizationType(
                 organization.apiClass,
                 organization.oauth,
@@ -181,10 +224,7 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
                           variant="contained"
                           size="small"
                           sx={{ m: '0 0 0 10px' }}
-                          onClick={() => {
-                            setSelectedOrganization(organization);
-                            handleSync(organization);
-                          }}
+                          onClick={() => handleSync(id)}
                         >
                           Sync
                         </StyledServicesButton>
@@ -195,10 +235,7 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
                           variant="contained"
                           size="small"
                           sx={{ m: '0 0 0 10px' }}
-                          onClick={() => {
-                            setSelectedOrganization(organization);
-                            setShowImportDataSyncModal(true);
-                          }}
+                          onClick={() => setShowImportDataSyncModal(true)}
                         >
                           Import TntConnect DataSync file
                         </StyledServicesButton>
@@ -216,43 +253,66 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
                       )}
                       {type === OrganizationTypesEnum.LOGIN && (
                         <OrganizationDeleteIconButton
-                          onClick={() => handleEdit(organization)}
+                          onClick={() => setShowEditOrganizationModal(true)}
                         >
                           <Edit />
                         </OrganizationDeleteIconButton>
                       )}
                       <OrganizationDeleteIconButton
-                        onClick={() => handleDelete(organization)}
+                        onClick={() => setShowDeleteOrganizationModal(true)}
                       >
                         <DeleteIcon />
                       </OrganizationDeleteIconButton>
                     </Box>
                   </Box>
                   <Divider />
-                  <Box sx={{ p: 2, display: 'flex' }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        Last Updated
-                      </Grid>
-                      {lastDownloadedAt && (
+                  {lastDownloadedAt && (
+                    <Box sx={{ p: 2, display: 'flex' }}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          Last Updated
+                        </Grid>
                         <Grid item xs={6}>
                           {DateTime.fromISO(lastDownloadedAt).toRelative()}
                         </Grid>
-                      )}
-                    </Grid>
-                  </Box>
-                  <Box sx={{ p: 2, display: 'flex' }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        Last Gift Date
                       </Grid>
-                      {latestDonationDate && (
+                    </Box>
+                  )}
+                  {latestDonationDate && (
+                    <Box sx={{ p: 2, display: 'flex' }}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          Last Gift Date
+                        </Grid>
                         <Grid item xs={6}>
                           {DateTime.fromISO(latestDonationDate).toRelative()}
                         </Grid>
-                      )}
-                    </Grid>
-                  </Box>
+                      </Grid>
+                    </Box>
+                  )}
+                  <Confirmation
+                    isOpen={showDeleteOrganizationModal}
+                    title={t('Confirm')}
+                    message={t(
+                      'Are you sure you wish to disconnect this organization?',
+                    )}
+                    handleClose={() => setShowDeleteOrganizationModal(false)}
+                    mutation={() => handleDelete(id)}
+                  />
+                  {showEditOrganizationModal && (
+                    <OrganizationEditAccountModal
+                      handleClose={() => setShowEditOrganizationModal(false)}
+                      organizationId={id}
+                    />
+                  )}
+                  {showImportDataSyncModal && (
+                    <OrganizationImportDataSyncModal
+                      handleClose={() => setShowImportDataSyncModal(false)}
+                      organizationId={id}
+                      organizationName={organization.name}
+                      accountListId={accountListId ?? ''}
+                    />
+                  )}
                 </Card>
               );
             },
@@ -270,12 +330,8 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
       {showAddAccountModal && (
         <OrganizationAddAccountModal
           handleClose={() => setShowAddAccountModal(false)}
-        />
-      )}
-      {showImportDataSyncModal && (
-        <OrganizationImportDataSyncModal
-          handleClose={() => setShowImportDataSyncModal(false)}
-          organization={selectedOrganization}
+          accountListId={accountListId}
+          refetchOrganizations={refetchOrganizations}
         />
       )}
     </AccordionItem>

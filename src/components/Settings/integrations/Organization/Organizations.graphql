@@ -63,14 +63,6 @@ mutation UpdateOrganizationAccount(
   updateOrganizationAccount(input: $input) {
     organizationAccount {
       id
-      organization {
-        name
-        id
-        apiClass
-        oauth
-      }
-      lastDownloadedAt
-      lastDownload
     }
   }
 }
