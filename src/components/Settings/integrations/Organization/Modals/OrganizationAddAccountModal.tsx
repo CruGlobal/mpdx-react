@@ -45,8 +45,8 @@ export type OrganizationFormikSchema = {
     Organization,
     'id' | 'name' | 'oauth' | 'apiClass' | 'giftAidPercentage'
   >;
-  username: string | null | undefined;
-  password: string | null | undefined;
+  username: string | undefined;
+  password: string | undefined;
 };
 
 const StyledBox = styled(Box)(() => ({
@@ -75,7 +75,8 @@ export const OrganizationAddAccountModal: React.FC<
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
   const { data: organizations, loading } = useGetOrganizationsQuery();
 
-  const onSubmit = async (attributes: OrganizationFormikSchema) => {
+  const onSubmit = async (attributes: Partial<OrganizationFormikSchema>) => {
+    if (!attributes?.selectedOrganization) return;
     const { apiClass, oauth, id } = attributes.selectedOrganization;
     const type = getOrganizationType(apiClass, oauth);
 

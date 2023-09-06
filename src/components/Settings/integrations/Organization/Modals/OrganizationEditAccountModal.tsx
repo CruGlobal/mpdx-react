@@ -80,7 +80,6 @@ export const OrganizationEditAccountModal: React.FC<
     >
       <Formik
         initialValues={{
-          selectedOrganization: undefined,
           username: '',
           password: '',
         }}
