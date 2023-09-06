@@ -13,6 +13,7 @@ import {
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
 import InfoIcon from '@mui/icons-material/Info';
+import { useLocale } from 'src/hooks/useLocale';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
 import {
@@ -20,11 +21,12 @@ import {
   FourteenMonthReportTableHeadProps as TableHeadProps,
 } from './TableHead/TableHead';
 import type { Contact, Month } from './TableHead/TableHead';
-import { useLocale } from 'src/hooks/useLocale';
+import { Totals } from '../../FourteenMonthReport';
 
 interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[] | undefined;
+  totals: Totals[];
   ref: React.Ref<HTMLTableElement>;
   onSelectContact: (contactId: string) => void;
 }
@@ -59,10 +61,10 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
         isExpanded,
         order,
         orderBy,
+        totals,
         orderedContacts,
         onRequestSort,
         salaryCurrency,
-        totals,
         onSelectContact,
       },
       ref,
@@ -152,7 +154,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                 <TableCell>
                   <strong>{t('Totals')}</strong>
                 </TableCell>
-                {totals?.months?.map((month) => (
+                {totals?.map((month) => (
                   <TableCell key={month.month} align="center">
                     <strong>
                       {numberFormat(Math.round(month.total), locale)}
@@ -163,10 +165,8 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                   <strong>
                     {numberFormat(
                       Math.round(
-                        totals?.months?.reduce(
-                          (sum, month) => sum + month.total,
+                        totals?.reduce((sum, month) => sum + month.total, 0) ??
                           0,
-                        ) ?? 0,
                       ),
                       locale,
                     )}
