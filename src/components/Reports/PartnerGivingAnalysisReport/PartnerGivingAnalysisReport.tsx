@@ -2,6 +2,10 @@ import React, { useMemo, useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
+import {
+  MultiPageHeader,
+  HeaderTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
@@ -13,7 +17,6 @@ import {
 import type { Order } from '../Reports.type';
 import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
-import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { ListHeader } from 'src/components/Shared/Header/ListHeader';
 
@@ -130,11 +133,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 
   return (
     <Box>
-      <Header
-        title={title}
-        showNavListButton={false}
-        onNavListToggle={onNavListToggle}
+      <MultiPageHeader
         isNavListOpen={isNavListOpen}
+        onNavListToggle={onNavListToggle}
+        title={title}
+        headerType={HeaderTypeEnum.Report}
       />
       <ListHeader
         page="report"

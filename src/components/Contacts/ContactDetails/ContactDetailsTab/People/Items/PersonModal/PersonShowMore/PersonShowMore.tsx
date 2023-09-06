@@ -34,10 +34,12 @@ const DeceasedLabel = styled(FormControlLabel)(() => ({
 
 interface PersonShowMoreProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  showDeceased?: boolean;
 }
 
 export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
   formikProps,
+  showDeceased = true,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -198,22 +200,24 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           fullWidth
         />
       </ModalSectionContainer>
-      <ModalSectionContainer>
-        <Grid container alignItems="center">
-          <Grid container item xs={6} alignItems="center">
-            <DeceasedLabel
-              control={
-                <Checkbox
-                  checked={!!deceased}
-                  onChange={() => setFieldValue('deceased', !deceased)}
-                  color="secondary"
-                />
-              }
-              label={t('Deceased')}
-            />
+      {showDeceased && (
+        <ModalSectionContainer>
+          <Grid container alignItems="center">
+            <Grid container item xs={6} alignItems="center">
+              <DeceasedLabel
+                control={
+                  <Checkbox
+                    checked={!!deceased}
+                    onChange={() => setFieldValue('deceased', !deceased)}
+                    color="secondary"
+                  />
+                }
+                label={t('Deceased')}
+              />
+            </Grid>
           </Grid>
-        </Grid>
-      </ModalSectionContainer>
+        </ModalSectionContainer>
+      )}
     </>
   );
 };

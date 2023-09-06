@@ -9,11 +9,14 @@ import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsPage } from '../../contacts/ContactsPage';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { suggestArticles } from 'src/lib/helpScout';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 
 const DonationsReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -55,12 +58,13 @@ const DonationsReportPage: React.FC = () => {
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
-              <NavReportsList
+              <MultiPageMenu
                 isOpen={isNavListOpen}
                 selectedId="donations"
                 onClose={handleNavListToggle}
                 designationAccounts={designationAccounts}
                 setDesignationAccounts={setDesignationAccounts}
+                navType={NavTypeEnum.Reports}
               />
             }
             leftOpen={isNavListOpen}

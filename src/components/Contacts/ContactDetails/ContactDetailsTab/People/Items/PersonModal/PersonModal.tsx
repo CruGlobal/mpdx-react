@@ -13,7 +13,6 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useApolloClient } from '@apollo/client';
 import { Formik } from 'formik';
-import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
 import {
@@ -39,10 +38,6 @@ import {
 } from './PersonModal.generated';
 import { useEditMailingInfoMutation } from '../../../Mailing/EditMailingInfoModal/EditMailingInfoModal.generated';
 import {
-  ContactDetailContext,
-  ContactDetailsType,
-} from 'src/components/Contacts/ContactDetails/ContactDetailContext';
-import {
   SubmitButton,
   CancelButton,
   DeleteButton,
@@ -52,13 +47,12 @@ import {
   GetContactDetailsHeaderDocument,
   GetContactDetailsHeaderQuery,
 } from '../../../../ContactDetailsHeader/ContactDetailsHeader.generated';
+import { getPersonSchema, formatSubmittedFields } from './personModalHelper';
+import { profile2 } from 'src/components/Settings/preferences/DemoContent';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
 })(({ destroyed }: { destroyed: boolean }) => ({
-  // '&& > label': {
-  //   textTransform: 'uppercase',
-  // },
   textDecoration: destroyed ? 'line-through' : 'none',
 }));
 
@@ -101,6 +95,7 @@ interface PersonModalProps {
   accountListId: string;
   handleClose: () => void;
   contactData?: ContactPeopleFragment;
+  userProfile?: boolean;
 }
 
 export interface NewSocial {
@@ -117,17 +112,19 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   accountListId,
   handleClose,
   contactData,
+  userProfile = false,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const {
-    personEditShowMore,
-    setPersonEditShowMore,
-    removeDialogOpen,
-    handleRemoveDialogOpen,
-  } = React.useContext(ContactDetailContext) as ContactDetailsType;
+  const [personEditShowMore, setPersonEditShowMore] = useState(false);
+  const [removeDialogOpen, handleRemoveDialogOpen] = useState(false);
 
   const client = useApolloClient();
+
+  // TODO
+  if (userProfile)
+    person =
+      profile2 as ContactDetailsTabQuery['contact']['people']['nodes'][0];
 
   const [avatar, setAvatar] = useState<{ file: File; blobUrl: string } | null>(
     null,
@@ -159,85 +156,10 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [createPerson] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
   const [editMailingInfo] = useEditMailingInfoMutation();
+  // TODO
+  // const [updateUserProfile] = useCreatePersonMutation();
 
-  const personSchema: yup.SchemaOf<
-    Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
-  > = yup.object({
-    firstName: yup.string().required(),
-    lastName: yup.string().nullable(),
-    title: yup.string().nullable(),
-    suffix: yup.string().nullable(),
-    phoneNumbers: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        number: yup.string().required(t('This field is required')),
-        destroy: yup.boolean().default(false),
-        primary: yup.boolean().default(false),
-        historic: yup.boolean().default(false),
-      }),
-    ),
-    emailAddresses: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        email: yup
-          .string()
-          .email(t('Invalid email address'))
-          .required(t('This field is required')),
-        destroy: yup.boolean().default(false),
-        primary: yup.boolean().default(false),
-        historic: yup.boolean().default(false),
-      }),
-    ),
-    facebookAccounts: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        username: yup.string().required(),
-      }),
-    ),
-    linkedinAccounts: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        publicUrl: yup.string().required(),
-      }),
-    ),
-    twitterAccounts: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        screenName: yup.string().required(),
-      }),
-    ),
-    websites: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        url: yup.string().required(),
-      }),
-    ),
-    newSocials: yup.array().of(
-      yup.object({
-        value: yup.string().required(),
-        type: yup.string().required(),
-      }),
-    ),
-    optoutEnewsletter: yup.boolean().default(false),
-    birthdayDay: yup.number().nullable(),
-    birthdayMonth: yup.number().nullable(),
-    birthdayYear: yup.number().nullable(),
-    maritalStatus: yup.string().nullable(),
-    gender: yup.string().nullable(),
-    anniversaryDay: yup.number().nullable(),
-    anniversaryMonth: yup.number().nullable(),
-    anniversaryYear: yup.number().nullable(),
-    almaMater: yup.string().nullable(),
-    employer: yup.string().nullable(),
-    occupation: yup.string().nullable(),
-    legalFirstName: yup.string().nullable(),
-    deceased: yup.boolean().default(false),
-    defaultAccountList: yup.string().nullable(),
-  });
+  const { personSchema, initialPerson } = getPersonSchema(t, contactId, person);
 
   const personPhoneNumberSources = person?.phoneNumbers.nodes.map(
     (phoneNumber) => {
@@ -257,153 +179,10 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     },
   );
 
-  const personPhoneNumbers = person?.phoneNumbers.nodes.map((phoneNumber) => {
-    return {
-      id: phoneNumber.id,
-      primary: phoneNumber.primary,
-      number: phoneNumber.number,
-      historic: phoneNumber.historic,
-      location: phoneNumber.location,
-      destroy: false,
-    };
-  });
-
-  const personEmails = person?.emailAddresses.nodes.map((emailAddress) => {
-    return {
-      id: emailAddress.id,
-      primary: emailAddress.primary,
-      email: emailAddress.email,
-      historic: emailAddress.historic,
-      location: emailAddress.location,
-      destroy: false,
-    };
-  });
-
-  const personFacebookAccounts = person?.facebookAccounts.nodes.map(
-    (account) => ({
-      id: account.id,
-      username: account.username,
-      destroy: false,
-    }),
-  );
-
-  const personTwitterAccounts = person?.twitterAccounts.nodes.map(
-    (account) => ({
-      id: account.id,
-      screenName: account.screenName,
-      destroy: false,
-    }),
-  );
-
-  const personLinkedinAccounts = person?.linkedinAccounts.nodes.map(
-    (account) => ({
-      id: account.id,
-      publicUrl: account.publicUrl,
-      destroy: false,
-    }),
-  );
-
-  const personWebsites = person?.websites.nodes.map((account) => ({
-    id: account.id,
-    url: account.url,
-    destroy: false,
-  }));
-
-  const initialPerson: (PersonCreateInput | PersonUpdateInput) & NewSocial =
-    person
-      ? {
-          id: person.id,
-          firstName: person.firstName,
-          lastName: person.lastName,
-          title: person.title,
-          suffix: person.suffix,
-          phoneNumbers: personPhoneNumbers,
-          emailAddresses: personEmails,
-          optoutEnewsletter: person.optoutEnewsletter,
-          birthdayDay: person.birthdayDay,
-          birthdayMonth: person.birthdayMonth,
-          birthdayYear: person.birthdayYear,
-          maritalStatus: person.maritalStatus,
-          gender: person.gender,
-          anniversaryDay: person.anniversaryDay,
-          anniversaryMonth: person.anniversaryMonth,
-          anniversaryYear: person.anniversaryYear,
-          almaMater: person.almaMater,
-          employer: person.employer,
-          occupation: person.occupation,
-          facebookAccounts: personFacebookAccounts,
-          twitterAccounts: personTwitterAccounts,
-          linkedinAccounts: personLinkedinAccounts,
-          websites: personWebsites,
-          legalFirstName: person.legalFirstName,
-          deceased: person.deceased,
-          newSocials: [],
-        }
-      : {
-          contactId,
-          id: null,
-          firstName: '',
-          lastName: null,
-          title: null,
-          suffix: null,
-          phoneNumbers: [],
-          emailAddresses: [],
-          optoutEnewsletter: false,
-          birthdayDay: null,
-          birthdayMonth: null,
-          birthdayYear: null,
-          maritalStatus: null,
-          gender: 'Male',
-          anniversaryDay: null,
-          anniversaryMonth: null,
-          anniversaryYear: null,
-          almaMater: null,
-          employer: null,
-          occupation: null,
-          facebookAccounts: [],
-          twitterAccounts: [],
-          linkedinAccounts: [],
-          websites: [],
-          legalFirstName: null,
-          deceased: false,
-          newSocials: [],
-        };
-
   const onSubmit = async (
     fields: (PersonCreateInput | PersonUpdateInput) & NewSocial,
   ): Promise<void> => {
-    const { newSocials, ...existingSocials } = fields;
-    const attributes: PersonCreateInput | PersonUpdateInput = {
-      ...existingSocials,
-      facebookAccounts: fields.facebookAccounts?.concat(
-        newSocials
-          .filter((social) => social.type === 'facebook' && !social.destroy)
-          .map((social) => ({
-            username: social.value,
-          })),
-      ),
-      twitterAccounts: fields.twitterAccounts?.concat(
-        newSocials
-          .filter((social) => social.type === 'twitter' && !social.destroy)
-          .map((social) => ({
-            screenName: social.value,
-          })),
-      ),
-      linkedinAccounts: fields.linkedinAccounts?.concat(
-        newSocials
-          .filter((social) => social.type === 'linkedin' && !social.destroy)
-          .map((social) => ({
-            publicUrl: social.value,
-          })),
-      ),
-      websites: fields.websites?.concat(
-        newSocials
-          .filter((social) => social.type === 'website' && !social.destroy)
-          .map((social) => ({
-            url: social.value,
-          })),
-      ),
-    };
+    const attributes = formatSubmittedFields(fields);
 
     const isUpdate = (
       attributes: PersonCreateInput | PersonUpdateInput,
@@ -642,7 +421,13 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   return (
     <Modal
       isOpen={true}
-      title={person ? t('Edit Person') : t('Create Person')}
+      title={
+        userProfile
+          ? 'Edit Details'
+          : person
+          ? t('Edit Person')
+          : t('Create Person')
+      }
       size="md"
       handleClose={handleClose}
     >
@@ -675,6 +460,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   <PersonEmail
                     formikProps={formikProps}
                     sources={personEmailAddressSources}
+                    showOptOutENewsletter={!userProfile}
                   />
                   {/* Birthday Section */}
                   <PersonBirthday formikProps={formikProps} />
@@ -708,7 +494,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              {person && (
+              {person && !userProfile && (
                 <DeleteButton onClick={() => handleRemoveDialogOpen(true)} />
               )}
               <CancelButton onClick={handleClose} />

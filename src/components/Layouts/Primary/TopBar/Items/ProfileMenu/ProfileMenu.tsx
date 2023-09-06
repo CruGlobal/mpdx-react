@@ -150,6 +150,14 @@ const ProfileMenu = (): ReactElement => {
     url.searchParams.append('path', '/logout');
     window.location.href = url.href;
   };
+  let accountListIdFallback = accountListId;
+  if (!accountListIdFallback) {
+    if (data?.accountLists?.nodes.length === 1) {
+      accountListIdFallback = data.accountLists.nodes[0]?.id;
+    } else if (data?.user.defaultAccountList) {
+      accountListIdFallback = data.user.defaultAccountList;
+    }
+  }
 
   return (
     <>
@@ -243,26 +251,34 @@ const ProfileMenu = (): ReactElement => {
           </AccountListSelectorDetails>
         </Accordion>
         <Divider />
-        <HandoffLink path="/preferences/personal">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Preferences')} />
-          </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/notifications">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Notifications')} />
-          </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/integrations">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Connect Services')} />
-          </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/accounts">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Manage Accounts')} />
-          </MenuItem>
-        </HandoffLink>
+        <MenuItem
+          onClick={handleProfileMenuClose}
+          component="a"
+          href={`/accountLists/${accountListIdFallback}/settings/preferences`}
+        >
+          <ListItemText primary={t('Preferences')} />
+        </MenuItem>
+        <MenuItem
+          onClick={handleProfileMenuClose}
+          component="a"
+          href={`/accountLists/${accountListIdFallback}/settings/notifications`}
+        >
+          <ListItemText primary={t('Notifications')} />
+        </MenuItem>
+        <MenuItem
+          onClick={handleProfileMenuClose}
+          component="a"
+          href={`/accountLists/${accountListIdFallback}/settings/integrations`}
+        >
+          <ListItemText primary={t('Connect Services')} />
+        </MenuItem>
+        <MenuItem
+          onClick={handleProfileMenuClose}
+          component="a"
+          href={`/accountLists/${accountListIdFallback}/settings/manageAccounts`}
+        >
+          <ListItemText primary={t('Manage Accounts')} />
+        </MenuItem>
         <HandoffLink path="/preferences/coaches">
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Manage Coaches')} />

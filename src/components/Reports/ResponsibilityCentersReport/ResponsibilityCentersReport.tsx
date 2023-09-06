@@ -2,7 +2,10 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
+import {
+  MultiPageHeader,
+  HeaderTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
 import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
 import {
@@ -170,10 +173,11 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
 
   return (
     <Box>
-      <Header
+      <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={title}
+        headerType={HeaderTypeEnum.Report}
         rightExtra={balanceNode}
       />
       {loading ? (

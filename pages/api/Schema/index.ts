@@ -45,6 +45,7 @@ import DestroyDonorAccountTypeDefs from './Contacts/DonorAccounts/Destroy/destro
 import { DestroyDonorAccountResolvers } from './Contacts/DonorAccounts/Destroy/resolvers';
 import DeleteTagsTypeDefs from './Tags/Delete/deleteTags.graphql';
 import { DeleteTagsResolvers } from './Tags/Delete/resolvers';
+import { integrationSchema } from './SubgraphSchema/Integrations';
 
 const schema = buildSubgraphSchema([
   {
@@ -127,6 +128,7 @@ const schema = buildSubgraphSchema([
     typeDefs: DeleteTagsTypeDefs,
     resolvers: DeleteTagsResolvers,
   },
+  ...integrationSchema,
 ]);
 
 export default schema;

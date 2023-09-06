@@ -8,7 +8,11 @@ import Loading from 'src/components/Loading';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+
 import { suggestArticles } from 'src/lib/helpScout';
 
 const DesignationAccountsReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -42,12 +46,13 @@ const DesignationAccountsReportPage: React.FC = () => {
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
-              <NavReportsList
+              <MultiPageMenu
                 isOpen={isNavListOpen}
                 selectedId="designationAccounts"
                 onClose={handleNavListToggle}
                 designationAccounts={designationAccounts}
                 setDesignationAccounts={setDesignationAccounts}
+                navType={NavTypeEnum.Reports}
               />
             }
             leftOpen={isNavListOpen}

@@ -3,7 +3,10 @@ import { Container, Box } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useRouter } from 'next/router';
 import { ISODateString } from 'next-auth';
-import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
+import {
+  MultiPageHeader,
+  HeaderTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { MonthlyActivitySection } from './MonthlyActivity/MonthlyActivitySection';
 import { DonationsReportTable } from './Table/DonationsReportTable';
 
@@ -41,10 +44,11 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
 
   return (
     <Box>
-      <Header
+      <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={title}
+        headerType={HeaderTypeEnum.Report}
       />
       <Container>
         <MonthlyActivitySection

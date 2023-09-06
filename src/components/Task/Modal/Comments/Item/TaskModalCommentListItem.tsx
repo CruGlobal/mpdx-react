@@ -91,7 +91,8 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
     return (
       <Box>
         <CommentInfoText display="inline">
-          {comment?.person?.firstName} {comment?.person?.lastName}{' '}
+          {comment?.person &&
+            `${comment.person.firstName} ${comment.person.lastName} `}
         </CommentInfoText>
         <Tooltip placement="bottom" title={comment?.createdAt || ''} arrow>
           <CommentInfoText display="inline">
