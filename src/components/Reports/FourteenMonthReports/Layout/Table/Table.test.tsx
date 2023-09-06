@@ -178,6 +178,25 @@ const mocks = {
   },
 };
 
+const totals = [
+  {
+    month: '2020-10-01',
+    total: 1836.32,
+  },
+  {
+    month: '2020-11-01',
+    total: 1836.32,
+  },
+  {
+    month: '2020-12-01',
+    total: 1836.32,
+  },
+  {
+    month: '2021-1-01',
+    total: 1836.32,
+  },
+];
+
 describe('FourteenMonthReportTable', () => {
   it('default', async () => {
     const { getAllByTestId, getByRole, queryByTestId } = render(
@@ -198,10 +217,7 @@ describe('FourteenMonthReportTable', () => {
             onRequestSort={onRequestSort}
             onSelectContact={onSelectContact}
             ref={null}
-            totals={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .totals
-            }
+            totals={totals}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -237,10 +253,7 @@ describe('FourteenMonthReportTable', () => {
             onRequestSort={onRequestSort}
             onSelectContact={onSelectContact}
             ref={null}
-            totals={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .totals
-            }
+            totals={totals}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
@@ -280,10 +293,7 @@ describe('FourteenMonthReportTable', () => {
             onRequestSort={onRequestSort}
             onSelectContact={onSelectContact}
             ref={null}
-            totals={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .totals
-            }
+            totals={totals}
           />
         </GqlMockedProvider>
       </ThemeProvider>,
