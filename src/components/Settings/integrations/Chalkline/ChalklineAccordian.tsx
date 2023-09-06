@@ -4,7 +4,7 @@ import { Typography } from '@mui/material';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { StyledServicesButton, AccordianProps } from '../integrationsHelper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { useSendToChalklineMutation } from './SendToChalkine.generated';
+import { useSendToChalklineMutation } from './SendToChalkline.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useSnackbar } from 'notistack';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';

@@ -53,72 +53,72 @@ const standardPrayerlettersAccount: Types.PrayerlettersAccount = {
 
 describe('PrayerlettersAccount', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  // it('should render accordian closed', async () => {
-  //   const { getByText, queryByRole } = render(
-  //     Components(
-  //       <GqlMockedProvider>
-  //         <PrayerlettersAccordian
-  //           handleAccordionChange={handleAccordionChange}
-  //           expandedPanel={''}
-  //         />
-  //       </GqlMockedProvider>,
-  //     ),
-  //   );
-  //   expect(getByText('prayerletters.com')).toBeInTheDocument();
-  //   const image = queryByRole('img', {
-  //     name: /prayerletters.com/i,
-  //   });
-  //   expect(image).not.toBeInTheDocument();
-  // });
-  // it('should render accordian open', async () => {
-  //   const { queryByRole } = render(
-  //     Components(
-  //       <GqlMockedProvider>
-  //         <PrayerlettersAccordian
-  //           handleAccordionChange={handleAccordionChange}
-  //           expandedPanel={'prayerletters.com'}
-  //         />
-  //       </GqlMockedProvider>,
-  //     ),
-  //   );
-  //   const image = queryByRole('img', {
-  //     name: /prayerletters.com/i,
-  //   });
-  //   expect(image).toBeInTheDocument();
-  // });
+  it('should render accordian closed', async () => {
+    const { getByText, queryByRole } = render(
+      Components(
+        <GqlMockedProvider>
+          <PrayerlettersAccordian
+            handleAccordionChange={handleAccordionChange}
+            expandedPanel={''}
+          />
+        </GqlMockedProvider>,
+      ),
+    );
+    expect(getByText('prayerletters.com')).toBeInTheDocument();
+    const image = queryByRole('img', {
+      name: /prayerletters.com/i,
+    });
+    expect(image).not.toBeInTheDocument();
+  });
+  it('should render accordian open', async () => {
+    const { queryByRole } = render(
+      Components(
+        <GqlMockedProvider>
+          <PrayerlettersAccordian
+            handleAccordionChange={handleAccordionChange}
+            expandedPanel={'prayerletters.com'}
+          />
+        </GqlMockedProvider>,
+      ),
+    );
+    const image = queryByRole('img', {
+      name: /prayerletters.com/i,
+    });
+    expect(image).toBeInTheDocument();
+  });
 
-  // describe('Not Connected', () => {
-  //   it('should render PrayerLetters.com Overview', async () => {
-  //     const { getByText } = render(
-  //       Components(
-  //         <GqlMockedProvider<{
-  //           GetPrayerlettersAccount: GetPrayerlettersAccountQuery | undefined;
-  //         }>
-  //           mocks={{
-  //             GetPrayerlettersAccount: {
-  //               getPrayerlettersAccount: [],
-  //             },
-  //           }}
-  //         >
-  //           <PrayerlettersAccordian
-  //             handleAccordionChange={handleAccordionChange}
-  //             expandedPanel={'prayerletters.com'}
-  //           />
-  //         </GqlMockedProvider>,
-  //       ),
-  //     );
+  describe('Not Connected', () => {
+    it('should render PrayerLetters.com Overview', async () => {
+      const { getByText } = render(
+        Components(
+          <GqlMockedProvider<{
+            GetPrayerlettersAccount: GetPrayerlettersAccountQuery | undefined;
+          }>
+            mocks={{
+              GetPrayerlettersAccount: {
+                getPrayerlettersAccount: [],
+              },
+            }}
+          >
+            <PrayerlettersAccordian
+              handleAccordionChange={handleAccordionChange}
+              expandedPanel={'prayerletters.com'}
+            />
+          </GqlMockedProvider>,
+        ),
+      );
 
-  //     await waitFor(() => {
-  //       expect(getByText('PrayerLetters.com Overview')).toBeInTheDocument();
-  //     });
-  //     userEvent.click(getByText('Connect prayerletters.com Account'));
+      await waitFor(() => {
+        expect(getByText('PrayerLetters.com Overview')).toBeInTheDocument();
+      });
+      userEvent.click(getByText('Connect prayerletters.com Account'));
 
-  //     expect(getByText('Connect prayerletters.com Account')).toHaveAttribute(
-  //       'href',
-  //       `https://auth.mpdx.org/auth/user/prayer_letters?account_list_id=account-list-1&redirect_to=http%3A%2F%2Flocalhost%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dprayerletters.com&access_token=apiToken`,
-  //     );
-  //   });
-  // });
+      expect(getByText('Connect prayerletters.com Account')).toHaveAttribute(
+        'href',
+        `https://auth.mpdx.org/auth/user/prayer_letters?account_list_id=account-list-1&redirect_to=http%3A%2F%2Flocalhost%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dprayerletters.com&access_token=apiToken`,
+      );
+    });
+  });
 
   describe('Connected', () => {
     let prayerlettersAccount = { ...standardPrayerlettersAccount };

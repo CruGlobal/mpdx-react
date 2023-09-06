@@ -136,6 +136,7 @@ export const OrganizationImportDataSyncModal: React.FC<
                     accept=".tntmpd, .tntdatasync"
                     multiple
                     type="file"
+                    data-testid="importFileUploader"
                     onChange={handleFileChange}
                   />
                 </Button>

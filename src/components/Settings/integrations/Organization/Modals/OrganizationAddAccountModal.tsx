@@ -80,6 +80,10 @@ export const OrganizationAddAccountModal: React.FC<
     const type = getOrganizationType(apiClass, oauth);
 
     if (type === OrganizationTypesEnum.OAUTH) {
+      enqueueSnackbar(
+        t('Redirecting you to complete authenication to connect.'),
+        { variant: 'success' },
+      );
       window.location.href = await oAuth(id);
       return;
     }
@@ -301,7 +305,7 @@ export const OrganizationAddAccountModal: React.FC<
                   <FieldWrapper>
                     <TextField
                       required
-                      id="outlined-required"
+                      id="username"
                       label={t('Username')}
                       value={username}
                       disabled={isSubmitting}
@@ -315,7 +319,7 @@ export const OrganizationAddAccountModal: React.FC<
                   <FieldWrapper>
                     <TextField
                       required
-                      id="outlined-required"
+                      id="password"
                       label={t('Password')}
                       type="password"
                       value={password}
@@ -330,7 +334,13 @@ export const OrganizationAddAccountModal: React.FC<
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
 
-              <SubmitButton disabled={!isValid || isSubmitting}>
+              <SubmitButton
+                disabled={
+                  !isValid ||
+                  isSubmitting ||
+                  organizationType === OrganizationTypesEnum.MINISTRY
+                }
+              >
                 {organizationType !== OrganizationTypesEnum.OAUTH &&
                   t('Add Account')}
                 {organizationType === OrganizationTypesEnum.OAUTH &&

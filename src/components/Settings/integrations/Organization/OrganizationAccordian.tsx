@@ -9,6 +9,7 @@ import {
   Divider,
 } from '@mui/material';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import theme from 'src/theme';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Edit from '@mui/icons-material/Edit';
@@ -22,7 +23,6 @@ import {
   useSyncOrganizationAccountMutation,
 } from './Organizations.generated';
 import { oAuth } from './OrganizationService';
-import { useSnackbar } from 'notistack';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
@@ -100,8 +100,12 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
   const organizations = data?.userOrganizationAccounts;
 
   const handleReconnect = async (organizationId) => {
-    // TODO
-    await oAuth(organizationId);
+    enqueueSnackbar(
+      t('Redirecting you to complete authenication to reconnect.'),
+      { variant: 'success' },
+    );
+    const oAuthUrl = await oAuth(organizationId);
+    window.location.href = oAuthUrl;
   };
 
   const handleSync = async (accountId: string) => {
@@ -172,14 +176,14 @@ export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
       }
     >
       <Typography>
-        Add or change the organizations that sync donation information with this
+        {t(`Add or change the organizations that sync donation information with this
         MPDX account. Removing an organization will not remove past information,
-        but will prevent future donations and contacts from syncing.
+        but will prevent future donations and contacts from syncing.`)}
       </Typography>
 
       {!loading && !organizations?.length && (
         <Typography variant="h5" style={{ marginTop: '20px' }}>
-          Let&apos;s start by connecting to your first organization
+          {t("Let's start by connecting to your first organization")}
         </Typography>
       )}
 
