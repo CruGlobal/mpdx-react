@@ -1,4 +1,4 @@
-import React, { FC, forwardRef } from 'react';
+import React, { FC, forwardRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -89,67 +89,76 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
               onRequestSort={onRequestSort}
             />
             <TableBody>
-              {orderedContacts?.map((contact) => (
-                <TableRow
-                  key={contact.id}
-                  hover
-                  data-testid="FourteenMonthReportTableRow"
-                >
-                  <TableCell>
-                    <Box display="flex" flexDirection="column">
-                      <Box display="flex" alignItems="center">
-                        {!isExpanded && <InfoIcon fontSize="small" />}
-                        <NameTypography variant="body1" expanded={isExpanded}>
-                          <Link onClick={() => onSelectContact(contact.id)}>
-                            {contact.name}
-                          </Link>
-                        </NameTypography>
-                      </Box>
-                      {isExpanded && (
-                        <Typography variant="body2" color="textSecondary">
-                          {contact.accountNumbers.join(', ')}
-                        </Typography>
-                      )}
-                    </Box>
-                  </TableCell>
-                  {isExpanded && (
-                    <React.Fragment>
-                      <TableCell>{contact.status}</TableCell>
-                      <TableCell>
-                        {contact.pledgeAmount &&
-                          `${numberFormat(
-                            Math.round(contact.pledgeAmount),
-                            locale,
-                          )} ${contact.pledgeCurrency} ${
-                            apiConstants?.pledgeFrequencies?.find(
-                              ({ key }) => key === contact.pledgeFrequency,
-                            )?.value ?? ''
-                          }`}
-                      </TableCell>
-                      <TableCell>
-                        {numberFormat(Math.round(contact.average), locale)}
-                      </TableCell>
-                      <TableCell>
-                        {numberFormat(Math.round(contact.minimum), locale)}
-                      </TableCell>
-                    </React.Fragment>
-                  )}
-                  {contact.months?.map((month: Month) => (
-                    <TableCell key={month?.month} align="center">
-                      {month?.salaryCurrencyTotal &&
-                        numberFormat(
-                          Math.round(month?.salaryCurrencyTotal),
-                          locale,
+              {orderedContacts?.map((contact) => {
+                const totaldonated = useMemo(() => {
+                  if (contact?.months) {
+                    return contact.months.reduce((partialSum, month) => {
+                      return partialSum + month.salaryCurrencyTotal;
+                    }, 0);
+                  } else return 0;
+                }, [contact]);
+                return (
+                  <TableRow
+                    key={contact.id}
+                    hover
+                    data-testid="FourteenMonthReportTableRow"
+                  >
+                    <TableCell>
+                      <Box display="flex" flexDirection="column">
+                        <Box display="flex" alignItems="center">
+                          {!isExpanded && <InfoIcon fontSize="small" />}
+                          <NameTypography variant="body1" expanded={isExpanded}>
+                            <Link onClick={() => onSelectContact(contact.id)}>
+                              {contact.name}
+                            </Link>
+                          </NameTypography>
+                        </Box>
+                        {isExpanded && (
+                          <Typography variant="body2" color="textSecondary">
+                            {contact.accountNumbers.join(', ')}
+                          </Typography>
                         )}
+                      </Box>
                     </TableCell>
-                  ))}
-                  <TableCell align="right">
-                    <strong>
-                      {numberFormat(Math.round(contact.total), locale)}
-                    </strong>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    {isExpanded && (
+                      <React.Fragment>
+                        <TableCell>{contact.status}</TableCell>
+                        <TableCell>
+                          {contact.pledgeAmount &&
+                            `${numberFormat(
+                              Math.round(contact.pledgeAmount),
+                              locale,
+                            )} ${contact.pledgeCurrency} ${
+                              apiConstants?.pledgeFrequencies?.find(
+                                ({ key }) => key === contact.pledgeFrequency,
+                              )?.value ?? ''
+                            }`}
+                        </TableCell>
+                        <TableCell>
+                          {numberFormat(Math.round(contact.average), locale)}
+                        </TableCell>
+                        <TableCell>
+                          {numberFormat(Math.round(contact.minimum), locale)}
+                        </TableCell>
+                      </React.Fragment>
+                    )}
+                    {contact.months?.map((month: Month) => (
+                      <TableCell key={month?.month} align="center">
+                        {month?.salaryCurrencyTotal &&
+                          numberFormat(
+                            Math.round(month?.salaryCurrencyTotal),
+                            locale,
+                          )}
+                      </TableCell>
+                    ))}
+                    <TableCell align="right">
+                      <strong>
+                        {numberFormat(Math.round(totaldonated), locale)}
+                      </strong>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
               <TableRow>
                 <TableCell>
                   <strong>{t('Totals')}</strong>
