@@ -90,7 +90,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
             />
             <TableBody>
               {orderedContacts?.map((contact) => {
-                const totaldonated = useMemo(() => {
+                const totalDonated = useMemo(() => {
                   if (contact?.months) {
                     return contact.months.reduce((partialSum, month) => {
                       return partialSum + month.salaryCurrencyTotal;
@@ -153,7 +153,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                     ))}
                     <TableCell align="right">
                       <strong>
-                        {numberFormat(Math.round(totaldonated), locale)}
+                        {numberFormat(Math.round(totalDonated), locale)}
                       </strong>
                     </TableCell>
                   </TableRow>
