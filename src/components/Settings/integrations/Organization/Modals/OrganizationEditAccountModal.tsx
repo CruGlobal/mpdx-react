@@ -100,7 +100,7 @@ export const OrganizationEditAccountModal: React.FC<
               <FieldWrapper>
                 <TextField
                   required
-                  id="outlined-required"
+                  id="username"
                   label={t('Username')}
                   value={username}
                   disabled={isSubmitting}
@@ -119,7 +119,7 @@ export const OrganizationEditAccountModal: React.FC<
               <FieldWrapper>
                 <TextField
                   required
-                  id="outlined-required"
+                  id="password"
                   label={t('Password')}
                   type="password"
                   value={password}

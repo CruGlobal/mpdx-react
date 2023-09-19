@@ -46,6 +46,7 @@ import { DestroyDonorAccountResolvers } from './Contacts/DonorAccounts/Destroy/r
 import DeleteTagsTypeDefs from './Tags/Delete/deleteTags.graphql';
 import { DeleteTagsResolvers } from './Tags/Delete/resolvers';
 import { integrationSchema } from './SubgraphSchema/Integrations';
+import { organizationSchema } from './SubgraphSchema/Organizations';
 
 const schema = buildSubgraphSchema([
   {
@@ -129,6 +130,7 @@ const schema = buildSubgraphSchema([
     resolvers: DeleteTagsResolvers,
   },
   ...integrationSchema,
+  ...organizationSchema,
 ]);
 
 export default schema;

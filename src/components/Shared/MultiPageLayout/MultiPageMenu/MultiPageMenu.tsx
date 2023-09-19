@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   BoxProps,
@@ -10,12 +11,12 @@ import {
 import { styled } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import Close from '@mui/icons-material/Close';
-import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { Item } from './Item/Item';
 import { MultiselectFilter } from '../../../../../graphql/types.generated';
 import { FilterListItemMultiselect } from 'src/components/Shared/Filters/FilterListItemMultiselect';
 import { useGetDesignationAccountsQuery } from 'src/components/Reports/DonationsReport/Table/Modal/EditDonation.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGetUserAccessQuery } from './MultiPageMenuItems.generated';
 import { ReportNavItems, SettingsNavItems } from './MultiPageMenuItems';
 
 export enum NavTypeEnum {
@@ -65,6 +66,7 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { data: userPrivileges } = useGetUserAccessQuery();
   const navItems =
     navType === NavTypeEnum.Reports ? ReportNavItems : SettingsNavItems;
   const navTitle =
@@ -120,14 +122,36 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
                     }}
                   />
                 )}
-              {navItems.map((item) => (
-                <Item
-                  key={item.id}
-                  item={item}
-                  isSelected={item.id === selectedId}
-                  navType={navType}
-                />
-              ))}
+              {navItems.map((item) => {
+                const showItem = useMemo(() => {
+                  let showItem = false;
+                  if (item?.grantedAccess?.length) {
+                    if (
+                      item.grantedAccess.indexOf('admin') !== -1 &&
+                      userPrivileges?.user.admin
+                    ) {
+                      showItem = true;
+                    }
+                    if (
+                      item.grantedAccess.indexOf('developer') !== -1 &&
+                      userPrivileges?.user.developer
+                    ) {
+                      showItem = true;
+                    }
+                  } else showItem = true;
+                  return showItem;
+                }, [item]);
+
+                if (!showItem) return null;
+                return (
+                  <Item
+                    key={item.id}
+                    item={item}
+                    selectedId={selectedId}
+                    navType={navType}
+                  />
+                );
+              })}
             </FilterList>
           </Box>
         </Slide>

@@ -1,0 +1,21 @@
+extend type Query {
+  getOrganizations: AllOrganizations!
+}
+
+type AllOrganizations {
+  organizations: [Organizations]!
+  pagination: AllOrganizationsPagination!
+}
+
+type Organizations {
+  id: String!
+  name: String!
+  type: String
+}
+
+type AllOrganizationsPagination {
+  page: Int!
+  perPage: Int!
+  totalCount: Int!
+  totalPages: Int!
+}

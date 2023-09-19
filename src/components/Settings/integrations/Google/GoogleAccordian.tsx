@@ -22,7 +22,7 @@ import {
   StyledListItem,
   StyledList,
   StyledServicesButton,
-} from '../integrationsHelper';
+} from '../../accordianHelper';
 
 interface GoogleAccordianProps {
   handleAccordionChange: (panel: string) => void;

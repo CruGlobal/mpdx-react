@@ -85,15 +85,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const redirectCookie = context.req.headers?.cookie
     ?.split('mpdx-handoff.redirect-url=')[1]
     ?.split(';')[0];
+  const ImpersonateCookie = !!context.req.headers?.cookie
+    ?.split('mpdx-handoff.impersonate=')[1]
+    ?.split(';')[0];
   const immediateSignIn = !!redirectCookie;
 
-  if (immediateSignIn) {
+  if (immediateSignIn && !ImpersonateCookie) {
     context.res.setHeader(
       'Set-Cookie',
       `mpdx-handoff.redirect-url=; HttpOnly; path=/; Max-Age=0`,
     );
   }
-  if (context.res && session) {
+  if (context.res && session && !ImpersonateCookie) {
     return {
       redirect: {
         destination: redirectCookie ?? '/accountLists',

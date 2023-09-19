@@ -56,6 +56,7 @@ const Preferences: React.FC = () => {
     <SettingsWrapper
       pageTitle={t('Preferences')}
       pageHeading={t('Preferences')}
+      selectedMenuId="preferences"
     >
       <ProfileInfo accountListId={accountListId} />
 

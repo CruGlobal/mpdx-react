@@ -9,7 +9,7 @@ import {
   IntegrationsContextType,
 } from 'pages/accountLists/[accountListId]/settings/integrations.page';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { StyledServicesButton, AccordianProps } from '../integrationsHelper';
+import { StyledServicesButton, AccordianProps } from '../../accordianHelper';
 import {
   useGetPrayerlettersAccountQuery,
   useSyncPrayerlettersAccountMutation,

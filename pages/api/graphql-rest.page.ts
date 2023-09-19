@@ -111,6 +111,27 @@ import {
 import { SyncPrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/datahandler';
 import { DeletePrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/datahandler';
 import { SendToChalkline } from './Schema/Settings/Preferences/Intergrations/Chalkine/sendToChalkline/datahandler';
+import {
+  GetOrganizations,
+  GetOrganizationsResponse,
+} from './Schema/Settings/Preferences/Organizations/GetOrganizations/datahandler';
+import {
+  GetOrganizationAdminsResponse,
+  GetOrganizationAdmins,
+} from './Schema/Settings/Preferences/Organizations/GetOrganizationAdmins/datahandler';
+import {
+  GetOrganizationInvitesResponse,
+  OrganizationInvite,
+} from './Schema/Settings/Preferences/Organizations/helper';
+import { GetOrganizationInvites } from './Schema/Settings/Preferences/Organizations/GetOrganizationInvites/datahandler';
+import { DestroyOrganizationInvite } from './Schema/Settings/Preferences/Organizations/DeleteOrganizationInvite/datahandler';
+import { DestroyOrganizationAdmin } from './Schema/Settings/Preferences/Organizations/DeleteOrganizationAdmin/datahandler';
+import { CreateOrganizationInvite } from './Schema/Settings/Preferences/Organizations/CreateOrganizationInvite/datahandler';
+import {
+  SearchOrganizationsContacts,
+  SearchOrganizationsContactsResponse,
+} from './Schema/Settings/Preferences/Organizations/SearchOrganizationsContacts/datahandler';
+import { DeleteOrganizationContact } from './Schema/Settings/Preferences/Organizations/DeleteOrganizationContact/datahandler';
 
 function camelToSnake(str: string): string {
   return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -856,6 +877,14 @@ class MpdxRestApi extends RESTDataSource {
     return data;
   }
 
+  // =========================================
+  // INTERGRATIONS
+  // - Google Integration
+  // - Mailchimp Integration
+  // - Prayerletters Integration
+  // - Chalkline Integration
+  // =========================================
+
   // Google Integration
   //
   //
@@ -1054,6 +1083,99 @@ class MpdxRestApi extends RESTDataSource {
       },
     });
     return SendToChalkline();
+  }
+
+  // =========================================
+  // ORGANIZATION
+  // =========================================
+
+  async getOrganizations() {
+    const data: GetOrganizationsResponse = await this.get(
+      `organizations?fields[organization]=name&per_page=2500`,
+    );
+    return GetOrganizations(data);
+  }
+
+  async getOrganizationAdmins(organizationId) {
+    const data: GetOrganizationAdminsResponse = await this.get(
+      `organizations/${organizationId}/admins`,
+    );
+    return GetOrganizationAdmins(data);
+  }
+
+  async getOrganizationInvites(organizationId) {
+    const data: GetOrganizationInvitesResponse = await this.get(
+      `organizations/${organizationId}/invites`,
+    );
+    return GetOrganizationInvites(data);
+  }
+
+  async destroyOrganizationInvite(organizationId, inviteId) {
+    await this.delete(
+      `organizations/${organizationId}/invites/${inviteId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'organization_invites',
+          },
+        }),
+      },
+    );
+    return DestroyOrganizationInvite();
+  }
+
+  async destroyOrganizationAdmin(organizationId, adminId) {
+    await this.delete(
+      `organizations/${organizationId}/admins/${adminId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'admins',
+          },
+        }),
+      },
+    );
+    return DestroyOrganizationAdmin();
+  }
+
+  async createOrganizationInvite(organizationId, recipientEmail) {
+    const { data }: { data: OrganizationInvite } = await this.post(
+      `organizations/${organizationId}/invites`,
+      {
+        data: {
+          attributes: {
+            invite_user_as: 'admin',
+            recipient_email: recipientEmail,
+          },
+          type: 'organization_invites',
+        },
+      },
+    );
+    return CreateOrganizationInvite(data);
+  }
+
+  async searchOrganizationsContacts(organizationId, search, pageNumber = 1) {
+    const data: SearchOrganizationsContactsResponse = await this.get(
+      `organizations/contacts?data[type]=organizationId&fields[contact]=name,people,account_list,addresses,allow_deletion,square_avatar&fields[people]=first_name,last_name,email_addresses,phone_numbers,deceased&fields[email_addresses]=email,primary,historic&fields[phone_numbers]=number,primary,historic&fields[account_lists]=name,account_list_users&fields[account_list_users]=first_name,last_name,email_addresses&fields[addresses]=primary_mailing_address,street,city,state,postal_code&filter[organization_id]=${organizationId}&filter[wildcard_search]=${search}&filter[status]=active,hidden,null&include=people,people.email_addresses,people.phone_numbers,addresses,account_list,account_list.account_list_users,account_list.account_list_users.email_addresses&page=${pageNumber}`,
+    );
+    return SearchOrganizationsContacts(data);
+  }
+
+  async deleteOrganizationContact(contactId) {
+    await this.delete(
+      `organizations/contacts/${contactId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'contacts',
+          },
+        }),
+      },
+    );
+    return DeleteOrganizationContact();
   }
 }
 

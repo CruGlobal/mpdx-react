@@ -38,8 +38,6 @@ mutation CreateOrganizationAccount(
   createOrganizationAccount(input: $input) {
     clientMutationId
     organizationAccount {
-      username
-      password
       person {
         id
       }
