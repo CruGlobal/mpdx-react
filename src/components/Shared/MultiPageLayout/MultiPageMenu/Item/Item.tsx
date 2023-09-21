@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Collapse, ListItem, ListItemText } from '@mui/material';
 import { ArrowForwardIos } from '@mui/icons-material';
 import NextLink from 'next/link';
@@ -25,7 +25,13 @@ export const Item: React.FC<Props> = ({
   const [openSubMenu, setOpenSubMenu] = useState(false);
   const { t } = useTranslation();
 
-  const isSelected = item.id === selectedId;
+  const isSelected = useMemo(() => {
+    if (item.id === selectedId) return true;
+    if (!item?.subItems?.length) return false;
+    return item?.subItems.find((item) => item.id === selectedId)?.id
+      ? true
+      : false;
+  }, [item]);
 
   const handleClick = () => {
     if (isSelected) return;

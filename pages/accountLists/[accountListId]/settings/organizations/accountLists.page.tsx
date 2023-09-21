@@ -12,7 +12,7 @@ import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import { styled } from '@mui/material/styles';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import * as Types from '../../../../../graphql/types.generated';
-import { Contacts } from 'src/components/Settings/Organization/Contacts/Contacts';
+import { AccountLists } from 'src/components/Settings/Organization/AccountLists/AccountLists';
 import { useGetOrganizationsQuery } from '../organizations.generated';
 import { SettingsWrapper } from '../wrapper';
 import { OrganizationsContextProvider } from './organizationsContext';
@@ -24,7 +24,7 @@ const HeaderAndDropdown = styled(Box)(() => ({
   alignItems: 'center',
 }));
 
-const Organizations = (): ReactElement => {
+const AccountListsOrganizations = (): ReactElement => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const matches = useMediaQuery('(max-width:600px)');
@@ -38,8 +38,7 @@ const Organizations = (): ReactElement => {
   >();
   const { data } = useGetOrganizationsQuery();
   const organizations = data?.getOrganizations.organizations;
-  // Deboounce 1.5 seconds since it calls a massive request on contactSearch change.
-  const contactSearch = useDebouncedValue(search, 1500);
+  const contactSearch = useDebouncedValue(search, 1000);
 
   const clearFilters = () => {
     setSearch('');
@@ -54,9 +53,9 @@ const Organizations = (): ReactElement => {
       clearFilters={clearFilters}
     >
       <SettingsWrapper
-        pageTitle={t('Organizations Contacts')}
-        pageHeading={t('Organizations Contacts')}
-        selectedMenuId="organizations/contacts"
+        pageTitle={t('Organizations Account Lists')}
+        pageHeading={t('Organizations Account Lists')}
+        selectedMenuId="organizations/accountLists"
       >
         {!organizations?.length && !selectedOrganization && (
           <HeaderAndDropdown>
@@ -69,12 +68,12 @@ const Organizations = (): ReactElement => {
             <Box>
               {selectedOrganization && (
                 <TextField
-                  label={t('Search Contacts')}
+                  label={t('Search Account Lists')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   fullWidth
                   multiline
-                  inputProps={{ 'aria-label': 'Search Contacts' }}
+                  inputProps={{ 'aria-label': 'Search Account Lists' }}
                   style={{
                     width: matches ? '150px' : '250px',
                   }}
@@ -124,11 +123,11 @@ const Organizations = (): ReactElement => {
             </Box>
           </HeaderAndDropdown>
         )}
-        {/* List of contacts */}
-        <Contacts />
+
+        <AccountLists />
       </SettingsWrapper>
     </OrganizationsContextProvider>
   );
 };
 
-export default Organizations;
+export default AccountListsOrganizations;

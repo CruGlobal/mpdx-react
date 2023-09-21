@@ -2,15 +2,15 @@ import { useState, useContext, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { mdiHome } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import {
   OrganizationsContext,
   OrganizationsContextType,
 } from 'pages/accountLists/[accountListId]/settings/organizations/organizationsContext';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { NullStateBox } from 'src/components/Shared/Filters/NullState/NullStateBox';
-import { useSearchOrganizationsContactsQuery } from './contact.generated';
-import { ContactRow } from './ContactRow/ContactRow';
+import { useSearchOrganizationsAccountListsQuery } from './accountLists.generated';
+import { AccountListRow } from './AccountListRow/AccountListRow';
 
 const LoadingSpinner: React.FC<{ firstLoad: boolean }> = ({ firstLoad }) => (
   <CircularProgress
@@ -28,60 +28,60 @@ const LoadingSpinner: React.FC<{ firstLoad: boolean }> = ({ firstLoad }) => (
   />
 );
 
-export const Contacts: React.FC = () => {
+export const AccountLists: React.FC = () => {
   const { t } = useTranslation();
-  const contactsRef = useRef(null);
+  const accountListsRef = useRef(null);
   const [infiniteListHeight, setInfiniteListHeight] = useState<number | null>(
     null,
   );
-  const { selectedOrganizationId, search } = useContext(
+  const { selectedOrganizationId, search, clearFilters } = useContext(
     OrganizationsContext,
   ) as OrganizationsContextType;
 
-  const { data, loading, fetchMore } = useSearchOrganizationsContactsQuery({
+  const { data, loading, fetchMore } = useSearchOrganizationsAccountListsQuery({
     variables: {
       input: {
         organizationId: selectedOrganizationId,
         search: search,
       },
     },
-    skip: !!!(selectedOrganizationId && search),
+    skip: !!!selectedOrganizationId,
   });
 
-  const contacts = data?.searchOrganizationsContacts.contacts;
-  const pagination = data?.searchOrganizationsContacts.pagination;
+  const accountLists = data?.searchOrganizationsAccountLists.accountLists;
+  const pagination = data?.searchOrganizationsAccountLists.pagination;
 
   useEffect(() => {
-    if (!contactsRef.current) return;
+    if (!accountListsRef.current) return;
     if (!window.visualViewport?.height) return;
     // 24px for the padding which he parent page has added.
     setInfiniteListHeight(
       window.visualViewport.height -
-        (contactsRef.current as HTMLElement).getBoundingClientRect().top -
+        (accountListsRef.current as HTMLElement).getBoundingClientRect().top -
         24,
     );
-  }, [contactsRef]);
+  }, [accountListsRef]);
 
   return (
-    <Box style={{ position: 'relative', overflowX: 'auto' }} ref={contactsRef}>
+    <Box
+      style={{ position: 'relative', marginTop: '20px', overflowX: 'auto' }}
+      ref={accountListsRef}
+    >
       {loading && <LoadingSpinner firstLoad={!pagination?.page} />}
       <InfiniteList
         loading={loading}
-        data={contacts ?? []}
+        data={accountLists ?? []}
         style={{
           height: infiniteListHeight
             ? infiniteListHeight
             : `calc(100vh - 300px)`,
-          minWidth: '950px',
+          minWidth: '920px',
         }}
-        itemContent={(index, contact) => {
-          return contact ? (
-            <ContactRow
-              key={`contact-${contact?.id}`}
-              contact={contact}
-              useTopMargin={index === 0}
-              selectedOrganizationId={selectedOrganizationId}
-              contactSearch={search}
+        itemContent={(index, accountList) => {
+          return accountList ? (
+            <AccountListRow
+              key={`accountList-${index}-${accountList.id}`}
+              accountList={accountList}
             />
           ) : null;
         }}
@@ -102,14 +102,19 @@ export const Contacts: React.FC = () => {
           <Box width="75%" margin="auto" mt={2}>
             <NullStateBox>
               <Icon path={mdiHome} size={1.5} />
+
+              {pagination && pagination?.totalCount === 0 && search === '' && (
+                <Typography variant="h5">
+                  {t('Looks like you have no account lists to manage yet')}
+                </Typography>
+              )}
               <Typography variant="h5">
-                {t(
-                  'Unfortunately none of the contacts match your current search or filters.',
-                )}
+                {t('No account lists match your filters.')}
               </Typography>
-              <Typography>
-                {t('Try searching for a different keyword or organization.')}
-              </Typography>
+
+              <Button onClick={clearFilters} variant="contained">
+                {t('Reset All Search Filters')}
+              </Button>
             </NullStateBox>
           </Box>
         }

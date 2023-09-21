@@ -24,6 +24,19 @@ const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
     : undefined,
 );
 
+const paginationForOrganizationQueries = (name) => {
+  return {
+    keyArgs: ['input', ['search', 'organizationId']],
+    merge(existing = [] as any, incoming) {
+      const merged = existing ? { ...existing } : {};
+      merged.pagination = incoming.pagination;
+      const accountLists = existing[name] || [];
+      merged[name] = accountLists.concat(incoming[name]);
+      return merged;
+    },
+  };
+};
+
 export const cache = new InMemoryCache({
   possibleTypes: generatedIntrospection.possibleTypes,
   typePolicies: {
@@ -41,6 +54,10 @@ export const cache = new InMemoryCache({
         donations: paginationFieldPolicy,
         tasks: paginationFieldPolicy,
         userNotifications: paginationFieldPolicy,
+        searchOrganizationsContacts:
+          paginationForOrganizationQueries('contacts'),
+        searchOrganizationsAccountLists:
+          paginationForOrganizationQueries('accountLists'),
       },
     },
   },

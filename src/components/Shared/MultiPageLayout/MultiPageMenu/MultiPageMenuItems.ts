@@ -75,7 +75,7 @@ export const SettingsNavItems: NavItems[] = [
         grantedAccess: ['admin'],
       },
       {
-        id: 'organizations/account_lists',
+        id: 'organizations/accountLists',
         title: 'Account Lists',
         grantedAccess: ['admin'],
       },

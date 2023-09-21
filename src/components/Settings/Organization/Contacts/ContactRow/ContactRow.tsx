@@ -52,28 +52,27 @@ const SpaceBetweenBox = styled(Box)(() => ({
 }));
 
 const PersonData: React.FC<PersonDataProps> = ({ person }) => {
+  const email =
+    person?.emailAddresses &&
+    person?.emailAddresses.find((email) => email?.primary);
+  const phone =
+    person?.phoneNumbers &&
+    person?.phoneNumbers.find((phone) => phone?.primary);
   return (
     <StyledBox>
       <Typography component="span" variant="body2">
         {person?.firstName} {person?.lastName}
       </Typography>
-      {person?.emailAddresses?.map((email) => {
-        if (email?.historic || !email?.email) return null;
-        return (
-          <Link key={`email-${email.email}`} href={`mailto:${email.email}`}>
-            {email.email}
-          </Link>
-        );
-      })}
-      {person?.phoneNumbers &&
-        person.phoneNumbers?.map((phone) => {
-          if (phone?.historic || !phone?.number) return null;
-          return (
-            <Typography key={`phone-${phone.number}`} component="span">
-              {phone.number}
-            </Typography>
-          );
-        })}
+      {email && (
+        <Link key={`email-${email.email}`} href={`mailto:${email.email}`}>
+          {email.email}
+        </Link>
+      )}
+      {phone && (
+        <Typography key={`phone-${phone.number}`} component="span">
+          {phone.number}
+        </Typography>
+      )}
     </StyledBox>
   );
 };

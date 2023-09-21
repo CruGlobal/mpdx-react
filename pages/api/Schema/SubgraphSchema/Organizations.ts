@@ -25,6 +25,19 @@ import { SearchOrganizationsContactsResolvers } from '../Settings/Preferences/Or
 // Delete Organization contact
 import DeleteOrganizationContactTypeDefs from '../Settings/Preferences/Organizations/DeleteOrganizationContact/DeleteOrganizationContact.graphql';
 import { DeleteOrganizationContactResolvers } from '../Settings/Preferences/Organizations/DeleteOrganizationContact/resolvers';
+// Search Organization AccountLists
+import SearchOrganizationsAccountListsTypeDefs from '../Settings/Preferences/Organizations/SearchOrganizationsAccountLists/SearchOrganizationsAccountLists.graphql';
+import { SearchOrganizationsAccountListsResolvers } from '../Settings/Preferences/Organizations/SearchOrganizationsAccountLists/resolvers';
+
+// Admin Delete Organization user
+import AdminDeleteOrganizationUserTypeDefs from '../Settings/Preferences/Organizations/AdminDeleteOrganizationUser/AdminDeleteOrganizationUser.graphql';
+import { AdminDeleteOrganizationUserResolvers } from '../Settings/Preferences/Organizations/AdminDeleteOrganizationUser/resolvers';
+// Admin Delete Organization coach
+import AdminDeleteOrganizationCoachTypeDefs from '../Settings/Preferences/Organizations/AdminDeleteOrganizationCoach/AdminDeleteOrganizationCoach.graphql';
+import { AdminDeleteOrganizationCoachResolvers } from '../Settings/Preferences/Organizations/AdminDeleteOrganizationCoach/resolvers';
+// Admin Delete Organization invite
+import AdminDeleteOrganizationInvitesTypeDefs from '../Settings/Preferences/Organizations/AdminDeleteOrganizationInvites/AdminDeleteOrganizationInvites.graphql';
+import { AdminDeleteOrganizationInvitesResolvers } from '../Settings/Preferences/Organizations/AdminDeleteOrganizationInvites/resolvers';
 
 export const organizationSchema = [
   {
@@ -58,5 +71,21 @@ export const organizationSchema = [
   {
     typeDefs: DeleteOrganizationContactTypeDefs,
     resolvers: DeleteOrganizationContactResolvers,
+  },
+  {
+    typeDefs: SearchOrganizationsAccountListsTypeDefs,
+    resolvers: SearchOrganizationsAccountListsResolvers,
+  },
+  {
+    typeDefs: AdminDeleteOrganizationUserTypeDefs,
+    resolvers: AdminDeleteOrganizationUserResolvers,
+  },
+  {
+    typeDefs: AdminDeleteOrganizationCoachTypeDefs,
+    resolvers: AdminDeleteOrganizationCoachResolvers,
+  },
+  {
+    typeDefs: AdminDeleteOrganizationInvitesTypeDefs,
+    resolvers: AdminDeleteOrganizationInvitesResolvers,
   },
 ];
