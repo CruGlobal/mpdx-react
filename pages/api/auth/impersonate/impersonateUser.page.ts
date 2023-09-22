@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { impersonate, ImpersonationTypeEnum } from './impersonateHelper';
 
-const impersonateOrganization = async (
+const impersonateUser = async (
   req: NextApiRequest,
   res: NextApiResponse,
 ): Promise<void> => {
   try {
     const impersonateResponse = await impersonate(
       req,
-      ImpersonationTypeEnum.ORGANIZATION,
+      ImpersonationTypeEnum.USER,
     );
     const status = Number(impersonateResponse.status);
     const success = status === 200;
@@ -26,4 +26,4 @@ const impersonateOrganization = async (
   }
 };
 
-export default impersonateOrganization;
+export default impersonateUser;
