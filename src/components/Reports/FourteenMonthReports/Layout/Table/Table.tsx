@@ -123,7 +123,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                     {isExpanded && (
                       <React.Fragment>
                         <TableCell>{contact.status}</TableCell>
-                        <TableCell>
+                        <TableCell data-testid="pledgeAmount">
                           {contact.pledgeAmount &&
                             `${numberFormat(
                               Math.round(contact.pledgeAmount),
@@ -152,7 +152,7 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                       </TableCell>
                     ))}
                     <TableCell align="right">
-                      <strong>
+                      <strong data-testid="totalGivenByContact">
                         {numberFormat(Math.round(totalDonated), locale)}
                       </strong>
                     </TableCell>
@@ -165,13 +165,13 @@ export const FourteenMonthReportTable: FC<FourteenMonthReportTableProps> =
                 </TableCell>
                 {totals?.map((month) => (
                   <TableCell key={month.month} align="center">
-                    <strong>
+                    <strong data-testid="monthlyTotals">
                       {numberFormat(Math.round(month.total), locale)}
                     </strong>
                   </TableCell>
                 ))}
                 <TableCell align="right">
-                  <strong>
+                  <strong data-testid="overallTotal">
                     {numberFormat(
                       Math.round(
                         totals?.reduce((sum, month) => sum + month.total, 0) ??
