@@ -24,6 +24,10 @@ interface Props {
   currencyType: FourteenMonthReportCurrencyType;
   onSelectContact: (contactId: string) => void;
 }
+export interface Totals {
+  total: number;
+  month: string;
+}
 
 export const FourteenMonthReport: React.FC<Props> = ({
   accountListId,
@@ -229,6 +233,27 @@ export const FourteenMonthReport: React.FC<Props> = ({
     return [...csvHeaders, ...csvBody, csvTotals];
   }, [apiConstants, contacts]);
 
+  const totals: Totals[] = useMemo(() => {
+    const totals: Totals[] = [];
+    data?.fourteenMonthReport.currencyGroups.forEach((current) => {
+      current.contacts.forEach((contact) => {
+        if (contact?.months) {
+          contact.months.forEach((month, idx) => {
+            if (!totals[idx]?.total && totals[idx]?.total !== 0) {
+              totals.push({
+                month: month.month,
+                total: month.salaryCurrencyTotal,
+              });
+            } else {
+              totals[idx].total = totals[idx].total + month.salaryCurrencyTotal;
+            }
+          });
+        }
+      });
+    });
+    return totals;
+  }, [data?.fourteenMonthReport]);
+
   return (
     <Box>
       <Header
@@ -263,7 +288,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
           orderedContacts={orderedContacts}
           ref={reportTableRef}
           salaryCurrency={data?.fourteenMonthReport.salaryCurrency}
-          totals={data?.fourteenMonthReport.currencyGroups[0].totals}
+          totals={totals}
         />
       ) : (
         <EmptyReport
