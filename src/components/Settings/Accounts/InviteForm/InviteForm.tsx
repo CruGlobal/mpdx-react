@@ -12,22 +12,25 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useCreateAccountListInviteMutation } from './InviteForm.generated';
-import {
-  GetAccountListInvitesQuery,
-  GetAccountListInvitesDocument,
-} from '../ManageAccountAccess/ManageAccountAccess.generated';
-import { InviteTypeEnum } from '../../../../../graphql/types.generated';
+import * as Types from '../../../../../graphql/types.generated';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { DialogActionsLeft } from 'src/components/Shared/Forms/DialogActions';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { useCreateAccountListInviteMutation } from './InviteForm.generated';
+import {
+  GetAccountListInvitesQuery,
+  GetAccountListInvitesDocument,
+} from '../ManageAccounts/ManageAccounts.generated';
 
 const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
 }));
 
-export const InviteForm: React.FC = () => {
+type InviteFormProps = {
+  type: Types.InviteTypeEnum;
+};
+export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() || '';
@@ -56,7 +59,7 @@ export const InviteForm: React.FC = () => {
         input: {
           attributes: {
             accountListId,
-            inviteUserAs: InviteTypeEnum.User,
+            inviteUserAs: type,
             recipientEmail: email,
           },
         },
@@ -66,6 +69,7 @@ export const InviteForm: React.FC = () => {
           query: GetAccountListInvitesDocument,
           variables: {
             accountListId,
+            inviteType: type,
           },
         };
         const dataFromCache =
@@ -159,21 +163,30 @@ export const InviteForm: React.FC = () => {
             title={t('Confirm')}
             message={
               <>
-                <Typography>
-                  {t(
-                    `You are about to share access to your MPDX account with another user. This will give them access to view and
-                modify all of your Contacts, Tasks, Donations, and any other information in your MPDX account.`,
-                  )}
-                </Typography>
-                <Alert severity="error" style={{ margin: '10px 0' }}>
-                  {t('Are you sure you want to proceed?')}
-                </Alert>
-                <Typography>
-                  {t(
-                    ` If you are trying to share coaching access please click Cancel below and try again through the Manage
-                Coaches page in Settings.`,
-                  )}
-                </Typography>
+                {type === Types.InviteTypeEnum.User && (
+                  <>
+                    <Typography>
+                      {t(
+                        `You are about to share access to your MPDX account with another user. This will give them access to view and
+                  modify all of your Contacts, Tasks, Donations, and any other information in your MPDX account.`,
+                      )}
+                    </Typography>
+                    <Alert severity="error" style={{ margin: '10px 0' }}>
+                      {t('Are you sure you want to proceed?')}
+                    </Alert>
+                    <Typography>
+                      {t(
+                        ` If you are trying to share coaching access please click Cancel below and try again through the Manage
+                  Coaches page in Settings.`,
+                      )}
+                    </Typography>
+                  </>
+                )}
+                {type === Types.InviteTypeEnum.Coach && (
+                  <Typography>
+                    {t(`Are you sure you want to proceed?`)}
+                  </Typography>
+                )}
               </>
             }
             handleClose={handleConfirmInviteClose}

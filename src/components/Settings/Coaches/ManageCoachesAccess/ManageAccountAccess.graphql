@@ -1,68 +1,18 @@
-query getAccountListUsers($accountListId: ID!) {
-  accountListUsers(accountListId: $accountListId) {
+query GetAccountListCoaches($accountListId: ID!) {
+  accountListCoaches(accountListId: $accountListId) {
     nodes {
-      user {
-        createdAt
+      coach {
         firstName
-        id
         lastName
-        updatedAt
+        id
       }
       id
     }
   }
 }
 
-query getUserId {
-  user {
+mutation DeleteAccountListCoach($input: AccountListCoachDeleteMutationInput!) {
+  deleteAccountListCoach(input: $input) {
     id
-  }
-}
-
-mutation DeleteAccountListUser($input: AccountListUserDeleteMutationInput!) {
-  deleteAccountListUser(input: $input) {
-    id
-  }
-}
-
-query getAccountListInvites($accountListId: ID!) {
-  accountListInvites(accountListId: $accountListId) {
-    nodes {
-      id
-      accountListId
-      cancelledByUser {
-        firstName
-        lastName
-        id
-      }
-      inviteUserAs
-      invitedByUser {
-        firstName
-        lastName
-        id
-      }
-      recipientEmail
-    }
-  }
-}
-
-mutation CancelAccountListInvite($input: CancelAccountListInviteInput!) {
-  cancelAccountListInvite(input: $input) {
-    accountListInvite {
-      accountListId
-      id
-      recipientEmail
-      cancelledByUser {
-        firstName
-        id
-        lastName
-      }
-      inviteUserAs
-      invitedByUser {
-        firstName
-        id
-        lastName
-      }
-    }
   }
 }

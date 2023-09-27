@@ -3,9 +3,10 @@ import { Typography, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
+import * as Types from '../../../../../graphql/types.generated';
 import { AccordianProps } from '../../accordianHelper';
-import { InviteForm } from '../InviteForm/InviteForm';
 import { MergeForm } from '../MergeForm/MergeForm';
+import { InviteForm } from '../InviteForm/InviteForm';
 
 const DividerWithPadding = styled(Divider)(() => ({
   marginTop: '20px',
@@ -43,7 +44,7 @@ export const MergeSpouseAccountsAccordian: React.FC<AccordianProps> = ({
         {t('1. Share your accounts with each other.')}
       </Typography>
 
-      <InviteForm />
+      <InviteForm type={Types.InviteTypeEnum.User} />
 
       <Typography>
         {t(

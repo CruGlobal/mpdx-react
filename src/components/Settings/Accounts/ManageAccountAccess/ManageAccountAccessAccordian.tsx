@@ -1,41 +1,17 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import {
-  Alert,
-  Typography,
-  Skeleton,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Alert, Typography } from '@mui/material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import {
-  User,
-  AccountListInvite,
-  UserScopedToAccountList,
-} from '../../../../../graphql/types.generated';
-import {
-  useGetAccountListUsersQuery,
-  useGetUserIdQuery,
-  useGetAccountListInvitesQuery,
-  useCancelAccountListInviteMutation,
-  useDeleteAccountListUserMutation,
-} from './ManageAccountAccess.generated';
+import * as Types from '../../../../../graphql/types.generated';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
+import {
+  useGetAccountListUsersQuery,
+  useDeleteAccountListUserMutation,
+} from './ManageAccountAccess.generated';
 import { AccordianProps } from '../../accordianHelper';
-import { InviteForm } from '../InviteForm/InviteForm';
-
-type handleRemoveUserProp = Pick<User, 'firstName' | 'id' | 'lastName'>;
-type handleCancelInviteProp = Pick<
-  AccountListInvite,
-  'id' | 'accountListId' | 'inviteUserAs' | 'recipientEmail'
-> & {
-  invitedByUser: Pick<UserScopedToAccountList, 'firstName' | 'lastName' | 'id'>;
-};
+import { ManageAccounts, User } from '../ManageAccounts/ManageAccounts';
 
 export const ManageAccountAccessAccordian: React.FC<AccordianProps> = ({
   handleAccordionChange,
@@ -52,27 +28,11 @@ export const ManageAccountAccessAccordian: React.FC<AccordianProps> = ({
         accountListId,
       },
     });
-  const { data: accountListInvites, loading: loadingInvites } =
-    useGetAccountListInvitesQuery({
-      variables: {
-        accountListId,
-      },
-    });
-  const { data: userIdData } = useGetUserIdQuery();
-  const [cancelAccountListInvite] = useCancelAccountListInviteMutation();
   const [deleteAccountListUser] = useDeleteAccountListUserMutation();
 
   const users = accountListUsers?.accountListUsers.nodes;
-  const invites = useMemo(
-    () =>
-      accountListInvites?.accountListInvites.nodes.filter(
-        (user) => !user.cancelledByUser,
-      ),
-    [accountListInvites],
-  );
-  const userId = userIdData?.user.id;
 
-  const handleRemoveUser = async (user: handleRemoveUserProp) => {
+  const handleRemoveUser = async (user: User) => {
     await deleteAccountListUser({
       variables: {
         input: {
@@ -95,30 +55,6 @@ export const ManageAccountAccessAccordian: React.FC<AccordianProps> = ({
       },
     });
   };
-  const handleCancelInvite = async (invite: handleCancelInviteProp) => {
-    await cancelAccountListInvite({
-      variables: {
-        input: {
-          accountListId,
-          id: invite.id,
-        },
-      },
-      update: (cache) => {
-        cache.evict({ id: `AccountListInvite:${invite.id}` });
-        cache.gc();
-      },
-      onCompleted: () => {
-        enqueueSnackbar(t('MPDX removed the invite successfully'), {
-          variant: 'success',
-        });
-      },
-      onError: () => {
-        enqueueSnackbar(t("MPDX couldn't remove the invite"), {
-          variant: 'error',
-        });
-      },
-    });
-  };
 
   return (
     <AccordionItem
@@ -129,83 +65,25 @@ export const ManageAccountAccessAccordian: React.FC<AccordianProps> = ({
       fullWidth={true}
     >
       <StyledFormLabel>{accordianName}</StyledFormLabel>
-      <Typography>
-        {t('Share this ministry account with other team members')}
-      </Typography>
-      <Alert severity="warning" style={{ marginTop: '15px' }}>
-        {t(` If you want to allow another mpdx user to have access to this ministry account, you can share access with them. Make
-        sure you have the proper permissions and leadership consensus around this sharing before you do this. You will be
-        able to remove access later.`)}
-      </Alert>
 
-      {loadingUsers && <Skeleton height={'100px'} />}
-
-      {users?.length && (
-        <>
-          <Typography marginTop={4}>
-            {t('Account currently shared with')}
-          </Typography>
-          <List>
-            {users?.map((user) => {
-              return (
-                <ListItem
-                  key={user.id}
-                  secondaryAction={
-                    user.id !== userId ? (
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => handleRemoveUser(user)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    ) : null
-                  }
-                >
-                  <ListItemText
-                    primary={`${user.user.firstName} ${user.user.lastName}`}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
-        </>
-      )}
-
-      {loadingInvites && <Skeleton height={'100px'} />}
-      {!!invites?.length && (
-        <>
-          <Typography marginTop={4}>{t('Pending Invites')}</Typography>
-          <List>
-            {invites?.map((invite) => {
-              const { firstName = '', lastName = '' } = invite.invitedByUser;
-              const showInvitedBy = !!firstName && !!lastName;
-              const invitedBy = `(Sent by ${firstName} ${lastName})`;
-
-              return (
-                <ListItem
-                  key={invite.id}
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleCancelInvite(invite)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemText
-                    primary={invite.recipientEmail}
-                    secondary={showInvitedBy ? invitedBy : null}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
-        </>
-      )}
-      <InviteForm />
+      <ManageAccounts
+        type={Types.InviteTypeEnum.User}
+        intro={
+          <>
+            <Typography>
+              {t('Share this ministry account with other team members')}
+            </Typography>
+            <Alert severity="warning" style={{ marginTop: '15px' }}>
+              {t(` If you want to allow another mpdx user to have access to this ministry account, you can share access with them. Make
+              sure you have the proper permissions and leadership consensus around this sharing before you do this. You will be
+              able to remove access later.`)}
+            </Alert>
+          </>
+        }
+        loadingItems={loadingUsers}
+        items={users || []}
+        handleRemoveItem={handleRemoveUser}
+      />
     </AccordionItem>
   );
 };
