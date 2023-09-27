@@ -259,11 +259,13 @@ const ProfileMenu = (): ReactElement => {
         >
           <ListItemText primary={t('Manage Accounts')} />
         </MenuItem>
-        <HandoffLink path="/preferences/coaches">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Manage Coaches')} />
-          </MenuItem>
-        </HandoffLink>
+        <MenuItem
+          onClick={handleProfileMenuClose}
+          component="a"
+          href={`/accountLists/${accountListIdFallback}/settings/manageCoaches`}
+        >
+          <ListItemText primary={t('Manage Coaches')} />
+        </MenuItem>
         {(data?.user?.admin ||
           !!data?.user?.administrativeOrganizations?.nodes?.length) && (
           <MenuItem
