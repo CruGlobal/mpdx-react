@@ -1,11 +1,12 @@
 import {
+  Box,
   CircularProgress,
   DialogActions,
   DialogContent,
   DialogContentText,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../Modal';
 import {
@@ -20,7 +21,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 export interface ConfirmationProps {
   isOpen: boolean;
   title: string;
-  message: string;
+  message: string | ReactNode;
   mutation: () => Promise<unknown>;
   handleClose: () => void;
 }
@@ -50,13 +51,19 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
       });
   };
 
+  const isString = typeof message === 'string';
+
   return (
     <Modal isOpen={isOpen} title={title} handleClose={handleClose}>
       <DialogContent dividers>
         {mutating ? (
-          <LoadingIndicator color="primary" size={50} />
-        ) : (
+          <Box style={{ textAlign: 'center' }}>
+            <LoadingIndicator color="primary" size={50} />
+          </Box>
+        ) : isString ? (
           <DialogContentText>{message}</DialogContentText>
+        ) : (
+          message
         )}
       </DialogContent>
       <DialogActions>

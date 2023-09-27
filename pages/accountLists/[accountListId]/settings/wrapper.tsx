@@ -15,7 +15,7 @@ import {
 
 const PageContentWrapper = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(3),
+  paddingBottom: theme.spacing(10),
 }));
 
 interface SettingsWrapperProps {
