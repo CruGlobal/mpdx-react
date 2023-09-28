@@ -1,0 +1,8 @@
+mutation UpdateUserDefaultAccount($input: UserUpdateMutationInput!) {
+  updateUser(input: $input) {
+    user {
+      id
+      defaultAccountList
+    }
+  }
+}

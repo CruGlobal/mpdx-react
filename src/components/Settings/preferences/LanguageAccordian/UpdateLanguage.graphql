@@ -1,0 +1,10 @@
+mutation UpdateUserLanguagePreference(
+  $input: UserPreferenceUpdateMutationInput!
+) {
+  updatePreference(input: $input) {
+    clientMutationId
+    preference {
+      locale
+    }
+  }
+}

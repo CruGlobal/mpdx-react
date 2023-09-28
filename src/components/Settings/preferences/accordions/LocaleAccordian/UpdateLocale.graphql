@@ -1,0 +1,9 @@
+mutation UpdateUserLocalePreference(
+  $input: UserPreferenceUpdateMutationInput!
+) {
+  updatePreference(input: $input) {
+    preference {
+      localeDisplay
+    }
+  }
+}
