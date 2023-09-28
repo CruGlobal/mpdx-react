@@ -67,9 +67,13 @@ const ContactPersonIconContainer = styled(Box)(() => ({
 interface ProfileInfoProps {
   //profile: ContactDetailsTabQuery['contact']['people']['nodes'][0];
   accountListId: string;
+  data: any;
 }
 
-export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
+export const ProfileInfo: React.FC<ProfileInfoProps> = ({
+  accountListId,
+  data,
+}) => {
   const { t } = useTranslation();
   const profile = profile2;
   const theme = useTheme<Theme>();
@@ -78,14 +82,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
   );
 
   const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
-
-  const primaryPhone = profile.phoneNumbers.nodes.filter(
-    (item) => item.primary === true,
-  )[0];
-
-  const primaryEmail = profile.emailAddresses.nodes.filter(
-    (item) => item.primary === true,
-  )[0];
+  const user = data?.user || {};
 
   // const handleOpen = () => {
   //   setEditProfileModalOpen(true);
@@ -97,78 +94,55 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
         {/* Avatar */}
         <StyledAvatar
           src={profile.avatar}
-          alt={`${profile.firstName} ${profile.lastName}`}
+          alt={`${user?.firstName} ${user?.lastName}`}
         />
 
         {/* Name */}
         <Typography component="h3" variant="h5">
-          {profile.title} {profile.firstName} {profile.lastName}{' '}
-          {profile.suffix}
+          {user?.title} {user?.firstName} {user?.lastName} {user?.suffix}
         </Typography>
 
         {/* Work */}
-        {(profile?.occupation || profile?.employer) && (
+        {(user?.occupation || user?.employer) && (
           <Typography component="h4">
-            {`${profile.occupation} ${
-              profile.occupation && profile.employer ? '-' : ''
-            } ${profile.employer}`}
+            {`${user?.occupation} ${
+              user?.occupation && user?.employer ? '-' : ''
+            } ${user?.employer}`}
           </Typography>
         )}
       </Box>
 
-      {/* Email */}
-      {/* <PersPrefContactMethods type="email" methods={profile.email} /> */}
-
       {/* Phone Number */}
-      {primaryPhone !== null ? (
+      {user?.primaryPhoneNumber !== null ? (
         <ContactPersonRowContainer>
           <ContactPersonIconContainer>
             <Phone color="disabled" />
           </ContactPersonIconContainer>
           <Typography variant="subtitle1">
-            <Link href={`tel:${primaryPhone?.number}`}>
-              {primaryPhone?.number}
+            <Link href={`tel:${user?.primaryPhoneNumber?.number}`}>
+              {user?.primaryPhoneNumber?.number}
             </Link>
           </Typography>
-          {primaryPhone?.location ? (
+          {user?.primaryPhoneNumber?.location ? (
             <Typography variant="caption" marginLeft={1}>
-              {t(primaryPhone.location)}
+              {t(user?.primaryPhoneNumber?.location)}
             </Typography>
           ) : null}
         </ContactPersonRowContainer>
       ) : null}
       {/* Email Section */}
-      {primaryEmail !== null ? (
+      {user?.primaryEmailAddress !== null ? (
         <ContactPersonRowContainer>
           <ContactPersonIconContainer>
             <Email color="disabled" />
           </ContactPersonIconContainer>
           <Typography variant="subtitle1">
-            <Link href={`mailto:${primaryEmail?.email}`}>
-              {primaryEmail?.email}
+            <Link href={`mailto:${user?.primaryEmailAddress?.email}`}>
+              {user?.primaryEmailAddress?.email}
             </Link>
           </Typography>
         </ContactPersonRowContainer>
       ) : null}
-
-      {/* Phone */}
-      {/* <PersPrefContactMethods type="phone" methods={profile.phone} /> */}
-
-      {/* Anniversay */}
-      {/* <PersPrefAnniversary
-        marital_status={t(profile.marital_status)}
-        anniversary_day={profile.anniversary_day}
-        anniversary_month={profile.anniversary_month}
-        anniversary_year={profile.anniversary_year}
-      /> */}
-
-      {/* Social Media */}
-      {/* <PersPrefSocials
-        facebook_accounts={profile.facebook_accounts}
-        twitter_accounts={profile.twitter_accounts}
-        linkedin_accounts={profile.linkedin_accounts}
-        websites={profile.websites}
-      /> */}
 
       {/* Edit Info Button */}
       <StyledContactEdit
