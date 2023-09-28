@@ -1,0 +1,55 @@
+query getPreferences($accountListId: ID!) {
+  user {
+    localeDisplay
+    lastName
+    firstName
+    title
+    suffix
+    id
+    defaultAccountList
+    occupation
+    employer
+    primaryEmailAddress {
+      email
+      primary
+      id
+      source
+      location
+      historic
+      validValues
+    }
+    primaryPhoneNumber {
+      validValues
+      source
+      primary
+      number
+      location
+      id
+      historic
+    }
+    preferences {
+      timeZone
+      localeDisplay
+      locale
+      hourToSendNotifications
+    }
+  }
+  accountList(id: $accountListId) {
+    settings {
+      homeCountry
+      monthlyGoal
+      tester
+      currency
+    }
+    activeMpdMonthlyGoal
+    name
+    activeMpdStartAt
+    activeMpdFinishAt
+  }
+  accountLists {
+    nodes {
+      name
+      id
+    }
+  }
+}
