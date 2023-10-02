@@ -3,8 +3,8 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 16.16.0
-        - nvm use 16.16.0
+        - nvm install 18.17.0
+        - nvm use 18.17.0
         - echo $secrets
         - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
         - echo "NODE_ENV=$NODE_ENV" >> .env
