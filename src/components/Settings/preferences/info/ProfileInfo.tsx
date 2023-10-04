@@ -1,25 +1,18 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Avatar,
-  Box,
-  Button,
-  Typography,
-  useMediaQuery,
-  Link,
-} from '@mui/material';
+import { DateTime } from 'luxon';
+import { Avatar, Box, Button, Typography, useMediaQuery } from '@mui/material';
 import { Theme, styled, useTheme } from '@mui/material/styles';
-import { Edit } from '@mui/icons-material';
 import { profile2 } from '../DemoContent';
-//import { PersPrefModal } from '../modals/PreferencesModal';
-// import { PersPrefContactMethods } from './PreferencesContactMethods';
-// import { PersPrefAnniversary } from './PreferencesAnniversary';
-// import { PersPrefSocials } from './PreferencesSocials';
 import { PersonModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
-// import { ProfileModal } from 'src/components/Modals/ProfileModal/ProfileModal';
-import Email from '@mui/icons-material/Email';
-import Phone from '@mui/icons-material/Phone';
-//import { ContactDetailsTabQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/ContactDetailsTab.generated';
+import { Edit } from '@mui/icons-material';
+import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
+import { ProfileInfoData } from './ProfileInfoData';
+import { Facebook } from 'src/components/common/Links/Facebook';
+import { Twitter } from 'src/components/common/Links/Twitter';
+import { LinkedIn } from 'src/components/common/Links/LinkedIn';
+import { Website } from 'src/components/common/Links/Website';
+import { useLocale } from 'src/hooks/useLocale';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -52,18 +45,6 @@ const StyledContactEdit = styled(Button)(({ theme }) => ({
   },
 }));
 
-const ContactPersonRowContainer = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(1),
-  display: 'flex',
-  alignItems: 'center',
-}));
-
-const ContactPersonIconContainer = styled(Box)(() => ({
-  width: '18px',
-  height: '18px',
-  marginRight: '15px',
-}));
-
 interface ProfileInfoProps {
   //profile: ContactDetailsTabQuery['contact']['people']['nodes'][0];
   accountListId: string;
@@ -75,18 +56,18 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
   data,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const profile = profile2;
   const theme = useTheme<Theme>();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
-
   const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
   const user = data?.user || {};
 
-  // const handleOpen = () => {
-  //   setEditProfileModalOpen(true);
-  // };
+  const birthDate = new Date(
+    `${user.birthdayYear}-${user.birthdayMonth - 1}-${user.birthdayDay}`,
+  );
 
   return (
     <ProfileInfoWrapper component="section">
@@ -112,37 +93,52 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
         )}
       </Box>
 
-      {/* Phone Number */}
-      {user?.primaryPhoneNumber !== null ? (
-        <ContactPersonRowContainer>
-          <ContactPersonIconContainer>
-            <Phone color="disabled" />
-          </ContactPersonIconContainer>
-          <Typography variant="subtitle1">
-            <Link href={`tel:${user?.primaryPhoneNumber?.number}`}>
-              {user?.primaryPhoneNumber?.number}
-            </Link>
+      {user?.primaryEmailAddress && (
+        <ProfileInfoData
+          primaryData={user.primaryEmailAddress}
+          additionalData={user.emailAddresses?.nodes}
+        />
+      )}
+
+      {user?.primaryPhoneNumber && (
+        <ProfileInfoData
+          primaryData={user.primaryPhoneNumber}
+          additionalData={user.phoneNumbers?.nodes}
+        />
+      )}
+
+      {user.maritalStatus && (
+        <Box>
+          {user.maritalStatus}
+          {' : '}
+          {dayMonthFormat(user.anniversaryDay, user.anniversaryMonth, locale)}
+        </Box>
+      )}
+
+      <Box>
+        {user.facebookAccounts?.nodes?.map((account) => (
+          <Facebook account={account} key={account.id} />
+        ))}
+        {user.twitterAccounts?.nodes?.map((account) => (
+          <Twitter account={account} key={account.id} />
+        ))}
+        {user.linkedinAccounts?.nodes?.map((account) => (
+          <LinkedIn account={account} key={account.id} />
+        ))}
+        {user.websites?.nodes?.map((account) => (
+          <Website account={account} key={account.id} />
+        ))}
+      </Box>
+
+      {birthDate && (
+        <Box>
+          <Typography component="span">
+            {t('Birthday')}
+            {': '}
+            {dateFormat(DateTime.fromISO(birthDate.toISOString()), locale)}
           </Typography>
-          {user?.primaryPhoneNumber?.location ? (
-            <Typography variant="caption" marginLeft={1}>
-              {t(user?.primaryPhoneNumber?.location)}
-            </Typography>
-          ) : null}
-        </ContactPersonRowContainer>
-      ) : null}
-      {/* Email Section */}
-      {user?.primaryEmailAddress !== null ? (
-        <ContactPersonRowContainer>
-          <ContactPersonIconContainer>
-            <Email color="disabled" />
-          </ContactPersonIconContainer>
-          <Typography variant="subtitle1">
-            <Link href={`mailto:${user?.primaryEmailAddress?.email}`}>
-              {user?.primaryEmailAddress?.email}
-            </Link>
-          </Typography>
-        </ContactPersonRowContainer>
-      ) : null}
+        </Box>
+      )}
 
       {/* Edit Info Button */}
       <StyledContactEdit

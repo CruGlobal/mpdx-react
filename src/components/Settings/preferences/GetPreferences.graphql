@@ -9,29 +9,70 @@ query getPreferences($accountListId: ID!) {
     defaultAccountList
     occupation
     employer
+    anniversaryYear
+    anniversaryDay
+    anniversaryMonth
+    maritalStatus
+    birthdayDay
+    birthdayMonth
+    birthdayYear
     primaryEmailAddress {
+      id
       email
       primary
-      id
-      source
       location
-      historic
-      validValues
     }
     primaryPhoneNumber {
-      validValues
-      source
-      primary
-      number
-      location
       id
-      historic
+      number
+      primary
+      location
+    }
+    phoneNumbers {
+      nodes {
+        id
+        number
+        primary
+        location
+      }
+    }
+    emailAddresses {
+      nodes {
+        id
+        email
+        primary
+        location
+      }
     }
     preferences {
       timeZone
       localeDisplay
       locale
       hourToSendNotifications
+    }
+    twitterAccounts {
+      nodes {
+        id
+        screenName
+      }
+    }
+    websites {
+      nodes {
+        url
+        id
+      }
+    }
+    linkedinAccounts {
+      nodes {
+        id
+        publicUrl
+      }
+    }
+    facebookAccounts {
+      nodes {
+        id
+        username
+      }
     }
   }
   accountList(id: $accountListId) {
