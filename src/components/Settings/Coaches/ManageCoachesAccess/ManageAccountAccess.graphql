@@ -1,0 +1,18 @@
+query GetAccountListCoaches($accountListId: ID!) {
+  accountListCoaches(accountListId: $accountListId) {
+    nodes {
+      coach {
+        firstName
+        lastName
+        id
+      }
+      id
+    }
+  }
+}
+
+mutation DeleteAccountListCoach($input: AccountListCoachDeleteMutationInput!) {
+  deleteAccountListCoach(input: $input) {
+    id
+  }
+}

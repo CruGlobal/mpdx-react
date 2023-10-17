@@ -3,10 +3,8 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { suggestArticles } from 'src/lib/helpScout';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
-import { ManageAccountAccessAccordian } from 'src/components/Settings/Accounts/ManageAccountAccess/ManageAccountAccessAccordian';
-import { MergeAccountsAccordian } from 'src/components/Settings/Accounts/MergeAccounts/MergeAccountsAccordian';
-import { MergeSpouseAccountsAccordian } from 'src/components/Settings/Accounts/MergeSpouseAccounts/MergeSpouseAccountsAccordian';
 import { SettingsWrapper } from './wrapper';
+import { ManageCoachesAccessAccordian } from 'src/components/Settings/Coaches/ManageCoachesAccess/ManageCoachesAccessAccordian';
 
 interface Props {
   selectedTab: string;
@@ -28,22 +26,12 @@ const ManageAccounts = ({ selectedTab }: Props): ReactElement => {
 
   return (
     <SettingsWrapper
-      pageTitle={t('Manage Accounts')}
-      pageHeading={t('Manage Accounts')}
-      selectedMenuId="manageAccounts"
+      pageTitle={t('Manage Coaches')}
+      pageHeading={t('Manage Coaches')}
+      selectedMenuId="manageCoaches"
     >
       <AccordionGroup title="">
-        <ManageAccountAccessAccordian
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
-        />
-
-        <MergeAccountsAccordian
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
-        />
-
-        <MergeSpouseAccountsAccordian
+        <ManageCoachesAccessAccordian
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
         />

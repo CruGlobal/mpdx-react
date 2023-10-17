@@ -1,0 +1,18 @@
+query getAccountListUsers($accountListId: ID!) {
+  accountListUsers(accountListId: $accountListId) {
+    nodes {
+      user {
+        firstName
+        id
+        lastName
+      }
+      id
+    }
+  }
+}
+
+mutation DeleteAccountListUser($input: AccountListUserDeleteMutationInput!) {
+  deleteAccountListUser(input: $input) {
+    id
+  }
+}

@@ -1,0 +1,47 @@
+query getUserId {
+  user {
+    id
+  }
+}
+
+query getAccountListInvites($accountListId: ID!, $inviteType: InviteTypeEnum!) {
+  accountListInvites(accountListId: $accountListId, inviteType: $inviteType) {
+    nodes {
+      id
+      accountListId
+      cancelledByUser {
+        firstName
+        lastName
+        id
+      }
+      inviteUserAs
+      invitedByUser {
+        firstName
+        lastName
+        id
+      }
+      recipientEmail
+    }
+  }
+}
+
+mutation CancelAccountListInvite($input: CancelAccountListInviteInput!) {
+  cancelAccountListInvite(input: $input) {
+    accountListInvite {
+      accountListId
+      id
+      recipientEmail
+      cancelledByUser {
+        firstName
+        id
+        lastName
+      }
+      inviteUserAs
+      invitedByUser {
+        firstName
+        id
+        lastName
+      }
+    }
+  }
+}
