@@ -39,7 +39,6 @@ mutation CreateOrganizationAccount(
     clientMutationId
     organizationAccount {
       username
-      password
       person {
         id
       }
