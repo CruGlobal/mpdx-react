@@ -260,7 +260,7 @@ describe('PrayerlettersAccount', () => {
 
       userEvent.click(
         getByRole('button', {
-          name: /sync now/i,
+          name: /Sync Now/i,
         }),
       );
 
