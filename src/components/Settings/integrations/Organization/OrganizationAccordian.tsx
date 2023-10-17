@@ -26,7 +26,7 @@ import { oAuth } from './OrganizationService';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
-import { StyledServicesButton } from '../integrationsHelper';
+import { StyledServicesButton } from '../../accordianHelper';
 
 interface OrganizationAccordianProps {
   handleAccordionChange: (panel: string) => void;

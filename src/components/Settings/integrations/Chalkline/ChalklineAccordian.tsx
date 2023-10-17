@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
-import { StyledServicesButton, AccordianProps } from '../integrationsHelper';
+import { StyledServicesButton, AccordianProps } from '../../accordianHelper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { useSendToChalklineMutation } from './SendToChalkline.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';

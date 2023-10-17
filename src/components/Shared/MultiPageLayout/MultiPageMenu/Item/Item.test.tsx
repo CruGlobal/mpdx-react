@@ -14,7 +14,7 @@ describe('Item', () => {
   it('default', () => {
     const { queryByText } = render(
       <TestWrapper>
-        <Item item={item} isSelected={false} navType={NavTypeEnum.Reports} />
+        <Item item={item} selectedId="testItem" navType={NavTypeEnum.Reports} />
       </TestWrapper>,
     );
     expect(queryByText(item.title)).toBeInTheDocument();

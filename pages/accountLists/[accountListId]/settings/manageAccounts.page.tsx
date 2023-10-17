@@ -51,6 +51,7 @@ const ManageAccounts: React.FC = () => {
     <SettingsWrapper
       pageTitle={t('Manage Accounts')}
       pageHeading={t('Manage Accounts')}
+      selectedMenuId="manageAccounts"
     >
       <AccordionGroup title={t('')}>
         <AccordionItem

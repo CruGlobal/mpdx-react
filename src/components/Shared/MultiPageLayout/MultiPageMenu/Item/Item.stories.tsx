@@ -13,9 +13,13 @@ const item = {
 };
 
 export const Default = (): ReactElement => (
-  <Item item={item} isSelected={false} navType={NavTypeEnum.Reports} />
+  <Item
+    item={item}
+    selectedId={'notSalaryCurrency'}
+    navType={NavTypeEnum.Reports}
+  />
 );
 
 export const Selected = (): ReactElement => (
-  <Item item={item} isSelected={true} navType={NavTypeEnum.Reports} />
+  <Item item={item} selectedId="salaryCurrency" navType={NavTypeEnum.Reports} />
 );

@@ -16,6 +16,7 @@ const Notifications: React.FC = () => {
     <SettingsWrapper
       pageTitle={t('Notifications')}
       pageHeading={t('Notifications')}
+      selectedMenuId="notifications"
     >
       <Box component="section" marginTop={3}>
         <p>

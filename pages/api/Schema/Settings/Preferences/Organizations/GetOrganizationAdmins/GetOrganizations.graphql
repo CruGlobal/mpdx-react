@@ -1,0 +1,13 @@
+extend type Query {
+  getOrganizationAdmins(input: getOrganizationAdminsInput!): [AdminList]!
+}
+
+input getOrganizationAdminsInput {
+  organizationId: String!
+}
+
+type AdminList {
+  id: String!
+  firstName: String!
+  lastName: String!
+}

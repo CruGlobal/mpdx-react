@@ -286,11 +286,13 @@ const ProfileMenu = (): ReactElement => {
         </HandoffLink>
         {(data?.user?.admin ||
           !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-          <HandoffLink path="/preferences/organizations">
-            <MenuItem onClick={handleProfileMenuClose} component="a">
-              <ListItemText primary={t('Manage Organizations')} />
-            </MenuItem>
-          </HandoffLink>
+          <MenuItem
+            onClick={handleProfileMenuClose}
+            component="a"
+            href={`/accountLists/${accountListIdFallback}/settings/organizations`}
+          >
+            <ListItemText primary={t('Manage Organizations')} />
+          </MenuItem>
         )}
         {(data?.user?.admin || data?.user?.developer) && (
           <HandoffLink path="/preferences/admin">

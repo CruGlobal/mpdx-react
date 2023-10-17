@@ -40,7 +40,7 @@ import {
   StyledListItem,
   StyledList,
   StyledServicesButton,
-} from '../integrationsHelper';
+} from '../../accordianHelper';
 
 interface MailchimpAccordianProps {
   handleAccordionChange: (panel: string) => void;

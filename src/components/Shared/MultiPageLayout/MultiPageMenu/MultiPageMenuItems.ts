@@ -1,4 +1,12 @@
-export const ReportNavItems = [
+export type NavItems = {
+  id: string;
+  title: string;
+  subTitle?: string;
+  grantedAccess?: string[];
+  subItems?: NavItems[];
+};
+
+export const ReportNavItems: NavItems[] = [
   {
     id: 'donations',
     title: 'Donations',
@@ -35,7 +43,7 @@ export const ReportNavItems = [
   },
 ];
 
-export const SettingsNavItems = [
+export const SettingsNavItems: NavItems[] = [
   {
     id: 'preferences',
     title: 'Preferences',
@@ -55,5 +63,42 @@ export const SettingsNavItems = [
   {
     id: 'manageCoaches',
     title: 'Manage Coaches',
+  },
+  {
+    id: 'organizations',
+    title: 'Manage Organizations',
+    grantedAccess: ['admin'],
+    subItems: [
+      {
+        id: 'organizations',
+        title: 'Impersonate & Share',
+        grantedAccess: ['admin'],
+      },
+      {
+        id: 'organizations/accountLists',
+        title: 'Account Lists',
+        grantedAccess: ['admin'],
+      },
+      {
+        id: 'organizations/contacts',
+        title: 'Contacts',
+        grantedAccess: ['admin'],
+      },
+    ],
+  },
+  {
+    id: 'adminConsole',
+    title: 'Admin Console',
+    grantedAccess: ['admin', 'developer'],
+  },
+  {
+    id: 'backendAdmin',
+    title: 'Backend Admin',
+    grantedAccess: ['developer'],
+  },
+  {
+    id: 'sidekiq',
+    title: 'Sidekiq',
+    grantedAccess: ['developer'],
   },
 ];

@@ -55,6 +55,7 @@ const Integrations = ({ apiToken, selectedTab }: Props): ReactElement => {
     <SettingsWrapper
       pageTitle={t('Connect Services')}
       pageHeading={t('Connect Services')}
+      selectedMenuId="integrations"
     >
       <IntegrationsContextProvider apiToken={apiToken}>
         <AccordionGroup title="">

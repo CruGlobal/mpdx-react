@@ -1,0 +1,15 @@
+query GetOrganizations {
+  getOrganizations {
+    organizations {
+      id
+      name
+    }
+    pagination {
+      page
+      totalPages
+    }
+  }
+  user {
+    id
+  }
+}
