@@ -13,6 +13,7 @@ import { Twitter } from 'src/components/common/Links/Twitter';
 import { LinkedIn } from 'src/components/common/Links/LinkedIn';
 import { Website } from 'src/components/common/Links/Website';
 import { useLocale } from 'src/hooks/useLocale';
+import { GetProfileInfoQuery } from '../GetProfileInfo.generated';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -48,7 +49,8 @@ const StyledContactEdit = styled(Button)(({ theme }) => ({
 interface ProfileInfoProps {
   //profile: ContactDetailsTabQuery['contact']['people']['nodes'][0];
   accountListId: string;
-  data: any;
+  data: GetProfileInfoQuery;
+  loading?: boolean;
 }
 
 export const ProfileInfo: React.FC<ProfileInfoProps> = ({
@@ -65,9 +67,12 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
   const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
   const user = data?.user || {};
 
-  const birthDate = new Date(
-    `${user.birthdayYear}-${user.birthdayMonth - 1}-${user.birthdayDay}`,
-  );
+  const birthDate =
+    user.birthdayYear && user.birthdayMonth && user.birthdayDay
+      ? new Date(
+          `${user.birthdayYear}-${user.birthdayMonth - 1}-${user.birthdayDay}`,
+        )
+      : null;
 
   return (
     <ProfileInfoWrapper component="section">
@@ -111,7 +116,11 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
         <Box>
           {user.maritalStatus}
           {' : '}
-          {dayMonthFormat(user.anniversaryDay, user.anniversaryMonth, locale)}
+          {dayMonthFormat(
+            user?.anniversaryDay || 0,
+            user?.anniversaryMonth || 0,
+            locale,
+          )}
         </Box>
       )}
 

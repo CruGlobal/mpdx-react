@@ -1,55 +1,91 @@
+import React, { ReactElement } from 'react';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import React, { ReactElement } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import * as Types from '../../../../../../graphql/types.generated';
+import { useUpdateHourToSendNotificationsPreferenceMutation } from './UpdateHourToSendNotifications.generated';
 import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { useUpdateUserDefaultAccountMutation } from './UpdateDefaultAccount.generated';
+import {
+  GetPersonalPreferencesQuery,
+  GetPersonalPreferencesDocument,
+} from '../../GetPersonalPreferences.generated';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 
-interface DefaultAccountAccordianProps {
+interface HourToSendNotificationsAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
   loading: boolean;
-  data: any;
+  data: GetPersonalPreferencesQuery['user'] | undefined;
   accountListId: string;
 }
 
-export const DefaultAccountAccordian: React.FC<
-  DefaultAccountAccordianProps
-> = ({ handleAccordionChange, expandedPanel, loading, data }) => {
+export const HourToSendNotificationsAccordion: React.FC<
+  HourToSendNotificationsAccordionProps
+> = ({
+  handleAccordionChange,
+  expandedPanel,
+  loading,
+  data,
+  accountListId,
+}) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [updateUserDefaultAccount] = useUpdateUserDefaultAccountMutation();
-  const label = 'Default Account';
-  const accounts = data?.accountLists?.nodes || [];
-  const defaultAccountList = data?.user?.defaultAccountList || '';
+  const [updateHourToSendNotificationsPreference] =
+    useUpdateHourToSendNotificationsPreferenceMutation();
+  const constants = useApiConstants();
+  const hours = constants?.times ?? [];
+  const label = 'Hour To Send Notifications';
 
   const PreferencesSchema: yup.SchemaOf<
-    Pick<Types.User, 'defaultAccountList'>
+    Pick<Types.Preference, 'hourToSendNotifications'>
   > = yup.object({
-    defaultAccountList: yup.string().required(),
+    hourToSendNotifications: yup.number().required(),
   });
 
   const onSubmit = async (
-    attributes: Pick<Types.User, 'defaultAccountList'>,
+    attributes: Pick<Types.Preference, 'hourToSendNotifications'>,
   ) => {
-    await updateUserDefaultAccount({
+    await updateHourToSendNotificationsPreference({
       variables: {
         input: {
           attributes: {
-            defaultAccountList: attributes.defaultAccountList,
+            hourToSendNotifications: attributes.hourToSendNotifications,
           },
         },
+      },
+      update: (cache) => {
+        cache.updateQuery(
+          {
+            query: GetPersonalPreferencesDocument,
+            variables: {
+              accountListId,
+            },
+          },
+          (data) => {
+            return {
+              user: {
+                ...data.user,
+                preferences: {
+                  ...data.user.preferences,
+                  hourToSendNotifications: attributes.hourToSendNotifications,
+                },
+              },
+              accountList: data.accountList,
+              accountLists: data.accountLists,
+            };
+          },
+        );
       },
       onCompleted: () => {
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
+        handleAccordionChange(label);
       },
       onError: () => {
         //console.log('error: ', e);
@@ -66,21 +102,21 @@ export const DefaultAccountAccordian: React.FC<
       expandedPanel={expandedPanel}
       label={t(label)}
       value={
-        data?.accountLists?.nodes.find(
-          ({ id }) => String(id) === String(data?.user?.defaultAccountList),
-        )?.name ?? ''
+        hours.find(
+          ({ key }) => key === data?.preferences?.hourToSendNotifications,
+        )?.value || 'Immediately'
       }
       fullWidth={true}
     >
       <Formik
         initialValues={{
-          defaultAccountList: defaultAccountList,
+          hourToSendNotifications: data?.preferences?.hourToSendNotifications,
         }}
         validationSchema={PreferencesSchema}
         onSubmit={onSubmit}
       >
         {({
-          values: { defaultAccountList },
+          values: { hourToSendNotifications },
           handleSubmit,
           setFieldValue,
           isSubmitting,
@@ -96,7 +132,7 @@ export const DefaultAccountAccordian: React.FC<
               <FieldWrapper
                 labelText={t(label)}
                 helperText={t(
-                  'This sets which account you will land in whenever you login to MPDX.',
+                  'MPDX can send you app notifications immediately or at a particular time each day. Please make sure your time zone is set correctly so this time matches your local time.',
                 )}
               >
                 <Autocomplete
@@ -104,15 +140,14 @@ export const DefaultAccountAccordian: React.FC<
                   disabled={isSubmitting}
                   autoHighlight
                   loading={loading}
-                  value={defaultAccountList}
+                  value={hourToSendNotifications}
                   onChange={(_, value) => {
-                    setFieldValue('defaultAccountList', value);
+                    setFieldValue('hourToSendNotifications', value);
                   }}
-                  options={accounts.map((account) => account.id) || []}
-                  getOptionLabel={(defaultAccountList): string =>
-                    accounts.find(
-                      ({ id }) => String(id) === String(defaultAccountList),
-                    )?.name ?? ''
+                  options={hours.map((hour) => hour.key) || []}
+                  getOptionLabel={(hourToSendNotifications): string =>
+                    hours.find(({ key }) => key === hourToSendNotifications)
+                      ?.value ?? ''
                   }
                   filterSelectedOptions
                   fullWidth

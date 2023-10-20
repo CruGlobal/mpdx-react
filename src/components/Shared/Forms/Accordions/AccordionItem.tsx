@@ -38,15 +38,15 @@ const StyledAccordionColumn = styled(Box)(({ theme }) => ({
   paddingRight: theme.spacing(2),
   flexBasis: '100%',
   [theme.breakpoints.only('xs')]: {
-    '&:nth-child(2)': {
+    '&:nth-of-type(2)': {
       fontStyle: 'italic',
     },
   },
   [theme.breakpoints.up('md')]: {
-    '&:first-child:not(:last-child)': {
+    '&:first-of-type:not(:last-of-type)': {
       flexBasis: '33.33%',
     },
-    '&:nth-child(2)': {
+    '&:nth-of-type(2)': {
       flexBasis: '66.66%',
     },
   },

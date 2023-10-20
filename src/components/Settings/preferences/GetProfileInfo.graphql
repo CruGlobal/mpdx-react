@@ -1,12 +1,10 @@
-query getPreferences($accountListId: ID!) {
+query getProfileInfo {
   user {
-    localeDisplay
     lastName
     firstName
     title
     suffix
     id
-    defaultAccountList
     occupation
     employer
     anniversaryYear
@@ -44,12 +42,6 @@ query getPreferences($accountListId: ID!) {
         location
       }
     }
-    preferences {
-      timeZone
-      localeDisplay
-      locale
-      hourToSendNotifications
-    }
     twitterAccounts {
       nodes {
         id
@@ -73,24 +65,6 @@ query getPreferences($accountListId: ID!) {
         id
         username
       }
-    }
-  }
-  accountList(id: $accountListId) {
-    settings {
-      homeCountry
-      monthlyGoal
-      tester
-      currency
-    }
-    activeMpdMonthlyGoal
-    name
-    activeMpdStartAt
-    activeMpdFinishAt
-  }
-  accountLists {
-    nodes {
-      name
-      id
     }
   }
 }

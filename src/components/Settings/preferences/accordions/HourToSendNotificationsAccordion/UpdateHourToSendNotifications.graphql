@@ -1,0 +1,9 @@
+mutation UpdateHourToSendNotificationsPreference(
+  $input: UserPreferenceUpdateMutationInput!
+) {
+  updatePreference(input: $input) {
+    preference {
+      hourToSendNotifications
+    }
+  }
+}

@@ -1,78 +1,91 @@
+import React, { ReactElement } from 'react';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import React, { ReactElement } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import * as Types from '../../../../../../graphql/types.generated';
 import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { useUpdateUserLocalePreferenceMutation } from './UpdateLocale.generated';
+import { useUpdateCurrencyPreferenceMutation } from './UpdateCurrency.generated';
+import {
+  GetAccountPreferencesQuery,
+  GetAccountPreferencesDocument,
+} from '../../GetAccountPreferences.generated';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 
-interface LocaleAccordianProps {
+interface CurrencyAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
   loading: boolean;
-  data: string | undefined;
+  data: GetAccountPreferencesQuery | undefined;
+  accountListId: string;
 }
 
-export const LocaleAccordian: React.FC<LocaleAccordianProps> = ({
+export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
   loading,
   data,
+  accountListId,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [updateUserLocalePreference] = useUpdateUserLocalePreferenceMutation();
+  const [updateCurrencyPreference] = useUpdateCurrencyPreferenceMutation();
   const constants = useApiConstants();
-  const languages = constants?.languages ?? [];
-  const label = 'Locale';
+  const currencies = constants?.pledgeCurrencies ?? [];
+  const label = 'Default Currency';
+  //console.log('currencies', currencies);
 
   const PreferencesSchema: yup.SchemaOf<
-    Pick<Types.Preference, 'localeDisplay'>
+    Pick<Types.AccountListSettingsInput, 'currency'>
   > = yup.object({
-    localeDisplay: yup.string().required(),
+    currency: yup.string().required(),
   });
 
   const onSubmit = async (
-    attributes: Pick<Types.Preference, 'localeDisplay'>,
+    attributes: Pick<Types.AccountListSettingsInput, 'currency'>,
   ) => {
-    await updateUserLocalePreference({
+    await updateCurrencyPreference({
       variables: {
         input: {
+          id: accountListId,
           attributes: {
-            localeDisplay: attributes.localeDisplay,
+            id: accountListId,
+            settings: { currency: attributes.currency },
           },
         },
       },
-      //update: (cache, { data }) => {
-      //console.log('data: ', data);
-      //const cacheId = cache.identify(data?.updatePreference);
-      //console.log('cacheId: ', cacheId);
-      // cache.modify({
-      //   fields: {
-      //     user: (existingFieldData, { toReference }) => {
-      //       return {...existingFieldData, toReference(cacheId)};
-      //     },
-      //   },
-      // });
-      //   cache.modify({
-      //     id: cacheId,
-      //     fields: {
-      //       localDisplay(data) {
-      //         return data?.updatePreference?.preference.localeDisplay;
-      //       },
-      //     },
-      //   });
-      // },
+      update: (cache) => {
+        cache.updateQuery(
+          {
+            query: GetAccountPreferencesDocument,
+            variables: {
+              accountListId,
+            },
+          },
+          (data) => {
+            return {
+              user: data.user,
+              accountList: {
+                ...data.accountList,
+                settings: {
+                  ...data.accountList.settings,
+                  currency: attributes.currency,
+                },
+              },
+              accountLists: data.accountLists,
+            };
+          },
+        );
+      },
       onCompleted: () => {
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
+        handleAccordionChange(label);
       },
       onError: () => {
         //console.log('error: ', e);
@@ -88,18 +101,18 @@ export const LocaleAccordian: React.FC<LocaleAccordianProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={t(label)}
-      value={data || ''}
+      value={data?.accountList?.settings?.currency || ''}
       fullWidth={true}
     >
       <Formik
         initialValues={{
-          localeDisplay: data || '',
+          currency: data?.accountList?.settings?.currency,
         }}
         validationSchema={PreferencesSchema}
         onSubmit={onSubmit}
       >
         {({
-          values: { localeDisplay },
+          values: { currency },
           handleSubmit,
           setFieldValue,
           isSubmitting,
@@ -115,7 +128,7 @@ export const LocaleAccordian: React.FC<LocaleAccordianProps> = ({
               <FieldWrapper
                 labelText={t(label)}
                 helperText={t(
-                  'The locale determines how numbers, dates and other information are formatted in MPDX.',
+                  'This should be the place from which you are living and sending out physical communications. This will be used in exports for mailing address information.',
                 )}
               >
                 <Autocomplete
@@ -123,15 +136,13 @@ export const LocaleAccordian: React.FC<LocaleAccordianProps> = ({
                   disabled={isSubmitting}
                   autoHighlight
                   loading={loading}
-                  value={localeDisplay}
+                  value={currency}
                   onChange={(_, value) => {
-                    setFieldValue('localeDisplay', value);
+                    setFieldValue('currency', value);
                   }}
-                  options={languages.map((language) => language.id) || []}
-                  getOptionLabel={(localeDisplay): string =>
-                    languages.find(
-                      ({ id }) => String(id) === String(localeDisplay),
-                    )?.value ?? ''
+                  options={currencies.map((cur) => cur.id) || []}
+                  getOptionLabel={(currency): string =>
+                    currencies.find(({ id }) => id === currency)?.value ?? ''
                   }
                   filterSelectedOptions
                   fullWidth

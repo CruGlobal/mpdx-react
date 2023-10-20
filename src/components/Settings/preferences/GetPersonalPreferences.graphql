@@ -1,0 +1,22 @@
+query getPersonalPreferences($accountListId: ID!) {
+  user {
+    localeDisplay
+    id
+    defaultAccountList
+    preferences {
+      timeZone
+      localeDisplay
+      locale
+      hourToSendNotifications
+    }
+  }
+  accountList(id: $accountListId) {
+    name
+  }
+  accountLists {
+    nodes {
+      name
+      id
+    }
+  }
+}

@@ -1,0 +1,7 @@
+mutation UpdateTimeZonePreference($input: UserPreferenceUpdateMutationInput!) {
+  updatePreference(input: $input) {
+    preference {
+      timeZone
+    }
+  }
+}

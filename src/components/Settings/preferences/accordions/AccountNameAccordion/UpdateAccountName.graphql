@@ -1,0 +1,7 @@
+mutation UpdateAccountNamePreference($input: AccountListUpdateMutationInput!) {
+  updateAccountList(input: $input) {
+    accountList {
+      name
+    }
+  }
+}
