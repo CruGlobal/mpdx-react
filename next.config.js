@@ -95,6 +95,7 @@ module.exports = withPlugins([
       HS_REPORTS_SUGGESTIONS: process.env.HS_REPORTS_SUGGESTIONS,
       HS_TASKS_SUGGESTIONS: process.env.HS_TASKS_SUGGESTIONS,
       ALERT_MESSAGE: process.env.ALERT_MESSAGE,
+      SHOW_BANNER: process.env.SHOW_BANNER,
     },
     experimental: {
       modularizeImports: {

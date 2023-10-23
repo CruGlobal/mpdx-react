@@ -216,3 +216,49 @@ describe('Dashboard', () => {
     ).toEqual('Committed $700');
   });
 });
+
+describe('Static Banner', () => {
+  const OLD_ENV = process.env;
+  beforeEach(() => {
+    jest.resetModules(); // Most important - it clears the cache
+    process.env = { ...OLD_ENV }; // Make a copy
+    beforeTestResizeObserver();
+  });
+
+  afterAll(() => {
+    process.env = OLD_ENV; // Restore old environment
+    afterTestResizeObserver();
+  });
+
+  it('should show the banner if the env variable is true', () => {
+    process.env.SHOW_BANNER = 'true';
+
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
+            <Dashboard accountListId="abc" data={data} />
+          </MockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('staticBanner')).toBeInTheDocument();
+  });
+
+  it('should NOT show the banner if the env variable is false', () => {
+    process.env.SHOW_BANNER = 'false';
+
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
+            <Dashboard accountListId="abc" data={data} />
+          </MockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('staticBanner')).not.toBeInTheDocument();
+  });
+});

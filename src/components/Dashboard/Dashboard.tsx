@@ -7,6 +7,7 @@ import MonthlyGoal from './MonthlyGoal/MonthlyGoal';
 import Balance from './Balance';
 import DonationHistories from './DonationHistories';
 import ThisWeek from './ThisWeek';
+import { StaticBanner } from '../Shared/staticBanner/StaticBanner';
 
 interface Props {
   data: GetDashboardQuery;
@@ -26,6 +27,10 @@ const variants = {
     },
   },
 };
+const checkShowBanner = function () {
+  return process.env.SHOW_BANNER;
+};
+//const showBanner = process.env.SHOW_BANNER;
 
 const Dashboard = ({ data, accountListId }: Props): ReactElement => {
   return (
@@ -39,6 +44,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             exit="exit"
             variants={variants}
           >
+            {checkShowBanner() === 'true' ? <StaticBanner /> : null}
             <Grid container spacing={3} alignItems="stretch">
               <Grid xs={12} sm={8} item>
                 <MonthlyGoal
