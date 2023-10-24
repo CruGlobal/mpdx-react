@@ -32,6 +32,8 @@ query getProfileInfo {
         number
         primary
         location
+        source
+        historic
       }
     }
     emailAddresses {
@@ -40,6 +42,8 @@ query getProfileInfo {
         email
         primary
         location
+        source
+        historic
       }
     }
     twitterAccounts {

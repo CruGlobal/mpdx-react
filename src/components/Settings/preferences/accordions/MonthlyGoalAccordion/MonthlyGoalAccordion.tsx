@@ -6,7 +6,7 @@ import { useSnackbar } from 'notistack';
 import { TextField } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import * as Types from '../../../../../../graphql/types.generated';
-import { useUpdateMonthlyGoalPreferenceMutation } from './UpdateMonthlyGoal.generated';
+import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
@@ -32,8 +32,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [updateMonthlyGoalPreference] =
-    useUpdateMonthlyGoalPreferenceMutation();
+  const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
   const label = 'Monthly Goal';
 
   const AccountPreferencesSchema: yup.SchemaOf<
@@ -45,7 +44,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   const onSubmit = async (
     attributes: Pick<Types.AccountListSettingsInput, 'monthlyGoal'>,
   ) => {
-    await updateMonthlyGoalPreference({
+    await updateAccountPreferences({
       variables: {
         input: {
           id: accountListId,

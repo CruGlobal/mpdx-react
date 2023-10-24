@@ -1,0 +1,76 @@
+mutation UpdateUser($input: UserUpdateMutationInput!) {
+  updateUser(input: $input) {
+    user {
+      lastName
+      firstName
+      title
+      suffix
+      id
+      occupation
+      employer
+      anniversaryYear
+      anniversaryDay
+      anniversaryMonth
+      maritalStatus
+      birthdayDay
+      birthdayMonth
+      birthdayYear
+      primaryEmailAddress {
+        id
+        email
+        primary
+        location
+      }
+      primaryPhoneNumber {
+        id
+        number
+        primary
+        location
+      }
+      phoneNumbers {
+        nodes {
+          id
+          number
+          primary
+          location
+          source
+          historic
+        }
+      }
+      emailAddresses {
+        nodes {
+          id
+          email
+          primary
+          location
+          source
+          historic
+        }
+      }
+      twitterAccounts {
+        nodes {
+          id
+          screenName
+        }
+      }
+      websites {
+        nodes {
+          url
+          id
+        }
+      }
+      linkedinAccounts {
+        nodes {
+          id
+          publicUrl
+        }
+      }
+      facebookAccounts {
+        nodes {
+          id
+          username
+        }
+      }
+    }
+  }
+}

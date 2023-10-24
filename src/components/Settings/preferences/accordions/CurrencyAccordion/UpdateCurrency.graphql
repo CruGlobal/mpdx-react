@@ -1,9 +1,0 @@
-mutation UpdateCurrencyPreference($input: AccountListUpdateMutationInput!) {
-  updateAccountList(input: $input) {
-    accountList {
-      settings {
-        currency
-      }
-    }
-  }
-}

@@ -9,7 +9,7 @@ import * as Types from '../../../../../../graphql/types.generated';
 import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { useUpdateHomeCountryPreferenceMutation } from './UpdateHomeCountry.generated';
+import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 import {
   GetAccountPreferencesQuery,
   GetAccountPreferencesDocument,
@@ -32,8 +32,8 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [updateHomeCountryPreference] =
-    useUpdateHomeCountryPreferenceMutation();
+  const [updateAccountPreferencesMutation] =
+    useUpdateAccountPreferencesMutation();
   const label = 'Home Country';
 
   const countries = [
@@ -76,13 +76,15 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
   const onSubmit = async (
     attributes: Pick<Types.AccountListSettingsInput, 'homeCountry'>,
   ) => {
-    await updateHomeCountryPreference({
+    await updateAccountPreferencesMutation({
       variables: {
         input: {
           id: accountListId,
           attributes: {
             id: accountListId,
-            settings: { homeCountry: attributes.homeCountry },
+            settings: {
+              homeCountry: attributes.homeCountry,
+            },
           },
         },
       },

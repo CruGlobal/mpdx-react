@@ -1,9 +1,0 @@
-mutation UpdateHomeCountryPreference($input: AccountListUpdateMutationInput!) {
-  updateAccountList(input: $input) {
-    accountList {
-      settings {
-        homeCountry
-      }
-    }
-  }
-}

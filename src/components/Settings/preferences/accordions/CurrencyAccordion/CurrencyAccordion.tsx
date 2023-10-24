@@ -9,7 +9,7 @@ import * as Types from '../../../../../../graphql/types.generated';
 import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { useUpdateCurrencyPreferenceMutation } from './UpdateCurrency.generated';
+import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 import {
   GetAccountPreferencesQuery,
   GetAccountPreferencesDocument,
@@ -33,7 +33,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [updateCurrencyPreference] = useUpdateCurrencyPreferenceMutation();
+  const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
   const constants = useApiConstants();
   const currencies = constants?.pledgeCurrencies ?? [];
   const label = 'Default Currency';
@@ -48,13 +48,15 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
   const onSubmit = async (
     attributes: Pick<Types.AccountListSettingsInput, 'currency'>,
   ) => {
-    await updateCurrencyPreference({
+    await updateAccountPreferences({
       variables: {
         input: {
           id: accountListId,
           attributes: {
             id: accountListId,
-            settings: { currency: attributes.currency },
+            settings: {
+              currency: attributes.currency,
+            },
           },
         },
       },

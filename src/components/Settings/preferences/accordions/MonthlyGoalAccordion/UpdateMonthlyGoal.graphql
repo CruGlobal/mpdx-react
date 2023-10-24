@@ -1,9 +1,0 @@
-mutation UpdateMonthlyGoalPreference($input: AccountListUpdateMutationInput!) {
-  updateAccountList(input: $input) {
-    accountList {
-      settings {
-        monthlyGoal
-      }
-    }
-  }
-}

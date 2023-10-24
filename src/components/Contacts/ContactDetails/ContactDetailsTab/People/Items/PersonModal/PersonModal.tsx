@@ -42,7 +42,8 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { uploadAvatar, validateAvatar } from './uploadAvatar';
 import { getPersonSchema, formatSubmittedFields } from './personModalHelper';
-import { profile2 } from 'src/components/Settings/preferences/DemoContent';
+import { useUpdateUserMutation } from 'src/components/Settings/preferences/UpdateUser.generated';
+//import { profile2 } from 'src/components/Settings/preferences/DemoContent';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -113,10 +114,11 @@ export const PersonModal: React.FC<PersonModalProps> = ({
 
   const client = useApolloClient();
 
+  //console.log('person/user: ', person);
   // TODO
-  if (userProfile)
-    person =
-      profile2 as ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  // if (userProfile)
+  //   person =
+  //     profile2 as ContactDetailsTabQuery['contact']['people']['nodes'][0];
 
   const [avatar, setAvatar] = useState<{ file: File; blobUrl: string } | null>(
     null,
@@ -148,7 +150,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [createPerson] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
   // TODO
-  // const [updateUserProfile] = useCreatePersonMutation();
+  const [updateUserProfile] = useUpdateUserMutation();
 
   const { personSchema, initialPerson } = getPersonSchema(t, contactId, person);
 
@@ -179,7 +181,17 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       attributes: PersonCreateInput | PersonUpdateInput,
     ): attributes is PersonUpdateInput => !!person;
 
-    if (isUpdate(attributes)) {
+    if (userProfile) {
+      await updateUserProfile({
+        variables: {
+          attributes,
+        },
+      });
+
+      enqueueSnackbar(t('Profile updated successfully'), {
+        variant: 'success',
+      });
+    } else if (isUpdate(attributes)) {
       const file = avatar?.file;
       if (file) {
         try {

@@ -165,6 +165,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
           handleClose={() => setEditProfileModalOpen(false)}
           userProfile={true}
           contactId=""
+          person={data.user}
         />
       ) : null}
     </ProfileInfoWrapper>
