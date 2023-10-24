@@ -249,7 +249,7 @@ describe('Static Banner', () => {
   it('should NOT show the banner if the env variable is false', () => {
     process.env.SHOW_BANNER = 'false';
 
-    const { getByTestId } = render(
+    const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
@@ -259,6 +259,6 @@ describe('Static Banner', () => {
       </ThemeProvider>,
     );
 
-    expect(getByTestId('staticBanner')).not.toBeInTheDocument();
+    expect(queryByTestId('staticBanner')).not.toBeInTheDocument();
   });
 });
