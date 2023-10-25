@@ -87,6 +87,10 @@ const useStyles = makeStyles()((theme: Theme) => ({
     textOverflow: 'ellipsis',
     overflow: 'hidden',
   },
+  appealsHeader: {
+    textTransform: 'capitalize',
+    width: '100%',
+  },
 }));
 
 interface Props {
@@ -135,7 +139,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
             )}
           >
             <HandoffLink path={`/tools/appeals/${appeal?.id}`}>
-              <Link style={{ width: '100%', textTransform: 'capitalize' }}>
+              <Link underline="hover" className={classes.appealsHeader}>
                 <Typography variant="h6" className={classes.titleContainer}>
                   <Box className={classes.title}>
                     <Box
