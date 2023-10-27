@@ -41,7 +41,11 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             exit="exit"
             variants={variants}
           >
-            {shouldShowBanner && <StaticBanner data-testid="staticBanner" />}
+            {shouldShowBanner && (
+              <div data-testid="staticBanner">
+                <StaticBanner />
+              </div>
+            )}
             <Grid container spacing={3} alignItems="stretch">
               <Grid xs={12} sm={8} item>
                 <MonthlyGoal
