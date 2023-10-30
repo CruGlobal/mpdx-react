@@ -105,11 +105,7 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
                 domain={[0, domainMax]}
                 label={
                   <Text x={0} y={0} dx={20} dy={150} offset={0} angle={-90}>
-                    {
-                      t('Amount ({{ currencyCode }})', {
-                        currencyCode,
-                      }) as string
-                    }
+                    {t('Amount ({{ currencyCode }})', { currencyCode })}
                   </Text>
                 }
               />
@@ -130,14 +126,18 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
               />
               <XAxis tickLine={false} dataKey="startDate" />
               <Bar
-                dataKey="committed"
-                barSize={30}
-                fill={theme.palette.progressBarOrange.main}
-              />
-              <Bar
+                name={t('Received')}
                 dataKey="received"
+                stackId={1}
                 barSize={30}
                 fill={theme.palette.mpdxGreen.main}
+              />
+              <Bar
+                name={t('Committed')}
+                dataKey="committed"
+                stackId={1}
+                barSize={30}
+                fill={theme.palette.progressBarOrange.main}
               />
             </BarChart>
           )}
