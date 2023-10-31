@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from '@mui/material/Alert';
 import { Link } from '@mui/material';
@@ -12,21 +12,18 @@ export const StaticBanner: React.FC<StaticBannerProps> = ({
   severity = 'warning',
 }) => {
   const { t } = useTranslation();
-  let showBanner = false;
-  let non_cru_user = true;
 
   const { data, loading } = useGetUsersOrganizationsQuery();
-  data?.userOrganizationAccounts.map((org) => {
-    if (
-      org.organization.organizationType === 'Cru-International' ||
-      org.organization.organizationType === 'Cru'
-    ) {
-      non_cru_user = false;
-    }
-  });
-  showBanner = !loading && non_cru_user;
+  const nonCruUser = useMemo(() => {
+    const foundCruOrg = data?.userOrganizationAccounts.find(
+      (org) =>
+        org.organization.organizationType === 'Cru-International' ||
+        org.organization.organizationType === 'Cru',
+    );
+    return !foundCruOrg;
+  }, [data]);
 
-  return !loading && showBanner ? (
+  return !loading && nonCruUser ? (
     <Alert severity={severity}>
       {t(
         `Due to data privacy regulations and costs, Cru will no longer be able to host MPDX data for non-Cru/non-CCCI ministries. This means that MPDX will no longer be available for use outside of Cru/CCCI.  Your data in MPDX will be deleted if you don't export it from MPDX by January 31, 2024 or let us know why you might need an extension. For more information and to take action, `,

@@ -1,14 +1,7 @@
 query GetUsersOrganizations {
   userOrganizationAccounts {
     organization {
-      apiClass
-      id
-      name
-      oauth
       organizationType
     }
-    latestDonationDate
-    lastDownloadedAt
-    username
   }
 }
