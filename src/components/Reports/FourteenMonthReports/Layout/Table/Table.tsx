@@ -27,7 +27,6 @@ interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[] | undefined;
   totals: Totals[];
-  ref: React.Ref<HTMLTableElement>;
   onSelectContact: (contactId: string) => void;
 }
 

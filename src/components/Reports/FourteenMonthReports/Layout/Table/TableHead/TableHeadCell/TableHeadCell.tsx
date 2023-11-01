@@ -20,6 +20,15 @@ interface FourteenMonthReportTableCellProps {
   ) => void;
 }
 
+const PrintableTableSortLabel = styled(TableSortLabel)(() => ({
+  '@media print': {
+    display: 'grid',
+    '& svg': {
+      display: 'none',
+    },
+  },
+}));
+
 const HeadCellSpan = styled('span')(() => ({
   border: 0,
   clip: 'rect(0 0 0 0)',
@@ -30,6 +39,9 @@ const HeadCellSpan = styled('span')(() => ({
   position: 'absolute',
   top: 20,
   width: 1,
+  '@media print': {
+    display: 'none',
+  },
 }));
 
 export const TableHeadCell: React.FC<FourteenMonthReportTableCellProps> = ({
@@ -42,14 +54,18 @@ export const TableHeadCell: React.FC<FourteenMonthReportTableCellProps> = ({
 }) => {
   return (
     <TableCell align={align} sortDirection={sortDirection} style={{ top: 65 }}>
-      <TableSortLabel active={isActive} direction={direction} onClick={onClick}>
+      <PrintableTableSortLabel
+        active={isActive}
+        direction={direction}
+        onClick={onClick}
+      >
         {children}
         {isActive && (
           <HeadCellSpan>
             {direction === 'desc' ? 'sorted descending' : 'sorted ascending'}
           </HeadCellSpan>
         )}
-      </TableSortLabel>
+      </PrintableTableSortLabel>
     </TableCell>
   );
 };

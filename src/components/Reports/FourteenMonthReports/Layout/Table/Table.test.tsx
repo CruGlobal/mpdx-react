@@ -217,7 +217,6 @@ describe('FourteenMonthReportTable', () => {
             }
             onRequestSort={onRequestSort}
             onSelectContact={onSelectContact}
-            ref={null}
             totals={totals}
           />
         </GqlMockedProvider>
@@ -255,7 +254,6 @@ describe('FourteenMonthReportTable', () => {
             }
             onRequestSort={onRequestSort}
             onSelectContact={onSelectContact}
-            ref={null}
             totals={totals}
           />
         </GqlMockedProvider>
@@ -295,7 +293,6 @@ describe('FourteenMonthReportTable', () => {
             }
             onRequestSort={onRequestSort}
             onSelectContact={onSelectContact}
-            ref={null}
             totals={totals}
           />
         </GqlMockedProvider>
@@ -366,7 +363,6 @@ describe('FourteenMonthReportTable', () => {
             }
             onRequestSort={onRequestSort}
             onSelectContact={onSelectContact}
-            ref={null}
             totals={totals}
           />
         </GqlMockedProvider>
@@ -401,7 +397,6 @@ describe('FourteenMonthReportTable', () => {
             }
             onRequestSort={onRequestSort}
             onSelectContact={onSelectContact}
-            ref={null}
             totals={totals}
           />
         </GqlMockedProvider>
