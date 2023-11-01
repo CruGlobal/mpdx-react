@@ -1,8 +1,7 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, CircularProgress, useMediaQuery } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useReactToPrint } from 'react-to-print';
 import { DateTime } from 'luxon';
 import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 import type { Order } from '../Reports.type';
@@ -41,7 +40,6 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const [isExpanded, setExpanded] = useState<boolean>(false);
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<OrderBy | number | null>(null);
-  const reportTableRef = useRef(null);
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -94,9 +92,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
     setExpanded((prevExpanded) => !prevExpanded);
   };
 
-  const handlePrint = useReactToPrint({
-    content: () => reportTableRef.current,
-  });
+  const handlePrint = () => window.print();
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -264,7 +260,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         isNavListOpen={isNavListOpen}
         onExpandToggle={handleExpandToggle}
         onNavListToggle={onNavListToggle}
-        onPrint={() => handlePrint && handlePrint()}
+        onPrint={handlePrint}
         title={title}
       />
       {loading ? (
@@ -286,7 +282,6 @@ export const FourteenMonthReport: React.FC<Props> = ({
           order={order}
           orderBy={orderBy}
           orderedContacts={orderedContacts}
-          ref={reportTableRef}
           salaryCurrency={data?.fourteenMonthReport.salaryCurrency}
           totals={totals}
         />
