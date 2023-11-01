@@ -432,9 +432,9 @@ const TasksPage: React.FC = () => {
               contactDetailsId ? (
                 <ContactsProvider
                   urlFilters={urlFilters}
-                  activeFilters={activeFilters}
+                  activeFilters={{}}
                   setActiveFilters={setActiveFilters}
-                  starredFilter={starredFilter}
+                  starredFilter={{}}
                   setStarredFilter={setStarredFilter}
                   filterPanelOpen={filterPanelOpen}
                   setFilterPanelOpen={setFilterPanelOpen}
