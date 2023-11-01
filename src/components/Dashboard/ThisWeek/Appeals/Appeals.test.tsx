@@ -70,7 +70,7 @@ describe('Appeals', () => {
     );
 
     expect(getByTestId('AppealsBoxName').textContent).toEqual('My Appeal');
-    expect(getByTestId('AppealsBoxAmount').textContent).toEqual('€5,000');
+    expect(getByTestId('AppealsBoxAmount').textContent).toEqual('€5,000 EUR');
     expect(
       getByTestId('AppealsTypographyPledgesAmountProcessedPercentage')
         .textContent,

@@ -7,6 +7,7 @@ import {
   CardContent,
   Typography,
   Grid,
+  Link,
   Box,
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
@@ -86,6 +87,10 @@ const useStyles = makeStyles()((theme: Theme) => ({
     textOverflow: 'ellipsis',
     overflow: 'hidden',
   },
+  appealsHeader: {
+    textTransform: 'capitalize',
+    width: '100%',
+  },
 }));
 
 interface Props {
@@ -133,31 +138,35 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
               ' ',
             )}
           >
-            <Typography variant="h6" className={classes.titleContainer}>
-              <Box className={classes.title}>
-                <Box
-                  className={classes.titleContent}
-                  data-testid="AppealsBoxName"
-                >
-                  {loading ? (
-                    <Skeleton variant="text" width="50%" />
-                  ) : (
-                    appeal?.name
-                  )}
-                </Box>
-                <Box data-testid="AppealsBoxAmount">
-                  {loading || !appeal?.amount ? (
-                    <Skeleton variant="text" width={100} />
-                  ) : (
-                    currencyFormat(
-                      appeal.amount,
-                      appeal?.amountCurrency,
-                      locale,
-                    )
-                  )}
-                </Box>
-              </Box>
-            </Typography>
+            <HandoffLink path={`/tools/appeals/${appeal?.id}`}>
+              <Link underline="hover" className={classes.appealsHeader}>
+                <Typography variant="h6" className={classes.titleContainer}>
+                  <Box className={classes.title}>
+                    <Box
+                      className={classes.titleContent}
+                      data-testid="AppealsBoxName"
+                    >
+                      {loading ? (
+                        <Skeleton variant="text" width="50%" />
+                      ) : (
+                        appeal?.name
+                      )}
+                    </Box>
+                    <Box data-testid="AppealsBoxAmount">
+                      {loading && <Skeleton variant="text" width={100} />}
+                      {!loading &&
+                        appeal?.amount &&
+                        currencyFormat(
+                          appeal.amount,
+                          appeal?.amountCurrency,
+                          locale,
+                        )}
+                      {' ' + appeal?.amountCurrency}
+                    </Box>
+                  </Box>
+                </Typography>
+              </Link>
+            </HandoffLink>
             <StyledProgress
               loading={loading}
               primary={pledgesAmountProcessedPercentage}
