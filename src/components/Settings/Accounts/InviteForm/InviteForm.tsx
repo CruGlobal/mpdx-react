@@ -112,6 +112,7 @@ export const InviteForm: React.FC = () => {
       }}
       validationSchema={formikSchema}
       onSubmit={onSubmit}
+      isInitialValid={false}
     >
       {({
         values: { email },

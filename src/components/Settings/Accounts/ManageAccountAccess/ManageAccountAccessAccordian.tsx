@@ -154,7 +154,7 @@ export const ManageAccountAccessAccordian: React.FC<AccordianProps> = ({
                     user.id !== userId ? (
                       <IconButton
                         edge="end"
-                        aria-label="delete"
+                        aria-label="Delete user"
                         onClick={() => handleRemoveUser(user)}
                       >
                         <DeleteIcon />
@@ -188,7 +188,7 @@ export const ManageAccountAccessAccordian: React.FC<AccordianProps> = ({
                   secondaryAction={
                     <IconButton
                       edge="end"
-                      aria-label="delete"
+                      aria-label="Delete invite"
                       onClick={() => handleCancelInvite(invite)}
                     >
                       <DeleteIcon />
