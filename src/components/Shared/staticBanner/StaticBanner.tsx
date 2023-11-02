@@ -26,7 +26,15 @@ export const StaticBanner: React.FC<StaticBannerProps> = ({
   return !loading && nonCruUser ? (
     <Alert severity={severity}>
       {t(
-        `Due to data privacy regulations and costs, Cru will no longer be able to host MPDX data for non-Cru/non-CCCI ministries. This means that MPDX will no longer be available for use outside of Cru/CCCI.  Your data in MPDX will be deleted if you don't export it from MPDX by January 31, 2024 or let us know why you might need an extension. For more information and to take action, `,
+        `Due to data privacy regulations and costs, Cru will no longer be able to host MPDX data for non-Cru/non-CCCI ministries. `,
+      )}
+      <b>
+        {t(
+          `Your data in MPDX will be deleted if you don’t export from MPDX by January 31, 2024,`,
+        )}
+      </b>
+      {t(
+        ` or let us know why you might need an extension. For more information and to take action, read `,
       )}
       <Link
         data-testid="nonCruOrgReminder"
@@ -34,7 +42,7 @@ export const StaticBanner: React.FC<StaticBannerProps> = ({
         target="_blank"
         rel="noreferrer"
       >
-        {t('read this communication.')}
+        {t('this communication.')}
       </Link>
     </Alert>
   ) : null;
