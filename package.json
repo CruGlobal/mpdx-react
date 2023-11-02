@@ -62,7 +62,7 @@
     "formidable": "^2.1.1",
     "formik": "^2.2.9",
     "framer-motion": "^7.3.6",
-    "graphql": "^16.6.0",
+    "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
     "i18next": "^21.9.2",
     "i18next-browser-languagedetector": "^6.1.5",
