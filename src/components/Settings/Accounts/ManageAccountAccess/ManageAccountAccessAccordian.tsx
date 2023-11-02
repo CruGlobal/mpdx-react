@@ -18,7 +18,7 @@ import {
   UserScopedToAccountList,
 } from '../../../../../graphql/types.generated';
 import {
-  useGetAccountListUsersQuery,
+  useGetAccountsSharingWithQuery,
   useGetUserIdQuery,
   useGetAccountListInvitesQuery,
   useCancelAccountListInviteMutation,
@@ -47,7 +47,7 @@ export const ManageAccountAccessAccordian: React.FC<AccordianProps> = ({
   const accountListId = useAccountListId() || '';
 
   const { data: accountListUsers, loading: loadingUsers } =
-    useGetAccountListUsersQuery({
+    useGetAccountsSharingWithQuery({
       variables: {
         accountListId,
       },
@@ -62,7 +62,7 @@ export const ManageAccountAccessAccordian: React.FC<AccordianProps> = ({
   const [cancelAccountListInvite] = useCancelAccountListInviteMutation();
   const [deleteAccountListUser] = useDeleteAccountListUserMutation();
 
-  const users = accountListUsers?.accountListUsers.nodes;
+  const accountsSharingWith = accountListUsers?.accountListUsers.nodes;
   const invites = useMemo(
     () =>
       accountListInvites?.accountListInvites.nodes.filter(
@@ -140,13 +140,13 @@ export const ManageAccountAccessAccordian: React.FC<AccordianProps> = ({
 
       {loadingUsers && <Skeleton height={'100px'} />}
 
-      {users?.length && (
+      {accountsSharingWith?.length && (
         <>
           <Typography marginTop={4}>
             {t('Account currently shared with')}
           </Typography>
           <List>
-            {users?.map((user) => {
+            {accountsSharingWith?.map((user) => {
               return (
                 <ListItem
                   key={user.id}

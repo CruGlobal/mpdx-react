@@ -1,4 +1,4 @@
-query getAccountLists {
+query GetAccountListsForMerging {
   accountLists {
     nodes {
       id

@@ -1,4 +1,4 @@
-query getAccountListUsers($accountListId: ID!) {
+query GetAccountsSharingWith($accountListId: ID!) {
   accountListUsers(accountListId: $accountListId) {
     nodes {
       user {
@@ -13,7 +13,7 @@ query getAccountListUsers($accountListId: ID!) {
   }
 }
 
-query getUserId {
+query GetUserId {
   user {
     id
   }
@@ -25,7 +25,7 @@ mutation DeleteAccountListUser($input: AccountListUserDeleteMutationInput!) {
   }
 }
 
-query getAccountListInvites($accountListId: ID!) {
+query GetAccountListInvites($accountListId: ID!) {
   accountListInvites(accountListId: $accountListId) {
     nodes {
       id

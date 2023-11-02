@@ -19,7 +19,7 @@ import { styled } from '@mui/material/styles';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
-  useGetAccountListsQuery,
+  useGetAccountListsForMergingQuery,
   useAccountListQuery,
   useMergeAccountListMutation,
 } from './MergeForm.generated';
@@ -48,7 +48,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() || '';
-  const { data } = useGetAccountListsQuery();
+  const { data } = useGetAccountListsForMergingQuery();
   const { data: currentAccountList } = useAccountListQuery({
     variables: {
       accountListId,
@@ -139,6 +139,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
           accept: false,
         }}
         validationSchema={formikSchema}
+        isInitialValid={false}
         onSubmit={onSubmit}
       >
         {({
@@ -214,6 +215,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                       <KeyboardArrowRightIcon
                         color="success"
                         fontSize="large"
+                        data-testid="KeyboardArrowRightIcon"
                       />
                     </Grid>
                   )}

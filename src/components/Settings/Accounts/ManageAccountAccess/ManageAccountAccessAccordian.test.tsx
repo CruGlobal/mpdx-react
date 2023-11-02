@@ -7,7 +7,7 @@ import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking'
 import theme from '../../../../theme';
 import { ManageAccountAccessAccordian } from './ManageAccountAccessAccordian';
 import {
-  GetAccountListUsersQuery,
+  GetAccountsSharingWithQuery,
   GetAccountListInvitesQuery,
   GetUserIdQuery,
 } from './ManageAccountAccess.generated';
@@ -34,8 +34,8 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const GetAccountListUsersMock = {
-  getAccountListUsers: {
+const GetAccountsSharingWith = {
+  GetAccountsSharingWith: {
     accountListUsers: {
       nodes: [
         {
@@ -59,7 +59,7 @@ const GetAccountListUsersMock = {
   },
 };
 const GetAccountListInvitesMock = {
-  getAccountListInvites: {
+  GetAccountListInvites: {
     accountListInvites: {
       nodes: [
         {
@@ -130,16 +130,16 @@ describe('ManageAccountAccessAccordian', () => {
     const { queryByText } = render(
       Components(
         <GqlMockedProvider<{
-          getAccountListUsers: GetAccountListUsersQuery;
-          getAccountListInvites: GetAccountListInvitesQuery;
+          GetAccountsSharingWith: GetAccountsSharingWithQuery;
+          GetAccountListInvites: GetAccountListInvitesQuery;
         }>
           mocks={{
-            getAccountListUsers: {
+            GetAccountsSharingWith: {
               accountListUsers: {
                 nodes: [],
               },
             },
-            getAccountListInvites: {
+            GetAccountListInvites: {
               accountListInvites: {
                 nodes: [],
               },
@@ -164,12 +164,12 @@ describe('ManageAccountAccessAccordian', () => {
     const { getByText } = render(
       Components(
         <GqlMockedProvider<{
-          getAccountListUsers: GetAccountListUsersQuery;
-          getAccountListInvites: GetAccountListInvitesQuery;
+          GetAccountsSharingWith: GetAccountsSharingWithQuery;
+          GetAccountListInvites: GetAccountListInvitesQuery;
           getUserId: GetUserIdQuery;
         }>
           mocks={{
-            ...GetAccountListUsersMock,
+            ...GetAccountsSharingWith,
             ...GetAccountListInvitesMock,
             ...GetUserIdMock,
           }}
@@ -198,13 +198,13 @@ describe('ManageAccountAccessAccordian', () => {
     const { getByText, queryByText } = render(
       Components(
         <GqlMockedProvider<{
-          getAccountListUsers: GetAccountListUsersQuery;
-          getAccountListInvites: GetAccountListInvitesQuery;
+          GetAccountsSharingWith: GetAccountsSharingWithQuery;
+          GetAccountListInvites: GetAccountListInvitesQuery;
           getUserId: GetUserIdQuery;
         }>
           mocks={{
-            ...GetAccountListUsersMock,
-            getAccountListInvites: {
+            ...GetAccountsSharingWith,
+            GetAccountListInvites: {
               accountListInvites: {
                 nodes: [
                   {
@@ -252,13 +252,13 @@ describe('ManageAccountAccessAccordian', () => {
     const { getByText, getAllByLabelText } = render(
       Components(
         <GqlMockedProvider<{
-          getAccountListUsers: GetAccountListUsersQuery;
-          getAccountListInvites: GetAccountListInvitesQuery;
+          GetAccountsSharingWith: GetAccountsSharingWithQuery;
+          GetAccountListInvites: GetAccountListInvitesQuery;
           getUserId: GetUserIdQuery;
         }>
           onCall={mutationSpy}
           mocks={{
-            ...GetAccountListUsersMock,
+            ...GetAccountsSharingWith,
             ...GetAccountListInvitesMock,
             ...GetUserIdMock,
           }}
@@ -305,17 +305,17 @@ describe('ManageAccountAccessAccordian', () => {
       render(
         Components(
           <GqlMockedProvider<{
-            getAccountListUsers: GetAccountListUsersQuery;
-            getAccountListInvites: GetAccountListInvitesQuery;
+            GetAccountsSharingWith: GetAccountsSharingWithQuery;
+            GetAccountListInvites: GetAccountListInvitesQuery;
           }>
             onCall={mutationSpy}
             mocks={{
-              getAccountListUsers: {
+              GetAccountsSharingWith: {
                 accountListUsers: {
                   nodes: [],
                 },
               },
-              getAccountListInvites: {
+              GetAccountListInvites: {
                 accountListInvites: {
                   nodes: [],
                 },
