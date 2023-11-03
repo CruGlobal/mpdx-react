@@ -174,4 +174,65 @@ describe('DonationsReport', () => {
     ).not.toBeInTheDocument();
     expect(getByTestId('donationRow')).toBeInTheDocument();
   });
+
+  it('filters report by designation account', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<Mocks> mocks={mocks} onCall={mutationSpy}>
+            <DonationsReport
+              accountListId={'abc'}
+              designationAccounts={['account-1']}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              onSelectContact={onSelectContact}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[2][0]).toMatchObject({
+        operation: {
+          operationName: 'GetDonationGraph',
+          variables: {
+            designationAccountIds: ['account-1'],
+          },
+        },
+      }),
+    );
+  });
+
+  it('does not filter report by designation account', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<Mocks> mocks={mocks} onCall={mutationSpy}>
+            <DonationsReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              onSelectContact={onSelectContact}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[2][0]).toMatchObject({
+        operation: {
+          operationName: 'GetDonationGraph',
+          variables: {
+            designationAccountIds: null,
+          },
+        },
+      }),
+    );
+  });
 });
