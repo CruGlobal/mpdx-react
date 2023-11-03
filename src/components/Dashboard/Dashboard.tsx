@@ -27,9 +27,10 @@ const variants = {
     },
   },
 };
-const shouldShowBanner = process.env.SHOW_BANNER === 'true';
 
 const Dashboard = ({ data, accountListId }: Props): ReactElement => {
+  const shouldShowBanner = process.env.SHOW_BANNER === 'true';
+
   return (
     <>
       <Welcome firstName={data.user.firstName ?? undefined} />
@@ -41,11 +42,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             exit="exit"
             variants={variants}
           >
-            {shouldShowBanner && (
-              <div data-testid="staticBanner">
-                <StaticBanner />
-              </div>
-            )}
+            {shouldShowBanner && <StaticBanner data-testid="staticBanner" />}
             <Grid container spacing={3} alignItems="stretch">
               <Grid xs={12} sm={8} item>
                 <MonthlyGoal
