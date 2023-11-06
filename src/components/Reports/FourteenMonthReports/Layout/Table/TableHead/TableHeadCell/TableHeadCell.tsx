@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
-import { TableCell, TableSortLabel } from '@mui/material';
+import { TableSortLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { StyledTableCell } from '../../Table';
 
 type Align = 'center' | 'inherit' | 'justify' | 'left' | 'right';
 
@@ -53,7 +54,11 @@ export const TableHeadCell: React.FC<FourteenMonthReportTableCellProps> = ({
   onClick,
 }) => {
   return (
-    <TableCell align={align} sortDirection={sortDirection} style={{ top: 65 }}>
+    <StyledTableCell
+      align={align}
+      sortDirection={sortDirection}
+      style={{ top: 65 }}
+    >
       <PrintableTableSortLabel
         active={isActive}
         direction={direction}
@@ -66,6 +71,6 @@ export const TableHeadCell: React.FC<FourteenMonthReportTableCellProps> = ({
           </HeadCellSpan>
         )}
       </PrintableTableSortLabel>
-    </TableCell>
+    </StyledTableCell>
   );
 };

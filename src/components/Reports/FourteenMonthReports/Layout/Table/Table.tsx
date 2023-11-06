@@ -38,6 +38,9 @@ const NameTypography = styled(Typography, {
   '&:hover': {
     textDecoration: 'underline',
   },
+  '@media print': {
+    fontSize: '14px',
+  },
 }));
 
 const PrintableContainer = styled(TableContainer)(() => ({
@@ -55,6 +58,18 @@ const StickyTable = styled(Table)(({}) => ({
   '@media print': {
     overflow: 'auto',
     height: '100%',
+  },
+}));
+
+const StyledInfoIcon = styled(InfoIcon)(({}) => ({
+  '@media print': {
+    display: 'none',
+  },
+}));
+
+export const StyledTableCell = styled(TableCell)(({}) => ({
+  '@media print': {
+    padding: '8px',
   },
 }));
 
@@ -104,10 +119,10 @@ export const FourteenMonthReportTable: React.FC<
                 hover
                 data-testid="FourteenMonthReportTableRow"
               >
-                <TableCell>
+                <StyledTableCell>
                   <Box display="flex" flexDirection="column">
                     <Box display="flex" alignItems="center">
-                      {!isExpanded && <InfoIcon fontSize="small" />}
+                      {!isExpanded && <StyledInfoIcon fontSize="small" />}
                       <NameTypography variant="body1" expanded={isExpanded}>
                         <Link onClick={() => onSelectContact(contact.id)}>
                           {contact.name}
@@ -120,11 +135,11 @@ export const FourteenMonthReportTable: React.FC<
                       </Typography>
                     )}
                   </Box>
-                </TableCell>
+                </StyledTableCell>
                 {isExpanded && (
                   <React.Fragment>
-                    <TableCell>{contact.status}</TableCell>
-                    <TableCell data-testid="pledgeAmount">
+                    <StyledTableCell>{contact.status}</StyledTableCell>
+                    <StyledTableCell data-testid="pledgeAmount">
                       {contact.pledgeAmount &&
                         `${numberFormat(
                           Math.round(contact.pledgeAmount),
@@ -134,44 +149,44 @@ export const FourteenMonthReportTable: React.FC<
                             ({ key }) => key === contact.pledgeFrequency,
                           )?.value ?? ''
                         }`}
-                    </TableCell>
-                    <TableCell>
+                    </StyledTableCell>
+                    <StyledTableCell>
                       {numberFormat(Math.round(contact.average), locale)}
-                    </TableCell>
-                    <TableCell>
+                    </StyledTableCell>
+                    <StyledTableCell>
                       {numberFormat(Math.round(contact.minimum), locale)}
-                    </TableCell>
+                    </StyledTableCell>
                   </React.Fragment>
                 )}
                 {contact.months?.map((month: Month) => (
-                  <TableCell key={month?.month} align="center">
+                  <StyledTableCell key={month?.month} align="center">
                     {month?.salaryCurrencyTotal &&
                       numberFormat(
                         Math.round(month?.salaryCurrencyTotal),
                         locale,
                       )}
-                  </TableCell>
+                  </StyledTableCell>
                 ))}
-                <TableCell align="right">
+                <StyledTableCell align="right">
                   <strong data-testid="totalGivenByContact">
                     {numberFormat(Math.round(totalDonated), locale)}
                   </strong>
-                </TableCell>
+                </StyledTableCell>
               </TableRow>
             );
           })}
           <TableRow>
-            <TableCell>
+            <StyledTableCell>
               <strong>{t('Totals')}</strong>
-            </TableCell>
+            </StyledTableCell>
             {totals?.map((month) => (
-              <TableCell key={month.month} align="center">
+              <StyledTableCell key={month.month} align="center">
                 <strong data-testid="monthlyTotals">
                   {numberFormat(Math.round(month.total), locale)}
                 </strong>
-              </TableCell>
+              </StyledTableCell>
             ))}
-            <TableCell align="right">
+            <StyledTableCell align="right">
               <strong data-testid="overallTotal">
                 {numberFormat(
                   Math.round(
@@ -180,7 +195,7 @@ export const FourteenMonthReportTable: React.FC<
                   locale,
                 )}
               </strong>
-            </TableCell>
+            </StyledTableCell>
           </TableRow>
         </TableBody>
       </StickyTable>
