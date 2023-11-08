@@ -12,6 +12,7 @@ import { StaticBanner } from '../Shared/staticBanner/StaticBanner';
 interface Props {
   data: GetDashboardQuery;
   accountListId: string;
+  shouldShowBanner?: boolean;
 }
 
 const variants = {
@@ -28,9 +29,11 @@ const variants = {
   },
 };
 
-const Dashboard = ({ data, accountListId }: Props): ReactElement => {
-  const shouldShowBanner = process.env.SHOW_BANNER === 'true';
-
+const Dashboard = ({
+  data,
+  accountListId,
+  shouldShowBanner = false,
+}: Props): ReactElement => {
   return (
     <>
       <Welcome firstName={data.user.firstName ?? undefined} />
@@ -42,7 +45,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             exit="exit"
             variants={variants}
           >
-            {shouldShowBanner && <StaticBanner data-testid="staticBanner" />}
+            {shouldShowBanner && <StaticBanner />}
             <Grid container spacing={3} alignItems="stretch">
               <Grid xs={12} sm={8} item>
                 <MonthlyGoal

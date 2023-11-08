@@ -218,26 +218,26 @@ describe('Dashboard', () => {
 });
 
 describe('Static Banner', () => {
-  const OLD_ENV = process.env;
   beforeEach(() => {
-    jest.resetModules(); // Most important - it clears the cache
-    process.env = { ...OLD_ENV }; // Make a copy
     beforeTestResizeObserver();
   });
 
   afterAll(() => {
-    process.env = OLD_ENV; // Restore old environment
     afterTestResizeObserver();
   });
 
-  it('should show the banner if the env variable is true', () => {
-    process.env.SHOW_BANNER = 'true';
+  it('should show the banner if the shouldShowBanner prop is true', () => {
+    const shouldShowBanner = true;
 
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
-            <Dashboard accountListId="abc" data={data} />
+            <Dashboard
+              accountListId="abc"
+              data={data}
+              shouldShowBanner={shouldShowBanner}
+            />
           </MockedProvider>
         </SnackbarProvider>
       </ThemeProvider>,
@@ -246,14 +246,18 @@ describe('Static Banner', () => {
     expect(getByTestId('staticBanner')).toBeInTheDocument();
   });
 
-  it('should NOT show the banner if the env variable is false', () => {
-    process.env.SHOW_BANNER = 'false';
+  it('should NOT show the banner if the shouldShowBanner prop is false', () => {
+    const shouldShowBanner = false;
 
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
           <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
-            <Dashboard accountListId="abc" data={data} />
+            <Dashboard
+              accountListId="abc"
+              data={data}
+              shouldShowBanner={shouldShowBanner}
+            />
           </MockedProvider>
         </SnackbarProvider>
       </ThemeProvider>,
