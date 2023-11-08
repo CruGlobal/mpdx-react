@@ -231,15 +231,13 @@ describe('Static Banner', () => {
 
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
-            <Dashboard
-              accountListId="abc"
-              data={data}
-              shouldShowBanner={shouldShowBanner}
-            />
-          </MockedProvider>
-        </SnackbarProvider>
+        <MockedProvider>
+          <Dashboard
+            accountListId="abc"
+            data={data}
+            shouldShowBanner={shouldShowBanner}
+          />
+        </MockedProvider>
       </ThemeProvider>,
     );
 
@@ -251,15 +249,13 @@ describe('Static Banner', () => {
 
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <MockedProvider mocks={GetThisWeekDefaultMocks()} addTypename={false}>
-            <Dashboard
-              accountListId="abc"
-              data={data}
-              shouldShowBanner={shouldShowBanner}
-            />
-          </MockedProvider>
-        </SnackbarProvider>
+        <MockedProvider>
+          <Dashboard
+            accountListId="abc"
+            data={data}
+            shouldShowBanner={shouldShowBanner}
+          />
+        </MockedProvider>
       </ThemeProvider>,
     );
 

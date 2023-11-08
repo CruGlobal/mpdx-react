@@ -15,7 +15,7 @@ export const StaticBanner: React.FC<StaticBannerProps> = ({
 
   const { data, loading } = useGetUsersOrganizationsQuery();
   const nonCruUser = useMemo(() => {
-    const foundCruOrg = data?.userOrganizationAccounts.find(
+    const foundCruOrg = data?.userOrganizationAccounts.some(
       (org) =>
         org.organization.organizationType === 'Cru-International' ||
         org.organization.organizationType === 'Cru',

@@ -7,16 +7,12 @@ const mockResponseNonCru = {
   GetUsersOrganizations: {
     userOrganizationAccounts: [
       {
-        __typename: 'OrganizationAccount',
         organization: {
-          __typename: 'Organization',
           organizationType: 'Non-Cru',
         },
       },
       {
-        __typename: 'OrganizationAccount',
         organization: {
-          __typename: 'Organization',
           organizationType: 'Non-Cru',
         },
       },
@@ -27,16 +23,12 @@ const mockResponseCru = {
   GetUsersOrganizations: {
     userOrganizationAccounts: [
       {
-        __typename: 'OrganizationAccount',
         organization: {
-          __typename: 'Organization',
           organizationType: 'Cru',
         },
       },
       {
-        __typename: 'OrganizationAccount',
         organization: {
-          __typename: 'Organization',
           organizationType: 'Non-Cru',
         },
       },
