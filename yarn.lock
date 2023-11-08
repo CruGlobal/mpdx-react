@@ -18308,7 +18308,7 @@ __metadata:
     react-dnd-html5-backend: ^14.0.2
     react-dom: ^18.2.0
     react-i18next: ^11.18.6
-    react-virtuoso: 2.19.0
+    react-virtuoso: 2.19.1
     recharts: 2.3.2
     rollbar: ^2.25.2
     seedrandom: ^3.0.5
@@ -20904,16 +20904,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtuoso@npm:2.19.0":
-  version: 2.19.0
-  resolution: "react-virtuoso@npm:2.19.0"
+"react-virtuoso@npm:2.19.1":
+  version: 2.19.1
+  resolution: "react-virtuoso@npm:2.19.1"
   dependencies:
     "@virtuoso.dev/react-urx": ^0.2.12
     "@virtuoso.dev/urx": ^0.2.12
   peerDependencies:
     react: ">=16 || >=17 || >= 18"
     react-dom: ">=16 || >=17 || >= 18"
-  checksum: 146416808b72a533d9e710826dfa2626fcc5761d6cb5709d082ed069b92b76e1258ae14bcea391fb6ac9fec09280e5e9b33fb10b4f269695e234f4323af4434c
+  checksum: a87c6550cc20e9f3de8763ecf1fa3b6bf7ca201eafc17bcf40626f43cb78a7dcb5643124707f021621df0d3048b696c63b78e2dc00025cceb68cc7a8f38703d3
   languageName: node
   linkType: hard
 
