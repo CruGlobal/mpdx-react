@@ -5,24 +5,31 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Skeleton from '@mui/material/Skeleton';
+import { DateTime } from 'luxon';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import {
-  useGetAccountListCoachUsersQuery,
-  useGetAccountListUsersQuery,
   useGetCoachingDonationGraphQuery,
   useLoadAccountListCoachingDetailQuery,
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
+import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
 import theme from 'src/theme';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useLocale } from 'src/hooks/useLocale';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
+import { SideContainerText } from './StyledComponents';
+import { CollapsibleEmailList } from './CollapsibleEmailList';
+import { CollapsiblePhoneList } from './CollapsiblePhoneList';
+import { getLastNewsletter } from './helpers';
 
 interface CoachingDetailProps {
-  coachingId: string;
-  isAccountListId: boolean;
+  accountListId: string;
+
+  // Whether the account list belongs to the user or someone that the user coaches
+  accountListType: 'own' | 'coached';
 }
 
 const CoachingLoadingSkeleton = styled(Skeleton)(({ theme }) => ({
@@ -32,14 +39,14 @@ const CoachingLoadingSkeleton = styled(Skeleton)(({ theme }) => ({
 }));
 
 const CoachingDetailContainer = styled(Box)(({}) => ({
-  width: '100&',
+  width: '100%',
   minHeight: '100%',
   display: 'flex',
 }));
 
 const CoachingSideContainer = styled(Box)(({ theme }) => ({
+  width: '20rem',
   minHeight: '100%',
-  flexGrow: 1,
   padding: theme.spacing(1),
 }));
 
@@ -61,6 +68,7 @@ const CoachingItemContainer = styled(Box)(({ theme }) => ({
 }));
 
 const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
   display: 'flex',
   margin: theme.spacing(1),
   alignItems: 'center',
@@ -72,66 +80,70 @@ const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
 }));
 
-const SideContainerText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
-  margin: theme.spacing(0, 1),
-}));
-
 const SideContainerIcon = styled(AccountCircle)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
   margin: theme.spacing(0, 1),
 }));
 
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
-  coachingId,
-  isAccountListId = false,
+  accountListId,
+  accountListType,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { data: ownData, loading } = useLoadAccountListCoachingDetailQuery({
-    variables: { coachingId },
-    skip: !isAccountListId,
-  });
 
-  const { data: coachingData, loading: coachingLoading } =
+  const { data: ownData, loading: ownLoading } =
+    useLoadAccountListCoachingDetailQuery({
+      variables: { accountListId },
+      skip: accountListType !== 'own',
+    });
+
+  const { data: coachedData, loading: coachedLoading } =
     useLoadCoachingDetailQuery({
-      variables: { coachingId },
-      skip: isAccountListId,
+      variables: { coachingAccountListId: accountListId },
+      skip: accountListType !== 'coached',
     });
 
-  const { data: coachingUsersData, loading: coachingUsersLoading } =
-    useGetAccountListCoachUsersQuery({
-      variables: { accountListId: coachingId },
-    });
+  const loading = accountListType === 'own' ? ownLoading : coachedLoading;
+  const accountListData =
+    accountListType === 'own'
+      ? ownData?.accountList
+      : coachedData?.coachingAccountList;
 
-  const { data: accountListUsersData, loading: accountListUsersLoading } =
-    useGetAccountListUsersQuery({
-      variables: { accountListId: coachingId },
-    });
+  const staffIds =
+    accountListData?.designationAccounts
+      .map((account) => account.accountNumber)
+      .filter((number) => number.length > 0) ?? [];
 
   const { data: ownDonationGraphData } = useGetDonationGraphQuery({
     variables: {
-      accountListId: coachingId,
+      accountListId,
     },
-    skip: !isAccountListId,
+    skip: accountListType !== 'own',
   });
 
   const { data: coachingDonationGraphData } = useGetCoachingDonationGraphQuery({
     variables: {
-      coachingAccountListId: coachingId,
+      coachingAccountListId: accountListId,
     },
-    skip: isAccountListId,
+    skip: accountListType !== 'coached',
   });
 
-  const accountListData = isAccountListId
-    ? ownData?.accountList
-    : coachingData?.coachingAccountList;
+  const donationGraphData =
+    accountListType === 'own'
+      ? ownDonationGraphData
+      : coachingDonationGraphData;
 
-  const donationGraphData = isAccountListId
-    ? ownDonationGraphData
-    : coachingDonationGraphData;
+  const { data: taskAnalyticsData } = useGetTaskAnalyticsQuery({
+    variables: {
+      accountListId,
+    },
+  });
 
-  const [isMonthly, setIsMonthly] = useState(true);
+  const formatOptionalDate = (isoDate: string | null | undefined): string =>
+    isoDate ? dateFormat(DateTime.fromISO(isoDate), locale) : t('None');
+
+  const [isMonthly, setIsMonthly] = useState(false);
 
   return (
     <CoachingDetailContainer>
@@ -156,50 +168,76 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           size="large"
         >
           <Button
+            variant={isMonthly ? 'outlined' : 'contained'}
+            onClick={() => setIsMonthly(false)}
+          >
+            {t('Weekly')}
+          </Button>
+          <Button
             variant={isMonthly ? 'contained' : 'outlined'}
             onClick={() => setIsMonthly(true)}
           >
             {t('Monthly')}
           </Button>
-          <Button
-            variant={isMonthly ? 'outlined' : 'contained'}
-            onClick={() => setIsMonthly(false)}
-          >
-            {t('Yearly')}
-          </Button>
         </CoachingMonthYearButtonGroup>
+        <SideContainerText variant="h5" data-testid="Balance">
+          {t('Balance:')}{' '}
+          {accountListData &&
+            currencyFormat(
+              accountListData.balance,
+              accountListData.currency,
+              locale,
+            )}
+        </SideContainerText>
         <SideContainerText>{t('Staff IDs:')}</SideContainerText>
-        <SideContainerText>None</SideContainerText>
-        <SideContainerText>
-          {t('Last Prayer Letter:') /* TODO: Add value */}
+        <SideContainerText data-testid="StaffIds">
+          {staffIds.length > 0 ? staffIds.join(', ') : t('None')}
+        </SideContainerText>
+        <SideContainerText data-testid="LastPrayerLetter">
+          {t('Last Prayer Letter:')}{' '}
+          {taskAnalyticsData &&
+            formatOptionalDate(
+              getLastNewsletter(
+                taskAnalyticsData.taskAnalytics
+                  .lastElectronicNewsletterCompletedAt,
+                taskAnalyticsData.taskAnalytics
+                  .lastPhysicalNewsletterCompletedAt,
+              ),
+            )}
         </SideContainerText>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
         <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
           {t('MPD Info')}
         </SideContainerText>
-        <SideContainerText>
-          {t('Week on MPD:') /* TODO: Add Value */}
+        <SideContainerText data-testid="WeeksOnMpd">
+          {t('Weeks on MPD:')} {accountListData?.weeksOnMpd}
         </SideContainerText>
-        <SideContainerText>
-          {t('Start Date:') /* TODO: Add Value */}
+        <SideContainerText data-testid="MpdStartDate">
+          {t('Start Date:')}{' '}
+          {accountListData &&
+            formatOptionalDate(accountListData?.activeMpdStartAt)}
         </SideContainerText>
-        <SideContainerText>
-          {t('End Date:') /* TODO: Add Value */}
+        <SideContainerText data-testid="MpdEndDate">
+          {t('End Date:')}{' '}
+          {accountListData &&
+            formatOptionalDate(accountListData?.activeMpdFinishAt)}
         </SideContainerText>
-        <SideContainerText>
-          {t('Commitment Goal:') +
-            ' ' +
-            currencyFormat(
-              accountListData?.monthlyGoal ? accountListData?.monthlyGoal : 0,
-              accountListData?.currency,
-              locale,
-            )}
+        <SideContainerText data-testid="MpdCommitmentGoal">
+          {t('Commitment Goal:')}{' '}
+          {accountListData &&
+            (typeof accountListData.activeMpdMonthlyGoal === 'number'
+              ? currencyFormat(
+                  accountListData.activeMpdMonthlyGoal,
+                  accountListData?.currency,
+                  locale,
+                )
+              : t('None'))}
         </SideContainerText>
         <Divider style={{ background: theme.palette.primary.contrastText }} />
         <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
           {t('Users')}
         </SideContainerText>
-        {accountListUsersLoading ? (
+        {loading ? (
           <>
             <CoachingLoadingSkeleton />
             <CoachingLoadingSkeleton />
@@ -207,27 +245,23 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             <CoachingLoadingSkeleton />
           </>
         ) : (
-          accountListUsersData?.accountListUsers.nodes.map(
-            (accountList, _index) => {
-              return (
-                <Fragment key={accountList.id}>
-                  <SideContainerIcon />
-                  <SideContainerText>
-                    {accountList.user.firstName +
-                      ' ' +
-                      accountList.user.lastName}
-                  </SideContainerText>
-                  <Divider style={{ margin: theme.spacing(1) }} />
-                </Fragment>
-              );
-            },
-          )
+          accountListData?.users.nodes.map((user) => (
+            <Fragment key={user.id}>
+              <SideContainerIcon />
+              <SideContainerText>
+                {user.firstName + ' ' + user.lastName}
+              </SideContainerText>
+              <CollapsibleEmailList emails={user.emailAddresses.nodes} />
+              <CollapsiblePhoneList phones={user.phoneNumbers.nodes} />
+              <Divider style={{ margin: theme.spacing(1) }} />
+            </Fragment>
+          ))
         )}
         <Divider style={{ background: theme.palette.primary.contrastText }} />
         <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
           {t('Coaches')}
         </SideContainerText>
-        {coachingUsersLoading ? (
+        {loading ? (
           <>
             <CoachingLoadingSkeleton />
             <CoachingLoadingSkeleton />
@@ -235,21 +269,21 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             <CoachingLoadingSkeleton />
           </>
         ) : (
-          coachingUsersData?.getAccountListCoachUsers?.map((user, _index) => {
-            return (
-              <>
-                <SideContainerIcon />
-                <SideContainerText>
-                  {user?.firstName + ' ' + user?.lastName}
-                </SideContainerText>
-                <Divider style={{ margin: theme.spacing(1) }} />
-              </>
-            );
-          })
+          accountListData?.coaches.nodes.map((coach) => (
+            <Fragment key={coach.id}>
+              <SideContainerIcon />
+              <SideContainerText>
+                {coach.firstName + ' ' + coach.lastName}
+              </SideContainerText>
+              <CollapsibleEmailList emails={coach.emailAddresses.nodes} />
+              <CollapsiblePhoneList phones={coach.phoneNumbers.nodes} />
+              <Divider style={{ margin: theme.spacing(1) }} />
+            </Fragment>
+          ))
         )}
       </CoachingSideContainer>
       <CoachingMainContainer>
-        {loading || coachingLoading ? (
+        {ownLoading || coachedLoading ? (
           <>
             <CoachingLoadingSkeleton />
             <CoachingLoadingSkeleton />
@@ -272,7 +306,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress
-                  loading={loading}
+                  loading={ownLoading}
                   isPrimary={false}
                   currency={accountListData?.currency}
                   goal={accountListData?.monthlyGoal ?? undefined}
@@ -293,7 +327,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               />
               <Box style={{ margin: theme.spacing(3, 0) }}>
                 <MonthlyCommitment
-                  coachingId={coachingId}
+                  coachingId={accountListId}
                   currencyCode={accountListData?.currency}
                   goal={accountListData?.monthlyGoal ?? 0}
                 />

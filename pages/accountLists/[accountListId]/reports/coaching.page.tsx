@@ -24,7 +24,7 @@ const CoachingReportPage = (): ReactElement => {
         </title>
       </Head>
       {accountListId ? (
-        <CoachingDetail coachingId={accountListId} isAccountListId={true} />
+        <CoachingDetail accountListId={accountListId} accountListType="own" />
       ) : (
         <Loading loading />
       )}

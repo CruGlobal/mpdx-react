@@ -23,8 +23,8 @@ const CoachingPage: React.FC = () => {
       </Head>
       {accountListId && coachingId && isReady ? (
         <CoachingDetail
-          coachingId={coachingId as string}
-          isAccountListId={false}
+          accountListId={coachingId as string}
+          accountListType="coached"
         />
       ) : (
         <Loading loading />

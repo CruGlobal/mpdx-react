@@ -1,5 +1,8 @@
 import React, { ReactElement } from 'react';
-import { LoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
+import {
+  LoadAccountListCoachingDetailQuery,
+  LoadCoachingDetailQuery,
+} from './LoadCoachingDetail.generated';
 import { CoachingDetail } from './CoachingDetail';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 
@@ -21,14 +24,16 @@ export const Default = (): ReactElement => {
         },
       }}
     >
-      <CoachingDetail coachingId={coachingId} isAccountListId={false} />
+      <CoachingDetail accountListId={coachingId} accountListType="coached" />
     </GqlMockedProvider>
   );
 };
 
 export const AccountListDetail = (): ReactElement => {
   return (
-    <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
+    <GqlMockedProvider<{
+      LoadAccountListCoachingDetail: LoadAccountListCoachingDetailQuery;
+    }>
       mocks={{
         LoadAccountListCoachingDetail: {
           accountList: {
@@ -38,7 +43,7 @@ export const AccountListDetail = (): ReactElement => {
         },
       }}
     >
-      <CoachingDetail coachingId={coachingId} isAccountListId={true} />
+      <CoachingDetail accountListId={coachingId} accountListType="own" />
     </GqlMockedProvider>
   );
 };
