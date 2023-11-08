@@ -18,7 +18,6 @@ import {
 } from '@mui/x-date-pickers/LocalizationProvider';
 import { SnackbarProvider } from 'notistack';
 import theme from '../src/theme';
-import './helpscout.css';
 import client from '../src/lib/client';
 import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
@@ -34,6 +33,8 @@ import DataDog from 'src/components/DataDog/DataDog';
 import { useLocale } from 'src/hooks/useLocale';
 import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
 import { AdapterLuxon } from './api/utils/AdapterLuxon';
+import './helpscout.css';
+import './print.css';
 
 const handleExitComplete = (): void => {
   if (typeof window !== 'undefined') {
@@ -79,13 +80,6 @@ const App = ({
     },
   };
 
-  // useEffect(() => {
-  //     // Remove the server-side injected CSS.
-  //     const jssStyles = document.querySelector('#jss-server-side');
-  //     if (jssStyles) {
-  //         jssStyles.parentElement.removeChild(jssStyles);
-  //     }
-  // }, []);
   return (
     <>
       <Head>

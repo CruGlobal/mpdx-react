@@ -23,6 +23,9 @@ const StickyHeader = styled(Box)(({}) => ({
   position: 'sticky',
   top: 0,
   height: 96,
+  '@media print': {
+    paddingTop: '0',
+  },
 }));
 
 const HeaderTitle = styled(Typography)(({}) => ({
@@ -38,12 +41,21 @@ const NavListButton = styled(IconButton, {
   borderradius: 24,
   margin: theme.spacing(1),
   backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
+  '@media print': {
+    display: 'none',
+  },
 }));
 
 const NavListIcon = styled(FilterList)(({ theme }) => ({
   width: 24,
   height: 24,
   color: theme.palette.primary.dark,
+}));
+
+const StyledGrid = styled(Grid)(() => ({
+  '@media print': {
+    display: 'none',
+  },
 }));
 
 export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
@@ -76,7 +88,7 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
             <HeaderTitle variant="h5">{title}</HeaderTitle>
           </Box>
         </Grid>
-        <Grid item>
+        <StyledGrid item>
           <FourteenMonthReportActions
             csvData={csvData}
             currencyType={currencyType}
@@ -85,7 +97,7 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
             onExpandToggle={onExpandToggle}
             onPrint={onPrint}
           />
-        </Grid>
+        </StyledGrid>
       </Grid>
     </StickyHeader>
   );

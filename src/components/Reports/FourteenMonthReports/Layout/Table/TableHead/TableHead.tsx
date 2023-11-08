@@ -9,6 +9,7 @@ import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.genera
 import type { Order, Unarray } from '../../../../Reports.type';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 import { Totals } from '../../../FourteenMonthReport';
+import { StyledTableCell } from '../Table';
 
 export type Contacts =
   FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
@@ -72,9 +73,9 @@ export const FourteenMonthReportTableHead: FC<
   return (
     <TableHead data-testid="SalaryReportTableHead">
       <TableRow>
-        <TableCell>
+        <StyledTableCell>
           <Typography variant="h6">{salaryCurrency}</Typography>
-        </TableCell>
+        </StyledTableCell>
         {monthCount &&
           monthCount.map((year) => (
             <YearTableCell
@@ -86,7 +87,7 @@ export const FourteenMonthReportTableHead: FC<
               <YearTypography variant="h6">{year.year}</YearTypography>
             </YearTableCell>
           ))}
-        <TableCell />
+        <StyledTableCell />
       </TableRow>
       <TableRow>
         <TableHeadCell

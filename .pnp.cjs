@@ -148,7 +148,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dnd-html5-backend", "npm:14.1.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.18.6"],\
-            ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.14.7"],\
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.2"],\
             ["rollbar", "npm:2.25.2"],\
@@ -27160,7 +27159,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dnd-html5-backend", "npm:14.1.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.18.6"],\
-            ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.14.7"],\
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.2"],\
             ["rollbar", "npm:2.25.2"],\
@@ -27257,7 +27255,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dnd-html5-backend", "npm:11.1.3"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["react-sortable-tree-patch-react-17", "virtual:60e535eb315faec906d01e72980c9f3de71dc50bb7b04154f06507067f4594cdbbd3b1c07ffb39d23ddb2a84e1252ba3457935acfb93ebeef3c81d9fd6f78ad6#npm:2.9.0"],\
-            ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.14.7"],\
+            ["react-to-print", "virtual:60e535eb315faec906d01e72980c9f3de71dc50bb7b04154f06507067f4594cdbbd3b1c07ffb39d23ddb2a84e1252ba3457935acfb93ebeef3c81d9fd6f78ad6#npm:2.14.7"],\
             ["tss-react", "virtual:60e535eb315faec906d01e72980c9f3de71dc50bb7b04154f06507067f4594cdbbd3b1c07ffb39d23ddb2a84e1252ba3457935acfb93ebeef3c81d9fd6f78ad6#npm:3.7.1"]\
           ],\
           "packagePeers": [\
@@ -30260,10 +30258,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.14.7", {\
-          "packageLocation": "./.yarn/__virtual__/react-to-print-virtual-a5569964ef/0/cache/react-to-print-npm-2.14.7-1a53b4a0a5-a8bb9956f7.zip/node_modules/react-to-print/",\
+        ["virtual:60e535eb315faec906d01e72980c9f3de71dc50bb7b04154f06507067f4594cdbbd3b1c07ffb39d23ddb2a84e1252ba3457935acfb93ebeef3c81d9fd6f78ad6#npm:2.14.7", {\
+          "packageLocation": "./.yarn/__virtual__/react-to-print-virtual-d53442899f/0/cache/react-to-print-npm-2.14.7-1a53b4a0a5-a8bb9956f7.zip/node_modules/react-to-print/",\
           "packageDependencies": [\
-            ["react-to-print", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.14.7"],\
+            ["react-to-print", "virtual:60e535eb315faec906d01e72980c9f3de71dc50bb7b04154f06507067f4594cdbbd3b1c07ffb39d23ddb2a84e1252ba3457935acfb93ebeef3c81d9fd6f78ad6#npm:2.14.7"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/react-dom", null],\
             ["prop-types", "npm:15.8.1"],\

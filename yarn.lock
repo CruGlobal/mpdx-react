@@ -18308,7 +18308,6 @@ __metadata:
     react-dnd-html5-backend: ^14.0.2
     react-dom: ^18.2.0
     react-i18next: ^11.18.6
-    react-to-print: ^2.14.7
     react-virtuoso: 2.19.0
     recharts: 2.3.2
     rollbar: ^2.25.2
@@ -20846,7 +20845,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-to-print@npm:^2.14.7, react-to-print@npm:^2.8.0":
+"react-to-print@npm:^2.8.0":
   version: 2.14.7
   resolution: "react-to-print@npm:2.14.7"
   dependencies:
