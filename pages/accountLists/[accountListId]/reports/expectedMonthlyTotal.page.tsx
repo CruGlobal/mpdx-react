@@ -3,14 +3,17 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { ExpectedMonthlyTotalReportHeader } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/Header/ExpectedMonthlyTotalReportHeader';
-import Loading from '../../../../src/components/Loading';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { ExpectedMonthlyTotalReport } from '../../../../src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReport';
 import { suggestArticles } from 'src/lib/helpScout';
+import Loading from 'src/components/Loading';
+import { ExpectedMonthlyTotalReportHeader } from 'src/components/Reports/ExpectedMonthlyTotalReport/Header/ExpectedMonthlyTotalReportHeader';
+import { ExpectedMonthlyTotalReport } from 'src/components/Reports/ExpectedMonthlyTotalReport/ExpectedMonthlyTotalReport';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 
 const ExpectedMonthlyTotalReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -43,12 +46,13 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
-              <NavReportsList
+              <MultiPageMenu
                 isOpen={isNavListOpen}
                 selectedId="expectedMonthlyTotal"
                 onClose={handleNavListToggle}
                 designationAccounts={designationAccounts}
                 setDesignationAccounts={setDesignationAccounts}
+                navType={NavTypeEnum.Reports}
               />
             }
             leftOpen={isNavListOpen}

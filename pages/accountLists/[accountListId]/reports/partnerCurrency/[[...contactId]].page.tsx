@@ -6,13 +6,16 @@ import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import { FourteenMonthReportCurrencyType } from '../../../../../graphql/types.generated';
 import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
-import Loading from 'src/components/Loading';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
+import Loading from 'src/components/Loading';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { ContactsPage } from '../../contacts/ContactsPage';
 
@@ -55,12 +58,13 @@ const PartnerCurrencyReportPage: React.FC = () => {
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
-              <NavReportsList
+              <MultiPageMenu
                 isOpen={isNavListOpen}
                 selectedId="partnerCurrency"
                 onClose={handleNavListToggle}
                 designationAccounts={designationAccounts}
                 setDesignationAccounts={setDesignationAccounts}
+                navType={NavTypeEnum.Reports}
               />
             }
             leftOpen={isNavListOpen}
