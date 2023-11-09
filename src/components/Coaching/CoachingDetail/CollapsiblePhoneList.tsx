@@ -34,7 +34,7 @@ export const CollapsiblePhoneList: React.FC<CollapsiblePhoneListProps> = ({
     <CollapsibleList
       primaryItem={<Phone phone={primaryPhone} />}
       secondaryItems={
-        secondaryPhones.length > 0
+        secondaryPhones.length
           ? secondaryPhones.map((phone) => (
               <SideContainerText key={phone.id}>
                 <Phone phone={phone} />

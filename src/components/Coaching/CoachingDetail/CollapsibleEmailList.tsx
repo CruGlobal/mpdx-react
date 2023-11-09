@@ -34,7 +34,7 @@ export const CollapsibleEmailList: React.FC<CollapsibleEmailListProps> = ({
     <CollapsibleList
       primaryItem={<Email email={primaryEmail} />}
       secondaryItems={
-        secondaryEmails.length > 0
+        secondaryEmails.length
           ? secondaryEmails.map((email) => (
               <SideContainerText key={email.id}>
                 <Email email={email} />

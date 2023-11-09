@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { CoachingDetail } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
+import {
+  AccountListType,
+  CoachingDetail,
+} from 'src/components/Coaching/CoachingDetail/CoachingDetail';
 import { suggestArticles } from 'src/lib/helpScout';
 
 const CoachingReportPage = (): ReactElement => {
@@ -24,7 +27,10 @@ const CoachingReportPage = (): ReactElement => {
         </title>
       </Head>
       {accountListId ? (
-        <CoachingDetail accountListId={accountListId} accountListType="own" />
+        <CoachingDetail
+          accountListId={accountListId}
+          accountListType={AccountListType.Own}
+        />
       ) : (
         <Loading loading />
       )}

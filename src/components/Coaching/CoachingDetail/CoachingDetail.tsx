@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useMemo } from 'react';
 import { Box, Button, ButtonGroup, Divider, Typography } from '@mui/material';
 // TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -25,11 +25,15 @@ import { CollapsibleEmailList } from './CollapsibleEmailList';
 import { CollapsiblePhoneList } from './CollapsiblePhoneList';
 import { getLastNewsletter } from './helpers';
 
+export enum AccountListType {
+  Own = 'Own',
+  Coaching = 'Coaching',
+}
+
 interface CoachingDetailProps {
   accountListId: string;
-
   // Whether the account list belongs to the user or someone that the user coaches
-  accountListType: 'own' | 'coached';
+  accountListType: AccountListType;
 }
 
 const CoachingLoadingSkeleton = styled(Skeleton)(({ theme }) => ({
@@ -95,42 +99,46 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   const { data: ownData, loading: ownLoading } =
     useLoadAccountListCoachingDetailQuery({
       variables: { accountListId },
-      skip: accountListType !== 'own',
+      skip: accountListType !== AccountListType.Own,
     });
 
-  const { data: coachedData, loading: coachedLoading } =
+  const { data: coachingData, loading: coachingLoading } =
     useLoadCoachingDetailQuery({
       variables: { coachingAccountListId: accountListId },
-      skip: accountListType !== 'coached',
+      skip: accountListType !== AccountListType.Coaching,
     });
 
-  const loading = accountListType === 'own' ? ownLoading : coachedLoading;
+  const loading =
+    accountListType === AccountListType.Own ? ownLoading : coachingLoading;
   const accountListData =
-    accountListType === 'own'
+    accountListType === AccountListType.Own
       ? ownData?.accountList
-      : coachedData?.coachingAccountList;
+      : coachingData?.coachingAccountList;
 
-  const staffIds =
-    accountListData?.designationAccounts
-      .map((account) => account.accountNumber)
-      .filter((number) => number.length > 0) ?? [];
+  const staffIds = useMemo(
+    () =>
+      accountListData?.designationAccounts
+        .map((account) => account.accountNumber)
+        .filter((number) => number.length > 0) ?? [],
+    [accountListData],
+  );
 
   const { data: ownDonationGraphData } = useGetDonationGraphQuery({
     variables: {
       accountListId,
     },
-    skip: accountListType !== 'own',
+    skip: accountListType !== AccountListType.Own,
   });
 
   const { data: coachingDonationGraphData } = useGetCoachingDonationGraphQuery({
     variables: {
       coachingAccountListId: accountListId,
     },
-    skip: accountListType !== 'coached',
+    skip: accountListType !== AccountListType.Coaching,
   });
 
   const donationGraphData =
-    accountListType === 'own'
+    accountListType === AccountListType.Own
       ? ownDonationGraphData
       : coachingDonationGraphData;
 
@@ -191,7 +199,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
         </SideContainerText>
         <SideContainerText>{t('Staff IDs:')}</SideContainerText>
         <SideContainerText data-testid="StaffIds">
-          {staffIds.length > 0 ? staffIds.join(', ') : t('None')}
+          {staffIds.length ? staffIds.join(', ') : t('None')}
         </SideContainerText>
         <SideContainerText data-testid="LastPrayerLetter">
           {t('Last Prayer Letter:')}{' '}
@@ -283,7 +291,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
         )}
       </CoachingSideContainer>
       <CoachingMainContainer>
-        {ownLoading || coachedLoading ? (
+        {ownLoading || coachingLoading ? (
           <>
             <CoachingLoadingSkeleton />
             <CoachingLoadingSkeleton />

@@ -3,7 +3,7 @@ import {
   LoadAccountListCoachingDetailQuery,
   LoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
-import { CoachingDetail } from './CoachingDetail';
+import { AccountListType, CoachingDetail } from './CoachingDetail';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 
 export default {
@@ -24,7 +24,10 @@ export const Default = (): ReactElement => {
         },
       }}
     >
-      <CoachingDetail accountListId={coachingId} accountListType="coached" />
+      <CoachingDetail
+        accountListId={coachingId}
+        accountListType={AccountListType.Coaching}
+      />
     </GqlMockedProvider>
   );
 };
@@ -43,7 +46,10 @@ export const AccountListDetail = (): ReactElement => {
         },
       }}
     >
-      <CoachingDetail accountListId={coachingId} accountListType="own" />
+      <CoachingDetail
+        accountListId={coachingId}
+        accountListType={AccountListType.Own}
+      />
     </GqlMockedProvider>
   );
 };
