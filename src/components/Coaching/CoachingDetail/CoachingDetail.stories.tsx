@@ -3,7 +3,7 @@ import {
   LoadAccountListCoachingDetailQuery,
   LoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
-import { AccountListType, CoachingDetail } from './CoachingDetail';
+import { AccountListTypEnum, CoachingDetail } from './CoachingDetail';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 
 export default {
@@ -26,7 +26,7 @@ export const Default = (): ReactElement => {
     >
       <CoachingDetail
         accountListId={coachingId}
-        accountListType={AccountListType.Coaching}
+        accountListType={AccountListTypEnum.Coaching}
       />
     </GqlMockedProvider>
   );
@@ -48,7 +48,7 @@ export const AccountListDetail = (): ReactElement => {
     >
       <CoachingDetail
         accountListId={coachingId}
-        accountListType={AccountListType.Own}
+        accountListType={AccountListTypEnum.Own}
       />
     </GqlMockedProvider>
   );

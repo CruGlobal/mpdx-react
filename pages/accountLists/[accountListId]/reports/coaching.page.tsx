@@ -5,7 +5,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import {
-  AccountListType,
+  AccountListTypEnum,
   CoachingDetail,
 } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
 import { suggestArticles } from 'src/lib/helpScout';
@@ -29,7 +29,7 @@ const CoachingReportPage = (): ReactElement => {
       {accountListId ? (
         <CoachingDetail
           accountListId={accountListId}
-          accountListType={AccountListType.Own}
+          accountListType={AccountListTypEnum.Own}
         />
       ) : (
         <Loading loading />
