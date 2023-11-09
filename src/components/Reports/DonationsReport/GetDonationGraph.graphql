@@ -9,14 +9,18 @@ query GetDonationGraph($accountListId: ID!, $designationAccountIds: [ID!]) {
     accountListId: $accountListId
     designationAccountId: $designationAccountIds
   ) {
-    averageIgnoreCurrent
-    periods {
-      startDate
-      convertedTotal
-      totals {
-        currency
-        convertedAmount
-      }
+    ...DonationGraphHistories
+  }
+}
+
+fragment DonationGraphHistories on DonationHistories {
+  averageIgnoreCurrent
+  periods {
+    startDate
+    convertedTotal
+    totals {
+      currency
+      convertedAmount
     }
   }
 }

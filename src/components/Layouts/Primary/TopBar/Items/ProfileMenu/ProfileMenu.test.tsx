@@ -1,7 +1,8 @@
+import fetchMock from 'jest-fetch-mock';
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import {
   render,
@@ -22,6 +23,7 @@ const session = {
     image: null,
     name: 'Dung Tapestry',
     token: 'superLongJwtString',
+    impersonating: false,
   },
 };
 
@@ -32,6 +34,19 @@ jest.mock('next-auth/react', () => {
     useSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
   };
 });
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 const router = {
   pathname: '/accountLists/[accountListId]/test',
@@ -174,5 +189,72 @@ describe('ProfileMenu', () => {
     await waitFor(() => expect(getByText(/sign out/i)).toBeInTheDocument());
     userEvent.click(getByText(/sign out/i));
     expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' });
+  });
+});
+
+describe('ProfileMenu while Impersonating', () => {
+  fetchMock.enableMocks();
+  window = Object.create(window);
+  const url = 'https://mpdx.org';
+  Object.defineProperty(window, 'location', {
+    value: {
+      href: url,
+    },
+    writable: true,
+  });
+
+  beforeEach(() => {
+    session.user.impersonating = true;
+    (useSession as jest.Mock).mockReturnValue({
+      data: {
+        ...session,
+      },
+      status: 'authenticated',
+    });
+  });
+
+  it('Should remove impersonating cookies and redirect user to Angular MPDX', async () => {
+    fetchMock.resetMocks();
+    fetchMock.mockResponses([
+      JSON.stringify({ status: 'success' }),
+      { status: 200 },
+    ]);
+
+    const { getByTestId, getByText, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={[getTopBarMock()]}>
+          <TestRouter router={router}>
+            <ProfileMenu />
+          </TestRouter>
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(getByText('Impersonating John Smith')).toBeInTheDocument(),
+    );
+    expect(queryByTestId('accountListName')).not.toBeInTheDocument();
+    userEvent.click(getByTestId('profileMenuButton'));
+    await waitFor(() =>
+      expect(queryByTestId('profileMenu')).toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(getByText(/stop impersonating/i)).toBeInTheDocument(),
+    );
+    userEvent.click(getByText(/stop impersonating/i));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Stopping Impersonating and redirecting you to the legacy MPDX',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+
+    await waitFor(() =>
+      expect(window.location.href).toEqual(
+        `${process.env.SITE_URL}/api/stop-impersonating?accountListId=1&userId=user-1&path=%2Flogout`,
+      ),
+    );
   });
 });

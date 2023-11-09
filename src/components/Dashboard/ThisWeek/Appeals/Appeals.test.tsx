@@ -48,7 +48,10 @@ describe('Appeals', () => {
     ).toContain('MuiSkeleton-root');
     expect(
       getByRole('link', { hidden: true, name: 'View All' }),
-    ).toHaveAttribute('href', 'https://stage.mpdx.org/tools/appeals');
+    ).toHaveAttribute(
+      'href',
+      `https://${process.env.REWRITE_DOMAIN}/tools/appeals`,
+    );
   });
 
   it('props', () => {
@@ -67,7 +70,7 @@ describe('Appeals', () => {
     );
 
     expect(getByTestId('AppealsBoxName').textContent).toEqual('My Appeal');
-    expect(getByTestId('AppealsBoxAmount').textContent).toEqual('€5,000');
+    expect(getByTestId('AppealsBoxAmount').textContent).toEqual('€5,000 EUR');
     expect(
       getByTestId('AppealsTypographyPledgesAmountProcessedPercentage')
         .textContent,

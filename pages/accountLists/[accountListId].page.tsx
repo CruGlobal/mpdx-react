@@ -1,7 +1,7 @@
 import React, { ReactElement, useState, useEffect } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
+import { getToken } from 'next-auth/jwt';
 import useGetAppSettings from '../../src/hooks/useGetAppSettings';
 import Dashboard from '../../src/components/Dashboard';
 import { ssrClient } from '../../src/lib/client';
@@ -76,10 +76,13 @@ export const getServerSideProps: GetServerSideProps = async ({
   query,
   req,
 }) => {
-  const session = await getSession({ req });
+  const jwtToken = (await getToken({
+    req,
+    secret: process.env.JWT_SECRET as string,
+  })) as { apiToken: string } | null;
 
   // If no token from session, redirect to login page
-  if (!session?.user.apiToken) {
+  if (!jwtToken?.apiToken) {
     return {
       redirect: {
         destination: '/login',
@@ -89,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   try {
-    const client = await ssrClient(session?.user.apiToken);
+    const client = await ssrClient(jwtToken?.apiToken);
     const response = await client.query<
       GetDashboardQuery,
       GetDashboardQueryVariables

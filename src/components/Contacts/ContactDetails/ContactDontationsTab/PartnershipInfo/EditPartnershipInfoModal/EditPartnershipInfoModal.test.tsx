@@ -9,6 +9,7 @@ import {
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
+  LikelyToGiveEnum,
 } from '../../../../../../../graphql/types.generated';
 import {
   gqlMock,
@@ -53,6 +54,29 @@ const contactMock = gqlMock<ContactDonorAccountsFragment>(
           },
         ],
       },
+      likelyToGive: LikelyToGiveEnum.Likely,
+    },
+  },
+);
+
+const newContactMock = gqlMock<ContactDonorAccountsFragment>(
+  ContactDonorAccountsFragmentDoc,
+  {
+    mocks: {
+      status: null,
+      nextAsk: null,
+      pledgeCurrency: null,
+      pledgeStartDate: null,
+      pledgeFrequency: null,
+      pledgeAmount: null,
+      pledgeReceived: false,
+      sendNewsletter: null,
+      noAppeals: true,
+      lastDonation: null,
+      contactReferralsToMe: {
+        nodes: [],
+      },
+      likelyToGive: null,
     },
   },
 );
@@ -143,6 +167,38 @@ describe('EditPartnershipInfoModal', () => {
 
     expect(getByText('Edit Partnership')).toBeInTheDocument();
     userEvent.click(getByText('Cancel'));
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should save when only status is inputted', async () => {
+    const { getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <EditPartnershipInfoModal
+                contact={newContactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    const statusInput = getByLabelText('Status');
+
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask In Future'));
+
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -357,6 +413,50 @@ describe('EditPartnershipInfoModal', () => {
       ),
     );
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing Likely to give', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <EditPartnershipInfoModal
+                contact={contactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    mutationSpy.mockClear();
+
+    userEvent.click(getByRole('button', { name: 'Likely' }));
+    userEvent.click(getByRole('option', { name: 'Most Likely' }));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+    expect(mutationSpy.mock.lastCall).toMatchObject([
+      {
+        operation: {
+          operationName: 'UpdateContactPartnership',
+          variables: {
+            attributes: {
+              likelyToGive: 'MOST_LIKELY',
+            },
+          },
+        },
+      },
+    ]);
   });
 
   it('should handle editing start date', async () => {

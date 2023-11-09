@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import { GroupItemContent } from 'react-virtuoso';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../../src/theme';
@@ -74,17 +74,6 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('react-virtuoso', () => ({
-  // eslint-disable-next-line react/display-name
-  GroupedVirtuoso: ({
-    itemContent,
-  }: {
-    itemContent: GroupItemContent<undefined, undefined>;
-  }) => {
-    return <div>{itemContent(0, 0, undefined, undefined)}</div>;
-  },
-}));
-
 it('should render list of people', async () => {
   const { findByTestId, getByText } = render(
     <ThemeProvider theme={theme}>
@@ -94,7 +83,11 @@ it('should render list of people', async () => {
             Contacts: mockResponse,
           }}
         >
-          <Contacts />
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
+          >
+            <Contacts />
+          </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>,
@@ -113,7 +106,11 @@ it('should render contact detail panel', async () => {
             Contacts: mockResponse,
           }}
         >
-          <Contacts />
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
+          >
+            <Contacts />
+          </VirtuosoMockContext.Provider>
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>,

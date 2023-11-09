@@ -1,7 +1,7 @@
 # MPDX
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/zeit/next.js/tree/canary/packages/create-next-app).
-The project uses node version 16.16.0.
+The project uses node version 18.13.0.
 
 ## Environments
 
@@ -51,7 +51,7 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `GOOGLE_TAG_MANAGER_CONTAINER_ID` - Optional Google Tag Manager container ID
 - `NEXT_PUBLIC_MEDIA_FAVICON` - Application favicon image url
 - `NEXT_PUBLIC_MEDIA_LOGO` - Application logo image url
-- `REWRITE_DOMAIN` - The domain which where new & old MPDX applications live. Set to `mpdx.org` for next.mpdx.org & mpdx.org.
+- `REWRITE_DOMAIN` - The domain which where new & old MPDX applications live. Set to `mpdx.org` for next.mpdx.org & `stage.mpdx.org` for staging.
 - `DATADOG_APP_ID` - Datadog tracking application ID.
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
 - `BEACON_TOKEN` - HelpScout beacon token

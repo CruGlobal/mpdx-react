@@ -17,6 +17,7 @@ import {
 import { useTheme, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Close from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { filter } from 'lodash';
 import {
@@ -39,6 +40,7 @@ import {
 import { FilterListItemShowAll } from './FilterListItemShowAll';
 import { FilterListItem } from './FilterListItem';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
+import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
@@ -173,7 +175,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const { t } = useTranslation();
 
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
+  const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [filterToBeDeleted, setFilterToBeDeleted] =
+    useState<UserOptionFragment | null>(null);
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
       let filterValue = value;
@@ -684,6 +689,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     }
   };
 
+  const handleDeleteSavedFilter = async (filter: UserOptionFragment) => {
+    setFilterToBeDeleted(filter);
+    setDeleteFilterModalOpen(true);
+  };
+
   const tagsFilters =
     (
       filters.find((filter) => filter?.filters[0]?.filterKey === 'tags')
@@ -769,9 +779,21 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                               <ListItem
                                 key={filter.id}
                                 button
-                                onClick={() => setSelectedSavedFilter(filter)}
+                                secondaryAction={
+                                  <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    data-testid="deleteSavedFilter"
+                                    onClick={() =>
+                                      handleDeleteSavedFilter(filter)
+                                    }
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                }
                               >
                                 <ListItemText
+                                  onClick={() => setSelectedSavedFilter(filter)}
                                   primary={filterName}
                                   primaryTypographyProps={{
                                     variant: 'subtitle1',
@@ -881,6 +903,13 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         currentFilters={selectedFilters}
         currentSavedFilters={savedFilters}
       />
+      {filterToBeDeleted && (
+        <DeleteFilterModal
+          isOpen={deleteFilterModalOpen}
+          handleClose={() => setDeleteFilterModalOpen(false)}
+          filter={filterToBeDeleted}
+        />
+      )}
     </Box>
   );
 };

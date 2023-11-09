@@ -47,7 +47,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-10-01',
-                  salaryCurrencyTotal: 85,
+                  salaryCurrencyTotal: 50,
                   total: 35,
                 },
                 {
@@ -60,7 +60,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-11-01',
-                  salaryCurrencyTotal: 85,
+                  salaryCurrencyTotal: 50,
                   total: 35,
                 },
                 {
@@ -73,7 +73,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-12-01',
-                  salaryCurrencyTotal: 85,
+                  salaryCurrencyTotal: 50,
                   total: 35,
                 },
                 {
@@ -86,7 +86,7 @@ const mocks = {
                     },
                   ],
                   month: '2021-1-01',
-                  salaryCurrencyTotal: 85,
+                  salaryCurrencyTotal: 50,
                   total: 35,
                 },
               ],
@@ -115,7 +115,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-10-01',
-                  salaryCurrencyTotal: 85,
+                  salaryCurrencyTotal: 50,
                   total: 35,
                 },
                 {
@@ -128,7 +128,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-11-01',
-                  salaryCurrencyTotal: 85,
+                  salaryCurrencyTotal: 50,
                   total: 35,
                 },
                 {
@@ -141,7 +141,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-12-01',
-                  salaryCurrencyTotal: 85,
+                  salaryCurrencyTotal: 50,
                   total: 35,
                 },
                 {
@@ -154,7 +154,7 @@ const mocks = {
                     },
                   ],
                   month: '2021-1-01',
-                  salaryCurrencyTotal: 85,
+                  salaryCurrencyTotal: 50,
                   total: 35,
                 },
               ],
@@ -167,6 +167,99 @@ const mocks = {
             },
           ],
           currency: 'cad',
+          totals: {
+            months: [
+              {
+                month: '2020-10-01',
+                total: 1836.32,
+              },
+              {
+                month: '2020-11-01',
+                total: 1836.32,
+              },
+              {
+                month: '2020-12-01',
+                total: 1836.32,
+              },
+              {
+                month: '2021-1-01',
+                total: 1836.32,
+              },
+            ],
+          },
+        },
+        {
+          contacts: [
+            {
+              accountNumbers: ['101823'],
+              average: 86,
+              id: 'contact-1',
+              lateBy30Days: false,
+              lateBy60Days: false,
+              minimum: 85,
+              months: [
+                {
+                  donations: [
+                    {
+                      amount: 85,
+                      currency: 'USD',
+                      date: '2020-07-15',
+                      paymentMethod: 'BANK_TRANS',
+                    },
+                  ],
+                  month: '2020-10-01',
+                  salaryCurrencyTotal: 50,
+                  total: 35,
+                },
+                {
+                  donations: [
+                    {
+                      amount: 85,
+                      currency: 'USD',
+                      date: '2020-11-15',
+                      paymentMethod: 'BANK_TRANS',
+                    },
+                  ],
+                  month: '2020-11-01',
+                  salaryCurrencyTotal: 50,
+                  total: 35,
+                },
+                {
+                  donations: [
+                    {
+                      amount: 85,
+                      currency: 'USD',
+                      date: '2020-12-15',
+                      paymentMethod: 'BANK_TRANS',
+                    },
+                  ],
+                  month: '2020-12-01',
+                  salaryCurrencyTotal: 50,
+                  total: 35,
+                },
+                {
+                  donations: [
+                    {
+                      amount: 85,
+                      currency: 'USD',
+                      date: '2021-1-15',
+                      paymentMethod: 'BANK_TRANS',
+                    },
+                  ],
+                  month: '2021-1-01',
+                  salaryCurrencyTotal: 50,
+                  total: 35,
+                },
+              ],
+              name: 'test name',
+              pledgeAmount: null,
+              pledgeCurrency: 'USD',
+              pledgeFrequency: null,
+              status: null,
+              total: 1290,
+            },
+          ],
+          currency: 'usd',
           totals: {
             months: [
               {
@@ -251,7 +344,7 @@ describe('FourteenMonthReport', () => {
     });
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(getAllByTestId('FourteenMonthReportTableRow').length).toBe(2);
+    expect(getAllByTestId('FourteenMonthReportTableRow').length).toBe(3);
     expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 
@@ -475,5 +568,39 @@ describe('FourteenMonthReport', () => {
 
     userEvent.click(getAllByText('test name')[0]);
     expect(onSelectContact).toHaveBeenCalledWith('contact-1');
+  });
+
+  it('should calulate totals correctly', async () => {
+    const mutationSpy = jest.fn();
+    const { getAllByTestId, queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<FourteenMonthReportQuery>
+          mocks={mocks}
+          onCall={mutationSpy}
+        >
+          <FourteenMonthReport
+            {...defaultProps}
+            isNavListOpen={true}
+            currencyType={FourteenMonthReportCurrencyType.Donor}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    const contactTotal = getAllByTestId('monthlyTotals');
+    // 50 * 3 contacts with different currencies
+    expect(contactTotal[0].innerHTML).toEqual('150');
+    expect(contactTotal[1].innerHTML).toEqual('150');
+    expect(contactTotal[2].innerHTML).toEqual('150');
+    expect(contactTotal[3].innerHTML).toEqual('150');
+
+    // 50 * 12 (All dontions from all currecnies)
+    expect(getAllByTestId('overallTotal')[0].innerHTML).toEqual('600');
   });
 });

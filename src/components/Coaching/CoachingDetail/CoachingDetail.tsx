@@ -10,13 +10,15 @@ import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import {
   useGetAccountListCoachUsersQuery,
   useGetAccountListUsersQuery,
+  useGetCoachingDonationGraphQuery,
   useLoadAccountListCoachingDetailQuery,
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
 import theme from 'src/theme';
-import { MonthlyActivitySection } from 'src/components/Reports/DonationsReport/MonthlyActivity/MonthlyActivitySection';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useLocale } from 'src/hooks/useLocale';
+import DonationHistories from 'src/components/Dashboard/DonationHistories';
+import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
 
 interface CoachingDetailProps {
   coachingId: string;
@@ -86,11 +88,10 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { data: accountListData, loading } =
-    useLoadAccountListCoachingDetailQuery({
-      variables: { coachingId },
-      skip: !isAccountListId,
-    });
+  const { data: ownData, loading } = useLoadAccountListCoachingDetailQuery({
+    variables: { coachingId },
+    skip: !isAccountListId,
+  });
 
   const { data: coachingData, loading: coachingLoading } =
     useLoadCoachingDetailQuery({
@@ -108,9 +109,27 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
       variables: { accountListId: coachingId },
     });
 
-  const data = isAccountListId
-    ? accountListData?.accountList
+  const { data: ownDonationGraphData } = useGetDonationGraphQuery({
+    variables: {
+      accountListId: coachingId,
+    },
+    skip: !isAccountListId,
+  });
+
+  const { data: coachingDonationGraphData } = useGetCoachingDonationGraphQuery({
+    variables: {
+      coachingAccountListId: coachingId,
+    },
+    skip: isAccountListId,
+  });
+
+  const accountListData = isAccountListId
+    ? ownData?.accountList
     : coachingData?.coachingAccountList;
+
+  const donationGraphData = isAccountListId
+    ? ownDonationGraphData
+    : coachingDonationGraphData;
 
   const [isMonthly, setIsMonthly] = useState(true);
 
@@ -171,8 +190,8 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           {t('Commitment Goal:') +
             ' ' +
             currencyFormat(
-              data?.monthlyGoal ? data?.monthlyGoal : 0,
-              data?.currency,
+              accountListData?.monthlyGoal ? accountListData?.monthlyGoal : 0,
+              accountListData?.currency,
               locale,
             )}
         </SideContainerText>
@@ -248,33 +267,35 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     margin: theme.spacing(1),
                   }}
                 >
-                  {data?.name}
+                  {accountListData?.name}
                 </Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress
                   loading={loading}
                   isPrimary={false}
-                  currency={data?.currency}
-                  goal={data?.monthlyGoal ?? 0}
-                  received={data?.receivedPledges}
-                  pledged={data?.totalPledges}
+                  currency={accountListData?.currency}
+                  goal={accountListData?.monthlyGoal ?? undefined}
+                  received={accountListData?.receivedPledges}
+                  pledged={accountListData?.totalPledges}
                 />
               </Box>
             </CoachingMainTitleContainer>
             <Divider />
             <CoachingItemContainer>
-              {/*
-                TODO: MonthlyActivitySection doesn't work if coaching is not one of the
-                Accountlists. reportDonationsHistories is required for this View and it doesn't
-                work with coaching.
-              */}
-              <MonthlyActivitySection accountListId={coachingId} />
+              <DonationHistories
+                goal={accountListData?.monthlyGoal ?? undefined}
+                pledged={accountListData?.totalPledges}
+                reportsDonationHistories={
+                  donationGraphData?.reportsDonationHistories
+                }
+                currencyCode={accountListData?.currency}
+              />
               <Box style={{ margin: theme.spacing(3, 0) }}>
                 <MonthlyCommitment
                   coachingId={coachingId}
-                  currencyCode={data?.currency}
-                  goal={data?.monthlyGoal ? data.monthlyGoal : 0}
+                  currencyCode={accountListData?.currency}
+                  goal={accountListData?.monthlyGoal ?? 0}
                 />
               </Box>
             </CoachingItemContainer>

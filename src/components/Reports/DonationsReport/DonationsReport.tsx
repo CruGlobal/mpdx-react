@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Container, Box } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useRouter } from 'next/router';
-import { ISODateString } from 'next-auth';
 import {
   MultiPageHeader,
   HeaderTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { MonthlyActivitySection } from './MonthlyActivity/MonthlyActivitySection';
 import { DonationsReportTable } from './Table/DonationsReportTable';
+import DonationHistories from 'src/components/Dashboard/DonationHistories';
+import { useGetDonationGraphQuery } from './GetDonationGraph.generated';
 
 interface DonationReportsProps {
   accountListId: string;
@@ -29,9 +29,19 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
 }) => {
   const [time, setTime] = useState(DateTime.now().startOf('month'));
   const { query, replace } = useRouter();
+
+  const { data } = useGetDonationGraphQuery({
+    variables: {
+      accountListId,
+      designationAccountIds: designationAccounts?.length
+        ? designationAccounts
+        : null,
+    },
+  });
+
   useEffect(() => {
-    if (query.month) {
-      setTime(DateTime.fromISO(query.month as ISODateString));
+    if (typeof query.month === 'string') {
+      setTime(DateTime.fromISO(query.month));
     }
     replace(
       {
@@ -51,9 +61,11 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
         headerType={HeaderTypeEnum.Report}
       />
       <Container>
-        <MonthlyActivitySection
-          accountListId={accountListId}
-          designationAccounts={designationAccounts}
+        <DonationHistories
+          goal={data?.accountList.monthlyGoal ?? undefined}
+          pledged={data?.accountList.totalPledges}
+          reportsDonationHistories={data?.reportsDonationHistories}
+          currencyCode={data?.accountList.currency}
           setTime={setTime}
         />
         <DonationsReportTable

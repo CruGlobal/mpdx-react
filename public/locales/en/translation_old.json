@@ -98,5 +98,11 @@
   "Maximum": "Maximum",
   "You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost.": "You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost.",
   "Current": "Current",
-  "Historic": "Historic"
+  "Historic": "Historic",
+  "Contact(s) completed successfully": "Contact(s) completed successfully",
+  "Contact(s) deleted successfully": "Contact(s) deleted successfully",
+  "Name Account": "Name Account",
+  "Add Account": "Add Account",
+  "Task logged successfully": "Task logged successfully",
+  "Are you sure you wish to delete the selected task?": "Are you sure you wish to delete the selected task?"
 }

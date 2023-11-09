@@ -71,3 +71,9 @@ query GetAccountListUsers($accountListId: ID!) {
     }
   }
 }
+
+query GetCoachingDonationGraph($coachingAccountListId: ID!) {
+  reportsDonationHistories(accountListId: $coachingAccountListId) {
+    ...DonationGraphHistories
+  }
+}

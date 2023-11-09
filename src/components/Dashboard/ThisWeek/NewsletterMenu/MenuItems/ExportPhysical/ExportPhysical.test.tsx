@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
-import { useSession } from 'next-auth/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
+import fetchMock from 'jest-fetch-mock';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -16,21 +16,27 @@ import { CreateExportedContactsMutation } from './ExportPhysical.generated';
 const accountListId = '111';
 const apiToken = 'someToken1234';
 const handleClose = jest.fn();
-
 jest.mock('next-auth/react');
+fetchMock.enableMocks();
+
+const mockEnqueue = jest.fn();
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 describe('ExportPhysical', () => {
   beforeEach(() => {
-    (useSession as jest.Mock).mockReturnValue({
-      data: {
-        user: {
-          apiToken,
-        },
-      },
-      status: 'authenticated',
-    });
+    fetchMock.resetMocks();
+    fetchMock.mockResponseOnce(JSON.stringify({ apiToken }));
+    process.env.SITE_URL = 'http://localhost:3000';
   });
-
   const mocks = {
     CreateExportedContacts: {
       exportContacts: 'someRandomUrlToFile/abc1234',
@@ -96,6 +102,35 @@ describe('ExportPhysical', () => {
 
     afterAll(() => {
       window.location = location;
+    });
+
+    it('Has NO apiToken', async () => {
+      fetchMock.resetMocks();
+      fetchMock.mockResponseOnce(JSON.stringify({ apiToken: null }));
+      const { getByText } = render(
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            CreateExportedContacts: CreateExportedContactsMutation;
+          }>
+            mocks={createMock(ExportFormatEnum.Csv)}
+          >
+            <ExportPhysical
+              accountListId={accountListId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
+      );
+      userEvent.click(getByText('CSV for Mail Merge'));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Unable to make request due to lack of proof of authenication.',
+          {
+            variant: 'error',
+          },
+        );
+      });
     });
 
     it('Exports Contacts and Downloads File - PDF of Mail Merged Labels | Avery5160 and Contact Name', async () => {

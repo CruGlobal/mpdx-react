@@ -333,9 +333,9 @@ const NavMenu: React.FC = () => {
                           return (
                             <HandoffLink
                               key={tool.id}
-                              path={`https://mpdx.org/tools/${
-                                toolsRedirectLinks[tool.id]
-                              }`}
+                              path={`https://${
+                                process.env.REWRITE_DOMAIN
+                              }/tools/${toolsRedirectLinks[tool.id]}`}
                             >
                               <MenuItem
                                 tabIndex={0}

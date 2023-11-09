@@ -124,7 +124,10 @@ describe('WeeklyActivity', () => {
     ).toEqual('1,234');
     expect(
       getByRole('link', { hidden: true, name: 'View Activity Detail' }),
-    ).toHaveAttribute('href', 'https://stage.mpdx.org/reports/coaching');
+    ).toHaveAttribute(
+      'href',
+      `https://${process.env.REWRITE_DOMAIN}/reports/coaching`,
+    );
   });
 
   it('opens weekly activity modal', async () => {

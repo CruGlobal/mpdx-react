@@ -260,7 +260,7 @@ export const CreateMultipleContacts = ({
                     <InputCell align="left">{t('First')}</InputCell>
                     <InputCell align="left">{t('Spouse')}</InputCell>
                     <InputCell align="left">{t('Last')}</InputCell>
-                    <InputCell align="left">{t('Address')}</InputCell>
+                    <InputCell align="left">{t('Street Address')}</InputCell>
                     <InputCell align="left">{t('Phone')}</InputCell>
                     <InputCell align="left">{t('Email')}</InputCell>
                   </TableRow>
@@ -348,7 +348,7 @@ export const CreateMultipleContacts = ({
                                     variant: 'outlined',
                                     size: 'small',
                                     fullWidth: true,
-                                    'aria-label': t('Address'),
+                                    'aria-label': t('Street Address'),
                                     ...field,
                                   }}
                                   streetValue={contact.address.street}

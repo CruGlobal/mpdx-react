@@ -1,8 +1,5 @@
 import { setUserInfo } from 'pages/api/auth/setUserInfo';
-import {
-  nextAuthSessionCookieName,
-  expireCookieDefaultInfo,
-} from 'pages/api/utils/cookies';
+import { expireCookieDefaultInfo } from 'pages/api/utils/cookies';
 
 // User One
 const userOneId = 'userId_1';
@@ -16,8 +13,8 @@ const userTwoImpersonate = 'userTwo.impersonate.token';
 
 const cookieCreator = (name: string, value: string) => {
   switch (name) {
-    case nextAuthSessionCookieName:
-      return `${nextAuthSessionCookieName}=${value}; Secure; HttpOnly; path=/; Max-Age=0`;
+    case '__Secure-next-auth.session-token':
+      return `__Secure-next-auth.session-token=${value}; Secure; ${expireCookieDefaultInfo}`;
     case 'mpdx-handoff.logged-in':
       return `mpdx-handoff.logged-in=${value}; path=/; domain=${process.env.REWRITE_DOMAIN}`;
     default:

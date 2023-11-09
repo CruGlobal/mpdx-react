@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
-import { getSession } from 'next-auth/react';
+import { getToken } from 'next-auth/jwt';
 import { useTranslation } from 'react-i18next';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import AccountLists from '../src/components/AccountLists';
@@ -38,9 +38,12 @@ AccountListsPage.layout = BaseLayout;
 export const getServerSideProps: GetServerSideProps = async ({
   req,
 }): Promise<GetServerSidePropsResult<Props>> => {
-  const session = await getSession({ req });
+  const jwtToken = (await getToken({
+    req,
+    secret: process.env.JWT_SECRET as string,
+  })) as { apiToken: string } | null;
 
-  const apiToken = session?.user.apiToken;
+  const apiToken = jwtToken?.apiToken;
 
   if (!apiToken) {
     return {

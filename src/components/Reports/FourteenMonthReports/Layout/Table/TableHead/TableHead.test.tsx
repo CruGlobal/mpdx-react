@@ -10,32 +10,22 @@ const onRequestSort = jest.fn();
 const order = 'asc';
 const orderBy = 'total';
 const salaryCurrency = 'CAD';
-const totals = {
-  average: 1831,
-  minimum: 1583.63,
-  months: [
-    {
-      month: '2020-06-01',
-      total: 1836.3,
-    },
-    {
-      month: '2020-07-01',
-      total: 1836.3,
-    },
-    {
-      month: '2020-08-01',
-      total: 1836.3,
-    },
-  ],
-  year: 24613.04,
-};
+const totals = [
+  {
+    month: '2020-06-01',
+    total: 1836.3,
+  },
+  {
+    month: '2020-07-01',
+    total: 1836.3,
+  },
+  {
+    month: '2020-08-01',
+    total: 1836.3,
+  },
+];
 
-const noTotals = {
-  average: 0,
-  minimum: 0,
-  months: [],
-  year: 0,
-};
+const noTotals = [];
 
 describe('FourteenMonthReportTableHead', () => {
   it('default', async () => {

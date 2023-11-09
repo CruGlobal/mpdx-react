@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useLocale } from 'src/hooks/useLocale';
 // eslint-disable-next-line import/extensions
 import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
 import type { Order, Unarray } from '../../../../Reports.type';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
-import { useLocale } from 'src/hooks/useLocale';
+import { Totals } from '../../../FourteenMonthReport';
+import { StyledTableCell } from '../Table';
 
 export type Contacts =
   FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
@@ -18,9 +20,7 @@ export type OrderBy = keyof Contact | keyof Unarray<Months>;
 
 export interface FourteenMonthReportTableHeadProps {
   isExpanded: boolean;
-  totals:
-    | FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['totals']
-    | undefined;
+  totals: Totals[] | undefined;
   salaryCurrency:
     | FourteenMonthReportQuery['fourteenMonthReport']['salaryCurrency']
     | undefined;
@@ -52,7 +52,7 @@ export const FourteenMonthReportTableHead: FC<
     };
 
   const allYears = useMemo(() => {
-    return totals?.months.map((month) => month.month.split('-')[0]);
+    return totals?.map((month) => month.month.split('-')[0]);
   }, [totals]);
 
   const monthCount = useMemo(() => {
@@ -73,9 +73,9 @@ export const FourteenMonthReportTableHead: FC<
   return (
     <TableHead data-testid="SalaryReportTableHead">
       <TableRow>
-        <TableCell>
+        <StyledTableCell>
           <Typography variant="h6">{salaryCurrency}</Typography>
-        </TableCell>
+        </StyledTableCell>
         {monthCount &&
           monthCount.map((year) => (
             <YearTableCell
@@ -87,7 +87,7 @@ export const FourteenMonthReportTableHead: FC<
               <YearTypography variant="h6">{year.year}</YearTypography>
             </YearTableCell>
           ))}
-        <TableCell />
+        <StyledTableCell />
       </TableRow>
       <TableRow>
         <TableHeadCell
@@ -134,7 +134,7 @@ export const FourteenMonthReportTableHead: FC<
             </TableHeadCell>
           </React.Fragment>
         )}
-        {totals?.months.map((month, i: number) => (
+        {totals?.map((month, i: number) => (
           <TableHeadCell
             key={i}
             isActive={orderBy === i}
