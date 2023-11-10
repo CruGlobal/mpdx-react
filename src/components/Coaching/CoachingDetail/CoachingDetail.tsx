@@ -21,6 +21,11 @@ import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport
 import { AppointmentResults } from './AppointmentResults/AppointmentResults';
 import { MultilineSkeleton } from './MultilineSkeleton';
 
+export enum CoachingPeriodEnum {
+  Weekly = 'Weekly',
+  Monthly = 'Monthly',
+}
+
 interface CoachingDetailProps {
   coachingId: string;
   isAccountListId: boolean;
@@ -126,7 +131,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     ? ownDonationGraphData
     : coachingDonationGraphData;
 
-  const [isMonthly, setIsMonthly] = useState(true);
+  const [period, setPeriod] = useState(CoachingPeriodEnum.Weekly);
 
   return (
     <CoachingDetailContainer>
@@ -151,16 +156,20 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           size="large"
         >
           <Button
-            variant={isMonthly ? 'contained' : 'outlined'}
-            onClick={() => setIsMonthly(true)}
+            variant={
+              period === CoachingPeriodEnum.Monthly ? 'contained' : 'outlined'
+            }
+            onClick={() => setPeriod(CoachingPeriodEnum.Monthly)}
           >
             {t('Monthly')}
           </Button>
           <Button
-            variant={isMonthly ? 'outlined' : 'contained'}
-            onClick={() => setIsMonthly(false)}
+            variant={
+              period === CoachingPeriodEnum.Weekly ? 'contained' : 'outlined'
+            }
+            onClick={() => setPeriod(CoachingPeriodEnum.Weekly)}
           >
-            {t('Yearly')}
+            {t('Weekly')}
           </Button>
         </CoachingMonthYearButtonGroup>
         <SideContainerText>{t('Staff IDs:')}</SideContainerText>
@@ -281,7 +290,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               <AppointmentResults
                 accountListId={coachingId}
                 currency={accountListData?.currency}
-                period={isMonthly ? 'month' : 'week'}
+                period={period}
               />
             </CoachingItemContainer>
           </>

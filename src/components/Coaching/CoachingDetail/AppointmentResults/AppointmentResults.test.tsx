@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { CoachingPeriodEnum } from '../CoachingDetail';
 import { AppointmentResults } from './AppointmentResults';
 
 const mocks = {
@@ -45,7 +46,7 @@ describe('AppointmentResults', () => {
       <GqlMockedProvider mocks={mocks}>
         <AppointmentResults
           accountListId="account-list-1"
-          period="week"
+          period={CoachingPeriodEnum.Weekly}
           currency="USD"
         />
       </GqlMockedProvider>,

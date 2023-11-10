@@ -17,6 +17,7 @@ import theme from 'src/theme';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useAppointmentResultsQuery } from './AppointmentResults.generated';
+import { CoachingPeriodEnum } from '../CoachingDetail';
 import { MultilineSkeleton } from '../MultilineSkeleton';
 
 const RootContainer = styled(Paper)(({ theme }) => ({
@@ -39,7 +40,7 @@ const AlignedTableCell = styled(TableCell)({
 interface AppointmentResultsProps {
   accountListId: string;
   currency?: string;
-  period: 'week' | 'month';
+  period: CoachingPeriodEnum;
 }
 
 export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
@@ -59,7 +60,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
   const { data, loading } = useAppointmentResultsQuery({
     variables: {
       accountListId,
-      range: period === 'week' ? '4w' : '4m',
+      range: period === CoachingPeriodEnum.Weekly ? '4w' : '4m',
     },
   });
 
@@ -88,9 +89,11 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
 
   // Calculate the color of an appointment result based on how close it is to the goal of 10
   const getColor = (amount: number): string => {
-    if (period === 'week' ? amount >= 10 : amount >= 40) {
+    if (period === CoachingPeriodEnum.Weekly ? amount >= 10 : amount >= 40) {
       return theme.palette.statusSuccess.main;
-    } else if (period === 'week' ? amount >= 8 : amount >= 32) {
+    } else if (
+      period === CoachingPeriodEnum.Weekly ? amount >= 8 : amount >= 32
+    ) {
       return theme.palette.statusWarning.main;
     } else {
       return theme.palette.statusDanger.main;
