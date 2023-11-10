@@ -25,7 +25,7 @@ import { CollapsibleEmailList } from './CollapsibleEmailList';
 import { CollapsiblePhoneList } from './CollapsiblePhoneList';
 import { getLastNewsletter } from './helpers';
 
-export enum AccountListTypEnum {
+export enum AccountListTypeEnum {
   Own = 'Own',
   Coaching = 'Coaching',
 }
@@ -33,7 +33,7 @@ export enum AccountListTypEnum {
 interface CoachingDetailProps {
   accountListId: string;
   // Whether the account list belongs to the user or someone that the user coaches
-  accountListType: AccountListTypEnum;
+  accountListType: AccountListTypeEnum;
 }
 
 const CoachingLoadingSkeleton = styled(Skeleton)(({ theme }) => ({
@@ -99,19 +99,19 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   const { data: ownData, loading: ownLoading } =
     useLoadAccountListCoachingDetailQuery({
       variables: { accountListId },
-      skip: accountListType !== AccountListTypEnum.Own,
+      skip: accountListType !== AccountListTypeEnum.Own,
     });
 
   const { data: coachingData, loading: coachingLoading } =
     useLoadCoachingDetailQuery({
       variables: { coachingAccountListId: accountListId },
-      skip: accountListType !== AccountListTypEnum.Coaching,
+      skip: accountListType !== AccountListTypeEnum.Coaching,
     });
 
   const loading =
-    accountListType === AccountListTypEnum.Own ? ownLoading : coachingLoading;
+    accountListType === AccountListTypeEnum.Own ? ownLoading : coachingLoading;
   const accountListData =
-    accountListType === AccountListTypEnum.Own
+    accountListType === AccountListTypeEnum.Own
       ? ownData?.accountList
       : coachingData?.coachingAccountList;
 
@@ -127,18 +127,18 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     variables: {
       accountListId,
     },
-    skip: accountListType !== AccountListTypEnum.Own,
+    skip: accountListType !== AccountListTypeEnum.Own,
   });
 
   const { data: coachingDonationGraphData } = useGetCoachingDonationGraphQuery({
     variables: {
       coachingAccountListId: accountListId,
     },
-    skip: accountListType !== AccountListTypEnum.Coaching,
+    skip: accountListType !== AccountListTypeEnum.Coaching,
   });
 
   const donationGraphData =
-    accountListType === AccountListTypEnum.Own
+    accountListType === AccountListTypeEnum.Own
       ? ownDonationGraphData
       : coachingDonationGraphData;
 

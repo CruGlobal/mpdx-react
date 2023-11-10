@@ -4,7 +4,7 @@ import {
   LoadCoachingDetailQuery,
   LoadAccountListCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
-import { AccountListTypEnum, CoachingDetail } from './CoachingDetail';
+import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import TestRouter from '__tests__/util/TestRouter';
@@ -48,7 +48,7 @@ describe('LoadCoachingDetail', () => {
         >
           <CoachingDetail
             accountListId={accountListId}
-            accountListType={AccountListTypEnum.Coaching}
+            accountListType={AccountListTypeEnum.Coaching}
           />
         </GqlMockedProvider>
       </TestRouter>,
@@ -74,7 +74,7 @@ describe('LoadCoachingDetail', () => {
         >
           <CoachingDetail
             accountListId={accountListId}
-            accountListType={AccountListTypEnum.Coaching}
+            accountListType={AccountListTypeEnum.Coaching}
           />
         </GqlMockedProvider>
       </TestRouter>,
@@ -103,7 +103,7 @@ describe('LoadCoachingDetail', () => {
         >
           <CoachingDetail
             accountListId={accountListId}
-            accountListType={AccountListTypEnum.Own}
+            accountListType={AccountListTypeEnum.Own}
           />
         </GqlMockedProvider>
       </TestRouter>,
@@ -131,7 +131,7 @@ describe('LoadCoachingDetail', () => {
         >
           <CoachingDetail
             accountListId={accountListId}
-            accountListType={AccountListTypEnum.Own}
+            accountListType={AccountListTypeEnum.Own}
           />
         </GqlMockedProvider>
       </TestRouter>,
@@ -157,7 +157,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
@@ -188,7 +188,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
@@ -217,7 +217,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
@@ -246,7 +246,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
@@ -287,7 +287,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
@@ -320,7 +320,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
@@ -353,7 +353,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
@@ -390,7 +390,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
@@ -445,7 +445,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
@@ -494,7 +494,7 @@ describe('LoadCoachingDetail', () => {
           >
             <CoachingDetail
               accountListId={accountListId}
-              accountListType={AccountListTypEnum.Coaching}
+              accountListType={AccountListTypeEnum.Coaching}
             />
           </GqlMockedProvider>
         </TestRouter>,
