@@ -84,10 +84,16 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
       >
         <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
           {headerType === HeaderTypeEnum.Report && (
-            <NavFilterIcon titleAccess={titleAccess} />
+            <NavFilterIcon
+              titleAccess={titleAccess}
+              data-testid="ReportsFilterIcon"
+            />
           )}
           {headerType === HeaderTypeEnum.Settings && (
-            <NavMenuIcon titleAccess={titleAccess} />
+            <NavMenuIcon
+              titleAccess={titleAccess}
+              data-testid="SettingsMenuIcon"
+            />
           )}
         </NavListButton>
         <Typography variant="h5" sx={{ flex: 1 }}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import theme from '../../../theme';
@@ -234,5 +235,27 @@ describe('DonationsReport', () => {
         },
       }),
     );
+  });
+  it('renders nav list icon and onclick triggers onNavListToggle', async () => {
+    onNavListToggle.mockClear();
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<Mocks> mocks={mocks}>
+            <DonationsReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              onSelectContact={onSelectContact}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsFilterIcon'));
+    await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 });
