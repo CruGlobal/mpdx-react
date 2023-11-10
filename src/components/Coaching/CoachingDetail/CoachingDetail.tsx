@@ -4,7 +4,6 @@ import { Box, Button, ButtonGroup, Divider, Typography } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import Skeleton from '@mui/material/Skeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import {
@@ -19,17 +18,13 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { useLocale } from 'src/hooks/useLocale';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
+import { AppointmentResults } from './AppointmentResults/AppointmentResults';
+import { MultilineSkeleton } from './MultilineSkeleton';
 
 interface CoachingDetailProps {
   coachingId: string;
   isAccountListId: boolean;
 }
-
-const CoachingLoadingSkeleton = styled(Skeleton)(({ theme }) => ({
-  width: '100%',
-  padding: theme.spacing(1),
-  margin: theme.spacing(1),
-}));
 
 const CoachingDetailContainer = styled(Box)(({}) => ({
   width: '100&',
@@ -200,12 +195,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           {t('Users')}
         </SideContainerText>
         {accountListUsersLoading ? (
-          <>
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-          </>
+          <MultilineSkeleton lines={4} />
         ) : (
           accountListUsersData?.accountListUsers.nodes.map(
             (accountList, _index) => {
@@ -228,12 +218,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           {t('Coaches')}
         </SideContainerText>
         {coachingUsersLoading ? (
-          <>
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-          </>
+          <MultilineSkeleton lines={4} />
         ) : (
           coachingUsersData?.getAccountListCoachUsers?.map((user, _index) => {
             return (
@@ -250,12 +235,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
       </CoachingSideContainer>
       <CoachingMainContainer>
         {loading || coachingLoading ? (
-          <>
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-          </>
+          <MultilineSkeleton lines={4} />
         ) : (
           <>
             <CoachingMainTitleContainer>
@@ -298,6 +278,11 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                   goal={accountListData?.monthlyGoal ?? 0}
                 />
               </Box>
+              <AppointmentResults
+                accountListId={coachingId}
+                currency={accountListData?.currency}
+                period={isMonthly ? 'month' : 'week'}
+              />
             </CoachingItemContainer>
           </>
         )}
