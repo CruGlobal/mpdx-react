@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { AppointmentResults } from './AppointmentResults';
@@ -39,6 +39,8 @@ const mocks = {
     ],
   },
 };
+
+const mutationSpy = jest.fn();
 
 describe('AppointmentResults', () => {
   it('renders the table data', async () => {
@@ -125,5 +127,41 @@ describe('AppointmentResults', () => {
     expect(specialIncreaseRow.children[2]).toHaveTextContent('$556');
     expect(specialIncreaseRow.children[3]).toHaveTextContent('$1,000');
     expect(specialIncreaseRow.children[4]).toHaveTextContent('$630');
+  });
+
+  it('loads data for the weekly period', async () => {
+    render(
+      <GqlMockedProvider onCall={mutationSpy}>
+        <AppointmentResults
+          accountListId="account-list-1"
+          period={CoachingPeriodEnum.Weekly}
+          currency="USD"
+        />
+      </GqlMockedProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[0][0].operation.variables).toMatchObject({
+        range: '4w',
+      }),
+    );
+  });
+
+  it('loads data for the monthly period', async () => {
+    render(
+      <GqlMockedProvider onCall={mutationSpy}>
+        <AppointmentResults
+          accountListId="account-list-1"
+          period={CoachingPeriodEnum.Monthly}
+          currency="USD"
+        />
+      </GqlMockedProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[0][0].operation.variables).toMatchObject({
+        range: '4m',
+      }),
+    );
   });
 });
