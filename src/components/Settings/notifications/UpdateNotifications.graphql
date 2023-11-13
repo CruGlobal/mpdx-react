@@ -1,0 +1,11 @@
+mutation UpdateNotificationPreferences(
+  $input: NotificationPreferencesUpdateMutationInput!
+) {
+  updateNotificationPreferences(input: $input) {
+    notificationPreferences {
+      notificationType {
+        id
+      }
+    }
+  }
+}
