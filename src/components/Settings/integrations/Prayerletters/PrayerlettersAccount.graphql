@@ -1,0 +1,13 @@
+query GetPrayerlettersAccount($input: PrayerlettersAccountInput!) {
+  getPrayerlettersAccount(input: $input) {
+    validToken
+  }
+}
+
+mutation SyncPrayerlettersAccount($input: SyncPrayerlettersAccountInput!) {
+  syncPrayerlettersAccount(input: $input)
+}
+
+mutation DeletePrayerlettersAccount($input: DeletePrayerlettersAccountInput!) {
+  deletePrayerlettersAccount(input: $input)
+}
