@@ -213,6 +213,9 @@ const mocks: Mocks = {
 };
 
 describe('PartnerGivingAnalysisReport', () => {
+  beforeEach(() => {
+    onNavListToggle.mockClear();
+  });
   it('loading', async () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
@@ -279,7 +282,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(getByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
-    expect(queryByTestId('ReportNavList')).toBeNull();
+    expect(queryByTestId('MultiPageMenu')).toBeNull();
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
@@ -580,5 +583,27 @@ describe('PartnerGivingAnalysisReport', () => {
 
     // Test that it rounds to two decimal points
     expect(getByText('CA$86.47')).toBeInTheDocument();
+  });
+
+  it('renders nav list icon and onclick triggers onNavListToggle', async () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
+          mocks={mocks}
+        >
+          <PartnerGivingAnalysisReport
+            {...defaultProps}
+            onNavListToggle={onNavListToggle}
+            isNavListOpen={true}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsFilterIcon'));
+    await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 });

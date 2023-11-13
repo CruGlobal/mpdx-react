@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Item } from './Item';
+import { NavTypeEnum } from '../MultiPageMenu';
 
 export default {
   title: 'Reports/ReportLayout/NavReportsList/Item',
@@ -12,9 +13,13 @@ const item = {
 };
 
 export const Default = (): ReactElement => (
-  <Item item={item} isSelected={false} />
+  <Item
+    item={item}
+    selectedId={'notSalaryCurrency'}
+    navType={NavTypeEnum.Reports}
+  />
 );
 
 export const Selected = (): ReactElement => (
-  <Item item={item} isSelected={true} />
+  <Item item={item} selectedId="salaryCurrency" navType={NavTypeEnum.Reports} />
 );

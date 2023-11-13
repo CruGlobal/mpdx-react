@@ -2,11 +2,12 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import { NavReportsList } from './NavReportsList';
+import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { GetDesignationAccountsQuery } from '../DonationsReport/Table/Modal/EditDonation.generated';
+import { GetDesignationAccountsQuery } from 'src/components/Reports/DonationsReport/Table/Modal/EditDonation.generated';
+import { GetUserAccessQuery } from './MultiPageMenuItems.generated';
 
 const accountListId = 'account-list-1';
 const selected = 'salaryCurrency';
@@ -16,18 +17,19 @@ const router = {
   isReady: true,
 };
 
-describe('NavReportsList', () => {
+describe('MultiPageMenu', () => {
   it('default', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider>
-            <NavReportsList
+            <MultiPageMenu
               selectedId={selected}
               isOpen={true}
               onClose={() => {}}
               designationAccounts={[]}
               setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.Reports}
             />
           </GqlMockedProvider>
         </TestRouter>
@@ -72,12 +74,13 @@ describe('NavReportsList', () => {
             mocks={mocks}
             onCall={mutationSpy}
           >
-            <NavReportsList
+            <MultiPageMenu
               selectedId={selected}
               isOpen={true}
               onClose={() => {}}
               designationAccounts={designationAccounts}
               setDesignationAccounts={setDesignationAccounts}
+              navType={NavTypeEnum.Reports}
             />
           </GqlMockedProvider>
         </TestRouter>
@@ -121,12 +124,13 @@ describe('NavReportsList', () => {
             mocks={mocks}
             onCall={mutationSpy}
           >
-            <NavReportsList
+            <MultiPageMenu
               selectedId={selected}
               isOpen={true}
               onClose={() => {}}
               designationAccounts={[]}
               setDesignationAccounts={jest.fn()}
+              navType={NavTypeEnum.Reports}
             />
           </GqlMockedProvider>
         </TestRouter>
@@ -138,5 +142,93 @@ describe('NavReportsList', () => {
     expect(
       queryByRole('combobox', { name: 'Designation Account' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('shows the developer tools', async () => {
+    const mutationSpy = jest.fn();
+    const { queryByText, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            GetUserAccess: GetUserAccessQuery;
+          }>
+            mocks={{
+              GetUserAccess: {
+                user: {
+                  admin: false,
+                  developer: true,
+                },
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={jest.fn()}
+              navType={NavTypeEnum.Settings}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+    await waitFor(() => {
+      expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(getByText('Admin Console')).toBeInTheDocument();
+      expect(getByText('Backend Admin')).toBeInTheDocument();
+      expect(getByText('Sidekiq')).toBeInTheDocument();
+    });
+  });
+
+  it('shows the admin tools', async () => {
+    const mutationSpy = jest.fn();
+    const { queryByText, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            GetUserAccess: GetUserAccessQuery;
+          }>
+            mocks={{
+              GetUserAccess: {
+                user: {
+                  admin: true,
+                  developer: false,
+                },
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={jest.fn()}
+              navType={NavTypeEnum.Settings}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+    await waitFor(() => {
+      expect(queryByText('Sidekiq')).not.toBeInTheDocument();
+      expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(getByText('Manage Organizations')).toBeInTheDocument();
+      expect(getByText('Admin Console')).toBeInTheDocument();
+    });
   });
 });

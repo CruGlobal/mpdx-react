@@ -3,13 +3,16 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import { DesignationAccountsReport } from 'src/components/Reports/DesignationAccountsReport/DesignationAccountsReport';
-import Loading from 'src/components/Loading';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 import { suggestArticles } from 'src/lib/helpScout';
+import Loading from 'src/components/Loading';
+import { DesignationAccountsReport } from 'src/components/Reports/DesignationAccountsReport/DesignationAccountsReport';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 
 const DesignationAccountsReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -42,12 +45,13 @@ const DesignationAccountsReportPage: React.FC = () => {
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
-              <NavReportsList
+              <MultiPageMenu
                 isOpen={isNavListOpen}
                 selectedId="designationAccounts"
                 onClose={handleNavListToggle}
                 designationAccounts={designationAccounts}
                 setDesignationAccounts={setDesignationAccounts}
+                navType={NavTypeEnum.Reports}
               />
             }
             leftOpen={isNavListOpen}
