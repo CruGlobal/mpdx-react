@@ -1,0 +1,67 @@
+query getOrganizations {
+  organizations {
+    id
+    name
+    apiClass
+    oauth
+    giftAidPercentage
+  }
+}
+
+query GetUsersOrganizations {
+  userOrganizationAccounts {
+    organization {
+      apiClass
+      id
+      name
+      oauth
+    }
+    latestDonationDate
+    lastDownloadedAt
+    username
+    id
+  }
+}
+
+mutation DeleteOrganizationAccount(
+  $input: OrganizationAccountDeleteMutationInput!
+) {
+  deleteOrganizationAccount(input: $input) {
+    clientMutationId
+    id
+  }
+}
+
+mutation CreateOrganizationAccount(
+  $input: OrganizationAccountCreateMutationInput!
+) {
+  createOrganizationAccount(input: $input) {
+    clientMutationId
+    organizationAccount {
+      username
+      person {
+        id
+      }
+    }
+  }
+}
+
+mutation SyncOrganizationAccount(
+  $input: OrganizationAccountSyncMutationInput!
+) {
+  syncOrganizationAccount(input: $input) {
+    organizationAccount {
+      id
+    }
+  }
+}
+
+mutation UpdateOrganizationAccount(
+  $input: OrganizationAccountUpdateMutationInput!
+) {
+  updateOrganizationAccount(input: $input) {
+    organizationAccount {
+      id
+    }
+  }
+}
