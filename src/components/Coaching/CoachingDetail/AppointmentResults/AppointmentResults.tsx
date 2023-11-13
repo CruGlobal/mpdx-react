@@ -16,9 +16,10 @@ import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { dateFormatWithoutYear } from 'src/lib/intlFormat/intlFormat';
 import { useAppointmentResultsQuery } from './AppointmentResults.generated';
 import { CoachingPeriodEnum } from '../CoachingDetail';
-import { MultilineSkeleton } from '../MultilineSkeleton';
+import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 
 const RootContainer = styled(Paper)(({ theme }) => ({
   paddingTop: theme.spacing(1),
@@ -39,23 +40,17 @@ const AlignedTableCell = styled(TableCell)({
 
 interface AppointmentResultsProps {
   accountListId: string;
-  currency?: string;
   period: CoachingPeriodEnum;
+  currency?: string;
 }
 
 export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
   accountListId,
-  currency,
   period,
+  currency,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-
-  const dayMonthFormat = (date: DateTime) =>
-    new Intl.DateTimeFormat(locale, {
-      day: 'numeric',
-      month: 'short',
-    }).format(date.toJSDate());
 
   const { data, loading } = useAppointmentResultsQuery({
     variables: {
@@ -66,23 +61,24 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
 
   const averages = useMemo(
     () =>
-      Object.fromEntries(
-        [
-          'appointmentsScheduled',
-          'individualAppointments',
-          'monthlyDecrease',
-          'monthlyIncrease',
-          'newMonthlyPartners',
-          'newSpecialPledges',
-          'specialGifts',
-        ].map((field) => [
-          field,
-          data
+      [
+        'appointmentsScheduled',
+        'individualAppointments',
+        'monthlyDecrease',
+        'monthlyIncrease',
+        'newMonthlyPartners',
+        'newSpecialPledges',
+        'specialGifts',
+      ].reduce(
+        (averages, field) => ({
+          ...averages,
+          [field]: data
             ? data.appointmentResults.reduce<number>((total, period) => {
                 return total + period[field];
               }, 0) / data.appointmentResults.length
             : 0,
-        ]),
+        }),
+        {} as Record<string, number>,
       ),
     [data],
   );
@@ -117,7 +113,11 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                 <AlignedTableCell>{t('Appointments')}</AlignedTableCell>
                 {data?.appointmentResults.map(({ id, startDate }) => (
                   <AlignedTableCell key={id}>
-                    {startDate && dayMonthFormat(DateTime.fromISO(startDate))}
+                    {startDate &&
+                      dateFormatWithoutYear(
+                        DateTime.fromISO(startDate),
+                        locale,
+                      )}
                   </AlignedTableCell>
                 ))}
                 <AlignedTableCell>{t('Average')}</AlignedTableCell>

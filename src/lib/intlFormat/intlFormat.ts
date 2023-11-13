@@ -80,6 +80,20 @@ export const dateFormatShort = (date: DateTime, locale: string): string =>
     year: 'numeric',
   }).format(date.toJSDate());
 
+export const dateFormatWithoutYear = (
+  date: DateTime | null,
+  locale: string,
+): string => {
+  if (date === null) {
+    return '';
+  }
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date.toJSDate());
+};
+
 const intlFormat = {
   numberFormat,
   percentageFormat,

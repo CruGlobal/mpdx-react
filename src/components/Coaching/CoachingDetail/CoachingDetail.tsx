@@ -19,7 +19,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
 import { AppointmentResults } from './AppointmentResults/AppointmentResults';
-import { MultilineSkeleton } from './MultilineSkeleton';
+import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 
 export enum CoachingPeriodEnum {
   Weekly = 'Weekly',
