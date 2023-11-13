@@ -5,10 +5,8 @@ import { makeStyles } from 'tss-react/mui';
 import { useRouter } from 'next/router';
 import NextLink, { LinkProps } from 'next/link';
 import { useTranslation } from 'react-i18next';
-import {
-  filteredReportNavItems,
-  toolsRedirectLinks,
-} from '../TopBar/Items/NavMenu/NavMenu';
+import { toolsRedirectLinks } from '../TopBar/Items/NavMenu/NavMenu';
+import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
 import { ToolsList } from 'src/components/Tool/Home/ToolList';
@@ -133,7 +131,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
     },
     {
       title: t('Reports'),
-      items: filteredReportNavItems.map((item) => ({
+      items: reportNavItems.map((item) => ({
         ...item,
         title: item.title,
         href: `/accountLists/${accountListId}/reports/${item.id}`,

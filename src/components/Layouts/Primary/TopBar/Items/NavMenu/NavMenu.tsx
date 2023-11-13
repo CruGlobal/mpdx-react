@@ -18,7 +18,7 @@ import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import Icon from '@mdi/react';
 import { useRouter } from 'next/router';
-import { ReportNavItems } from '../../../../../Reports/NavReportsList/ReportNavItems';
+import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
@@ -26,8 +26,6 @@ import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import HandoffLink from 'src/components/HandoffLink';
 import { ReportLink } from './ReportLink';
-
-export const filteredReportNavItems = ReportNavItems;
 
 const useStyles = makeStyles()(() => ({
   navListItem: {
@@ -252,7 +250,7 @@ const NavMenu: React.FC = () => {
               <Paper>
                 <ClickAwayListener onClickAway={handleReportsMenuClose}>
                   <MenuList autoFocusItem={reportsMenuOpen} id="menu-list-grow">
-                    {filteredReportNavItems.map(({ id, title }) => (
+                    {reportNavItems.map(({ id, title }) => (
                       <ReportLink
                         key={id}
                         id={id}

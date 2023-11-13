@@ -2,9 +2,10 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
-import { AccountsList as List } from '../AccountsListLayout/List/List';
-import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
+import { currencyFormat } from 'src/lib/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
+import { useSetActiveFinancialAccountMutation } from './SetActiveFinancialAccount.generated';
+import { useEntryHistoriesQuery } from './GetEntryHistories.generated';
 import {
   FinancialAccountsDocument,
   FinancialAccountsQuery,
@@ -14,12 +15,14 @@ import type {
   FinancialAccountsGroup,
   PreFinancialAccountsGroup,
 } from './ResponsibilityCentersReport.type';
-import { useSetActiveFinancialAccountMutation } from './SetActiveFinancialAccount.generated';
-import { useEntryHistoriesQuery } from './GetEntryHistories.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
-import { currencyFormat } from 'src/lib/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
+import {
+  MultiPageHeader,
+  HeaderTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { AccountsList as List } from '../AccountsListLayout/List/List';
+import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
 
 interface Props {
   accountListId: string;
@@ -170,10 +173,11 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
 
   return (
     <Box>
-      <Header
+      <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={title}
+        headerType={HeaderTypeEnum.Report}
         rightExtra={balanceNode}
       />
       {loading ? (
