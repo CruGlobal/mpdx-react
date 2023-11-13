@@ -1,0 +1,7 @@
+extend type Mutation {
+  syncMailchimpAccount(input: SyncMailchimpAccountInput!): String
+}
+
+input SyncMailchimpAccountInput {
+  accountListId: ID!
+}

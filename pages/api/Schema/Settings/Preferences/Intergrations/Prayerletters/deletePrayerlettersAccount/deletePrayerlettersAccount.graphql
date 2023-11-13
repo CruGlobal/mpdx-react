@@ -1,0 +1,7 @@
+extend type Mutation {
+  deletePrayerlettersAccount(input: DeletePrayerlettersAccountInput!): String!
+}
+
+input DeletePrayerlettersAccountInput {
+  accountListId: ID!
+}
