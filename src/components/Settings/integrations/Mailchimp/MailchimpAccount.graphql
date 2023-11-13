@@ -1,0 +1,51 @@
+query GetMailchimpAccount($input: MailchimpAccountInput!) {
+  getMailchimpAccount(input: $input) {
+    id
+    active
+    autoLogCampaigns
+    createdAt
+    listsAvailableForNewsletters {
+      id
+      name
+    }
+    listsLink
+    listsPresent
+    primaryListId
+    primaryListName
+    updatedAt
+    updatedInDbAt
+    valid
+    validateKey
+    validationError
+  }
+}
+
+mutation UpdateMailchimpAccount($input: UpdateMailchimpAccountInput!) {
+  updateMailchimpAccount(input: $input) {
+    id
+    active
+    autoLogCampaigns
+    createdAt
+    listsAvailableForNewsletters {
+      id
+      name
+    }
+    listsLink
+    listsPresent
+    primaryListId
+    primaryListName
+    updatedAt
+    updatedInDbAt
+    valid
+    validateKey
+    validationError
+  }
+}
+
+mutation SyncMailchimpAccount($input: SyncMailchimpAccountInput!) {
+  syncMailchimpAccount(input: $input)
+}
+
+mutation DeleteMailchimpAccount($input: DeleteMailchimpAccountInput!) {
+  deleteMailchimpAccount(input: $input)
+}
