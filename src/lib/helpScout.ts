@@ -39,15 +39,22 @@ export const identifyUser = (id: string, email: string, name: string) => {
   });
 };
 
-export const suggestArticles = (envVar: keyof typeof env) => {
-  const articleIds = env[envVar];
+export const showArticle = (articleId) => {
+  callBeacon('article', articleId);
+};
+
+export const suggestArticles = (envVar: keyof typeof variables) => {
+  const articleIds = variables[envVar];
   callBeacon('suggest', articleIds?.split(',') ?? []);
 };
 
-const env = {
+export const variables = {
   HS_CONTACTS_SUGGESTIONS: process.env.HS_CONTACTS_SUGGESTIONS,
   HS_CONTACTS_CONTACT_SUGGESTIONS: process.env.HS_CONTACTS_CONTACT_SUGGESTIONS,
   HS_HOME_SUGGESTIONS: process.env.HS_HOME_SUGGESTIONS,
   HS_REPORTS_SUGGESTIONS: process.env.HS_REPORTS_SUGGESTIONS,
   HS_TASKS_SUGGESTIONS: process.env.HS_TASKS_SUGGESTIONS,
+  HS_SETTINGS_SERVICES_SUGGESTIONS:
+    process.env.HS_SETTINGS_SERVICES_SUGGESTIONS,
+  HS_SETUP_FIND_ORGANIZATION: process.env.HS_SETUP_FIND_ORGANIZATION,
 };
