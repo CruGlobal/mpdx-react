@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from 'src/theme';
 import { FieldWrapper } from './FieldWrapper';
-import { helperPositionEnum } from './FieldHelper';
+import { HelperPositionEnum } from './FieldHelper';
 
 describe('FieldWrapper', () => {
   it('Should render children', () => {
@@ -50,7 +50,7 @@ describe('FieldWrapper', () => {
       <ThemeProvider theme={theme}>
         <FieldWrapper
           helperText="helperText"
-          helperPosition={helperPositionEnum.Bottom}
+          helperPosition={HelperPositionEnum.Bottom}
           formHelperTextProps={{
             'data-testid': 'helper-text-bottom',
           }}

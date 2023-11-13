@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormControl, FormControlProps } from '@mui/material';
 import {
-  helperPositionEnum,
+  HelperPositionEnum,
   StyledFormHelperText,
   StyledFormLabel,
 } from './FieldHelper';
@@ -10,7 +10,7 @@ import {
 interface FieldWrapperProps {
   labelText?: string;
   helperText?: string;
-  helperPosition?: helperPositionEnum;
+  helperPosition?: HelperPositionEnum;
   formControlDisabled?: FormControlProps['disabled'];
   formControlError?: FormControlProps['error'];
   formControlFullWidth?: FormControlProps['fullWidth'];
@@ -23,7 +23,7 @@ interface FieldWrapperProps {
 export const FieldWrapper: React.FC<FieldWrapperProps> = ({
   labelText = '',
   helperText = '',
-  helperPosition = helperPositionEnum.Top,
+  helperPosition = HelperPositionEnum.Top,
   formControlDisabled = false,
   formControlError = false,
   formControlFullWidth = true,
@@ -64,9 +64,9 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
       variant={formControlVariant}
     >
       {labelOutput}
-      {helperPosition === helperPositionEnum.Top && helperTextOutput}
+      {helperPosition === HelperPositionEnum.Top && helperTextOutput}
       {children}
-      {helperPosition === helperPositionEnum.Bottom && helperTextOutput}
+      {helperPosition === HelperPositionEnum.Bottom && helperTextOutput}
     </FormControl>
   );
 };

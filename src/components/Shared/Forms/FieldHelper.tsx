@@ -1,7 +1,7 @@
 import { FormLabel, FormHelperText, OutlinedInput, Theme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-export enum helperPositionEnum {
+export enum HelperPositionEnum {
   Top = 'top',
   Bottom = 'bottom',
 }
