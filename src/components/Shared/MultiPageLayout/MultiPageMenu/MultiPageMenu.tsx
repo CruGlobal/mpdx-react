@@ -139,7 +139,7 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
                     }
                   } else return true;
                   return false;
-                }, [item]);
+                }, [item, userPrivileges]);
 
                 if (!showItem) return null;
                 return (
