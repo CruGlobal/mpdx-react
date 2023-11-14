@@ -1,8 +1,9 @@
-import * as yup from 'yup';
-import { Formik, FieldArray } from 'formik';
+import React, { useState, useEffect, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Formik, FieldArray } from 'formik';
+import * as yup from 'yup';
+import { v4 as uuidv4 } from 'uuid';
 import { useSnackbar } from 'notistack';
-import React, { useState, ReactElement } from 'react';
 import { styled } from '@mui/material/styles';
 import {
   Box,
@@ -16,12 +17,15 @@ import {
   Paper,
 } from '@mui/material';
 import { Email, Smartphone, Task } from '@mui/icons-material';
-import * as Types from '../../../../graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useGetPreferencesNotificationsQuery } from './GetNotifications.generated';
-import { NotificationsTableSkeleton } from './NotificationsTableSkeleton';
+import {
+  useGetPreferencesNotificationsQuery,
+  useGetNotificationConstantsQuery,
+} from './GetNotifications.generated';
 import { useUpdateNotificationPreferencesMutation } from './UpdateNotifications.generated';
+import * as Types from '../../../../graphql/types.generated';
+import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { NotificationsTableSkeleton } from './NotificationsTableSkeleton';
 
 export enum notificationsEnum {
   App = 'app',
@@ -86,6 +90,7 @@ export const NotificationsTable: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
+  const [notifications, setNotifications] = useState([]);
   const [appSelectAll, setAppSelectAll] = useState(false);
   const [emailSelectAll, setEmailSelectAll] = useState(false);
   const [isSetup, _] = useState(false);
@@ -117,6 +122,7 @@ export const NotificationsTable: React.FC = () => {
       accountListId: accountListId ?? '',
     },
   });
+  const { data: notificationConstants } = useGetNotificationConstantsQuery();
 
   const defaultIfInSetup = (
     notificationPreference: any,
@@ -127,20 +133,31 @@ export const NotificationsTable: React.FC = () => {
     return notificationPreference[type] || isSetup;
   };
 
-  // TODO: We need order the notifications like we do on the old MPDX.
-  // PR is https://github.com/CruGlobal/mpdx_api/pull/2743
-  const notifications: notificationType =
-    data?.notificationPreferences?.nodes.reduce((result, notification) => {
+  useEffect(() => {
+    const notificationsData = data?.notificationPreferences?.nodes || [];
+    const notificationsOrder =
+      notificationConstants?.constant?.notificationTranslatedHashes || [];
+
+    if (!notificationsData.length || !notificationsOrder.length) return;
+
+    const notifications = notificationsOrder.reduce((result, notification) => {
+      const notificationPreference = notificationsData.find(
+        (object) => object.notificationType.id === notification.key,
+      );
       return [
         ...result,
         {
-          ...notification,
-          app: defaultIfInSetup(notification, 'app'),
-          email: defaultIfInSetup(notification, 'email'),
-          task: defaultIfInSetup(notification, 'task'),
+          id: notificationPreference.id || uuidv4(),
+          notificationType: notificationPreference.notificationType,
+          app: defaultIfInSetup(notificationPreference, 'app'),
+          email: defaultIfInSetup(notificationPreference, 'email'),
+          task: defaultIfInSetup(notificationPreference, 'task'),
         },
       ];
     }, []);
+
+    setNotifications(notifications);
+  }, [data, notificationConstants]);
 
   const selectAll = (
     type,

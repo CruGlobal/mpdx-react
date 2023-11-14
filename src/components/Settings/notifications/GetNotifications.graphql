@@ -4,10 +4,21 @@ query getPreferencesNotifications($accountListId: ID!) {
       app
       email
       notificationType {
+        id
         descriptionTemplate
         type
       }
       task
+    }
+  }
+}
+
+query getNotificationConstants {
+  constant {
+    notificationTranslatedHashes {
+      id
+      key
+      value
     }
   }
 }
