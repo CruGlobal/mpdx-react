@@ -11,19 +11,21 @@ The project uses node version 18.13.0.
 
 ## Getting Started
 
-First, make sure that you have a suitable version of Node.js. This project uses node v18.13.0. To check your node version, run `node --version`. If you don't have node v18.13.0 installed or a suitable version, an easy way to install it is with [fnm](https://github.com/Schniz/fnm), a node version manager.
+First, make sure that you have a suitable version of Node.js. This project uses node v18.13.0. To check your node version, run `node --version`. If you don't have node v18.13.0 installed or a suitable version, an easy way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
 
 ```bash
-# Install fnm
-brew install fnm
+# Install asdf and the node plugin
+brew install asdf
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 
-# Integrate it with your shell (you will need to change this if you use a different shell than zsh)
-echo 'eval "$(fnm env --use-on-cd)"' >> ~/.zshrc
+# Integrate it with your shell
+# For installation instructions for other shells, go here: https://asdf-vm.com/manage/core.html
+echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ${ZDOTDIR:-~}/.zshrc
 
 # IMPORTANT: Close that terminal tab/window and open another one to apply the changes to your shell configuration file
 
-# Install the version of node defined in this project's .nvmrc file
-fnm install
+# Install the version of node defined in this project's .tool-versions file
+asdf install nodejs
 
 # Check that the node version is now 18.13.0
 node --version
@@ -645,7 +647,7 @@ export const Dashboard: React.FC = () => {
 };
 ```
 
-At some point after using a new `t()` label, you will need to run `yarn onesky:upload` to extract all the labels used by the application (including your new one) and send them to OneSky for translation. Once they have been translated, you can then run `yarn onesky:download` to pull the updated translations from OneSky into the project. Then you can submit a PR with the changes to the `public/locales/` directory.
+Whenever you open a new PR, GitHub actions automatically runs `yarn onesky:upload` to extract all the labels used by the application (including your new one) and sends them to OneSky for translation. Once they have been translated, you can then run `yarn onesky:download` to pull the updated translations from OneSky into the project. Note that you will need the [`ONESKY_API_*` variables](#cru-specific-secrets) in your `.env` file for the download to work. Then you can submit a PR with the changes to the `public/locales/` directory.
 
 ## Learn More
 
