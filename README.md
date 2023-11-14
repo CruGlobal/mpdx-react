@@ -1,6 +1,6 @@
 # MPDX
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a [Next.js 12](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 The project uses node version 18.13.0.
 
 ## Environments
@@ -114,7 +114,7 @@ If you need them, request a developer to send you the values to these env variab
 
 ## Directory Structure
 
-This project uses the Next.js Pages Router, which you can learn more about [here](https://nextjs.org/docs/pages). Next.js provides a file-based router, so the directory structure the filenames of pages in the `pages/` directory determines their URL. For example, `pages/accountLists/[accountListId]/reports/expectedMonthlyTotal.page.tsx` will handle URLs like `/accountLists/01234567-89ab-cdef-0123-456789abcdef/reports/expectedMonthlyTotal`. The page is rendered on the server as HTML so that the user can see the content and not a blank page while React and the page's components load. Onces the JavaScript loads and the page "hydrates", the page will be interactive. You can learn more about hydration in React [here](https://react.dev/reference/react-dom/client/hydrateRoot).
+This project uses the Next.js 12 Pages Router, which you can learn more about [here](https://nextjs.org/docs/pages). Next.js provides a file-based router, so the directory structure the filenames of pages in the `pages/` directory determines their URL. For example, `pages/accountLists/[accountListId]/reports/expectedMonthlyTotal.page.tsx` will handle URLs like `/accountLists/01234567-89ab-cdef-0123-456789abcdef/reports/expectedMonthlyTotal`. The page is rendered on the server as HTML so that the user can see the content and not a blank page while React and the page's components load. Onces the JavaScript loads and the page "hydrates", the page will be interactive. You can learn more about hydration in React [here](https://react.dev/reference/react-dom/client/hydrateRoot).
 
 `pages/_app.page.tsx` is a wrapper for all pages and contains setup for various React context providers that the application uses.
 
