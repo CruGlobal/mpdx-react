@@ -33,8 +33,6 @@ import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComment
 import { UpdateCommentResolvers } from './Tasks/Comments/UpdateComments/resolvers';
 import AccountListDonorAccountsTypeDefs from './AccountListDonorAccounts/accountListDonorAccounts.graphql';
 import { AccountListDonorAccountsResolvers } from './AccountListDonorAccounts/resolvers';
-import AccountListCoachUserTypeDefs from './AccountListCoachUser/accountListCoachUser.graphql';
-import { AccountListCoachUserResolvers } from './AccountListCoachUser/resolvers';
 import AccountListCoachesTypeDefs from './AccountListCoaches/accountListCoaches.graphql';
 import { AccountListCoachesResolvers } from './AccountListCoaches/resolvers';
 import ReportsPledgeHistoriesTyeDefs from './reports/pledgeHistories/pledgeHistories.graphql';
@@ -64,10 +62,6 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: AccountListDonorAccountsTypeDefs,
     resolvers: AccountListDonorAccountsResolvers,
-  },
-  {
-    typeDefs: AccountListCoachUserTypeDefs,
-    resolvers: AccountListCoachUserResolvers,
   },
   {
     typeDefs: AppointmentResultsTypeDefs,
