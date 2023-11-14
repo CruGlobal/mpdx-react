@@ -139,6 +139,7 @@ describe('GoogleAccordian', () => {
 
   describe('Connected', () => {
     let googleAccount = { ...standardGoogleAccount };
+    process.env.REWRITE_DOMAIN = 'stage.mpdx.org';
 
     beforeEach(() => {
       googleAccount = { ...standardGoogleAccount };
