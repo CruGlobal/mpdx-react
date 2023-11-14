@@ -177,19 +177,19 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
         >
           <Button
             variant={
-              period === CoachingPeriodEnum.Monthly ? 'contained' : 'outlined'
-            }
-            onClick={() => setPeriod(CoachingPeriodEnum.Monthly)}
-          >
-            {t('Monthly')}
-          </Button>
-          <Button
-            variant={
               period === CoachingPeriodEnum.Weekly ? 'contained' : 'outlined'
             }
             onClick={() => setPeriod(CoachingPeriodEnum.Weekly)}
           >
             {t('Weekly')}
+          </Button>
+          <Button
+            variant={
+              period === CoachingPeriodEnum.Monthly ? 'contained' : 'outlined'
+            }
+            onClick={() => setPeriod(CoachingPeriodEnum.Monthly)}
+          >
+            {t('Monthly')}
           </Button>
         </CoachingMonthYearButtonGroup>
         <SideContainerText variant="h5" data-testid="Balance">
