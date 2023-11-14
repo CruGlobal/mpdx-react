@@ -257,10 +257,39 @@ describe('PrayerlettersAccount', () => {
           accountListId: accountListId,
         });
       });
+    });
+
+    it('should sync contacts', async () => {
+      const mutationSpy = jest.fn();
+      const { queryByText, getByRole } = render(
+        Components(
+          <GqlMockedProvider<{
+            GetPrayerlettersAccount: GetPrayerlettersAccountQuery;
+          }>
+            mocks={{
+              GetPrayerlettersAccount: {
+                getPrayerlettersAccount: [prayerlettersAccount],
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <PrayerlettersAccordian
+              handleAccordionChange={handleAccordionChange}
+              expandedPanel={'prayerletters.com'}
+            />
+          </GqlMockedProvider>,
+        ),
+      );
+
+      await waitFor(() => {
+        expect(
+          queryByText('We strongly recommend only making changes in MPDX.'),
+        ).toBeInTheDocument();
+      });
 
       userEvent.click(
         getByRole('button', {
-          name: 'sync now',
+          name: /sync now/i,
         }),
       );
 
@@ -271,10 +300,10 @@ describe('PrayerlettersAccount', () => {
             variant: 'success',
           },
         );
-        expect(mutationSpy.mock.calls[3][0].operation.operationName).toEqual(
+        expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
           'SyncPrayerlettersAccount',
         );
-        expect(mutationSpy.mock.calls[3][0].operation.variables.input).toEqual({
+        expect(mutationSpy.mock.calls[1][0].operation.variables.input).toEqual({
           accountListId: accountListId,
         });
       });
