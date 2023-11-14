@@ -4,16 +4,19 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import { DonationsReport } from 'src/components/Reports/DonationsReport/DonationsReport';
-import Loading from 'src/components/Loading';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { NavReportsList } from 'src/components/Reports/NavReportsList/NavReportsList';
 import { getQueryParam } from 'src/utils/queryParam';
-import { ContactsPage } from '../../contacts/ContactsPage';
-import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { suggestArticles } from 'src/lib/helpScout';
+import { DonationsReport } from 'src/components/Reports/DonationsReport/DonationsReport';
+import Loading from 'src/components/Loading';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { ContactsPage } from '../../contacts/ContactsPage';
 
 const DonationsReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -55,12 +58,13 @@ const DonationsReportPage: React.FC = () => {
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
-              <NavReportsList
+              <MultiPageMenu
                 isOpen={isNavListOpen}
                 selectedId="donations"
                 onClose={handleNavListToggle}
                 designationAccounts={designationAccounts}
                 setDesignationAccounts={setDesignationAccounts}
+                navType={NavTypeEnum.Reports}
               />
             }
             leftOpen={isNavListOpen}

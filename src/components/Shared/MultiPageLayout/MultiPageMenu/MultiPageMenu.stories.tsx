@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { NavReportsList } from './NavReportsList';
+import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
 
 const selected = 'salaryCurrency';
 
@@ -9,12 +9,13 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <NavReportsList
+    <MultiPageMenu
       selectedId={selected}
       isOpen={true}
       onClose={() => {}}
       designationAccounts={[]}
       setDesignationAccounts={() => {}}
+      navType={NavTypeEnum.Reports}
     />
   );
 };

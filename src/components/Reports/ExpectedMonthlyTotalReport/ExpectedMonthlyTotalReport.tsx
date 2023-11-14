@@ -1,9 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress } from '@mui/material';
-import { AccountsListHeader as Header } from '../AccountsListLayout/Header/Header';
 import { useGetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import { EmptyDonationsTable } from '../../../../src/components/common/EmptyDonationsTable/EmptyDonationsTable';
+import { EmptyDonationsTable } from 'src/components/common/EmptyDonationsTable/EmptyDonationsTable';
+import {
+  MultiPageHeader,
+  HeaderTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';
 import { ExpectedMonthlyTotalReportTable } from './Table/ExpectedMonthlyTotalReportTable';
 
@@ -62,10 +65,11 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
 
   return (
     <Box>
-      <Header
+      <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={title}
+        headerType={HeaderTypeEnum.Report}
         rightExtra={
           <ExpectedMonthlyTotalReportHeader
             empty={isEmpty}
