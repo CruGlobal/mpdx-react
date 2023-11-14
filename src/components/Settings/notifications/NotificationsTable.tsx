@@ -2,7 +2,6 @@ import React, { useState, useEffect, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Formik, FieldArray } from 'formik';
 import * as yup from 'yup';
-import { v4 as uuidv4 } from 'uuid';
 import { useSnackbar } from 'notistack';
 import { styled } from '@mui/material/styles';
 import {
@@ -32,6 +31,17 @@ export enum notificationsEnum {
   Email = 'email',
   Task = 'task',
 }
+
+type Notification = Pick<
+  Types.NotificationPreference,
+  'app' | 'email' | 'task'
+> & {
+  notificationType: Pick<
+    Types.NotificationType,
+    'id' | 'descriptionTemplate' | 'type'
+  >;
+};
+type NotificationConstant = Pick<Types.IdKeyValue, 'id' | 'key' | 'value'>;
 
 export const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -77,20 +87,11 @@ export const SelectAllBox = styled(Box)(() => ({
   margin: '0 0 0 auto',
 }));
 
-type notificationType = Array<
-  Pick<Types.NotificationPreference, 'app' | 'email' | 'task'> & {
-    notificationType: Pick<
-      Types.NotificationType,
-      'descriptionTemplate' | 'type'
-    >;
-  }
->;
-
 export const NotificationsTable: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [appSelectAll, setAppSelectAll] = useState(false);
   const [emailSelectAll, setEmailSelectAll] = useState(false);
   const [isSetup, _] = useState(false);
@@ -99,7 +100,7 @@ export const NotificationsTable: React.FC = () => {
   const [updateNotifications] = useUpdateNotificationPreferencesMutation();
 
   const NotificationSchema: yup.SchemaOf<{
-    notifications: notificationType;
+    notifications: Notification[];
   }> = yup.object({
     notifications: yup.array(
       yup.object({
@@ -107,6 +108,7 @@ export const NotificationsTable: React.FC = () => {
         email: yup.boolean().required(),
         task: yup.boolean().required(),
         notificationType: yup.object({
+          id: yup.string().required(),
           descriptionTemplate: yup.string().required(),
           type: yup
             .mixed<Types.NotificationTypeTypeEnum>()
@@ -134,27 +136,30 @@ export const NotificationsTable: React.FC = () => {
   };
 
   useEffect(() => {
-    const notificationsData = data?.notificationPreferences?.nodes || [];
-    const notificationsOrder =
+    const notificationsData: Notification[] =
+      data?.notificationPreferences?.nodes || [];
+    const notificationsOrder: NotificationConstant[] =
       notificationConstants?.constant?.notificationTranslatedHashes || [];
 
     if (!notificationsData.length || !notificationsOrder.length) return;
 
-    const notifications = notificationsOrder.reduce((result, notification) => {
-      const notificationPreference = notificationsData.find(
-        (object) => object.notificationType.id === notification.key,
-      );
-      return [
-        ...result,
-        {
-          id: notificationPreference.id || uuidv4(),
-          notificationType: notificationPreference.notificationType,
-          app: defaultIfInSetup(notificationPreference, 'app'),
-          email: defaultIfInSetup(notificationPreference, 'email'),
-          task: defaultIfInSetup(notificationPreference, 'task'),
-        },
-      ];
-    }, []);
+    const notifications = notificationsOrder.reduce(
+      (result: Notification[], notification) => {
+        const notificationPreference = notificationsData.find(
+          (object) => object.notificationType.id === notification.key,
+        );
+        return [
+          ...result,
+          {
+            notificationType: notificationPreference?.notificationType || {},
+            app: defaultIfInSetup(notificationPreference, 'app'),
+            email: defaultIfInSetup(notificationPreference, 'email'),
+            task: defaultIfInSetup(notificationPreference, 'task'),
+          } as Notification,
+        ];
+      },
+      [],
+    );
 
     setNotifications(notifications);
   }, [data, notificationConstants]);
@@ -175,14 +180,7 @@ export const NotificationsTable: React.FC = () => {
   const onSubmit = async ({
     notifications,
   }: {
-    notifications: Array<
-      Pick<Types.NotificationPreference, 'app' | 'email' | 'task'> & {
-        notificationType: Pick<
-          Types.NotificationType,
-          'descriptionTemplate' | 'type'
-        >;
-      }
-    >;
+    notifications: Notification[];
   }) => {
     const attributes = notifications.map((notification) => {
       return {
