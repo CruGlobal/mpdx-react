@@ -1,72 +1,100 @@
-query LoadCoachingDetail($coachingId: ID!) {
-  coachingAccountList(id: $coachingId) {
-    id
-    name
-    primaryAppeal {
-      active
-      amount
-      amountCurrency
-      id
-      name
-      pledgesAmountNotReceivedNotProcessed
-      pledgesAmountProcessed
-      pledgesAmountTotal
-    }
-    currency
-    monthlyGoal
-    balance
-    receivedPledges
-    totalPledges
-  }
-}
-
-query LoadAccountListCoachingDetail($coachingId: ID!) {
-  accountList(id: $coachingId) {
-    id
-    name
-    primaryAppeal {
-      active
-      amount
-      amountCurrency
-      id
-      name
-      pledgesAmountNotReceivedNotProcessed
-      pledgesAmountProcessed
-      pledgesAmountTotal
-    }
-    currency
-    monthlyGoal
-    balance
-    receivedPledges
-    totalPledges
-  }
-}
-
-query GetAccountListCoachUsers($accountListId: ID!) {
-  getAccountListCoachUsers(accountListId: $accountListId) {
-    id
-    firstName
-    lastName
-    createdAt
-    updatedAt
-    updatedInDbAt
-  }
-}
-
-query GetAccountListUsers($accountListId: ID!) {
-  accountListUsers(accountListId: $accountListId) {
-    pageInfo {
-      endCursor
-      startCursor
-      hasNextPage
-      hasPreviousPage
-    }
+fragment UserContactInfo on UserScopedToAccountList {
+  id
+  firstName
+  lastName
+  emailAddresses {
     nodes {
       id
-      user {
-        id
-        firstName
-        lastName
+      email
+      location
+      primary
+    }
+  }
+  phoneNumbers {
+    nodes {
+      id
+      number
+      location
+      primary
+    }
+  }
+}
+
+query LoadCoachingDetail($coachingAccountListId: ID!) {
+  coachingAccountList(id: $coachingAccountListId) {
+    id
+    name
+    designationAccounts {
+      id
+      accountNumber
+    }
+    primaryAppeal {
+      active
+      amount
+      amountCurrency
+      id
+      name
+      pledgesAmountNotReceivedNotProcessed
+      pledgesAmountProcessed
+      pledgesAmountTotal
+    }
+    currency
+    monthlyGoal
+    balance
+    activeMpdStartAt
+    activeMpdFinishAt
+    activeMpdMonthlyGoal
+    weeksOnMpd
+    receivedPledges
+    totalPledges
+    coaches {
+      nodes {
+        ...UserContactInfo
+      }
+    }
+    users {
+      nodes {
+        ...UserContactInfo
+      }
+    }
+  }
+}
+
+query LoadAccountListCoachingDetail($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    name
+    designationAccounts {
+      id
+      accountNumber
+    }
+    primaryAppeal {
+      active
+      amount
+      amountCurrency
+      id
+      name
+      pledgesAmountNotReceivedNotProcessed
+      pledgesAmountProcessed
+      pledgesAmountTotal
+    }
+    currency
+    monthlyGoal
+    balance
+    activeMpdStartAt
+    activeMpdFinishAt
+    activeMpdMonthlyGoal
+    weeksOnMpd
+    receivedPledges
+    totalPledges
+    coaches {
+      nodes {
+        ...UserContactInfo
+      }
+    }
+    users {
+      nodes {
+        ...UserContactInfo
       }
     }
   }

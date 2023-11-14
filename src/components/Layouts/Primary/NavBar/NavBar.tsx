@@ -139,14 +139,14 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
     },
     {
       title: t('Tools'),
-      items: ToolsList.flatMap((toolsGroup) => [
-        ...toolsGroup.items.map((tool) => ({
+      items: ToolsList.flatMap((toolsGroup) =>
+        toolsGroup.items.map((tool) => ({
           title: tool.tool,
           href: `https://${process.env.REWRITE_DOMAIN}/tools/${
             toolsRedirectLinks[tool.id]
           }`,
         })),
-      ]),
+      ),
     },
     {
       title: t('Coaches'),

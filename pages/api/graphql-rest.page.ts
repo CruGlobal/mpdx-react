@@ -54,7 +54,6 @@ import {
   UpdateComment,
 } from './Schema/Tasks/Comments/UpdateComments/datahandler';
 import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/dataHandler';
-import { getAccountListCoachUsers } from './Schema/AccountListCoachUser/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
 import { getReportsPledgeHistories } from './Schema/reports/pledgeHistories/dataHandler';
 import { DateTime, Duration, Interval } from 'luxon';
@@ -171,11 +170,6 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getAccountListAnalytics(data);
-  }
-
-  async getAccountListCoachUsers(accountListId: string) {
-    const { data } = await this.get(`account_lists/${accountListId}/coaches`);
-    return getAccountListCoachUsers(data);
   }
 
   async getAppointmentResults(
