@@ -1,7 +1,6 @@
 # MPDX
 
 This is a [Next.js 12](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-The project uses node version 18.13.0.
 
 ## Environments
 
@@ -11,7 +10,7 @@ The project uses node version 18.13.0.
 
 ## Getting Started
 
-First, make sure that you have a suitable version of Node.js. This project uses node v18.13.0. To check your node version, run `node --version`. If you don't have node v18.13.0 installed or a suitable version, an easy way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
+First, make sure that you have a suitable version of Node.js. This project uses node v18.13.0. To check your node version, run `node --version`. If you don't have node v18.13.0 installed or a suitable version, the recommended way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
 
 ```bash
 # Install asdf and the node plugin
@@ -19,7 +18,7 @@ brew install asdf
 asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
 
 # Integrate it with your shell
-# For installation instructions for other shells, go here: https://asdf-vm.com/manage/core.html
+# ZSH shell integration is shown here, but for installation instructions for other shells, go to https://asdf-vm.com/guide/getting-started.html#_3-install-asdf
 echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ${ZDOTDIR:-~}/.zshrc
 
 # IMPORTANT: Close that terminal tab/window and open another one to apply the changes to your shell configuration file
