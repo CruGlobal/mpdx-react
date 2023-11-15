@@ -901,7 +901,7 @@ class MpdxRestApi extends RESTDataSource {
     accountListId,
   ) {
     const attributes = {};
-    Object.keys(googleIntegration).map((key) => {
+    Object.keys(googleIntegration).forEach((key) => {
       attributes[camelToSnake(key)] = googleIntegration[key];
     });
     const { data }: { data: CreateGoogleIntegrationResponse } = await this.post(
