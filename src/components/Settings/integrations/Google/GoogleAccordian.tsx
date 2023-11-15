@@ -12,7 +12,7 @@ import theme from 'src/theme';
 import {
   IntegrationsContext,
   IntegrationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/integrations/integrationsContext';
+} from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import HandoffLink from 'src/components/HandoffLink';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';

@@ -8,7 +8,7 @@ import {
 } from './Organizations.generated';
 import * as Types from '../../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/integrationsContext';
+import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import theme from '../../../../theme';
 import TestRouter from '__tests__/util/TestRouter';
 import { OrganizationAccordian } from './OrganizationAccordian';

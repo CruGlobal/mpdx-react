@@ -5,7 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from 'src/theme';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/integrationsContext';
+import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import * as Types from '../../../../../graphql/types.generated';
 import { PrayerlettersAccordian } from './PrayerlettersAccordian';
 import { GetPrayerlettersAccountQuery } from './PrayerlettersAccount.generated';

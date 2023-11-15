@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from '../../../../theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/integrationsContext';
+import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { GoogleAccordian } from './GoogleAccordian';
 import { GoogleAccountsQuery } from './googleAccounts.generated';
 

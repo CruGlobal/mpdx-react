@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/integrationsContext';
+import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import TestRouter from '__tests__/util/TestRouter';
 import { OrganizationEditAccountModal } from './OrganizationEditAccountModal';
 

@@ -31,7 +31,7 @@ import * as Types from '../../../../../graphql/types.generated';
 import {
   IntegrationsContext,
   IntegrationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/integrations/integrationsContext';
+} from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';

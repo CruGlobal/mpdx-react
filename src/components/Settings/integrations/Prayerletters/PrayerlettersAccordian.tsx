@@ -11,7 +11,7 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import {
   IntegrationsContext,
   IntegrationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/integrations/integrationsContext';
+} from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { DeletePrayerlettersAccountModal } from './Modals/DeletePrayerlettersModal';
 import { StyledServicesButton, AccordianProps } from '../integrationsHelper';

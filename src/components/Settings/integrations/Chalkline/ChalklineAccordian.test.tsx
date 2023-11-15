@@ -5,7 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/integrationsContext';
+import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { ChalklineAccordian } from './ChalklineAccordian';
 
 jest.mock('next-auth/react');
