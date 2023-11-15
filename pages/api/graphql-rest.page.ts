@@ -76,13 +76,13 @@ import {
   DestroyDonorAccountResponse,
 } from './Schema/Contacts/DonorAccounts/Destroy/datahander';
 import {
-  GetGoogleAccounts,
-  GetGoogleAccountsResponse,
-} from './Schema/Settings/Preferences/Intergrations/Google/getGoogleAccounts/datahandler';
+  GoogleAccounts,
+  GoogleAccountsResponse,
+} from './Schema/Settings/Preferences/Intergrations/Google/googleAccounts/datahandler';
 import {
-  GetGoogleAccountIntegrationsResponse,
-  GetGoogleAccountIntegrations,
-} from './Schema/Settings/Preferences/Intergrations/Google/getGoogleAccountIntegrations/datahandler';
+  GoogleAccountIntegrationsResponse,
+  GoogleAccountIntegrations,
+} from './Schema/Settings/Preferences/Intergrations/Google/googleAccountIntegrations/datahandler';
 import { SyncGoogleIntegration } from './Schema/Settings/Preferences/Intergrations/Google/syncGoogleIntegration/datahandler';
 import {
   UpdateGoogleIntegrationResponse,
@@ -860,28 +860,28 @@ class MpdxRestApi extends RESTDataSource {
   //
   //
 
-  async getGoogleAccounts() {
-    const { data }: { data: GetGoogleAccountsResponse[] } = await this.get(
+  async googleAccounts() {
+    const { data }: { data: GoogleAccountsResponse[] } = await this.get(
       'user/google_accounts',
       {
         sort: 'created_at',
         include: 'contact_groups',
       },
     );
-    return GetGoogleAccounts(data);
+    return GoogleAccounts(data);
   }
 
-  async getGoogleAccountIntegrations(
+  async googleAccountIntegrations(
     googleAccountId: string,
     accountListId: string,
   ) {
-    const { data }: { data: GetGoogleAccountIntegrationsResponse[] } =
+    const { data }: { data: GoogleAccountIntegrationsResponse[] } =
       await this.get(
         `user/google_accounts/${googleAccountId}/google_integrations?${encodeURI(
           `filter[account_list_id]=${accountListId}`,
         )}`,
       );
-    return GetGoogleAccountIntegrations(data);
+    return GoogleAccountIntegrations(data);
   }
 
   async syncGoogleIntegration(

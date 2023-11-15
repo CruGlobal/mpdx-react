@@ -1,11 +1,11 @@
 // GOOGLE INTEGRATION
 //
 // Get Accounts
-import GetGoogleAccountsTypeDefs from '../Settings/Preferences/Intergrations/Google/getGoogleAccounts/getGoogleAccounts.graphql';
-import { GetGoogleAccountsResolvers } from '../Settings/Preferences/Intergrations/Google/getGoogleAccounts/resolvers';
+import GoogleAccountsTypeDefs from '../Settings/Preferences/Intergrations/Google/googleAccounts/googleAccounts.graphql';
+import { GoogleAccountsResolvers } from '../Settings/Preferences/Intergrations/Google/googleAccounts/resolvers';
 // account integrations
-import GetGoogleAccountIntegrationsTypeDefs from '../Settings/Preferences/Intergrations/Google/getGoogleAccountIntegrations/getGoogleAccountIntegrations.graphql';
-import { GetGoogleAccountIntegrationsResolvers } from '../Settings/Preferences/Intergrations/Google/getGoogleAccountIntegrations/resolvers';
+import GoogleAccountIntegrationsTypeDefs from '../Settings/Preferences/Intergrations/Google/googleAccountIntegrations/googleAccountIntegrations.graphql';
+import { GoogleAccountIntegrationsResolvers } from '../Settings/Preferences/Intergrations/Google/googleAccountIntegrations/resolvers';
 // create
 import CreateGoogleIntegrationTypeDefs from '../Settings/Preferences/Intergrations/Google/createGoogleIntegration/createGoogleIntegration.graphql';
 import { CreateGoogleIntegrationResolvers } from '../Settings/Preferences/Intergrations/Google/createGoogleIntegration/resolvers';
@@ -54,12 +54,12 @@ import { SendToChalklineResolvers } from '../Settings/Preferences/Intergrations/
 
 export const integrationSchema = [
   {
-    typeDefs: GetGoogleAccountsTypeDefs,
-    resolvers: GetGoogleAccountsResolvers,
+    typeDefs: GoogleAccountsTypeDefs,
+    resolvers: GoogleAccountsResolvers,
   },
   {
-    typeDefs: GetGoogleAccountIntegrationsTypeDefs,
-    resolvers: GetGoogleAccountIntegrationsResolvers,
+    typeDefs: GoogleAccountIntegrationsTypeDefs,
+    resolvers: GoogleAccountIntegrationsResolvers,
   },
   {
     typeDefs: UpdateGoogleIntegrationTypeDefs,

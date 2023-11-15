@@ -1,10 +1,10 @@
 extend type Query {
-  getGoogleAccountIntegrations(
-    input: GetGoogleAccountIntegrationsInput!
+  googleAccountIntegrations(
+    input: GoogleAccountIntegrationsInput!
   ): [GoogleAccountIntegration]!
 }
 
-input GetGoogleAccountIntegrationsInput {
+input GoogleAccountIntegrationsInput {
   googleAccountId: ID!
   accountListId: ID!
 }

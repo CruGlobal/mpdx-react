@@ -17,8 +17,8 @@ import {
 } from '@mui/material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
-  GetGoogleAccountIntegrationsDocument,
-  GetGoogleAccountIntegrationsQuery,
+  GoogleAccountIntegrationsDocument,
+  GoogleAccountIntegrationsQuery,
   useGetIntegrationActivitiesQuery,
 } from './googleIntegrations.generated';
 import { useUpdateGoogleIntegrationMutation } from './updateGoogleIntegration.generated';
@@ -114,14 +114,14 @@ export const EditGoogleIntegrationForm: React.FC<
       },
       update: (cache) => {
         const query = {
-          query: GetGoogleAccountIntegrationsDocument,
+          query: GoogleAccountIntegrationsDocument,
           variables: {
             googleAccountId: account.id,
             accountListId,
           },
         };
         const dataFromCache =
-          cache.readQuery<GetGoogleAccountIntegrationsQuery>(query);
+          cache.readQuery<GoogleAccountIntegrationsQuery>(query);
 
         if (dataFromCache) {
           const data = {

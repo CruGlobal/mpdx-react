@@ -79,7 +79,7 @@ export const GoogleAccordian: React.FC<GoogleAccordianProps> = ({
   const { data, loading } = useGoogleAccountsQuery({
     skip: !expandedPanel,
   });
-  const googleAccounts = data?.getGoogleAccounts;
+  const googleAccounts = data?.googleAccounts;
   const accountListId = useAccountListId();
   const [oAuth, setOAuth] = useState('');
 

@@ -9,7 +9,7 @@ import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocki
 import * as Types from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
 import {
-  GetGoogleAccountIntegrationsQuery,
+  GoogleAccountIntegrationsQuery,
   GetIntegrationActivitiesQuery,
 } from './googleIntegrations.generated';
 import { EditGoogleAccountModal } from './EditGoogleAccountModal';
@@ -169,8 +169,8 @@ describe('EditGoogleAccountModal', () => {
       Components(
         <GqlMockedProvider
           mocks={{
-            GetGoogleAccountIntegrations: {
-              getGoogleAccountIntegrations: [googleIntegration],
+            GoogleAccountIntegrations: {
+              googleAccountIntegrations: [googleIntegration],
             },
           }}
           onCall={mutationSpy}
@@ -217,11 +217,11 @@ describe('EditGoogleAccountModal', () => {
       Components(
         <GqlMockedProvider<{
           GetIntegrationActivities: GetIntegrationActivitiesQuery;
-          GetGoogleAccountIntegrations: GetGoogleAccountIntegrationsQuery;
+          GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
         }>
           mocks={{
-            GetGoogleAccountIntegrations: {
-              getGoogleAccountIntegrations: [googleIntegration],
+            GoogleAccountIntegrations: {
+              googleAccountIntegrations: [googleIntegration],
             },
             GetIntegrationActivities: {
               constant: {
@@ -322,12 +322,12 @@ describe('EditGoogleAccountModal', () => {
       } = render(
         Components(
           <GqlMockedProvider<{
-            GetGoogleAccountIntegrations: GetGoogleAccountIntegrationsQuery;
+            GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
             GetIntegrationActivities: GetIntegrationActivitiesQuery;
           }>
             mocks={{
-              GetGoogleAccountIntegrations: {
-                getGoogleAccountIntegrations: [googleIntegration],
+              GoogleAccountIntegrations: {
+                googleAccountIntegrations: [googleIntegration],
               },
               GetIntegrationActivities: {
                 constant: {
@@ -406,11 +406,11 @@ describe('EditGoogleAccountModal', () => {
     const { getByText, getByRole } = render(
       Components(
         <GqlMockedProvider<{
-          GetGoogleAccountIntegrations: GetGoogleAccountIntegrationsQuery;
+          GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
         }>
           mocks={{
-            GetGoogleAccountIntegrations: {
-              getGoogleAccountIntegrations: [googleIntegration],
+            GoogleAccountIntegrations: {
+              googleAccountIntegrations: [googleIntegration],
             },
           }}
           onCall={mutationSpy}
@@ -460,11 +460,11 @@ describe('EditGoogleAccountModal', () => {
     const { getByText, getByRole } = render(
       Components(
         <GqlMockedProvider<{
-          GetGoogleAccountIntegrations: GetGoogleAccountIntegrationsQuery;
+          GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
         }>
           mocks={{
-            GetGoogleAccountIntegrations: {
-              getGoogleAccountIntegrations: [googleIntegration],
+            GoogleAccountIntegrations: {
+              googleAccountIntegrations: [googleIntegration],
             },
           }}
           onCall={mutationSpy}

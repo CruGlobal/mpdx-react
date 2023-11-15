@@ -112,7 +112,7 @@ describe('GoogleAccordian', () => {
           }>
             mocks={{
               GoogleAccounts: {
-                getGoogleAccounts: [],
+                googleAccounts: [],
               },
             }}
             onCall={mutationSpy}
@@ -153,7 +153,7 @@ describe('GoogleAccordian', () => {
           }>
             mocks={{
               GoogleAccounts: {
-                getGoogleAccounts: [googleAccount],
+                googleAccounts: [googleAccount],
               },
             }}
             onCall={mutationSpy}
@@ -209,7 +209,7 @@ describe('GoogleAccordian', () => {
           }>
             mocks={{
               GoogleAccounts: {
-                getGoogleAccounts: [googleAccount],
+                googleAccounts: [googleAccount],
               },
             }}
             onCall={mutationSpy}

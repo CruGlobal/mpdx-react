@@ -1,13 +1,13 @@
 import { Resolvers } from '../../../../../../graphql-rest.page.generated';
 
-const GetGoogleAccountIntegrationsResolvers: Resolvers = {
+const GoogleAccountIntegrationsResolvers: Resolvers = {
   Query: {
-    getGoogleAccountIntegrations: async (
+    googleAccountIntegrations: async (
       _source,
       { input: { googleAccountId, accountListId } },
       { dataSources },
     ) => {
-      return dataSources.mpdxRestApi.getGoogleAccountIntegrations(
+      return dataSources.mpdxRestApi.googleAccountIntegrations(
         googleAccountId,
         accountListId,
       );
@@ -15,4 +15,4 @@ const GetGoogleAccountIntegrationsResolvers: Resolvers = {
   },
 };
 
-export { GetGoogleAccountIntegrationsResolvers };
+export { GoogleAccountIntegrationsResolvers };

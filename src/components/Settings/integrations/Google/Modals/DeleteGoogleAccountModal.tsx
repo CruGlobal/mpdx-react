@@ -49,12 +49,11 @@ export const DeleteGoogleAccountModal: React.FC<
         const dataFromCache = cache.readQuery<GoogleAccountsQuery>(query);
 
         if (dataFromCache) {
-          const removedAccountFromCache =
-            dataFromCache?.getGoogleAccounts.filter(
-              (acc) => acc?.id !== account.id,
-            );
+          const removedAccountFromCache = dataFromCache?.googleAccounts.filter(
+            (acc) => acc?.id !== account.id,
+          );
           const data = {
-            getGoogleAccounts: [...removedAccountFromCache],
+            googleAccounts: [...removedAccountFromCache],
           };
           cache.writeQuery({ ...query, data });
         }

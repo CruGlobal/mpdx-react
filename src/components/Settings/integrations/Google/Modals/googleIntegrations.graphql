@@ -1,5 +1,5 @@
-query GetGoogleAccountIntegrations($input: GetGoogleAccountIntegrationsInput!) {
-  getGoogleAccountIntegrations(input: $input) {
+query GoogleAccountIntegrations($input: GoogleAccountIntegrationsInput!) {
+  googleAccountIntegrations(input: $input) {
     calendarId
     calendarIntegration
     calendarIntegrations

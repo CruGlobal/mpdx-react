@@ -14,9 +14,9 @@ import {
 } from '@mui/material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
-  useGetGoogleAccountIntegrationsQuery,
-  GetGoogleAccountIntegrationsDocument,
-  GetGoogleAccountIntegrationsQuery,
+  useGoogleAccountIntegrationsQuery,
+  GoogleAccountIntegrationsDocument,
+  GoogleAccountIntegrationsQuery,
   useCreateGoogleIntegrationMutation,
 } from './googleIntegrations.generated';
 import { useSyncGoogleAccountMutation } from '../googleAccounts.generated';
@@ -63,7 +63,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
     data,
     loading,
     refetch: refetchGoogleIntegrations,
-  } = useGetGoogleAccountIntegrationsQuery({
+  } = useGoogleAccountIntegrationsQuery({
     variables: {
       input: {
         googleAccountId: account.id,
@@ -73,7 +73,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
     skip: !accountListId,
   });
 
-  const googleAccountDetails = data?.getGoogleAccountIntegrations[0];
+  const googleAccountDetails = data?.googleAccountIntegrations[0];
 
   const handleTabChange = (_, tab) => {
     setTabSelected(tab);
@@ -114,14 +114,14 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
         },
         update: (cache) => {
           const query = {
-            query: GetGoogleAccountIntegrationsDocument,
+            query: GoogleAccountIntegrationsDocument,
             variables: {
               googleAccountId: account.id,
               accountListId,
             },
           };
           const dataFromCache =
-            cache.readQuery<GetGoogleAccountIntegrationsQuery>(query);
+            cache.readQuery<GoogleAccountIntegrationsQuery>(query);
 
           if (dataFromCache) {
             const data = {
