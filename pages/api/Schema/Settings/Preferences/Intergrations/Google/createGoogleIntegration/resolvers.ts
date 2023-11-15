@@ -4,13 +4,13 @@ const CreateGoogleIntegrationResolvers: Resolvers = {
   Mutation: {
     createGoogleIntegration: async (
       _source,
-      { input: { googleAccountId, googleIntegration, accountListID } },
+      { input: { googleAccountId, googleIntegration, accountListId } },
       { dataSources },
     ) => {
       return dataSources.mpdxRestApi.createGoogleIntegration(
         googleAccountId,
         googleIntegration,
-        accountListID,
+        accountListId,
       );
     },
   },

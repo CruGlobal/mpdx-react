@@ -898,7 +898,7 @@ class MpdxRestApi extends RESTDataSource {
   async createGoogleIntegration(
     googleAccountId,
     googleIntegration,
-    accountListID,
+    accountListId,
   ) {
     const attributes = {};
     Object.keys(googleIntegration).map((key) => {
@@ -915,7 +915,7 @@ class MpdxRestApi extends RESTDataSource {
             account_list: {
               data: {
                 type: 'account_lists',
-                id: accountListID,
+                id: accountListId,
               },
             },
           },

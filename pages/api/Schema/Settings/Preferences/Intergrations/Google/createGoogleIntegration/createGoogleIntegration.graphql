@@ -7,7 +7,7 @@ extend type Mutation {
 input CreateGoogleIntegrationInput {
   googleAccountId: ID!
   googleIntegration: GoogleAccountIntegrationInput
-  accountListID: String!
+  accountListId: String!
 }
 
 input GoogleAccountIntegrationInput {

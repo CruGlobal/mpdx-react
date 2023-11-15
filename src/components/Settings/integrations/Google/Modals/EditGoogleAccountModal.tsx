@@ -91,7 +91,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
         variables: {
           input: {
             googleAccountId: account.id,
-            accountListID: accountListId ?? '',
+            accountListId: accountListId ?? '',
             googleIntegration: {
               [`${tabSelected}Integration`]: enableIntegration,
             },
