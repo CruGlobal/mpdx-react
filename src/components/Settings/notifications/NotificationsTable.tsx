@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement } from 'react';
+import React, { useState, useMemo, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Formik, FieldArray } from 'formik';
 import * as yup from 'yup';
@@ -91,7 +91,6 @@ export const NotificationsTable: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [appSelectAll, setAppSelectAll] = useState(false);
   const [emailSelectAll, setEmailSelectAll] = useState(false);
   const [isSetup, _] = useState(false);
@@ -135,33 +134,28 @@ export const NotificationsTable: React.FC = () => {
     return notificationPreference[type] || isSetup;
   };
 
-  useEffect(() => {
+  const notifications = useMemo(() => {
     const notificationsData: Notification[] =
       data?.notificationPreferences?.nodes || [];
     const notificationsOrder: NotificationConstant[] =
       notificationConstants?.constant?.notificationTranslatedHashes || [];
 
-    if (!notificationsData.length || !notificationsOrder.length) return;
+    if (!notificationsData.length || !notificationsOrder.length) return [];
 
-    const notifications = notificationsOrder.reduce(
-      (result: Notification[], notification) => {
-        const notificationPreference = notificationsData.find(
-          (object) => object.notificationType.id === notification.key,
-        );
-        return [
-          ...result,
-          {
-            notificationType: notificationPreference?.notificationType || {},
-            app: defaultIfInSetup(notificationPreference, 'app'),
-            email: defaultIfInSetup(notificationPreference, 'email'),
-            task: defaultIfInSetup(notificationPreference, 'task'),
-          } as Notification,
-        ];
-      },
-      [],
-    );
-
-    setNotifications(notifications);
+    return notificationsOrder.reduce((result: Notification[], notification) => {
+      const notificationPreference = notificationsData.find(
+        (object) => object.notificationType.id === notification.key,
+      );
+      return [
+        ...result,
+        {
+          notificationType: notificationPreference?.notificationType || {},
+          app: defaultIfInSetup(notificationPreference, 'app'),
+          email: defaultIfInSetup(notificationPreference, 'email'),
+          task: defaultIfInSetup(notificationPreference, 'task'),
+        } as Notification,
+      ];
+    }, []);
   }, [data, notificationConstants]);
 
   const selectAll = (
@@ -353,6 +347,7 @@ export const NotificationsTable: React.FC = () => {
                                   <Checkbox
                                     data-testid={`${type}-email-checkbox`}
                                     checked={notification.email}
+                                    disabled={isSubmitting}
                                     onChange={(_, value) => {
                                       setFieldValue(
                                         `notifications.${idx}.email`,
@@ -365,6 +360,7 @@ export const NotificationsTable: React.FC = () => {
                                   <Checkbox
                                     data-testid={`${type}-task-checkbox`}
                                     checked={notification.task}
+                                    disabled={isSubmitting}
                                     onChange={(_, value) => {
                                       setFieldValue(
                                         `notifications.${idx}.task`,
