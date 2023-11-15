@@ -115,7 +115,7 @@ If you need them, request a developer to send you the values to these env variab
 
 ## Directory Structure
 
-This project uses the Next.js 12 Pages Router, which you can learn more about [here](https://nextjs.org/docs/pages). Next.js provides a file-based router, so the directory structure the filenames of pages in the `pages/` directory determines their URL. For example, `pages/accountLists/[accountListId]/reports/expectedMonthlyTotal.page.tsx` will handle URLs like `/accountLists/01234567-89ab-cdef-0123-456789abcdef/reports/expectedMonthlyTotal`. The page is rendered on the server as HTML so that the user can see the content and not a blank page while React and the page's components load. Onces the JavaScript loads and the page "hydrates", the page will be interactive. You can learn more about hydration in React [here](https://react.dev/reference/react-dom/client/hydrateRoot).
+This project uses the Next.js 12 Pages Router, which you can learn more about [here](https://nextjs.org/docs/pages). Next.js provides a file-based router, so the directory structure the filenames of pages in the `pages/` directory determines their URL. For example, `pages/accountLists/[accountListId]/reports/expectedMonthlyTotal.page.tsx` will handle URLs like `/accountLists/01234567-89ab-cdef-0123-456789abcdef/reports/expectedMonthlyTotal`. The page is rendered on the server as HTML so that the user can see the content and not a blank page while React and the page's components load. Once the JavaScript loads and the page "hydrates", the page will be interactive. You can learn more about hydration in React [here](https://react.dev/reference/react-dom/client/hydrateRoot).
 
 `pages/_app.page.tsx` is a wrapper for all pages and contains setup for various React context providers that the application uses.
 
@@ -131,19 +131,27 @@ This project uses the Next.js 12 Pages Router, which you can learn more about [h
 
 `public/` contains static files like images and translation data.
 
-Test files live next to the files that they test, i.e. the test file for `src/components/Tool/Home/Home.tsx` is `src/components/Tool/Home/Home.test.tsx`. Similarly the GraphQL query and mutation definitions live next to or near the component that uses them.
+Test files live next to the files that they test, i.e. the test file for `src/components/Tool/Home/Home.tsx` is `src/components/Tool/Home/Home.test.tsx`. Similarly the definitions of GraphQL query and mutation operations live next to or near the component that uses them.
 
 ## GraphQL
 
 This project uses GraphQL to load data from the API server. GraphQL allows us to load exactly the data that each component needs. It is an alternative to a REST API. If you aren't familiar with GraphQL, a great resource for learning more is https://graphql.com/learn.
 
-### GraphQL Playground
+### Apollo Studio
 
-The GraphQL playground can be a useful tool/interface for testing out queries and mutations. It can accessed locally during development at [http://localhost:3000/api/graphql](http://localhost:3000/api/graphql).
+Apollo Studio is an invaluable tool/interface for testing out queries and mutations during development. If your dev server is running (use `yarn start` to start it), you can access Apollo Studio at http://localhost:3000/api/graphql. Once you navigate to Apollo Studio, you will need to set some a header to authenticate with the API server.
+
+1. Go to http://localhost:3000 and login.
+2. Open Chrome DevTools and go to the Application tab.
+3. In the sidebar, click on Cookies > http://localhost:3000 in the Storage section.
+4. Copy the value of the `next-auth.session-token` cookie.
+5. Back in Apollo Studio, find the Headers tab near the bottom and click the "Set shared headers" button.
+6. In the modal, click the "+ New shared header button" and choose "Authorization" for the header key and the word `Bearer` followed by a space followed by the value of the `next-auth.session-token` cookie.
+7. After you click save, all queries and mutations you make in Apollo Studio will be authenticated.
 
 ### Using a Query
 
-To load data in your component, the first step will be to write a query definition based on the fields that your component needs. The easiest way to do this is to go to [Apollo Studio](http://localhost:3000/api/graphql), click the plus sign next to the query you want to load, and then click the plus signs next to the fields you want to use in your component. On line 1, give the query a name that describes the data it loads and is unique across the entire project. Then create a `.graphql` file with the same name as your component (i.e. if your component is `Partners.tsx`, the query goes in `Partners.graphql`) and copy and paste the query from Apollo studio into it. It should look something like this:
+To load data in your component, the first step will be to write an operation definition based on the query and fields that your component needs. The easiest way to do this is to go to [Apollo Studio](http://localhost:3000/api/graphql), click the plus sign next to the query you want to load, and then click the plus signs next to the fields you want to use in your component. On line 1, give the operation a name that describes the data it loads and is unique across the entire project (the `yarn gql` step below will fail and tell you if your operation name isn't unique). Then create a `.graphql` file with the same name as your component (i.e. if your component is `Partners.tsx`, the operation goes in `Partners.graphql`) and copy and paste the operation from Apollo Studio into it. It should look something like this:
 
 ```gql
 # Partners.graphql
@@ -162,9 +170,9 @@ query PartnerCommitments($accountListId: ID!) {
 }
 ```
 
-Finally, run `yarn gql` to update the automatically generated types and hooks for your query. You will need to run this after every change to your `.graphql` query file. If you want it to rerun automatically when it detects changes, run `yarn gql:w`.
+Finally, run `yarn gql` to update the automatically generated types and hooks for your operation. You will need to run this after every change to your `.graphql` operation file. If you want it to rerun automatically when it detects changes, run `yarn gql:w`.
 
-To use your new query in a component, import and call the automatically generated `use...Query` hook inside your component. If your query in the `.graphql` file is called `PartnerCommitments`, for example, type `usePartnerCommitmentsQuery` and let autocomplete in VS Code automatically find and import the hook.
+To use your new operation in a component, import and call the automatically generated `use...Query` hook inside your component. If your operation in the `.graphql` file is called `PartnerCommitments`, for example, type `usePartnerCommitmentsQuery` and let autocomplete in VS Code automatically find and import the hook.
 
 ```tsx
 // Partners.tsx
@@ -185,17 +193,19 @@ export const Partners: React.FC<PartnersProps> = ({ accountListId }) => {
     <div>
       {loading
         ? 'Loading...'
-        : data?.contacts.nodes.map((contact) => <div>{contact.name}</div>)}
+        : data?.contacts.nodes.map((contact) => (
+            <div key={contact.id}>{contact.name}</div>
+          ))}
     </div>
   );
 };
 ```
 
-This hook returns a lot of helpful fields, but the most important ones are `data` and `loading`. `data` will be undefined while the query is loading or if it errors and will contain the data from the query. `loading` will be `true` while the query is loading and `false` when it finishes loading. If your query in the `.graphql` file defined any variables, you must pass them into the query hook via the `variables` property. The `use...Query` hooks have a lot more functionality, which you can read about [here](https://www.apollographql.com/docs/react/data/queries).
+This hook returns a lot of helpful fields, but the most important ones are `data` and `loading`. `data` will contain the data from the query once it finishes loading. `data` will be undefined while the query is loading or if it errors. `loading` will be `true` while the query is loading and `false` when it finishes loading. If your operation in the `.graphql` file defined any variables, you must pass them into the query hook via the `variables` property. The `use...Query` hooks have a lot more functionality, which you can read about [here](https://www.apollographql.com/docs/react/data/queries).
 
 ### Using a Mutation
 
-To modify data in your component, the process is similar to using a query. Go to Apollo Studio, go to the root, click on `mutation`, and click the add button next to the mutation you want to use. Select the fields that you want to load in the mutation response, rename the query, and put it in a `.graphql` file with the same name as your component. A `.graphql` file can contain multiple queries and/or mutations, so if you already have a query defined, simply add your mutation in the same file. Lastly, run `yarn gql`.
+To modify data in your component, the process is similar to using a query. Go to Apollo Studio, go to the root, click on `mutation`, and click the add button next to the mutation you want to use. Select the fields that you want to load in the mutation response, rename the operation, and put it in a `.graphql` file with the same name as your component. A `.graphql` file can contain query and/or mutation operations, so if you already have an operation defined, simply add your operation to the same file. Lastly, run `yarn gql`.
 
 ```gql
 # Partners.graphql
@@ -206,7 +216,7 @@ mutation DeletePartner($accountListId: ID!, $contactId: ID!) {
 }
 ```
 
-Now you can import and call the `use...Mutation` hook. Like the query, it will have the same name as the mutation you just defined. The hook will return an array where the first item is a method that you can call to run the mutation. Make sure you pass in the variables you defined in your mutation. You can read more about the `use...Mutation` hooks [here](https://www.apollographql.com/docs/react/data/mutations).
+Now you can import and call the `use...Mutation` hook. Like query operations, it will have the same name as the operation you just defined. The hook will return an array where the first item is a method that you can call to run the mutation. Make sure you pass in the variables you defined in your operation. You can read more about the `use...Mutation` hooks [here](https://www.apollographql.com/docs/react/data/mutations).
 
 ```tsx
 // Partners.tsx
@@ -232,7 +242,7 @@ export const Partners: React.FC<PartnersProps> = ({ accountListId }) => {
       {loading
         ? 'Loading...'
         : data?.contacts.nodes.map((contact) => (
-            <div>
+            <div key={contact.id}>
               {contact.name}{' '}
               <button
                 onClick={() =>
@@ -256,7 +266,7 @@ In a large application like this, multiple components will end up referencing th
 
 Every time a query receives new data, Apollo recursively looks through the response to see which objects in its cache need to be updated. It identifies objects using their type and their `id` field. For example, if a contact is in the cache from a previous query that loaded 20 fields, and another query later on loads just the contact's name, as long as the `id` field matches a the `id` of contact in the cache, it will update the cached contact's modified fields and leave the others intact. Any component referencing that cached contact will automatically update without having to load the entire query again.
 
-**Important**: For cache normalization to work, you **must** add the `id` property to **every** object in **every** query and mutation you define. Otherwise, the server won't send the `id` and Apollo know that two objects from two different queries are actually the same. Here's an example of a deeply nested query and a mutation that have the `id`s needed:
+**Important**: For cache normalization to work, you **must** add the `id` property to **every** object in **every** query and mutation operation you define. Otherwise, the server won't send the `id` and Apollo know that two objects from two different queries are actually the same. Here's an example of a deeply nested query and a mutation that have the `id`s needed:
 
 ```gql
 query TaskDetails($accountListId: ID!) {
@@ -331,6 +341,7 @@ To add a new GraphQL query that interacts with the REST API, you will need to fo
 5. In the `dataHandler.ts` file for your query, rename the exported method to be appropriate for your query and modify it so that it takes the response from the REST API and returns data in the format returned by the GraphQL query. Make sure that the types match what you defined in the `.graphql` file. Also, make sure that the method you added to `graphql-rest.page.ts` imports and calls your datahandler.
 6. In the `resolvers.ts` file for your query, make sure that the `Query` property on the exported resolvers contains one property for each query you are adding (and the same for the `Mutation` property if you are adding mutations). The second argument of each of those query resolver functions will be an object containing the inputs to your query. Make sure they match the inputs you defined in your `.graphql`. Also make sure that the resolver functions call the `dataSources.mpdxRestApi` method that you defined in `graphq-rest.page.ts`.
 7. In `pages/api/Schema/index.ts` import the typedefs and resolvers for your new query and add them to the `buildSubgraphSchema` call.
+8. In your component, you can now create a query operation that references this query just like you would for any other query.
 
 ### Pagination
 
@@ -408,7 +419,7 @@ const handleLoadMore = () => {
 };
 ```
 
-If you want to load all the pages, use the `useFetchAllPages` hook. As long as your query accepts an `after` variable, this hook will load all the pages into `data`, and set `loading` to `false` once all pages have loaded. For this, the field you are querying needs to have its field policy set to `paginationFieldPolicy` in `src/lib/client.ts` so that Apollo will know to merge the results from the additional pages back into the result from the initial query. Consult the Apollo docs for more information.
+If you want to load all the pages, use the `useFetchAllPages` hook. As long as your operation accepts an `after` variable, this hook will load all the pages into `data`, and set `loading` to `false` once all pages have loaded. For this to work, the field you are querying needs to have its field policy set to `paginationFieldPolicy` in `src/lib/client.ts` so that Apollo will know to merge the results from the additional pages back into the result from the initial query. Consult the [Apollo docs](https://www.apollographql.com/docs/react/caching/cache-field-behavior/) for more information.
 
 ```ts
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
@@ -477,7 +488,7 @@ describe('AsyncComponent', () => {
 
 React Testing Library contains dozen of methods for finding elements. Read [this documentation](https://testing-library.com/docs/dom-testing-library/cheatsheet/#queries) to learn more.
 
-When testing components that load data through GraphQL, it is helpful to be able to control some or all of the data in the query response. Wrapping components in a `<GqlMockedProvider>` in the test lets us accomplish this. By default, `GqlMockedProvider` intercepts all GraphQL queries, looks at the schema to see what type each of the fields should be, and generates random data that matches the schema. It uses a seeded random number generator, so the random data it returns will be stable between test runs.
+When testing components that load data through GraphQL, it is helpful to be able to control some or all of the data in the query response. Wrapping components in a `<GqlMockedProvider>` in the test lets us accomplish this. By default, `GqlMockedProvider` intercepts all GraphQL queries, looks at the schema to see what type each of the fields should be, and generates random data that matches the schema. It uses a seeded random number generator, so the random data it returns will be stable between test runs. `GqlMockedProvider` is based on the [graphql-ergonomock](https://github.com/SurveyMonkey/graphql-ergonomock) library, which has more detailed documentation in its readme.
 
 ```tsx
 import { render } from '@testing-library/react';
@@ -496,7 +507,7 @@ describe('PartnersComponent', () => {
 });
 ```
 
-We can also mock certain fields in the query. For example, suppose that a component uses this GraphQL query:
+We can also mock certain fields in the query. For example, suppose that a component uses this GraphQL operation:
 
 ```gql
 query PartnerCommitments($accountListId: ID!) {
@@ -522,9 +533,10 @@ import { render } from '@testing-library/react';
 describe('PartnersComponent', () => {
   it('shows the contact name', async () => {
     const { findByText } = render(
+      // <{ PartnerCommitments: PartnerCommitmentsQuery }> tells TypeScript that we are passing in mocks for PartnerCommitments and that the type of those mocks should be PartnerCommitmentsQuery, which is the generated type of the PartnerCommitments operation
       <GqlMockedProvider<{ PartnerCommitments: PartnerCommitmentsQuery }>
         mocks={{
-          // This property tells GqlMockedProvider which query to mock and it must exactly match the name of the query defined in our .graphql file
+          // This property tells GqlMockedProvider which operation to mock and it must exactly match the name of the operation defined in our .graphql file
           PartnerCommitments: {
             contacts: {
               nodes: [
@@ -545,9 +557,9 @@ describe('PartnersComponent', () => {
 });
 ```
 
-**Important note**: the structure of the `mocks` object must _exactly_ match the structure of the query in the GraphQL file. If you miss a level of nesting or misspell a field, those mocks won't be used.
+**Important note**: the structure of the `mocks` object must _exactly_ match the structure of the query operation definition in the GraphQL file. If you miss a level of nesting or misspell a field, those mocks won't be used.
 
-Another common pattern in tests is checking that a GraphQL query or mutation is called with the expected inputs. To do this, we use the `onCall` prop. `GqlMockedProvider` calls it every time it receives a GraphQL query or mutation and we can pass it a Jest mocked function to check these calls.
+Another common pattern in tests is checking that a GraphQL operation is called with the expected inputs. To do this, we use the `onCall` prop. `GqlMockedProvider` calls it every time a component loads a query or executes a mutation. We can pass it a Jest mocked function to `onCall` to check these calls.
 
 ```gql
 query ContactDetails($accountListId: ID!, $contactId: ID!) {
@@ -577,7 +589,7 @@ describe('ContactComponent', () => {
     // calls[0] is the first call, and calls[0][0] is the first argument of the first call
     expect(mutationSpy.calls[0][0]).toMatchObject({
       operation: {
-        // Matches the name of the query defined in the component's .graphql file
+        // Matches the name of the query operation defined in the component's .graphql file
         operationName: 'ContactDetails',
         variables: {
           accountListId: 'account-list-1',
@@ -620,7 +632,7 @@ describe('ContactComponent', () => {
     // The first operation was the query to load the contact, so we test the second operation
     expect(mutationSpy.calls[1][0]).toMatchObject({
       operation: {
-        // Matches the name of the mutation defined in the component's .graphql file
+        // Matches the name of the mutation operation defined in the component's .graphql file
         operationName: 'DeletePartner',
         variables: {
           accountListId: 'account-list-1',
