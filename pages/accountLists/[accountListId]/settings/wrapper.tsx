@@ -30,7 +30,7 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
   children,
 }) => {
   const { appName } = useGetAppSettings();
-  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const [isNavListOpen, setNavListOpen] = useState(false);
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
   };
