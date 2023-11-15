@@ -152,6 +152,35 @@ describe('NotificationsTable', () => {
     expect(getAllByRole('checkbox')[8]).toBeChecked();
   });
 
+  it('Should select Call Partner Once Per Year checkboxes', async () => {
+    const { queryByTestId, getByTestId } = render(Components);
+
+    await waitFor(() =>
+      expect(queryByTestId('skeleton-notifications')).not.toBeInTheDocument(),
+    );
+
+    const appCheckbox = getByTestId('CALL_PARTNER_ONCE_PER_YEAR-app-checkbox');
+    const emailCheckbox = getByTestId(
+      'CALL_PARTNER_ONCE_PER_YEAR-email-checkbox',
+    );
+    const taskCheckbox = getByTestId(
+      'CALL_PARTNER_ONCE_PER_YEAR-task-checkbox',
+    );
+
+    expect(appCheckbox).not.toBeChecked();
+    expect(emailCheckbox).not.toBeChecked();
+    expect(taskCheckbox).not.toBeChecked();
+
+    // Check first row
+    userEvent.click(appCheckbox);
+    userEvent.click(emailCheckbox);
+    userEvent.click(taskCheckbox);
+
+    expect(appCheckbox).toBeChecked();
+    expect(emailCheckbox).toBeChecked();
+    expect(taskCheckbox).toBeChecked();
+  });
+
   it('Should send data to server on submit', async () => {
     const { queryByTestId, getByTestId, getAllByRole } = render(Components);
 
