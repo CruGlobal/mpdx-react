@@ -159,13 +159,15 @@ describe('NotificationsTable', () => {
       expect(queryByTestId('skeleton-notifications')).not.toBeInTheDocument(),
     );
 
-    const appCheckbox = getByTestId('CALL_PARTNER_ONCE_PER_YEAR-app-checkbox');
+    const appCheckbox = getByTestId(
+      'CALL_PARTNER_ONCE_PER_YEAR-app-checkbox',
+    ).querySelectorAll("input[type='checkbox']")[0] as HTMLInputElement;
     const emailCheckbox = getByTestId(
       'CALL_PARTNER_ONCE_PER_YEAR-email-checkbox',
-    );
+    ).querySelectorAll("input[type='checkbox']")[0] as HTMLInputElement;
     const taskCheckbox = getByTestId(
       'CALL_PARTNER_ONCE_PER_YEAR-task-checkbox',
-    );
+    ).querySelectorAll("input[type='checkbox']")[0] as HTMLInputElement;
 
     expect(appCheckbox).not.toBeChecked();
     expect(emailCheckbox).not.toBeChecked();

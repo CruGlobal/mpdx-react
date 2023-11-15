@@ -332,6 +332,7 @@ export const NotificationsTable: React.FC = () => {
                                 </StyledTableCell>
                                 <StyledTableCell align="right">
                                   <Checkbox
+                                    data-testid={`${type}-app-checkbox`}
                                     checked={notification.app}
                                     disabled={isSubmitting}
                                     onChange={(_, value) => {
@@ -340,13 +341,11 @@ export const NotificationsTable: React.FC = () => {
                                         value,
                                       );
                                     }}
-                                    inputProps={{
-                                      'data-testid': `${type}-app-checkbox`,
-                                    }}
                                   />
                                 </StyledTableCell>
                                 <StyledTableCell align="right">
                                   <Checkbox
+                                    data-testid={`${type}-email-checkbox`}
                                     checked={notification.email}
                                     disabled={isSubmitting}
                                     onChange={(_, value) => {
@@ -355,13 +354,11 @@ export const NotificationsTable: React.FC = () => {
                                         value,
                                       );
                                     }}
-                                    inputProps={{
-                                      'data-testid': `${type}-email-checkbox`,
-                                    }}
                                   />
                                 </StyledTableCell>
                                 <StyledTableCell align="right">
                                   <Checkbox
+                                    data-testid={`${type}-task-checkbox`}
                                     checked={notification.task}
                                     disabled={isSubmitting}
                                     onChange={(_, value) => {
@@ -369,9 +366,6 @@ export const NotificationsTable: React.FC = () => {
                                         `notifications.${idx}.task`,
                                         value,
                                       );
-                                    }}
-                                    inputProps={{
-                                      'data-testid': `${type}-task-checkbox`,
                                     }}
                                   />
                                 </StyledTableCell>
