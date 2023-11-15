@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import { Box, Typography, Skeleton, Alert, Button } from '@mui/material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
-  useGetPrayerlettersAccountQuery,
+  usePrayerlettersAccountQuery,
   useSyncPrayerlettersAccountMutation,
 } from './PrayerlettersAccount.generated';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
@@ -36,7 +36,7 @@ export const PrayerlettersAccordian: React.FC<AccordianProps> = ({
     data,
     loading,
     refetch: refetchPrayerlettersAccount,
-  } = useGetPrayerlettersAccountQuery({
+  } = usePrayerlettersAccountQuery({
     variables: {
       input: {
         accountListId: accountListId ?? '',
@@ -45,8 +45,8 @@ export const PrayerlettersAccordian: React.FC<AccordianProps> = ({
     skip: expandedPanel !== accordianName,
   });
 
-  const prayerlettersAccount = data?.getPrayerlettersAccount
-    ? data?.getPrayerlettersAccount[0]
+  const prayerlettersAccount = data?.prayerlettersAccount
+    ? data?.prayerlettersAccount[0]
     : null;
 
   useEffect(() => {

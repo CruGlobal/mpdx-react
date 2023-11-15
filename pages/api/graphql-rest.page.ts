@@ -105,9 +105,9 @@ import {
   UpdateMailchimpAccountResponse,
 } from './Schema/Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/datahandler';
 import {
-  GetPrayerlettersAccountResponse,
-  GetPrayerlettersAccount,
-} from './Schema/Settings/Preferences/Intergrations/Prayerletters/getPrayerlettersAccount/datahandler';
+  PrayerlettersAccountResponse,
+  PrayerlettersAccount,
+} from './Schema/Settings/Preferences/Intergrations/Prayerletters/prayerlettersAccount/datahandler';
 import { SyncPrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/datahandler';
 import { DeletePrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/datahandler';
 import { SendToChalkline } from './Schema/Settings/Preferences/Intergrations/Chalkine/sendToChalkline/datahandler';
@@ -1020,14 +1020,15 @@ class MpdxRestApi extends RESTDataSource {
   // Prayerletters Integration
   //
   //
-  async getPrayerlettersAccount(accountListId) {
+  async prayerlettersAccount(accountListId) {
     // Catch since it will return an error if no account found
     try {
-      const { data }: { data: GetPrayerlettersAccountResponse } =
-        await this.get(`account_lists/${accountListId}/prayer_letters_account`);
-      return GetPrayerlettersAccount(data);
+      const { data }: { data: PrayerlettersAccountResponse } = await this.get(
+        `account_lists/${accountListId}/prayer_letters_account`,
+      );
+      return PrayerlettersAccount(data);
     } catch {
-      return GetPrayerlettersAccount(null);
+      return PrayerlettersAccount(null);
     }
   }
 

@@ -1,5 +1,5 @@
 extend type Query {
-  getPrayerlettersAccount(
+  prayerlettersAccount(
     input: PrayerlettersAccountInput!
   ): [PrayerlettersAccount]
 }

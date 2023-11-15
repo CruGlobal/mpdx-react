@@ -1,10 +1,10 @@
-export interface GetPrayerlettersAccountResponse {
-  attributes: Omit<GetPrayerlettersAccount, 'id'>;
+export interface PrayerlettersAccountResponse {
+  attributes: Omit<PrayerlettersAccount, 'id'>;
   id: string;
   type: string;
 }
 
-interface GetPrayerlettersAccount {
+interface PrayerlettersAccount {
   id: string;
   created_at: string;
   updated_at: string;
@@ -12,14 +12,14 @@ interface GetPrayerlettersAccount {
   valid_token: boolean;
 }
 
-interface GetPrayerlettersAccountCamel {
+interface PrayerlettersAccountCamel {
   id: string;
   validToken: boolean;
 }
 
-export const GetPrayerlettersAccount = (
-  data: GetPrayerlettersAccountResponse | null,
-): GetPrayerlettersAccountCamel[] => {
+export const PrayerlettersAccount = (
+  data: PrayerlettersAccountResponse | null,
+): PrayerlettersAccountCamel[] => {
   // Returning inside an array so I can mock an empty response from GraphQL
   // without the test thinking I want it to create custom random test data.
   if (!data) return [];

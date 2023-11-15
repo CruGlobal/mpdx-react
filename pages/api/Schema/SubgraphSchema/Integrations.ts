@@ -37,8 +37,8 @@ import { DeleteMailchimpAccountResolvers } from '../Settings/Preferences/Intergr
 // Prayerletters INTEGRATION
 //
 // Get Account
-import GetPrayerlettersAccountTypeDefs from '../Settings/Preferences/Intergrations/Prayerletters/getPrayerlettersAccount/getPrayerlettersAccount.graphql';
-import { GetPrayerlettersAccountResolvers } from '../Settings/Preferences/Intergrations/Prayerletters/getPrayerlettersAccount/resolvers';
+import PrayerlettersAccountTypeDefs from '../Settings/Preferences/Intergrations/Prayerletters/prayerlettersAccount/prayerlettersAccount.graphql';
+import { PrayerlettersAccountResolvers } from '../Settings/Preferences/Intergrations/Prayerletters/prayerlettersAccount/resolvers';
 // Sync Account
 import SyncPrayerlettersAccountTypeDefs from '../Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/syncPrayerlettersAccount.graphql';
 import { SyncPrayerlettersAccountResolvers } from '../Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/resolvers';
@@ -94,8 +94,8 @@ export const integrationSchema = [
     resolvers: DeleteMailchimpAccountResolvers,
   },
   {
-    typeDefs: GetPrayerlettersAccountTypeDefs,
-    resolvers: GetPrayerlettersAccountResolvers,
+    typeDefs: PrayerlettersAccountTypeDefs,
+    resolvers: PrayerlettersAccountResolvers,
   },
   {
     typeDefs: SyncPrayerlettersAccountTypeDefs,

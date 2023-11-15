@@ -8,7 +8,7 @@ import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking'
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import * as Types from '../../../../../graphql/types.generated';
 import { PrayerlettersAccordian } from './PrayerlettersAccordian';
-import { GetPrayerlettersAccountQuery } from './PrayerlettersAccount.generated';
+import { PrayerlettersAccountQuery } from './PrayerlettersAccount.generated';
 
 jest.mock('next-auth/react');
 
@@ -92,11 +92,11 @@ describe('PrayerlettersAccount', () => {
       const { getByText } = render(
         Components(
           <GqlMockedProvider<{
-            GetPrayerlettersAccount: GetPrayerlettersAccountQuery | undefined;
+            PrayerlettersAccount: PrayerlettersAccountQuery | undefined;
           }>
             mocks={{
-              GetPrayerlettersAccount: {
-                getPrayerlettersAccount: [],
+              PrayerlettersAccount: {
+                prayerlettersAccount: [],
               },
             }}
           >
@@ -132,11 +132,11 @@ describe('PrayerlettersAccount', () => {
       const { queryByText, getByText, getByRole } = render(
         Components(
           <GqlMockedProvider<{
-            GetPrayerlettersAccount: GetPrayerlettersAccountQuery;
+            PrayerlettersAccount: PrayerlettersAccountQuery;
           }>
             mocks={{
-              GetPrayerlettersAccount: {
-                getPrayerlettersAccount: [prayerlettersAccount],
+              PrayerlettersAccount: {
+                prayerlettersAccount: [prayerlettersAccount],
               },
             }}
             onCall={mutationSpy}
@@ -201,11 +201,11 @@ describe('PrayerlettersAccount', () => {
       const { queryByText, getByRole } = render(
         Components(
           <GqlMockedProvider<{
-            GetPrayerlettersAccount: GetPrayerlettersAccountQuery;
+            PrayerlettersAccount: PrayerlettersAccountQuery;
           }>
             mocks={{
-              GetPrayerlettersAccount: {
-                getPrayerlettersAccount: [prayerlettersAccount],
+              PrayerlettersAccount: {
+                prayerlettersAccount: [prayerlettersAccount],
               },
             }}
             onCall={mutationSpy}
@@ -264,11 +264,11 @@ describe('PrayerlettersAccount', () => {
       const { queryByText, getByRole } = render(
         Components(
           <GqlMockedProvider<{
-            GetPrayerlettersAccount: GetPrayerlettersAccountQuery;
+            PrayerlettersAccount: PrayerlettersAccountQuery;
           }>
             mocks={{
-              GetPrayerlettersAccount: {
-                getPrayerlettersAccount: [prayerlettersAccount],
+              PrayerlettersAccount: {
+                prayerlettersAccount: [prayerlettersAccount],
               },
             }}
             onCall={mutationSpy}
