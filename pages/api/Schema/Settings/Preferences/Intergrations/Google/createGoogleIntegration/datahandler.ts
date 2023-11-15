@@ -44,7 +44,7 @@ export const CreateGoogleIntegration = (
   data: CreateGoogleIntegrationResponse,
 ): CreateGoogleIntegrationAttributesCamel => {
   const attributes = {} as Omit<CreateGoogleIntegrationAttributesCamel, 'id'>;
-  Object.keys(data.attributes).map((key) => {
+  Object.keys(data.attributes).forEach((key) => {
     attributes[snakeToCamel(key)] = data.attributes[key];
   });
 
