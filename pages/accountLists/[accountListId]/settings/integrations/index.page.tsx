@@ -2,6 +2,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GetServerSideProps } from 'next';
 import { getToken } from 'next-auth/jwt';
+import { useRouter } from 'next/router';
 import { suggestArticles } from 'src/lib/helpScout';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { TheKeyAccordian } from 'src/components/Settings/integrations/Key/TheKeyAccordian';
@@ -11,20 +12,19 @@ import { MailchimpAccordian } from 'src/components/Settings/integrations/Mailchi
 import { PrayerlettersAccordian } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordian';
 import { ChalklineAccordian } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordian';
 import { SettingsWrapper } from '../wrapper';
-import { IntegrationsContextProvider } from './integrationsContext';
+import { IntegrationsContextProvider } from './IntegrationsContext';
 
 interface Props {
   apiToken: string;
-  selectedTab: string;
 }
 
-const Integrations = ({ apiToken, selectedTab }: Props): ReactElement => {
+const Integrations = ({ apiToken }: Props): ReactElement => {
   const { t } = useTranslation();
-  const [expandedPanel, setExpandedPanel] = useState('');
+  const { query } = useRouter();
+  const [expandedPanel, setExpandedPanel] = useState(query?.selectedTab || '');
 
   useEffect(() => {
     suggestArticles('HS_SETTINGS_SERVICES_SUGGESTIONS');
-    setExpandedPanel(selectedTab);
   }, []);
 
   const handleAccordionChange = (panel: string) => {
@@ -71,22 +71,16 @@ const Integrations = ({ apiToken, selectedTab }: Props): ReactElement => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({
-  query,
-  req,
-}) => {
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const jwtToken = (await getToken({
     req,
     secret: process.env.JWT_SECRET as string,
   })) as { apiToken: string } | null;
-
   const apiToken = jwtToken?.apiToken;
-  const selectedTab = query?.selectedTab ?? '';
 
   return {
     props: {
       apiToken,
-      selectedTab,
     },
   };
 };
