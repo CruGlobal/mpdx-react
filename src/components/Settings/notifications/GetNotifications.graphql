@@ -1,4 +1,4 @@
-query getPreferencesNotifications($accountListId: ID!) {
+query GetPreferencesNotifications($accountListId: ID!) {
   notificationPreferences(accountListId: $accountListId) {
     nodes {
       app
@@ -13,7 +13,7 @@ query getPreferencesNotifications($accountListId: ID!) {
   }
 }
 
-query getNotificationConstants {
+query GetNotificationConstants {
   constant {
     notificationTranslatedHashes {
       id

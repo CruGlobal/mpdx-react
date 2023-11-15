@@ -28,22 +28,41 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
-const createNotification = (type) => ({
+const createNotification = (type, id) => ({
   app: false,
   email: false,
   task: false,
   notificationType: {
+    id,
     descriptionTemplate: type,
     type,
   },
 });
+
+const createConstant = (type, id) => ({
+  id: type,
+  key: id,
+  value: type,
+});
 const mocks = {
-  getPreferencesNotifications: {
+  GetPreferencesNotifications: {
     notificationPreferences: {
       nodes: [
-        createNotification(NotificationTypeTypeEnum.CallPartnerOncePerYear),
-        createNotification(NotificationTypeTypeEnum.LargerGift),
-        createNotification(NotificationTypeTypeEnum.LongTimeFrameGift),
+        createNotification(
+          NotificationTypeTypeEnum.CallPartnerOncePerYear,
+          '111',
+        ),
+        createNotification(NotificationTypeTypeEnum.LargerGift, '222'),
+        createNotification(NotificationTypeTypeEnum.LongTimeFrameGift, '333'),
+      ],
+    },
+  },
+  GetNotificationConstants: {
+    constant: {
+      notificationTranslatedHashes: [
+        createConstant(NotificationTypeTypeEnum.CallPartnerOncePerYear, '111'),
+        createConstant(NotificationTypeTypeEnum.LargerGift, '222'),
+        createConstant(NotificationTypeTypeEnum.LongTimeFrameGift, '333'),
       ],
     },
   },
@@ -76,7 +95,10 @@ describe('NotificationsTable', () => {
           mutationSpy.mock.calls[0][0].operation.variables.accountListId,
         ).toEqual(accountListId);
       expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
-        'getPreferencesNotifications',
+        'GetPreferencesNotifications',
+      );
+      expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
+        'GetNotificationConstants',
       );
     });
 
@@ -131,7 +153,7 @@ describe('NotificationsTable', () => {
   });
 
   it('Should send data to server on submit', async () => {
-    const { queryByTestId, getByTestId, getByRole } = render(Components);
+    const { queryByTestId, getByTestId, getAllByRole } = render(Components);
 
     await waitFor(() =>
       expect(queryByTestId('skeleton-notifications')).not.toBeInTheDocument(),
@@ -140,18 +162,18 @@ describe('NotificationsTable', () => {
     userEvent.click(getByTestId('select-all-app'));
 
     userEvent.click(
-      getByRole('button', {
-        name: /save/i,
-      }),
+      getAllByRole('button', {
+        name: 'Save Changes',
+      })[0],
     );
 
     await waitFor(() => {
       // mutationSpy.mock.calls[1][0].operation.variables.input
-      expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
+      expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
         'UpdateNotificationPreferences',
       );
 
-      expect(mutationSpy.mock.calls[1][0].operation.variables.input).toEqual({
+      expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
         accountListId: accountListId,
         attributes: [
           {
