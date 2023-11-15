@@ -95,9 +95,9 @@ import {
 } from './Schema/Settings/Preferences/Intergrations/Google/createGoogleIntegration/datahandler';
 
 import {
-  GetMailchimpAccountResponse,
-  GetMailchimpAccount,
-} from './Schema/Settings/Preferences/Intergrations/Mailchimp/getMailchimpAccount/datahandler';
+  MailchimpAccountResponse,
+  MailchimpAccount,
+} from './Schema/Settings/Preferences/Intergrations/Mailchimp/mailchimpAccount/datahandler';
 import { SyncMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/syncMailchimpAccount/datahandler';
 import { DeleteMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/datahandler';
 import {
@@ -969,15 +969,15 @@ class MpdxRestApi extends RESTDataSource {
   // Mailchimp Integration
   //
   //
-  async getMailchimpAccount(accountListId) {
+  async mailchimpAccount(accountListId) {
     // Catch since it will return an error if no account found
     try {
-      const { data }: { data: GetMailchimpAccountResponse } = await this.get(
+      const { data }: { data: MailchimpAccountResponse } = await this.get(
         `account_lists/${accountListId}/mail_chimp_account`,
       );
-      return GetMailchimpAccount(data);
+      return MailchimpAccount(data);
     } catch {
-      return GetMailchimpAccount(null);
+      return MailchimpAccount(null);
     }
   }
 

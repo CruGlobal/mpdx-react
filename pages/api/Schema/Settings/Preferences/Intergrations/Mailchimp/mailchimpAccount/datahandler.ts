@@ -1,17 +1,17 @@
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 
-export interface GetMailchimpAccountResponse {
-  attributes: Omit<GetMailchimpAccount, 'id'>;
+export interface MailchimpAccountResponse {
+  attributes: Omit<MailchimpAccount, 'id'>;
   id: string;
   type: string;
 }
 
-export interface GetMailchimpAccount {
+export interface MailchimpAccount {
   id: string;
   active: boolean;
   auto_log_campaigns: boolean;
   created_at: string;
-  lists_available_for_newsletters: GetMailchimpAccountNewsletters;
+  lists_available_for_newsletters: MailchimpAccountNewsletters;
   lists_link: string;
   lists_present: boolean;
   primary_list_id: string;
@@ -23,17 +23,17 @@ export interface GetMailchimpAccount {
   validation_error: string;
 }
 
-interface GetMailchimpAccountNewsletters {
+interface MailchimpAccountNewsletters {
   id: string;
   name: string;
 }
 
-interface GetMailchimpAccountCamel {
+interface MailchimpAccountCamel {
   id: string;
   active: boolean;
   autoLogCampaigns: boolean;
   createdAt: string;
-  listsAvailableForNewsletters: GetMailchimpAccountNewsletters[];
+  listsAvailableForNewsletters: MailchimpAccountNewsletters[];
   listsLink: string;
   listsPresent: boolean;
   primaryListId: string;
@@ -45,14 +45,14 @@ interface GetMailchimpAccountCamel {
   validationError: string;
 }
 
-export const GetMailchimpAccount = (
-  data: GetMailchimpAccountResponse | null,
-): GetMailchimpAccountCamel[] => {
+export const MailchimpAccount = (
+  data: MailchimpAccountResponse | null,
+): MailchimpAccountCamel[] => {
   // Returning inside an array so I can mock an empty response from GraphQL
   // without the test thinking I want it to create custom random test data.
   if (!data) return [];
-  const attributes = {} as Omit<GetMailchimpAccountCamel, 'id'>;
-  Object.keys(data.attributes).map((key) => {
+  const attributes = {} as Omit<MailchimpAccountCamel, 'id'>;
+  Object.keys(data.attributes).forEach((key) => {
     attributes[snakeToCamel(key)] = data.attributes[key];
   });
   return [

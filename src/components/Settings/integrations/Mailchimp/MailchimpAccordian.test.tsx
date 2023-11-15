@@ -2,7 +2,7 @@ import { render, waitFor, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import { GetMailchimpAccountQuery } from './MailchimpAccount.generated';
+import { MailchimpAccountQuery } from './MailchimpAccount.generated';
 import * as Types from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
@@ -122,11 +122,11 @@ describe('MailchimpAccount', () => {
       const { getByText } = render(
         Components(
           <GqlMockedProvider<{
-            GetMailchimpAccount: GetMailchimpAccountQuery | undefined;
+            MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
             mocks={{
-              GetMailchimpAccount: {
-                getMailchimpAccount: [],
+              MailchimpAccount: {
+                mailchimpAccount: [],
               },
             }}
             onCall={mutationSpy}
@@ -163,11 +163,11 @@ describe('MailchimpAccount', () => {
       const { queryByText } = render(
         Components(
           <GqlMockedProvider<{
-            GetMailchimpAccount: GetMailchimpAccountQuery | undefined;
+            MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
             mocks={{
-              GetMailchimpAccount: {
-                getMailchimpAccount: [mailchimpAccount],
+              MailchimpAccount: {
+                mailchimpAccount: [mailchimpAccount],
               },
             }}
             onCall={mutationSpy}
@@ -206,11 +206,11 @@ describe('MailchimpAccount', () => {
       const { queryByText } = render(
         Components(
           <GqlMockedProvider<{
-            GetMailchimpAccount: GetMailchimpAccountQuery | undefined;
+            MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
             mocks={{
-              GetMailchimpAccount: {
-                getMailchimpAccount: [mailchimpAccount],
+              MailchimpAccount: {
+                mailchimpAccount: [mailchimpAccount],
               },
             }}
             onCall={mutationSpy}
@@ -241,11 +241,11 @@ describe('MailchimpAccount', () => {
       const { getByText, getByRole } = render(
         Components(
           <GqlMockedProvider<{
-            GetMailchimpAccount: GetMailchimpAccountQuery | undefined;
+            MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
             mocks={{
-              GetMailchimpAccount: {
-                getMailchimpAccount: [mailchimpAccount],
+              MailchimpAccount: {
+                mailchimpAccount: [mailchimpAccount],
               },
             }}
             onCall={mutationSpy}
@@ -308,11 +308,11 @@ describe('MailchimpAccount', () => {
       const { getByText, getByRole } = render(
         Components(
           <GqlMockedProvider<{
-            GetMailchimpAccount: GetMailchimpAccountQuery | undefined;
+            MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
             mocks={{
-              GetMailchimpAccount: {
-                getMailchimpAccount: [mailchimpAccount],
+              MailchimpAccount: {
+                mailchimpAccount: [mailchimpAccount],
               },
             }}
             onCall={mutationSpy}
@@ -366,7 +366,7 @@ describe('MailchimpAccount', () => {
       });
       // refetch account
       expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
-        'GetMailchimpAccount',
+        'MailchimpAccount',
       );
     });
     it('should show settings overview', async () => {
@@ -375,11 +375,11 @@ describe('MailchimpAccount', () => {
       const { getByText } = render(
         Components(
           <GqlMockedProvider<{
-            GetMailchimpAccount: GetMailchimpAccountQuery | undefined;
+            MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
             mocks={{
-              GetMailchimpAccount: {
-                getMailchimpAccount: [mailchimpAccount],
+              MailchimpAccount: {
+                mailchimpAccount: [mailchimpAccount],
               },
             }}
             onCall={mutationSpy}
@@ -411,11 +411,11 @@ describe('MailchimpAccount', () => {
       const { getByText, getByRole } = render(
         Components(
           <GqlMockedProvider<{
-            GetMailchimpAccount: GetMailchimpAccountQuery | undefined;
+            MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
             mocks={{
-              GetMailchimpAccount: {
-                getMailchimpAccount: [mailchimpAccount],
+              MailchimpAccount: {
+                mailchimpAccount: [mailchimpAccount],
               },
             }}
             onCall={mutationSpy}
@@ -468,11 +468,11 @@ describe('MailchimpAccount', () => {
       const { queryByText, getByRole } = render(
         Components(
           <GqlMockedProvider<{
-            GetMailchimpAccount: GetMailchimpAccountQuery | undefined;
+            MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
             mocks={{
-              GetMailchimpAccount: {
-                getMailchimpAccount: [mailchimpAccount],
+              MailchimpAccount: {
+                mailchimpAccount: [mailchimpAccount],
               },
             }}
             onCall={mutationSpy}

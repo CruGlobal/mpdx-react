@@ -22,8 +22,8 @@ import { DeleteGoogleAccountResolvers } from '../Settings/Preferences/Intergrati
 // MAILCHIMP INTEGRATION
 //
 // Get Account
-import GetMailchimpAccountTypeDefs from '../Settings/Preferences/Intergrations/Mailchimp/getMailchimpAccount/getMailchimpAccount.graphql';
-import { GetMailchimpAccountResolvers } from '../Settings/Preferences/Intergrations/Mailchimp/getMailchimpAccount/resolvers';
+import MailchimpAccountTypeDefs from '../Settings/Preferences/Intergrations/Mailchimp/mailchimpAccount/mailchimpAccount.graphql';
+import { MailchimpAccountResolvers } from '../Settings/Preferences/Intergrations/Mailchimp/mailchimpAccount/resolvers';
 // Update Account
 import UpdateMailchimpAccountTypeDefs from '../Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/updateMailchimpAccount.graphql';
 import { UpdateMailchimpAccountResolvers } from '../Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/resolvers';
@@ -78,8 +78,8 @@ export const integrationSchema = [
     resolvers: CreateGoogleIntegrationResolvers,
   },
   {
-    typeDefs: GetMailchimpAccountTypeDefs,
-    resolvers: GetMailchimpAccountResolvers,
+    typeDefs: MailchimpAccountTypeDefs,
+    resolvers: MailchimpAccountResolvers,
   },
   {
     typeDefs: UpdateMailchimpAccountTypeDefs,

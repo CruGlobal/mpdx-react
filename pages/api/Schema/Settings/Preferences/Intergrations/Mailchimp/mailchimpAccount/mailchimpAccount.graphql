@@ -1,5 +1,5 @@
 extend type Query {
-  getMailchimpAccount(input: MailchimpAccountInput!): [MailchimpAccount]
+  mailchimpAccount(input: MailchimpAccountInput!): [MailchimpAccount]
 }
 
 input MailchimpAccountInput {
@@ -11,7 +11,7 @@ type MailchimpAccount {
   active: Boolean!
   autoLogCampaigns: Boolean!
   createdAt: String
-  listsAvailableForNewsletters: [listsAvailableForNewsletters]
+  listsAvailableForNewsletters: [ListsAvailableForNewsletters]
   listsLink: String!
   listsPresent: Boolean!
   primaryListId: ID
@@ -23,7 +23,7 @@ type MailchimpAccount {
   validationError: String
 }
 
-type listsAvailableForNewsletters {
+type ListsAvailableForNewsletters {
   id: ID!
   name: String!
 }

@@ -21,10 +21,10 @@ import {
 } from '@mui/material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
-  useGetMailchimpAccountQuery,
+  useMailchimpAccountQuery,
   useUpdateMailchimpAccountMutation,
-  GetMailchimpAccountDocument,
-  GetMailchimpAccountQuery,
+  MailchimpAccountDocument,
+  MailchimpAccountQuery,
   useSyncMailchimpAccountMutation,
 } from './MailchimpAccount.generated';
 import * as Types from '../../../../../graphql/types.generated';
@@ -74,8 +74,8 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
   const {
     data,
     loading,
-    refetch: refetchGetMailchimpAccount,
-  } = useGetMailchimpAccountQuery({
+    refetch: refetchMailchimpAccount,
+  } = useMailchimpAccountQuery({
     variables: {
       input: {
         accountListId: accountListId ?? '',
@@ -84,8 +84,8 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
     skip: !accountListId,
   });
 
-  const mailchimpAccount = data?.getMailchimpAccount
-    ? data.getMailchimpAccount[0]
+  const mailchimpAccount = data?.mailchimpAccount
+    ? data.mailchimpAccount[0]
     : null;
 
   useEffect(() => {
@@ -121,12 +121,12 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
       },
       update: (cache) => {
         const query = {
-          query: GetMailchimpAccountDocument,
+          query: MailchimpAccountDocument,
           variables: {
             accountListId,
           },
         };
-        const dataFromCache = cache.readQuery<GetMailchimpAccountQuery>(query);
+        const dataFromCache = cache.readQuery<MailchimpAccountQuery>(query);
 
         if (dataFromCache) {
           const data = {
@@ -382,7 +382,7 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
         <DeleteMailchimpAccountModal
           accountListId={accountListId ?? ''}
           handleClose={handleDeleteModalClose}
-          refetchMailchimpAccount={refetchGetMailchimpAccount}
+          refetchMailchimpAccount={refetchMailchimpAccount}
         />
       )}
     </AccordionItem>

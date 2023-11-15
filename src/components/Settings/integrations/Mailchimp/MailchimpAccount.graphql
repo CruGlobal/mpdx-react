@@ -1,5 +1,5 @@
-query GetMailchimpAccount($input: MailchimpAccountInput!) {
-  getMailchimpAccount(input: $input) {
+query MailchimpAccount($input: MailchimpAccountInput!) {
+  mailchimpAccount(input: $input) {
     id
     active
     autoLogCampaigns
