@@ -112,7 +112,7 @@ describe('DeleteGoogleAccountModal', () => {
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        'MPDX removed your integration with Google.',
+        '{{appName}} removed your integration with Google.',
         {
           variant: 'success',
         },

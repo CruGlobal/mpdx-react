@@ -44,14 +44,17 @@ export const DeleteGoogleAccountModal: React.FC<
         });
       },
       onCompleted: () => {
-        enqueueSnackbar(t('MPDX removed your integration with Google.'), {
-          variant: 'success',
-        });
+        enqueueSnackbar(
+          t('{{appName}} removed your integration with Google.'),
+          {
+            variant: 'success',
+          },
+        );
         handleClose();
       },
       onError: () => {
         enqueueSnackbar(
-          t("MPDX couldn't save your configuration changes for Google."),
+          t("{{appName}} couldn't save your configuration changes for Google."),
           {
             variant: 'error',
           },

@@ -114,6 +114,7 @@ describe('MailchimpAccount', () => {
 
   describe('Not Connected', () => {
     it('should render Mailchimp Overview', async () => {
+      process.env.SITE_URL = 'https://next.mpdx.org';
       const mutationSpy = jest.fn();
       const { getByText } = render(
         Components(
@@ -142,7 +143,7 @@ describe('MailchimpAccount', () => {
 
       expect(getByText('Connect MailChimp')).toHaveAttribute(
         'href',
-        `https://auth.mpdx.org/auth/user/mailchimp?account_list_id=account-list-1&redirect_to=http%3A%2F%2Flocalhost%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dmailchimp&access_token=apiToken`,
+        `https://auth.mpdx.org/auth/user/mailchimp?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dmailchimp&access_token=apiToken`,
       );
     });
   });

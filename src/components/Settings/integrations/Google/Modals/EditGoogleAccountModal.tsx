@@ -13,6 +13,7 @@ import {
   Button,
 } from '@mui/material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
   useGoogleAccountIntegrationsQuery,
   GoogleAccountIntegrationsDocument,
@@ -51,10 +52,12 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
   oAuth,
 }) => {
   const { t } = useTranslation();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [tabSelected, setTabSelected] = useState<tabsEnum>(tabsEnum.calendar);
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
+  const [tabSelected, setTabSelected] = useState<tabsEnum>(tabsEnum.calendar);
 
   const [updateGoogleIntegration] = useUpdateGoogleIntegrationMutation();
   const [createGoogleIntegration] = useCreateGoogleIntegrationMutation();
@@ -225,20 +228,24 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
           !googleAccountDetails?.calendarIntegration &&
           tabSelected === tabsEnum.calendar && (
             <Typography>
-              {t(`MPDX can automatically update your google calendar with your tasks.
+              {t(
+                `{{appName}} can automatically update your google calendar with your tasks.
             Once you enable this feature, you'll be able to choose which
-            types of tasks you want to sync. By default MPDX will add
-            'Appointment' tasks to your calendar.`)}
+            types of tasks you want to sync. By default {{appName}} will add
+            'Appointment' tasks to your calendar.`,
+                { appName },
+              )}
             </Typography>
           )}
 
         {tabSelected === tabsEnum.setup && (
           <Typography>
             {t(
-              `If the link between MPDX and your Google account breaks, 
+              `If the link between {{appName}} and your Google account breaks, 
               click the button below to re-establish the connection. 
               (You should only need to do this if you receive an email 
-              from MPDX)`,
+              from {{appName}})`,
+              { appName },
             )}
           </Typography>
         )}

@@ -6,6 +6,7 @@ import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useGoogleAccountsQuery } from './googleAccounts.generated';
 import { GoogleAccountAttributes } from '../../../../../graphql/types.generated';
 import theme from 'src/theme';
@@ -81,6 +82,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
   });
   const googleAccounts = data?.googleAccounts;
   const accountListId = useAccountListId();
+  const { appName } = useGetAppSettings();
   const { apiToken } = useContext(
     IntegrationsContext,
   ) as IntegrationsContextType;
@@ -127,24 +129,32 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
               Ministry Partners.`)}
             </Typography>
             <Typography mt={2}>
-              {t(`By synchronizing your Google services with MPDX, you will be able
-              to:`)}
+              {t(
+                `By synchronizing your Google services with {{appName}}, you will be able
+              to:`,
+                { appName },
+              )}
             </Typography>
             <StyledList>
               <StyledListItem>
-                {t('See MPDX tasks in your Google Calendar')}
+                {t('See {{appName}} tasks in your Google Calendar', {
+                  appName,
+                })}
               </StyledListItem>
               <StyledListItem>
-                {t('Import Google Contacts into MPDX')}
+                {t('Import Google Contacts into {{appName}}', { appName })}
               </StyledListItem>
               <StyledListItem>
                 {t('Keep your Contacts in sync with your Google Contacts')}
               </StyledListItem>
             </StyledList>
             <Typography>
-              {t(`Connect your Google account to begin, and then setup specific
-              settings for Google Calendar and Contacts. MPDX leaves you in
-              control of how each service stays in sync.`)}
+              {t(
+                `Connect your Google account to begin, and then setup specific
+              settings for Google Calendar and Contacts. {{appName}} leaves you in
+              control of how each service stays in sync.`,
+                { appName },
+              )}
             </Typography>
           </>
         )}
@@ -177,9 +187,12 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
               {account?.tokenExpired && (
                 <>
                   <Alert severity="warning" style={{ marginTop: '15px' }}>
-                    {t(`The link between MPDX and your Google account stopped working. Click "Refresh Google Account" to
+                    {t(
+                      `The link between {{appName}} and your Google account stopped working. Click "Refresh Google Account" to
               re-enable it. After that, you'll need to manually re-enable any integrations that you had set
-              already.`)}
+              already.`,
+                      { appName },
+                    )}
                   </Alert>
                   <StyledServicesButton variant="outlined" href={oAuth}>
                     {t('Refresh Google Account')}

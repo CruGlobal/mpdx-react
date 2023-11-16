@@ -4,6 +4,7 @@ import { Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useSendToChalklineMutation } from './SendToChalkline.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
@@ -19,6 +20,7 @@ export const ChalklineAccordion: React.FC<AccordionProps> = ({
   const accountListId = useAccountListId();
   const [sendToChalkline] = useSendToChalklineMutation();
   const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
   const handleOpenModal = () => setShowModal(true);
 
   const handleCloseModal = () => {
@@ -74,7 +76,8 @@ export const ChalklineAccordion: React.FC<AccordionProps> = ({
         isOpen={showModal}
         title={t('Confirm')}
         message={t(
-          'Would you like MPDX to email Chalkline your newsletter list and open their order form in a new tab?',
+          'Would you like {{appName}} to email Chalkline your newsletter list and open their order form in a new tab?',
+          { appName },
         )}
         handleClose={handleCloseModal}
         mutation={handleSendListToChalkLine}

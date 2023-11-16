@@ -232,11 +232,12 @@ export const OrganizationAddAccountModal: React.FC<
               />
             </StyledBox>
 
-            {!selectedOrganization && (
-              <Button onClick={showOrganizationHelp}>
-                {t("Can't find your organization?")}
-              </Button>
-            )}
+            {!selectedOrganization &&
+              !!variables.HS_SETUP_FIND_ORGANIZATION && (
+                <Button onClick={showOrganizationHelp}>
+                  {t("Can't find your organization?")}
+                </Button>
+              )}
 
             {organizationType === OrganizationTypesEnum.MINISTRY && (
               <WarningBox>

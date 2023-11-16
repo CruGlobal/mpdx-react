@@ -246,7 +246,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for mpdx to push tasks to:/i),
+        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
@@ -343,7 +343,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for mpdx to push tasks to:/i),
+        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
@@ -406,7 +406,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for mpdx to push tasks to:/i),
+        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
@@ -460,7 +460,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for mpdx to push tasks to:/i),
+        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 

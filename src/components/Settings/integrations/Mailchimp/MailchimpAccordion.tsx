@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useMemo, ReactElement } from 'react';
+import { useState, useContext, useMemo, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import { Formik } from 'formik';
@@ -62,7 +62,6 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-  const [oAuth, setOAuth] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -90,15 +89,11 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
     ? data.mailchimpAccount[0]
     : null;
 
-  useEffect(() => {
-    setOAuth(
-      `${
-        process.env.OAUTH_URL
-      }/auth/user/mailchimp?account_list_id=${accountListId}&redirect_to=${window.encodeURIComponent(
-        `${window.location.origin}/accountLists/${accountListId}/settings/integrations?selectedTab=mailchimp`,
-      )}&access_token=${apiToken}`,
-    );
-  }, []);
+  const oAuth = `${
+    process.env.OAUTH_URL
+  }/auth/user/mailchimp?account_list_id=${accountListId}&redirect_to=${window.encodeURIComponent(
+    `${process.env.SITE_URL}/accountLists/${accountListId}/settings/integrations?selectedTab=mailchimp`,
+  )}&access_token=${apiToken}`;
 
   const MailchimpSchema: yup.SchemaOf<
     Pick<Types.MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>

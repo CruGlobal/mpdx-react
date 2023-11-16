@@ -16,6 +16,7 @@ import {
   FormHelperText,
 } from '@mui/material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
   GoogleAccountIntegrationsDocument,
   GoogleAccountIntegrationsQuery,
@@ -69,7 +70,7 @@ export const EditGoogleIntegrationForm: React.FC<
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
-
+  const { appName } = useGetAppSettings();
   const [updateGoogleIntegration] = useUpdateGoogleIntegrationMutation();
 
   const { data: actvitiesData } = useGetIntegrationActivitiesQuery();
@@ -151,7 +152,9 @@ export const EditGoogleIntegrationForm: React.FC<
       {!loading && (
         <>
           <Typography>
-            {t('Choose a calendar for MPDX to push tasks to:')}
+            {t('Choose a calendar for {{appName}} to push tasks to:', {
+              appName,
+            })}
           </Typography>
 
           <Formik
