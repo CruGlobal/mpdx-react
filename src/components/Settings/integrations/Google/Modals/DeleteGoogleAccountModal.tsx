@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import { styled } from '@mui/material/styles';
 import { DialogContent, DialogActions, Typography } from '@mui/material';
-import {
-  useDeleteGoogleAccountMutation,
-  GoogleAccountsDocument,
-  GoogleAccountsQuery,
-} from '../googleAccounts.generated';
+import { useDeleteGoogleAccountMutation } from '../googleAccounts.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import {
   SubmitButton,
@@ -43,20 +39,9 @@ export const DeleteGoogleAccountModal: React.FC<
         },
       },
       update: (cache) => {
-        const query = {
-          query: GoogleAccountsDocument,
-        };
-        const dataFromCache = cache.readQuery<GoogleAccountsQuery>(query);
-
-        if (dataFromCache) {
-          const removedAccountFromCache = dataFromCache?.googleAccounts.filter(
-            (acc) => acc?.id !== account.id,
-          );
-          const data = {
-            googleAccounts: [...removedAccountFromCache],
-          };
-          cache.writeQuery({ ...query, data });
-        }
+        cache.evict({
+          id: `GoogleAccountAttributes:${account.id}`,
+        });
       },
       onCompleted: () => {
         enqueueSnackbar(t('MPDX removed your integration with Google.'), {

@@ -43,12 +43,12 @@ jest.mock('notistack', () => ({
 
 const handleAccordionChange = jest.fn();
 
-const Components = (children: React.ReactElement) => (
+const Components = (props: { children: JSX.Element }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <IntegrationsContextProvider apiToken={apiToken}>
-          {children}
+          {props.children}
         </IntegrationsContextProvider>
       </ThemeProvider>
     </TestRouter>
@@ -70,14 +70,14 @@ describe('GoogleAccordian', () => {
 
   it('should render accordian closed', async () => {
     const { getByText, queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <GoogleAccordian
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     expect(getByText('Google')).toBeInTheDocument();
     const Image = queryByRole('img', {
@@ -87,14 +87,14 @@ describe('GoogleAccordian', () => {
   });
   it('should render accordian open', async () => {
     const { queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <GoogleAccordian
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Google'}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     const Image = queryByRole('img', {
       name: /google/i,
@@ -103,10 +103,11 @@ describe('GoogleAccordian', () => {
   });
 
   describe('Not Connected', () => {
+    process.env.SITE_URL = 'https://next.mpdx.org';
     it('should render Mailchimp Overview', async () => {
       const mutationSpy = jest.fn();
       const { getByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GoogleAccount: GoogleAccountsQuery;
           }>
@@ -121,8 +122,8 @@ describe('GoogleAccordian', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Google'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -132,7 +133,7 @@ describe('GoogleAccordian', () => {
 
       expect(getByText(/add account/i)).toHaveAttribute(
         'href',
-        `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=http%3A%2F%2Flocalhost%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
+        `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
       );
     });
   });
@@ -147,7 +148,7 @@ describe('GoogleAccordian', () => {
     it('shows one connected account', async () => {
       const mutationSpy = jest.fn();
       const { queryByText, getByText, getByTestId } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GoogleAccount: GoogleAccountsQuery;
           }>
@@ -162,8 +163,8 @@ describe('GoogleAccordian', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Google'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -200,10 +201,11 @@ describe('GoogleAccordian', () => {
     });
 
     it('shows account with expired token', async () => {
+      process.env.SITE_URL = 'https://next.mpdx.org';
       const mutationSpy = jest.fn();
       googleAccount.tokenExpired = true;
       const { getByText, getAllByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GoogleAccount: GoogleAccountsQuery;
           }>
@@ -218,8 +220,8 @@ describe('GoogleAccordian', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Google'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -230,7 +232,7 @@ describe('GoogleAccordian', () => {
         expect(getByText(/click "refresh google account/i)).toBeInTheDocument();
         expect(getAllByText(/refresh google account/i)[1]).toHaveAttribute(
           'href',
-          `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=http%3A%2F%2Flocalhost%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
+          `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
         );
       });
     });

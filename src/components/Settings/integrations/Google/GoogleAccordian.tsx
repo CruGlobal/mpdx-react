@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Box, Card, IconButton, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
@@ -81,21 +81,15 @@ export const GoogleAccordian: React.FC<GoogleAccordianProps> = ({
   });
   const googleAccounts = data?.googleAccounts;
   const accountListId = useAccountListId();
-  const [oAuth, setOAuth] = useState('');
-
-  useEffect(() => {
-    setOAuth(
-      `${
-        process.env.OAUTH_URL
-      }/auth/user/google?account_list_id=${accountListId}&redirect_to=${window.encodeURIComponent(
-        `${window.location.origin}/accountLists/${accountListId}/settings/integrations?selectedTab=Google`,
-      )}&access_token=${apiToken}`,
-    );
-  }, []);
-
   const { apiToken } = useContext(
     IntegrationsContext,
   ) as IntegrationsContextType;
+
+  const oAuth = `${
+    process.env.OAUTH_URL
+  }/auth/user/google?account_list_id=${accountListId}&redirect_to=${encodeURIComponent(
+    `${process.env.SITE_URL}/accountLists/${accountListId}/settings/integrations?selectedTab=Google`,
+  )}&access_token=${apiToken}`;
 
   const handleEditAccount = (account) => {
     setSelectedAccount(account);
@@ -125,28 +119,32 @@ export const GoogleAccordian: React.FC<GoogleAccordianProps> = ({
         {loading && <Skeleton height="90px" />}
         {!loading && !googleAccounts?.length && !!expandedPanel && (
           <>
-            <StyledFormLabel>Google Integration Overview</StyledFormLabel>
+            <StyledFormLabel>
+              {t('Google Integration Overview')}
+            </StyledFormLabel>
             <Typography>
-              Google’s suite of tools are great at connecting you to your
-              Ministry Partners.
+              {t(`Google’s suite of tools are great at connecting you to your
+              Ministry Partners.`)}
             </Typography>
             <Typography mt={2}>
-              By synchronizing your Google services with MPDX, you will be able
-              to:
+              {t(`By synchronizing your Google services with MPDX, you will be able
+              to:`)}
             </Typography>
             <StyledList>
               <StyledListItem>
-                See MPDX tasks in your Google Calendar
+                {t('See MPDX tasks in your Google Calendar')}
               </StyledListItem>
-              <StyledListItem>Import Google Contacts into MPDX</StyledListItem>
               <StyledListItem>
-                Keep your Contacts in sync with your Google Contacts
+                {t('Import Google Contacts into MPDX')}
+              </StyledListItem>
+              <StyledListItem>
+                {t('Keep your Contacts in sync with your Google Contacts')}
               </StyledListItem>
             </StyledList>
             <Typography>
-              Connect your Google account to begin, and then setup specific
+              {t(`Connect your Google account to begin, and then setup specific
               settings for Google Calendar and Contacts. MPDX leaves you in
-              control of how each service stays in sync.
+              control of how each service stays in sync.`)}
             </Typography>
           </>
         )}

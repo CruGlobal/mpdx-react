@@ -65,12 +65,10 @@ const googleAccount = {
   remoteId: '111222333444',
   id: 'abcd1234',
   tokenExpired: false,
-  __typename: 'GoogleAccountAttributes',
 };
 
 const standardGoogleIntegration: Pick<
   Types.GoogleAccountIntegration,
-  | '__typename'
   | 'calendarId'
   | 'calendarIntegration'
   | 'calendarIntegrations'
@@ -81,22 +79,15 @@ const standardGoogleIntegration: Pick<
   | 'updatedInDbAt'
 > & {
   calendars: Array<
-    Types.Maybe<
-      { __typename?: 'GoogleAccountIntegrationCalendars' } & Pick<
-        Types.GoogleAccountIntegrationCalendars,
-        'id' | 'name'
-      >
-    >
+    Types.Maybe<Pick<Types.GoogleAccountIntegrationCalendars, 'id' | 'name'>>
   >;
 } = {
-  __typename: 'GoogleAccountIntegration',
   calendarId: null,
   calendarIntegration: true,
   calendarIntegrations: ['Appointment'],
   calendarName: 'calendar',
   calendars: [
     {
-      __typename: 'GoogleAccountIntegrationCalendars',
       id: 'calendarsID',
       name: 'calendarsName@cru.org',
     },
@@ -229,17 +220,14 @@ describe('EditGoogleAccountModal', () => {
                   {
                     id: 'Call',
                     value: 'Call',
-                    __typename: 'IdValue',
                   },
                   {
                     id: 'Appointment',
                     value: 'Appointment',
-                    __typename: 'IdValue',
                   },
                   {
                     id: 'Email',
                     value: 'Email',
-                    __typename: 'IdValue',
                   },
                 ],
               },
@@ -313,59 +301,45 @@ describe('EditGoogleAccountModal', () => {
   it('should update calendar checkboxes', async () => {
     googleIntegration.calendarId = 'calendarsID';
     const mutationSpy = jest.fn();
-    let getByText, getByRole, getByTestId;
-    await act(async () => {
-      const {
-        getByText: getByTextFromRender,
-        getByRole: getByRoleFromRender,
-        getByTestId: getByTestIdFromRender,
-      } = render(
-        Components(
-          <GqlMockedProvider<{
-            GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
-            GetIntegrationActivities: GetIntegrationActivitiesQuery;
-          }>
-            mocks={{
-              GoogleAccountIntegrations: {
-                googleAccountIntegrations: [googleIntegration],
+    const { getByText, getByRole, getByTestId } = render(
+      Components(
+        <GqlMockedProvider<{
+          GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
+          GetIntegrationActivities: GetIntegrationActivitiesQuery;
+        }>
+          mocks={{
+            GoogleAccountIntegrations: {
+              googleAccountIntegrations: [googleIntegration],
+            },
+            GetIntegrationActivities: {
+              constant: {
+                activities: [
+                  {
+                    id: 'Call',
+                    value: 'Call',
+                  },
+                  {
+                    id: 'Appointment',
+                    value: 'Appointment',
+                  },
+                  {
+                    id: 'Email',
+                    value: 'Email',
+                  },
+                ],
               },
-              GetIntegrationActivities: {
-                constant: {
-                  activities: [
-                    {
-                      id: 'Call',
-                      value: 'Call',
-                      __typename: 'IdValue',
-                    },
-                    {
-                      id: 'Appointment',
-                      value: 'Appointment',
-                      __typename: 'IdValue',
-                    },
-                    {
-                      id: 'Email',
-                      value: 'Email',
-                      __typename: 'IdValue',
-                    },
-                  ],
-                },
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <EditGoogleAccountModal
-              account={googleAccount}
-              handleClose={handleClose}
-              oAuth={oAuth}
-            />
-          </GqlMockedProvider>,
-        ),
-      );
-
-      getByText = getByTextFromRender;
-      getByRole = getByRoleFromRender;
-      getByTestId = getByTestIdFromRender;
-    });
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <EditGoogleAccountModal
+            account={googleAccount}
+            handleClose={handleClose}
+            oAuth={oAuth}
+          />
+        </GqlMockedProvider>,
+      ),
+    );
 
     await waitFor(() =>
       expect(
@@ -373,31 +347,37 @@ describe('EditGoogleAccountModal', () => {
       ).toBeInTheDocument(),
     );
 
-    userEvent.click(getByTestId('Call-Checkbox'));
-    userEvent.click(getByRole('button', { name: /update/i }));
+    await waitFor(() =>
+      expect(getByTestId('Call-Checkbox')).toBeInTheDocument(),
+    );
 
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Updated Google Calendar Integration!',
-        {
-          variant: 'success',
-        },
-      );
-      expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
-        'UpdateGoogleIntegration',
-      );
+    await act(async () => {
+      userEvent.click(getByTestId('Call-Checkbox'));
+      userEvent.click(getByRole('button', { name: /update/i }));
 
-      expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
-        googleAccountId: googleAccount.id,
-        googleIntegration: {
-          calendarId: 'calendarsID',
-          calendarIntegrations: ['Appointment', 'Call'],
-          overwrite: true,
-        },
-        googleIntegrationId: googleIntegration.id,
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Updated Google Calendar Integration!',
+          {
+            variant: 'success',
+          },
+        );
+        expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
+          'UpdateGoogleIntegration',
+        );
+
+        expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
+          googleAccountId: googleAccount.id,
+          googleIntegration: {
+            calendarId: 'calendarsID',
+            calendarIntegrations: ['Appointment', 'Call'],
+            overwrite: true,
+          },
+          googleIntegrationId: googleIntegration.id,
+        });
+
+        expect(handleClose).toHaveBeenCalled();
       });
-
-      expect(handleClose).toHaveBeenCalled();
     });
   });
 

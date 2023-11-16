@@ -38,7 +38,7 @@ interface EditGoogleIntegrationFormProps {
   googleAccountDetails: GoogleAccountIntegrationSlimmed;
   loading: boolean;
   setIsSubmitting: (boolean) => void;
-  handleToogleCalendarIntegration: (boolean) => void;
+  handleToggleCalendarIntegration: (boolean) => void;
   handleClose: () => void;
 }
 
@@ -63,7 +63,7 @@ export const EditGoogleIntegrationForm: React.FC<
   googleAccountDetails,
   loading,
   setIsSubmitting,
-  handleToogleCalendarIntegration,
+  handleToggleCalendarIntegration,
   handleClose,
 }) => {
   const { t } = useTranslation();
@@ -242,7 +242,7 @@ export const EditGoogleIntegrationForm: React.FC<
                 <DialogActions>
                   <DeleteButton
                     disabled={isSubmitting}
-                    onClick={() => handleToogleCalendarIntegration(false)}
+                    onClick={() => handleToggleCalendarIntegration(false)}
                     variant="outlined"
                   >
                     {t('Disable Calendar Integration')}

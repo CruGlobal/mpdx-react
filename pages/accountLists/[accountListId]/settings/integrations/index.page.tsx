@@ -21,7 +21,9 @@ interface Props {
 const Integrations = ({ apiToken }: Props): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
-  const [expandedPanel, setExpandedPanel] = useState(query?.selectedTab || '');
+  const [expandedPanel, setExpandedPanel] = useState(
+    (query?.selectedTab as string) || '',
+  );
 
   useEffect(() => {
     suggestArticles('HS_SETTINGS_SERVICES_SUGGESTIONS');
