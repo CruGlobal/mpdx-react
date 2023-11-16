@@ -8,7 +8,7 @@ import theme from '../../../../theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import TestRouter from '__tests__/util/TestRouter';
-import { MailchimpAccordian } from './MailchimpAccordian';
+import { MailchimpAccordion } from './MailchimpAccordion';
 
 jest.mock('next-auth/react');
 
@@ -78,11 +78,11 @@ const standardMailchimpAccount: Types.MailchimpAccount = {
 
 describe('MailchimpAccount', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  it('should render accordian closed', async () => {
+  it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
       Components(
         <GqlMockedProvider>
-          <MailchimpAccordian
+          <MailchimpAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -95,11 +95,11 @@ describe('MailchimpAccount', () => {
     });
     expect(mailchimpImage).not.toBeInTheDocument();
   });
-  it('should render accordian open', async () => {
+  it('should render accordion open', async () => {
     const { queryByRole } = render(
       Components(
         <GqlMockedProvider>
-          <MailchimpAccordian
+          <MailchimpAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Mailchimp'}
           />
@@ -127,7 +127,7 @@ describe('MailchimpAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <MailchimpAccordian
+            <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
@@ -168,7 +168,7 @@ describe('MailchimpAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <MailchimpAccordian
+            <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
@@ -211,7 +211,7 @@ describe('MailchimpAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <MailchimpAccordian
+            <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
@@ -246,7 +246,7 @@ describe('MailchimpAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <MailchimpAccordian
+            <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
@@ -313,7 +313,7 @@ describe('MailchimpAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <MailchimpAccordian
+            <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
@@ -380,7 +380,7 @@ describe('MailchimpAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <MailchimpAccordian
+            <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
@@ -416,7 +416,7 @@ describe('MailchimpAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <MailchimpAccordian
+            <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
@@ -473,7 +473,7 @@ describe('MailchimpAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <MailchimpAccordian
+            <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />

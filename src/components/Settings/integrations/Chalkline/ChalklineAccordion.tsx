@@ -7,14 +7,14 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { StyledServicesButton, AccordianProps } from '../integrationsHelper';
+import { StyledServicesButton, AccordionProps } from '../integrationsHelper';
 
-export const ChalklineAccordian: React.FC<AccordianProps> = ({
+export const ChalklineAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-  const accordianName = t('Chalk Line');
+  const accordionName = t('Chalk Line');
   const [showModal, setShowModal] = useState(false);
   const accountListId = useAccountListId();
   const [sendToChalkline] = useSendToChalklineMutation();
@@ -50,12 +50,12 @@ export const ChalklineAccordian: React.FC<AccordianProps> = ({
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
-      label={accordianName}
+      label={accordionName}
       value={''}
       image={
         <img
           src="/images/settings-preferences-intergrations-chalkline.png"
-          alt={accordianName}
+          alt={accordionName}
         />
       }
     >

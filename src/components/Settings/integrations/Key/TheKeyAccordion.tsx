@@ -5,12 +5,12 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { useGetKeyAccountsQuery } from './Key.generated';
 
-interface TheKeyAccordianProps {
+interface TheKeyAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
 }
 
-export const TheKeyAccordian: React.FC<TheKeyAccordianProps> = ({
+export const TheKeyAccordion: React.FC<TheKeyAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {

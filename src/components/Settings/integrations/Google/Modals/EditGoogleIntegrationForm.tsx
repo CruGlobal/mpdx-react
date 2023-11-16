@@ -27,7 +27,7 @@ import {
   SubmitButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GoogleAccountAttributesSlimmed } from '../GoogleAccordian';
+import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 
 type GoogleAccountIntegrationSlimmed = Pick<
   GoogleAccountIntegration,

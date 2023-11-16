@@ -11,7 +11,7 @@ import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking'
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import theme from '../../../../theme';
 import TestRouter from '__tests__/util/TestRouter';
-import { OrganizationAccordian } from './OrganizationAccordian';
+import { OrganizationAccordion } from './OrganizationAccordion';
 
 jest.mock('next-auth/react');
 
@@ -96,13 +96,13 @@ const standardMocks = {
   },
 };
 
-describe('OrganizationAccordian', () => {
+describe('OrganizationAccordion', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  it('should render accordian closed', async () => {
+  it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
       Components(
         <GqlMockedProvider>
-          <OrganizationAccordian
+          <OrganizationAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -115,11 +115,11 @@ describe('OrganizationAccordian', () => {
     });
     expect(image).not.toBeInTheDocument();
   });
-  it('should render accordian open', async () => {
+  it('should render accordion open', async () => {
     const { queryByRole } = render(
       Components(
         <GqlMockedProvider>
-          <OrganizationAccordian
+          <OrganizationAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Organization'}
           />
@@ -149,7 +149,7 @@ describe('OrganizationAccordian', () => {
               },
             }}
           >
-            <OrganizationAccordian
+            <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
@@ -182,7 +182,7 @@ describe('OrganizationAccordian', () => {
           }>
             mocks={mocks}
           >
-            <OrganizationAccordian
+            <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
@@ -228,7 +228,7 @@ describe('OrganizationAccordian', () => {
             mocks={mocks}
             onCall={mutationSpy}
           >
-            <OrganizationAccordian
+            <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
@@ -276,7 +276,7 @@ describe('OrganizationAccordian', () => {
             mocks={mocks}
             onCall={mutationSpy}
           >
-            <OrganizationAccordian
+            <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
@@ -311,7 +311,7 @@ describe('OrganizationAccordian', () => {
             mocks={mocks}
             onCall={mutationSpy}
           >
-            <OrganizationAccordian
+            <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
@@ -348,7 +348,7 @@ describe('OrganizationAccordian', () => {
             mocks={mocks}
             onCall={mutationSpy}
           >
-            <OrganizationAccordian
+            <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
@@ -396,7 +396,7 @@ describe('OrganizationAccordian', () => {
           }>
             mocks={mocks}
           >
-            <OrganizationAccordian
+            <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />

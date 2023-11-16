@@ -7,7 +7,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import * as Types from '../../../../../graphql/types.generated';
-import { PrayerlettersAccordian } from './PrayerlettersAccordian';
+import { PrayerlettersAccordion } from './PrayerlettersAccordion';
 import { PrayerlettersAccountQuery } from './PrayerlettersAccount.generated';
 
 jest.mock('next-auth/react');
@@ -53,11 +53,11 @@ const standardPrayerlettersAccount: Types.PrayerlettersAccount = {
 
 describe('PrayerlettersAccount', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  it('should render accordian closed', async () => {
+  it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
       Components(
         <GqlMockedProvider>
-          <PrayerlettersAccordian
+          <PrayerlettersAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -70,11 +70,11 @@ describe('PrayerlettersAccount', () => {
     });
     expect(image).not.toBeInTheDocument();
   });
-  it('should render accordian open', async () => {
+  it('should render accordion open', async () => {
     const { queryByRole } = render(
       Components(
         <GqlMockedProvider>
-          <PrayerlettersAccordian
+          <PrayerlettersAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'prayerletters.com'}
           />
@@ -100,7 +100,7 @@ describe('PrayerlettersAccount', () => {
               },
             }}
           >
-            <PrayerlettersAccordian
+            <PrayerlettersAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'prayerletters.com'}
             />
@@ -141,7 +141,7 @@ describe('PrayerlettersAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <PrayerlettersAccordian
+            <PrayerlettersAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'prayerletters.com'}
             />
@@ -210,7 +210,7 @@ describe('PrayerlettersAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <PrayerlettersAccordian
+            <PrayerlettersAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'prayerletters.com'}
             />
@@ -273,7 +273,7 @@ describe('PrayerlettersAccount', () => {
             }}
             onCall={mutationSpy}
           >
-            <PrayerlettersAccordian
+            <PrayerlettersAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'prayerletters.com'}
             />

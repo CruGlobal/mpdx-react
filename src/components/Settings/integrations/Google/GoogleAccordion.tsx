@@ -24,7 +24,7 @@ import {
   StyledServicesButton,
 } from '../integrationsHelper';
 
-interface GoogleAccordianProps {
+interface GoogleAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
 }
@@ -66,7 +66,7 @@ export type GoogleAccountAttributesSlimmed = Pick<
   'id' | 'email' | 'primary' | 'remoteId' | 'tokenExpired'
 >;
 
-export const GoogleAccordian: React.FC<GoogleAccordianProps> = ({
+export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {

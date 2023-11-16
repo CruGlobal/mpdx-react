@@ -28,7 +28,7 @@ import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountMo
 import { oAuth } from './OrganizationService';
 import { StyledServicesButton } from '../integrationsHelper';
 
-interface OrganizationAccordianProps {
+interface OrganizationAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
 }
@@ -76,7 +76,7 @@ export const getOrganizationType = (apiClass, oauth) => {
   return undefined;
 };
 
-export const OrganizationAccordian: React.FC<OrganizationAccordianProps> = ({
+export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {

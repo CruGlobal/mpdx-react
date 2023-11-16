@@ -9,7 +9,7 @@ import {
   SubmitButton,
   CancelButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GoogleAccountAttributesSlimmed } from '../GoogleAccordian';
+import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 
 interface DeleteGoogleAccountModalProps {
   handleClose: () => void;

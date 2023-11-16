@@ -31,7 +31,7 @@ import {
 import {
   getOrganizationType,
   OrganizationTypesEnum,
-} from '../OrganizationAccordian';
+} from '../OrganizationAccordion';
 import { oAuth } from '../OrganizationService';
 
 interface OrganizationAddAccountModalProps {

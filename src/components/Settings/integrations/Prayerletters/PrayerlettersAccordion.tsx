@@ -14,9 +14,9 @@ import {
 } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { DeletePrayerlettersAccountModal } from './Modals/DeletePrayerlettersModal';
-import { StyledServicesButton, AccordianProps } from '../integrationsHelper';
+import { StyledServicesButton, AccordionProps } from '../integrationsHelper';
 
-export const PrayerlettersAccordian: React.FC<AccordianProps> = ({
+export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
@@ -30,7 +30,7 @@ export const PrayerlettersAccordian: React.FC<AccordianProps> = ({
     IntegrationsContext,
   ) as IntegrationsContextType;
   const accountListId = useAccountListId();
-  const accordianName = t('prayerletters.com');
+  const accordionName = t('prayerletters.com');
   const [syncPrayerlettersAccount] = useSyncPrayerlettersAccountMutation();
   const {
     data,
@@ -42,7 +42,7 @@ export const PrayerlettersAccordian: React.FC<AccordianProps> = ({
         accountListId: accountListId ?? '',
       },
     },
-    skip: expandedPanel !== accordianName,
+    skip: expandedPanel !== accordionName,
   });
 
   const prayerlettersAccount = data?.prayerlettersAccount
@@ -99,12 +99,12 @@ export const PrayerlettersAccordian: React.FC<AccordianProps> = ({
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
-      label={accordianName}
+      label={accordionName}
       value={''}
       image={
         <img
           src="/images/settings-preferences-intergrations-prayerletters.svg"
-          alt={accordianName}
+          alt={accordionName}
         />
       }
     >

@@ -5,12 +5,12 @@ import { getToken } from 'next-auth/jwt';
 import { useRouter } from 'next/router';
 import { suggestArticles } from 'src/lib/helpScout';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
-import { TheKeyAccordian } from 'src/components/Settings/integrations/Key/TheKeyAccordian';
-import { OrganizationAccordian } from 'src/components/Settings/integrations/Organization/OrganizationAccordian';
-import { GoogleAccordian } from 'src/components/Settings/integrations/Google/GoogleAccordian';
-import { MailchimpAccordian } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccordian';
-import { PrayerlettersAccordian } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordian';
-import { ChalklineAccordian } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordian';
+import { TheKeyAccordion } from 'src/components/Settings/integrations/Key/TheKeyAccordion';
+import { OrganizationAccordion } from 'src/components/Settings/integrations/Organization/OrganizationAccordion';
+import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';
+import { MailchimpAccordion } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccordion';
+import { PrayerlettersAccordion } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordion';
+import { ChalklineAccordion } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordion';
 import { SettingsWrapper } from '../wrapper';
 import { IntegrationsContextProvider } from './IntegrationsContext';
 
@@ -41,29 +41,29 @@ const Integrations = ({ apiToken }: Props): ReactElement => {
     >
       <IntegrationsContextProvider apiToken={apiToken}>
         <AccordionGroup title="">
-          <TheKeyAccordian
+          <TheKeyAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
           />
-          <OrganizationAccordian
+          <OrganizationAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
           />
         </AccordionGroup>
         <AccordionGroup title={t('External Services')}>
-          <GoogleAccordian
+          <GoogleAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
           />
-          <MailchimpAccordian
+          <MailchimpAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
           />
-          <PrayerlettersAccordian
+          <PrayerlettersAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
           />
-          <ChalklineAccordian
+          <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
           />

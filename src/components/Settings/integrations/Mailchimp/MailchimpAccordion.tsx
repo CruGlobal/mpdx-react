@@ -43,7 +43,7 @@ import {
   StyledServicesButton,
 } from '../integrationsHelper';
 
-interface MailchimpAccordianProps {
+interface MailchimpAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
 }
@@ -57,7 +57,7 @@ const StyledButton = styled(Button)(() => ({
   marginLeft: '15px',
 }));
 
-export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
+export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {

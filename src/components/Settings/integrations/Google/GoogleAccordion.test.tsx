@@ -7,7 +7,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import theme from '../../../../theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
-import { GoogleAccordian } from './GoogleAccordian';
+import { GoogleAccordion } from './GoogleAccordion';
 import { GoogleAccountsQuery } from './googleAccounts.generated';
 
 jest.mock('next-auth/react');
@@ -64,15 +64,15 @@ const standardGoogleAccount = {
   __typename: 'GoogleAccountAttributes',
 };
 
-describe('GoogleAccordian', () => {
+describe('GoogleAccordion', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
   (getSession as jest.Mock).mockResolvedValue(session);
 
-  it('should render accordian closed', async () => {
+  it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
       <Components>
         <GqlMockedProvider>
-          <GoogleAccordian
+          <GoogleAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -85,11 +85,11 @@ describe('GoogleAccordian', () => {
     });
     expect(Image).not.toBeInTheDocument();
   });
-  it('should render accordian open', async () => {
+  it('should render accordion open', async () => {
     const { queryByRole } = render(
       <Components>
         <GqlMockedProvider>
-          <GoogleAccordian
+          <GoogleAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Google'}
           />
@@ -118,7 +118,7 @@ describe('GoogleAccordian', () => {
             }}
             onCall={mutationSpy}
           >
-            <GoogleAccordian
+            <GoogleAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Google'}
             />
@@ -159,7 +159,7 @@ describe('GoogleAccordian', () => {
             }}
             onCall={mutationSpy}
           >
-            <GoogleAccordian
+            <GoogleAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Google'}
             />
@@ -216,7 +216,7 @@ describe('GoogleAccordian', () => {
             }}
             onCall={mutationSpy}
           >
-            <GoogleAccordian
+            <GoogleAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Google'}
             />

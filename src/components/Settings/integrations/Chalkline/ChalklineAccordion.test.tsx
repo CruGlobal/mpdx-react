@@ -6,7 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
-import { ChalklineAccordian } from './ChalklineAccordian';
+import { ChalklineAccordion } from './ChalklineAccordion';
 
 jest.mock('next-auth/react');
 
@@ -46,11 +46,11 @@ const Components = (children: React.ReactElement) => (
 
 describe('PrayerlettersAccount', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  it('should render accordian closed', async () => {
+  it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
       Components(
         <GqlMockedProvider>
-          <ChalklineAccordian
+          <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -63,11 +63,11 @@ describe('PrayerlettersAccount', () => {
     });
     expect(image).not.toBeInTheDocument();
   });
-  it('should render accordian open', async () => {
+  it('should render accordion open', async () => {
     const { queryByRole } = render(
       Components(
         <GqlMockedProvider>
-          <ChalklineAccordian
+          <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Chalk Line'}
           />
@@ -85,7 +85,7 @@ describe('PrayerlettersAccount', () => {
     const { getByText } = render(
       Components(
         <GqlMockedProvider onCall={mutationSpy}>
-          <ChalklineAccordian
+          <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Chalk Line'}
           />

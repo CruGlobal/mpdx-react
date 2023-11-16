@@ -27,7 +27,7 @@ import {
   CancelButton,
   ActionButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GoogleAccountAttributesSlimmed } from '../GoogleAccordian';
+import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import { EditGoogleIntegrationForm } from './EditGoogleIntegrationForm';
 
 interface EditGoogleAccountModalProps {
