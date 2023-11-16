@@ -89,10 +89,11 @@ describe('PrayerlettersAccount', () => {
 
   describe('Not Connected', () => {
     it('should render PrayerLetters.com Overview', async () => {
+      process.env.SITE_URL = 'https://next.mpdx.org';
       const { getByText } = render(
         Components(
           <GqlMockedProvider<{
-            PrayerlettersAccount: PrayerlettersAccountQuery | undefined;
+            PrayerlettersAccount: PrayerlettersAccountQuery;
           }>
             mocks={{
               PrayerlettersAccount: {
@@ -115,7 +116,7 @@ describe('PrayerlettersAccount', () => {
 
       expect(getByText('Connect prayerletters.com Account')).toHaveAttribute(
         'href',
-        `https://auth.mpdx.org/auth/user/prayer_letters?account_list_id=account-list-1&redirect_to=http%3A%2F%2Flocalhost%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dprayerletters.com&access_token=apiToken`,
+        `https://auth.mpdx.org/auth/user/prayer_letters?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dprayerletters.com&access_token=apiToken`,
       );
     });
   });
@@ -127,6 +128,7 @@ describe('PrayerlettersAccount', () => {
       prayerlettersAccount = { ...standardPrayerlettersAccount };
     });
     it('is connected but token is not valid', async () => {
+      process.env.SITE_URL = 'https://next.mpdx.org';
       prayerlettersAccount.validToken = false;
       const mutationSpy = jest.fn();
       const { queryByText, getByText, getByRole } = render(
@@ -157,7 +159,7 @@ describe('PrayerlettersAccount', () => {
 
       expect(getByText('Refresh prayerletters.com Account')).toHaveAttribute(
         'href',
-        `https://auth.mpdx.org/auth/user/prayer_letters?account_list_id=account-list-1&redirect_to=http%3A%2F%2Flocalhost%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dprayerletters.com&access_token=apiToken`,
+        `https://auth.mpdx.org/auth/user/prayer_letters?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dprayerletters.com&access_token=apiToken`,
       );
 
       userEvent.click(
@@ -182,7 +184,7 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'MPDX removed your integration with Prayer Letters',
+          '{{appName}} removed your integration with Prayer Letters',
           {
             variant: 'success',
           },
@@ -220,7 +222,9 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(
-          queryByText('We strongly recommend only making changes in MPDX.'),
+          queryByText(
+            'We strongly recommend only making changes in {{appName}}.',
+          ),
         ).toBeInTheDocument();
       });
 
@@ -245,7 +249,7 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'MPDX removed your integration with Prayer Letters',
+          '{{appName}} removed your integration with Prayer Letters',
           {
             variant: 'success',
           },
@@ -283,7 +287,9 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(
-          queryByText('We strongly recommend only making changes in MPDX.'),
+          queryByText(
+            'We strongly recommend only making changes in {{appName}}.',
+          ),
         ).toBeInTheDocument();
       });
 
@@ -295,7 +301,7 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'MPDX is now syncing your newsletter recipients with Prayer Letters',
+          '{{appName}} is now syncing your newsletter recipients with Prayer Letters',
           {
             variant: 'success',
           },

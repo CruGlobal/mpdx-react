@@ -1,8 +1,9 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import { Box, Typography, Skeleton, Alert, Button } from '@mui/material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
   usePrayerlettersAccountQuery,
   useSyncPrayerlettersAccountMutation,
@@ -21,11 +22,11 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-  const [oAuth, setOAuth] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   showDeleteModal;
   const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
   const { apiToken } = useContext(
     IntegrationsContext,
   ) as IntegrationsContextType;
@@ -49,15 +50,11 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
     ? data?.prayerlettersAccount[0]
     : null;
 
-  useEffect(() => {
-    setOAuth(
-      `${
-        process.env.OAUTH_URL
-      }/auth/user/prayer_letters?account_list_id=${accountListId}&redirect_to=${window.encodeURIComponent(
-        `${window.location.origin}/accountLists/${accountListId}/settings/integrations?selectedTab=prayerletters.com`,
-      )}&access_token=${apiToken}`,
-    );
-  }, []);
+  const oAuth = `${
+    process.env.OAUTH_URL
+  }/auth/user/prayer_letters?account_list_id=${accountListId}&redirect_to=${window.encodeURIComponent(
+    `${process.env.SITE_URL}/accountLists/${accountListId}/settings/integrations?selectedTab=prayerletters.com`,
+  )}&access_token=${apiToken}`;
 
   const handleSync = async () => {
     setIsSaving(true);
@@ -70,7 +67,10 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
       },
       onError: () => {
         enqueueSnackbar(
-          t("MPDX couldn't save your configuration changes for Prayer Letters"),
+          t(
+            "{{appName}} couldn't save your configuration changes for Prayer Letters",
+            { appName },
+          ),
           {
             variant: 'error',
           },
@@ -79,7 +79,8 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
       onCompleted: () => {
         enqueueSnackbar(
           t(
-            'MPDX is now syncing your newsletter recipients with Prayer Letters',
+            '{{appName}} is now syncing your newsletter recipients with Prayer Letters',
+            { appName },
           ),
           {
             variant: 'success',
@@ -113,17 +114,23 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
         <>
           <StyledFormLabel>{t('PrayerLetters.com Overview')}</StyledFormLabel>
           <Typography>
-            {t(`prayerletters.com is a significant way to save valuable ministry
+            {t(
+              `prayerletters.com is a significant way to save valuable ministry
             time while more effectively connecting with your partners. Keep your
-            physical newsletter list up to date in MPDX and then sync it to your
-            prayerletters.com account with this integration.`)}
+            physical newsletter list up to date in {{appName}} and then sync it to your
+            prayerletters.com account with this integration.`,
+              { appName },
+            )}
           </Typography>
           <Alert severity="info">
-            {t(`By clicking "Connect prayerletters.com Account" you will
-            replace your entire prayerletters.com list with what is in MPDX. Any
+            {t(
+              `By clicking "Connect prayerletters.com Account" you will
+            replace your entire prayerletters.com list with what is in {{appName}}. Any
             contacts or information that are in your current prayerletters.com
-            list that are not in MPDX will be deleted. We strongly recommend
-            only making changes in MPDX.`)}
+            list that are not in {{appName}} will be deleted. We strongly recommend
+            only making changes in {{appName}}.`,
+              { appName },
+            )}
           </Alert>
           <StyledServicesButton variant="contained" href={oAuth}>
             {t('Connect prayerletters.com Account')}
@@ -134,7 +141,8 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
         <>
           <Alert severity="error">
             {t(
-              'The link between MPDX and your prayerletters.com account stopped working. Click "Refresh prayerletters.com Account" to re-enable it.',
+              'The link between {{appName}} and your prayerletters.com account stopped working. Click "Refresh prayerletters.com Account" to re-enable it.',
+              { appName },
             )}
           </Alert>
 
@@ -160,13 +168,16 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
           <Alert severity="warning">
             <Typography>
               {t(
-                `By clicking "Sync Now" you will replace your entire prayerletters.com list with what is in MPDX.
-              Any contacts or information that are in your current prayerletters.com list that are not in MPDX
+                `By clicking "Sync Now" you will replace your entire prayerletters.com list with what is in {{appName}}.
+              Any contacts or information that are in your current prayerletters.com list that are not in {{appName}}
               will be deleted.`,
+                { appName },
               )}
             </Typography>
             <Typography>
-              {t('We strongly recommend only making changes in MPDX.')}
+              {t('We strongly recommend only making changes in {{appName}}.', {
+                appName,
+              })}
             </Typography>
           </Alert>
 

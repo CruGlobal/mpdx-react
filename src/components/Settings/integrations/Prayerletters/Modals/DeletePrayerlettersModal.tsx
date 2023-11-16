@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import { styled } from '@mui/material/styles';
 import { DialogContent, DialogActions, Typography } from '@mui/material';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useDeletePrayerlettersAccountMutation } from '../PrayerlettersAccount.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import {
@@ -24,6 +25,7 @@ export const DeletePrayerlettersAccountModal: React.FC<
   DeletePrayerlettersAccountModalProps
 > = ({ handleClose, accountListId, refetchPrayerlettersAccount }) => {
   const { t } = useTranslation();
+  const { appName } = useGetAppSettings();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -35,17 +37,25 @@ export const DeletePrayerlettersAccountModal: React.FC<
       await deletePrayerlettersAccount({
         variables: {
           input: {
-            accountListId: accountListId,
+            accountListId,
           },
         },
         update: () => refetchPrayerlettersAccount(),
       });
-      enqueueSnackbar(t('MPDX removed your integration with Prayer Letters'), {
-        variant: 'success',
-      });
+      enqueueSnackbar(
+        t('{{appName}} removed your integration with Prayer Letters', {
+          appName,
+        }),
+        {
+          variant: 'success',
+        },
+      );
     } catch {
       enqueueSnackbar(
-        t("MPDX couldn't save your configuration changes for Prayer Letters"),
+        t(
+          "{{appName}} couldn't save your configuration changes for Prayer Letters",
+          { appName },
+        ),
         {
           variant: 'error',
         },
