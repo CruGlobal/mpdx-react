@@ -47,24 +47,20 @@ const Components = (children: React.ReactElement) => (
 );
 
 const standardMailchimpAccount: Types.MailchimpAccount = {
-  __typename: 'MailchimpAccount',
   id: '123456789',
   active: true,
   autoLogCampaigns: false,
   createdAt: 'DATETIME',
   listsAvailableForNewsletters: [
     {
-      __typename: 'listsAvailableForNewsletters',
       id: '11111111',
       name: 'Newsletter list 1',
     },
     {
-      __typename: 'listsAvailableForNewsletters',
       id: '2222222',
       name: 'Newsletter list 2',
     },
     {
-      __typename: 'listsAvailableForNewsletters',
       id: '33333333',
       name: 'Newsletter list 3',
     },
