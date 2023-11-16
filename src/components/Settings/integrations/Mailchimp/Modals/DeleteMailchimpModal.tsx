@@ -14,6 +14,7 @@ interface DeleteMailchimpAccountModalProps {
   handleClose: () => void;
   accountListId: string;
   refetchMailchimpAccount: () => void;
+  appName: string;
 }
 
 const StyledDialogActions = styled(DialogActions)(() => ({
@@ -22,7 +23,7 @@ const StyledDialogActions = styled(DialogActions)(() => ({
 
 export const DeleteMailchimpAccountModal: React.FC<
   DeleteMailchimpAccountModalProps
-> = ({ handleClose, accountListId, refetchMailchimpAccount }) => {
+> = ({ handleClose, accountListId, refetchMailchimpAccount, appName }) => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -40,14 +41,20 @@ export const DeleteMailchimpAccountModal: React.FC<
       },
       update: () => refetchMailchimpAccount(),
       onCompleted: () => {
-        enqueueSnackbar(t('MPDX removed your integration with MailChimp'), {
-          variant: 'success',
-        });
+        enqueueSnackbar(
+          t('{{appName}} removed your integration with MailChimp', { appName }),
+          {
+            variant: 'success',
+          },
+        );
         handleClose();
       },
       onError: () => {
         enqueueSnackbar(
-          t("MPDX couldn't save your configuration changes for MailChimp"),
+          t(
+            "{{appName}} couldn't save your configuration changes for MailChimp",
+            { appName },
+          ),
           {
             variant: 'error',
           },

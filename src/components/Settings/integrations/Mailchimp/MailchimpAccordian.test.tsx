@@ -182,7 +182,7 @@ describe('MailchimpAccount', () => {
         ).toBeInTheDocument();
         expect(
           queryByText(
-            'You need to create a list on Mail Chimp that MPDX can use for your newsletter.',
+            'You need to create a list on MailChimp that {{appName}} can use for your newsletter.',
           ),
         ).toBeInTheDocument();
         expect(
@@ -202,7 +202,7 @@ describe('MailchimpAccount', () => {
       const { queryByText } = render(
         Components(
           <GqlMockedProvider<{
-            MailchimpAccount: MailchimpAccountQuery | undefined;
+            MailchimpAccount: MailchimpAccountQuery;
           }>
             mocks={{
               MailchimpAccount: {
@@ -222,7 +222,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           queryByText(
-            'You need to create a list on Mail Chimp that MPDX can use for your newsletter.',
+            'You need to create a list on MailChimp that {{appName}} can use for your newsletter.',
           ),
         ).toBeInTheDocument();
       });
@@ -347,7 +347,7 @@ describe('MailchimpAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'MPDX removed your integration with MailChimp',
+          '{{appName}} removed your integration with MailChimp',
           {
             variant: 'success',
           },

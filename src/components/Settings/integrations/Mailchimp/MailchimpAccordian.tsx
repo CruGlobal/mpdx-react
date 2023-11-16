@@ -20,6 +20,7 @@ import {
   ListItemText,
 } from '@mui/material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
   useMailchimpAccountQuery,
   useUpdateMailchimpAccountMutation,
@@ -65,6 +66,7 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
   const { apiToken } = useContext(
     IntegrationsContext,
   ) as IntegrationsContextType;
@@ -199,25 +201,40 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
       {loading && <Skeleton height="90px" />}
       {!loading && !mailchimpAccount && (
         <>
-          <StyledFormLabel>MailChimp Overview</StyledFormLabel>
+          <StyledFormLabel>{t('MailChimp Overview')}</StyledFormLabel>
           <Typography>
-            MailChimp makes keeping in touch with your ministry partners easy
-            and streamlined. Here’s how it works:
+            {t(`MailChimp makes keeping in touch with your ministry partners easy
+            and streamlined. Here's how it works:`)}
           </Typography>
           <StyledList sx={{ listStyleType: 'number' }}>
             <StyledListItem>
-              If you have an existing MailChimp list you’d like to use, Great!
-              Or, create a new one for your MPDX connection.
+              {t(
+                `If you have an existing MailChimp list you'd like to use, Great!
+              Or, create a new one for your {{appName}} connection.`,
+                {
+                  appName,
+                },
+              )}
             </StyledListItem>
             <StyledListItem>
-              Select your MPDX MailChimp list to stream your MPDX contacts into.
+              {t(
+                'Select your {{appName}} MailChimp list to stream your {{appName}} contacts into.',
+                {
+                  appName,
+                },
+              )}
             </StyledListItem>
           </StyledList>
           <Typography>
-            That&apos;s it! Set it and leave it! Now your MailChimp list is
-            continuously up to date with your MPDX Contacts. That&apos;s just
-            the surface. Click over to the MPDX Help site for more in-depth
-            details.
+            {t(
+              `That's it! Set it and leave it! Now your MailChimp list is
+            continuously up to date with your {{appName}} Contacts. That's just
+            the surface. Click over to the {{appName}} Help site for more in-depth
+            details.`,
+              {
+                appName,
+              },
+            )}
           </Typography>
           <StyledServicesButton variant="outlined" href={oAuth}>
             {t('Connect MailChimp')}
@@ -317,7 +334,10 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
               <Box>
                 <Typography>
                   {t(
-                    'You need to create a list on Mail Chimp that MPDX can use for your newsletter.',
+                    'You need to create a list on MailChimp that {{appName}} can use for your newsletter.',
+                    {
+                      appName,
+                    },
                   )}
                 </Typography>
                 {mailchimpAccount?.listsLink && (
@@ -383,6 +403,7 @@ export const MailchimpAccordian: React.FC<MailchimpAccordianProps> = ({
           accountListId={accountListId ?? ''}
           handleClose={handleDeleteModalClose}
           refetchMailchimpAccount={refetchMailchimpAccount}
+          appName={appName}
         />
       )}
     </AccordionItem>
