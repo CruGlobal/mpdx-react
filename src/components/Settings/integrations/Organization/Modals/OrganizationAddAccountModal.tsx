@@ -14,6 +14,7 @@ import {
   Link,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
   useGetOrganizationsQuery,
   useCreateOrganizationAccountMutation,
@@ -32,7 +33,7 @@ import {
   getOrganizationType,
   OrganizationTypesEnum,
 } from '../OrganizationAccordion';
-import { oAuth } from '../OrganizationService';
+import { getOauthUrl } from '../OrganizationService';
 
 interface OrganizationAddAccountModalProps {
   handleClose: () => void;
@@ -70,6 +71,7 @@ export const OrganizationAddAccountModal: React.FC<
 > = ({ handleClose, refetchOrganizations, accountListId }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
   const [organizationType, setOrganizationType] =
     useState<OrganizationTypesEnum>();
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
@@ -85,7 +87,7 @@ export const OrganizationAddAccountModal: React.FC<
         t('Redirecting you to complete authenication to connect.'),
         { variant: 'success' },
       );
-      window.location.href = await oAuth(id);
+      window.location.href = await getOauthUrl(id);
       return;
     }
 
@@ -118,9 +120,12 @@ export const OrganizationAddAccountModal: React.FC<
         });
       },
       onCompleted: () => {
-        enqueueSnackbar(t('MPDX added your organization account'), {
-          variant: 'success',
-        });
+        enqueueSnackbar(
+          t('{{appName}} added your organization account', { appName }),
+          {
+            variant: 'success',
+          },
+        );
       },
     });
     handleClose();
@@ -239,11 +244,14 @@ export const OrganizationAddAccountModal: React.FC<
                   variant="h6"
                   color={theme.palette.mpdxYellow.contrastText}
                 >
-                  {t('You must log into MPDX with your ministry email')}
+                  {t('You must log into {{appName}} with your ministry email', {
+                    appName,
+                  })}
                 </Typography>
                 <StyledTypography>
                   {t(
-                    'This organization requires you to log into MPDX with your ministry email to access it.',
+                    'This organization requires you to log into {{appName}} with your ministry email to access it.',
+                    { appName },
                   )}
                   <ol
                     style={{
@@ -271,7 +279,7 @@ export const OrganizationAddAccountModal: React.FC<
                           });
                         }}
                       >
-                        {t('click here to log out of MPDX')}
+                        {t('click here to log out of {{appName}}', { appName })}
                       </Link>
                       {t(
                         ' so you can log back in with your offical key account.',
@@ -284,7 +292,8 @@ export const OrganizationAddAccountModal: React.FC<
                     "If you are already logged in using your ministry account, you'll need to contact your donation services team to request access.",
                   )}
                   {t(
-                    "Once this is done you'll need to wait 24 hours for MPDX to sync your data.",
+                    "Once this is done you'll need to wait 24 hours for {{appName}} to sync your data.",
+                    { appName },
                   )}
                 </StyledTypography>
               </WarningBox>
@@ -294,7 +303,8 @@ export const OrganizationAddAccountModal: React.FC<
               <WarningBox>
                 <Typography color={theme.palette.mpdxYellow.contrastText}>
                   {t(
-                    "You will be taken to your organization's donation services system to grant MPDX permission to access your donation data.",
+                    "You will be taken to your organization's donation services system to grant {{appName}} permission to access your donation data.",
+                    { appName },
                   )}
                 </Typography>
               </WarningBox>

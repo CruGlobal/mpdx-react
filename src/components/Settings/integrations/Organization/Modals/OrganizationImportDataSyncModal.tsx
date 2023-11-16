@@ -47,7 +47,6 @@ export const OrganizationImportDataSyncModal: React.FC<
       if (!importFile) throw new Error('Please select a file to upload.');
       // TODO
       setIsSubmitting(true);
-      setIsSubmitting(false);
 
       const form = new FormData();
       form.append('accountListId', accountListId);
@@ -58,7 +57,7 @@ export const OrganizationImportDataSyncModal: React.FC<
         method: 'POST',
         body: form,
       }).catch(() => {
-        throw new Error(t('Cannot upload avatar: server error'));
+        throw new Error(t('Cannot upload file: server error'));
       });
 
       if (res.status === 201) {

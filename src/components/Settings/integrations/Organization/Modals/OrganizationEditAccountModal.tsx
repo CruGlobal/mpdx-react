@@ -5,6 +5,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { Box, DialogActions, TextField, FormHelperText } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdateOrganizationAccountMutation } from '../Organizations.generated';
 import Modal from 'src/components/common/Modal/Modal';
 import {
@@ -28,6 +29,7 @@ export const OrganizationEditAccountModal: React.FC<
 > = ({ handleClose, organizationId }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
   const [updateOrganizationAccount] = useUpdateOrganizationAccountMutation();
 
   const onSubmit = async (
@@ -53,9 +55,12 @@ export const OrganizationEditAccountModal: React.FC<
         });
       },
       onCompleted: () => {
-        enqueueSnackbar(t('MPDX updated your organization account'), {
-          variant: 'success',
-        });
+        enqueueSnackbar(
+          t('{{appName}} updated your organization account', { appName }),
+          {
+            variant: 'success',
+          },
+        );
       },
     });
 

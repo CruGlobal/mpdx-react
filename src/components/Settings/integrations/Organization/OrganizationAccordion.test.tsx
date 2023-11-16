@@ -248,7 +248,7 @@ describe('OrganizationAccordion', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'MPDX started syncing your organization account. This will occur in the background over the next 24-hours.',
+          '{{appName}} started syncing your organization account. This will occur in the background over the next 24-hours.',
           {
             variant: 'success',
           },
@@ -377,7 +377,7 @@ describe('OrganizationAccordion', () => {
           id: mocks.GetUsersOrganizations.userOrganizationAccounts[0].id,
         });
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'MPDX removed your organization integration',
+          '{{appName}} removed your organization integration',
           { variant: 'success' },
         );
       });

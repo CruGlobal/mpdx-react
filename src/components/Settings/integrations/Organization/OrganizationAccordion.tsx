@@ -14,6 +14,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import Edit from '@mui/icons-material/Edit';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
   useGetUsersOrganizationsQuery,
   useDeleteOrganizationAccountMutation,
@@ -25,7 +26,7 @@ import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmat
 import { OrganizationAddAccountModal } from './Modals/OrganizationAddAccountModal';
 import { OrganizationImportDataSyncModal } from './Modals/OrganizationImportDataSyncModal';
 import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
-import { oAuth } from './OrganizationService';
+import { getOauthUrl } from './OrganizationService';
 import { StyledServicesButton } from '../integrationsHelper';
 
 interface OrganizationAccordionProps {
@@ -83,6 +84,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
   const [showImportDataSyncModal, setShowImportDataSyncModal] = useState(false);
   const [showDeleteOrganizationModal, setShowDeleteOrganizationModal] =
@@ -104,7 +106,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
       t('Redirecting you to complete authenication to reconnect.'),
       { variant: 'success' },
     );
-    const oAuthUrl = await oAuth(organizationId);
+    const oAuthUrl = await getOauthUrl(organizationId);
     window.location.href = oAuthUrl;
   };
 
@@ -116,14 +118,18 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
         },
       },
       onError: () => {
-        enqueueSnackbar(t("MPDX couldn't sync your organization account"), {
-          variant: 'error',
-        });
+        enqueueSnackbar(
+          t("{{appName}} couldn't sync your organization account", { appName }),
+          {
+            variant: 'error',
+          },
+        );
       },
       onCompleted: () => {
         enqueueSnackbar(
           t(
-            'MPDX started syncing your organization account. This will occur in the background over the next 24-hours.',
+            '{{appName}} started syncing your organization account. This will occur in the background over the next 24-hours.',
+            { appName },
           ),
           {
             variant: 'success',
@@ -144,7 +150,8 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
       onError: () => {
         enqueueSnackbar(
           t(
-            "MPDX couldn't save your configuration changes for that organization",
+            "{{appName}} couldn't save your configuration changes for that organization",
+            { appName },
           ),
           {
             variant: 'error',
@@ -152,9 +159,12 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
         );
       },
       onCompleted: () => {
-        enqueueSnackbar(t('MPDX removed your organization integration'), {
-          variant: 'success',
-        });
+        enqueueSnackbar(
+          t('{{appName}} removed your organization integration', { appName }),
+          {
+            variant: 'success',
+          },
+        );
       },
     });
   };
@@ -176,9 +186,12 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
       }
     >
       <Typography>
-        {t(`Add or change the organizations that sync donation information with this
-        MPDX account. Removing an organization will not remove past information,
-        but will prevent future donations and contacts from syncing.`)}
+        {t(
+          `Add or change the organizations that sync donation information with this
+        {{appName}} account. Removing an organization will not remove past information,
+        but will prevent future donations and contacts from syncing.`,
+          { appName },
+        )}
       </Typography>
 
       {!loading && !organizations?.length && (

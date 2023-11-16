@@ -2,8 +2,8 @@ import { getSession } from 'next-auth/react';
 import Router from 'next/router';
 import { getQueryParam } from 'src/utils/queryParam';
 
-export const oAuth = async (
-  organizationId,
+export const getOauthUrl = async (
+  organizationId: string,
   route = 'preferences/integrations?selectedTab=organization',
 ) => {
   const session = await getSession();
