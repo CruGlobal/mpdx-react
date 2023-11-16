@@ -149,6 +149,8 @@ Apollo Studio is an invaluable tool/interface for testing out queries and mutati
 6. In the modal, click the "+ New shared header button" and choose "Authorization" for the header key and the word `Bearer` followed by a space followed by the value of the `next-auth.session-token` cookie.
 7. After you click save, all queries and mutations you make in Apollo Studio will be authenticated.
 
+Apollo also has a Chrome browser extension that will add an Apollo tab to Chrome DevTools. The extension lets you view the queries and mutations that the page has made and execute queries and mutations without needing to manually configure authorization headers. You can install it [here](https://chromewebstore.google.com/detail/jdkknkkbebbapilgoeccciglkfbmbnfm).
+
 ### Using a Query
 
 To load data in your component, the first step will be to write an operation definition based on the query and fields that your component needs. The easiest way to do this is to go to [Apollo Studio](http://localhost:3000/api/graphql), click the plus sign next to the query you want to load, and then click the plus signs next to the fields you want to use in your component. On line 1, give the operation a name that describes the data it loads and is unique across the entire project (the `yarn gql` step below will fail and tell you if your operation name isn't unique). Also, make sure the operation starts with a capital letter. Then create a `.graphql` file with the same name as your component (i.e. if your component is `Partners.tsx`, the operation goes in `Partners.graphql`) and copy and paste the operation from Apollo Studio into it. It should look something like this:
