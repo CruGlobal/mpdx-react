@@ -50,27 +50,29 @@ export enum OrganizationTypesEnum {
   OFFLINE = 'offline',
 }
 
-export const getOrganizationType = (apiClass, oauth) => {
-  const ministryAccount = [
+export const getOrganizationType = (
+  apiClass: string | undefined,
+  oauth = false,
+) => {
+  const ministryAccount = new Set([
     'Siebel',
     'Remote::Import::OrganizationAccountService',
-  ];
-  const loginRequired = [
+  ]);
+  const loginRequired = new Set([
     'DataServer',
     'DataServerPtc',
     'DataServerNavigators',
     'DataServerStumo',
-  ];
-  const offline = ['OfflineOrg'];
+  ]);
 
   if (apiClass) {
-    if (ministryAccount.indexOf(apiClass) !== -1) {
+    if (ministryAccount.has(apiClass)) {
       return OrganizationTypesEnum.MINISTRY;
-    } else if (loginRequired.indexOf(apiClass) !== -1 && !oauth) {
+    } else if (loginRequired.has(apiClass) && !oauth) {
       return OrganizationTypesEnum.LOGIN;
     } else if (oauth) {
       return OrganizationTypesEnum.OAUTH;
-    } else if (offline.indexOf(apiClass) !== -1) {
+    } else if (apiClass === 'OfflineOrg') {
       return OrganizationTypesEnum.OFFLINE;
     }
   }

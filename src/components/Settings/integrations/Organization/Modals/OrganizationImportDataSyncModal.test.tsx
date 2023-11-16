@@ -47,14 +47,12 @@ const Components = (children: React.ReactElement) => (
 );
 
 const handleClose = jest.fn();
-const refetchOrganizations = jest.fn();
 
 describe('OrganizationImportDataSyncModal', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
 
   beforeEach(() => {
     handleClose.mockClear();
-    refetchOrganizations.mockClear();
     (validateFile as jest.Mock).mockReturnValue({ success: true });
   });
   it('should render modal', async () => {
@@ -105,7 +103,7 @@ describe('OrganizationImportDataSyncModal', () => {
     );
   });
 
-  it('should inform user of the error when uploadiung file.', async () => {
+  it('should inform user of the error when uploading file.', async () => {
     (validateFile as jest.Mock).mockReturnValue({
       success: false,
       message: 'Invalid file',

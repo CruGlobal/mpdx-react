@@ -84,7 +84,7 @@ export const OrganizationAddAccountModal: React.FC<
 
     if (type === OrganizationTypesEnum.OAUTH) {
       enqueueSnackbar(
-        t('Redirecting you to complete authenication to connect.'),
+        t('Redirecting you to complete authentication to connect.'),
         { variant: 'success' },
       );
       window.location.href = await getOauthUrl(id);

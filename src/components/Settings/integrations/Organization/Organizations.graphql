@@ -27,7 +27,6 @@ mutation DeleteOrganizationAccount(
   $input: OrganizationAccountDeleteMutationInput!
 ) {
   deleteOrganizationAccount(input: $input) {
-    clientMutationId
     id
   }
 }
@@ -36,7 +35,6 @@ mutation CreateOrganizationAccount(
   $input: OrganizationAccountCreateMutationInput!
 ) {
   createOrganizationAccount(input: $input) {
-    clientMutationId
     organizationAccount {
       username
       person {

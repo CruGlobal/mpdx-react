@@ -312,7 +312,7 @@ describe('OrganizationAddAccountModal', () => {
     userEvent.click(getByText('Connect'));
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        'Redirecting you to complete authenication to connect.',
+        'Redirecting you to complete authentication to connect.',
         { variant: 'success' },
       );
     });

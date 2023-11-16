@@ -44,14 +44,12 @@ const Components = (children: React.ReactElement) => (
 );
 
 const handleClose = jest.fn();
-const refetchOrganizations = jest.fn();
 
 describe('OrganizationEditAccountModal', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
 
   beforeEach(() => {
     handleClose.mockClear();
-    refetchOrganizations.mockClear();
   });
   it('should render modal', async () => {
     const { getByText, getByTestId } = render(
