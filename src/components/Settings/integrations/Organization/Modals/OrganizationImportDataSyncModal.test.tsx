@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material/styles';
@@ -6,10 +6,11 @@ import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocki
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from '../../../../../theme';
-import { validateFile } from 'src/components/Shared/FileUploads/tntConnectDataSync';
-import { OrganizationImportDataSyncModal } from './OrganizationImportDataSyncModal';
+import {
+  OrganizationImportDataSyncModal,
+  validateFile,
+} from './OrganizationImportDataSyncModal';
 
-jest.mock('src/components/Shared/FileUploads/tntConnectDataSync');
 jest.mock('next-auth/react');
 
 const accountListId = 'account-list-1';
@@ -48,93 +49,217 @@ const Components = (children: React.ReactElement) => (
 
 const handleClose = jest.fn();
 
+const t = (text: string) => {
+  return text;
+};
+
 describe('OrganizationImportDataSyncModal', () => {
-  process.env.OAUTH_URL = 'https://auth.mpdx.org';
+  describe('ValidateFile()', () => {
+    it('File type is not correct', () => {
+      const file = new File(['contents'], 'image.png', {
+        type: 'image/png',
+      });
+      const response = validateFile({ file, t });
 
-  beforeEach(() => {
-    handleClose.mockClear();
-    (validateFile as jest.Mock).mockReturnValue({ success: true });
-  });
-  it('should render modal', async () => {
-    const { getByText, getByTestId } = render(
-      Components(
-        <GqlMockedProvider>
-          <OrganizationImportDataSyncModal
-            handleClose={handleClose}
-            organizationId={organizationId}
-            organizationName={organizationName}
-            accountListId={accountListId}
-          />
-        </GqlMockedProvider>,
-      ),
-    );
-
-    expect(getByText('Import TntConnect DataSync file')).toBeInTheDocument();
-
-    userEvent.click(getByText(/cancel/i));
-    expect(handleClose).toHaveBeenCalledTimes(1);
-    userEvent.click(getByTestId('CloseIcon'));
-    expect(handleClose).toHaveBeenCalledTimes(2);
-  });
-
-  it('should return error when no file present', async () => {
-    const mutationSpy = jest.fn();
-    const { getByText } = render(
-      Components(
-        <GqlMockedProvider onCall={mutationSpy}>
-          <OrganizationImportDataSyncModal
-            handleClose={handleClose}
-            organizationId={organizationId}
-            organizationName={organizationName}
-            accountListId={accountListId}
-          />
-        </GqlMockedProvider>,
-      ),
-    );
-    userEvent.click(getByText('Upload File'));
-
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Please select a file to upload.',
-        {
-          variant: 'error',
-        },
-      ),
-    );
-  });
-
-  it('should inform user of the error when uploading file.', async () => {
-    (validateFile as jest.Mock).mockReturnValue({
-      success: false,
-      message: 'Invalid file',
+      expect(response).toEqual({
+        success: false,
+        message:
+          'Cannot upload file: file must be an .tntmpd or .tntdatasync file.',
+      });
     });
-    const mutationSpy = jest.fn();
-    const { getByTestId, getByText } = render(
-      Components(
-        <GqlMockedProvider onCall={mutationSpy}>
-          <OrganizationImportDataSyncModal
-            handleClose={handleClose}
-            organizationId={organizationId}
-            organizationName={organizationName}
-            accountListId={accountListId}
-          />
-        </GqlMockedProvider>,
-      ),
-    );
 
-    const file = new File(['contents'], 'image.png', {
-      type: 'image/png',
+    it('File size is too big', () => {
+      const file = new File(['contents'], '.tntmpd', {
+        type: 'xml',
+      });
+      Object.defineProperty(file, 'size', { value: 200_000_000 });
+      const response = validateFile({ file, t });
+
+      expect(response).toEqual({
+        success: false,
+        message: 'Cannot upload file: file size cannot exceed 100MB',
+      });
     });
-    userEvent.upload(getByTestId('importFileUploader'), file);
 
-    userEvent.click(getByText('Upload File'));
+    it('File type is correct', () => {
+      const file = new File(['contents'], '.tntmpd', {
+        type: 'xml',
+      });
+      const response = validateFile({ file, t });
 
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Invalid file', {
-        variant: 'error',
-      }),
-    );
+      expect(response).toEqual({
+        success: true,
+      });
+    });
   });
-  // TODO: Need more tests with uploading correct file.
-  // Issue with node-fetch.
+
+  describe('Render and upload file tests', () => {
+    process.env.OAUTH_URL = 'https://auth.mpdx.org';
+
+    beforeEach(() => {
+      handleClose.mockClear();
+    });
+    it('should render modal', async () => {
+      const { getByText, getByTestId } = render(
+        Components(
+          <GqlMockedProvider>
+            <OrganizationImportDataSyncModal
+              handleClose={handleClose}
+              organizationId={organizationId}
+              organizationName={organizationName}
+              accountListId={accountListId}
+            />
+          </GqlMockedProvider>,
+        ),
+      );
+
+      expect(getByText('Import TntConnect DataSync file')).toBeInTheDocument();
+
+      userEvent.click(getByText(/cancel/i));
+      expect(handleClose).toHaveBeenCalledTimes(1);
+      userEvent.click(getByTestId('CloseIcon'));
+      expect(handleClose).toHaveBeenCalledTimes(2);
+    });
+
+    describe('Send Files to API', () => {
+      const fetch = jest
+        .fn()
+        .mockResolvedValue(Promise.resolve({ status: 201 }));
+      beforeEach(() => {
+        window.fetch = fetch;
+      });
+
+      it('should return error when file is too large', async () => {
+        const mutationSpy = jest.fn();
+        const { getByText, getByTestId } = render(
+          Components(
+            <GqlMockedProvider onCall={mutationSpy}>
+              <OrganizationImportDataSyncModal
+                handleClose={handleClose}
+                organizationId={organizationId}
+                organizationName={organizationName}
+                accountListId={accountListId}
+              />
+            </GqlMockedProvider>,
+          ),
+        );
+        const file = new File(['contents'], '.tntmpd', {
+          type: 'xml',
+        });
+        Object.defineProperty(file, 'size', {
+          value: 200_000_000,
+          configurable: true,
+        });
+        userEvent.upload(getByTestId('importFileUploader'), file);
+
+        await waitFor(() =>
+          expect(mockEnqueue).toHaveBeenCalledWith(
+            'Cannot upload file: file size cannot exceed 100MB',
+            {
+              variant: 'error',
+            },
+          ),
+        );
+        expect(getByText('Upload File')).toBeDisabled();
+      });
+
+      it('should inform user of the error when uploading file.', async () => {
+        const mutationSpy = jest.fn();
+        const { getByTestId, getByText } = render(
+          Components(
+            <GqlMockedProvider onCall={mutationSpy}>
+              <OrganizationImportDataSyncModal
+                handleClose={handleClose}
+                organizationId={organizationId}
+                organizationName={organizationName}
+                accountListId={accountListId}
+              />
+            </GqlMockedProvider>,
+          ),
+        );
+
+        const file = new File(['contents'], 'image.png', {
+          type: 'image/png',
+        });
+        userEvent.upload(getByTestId('importFileUploader'), file);
+        await waitFor(() =>
+          expect(mockEnqueue).toHaveBeenCalledWith(
+            'Cannot upload file: file must be an .tntmpd or .tntdatasync file.',
+            {
+              variant: 'error',
+            },
+          ),
+        );
+        expect(getByText('Upload File')).toBeDisabled();
+      });
+
+      it('should send formData and show successful banner', async () => {
+        const mutationSpy = jest.fn();
+        const { getByTestId, getByText } = render(
+          Components(
+            <GqlMockedProvider onCall={mutationSpy}>
+              <OrganizationImportDataSyncModal
+                handleClose={handleClose}
+                organizationId={organizationId}
+                organizationName={organizationName}
+                accountListId={accountListId}
+              />
+            </GqlMockedProvider>,
+          ),
+        );
+
+        await waitFor(() => {
+          expect(getByText('Upload File')).toBeDisabled();
+        });
+
+        const testValue = [{ isTest: 'It is a test' }];
+        const str = JSON.stringify(testValue);
+        const blob = new Blob([str]);
+        const tntDataSync = new File([blob], '.tntmpd', {
+          type: 'xml',
+        });
+
+        await act(() => {
+          userEvent.upload(getByTestId('importFileUploader'), tntDataSync);
+        });
+        await waitFor(() => {
+          expect(getByText('Upload File')).not.toBeDisabled();
+        });
+        userEvent.click(getByText('Upload File'));
+        await waitFor(() => {
+          expect(window.fetch).toHaveBeenCalledWith(
+            '/api/uploads/tnt-data-sync',
+            expect.objectContaining({
+              method: 'POST',
+              body: expect.any(FormData),
+            }),
+          );
+        });
+
+        const formData = Array.from(
+          (window.fetch as jest.Mock<any, any>).mock.calls[0][1].body.entries(),
+        ).reduce(
+          (acc, f) => ({
+            ...(acc as Array<object>),
+            [(f as Array<string>)[0]]: (f as Array<string>)[1],
+          }),
+          {},
+        );
+
+        expect(formData).toEqual({
+          accountListId,
+          organizationId,
+          tntDataSync,
+        });
+        await waitFor(() =>
+          expect(mockEnqueue).toHaveBeenCalledWith(
+            `File successfully uploaded. The import to ${organizationName} will begin in the background.`,
+            {
+              variant: 'success',
+            },
+          ),
+        );
+      });
+    });
+  });
 });

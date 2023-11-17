@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
+import { TFunction } from 'i18next';
 import { styled } from '@mui/material/styles';
 import {
   Box,
@@ -16,8 +17,32 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import theme from 'src/theme';
 import Modal from 'src/components/common/Modal/Modal';
-import { validateFile } from 'src/components/Shared/FileUploads/tntConnectDataSync';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
+
+export const validateFile = ({
+  file,
+  t,
+}: {
+  file: File;
+  t: TFunction;
+}): { success: true } | { success: false; message: string } => {
+  if (!new RegExp(/.*\.tntmpd$|.*\.tntdatasync$/).test(file.name)) {
+    return {
+      success: false,
+      message: t(
+        'Cannot upload file: file must be an .tntmpd or .tntdatasync file.',
+      ),
+    };
+  }
+  if (file.size > 100_000_000) {
+    return {
+      success: false,
+      message: t('Cannot upload file: file size cannot exceed 100MB'),
+    };
+  }
+
+  return { success: true };
+};
 
 interface OrganizationImportDataSyncModalProps {
   handleClose: () => void;
@@ -40,6 +65,7 @@ export const OrganizationImportDataSyncModal: React.FC<
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValid, setIsValid] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -77,7 +103,6 @@ export const OrganizationImportDataSyncModal: React.FC<
       });
     }
   };
-
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
@@ -88,7 +113,9 @@ export const OrganizationImportDataSyncModal: React.FC<
       const validationResult = validateFile({ file, t });
       if (!validationResult.success) throw new Error(validationResult.message);
       setImportFile(file);
+      setIsValid(true);
     } catch (err) {
+      setIsValid(false);
       enqueueSnackbar(getErrorMessage(err), {
         variant: 'error',
       });
@@ -159,7 +186,7 @@ export const OrganizationImportDataSyncModal: React.FC<
 
         <DialogActions>
           <CancelButton onClick={handleClose} disabled={isSubmitting} />
-          <SubmitButton disabled={isSubmitting}>
+          <SubmitButton disabled={isSubmitting || !isValid}>
             {t('Upload File')}
           </SubmitButton>
         </DialogActions>
