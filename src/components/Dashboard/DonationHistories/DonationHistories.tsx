@@ -256,8 +256,8 @@ const DonationHistories = ({
           ) : (
             <>
               <Box
-                display={{ xs: 'none', sm: 'block' }}
-                style={{ height: '250px' }}
+                display={{ sm: 'none', md: 'block' }}
+                style={{ height: '250px', minWidth: '600px' }}
               >
                 {loading ? (
                   <Grid
@@ -345,7 +345,7 @@ const DonationHistories = ({
                 )}
               </Box>
               <Box
-                display={{ xs: 'block', sm: 'none' }}
+                display={{ sm: 'block', md: 'none' }}
                 style={{ height: '150px' }}
               >
                 {loading ? (

@@ -64,7 +64,7 @@ const CoachingSideTitleContainer = styled(Box)(({ theme }) => ({
 
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
-  flexGrow: 4,
+  width: 'calc(100vw - 20rem)',
 }));
 
 const CoachingItemContainer = styled(Box)(({ theme }) => ({
@@ -322,7 +322,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 }
                 currencyCode={accountListData?.currency}
               />
-              <Box style={{ margin: theme.spacing(3, 0) }}>
+              <Box style={{ margin: theme.spacing(3, 0), minWidth: 600 }}>
                 <MonthlyCommitment
                   coachingId={accountListId}
                   currencyCode={accountListData?.currency}

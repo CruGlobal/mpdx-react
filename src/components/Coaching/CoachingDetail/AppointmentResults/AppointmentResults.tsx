@@ -23,6 +23,7 @@ import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 const RootContainer = styled(Paper)(({ theme }) => ({
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(1),
+  minWidth: '600px',
 }));
 
 const PaddedTypography = styled(Typography)(({ theme }) => ({
