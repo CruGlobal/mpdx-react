@@ -435,6 +435,61 @@ describe('EditGoogleAccountModal', () => {
     });
   });
 
+  it('should create a  Calendar Integration', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByRole } = render(
+      Components(
+        <GqlMockedProvider<{
+          GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
+        }>
+          mocks={{
+            GoogleAccountIntegrations: {
+              googleAccountIntegrations: [],
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <EditGoogleAccountModal
+            account={googleAccount}
+            handleClose={handleClose}
+            oAuth={oAuth}
+          />
+        </GqlMockedProvider>,
+      ),
+    );
+
+    await waitFor(() =>
+      expect(getByText(/Enable Calendar Integration/i)).toBeInTheDocument(),
+    );
+
+    userEvent.click(
+      getByRole('button', { name: /Enable Calendar Integration/i }),
+    );
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Enabled Google Calendar Integration!',
+        {
+          variant: 'success',
+        },
+      );
+      expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
+        'CreateGoogleIntegration',
+      );
+      expect(mutationSpy.mock.calls[1][0].operation.variables.input).toEqual({
+        googleAccountId: googleAccount.id,
+        accountListId: accountListId,
+        googleIntegration: {
+          calendarIntegration: true,
+        },
+      });
+
+      expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
+        'GoogleAccountIntegrations',
+      );
+    });
+  });
+
   it('should sync Calendar Integration', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
