@@ -1,6 +1,7 @@
-query GetPreferencesNotifications($accountListId: ID!) {
+query PreferencesNotifications($accountListId: ID!) {
   notificationPreferences(accountListId: $accountListId) {
     nodes {
+      id
       app
       email
       notificationType {
@@ -13,7 +14,7 @@ query GetPreferencesNotifications($accountListId: ID!) {
   }
 }
 
-query GetNotificationConstants {
+query NotificationConstants {
   constant {
     notificationTranslatedHashes {
       id

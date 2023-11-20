@@ -18,9 +18,9 @@ import {
 import { Email, Smartphone, Task } from '@mui/icons-material';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
-  useGetPreferencesNotificationsQuery,
-  useGetNotificationConstantsQuery,
-} from './GetNotifications.generated';
+  usePreferencesNotificationsQuery,
+  useNotificationConstantsQuery,
+} from './Notifications.generated';
 import { useUpdateNotificationPreferencesMutation } from './UpdateNotifications.generated';
 import * as Types from '../../../../graphql/types.generated';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
@@ -118,12 +118,12 @@ export const NotificationsTable: React.FC = () => {
     ),
   });
 
-  const { data, loading } = useGetPreferencesNotificationsQuery({
+  const { data, loading } = usePreferencesNotificationsQuery({
     variables: {
       accountListId: accountListId ?? '',
     },
   });
-  const { data: notificationConstants } = useGetNotificationConstantsQuery();
+  const { data: notificationConstants } = useNotificationConstantsQuery();
 
   const defaultIfInSetup = (
     notificationPreference: any,
@@ -158,7 +158,7 @@ export const NotificationsTable: React.FC = () => {
     }, []);
   }, [data, notificationConstants]);
 
-  const selectAll = (
+  const handleSelectAll = (
     type,
     notifications,
     setFieldValue,
@@ -201,8 +201,9 @@ export const NotificationsTable: React.FC = () => {
 
   return (
     <Box component="section" marginTop={5}>
-      {loading && <NotificationsTableSkeleton />}
-      {!loading && (
+      {loading ? (
+        <NotificationsTableSkeleton />
+      ) : (
         <Formik
           initialValues={{
             notifications: notifications,
@@ -264,7 +265,7 @@ export const NotificationsTable: React.FC = () => {
                             align="right"
                             data-testid="select-all-app"
                             onClick={() =>
-                              selectAll(
+                              handleSelectAll(
                                 notificationsEnum.App,
                                 notifications,
                                 setFieldValue,
@@ -283,7 +284,7 @@ export const NotificationsTable: React.FC = () => {
                             align="right"
                             data-testid="select-all-email"
                             onClick={() =>
-                              selectAll(
+                              handleSelectAll(
                                 notificationsEnum.Email,
                                 notifications,
                                 setFieldValue,
@@ -302,7 +303,7 @@ export const NotificationsTable: React.FC = () => {
                             align="right"
                             data-testid="select-all-task"
                             onClick={() =>
-                              selectAll(
+                              handleSelectAll(
                                 notificationsEnum.Task,
                                 notifications,
                                 setFieldValue,

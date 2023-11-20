@@ -3,6 +3,7 @@ mutation UpdateNotificationPreferences(
 ) {
   updateNotificationPreferences(input: $input) {
     notificationPreferences {
+      id
       notificationType {
         id
       }

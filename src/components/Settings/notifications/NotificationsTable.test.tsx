@@ -45,7 +45,7 @@ const createConstant = (type, id) => ({
   value: type,
 });
 const mocks = {
-  GetPreferencesNotifications: {
+  PreferencesNotifications: {
     notificationPreferences: {
       nodes: [
         createNotification(
@@ -57,7 +57,7 @@ const mocks = {
       ],
     },
   },
-  GetNotificationConstants: {
+  NotificationConstants: {
     constant: {
       notificationTranslatedHashes: [
         createConstant(NotificationTypeTypeEnum.CallPartnerOncePerYear, '111'),
@@ -95,10 +95,10 @@ describe('NotificationsTable', () => {
           mutationSpy.mock.calls[0][0].operation.variables.accountListId,
         ).toEqual(accountListId);
       expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
-        'GetPreferencesNotifications',
+        'PreferencesNotifications',
       );
       expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
-        'GetNotificationConstants',
+        'NotificationConstants',
       );
     });
 
@@ -123,33 +123,34 @@ describe('NotificationsTable', () => {
     await waitFor(() =>
       expect(queryByTestId('skeleton-notifications')).not.toBeInTheDocument(),
     );
-    expect(getAllByRole('checkbox')[0]).not.toBeChecked();
-    expect(getAllByRole('checkbox')[1]).not.toBeChecked();
-    expect(getAllByRole('checkbox')[2]).not.toBeChecked();
-    expect(getAllByRole('checkbox')[3]).not.toBeChecked();
-    expect(getAllByRole('checkbox')[4]).not.toBeChecked();
-    expect(getAllByRole('checkbox')[5]).not.toBeChecked();
-    expect(getAllByRole('checkbox')[6]).not.toBeChecked();
-    expect(getAllByRole('checkbox')[7]).not.toBeChecked();
-    expect(getAllByRole('checkbox')[8]).not.toBeChecked();
+    const checkboxes = getAllByRole('checkbox');
+    expect(checkboxes[0]).not.toBeChecked();
+    expect(checkboxes[1]).not.toBeChecked();
+    expect(checkboxes[2]).not.toBeChecked();
+    expect(checkboxes[3]).not.toBeChecked();
+    expect(checkboxes[4]).not.toBeChecked();
+    expect(checkboxes[5]).not.toBeChecked();
+    expect(checkboxes[6]).not.toBeChecked();
+    expect(checkboxes[7]).not.toBeChecked();
+    expect(checkboxes[8]).not.toBeChecked();
 
     // Select all app
     userEvent.click(getByTestId('select-all-app'));
-    expect(getAllByRole('checkbox')[0]).toBeChecked();
-    expect(getAllByRole('checkbox')[3]).toBeChecked();
-    expect(getAllByRole('checkbox')[6]).toBeChecked();
+    expect(checkboxes[0]).toBeChecked();
+    expect(checkboxes[3]).toBeChecked();
+    expect(checkboxes[6]).toBeChecked();
 
     // Select all email
     userEvent.click(getByTestId('select-all-email'));
-    expect(getAllByRole('checkbox')[1]).toBeChecked();
-    expect(getAllByRole('checkbox')[4]).toBeChecked();
-    expect(getAllByRole('checkbox')[7]).toBeChecked();
+    expect(checkboxes[1]).toBeChecked();
+    expect(checkboxes[4]).toBeChecked();
+    expect(checkboxes[7]).toBeChecked();
 
     // Select all tasks
     userEvent.click(getByTestId('select-all-task'));
-    expect(getAllByRole('checkbox')[2]).toBeChecked();
-    expect(getAllByRole('checkbox')[5]).toBeChecked();
-    expect(getAllByRole('checkbox')[8]).toBeChecked();
+    expect(checkboxes[2]).toBeChecked();
+    expect(checkboxes[5]).toBeChecked();
+    expect(checkboxes[8]).toBeChecked();
   });
 
   it('Should select Call Partner Once Per Year checkboxes', async () => {
@@ -199,7 +200,6 @@ describe('NotificationsTable', () => {
     );
 
     await waitFor(() => {
-      // mutationSpy.mock.calls[1][0].operation.variables.input
       expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
         'UpdateNotificationPreferences',
       );

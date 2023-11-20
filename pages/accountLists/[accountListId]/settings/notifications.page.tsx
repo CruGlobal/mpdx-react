@@ -14,18 +14,18 @@ const Notifications: React.FC = () => {
     >
       <Box component="section" marginTop={3}>
         <p>
-          Based on an analysis of a partner&apos;s giving history, MPDX can
+          {t(`Based on an analysis of a partner&apos;s giving history, MPDX can
           notify you of events that you will probably want to follow up on. The
           detection logic is based on a set of rules that are right most of the
           time, but you will still want to verify an event manually before
-          contacting the partner.
+          contacting the partner.`)}
         </p>
       </Box>
       <Box component="section" marginTop={1}>
         <p>
-          For each event MPDX can notify you via email and also create a task
+          {t(`For each event MPDX can notify you via email and also create a task
           entry reminding you to do something about it. The options below allow
-          you to control that behavior.
+          you to control that behavior.`)}
         </p>
       </Box>
       <NotificationsTable />
