@@ -132,7 +132,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["micro-cors", "npm:0.1.1"],\
             ["mui-datatables", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.2.2"],\
             ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.3.1"],\
-            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1"],\
+            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.5"],\
             ["next-compose-plugins", "npm:2.2.1"],\
             ["next-optimized-images", "npm:2.6.2"],\
             ["next-plugin-graphql", "npm:0.0.2"],\
@@ -27143,7 +27143,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["micro-cors", "npm:0.1.1"],\
             ["mui-datatables", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.2.2"],\
             ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.3.1"],\
-            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1"],\
+            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.5"],\
             ["next-compose-plugins", "npm:2.2.1"],\
             ["next-optimized-images", "npm:2.6.2"],\
             ["next-plugin-graphql", "npm:0.0.2"],\
@@ -27424,17 +27424,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["next-auth", [\
-        ["npm:4.20.1", {\
-          "packageLocation": "./.yarn/cache/next-auth-npm-4.20.1-33c67c6b5f-f341453371.zip/node_modules/next-auth/",\
+        ["npm:4.24.5", {\
+          "packageLocation": "./.yarn/cache/next-auth-npm-4.24.5-8428e11927-7cc4938512.zip/node_modules/next-auth/",\
           "packageDependencies": [\
-            ["next-auth", "npm:4.20.1"]\
+            ["next-auth", "npm:4.24.5"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1", {\
-          "packageLocation": "./.yarn/__virtual__/next-auth-virtual-b08069c45e/0/cache/next-auth-npm-4.20.1-33c67c6b5f-f341453371.zip/node_modules/next-auth/",\
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.5", {\
+          "packageLocation": "./.yarn/__virtual__/next-auth-virtual-b8c6a36db9/0/cache/next-auth-npm-4.24.5-8428e11927-7cc4938512.zip/node_modules/next-auth/",\
           "packageDependencies": [\
-            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1"],\
+            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.5"],\
             ["@babel/runtime", "npm:7.21.0"],\
             ["@panva/hkdf", "npm:1.0.4"],\
             ["@types/next", null],\
@@ -27448,7 +27448,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["oauth", "npm:0.9.15"],\
             ["openid-client", "npm:5.4.0"],\
             ["preact", "npm:10.10.5"],\
-            ["preact-render-to-string", "virtual:b08069c45e4cb0d847df80ea3fa3eb28728f9c476cbe669750a5bf787c210d8369bce7a78a71796c28d81ac15a272e442e4490704122a52d20e971bfc7e8544a#npm:5.2.2"],\
+            ["preact-render-to-string", "virtual:b8c6a36db99493d40c9ffef4e43448f2abdcd5f68e0bb05cda7e22dbef022832afeedf5d978c327b1d006898d46a7081c78defe893ad0b24212c1965b9beeddb#npm:5.2.2"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["uuid", "npm:8.3.2"]\
@@ -29095,10 +29095,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:b08069c45e4cb0d847df80ea3fa3eb28728f9c476cbe669750a5bf787c210d8369bce7a78a71796c28d81ac15a272e442e4490704122a52d20e971bfc7e8544a#npm:5.2.2", {\
-          "packageLocation": "./.yarn/__virtual__/preact-render-to-string-virtual-7f96371826/0/cache/preact-render-to-string-npm-5.2.2-b8f2c0c74e-2068b8ce48.zip/node_modules/preact-render-to-string/",\
+        ["virtual:b8c6a36db99493d40c9ffef4e43448f2abdcd5f68e0bb05cda7e22dbef022832afeedf5d978c327b1d006898d46a7081c78defe893ad0b24212c1965b9beeddb#npm:5.2.2", {\
+          "packageLocation": "./.yarn/__virtual__/preact-render-to-string-virtual-f87a90df8d/0/cache/preact-render-to-string-npm-5.2.2-b8f2c0c74e-2068b8ce48.zip/node_modules/preact-render-to-string/",\
           "packageDependencies": [\
-            ["preact-render-to-string", "virtual:b08069c45e4cb0d847df80ea3fa3eb28728f9c476cbe669750a5bf787c210d8369bce7a78a71796c28d81ac15a272e442e4490704122a52d20e971bfc7e8544a#npm:5.2.2"],\
+            ["preact-render-to-string", "virtual:b8c6a36db99493d40c9ffef4e43448f2abdcd5f68e0bb05cda7e22dbef022832afeedf5d978c327b1d006898d46a7081c78defe893ad0b24212c1965b9beeddb#npm:5.2.2"],\
             ["@types/preact", null],\
             ["preact", "npm:10.10.5"],\
             ["pretty-format", "npm:3.8.0"]\
