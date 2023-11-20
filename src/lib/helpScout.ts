@@ -42,7 +42,7 @@ export const identifyUser = (id: string, email: string, name: string) => {
 export const showArticle = (articleId: string | undefined) => {
   if (!articleId) {
     callBeacon('open');
-    return ``;
+    return;
   }
   callBeacon('article', articleId);
 };

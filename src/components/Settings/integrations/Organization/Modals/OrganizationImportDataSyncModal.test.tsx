@@ -236,14 +236,8 @@ describe('OrganizationImportDataSyncModal', () => {
           );
         });
 
-        const formData = Array.from(
+        const formData = Object.fromEntries(
           (window.fetch as jest.Mock<any, any>).mock.calls[0][1].body.entries(),
-        ).reduce(
-          (acc, f) => ({
-            ...(acc as Array<object>),
-            [(f as Array<string>)[0]]: (f as Array<string>)[1],
-          }),
-          {},
         );
 
         expect(formData).toEqual({

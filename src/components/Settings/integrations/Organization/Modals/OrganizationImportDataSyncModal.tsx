@@ -26,7 +26,7 @@ export const validateFile = ({
   file: File;
   t: TFunction;
 }): { success: true } | { success: false; message: string } => {
-  if (!new RegExp(/.*\.tntmpd$|.*\.tntdatasync$/).test(file.name)) {
+  if (!file.name.endsWith('.tntmpd') && !file.name.endsWith('.tntdatasync')) {
     return {
       success: false,
       message: t(
