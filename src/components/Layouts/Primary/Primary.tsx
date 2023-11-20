@@ -44,7 +44,7 @@ const Primary = ({ children }: Props): ReactElement => {
   return (
     <RootContainer>
       <TopBar
-        onMobileNavOpen={() => setMobileNavOpen(true)}
+        onMobileNavOpen={() => setMobileNavOpen(!isMobileNavOpen)}
         accountListId={accountListId}
       />
       {accountListId && (
