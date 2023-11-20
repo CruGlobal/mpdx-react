@@ -162,89 +162,86 @@ const DonationHistories = ({
       </Box>
       <AnimatedCard>
         {!empty && (
-          <Box display={{ xs: 'none', sm: 'block' }}>
+          <Box display={{ xs: 'none', md: 'block' }}>
             <CardHeader
               className={classes.cardHeader}
               title={
-                <Box display={{ xs: 'none', sm: 'block' }}>
-                  <Grid container spacing={2} justifyContent="center">
-                    {goal ? (
-                      <>
-                        <Grid item>
-                          <Box
-                            className={[
-                              classes.lineKey,
-                              classes.lineKeyGoal,
-                            ].join(' ')}
-                          />
-                          <Typography
-                            variant="body1"
-                            component="span"
-                            data-testid="DonationHistoriesTypographyGoal"
-                          >
-                            <strong>{t('Goal')}</strong>{' '}
-                            {currencyFormat(goal, currencyCode, locale)}
-                          </Typography>
-                        </Grid>
-                        <Grid item>|</Grid>
-                      </>
-                    ) : null}
-                    <Grid item>
-                      <Box
-                        className={[
-                          classes.lineKey,
-                          classes.lineKeyAverage,
-                        ].join(' ')}
-                      />
-                      <Typography
-                        variant="body1"
-                        component="span"
-                        data-testid="DonationHistoriesTypographyAverage"
-                      >
-                        <strong>{t('Average')}</strong>{' '}
-                        {loading || !reportsDonationHistories ? (
-                          <Skeleton
-                            variant="text"
-                            style={{ display: 'inline-block' }}
-                            width={90}
-                          />
-                        ) : (
-                          currencyFormat(
-                            reportsDonationHistories.averageIgnoreCurrent,
-                            currencyCode,
-                            locale,
-                          )
-                        )}
-                      </Typography>
-                    </Grid>
-                    {pledged ? (
-                      <>
-                        <Grid item>|</Grid>
-                        <Grid item>
-                          <Box
-                            className={[
-                              classes.lineKey,
-                              classes.lineKeyPledged,
-                            ].join(' ')}
-                          />
-                          <Typography
-                            variant="body1"
-                            component="span"
-                            data-testid="DonationHistoriesTypographyPledged"
-                          >
-                            <strong>{t('Committed')}</strong>{' '}
-                            {currencyFormat(pledged, currencyCode, locale)}
-                          </Typography>
-                        </Grid>
-                      </>
-                    ) : null}
+                <Grid container spacing={2} justifyContent="center">
+                  {goal ? (
+                    <>
+                      <Grid item>
+                        <Box
+                          className={[
+                            classes.lineKey,
+                            classes.lineKeyGoal,
+                          ].join(' ')}
+                        />
+                        <Typography
+                          variant="body1"
+                          component="span"
+                          data-testid="DonationHistoriesTypographyGoal"
+                        >
+                          <strong>{t('Goal')}</strong>{' '}
+                          {currencyFormat(goal, currencyCode, locale)}
+                        </Typography>
+                      </Grid>
+                      <Grid item>|</Grid>
+                    </>
+                  ) : null}
+                  <Grid item>
+                    <Box
+                      className={[classes.lineKey, classes.lineKeyAverage].join(
+                        ' ',
+                      )}
+                    />
+                    <Typography
+                      variant="body1"
+                      component="span"
+                      data-testid="DonationHistoriesTypographyAverage"
+                    >
+                      <strong>{t('Average')}</strong>{' '}
+                      {loading || !reportsDonationHistories ? (
+                        <Skeleton
+                          variant="text"
+                          style={{ display: 'inline-block' }}
+                          width={90}
+                        />
+                      ) : (
+                        currencyFormat(
+                          reportsDonationHistories.averageIgnoreCurrent,
+                          currencyCode,
+                          locale,
+                        )
+                      )}
+                    </Typography>
                   </Grid>
-                </Box>
+                  {pledged ? (
+                    <>
+                      <Grid item>|</Grid>
+                      <Grid item>
+                        <Box
+                          className={[
+                            classes.lineKey,
+                            classes.lineKeyPledged,
+                          ].join(' ')}
+                        />
+                        <Typography
+                          variant="body1"
+                          component="span"
+                          data-testid="DonationHistoriesTypographyPledged"
+                        >
+                          <strong>{t('Committed')}</strong>{' '}
+                          {currencyFormat(pledged, currencyCode, locale)}
+                        </Typography>
+                      </Grid>
+                    </>
+                  ) : null}
+                </Grid>
               }
             />
           </Box>
         )}
-        <CardContent>
+        <CardContent sx={{ overflowX: 'scroll' }}>
           {empty ? (
             <Box
               className={classes.boxImg}
@@ -255,10 +252,7 @@ const DonationHistories = ({
             </Box>
           ) : (
             <>
-              <Box
-                display={{ sm: 'none', md: 'block' }}
-                style={{ height: '250px', minWidth: '600px' }}
-              >
+              <Box display={{ xs: 'none', md: 'block' }} height={250}>
                 {loading ? (
                   <Grid
                     container
@@ -280,7 +274,7 @@ const DonationHistories = ({
                     <Skeleton variant="rectangular" width={30} height={250} />
                   </Grid>
                 ) : (
-                  <ResponsiveContainer>
+                  <ResponsiveContainer minWidth={600}>
                     <BarChart
                       data={periods}
                       margin={{
@@ -344,10 +338,7 @@ const DonationHistories = ({
                   </ResponsiveContainer>
                 )}
               </Box>
-              <Box
-                display={{ sm: 'block', md: 'none' }}
-                style={{ height: '150px' }}
-              >
+              <Box display={{ xs: 'block', md: 'none' }} height={150}>
                 {loading ? (
                   <Grid
                     container

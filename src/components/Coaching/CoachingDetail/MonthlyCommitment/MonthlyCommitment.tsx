@@ -82,8 +82,8 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
           </Box>
         }
       />
-      <CardContent>
-        <ResponsiveContainer>
+      <CardContent sx={{ overflowX: 'scroll' }}>
+        <ResponsiveContainer minWidth={600}>
           {loading ? (
             <>
               <Skeleton variant="text" />

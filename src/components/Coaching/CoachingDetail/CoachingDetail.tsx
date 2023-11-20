@@ -322,7 +322,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 }
                 currencyCode={accountListData?.currency}
               />
-              <Box style={{ margin: theme.spacing(3, 0), minWidth: 600 }}>
+              <Box style={{ margin: theme.spacing(3, 0) }}>
                 <MonthlyCommitment
                   coachingId={accountListId}
                   currencyCode={accountListData?.currency}

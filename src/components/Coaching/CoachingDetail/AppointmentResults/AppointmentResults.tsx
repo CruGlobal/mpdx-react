@@ -23,7 +23,7 @@ import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 const RootContainer = styled(Paper)(({ theme }) => ({
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(1),
-  minWidth: '600px',
+  overflowX: 'scroll',
 }));
 
 const PaddedTypography = styled(Typography)(({ theme }) => ({
@@ -106,7 +106,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
           <MultilineSkeleton lines={4} />
         </Box>
       ) : (
-        <TableContainer>
+        <TableContainer sx={{ minWidth: 600 }}>
           <Table size="small" aria-label="appointments and results table">
             <TableHead>
               <TableRow>
