@@ -154,8 +154,8 @@ const DonationHistories = ({
   };
 
   return (
-    <>
-      <Box my={{ xs: 1, sm: 2 }}>
+    <div>
+      <Box mb={{ xs: 1, sm: 2 }}>
         <AnimatedBox>
           <Typography variant="h6">{t('Monthly Activity')}</Typography>
         </AnimatedBox>
@@ -372,7 +372,7 @@ const DonationHistories = ({
           )}
         </CardContent>
       </AnimatedCard>
-    </>
+    </div>
   );
 };
 
