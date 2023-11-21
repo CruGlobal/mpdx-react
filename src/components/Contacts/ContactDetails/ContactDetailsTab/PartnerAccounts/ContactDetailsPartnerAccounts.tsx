@@ -140,7 +140,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
                 required
               />
               <IconButton
-                aria-label="submit"
+                aria-label={t('Submit')}
                 type="submit"
                 disabled={isSubmitting || !isValid || updating}
               >

@@ -348,7 +348,7 @@ const PartnerCare = ({
                         <ListItemSecondaryAction>
                           <CompleteButton
                             role="button"
-                            aria-label="Complete Button"
+                            aria-label={t('Complete')}
                             onClick={() => handleCompleteClick(task)}
                           >
                             <Brightness1Outlined name="Circle Icon" />
@@ -461,7 +461,7 @@ const PartnerCare = ({
                         <ListItemSecondaryAction>
                           <CompleteButton
                             role="button"
-                            aria-label="Complete Button"
+                            aria-label={t('Complete')}
                             onClick={() =>
                               handleCreateClick(
                                 person.birthdayDay

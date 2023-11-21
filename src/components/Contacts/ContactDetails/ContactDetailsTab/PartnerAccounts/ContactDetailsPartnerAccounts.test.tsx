@@ -141,7 +141,7 @@ describe('ContactDetailsPartnerAccounts', () => {
       getByRole('textbox', { name: 'Account Number' }),
       'new-account',
     );
-    userEvent.click(getByRole('button', { name: 'submit' }));
+    userEvent.click(getByRole('button', { name: 'Submit' }));
     await waitFor(() =>
       expect(
         queryByRole('textbox', { name: 'Account Number' }),

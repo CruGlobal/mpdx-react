@@ -37,7 +37,7 @@ export const FourteenMonthReportActions: React.FC<
   const { t } = useTranslation();
 
   return (
-    <ButtonGroup aria-label="report header button group">
+    <ButtonGroup aria-label={t('Report header button group')}>
       <Button
         startIcon={
           <SvgIcon fontSize="small">

@@ -76,7 +76,10 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
         </AccordionSummary>
         <AccordionDetails>
           <TableContainer component={Paper}>
-            <Table style={{ minWidth: 700 }} aria-label="customized table">
+            <Table
+              style={{ minWidth: 700 }}
+              aria-label={t('Expected monthly total report table')}
+            >
               <TableHead>
                 <TableRow>
                   <TableCell align="left">{t('Partner')}</TableCell>

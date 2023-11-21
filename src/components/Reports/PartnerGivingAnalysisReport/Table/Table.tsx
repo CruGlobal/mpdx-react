@@ -79,7 +79,7 @@ export const PartnerGivingAnalysisReportTable: FC<
     <StickyTableContainer>
       <StickyTable
         stickyHeader={true}
-        aria-label="partner giving analysis report table"
+        aria-label={t('Partner giving analysis report table')}
         data-testid="PartnerGivingAnalysisReport"
       >
         <TableHead

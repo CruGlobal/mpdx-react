@@ -93,7 +93,7 @@ export const FourteenMonthReportTable: React.FC<
     <PrintableContainer className="fourteen-month-report">
       <StickyTable
         stickyHeader={true}
-        aria-label="fourteen month report table"
+        aria-label={t('Fourteen month report table')}
         data-testid="FourteenMonthReport"
       >
         <TableHead
