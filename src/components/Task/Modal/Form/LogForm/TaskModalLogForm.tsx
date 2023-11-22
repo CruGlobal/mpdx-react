@@ -274,7 +274,7 @@ const TaskModalLogForm = ({
                   onChange={handleChange('subject')}
                   fullWidth
                   multiline
-                  inputProps={{ 'aria-label': 'Subject' }}
+                  inputProps={{ 'aria-label': t('Subject') }}
                   error={!!errors.subject && touched.subject}
                   helperText={
                     errors.subject && touched.subject && t('Field is required')
@@ -329,7 +329,7 @@ const TaskModalLogForm = ({
                     onChange={handleChange('location')}
                     fullWidth
                     multiline
-                    inputProps={{ 'aria-label': 'Location' }}
+                    inputProps={{ 'aria-label': t('Location') }}
                   />
                 </Grid>
               )}
@@ -497,7 +497,7 @@ const TaskModalLogForm = ({
                             onChange={handleChange('comment')}
                             fullWidth
                             multiline
-                            inputProps={{ 'aria-label': 'Comment' }}
+                            inputProps={{ 'aria-label': t('Comment') }}
                           />
                         </Grid>
                         <Grid item xs={12}>

@@ -124,7 +124,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
                 onChange={handleChange('body')}
                 fullWidth
                 multiline
-                inputProps={{ 'aria-label': 'Body' }}
+                inputProps={{ 'aria-label': t('Body') }}
                 required
                 onKeyPress={(event): void => {
                   if (event.key === 'Enter' && !event.shiftKey) {

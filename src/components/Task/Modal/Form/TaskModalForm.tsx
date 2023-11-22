@@ -298,7 +298,7 @@ const TaskModalForm = ({
                   onChange={handleChange('subject')}
                   fullWidth
                   multiline
-                  inputProps={{ 'aria-label': 'Subject' }}
+                  inputProps={{ 'aria-label': t('Subject') }}
                   error={!!errors.subject && touched.subject}
                   helperText={
                     errors.subject && touched.subject && t('Field is required')
@@ -354,7 +354,7 @@ const TaskModalForm = ({
                     onChange={handleChange('location')}
                     fullWidth
                     multiline
-                    inputProps={{ 'aria-label': 'Location' }}
+                    inputProps={{ 'aria-label': t('Location') }}
                   />
                 </Grid>
               )}
@@ -677,7 +677,7 @@ const TaskModalForm = ({
                           value={notificationTimeBefore ?? ''}
                           onChange={handleChange('notificationTimeBefore')}
                           inputProps={{
-                            'aria-label': 'Time',
+                            'aria-label': t('Time'),
                             type: 'number',
                             min: 0,
                           }}
@@ -736,7 +736,7 @@ const TaskModalForm = ({
                     }
                     fullWidth
                     multiline
-                    inputProps={{ 'aria-label': 'Comment' }}
+                    inputProps={{ 'aria-label': t('Comment') }}
                   />
                 </Grid>
               )}
