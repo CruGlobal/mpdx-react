@@ -19,8 +19,9 @@ import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useLocale } from 'src/hooks/useLocale';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
-import { AppointmentResults } from './AppointmentResults/AppointmentResults';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
+import { AppointmentResults } from './AppointmentResults/AppointmentResults';
+import { Activity } from './Activity/Activity';
 import { SideContainerText } from './StyledComponents';
 import { CollapsibleEmailList } from './CollapsibleEmailList';
 import { CollapsiblePhoneList } from './CollapsiblePhoneList';
@@ -334,6 +335,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 accountListId={accountListId}
                 currency={accountListData?.currency}
                 period={period}
+              />
+              <Activity
+                accountListId={accountListId}
+                accountListType={accountListType}
+                period={period}
+                currency={accountListData?.currency}
+                primaryAppeal={accountListData?.primaryAppeal ?? undefined}
               />
             </CoachingItemContainer>
           </>

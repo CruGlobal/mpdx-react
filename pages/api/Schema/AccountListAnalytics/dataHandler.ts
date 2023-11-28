@@ -51,10 +51,7 @@ const getAccountListAnalytics = (data: {
   };
 }): AccountListAnalytics => {
   const {
-    id,
-    type,
     attributes: {
-      created_at,
       appointments,
       contacts,
       correspondence,
@@ -63,29 +60,38 @@ const getAccountListAnalytics = (data: {
       facebook,
       phone,
       text_message,
-      start_date,
-      end_date,
-      updated_at,
-      updated_in_db_at,
+      start_date: startDate,
+      end_date: endDate,
     },
   } = data;
 
   return {
-    id: id,
-    type: type,
-    createdAt: created_at,
-    appointments: appointments,
-    contacts: contacts,
-    correspondence: correspondence,
-    electronic: electronic,
-    email: email,
-    facebook: facebook,
-    phone: phone,
+    appointments,
+    contacts: {
+      active: contacts.active,
+      referrals: contacts.referrals,
+      referralsOnHand: contacts.referrals_on_hand,
+    },
+    correspondence: {
+      precall: correspondence.precall,
+      reminders: correspondence.reminders,
+      supportLetters: correspondence.support_letters,
+      thankYous: correspondence.thank_yous,
+      newsletters: correspondence.newsletters,
+    },
+    electronic,
+    email,
+    facebook,
+    phone: {
+      appointments: phone.appointments,
+      attempted: phone.attempted,
+      completed: phone.completed,
+      received: phone.received,
+      talkToInPerson: phone.talktoinperson,
+    },
     textMessage: text_message,
-    startDate: start_date,
-    endDate: end_date,
-    updatedAt: updated_at,
-    updatedInDbAt: updated_in_db_at,
+    startDate,
+    endDate,
   };
 };
 export { getAccountListAnalytics };
