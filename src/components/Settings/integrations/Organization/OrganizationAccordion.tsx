@@ -245,7 +245,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
                           sx={{ m: '0 0 0 10px' }}
                           onClick={() => handleSync(id)}
                         >
-                          Sync
+                          {t('Sync')}
                         </StyledServicesButton>
                       )}
 
@@ -256,7 +256,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
                           sx={{ m: '0 0 0 10px' }}
                           onClick={() => setShowImportDataSyncModal(true)}
                         >
-                          Import TntConnect DataSync file
+                          {t('Import TntConnect DataSync file')}
                         </StyledServicesButton>
                       )}
 
@@ -267,7 +267,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
                           sx={{ m: '0 0 0 10px' }}
                           onClick={() => handleReconnect(organization.id)}
                         >
-                          Reconnect
+                          {t('Reconnect')}
                         </StyledServicesButton>
                       )}
                       {type === OrganizationTypesEnum.LOGIN && (
@@ -289,7 +289,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
                     <Box sx={{ p: 2, display: 'flex' }}>
                       <Grid container spacing={2}>
                         <Grid item xs={6}>
-                          Last Updated
+                          {t('Last Updated')}
                         </Grid>
                         <Grid item xs={6}>
                           {DateTime.fromISO(lastDownloadedAt).toRelative()}
@@ -301,7 +301,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
                     <Box sx={{ p: 2, display: 'flex' }}>
                       <Grid container spacing={2}>
                         <Grid item xs={6}>
-                          Last Gift Date
+                          {t('Last Gift Date')}
                         </Grid>
                         <Grid item xs={6}>
                           {DateTime.fromISO(latestDonationDate).toRelative()}
@@ -343,7 +343,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
         variant={!!organizations?.length ? 'outlined' : 'contained'}
         onClick={() => setShowAddAccountModal(true)}
       >
-        Add Account
+        {t('Add Account')}
       </StyledServicesButton>
 
       {showAddAccountModal && (

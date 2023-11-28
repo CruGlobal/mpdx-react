@@ -162,7 +162,7 @@ export const OrganizationImportDataSyncModal: React.FC<
                   component="label"
                   disabled={isSubmitting}
                 >
-                  Upload file here
+                  {t('Upload file here')}
                   <input
                     hidden
                     accept=".tntmpd, .tntdatasync"
