@@ -12,13 +12,13 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import theme from 'src/theme';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
 import AnimatedCard from 'src/components/AnimatedCard';
-import { useAppointmentResultsQuery } from './AppointmentResults.generated';
-import { CoachingPeriodEnum } from '../CoachingDetail';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
+import { CoachingPeriodEnum } from '../CoachingDetail';
+import { getResultColor } from '../helpers';
+import { useAppointmentResultsQuery } from './AppointmentResults.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -78,18 +78,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
     [data],
   );
 
-  // Calculate the color of an appointment result based on how close it is to the goal of 10
-  const getColor = (amount: number): string => {
-    if (period === CoachingPeriodEnum.Weekly ? amount >= 10 : amount >= 40) {
-      return theme.palette.statusSuccess.main;
-    } else if (
-      period === CoachingPeriodEnum.Weekly ? amount >= 8 : amount >= 32
-    ) {
-      return theme.palette.statusWarning.main;
-    } else {
-      return theme.palette.statusDanger.main;
-    }
-  };
+  const appointmentGoal = CoachingPeriodEnum.Weekly ? 10 : 40;
 
   return (
     <AnimatedCard>
@@ -122,14 +111,24 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                     ({ id, appointmentsScheduled }) => (
                       <AlignedTableCell
                         key={id}
-                        sx={{ color: getColor(appointmentsScheduled) }}
+                        sx={{
+                          color: getResultColor(
+                            appointmentsScheduled,
+                            appointmentGoal,
+                          ),
+                        }}
                       >
                         {appointmentsScheduled}
                       </AlignedTableCell>
                     ),
                   )}
                   <AlignedTableCell
-                    sx={{ color: getColor(averages.appointmentsScheduled) }}
+                    sx={{
+                      color: getResultColor(
+                        averages.appointmentsScheduled,
+                        appointmentGoal,
+                      ),
+                    }}
                   >
                     {Math.round(averages.appointmentsScheduled)}
                   </AlignedTableCell>
@@ -142,14 +141,24 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                     ({ id, individualAppointments }) => (
                       <AlignedTableCell
                         key={id}
-                        sx={{ color: getColor(individualAppointments) }}
+                        sx={{
+                          color: getResultColor(
+                            individualAppointments,
+                            appointmentGoal,
+                          ),
+                        }}
                       >
                         {individualAppointments}
                       </AlignedTableCell>
                     ),
                   )}
                   <AlignedTableCell
-                    sx={{ color: getColor(averages.individualAppointments) }}
+                    sx={{
+                      color: getResultColor(
+                        averages.individualAppointments,
+                        appointmentGoal,
+                      ),
+                    }}
                   >
                     {Math.round(averages.individualAppointments)}
                   </AlignedTableCell>
