@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, PropsWithChildren } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
@@ -32,7 +32,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const Components = (children: React.ReactElement) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -98,15 +98,15 @@ describe('OrganizationAddAccountModal', () => {
   });
   it('should render modal', async () => {
     const { getByText, getByTestId } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <OrganizationAddAccountModal
             handleClose={handleClose}
             refetchOrganizations={refetchOrganizations}
             accountListId={accountListId}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     expect(getByText('Add Organization Account')).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe('OrganizationAddAccountModal', () => {
   it('should select offline Organization and add it', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider<{
           GetOrganizations: GetOrganizationsQuery;
         }>
@@ -136,8 +136,8 @@ describe('OrganizationAddAccountModal', () => {
             refetchOrganizations={refetchOrganizations}
             accountListId={accountListId}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     userEvent.click(getByRole('combobox'));
@@ -171,7 +171,7 @@ describe('OrganizationAddAccountModal', () => {
   it('should select Ministry Organization and be unable to add it.', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider<{
           GetOrganizations: GetOrganizationsQuery;
         }>
@@ -187,8 +187,8 @@ describe('OrganizationAddAccountModal', () => {
             refetchOrganizations={refetchOrganizations}
             accountListId={accountListId}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     userEvent.click(getByRole('combobox'));
@@ -208,7 +208,7 @@ describe('OrganizationAddAccountModal', () => {
   it('should select Login Organization and add it.', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole, getByTestId } = render(
-      Components(
+      <Components>
         <GqlMockedProvider<{
           GetOrganizations: GetOrganizationsQuery;
         }>
@@ -224,8 +224,8 @@ describe('OrganizationAddAccountModal', () => {
             refetchOrganizations={refetchOrganizations}
             accountListId={accountListId}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     userEvent.click(getByRole('combobox'));
@@ -273,7 +273,7 @@ describe('OrganizationAddAccountModal', () => {
   it('should select OAuth Organization and add it.', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider<{
           GetOrganizations: GetOrganizationsQuery;
         }>
@@ -289,8 +289,8 @@ describe('OrganizationAddAccountModal', () => {
             refetchOrganizations={refetchOrganizations}
             accountListId={accountListId}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     userEvent.click(getByRole('combobox'));

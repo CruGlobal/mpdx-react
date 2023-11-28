@@ -1,4 +1,9 @@
-import { render, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  waitFor,
+  act,
+  PropsWithChildren,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material/styles';
@@ -35,7 +40,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const Components = (children: React.ReactElement) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -101,7 +106,7 @@ describe('OrganizationImportDataSyncModal', () => {
     });
     it('should render modal', async () => {
       const { getByText, getByTestId } = render(
-        Components(
+        <Components>
           <GqlMockedProvider>
             <OrganizationImportDataSyncModal
               handleClose={handleClose}
@@ -109,8 +114,8 @@ describe('OrganizationImportDataSyncModal', () => {
               organizationName={organizationName}
               accountListId={accountListId}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       expect(getByText('Import TntConnect DataSync file')).toBeInTheDocument();
@@ -132,7 +137,7 @@ describe('OrganizationImportDataSyncModal', () => {
       it('should return error when file is too large', async () => {
         const mutationSpy = jest.fn();
         const { getByText, getByTestId } = render(
-          Components(
+          <Components>
             <GqlMockedProvider onCall={mutationSpy}>
               <OrganizationImportDataSyncModal
                 handleClose={handleClose}
@@ -140,8 +145,8 @@ describe('OrganizationImportDataSyncModal', () => {
                 organizationName={organizationName}
                 accountListId={accountListId}
               />
-            </GqlMockedProvider>,
-          ),
+            </GqlMockedProvider>
+          </Components>,
         );
         const file = new File(['contents'], '.tntmpd', {
           type: 'xml',
@@ -166,7 +171,7 @@ describe('OrganizationImportDataSyncModal', () => {
       it('should inform user of the error when uploading file.', async () => {
         const mutationSpy = jest.fn();
         const { getByTestId, getByText } = render(
-          Components(
+          <Components>
             <GqlMockedProvider onCall={mutationSpy}>
               <OrganizationImportDataSyncModal
                 handleClose={handleClose}
@@ -174,8 +179,8 @@ describe('OrganizationImportDataSyncModal', () => {
                 organizationName={organizationName}
                 accountListId={accountListId}
               />
-            </GqlMockedProvider>,
-          ),
+            </GqlMockedProvider>
+          </Components>,
         );
 
         const file = new File(['contents'], 'image.png', {
@@ -196,7 +201,7 @@ describe('OrganizationImportDataSyncModal', () => {
       it('should send formData and show successful banner', async () => {
         const mutationSpy = jest.fn();
         const { getByTestId, getByText } = render(
-          Components(
+          <Components>
             <GqlMockedProvider onCall={mutationSpy}>
               <OrganizationImportDataSyncModal
                 handleClose={handleClose}
@@ -204,8 +209,8 @@ describe('OrganizationImportDataSyncModal', () => {
                 organizationName={organizationName}
                 accountListId={accountListId}
               />
-            </GqlMockedProvider>,
-          ),
+            </GqlMockedProvider>
+          </Components>,
         );
 
         await waitFor(() => {

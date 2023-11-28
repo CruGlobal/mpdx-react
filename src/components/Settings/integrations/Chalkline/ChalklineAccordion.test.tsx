@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, PropsWithChildren } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
@@ -32,7 +32,7 @@ jest.mock('notistack', () => ({
 
 const handleAccordionChange = jest.fn();
 
-const Components = (children: React.ReactElement) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -48,14 +48,14 @@ describe('PrayerlettersAccount', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
   it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     expect(getByText('Chalk Line')).toBeInTheDocument();
     const image = queryByRole('img', {
@@ -65,14 +65,14 @@ describe('PrayerlettersAccount', () => {
   });
   it('should render accordion open', async () => {
     const { queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Chalk Line'}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     const image = queryByRole('img', {
       name: /Chalk Line/i,
@@ -83,14 +83,14 @@ describe('PrayerlettersAccount', () => {
   it('should send contacts to Chalkline', async () => {
     const mutationSpy = jest.fn();
     const { getByText } = render(
-      Components(
+      <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Chalk Line'}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     await waitFor(() => {
       expect(getByText('Chalkline Overview')).toBeInTheDocument();

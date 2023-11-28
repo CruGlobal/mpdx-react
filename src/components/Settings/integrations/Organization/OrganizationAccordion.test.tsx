@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, PropsWithChildren } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
@@ -37,7 +37,7 @@ jest.mock('notistack', () => ({
 
 const handleAccordionChange = jest.fn();
 
-const Components = (children: React.ReactElement) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -100,14 +100,14 @@ describe('OrganizationAccordion', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
   it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <OrganizationAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     expect(getByText('Organization')).toBeInTheDocument();
     const image = queryByRole('img', {
@@ -117,14 +117,14 @@ describe('OrganizationAccordion', () => {
   });
   it('should render accordion open', async () => {
     const { queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <OrganizationAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Organization'}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     const image = queryByRole('img', {
       name: /Organization/i,
@@ -135,7 +135,7 @@ describe('OrganizationAccordion', () => {
   describe('No Organizations connected', () => {
     it('should render Organization Overview', async () => {
       const { getByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
             GetUsersOrganizations: GetUsersOrganizationsQuery;
@@ -153,8 +153,8 @@ describe('OrganizationAccordion', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -175,7 +175,7 @@ describe('OrganizationAccordion', () => {
 
     it('should render Offline Organization', async () => {
       const { getByText, queryByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
             GetUsersOrganizations: GetUsersOrganizationsQuery;
@@ -186,8 +186,8 @@ describe('OrganizationAccordion', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       expect(
@@ -220,7 +220,7 @@ describe('OrganizationAccordion', () => {
       mocks.GetUsersOrganizations.userOrganizationAccounts[0].organization.apiClass =
         'Siebel';
       const { getByText, queryByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
             GetUsersOrganizations: GetUsersOrganizationsQuery;
@@ -232,8 +232,8 @@ describe('OrganizationAccordion', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -268,7 +268,7 @@ describe('OrganizationAccordion', () => {
       mocks.GetUsersOrganizations.userOrganizationAccounts[0].organization.apiClass =
         'DataServer';
       const { getByText, getByTestId } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
             GetUsersOrganizations: GetUsersOrganizationsQuery;
@@ -280,8 +280,8 @@ describe('OrganizationAccordion', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -303,7 +303,7 @@ describe('OrganizationAccordion', () => {
       mocks.GetUsersOrganizations.userOrganizationAccounts[0].organization.oauth =
         true;
       const { getByText, queryByTestId } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
             GetUsersOrganizations: GetUsersOrganizationsQuery;
@@ -315,8 +315,8 @@ describe('OrganizationAccordion', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -340,7 +340,7 @@ describe('OrganizationAccordion', () => {
     it('should delete Organization', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getByTestId } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
             GetUsersOrganizations: GetUsersOrganizationsQuery;
@@ -352,8 +352,8 @@ describe('OrganizationAccordion', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -389,7 +389,7 @@ describe('OrganizationAccordion', () => {
       mocks.GetUsersOrganizations.userOrganizationAccounts[0].latestDonationDate =
         null;
       const { queryByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
             GetUsersOrganizations: GetUsersOrganizationsQuery;
@@ -400,8 +400,8 @@ describe('OrganizationAccordion', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Organization'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       expect(queryByText('Last Updated')).not.toBeInTheDocument();

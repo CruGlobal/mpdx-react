@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, PropsWithChildren } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material/styles';
@@ -34,7 +34,7 @@ jest.mock('notistack', () => ({
 
 const handleAccordionChange = jest.fn();
 
-const Components = (children: React.ReactElement) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -55,14 +55,14 @@ describe('PrayerlettersAccount', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
   it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <PrayerlettersAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     expect(getByText('prayerletters.com')).toBeInTheDocument();
     const image = queryByRole('img', {
@@ -72,14 +72,14 @@ describe('PrayerlettersAccount', () => {
   });
   it('should render accordion open', async () => {
     const { queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <PrayerlettersAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'prayerletters.com'}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     const image = queryByRole('img', {
       name: /prayerletters.com/i,
@@ -91,7 +91,7 @@ describe('PrayerlettersAccount', () => {
     it('should render PrayerLetters.com Overview', async () => {
       process.env.SITE_URL = 'https://next.mpdx.org';
       const { getByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             PrayerlettersAccount: PrayerlettersAccountQuery;
           }>
@@ -105,8 +105,8 @@ describe('PrayerlettersAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'prayerletters.com'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -132,7 +132,7 @@ describe('PrayerlettersAccount', () => {
       prayerlettersAccount.validToken = false;
       const mutationSpy = jest.fn();
       const { queryByText, getByText, getByRole } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             PrayerlettersAccount: PrayerlettersAccountQuery;
           }>
@@ -147,8 +147,8 @@ describe('PrayerlettersAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'prayerletters.com'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -201,7 +201,7 @@ describe('PrayerlettersAccount', () => {
     it('is connected but token is valid', async () => {
       const mutationSpy = jest.fn();
       const { queryByText, getByRole } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             PrayerlettersAccount: PrayerlettersAccountQuery;
           }>
@@ -216,8 +216,8 @@ describe('PrayerlettersAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'prayerletters.com'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -266,7 +266,7 @@ describe('PrayerlettersAccount', () => {
     it('should sync contacts', async () => {
       const mutationSpy = jest.fn();
       const { queryByText, getByRole } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             PrayerlettersAccount: PrayerlettersAccountQuery;
           }>
@@ -281,8 +281,8 @@ describe('PrayerlettersAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'prayerletters.com'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {

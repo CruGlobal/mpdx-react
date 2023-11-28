@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, PropsWithChildren } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getSession } from 'next-auth/react';
 import { ThemeProvider } from '@mui/material/styles';
@@ -42,7 +42,7 @@ jest.mock('notistack', () => ({
 
 const handleClose = jest.fn();
 
-const Components = (children: React.ReactElement) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -75,14 +75,14 @@ describe('DeleteGoogleAccountModal', () => {
 
   it('should render modal', async () => {
     const { getByText, getByTestId } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <DeleteGoogleAccountModal
             account={googleAccount}
             handleClose={handleClose}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     expect(
       getByText(/confirm to disconnect google account/i),
@@ -96,14 +96,14 @@ describe('DeleteGoogleAccountModal', () => {
   it('should run deleteGoogleAccount', async () => {
     const mutationSpy = jest.fn();
     const { getByText } = render(
-      Components(
+      <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <DeleteGoogleAccountModal
             account={googleAccount}
             handleClose={handleClose}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     expect(
       getByText(/confirm to disconnect google account/i),

@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, PropsWithChildren } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material/styles';
@@ -31,7 +31,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const Components = (children: React.ReactElement) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -53,14 +53,14 @@ describe('OrganizationEditAccountModal', () => {
   });
   it('should render modal', async () => {
     const { getByText, getByTestId } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <OrganizationEditAccountModal
             handleClose={handleClose}
             organizationId={organizationId}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     expect(getByText('Edit Organization Account')).toBeInTheDocument();
@@ -74,14 +74,14 @@ describe('OrganizationEditAccountModal', () => {
   it('should enter login details.', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole, getByTestId } = render(
-      Components(
+      <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <OrganizationEditAccountModal
             handleClose={handleClose}
             organizationId={organizationId}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     await waitFor(() => {

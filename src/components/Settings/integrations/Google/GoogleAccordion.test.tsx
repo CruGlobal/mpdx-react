@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, PropsWithChildren } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getSession } from 'next-auth/react';
 import { ThemeProvider } from '@mui/material/styles';
@@ -43,12 +43,12 @@ jest.mock('notistack', () => ({
 
 const handleAccordionChange = jest.fn();
 
-const Components = (props: { children: JSX.Element }) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <IntegrationsContextProvider apiToken={apiToken}>
-          {props.children}
+          {children}
         </IntegrationsContextProvider>
       </ThemeProvider>
     </TestRouter>

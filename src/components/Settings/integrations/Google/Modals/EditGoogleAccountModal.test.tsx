@@ -1,4 +1,9 @@
-import { render, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  waitFor,
+  act,
+  PropsWithChildren,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getSession } from 'next-auth/react';
 import { ThemeProvider } from '@mui/material/styles';
@@ -47,7 +52,7 @@ jest.mock('notistack', () => ({
 
 const handleClose = jest.fn();
 
-const Components = (children: React.ReactElement) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -111,15 +116,15 @@ describe('EditGoogleAccountModal', () => {
 
   it('should render modal', async () => {
     const { getByText, getByTestId } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <EditGoogleAccountModal
             account={googleAccount}
             handleClose={handleClose}
             oAuth={oAuth}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     expect(getByText(/Edit Google Integration/i)).toBeInTheDocument();
     userEvent.click(getByText(/cancel/i));
@@ -131,15 +136,15 @@ describe('EditGoogleAccountModal', () => {
   it('should switch tabs', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <EditGoogleAccountModal
             account={googleAccount}
             handleClose={handleClose}
             oAuth={oAuth}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     expect(getByText(/Edit Google Integration/i)).toBeInTheDocument();
     const setupTab = getByRole('tab', { name: /setup/i });
@@ -157,7 +162,7 @@ describe('EditGoogleAccountModal', () => {
     googleIntegration.calendarName = null;
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider
           mocks={{
             GoogleAccountIntegrations: {
@@ -171,8 +176,8 @@ describe('EditGoogleAccountModal', () => {
             handleClose={handleClose}
             oAuth={oAuth}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     await waitFor(() =>
       expect(getByText(/Edit Google Integration/i)).toBeInTheDocument(),
@@ -205,7 +210,7 @@ describe('EditGoogleAccountModal', () => {
   it('should update Integrations calendar', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole, queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider<{
           GetIntegrationActivities: GetIntegrationActivitiesQuery;
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
@@ -240,8 +245,8 @@ describe('EditGoogleAccountModal', () => {
             handleClose={handleClose}
             oAuth={oAuth}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     await waitFor(() =>
@@ -302,7 +307,7 @@ describe('EditGoogleAccountModal', () => {
     googleIntegration.calendarId = 'calendarsID';
     const mutationSpy = jest.fn();
     const { getByText, getByRole, getByTestId } = render(
-      Components(
+      <Components>
         <GqlMockedProvider<{
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
           GetIntegrationActivities: GetIntegrationActivitiesQuery;
@@ -337,8 +342,8 @@ describe('EditGoogleAccountModal', () => {
             handleClose={handleClose}
             oAuth={oAuth}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     await waitFor(() =>
@@ -384,7 +389,7 @@ describe('EditGoogleAccountModal', () => {
   it('should delete Calendar Integration', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider<{
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
         }>
@@ -400,8 +405,8 @@ describe('EditGoogleAccountModal', () => {
             handleClose={handleClose}
             oAuth={oAuth}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     await waitFor(() =>
@@ -438,7 +443,7 @@ describe('EditGoogleAccountModal', () => {
   it('should create a  Calendar Integration', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider<{
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
         }>
@@ -454,8 +459,8 @@ describe('EditGoogleAccountModal', () => {
             handleClose={handleClose}
             oAuth={oAuth}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     await waitFor(() =>
@@ -493,7 +498,7 @@ describe('EditGoogleAccountModal', () => {
   it('should sync Calendar Integration', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider<{
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
         }>
@@ -509,8 +514,8 @@ describe('EditGoogleAccountModal', () => {
             handleClose={handleClose}
             oAuth={oAuth}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
 
     await waitFor(() =>

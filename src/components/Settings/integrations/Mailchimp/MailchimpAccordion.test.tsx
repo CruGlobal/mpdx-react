@@ -1,4 +1,10 @@
-import { render, waitFor, within, act } from '@testing-library/react';
+import {
+  render,
+  waitFor,
+  within,
+  act,
+  PropsWithChildren,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
@@ -34,7 +40,7 @@ jest.mock('notistack', () => ({
 
 const handleAccordionChange = jest.fn();
 
-const Components = (children: React.ReactElement) => (
+const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -80,14 +86,14 @@ describe('MailchimpAccount', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
   it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <MailchimpAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     expect(getByText('MailChimp')).toBeInTheDocument();
     const mailchimpImage = queryByRole('img', {
@@ -97,14 +103,14 @@ describe('MailchimpAccount', () => {
   });
   it('should render accordion open', async () => {
     const { queryByRole } = render(
-      Components(
+      <Components>
         <GqlMockedProvider>
           <MailchimpAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Mailchimp'}
           />
-        </GqlMockedProvider>,
-      ),
+        </GqlMockedProvider>
+      </Components>,
     );
     const mailchimpImage = queryByRole('img', {
       name: /mailchimp/i,
@@ -117,7 +123,7 @@ describe('MailchimpAccount', () => {
       process.env.SITE_URL = 'https://next.mpdx.org';
       const mutationSpy = jest.fn();
       const { getByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
@@ -132,8 +138,8 @@ describe('MailchimpAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -158,7 +164,7 @@ describe('MailchimpAccount', () => {
       mailchimpAccount.listsPresent = false;
       const mutationSpy = jest.fn();
       const { queryByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
@@ -173,8 +179,8 @@ describe('MailchimpAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -201,7 +207,7 @@ describe('MailchimpAccount', () => {
       mailchimpAccount.listsLink = '';
       const mutationSpy = jest.fn();
       const { queryByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             MailchimpAccount: MailchimpAccountQuery;
           }>
@@ -216,8 +222,8 @@ describe('MailchimpAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -236,7 +242,7 @@ describe('MailchimpAccount', () => {
     it('should call updateMailchimpAccount', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
@@ -251,8 +257,8 @@ describe('MailchimpAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -303,7 +309,7 @@ describe('MailchimpAccount', () => {
     it('should call deleteMailchimpAccount', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
@@ -318,8 +324,8 @@ describe('MailchimpAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -370,7 +376,7 @@ describe('MailchimpAccount', () => {
       mailchimpAccount.valid = true;
       const mutationSpy = jest.fn();
       const { getByText } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
@@ -385,8 +391,8 @@ describe('MailchimpAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -406,7 +412,7 @@ describe('MailchimpAccount', () => {
       mailchimpAccount.autoLogCampaigns = true;
       const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
@@ -421,8 +427,8 @@ describe('MailchimpAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
@@ -463,7 +469,7 @@ describe('MailchimpAccount', () => {
       mailchimpAccount.autoLogCampaigns = true;
       const mutationSpy = jest.fn();
       const { queryByText, getByRole } = render(
-        Components(
+        <Components>
           <GqlMockedProvider<{
             MailchimpAccount: MailchimpAccountQuery | undefined;
           }>
@@ -478,8 +484,8 @@ describe('MailchimpAccount', () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={'Mailchimp'}
             />
-          </GqlMockedProvider>,
-        ),
+          </GqlMockedProvider>
+        </Components>,
       );
 
       await waitFor(() => {
