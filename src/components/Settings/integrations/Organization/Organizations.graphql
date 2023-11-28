@@ -36,6 +36,7 @@ mutation CreateOrganizationAccount(
 ) {
   createOrganizationAccount(input: $input) {
     organizationAccount {
+      id
       username
       person {
         id

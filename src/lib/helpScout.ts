@@ -39,12 +39,13 @@ export const identifyUser = (id: string, email: string, name: string) => {
   });
 };
 
-export const showArticle = (articleId: string | undefined) => {
-  if (!articleId) {
+export const showArticle = (envVar: keyof typeof variables) => {
+  const articleId = variables[envVar];
+  if (articleId) {
+    callBeacon('article', articleId);
+  } else {
     callBeacon('open');
-    return;
   }
-  callBeacon('article', articleId);
 };
 
 export const suggestArticles = (envVar: keyof typeof variables) => {
