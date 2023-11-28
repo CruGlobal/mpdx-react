@@ -215,23 +215,23 @@ export const EditGoogleIntegrationForm: React.FC<
                             name={activityId}
                             checked={isChecked}
                             onChange={(_, value) => {
-                              let newCalendarInetgrations;
+                              let newCalendarIntegrations;
                               if (value) {
                                 // Add to calendarIntegrations
-                                newCalendarInetgrations = [
+                                newCalendarIntegrations = [
                                   ...calendarIntegrations,
                                   activity.value,
                                 ];
                               } else {
                                 // Remove from calendarIntegrations
-                                newCalendarInetgrations =
+                                newCalendarIntegrations =
                                   calendarIntegrations.filter(
                                     (act) => act !== activity?.id,
                                   );
                               }
                               setFieldValue(
                                 `calendarIntegrations`,
-                                newCalendarInetgrations,
+                                newCalendarIntegrations,
                               );
                             }}
                           />
