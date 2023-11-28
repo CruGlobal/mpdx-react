@@ -39,32 +39,63 @@ export const identifyUser = (id: string, email: string, name: string) => {
   });
 };
 
-export type SuggestionsVar =
-  | 'HS_COACHING_SUGGESTIONS'
-  | 'HS_CONTACTS_SUGGESTIONS'
-  | 'HS_CONTACTS_CONTACT_SUGGESTIONS'
-  | 'HS_HOME_SUGGESTIONS'
-  | 'HS_REPORTS_SUGGESTIONS'
-  | 'HS_TASKS_SUGGESTIONS';
+export type SuggestionsVar = keyof typeof suggestions;
 
 export const suggestArticles = (envVar: SuggestionsVar) => {
-  const articleIds = process.env[envVar];
+  const articleIds = suggestions[envVar];
   callBeacon('suggest', articleIds?.split(',') ?? []);
 };
 
-export type ArticleVar =
-  | 'HS_COACHING_APPOINTMENTS_AND_RESULTS'
-  | 'HS_COACHING_COMMITMENTS'
-  | 'HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS'
-  | 'HS_COACHING_OUTSTANDING_SPECIAL_NEEDS'
-  | 'HS_COACHING_ACTIVITY'
-  | 'HS_COACHING_ACTIVITY_SUMMARY';
+export type ArticleVar = keyof typeof articles;
 
 export const showArticle = (envVar: ArticleVar) => {
-  const articleId = process.env[envVar];
+  const articleId = articles[envVar];
   if (articleId) {
     callBeacon('article', articleId);
   } else {
     callBeacon('open');
   }
+};
+
+// We are using getters so that when tests override environment variables, the changes will be picked up
+const suggestions = {
+  get HS_COACHING_SUGGESTIONS() {
+    return process.env.HS_COACHING_SUGGESTIONS;
+  },
+  get HS_CONTACTS_CONTACT_SUGGESTIONS() {
+    return process.env.HS_CONTACTS_CONTACT_SUGGESTIONS;
+  },
+  get HS_CONTACTS_SUGGESTIONS() {
+    return process.env.HS_CONTACTS_SUGGESTIONS;
+  },
+  get HS_HOME_SUGGESTIONS() {
+    return process.env.HS_HOME_SUGGESTIONS;
+  },
+  get HS_REPORTS_SUGGESTIONS() {
+    return process.env.HS_REPORTS_SUGGESTIONS;
+  },
+  get HS_TASKS_SUGGESTIONS() {
+    return process.env.HS_TASKS_SUGGESTIONS;
+  },
+};
+
+const articles = {
+  get HS_COACHING_ACTIVITY() {
+    return process.env.HS_COACHING_ACTIVITY;
+  },
+  get HS_COACHING_ACTIVITY_SUMMARY() {
+    return process.env.HS_COACHING_ACTIVITY_SUMMARY;
+  },
+  get HS_COACHING_APPOINTMENTS_AND_RESULTS() {
+    return process.env.HS_COACHING_APPOINTMENTS_AND_RESULTS;
+  },
+  get HS_COACHING_COMMITMENTS() {
+    return process.env.HS_COACHING_COMMITMENTS;
+  },
+  get HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS() {
+    return process.env.HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS;
+  },
+  get HS_COACHING_OUTSTANDING_SPECIAL_NEEDS() {
+    return process.env.HS_COACHING_OUTSTANDING_SPECIAL_NEEDS;
+  },
 };
