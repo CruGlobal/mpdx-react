@@ -127,9 +127,7 @@ describe('OrganizationImportDataSyncModal', () => {
     });
 
     describe('Send Files to API', () => {
-      const fetch = jest
-        .fn()
-        .mockResolvedValue(Promise.resolve({ status: 201 }));
+      const fetch = jest.fn().mockResolvedValue({ status: 201 });
       beforeEach(() => {
         window.fetch = fetch;
       });

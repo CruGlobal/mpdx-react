@@ -12,6 +12,7 @@ import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/
 import theme from '../../../../theme';
 import TestRouter from '__tests__/util/TestRouter';
 import { OrganizationAccordion } from './OrganizationAccordion';
+import { cloneDeep } from 'lodash';
 
 jest.mock('next-auth/react');
 
@@ -170,7 +171,7 @@ describe('OrganizationAccordion', () => {
   describe('Organizations connected', () => {
     let mocks = { ...standardMocks };
     beforeEach(() => {
-      mocks = { ...standardMocks };
+      mocks = cloneDeep(standardMocks);
     });
 
     it('should render Offline Organization', async () => {
