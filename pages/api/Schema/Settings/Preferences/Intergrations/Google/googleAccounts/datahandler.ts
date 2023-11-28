@@ -49,5 +49,5 @@ export const GoogleAccounts = (
     });
 
     return { id: accounts.id, ...attributes };
-  }, []);
+  });
 };

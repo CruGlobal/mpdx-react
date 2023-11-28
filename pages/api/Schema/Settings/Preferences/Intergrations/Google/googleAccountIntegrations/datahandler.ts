@@ -49,5 +49,5 @@ export const GoogleAccountIntegrations = (
       attributes[snakeToCamel(key)] = integrations.attributes[key];
     });
     return { id: integrations.id, ...attributes };
-  }, []);
+  });
 };
