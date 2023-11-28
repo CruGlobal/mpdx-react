@@ -39,36 +39,32 @@ export const identifyUser = (id: string, email: string, name: string) => {
   });
 };
 
-export const suggestArticles = (envVar: ArticleVar) => {
-  const articleIds = env[envVar];
+export type SuggestionsVar =
+  | 'HS_COACHING_SUGGESTIONS'
+  | 'HS_CONTACTS_SUGGESTIONS'
+  | 'HS_CONTACTS_CONTACT_SUGGESTIONS'
+  | 'HS_HOME_SUGGESTIONS'
+  | 'HS_REPORTS_SUGGESTIONS'
+  | 'HS_TASKS_SUGGESTIONS';
+
+export const suggestArticles = (envVar: SuggestionsVar) => {
+  const articleIds = process.env[envVar];
   callBeacon('suggest', articleIds?.split(',') ?? []);
 };
 
+export type ArticleVar =
+  | 'HS_COACHING_APPOINTMENTS_AND_RESULTS'
+  | 'HS_COACHING_COMMITMENTS'
+  | 'HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS'
+  | 'HS_COACHING_OUTSTANDING_SPECIAL_NEEDS'
+  | 'HS_COACHING_ACTIVITY'
+  | 'HS_COACHING_ACTIVITY_SUMMARY';
+
 export const showArticle = (envVar: ArticleVar) => {
-  const articleId = env[envVar];
+  const articleId = process.env[envVar];
   if (articleId) {
     callBeacon('article', articleId);
   } else {
     callBeacon('open');
   }
-};
-
-export type ArticleVar = keyof typeof env;
-
-const env = {
-  HS_COACHING_SUGGESTIONS: process.env.HS_COACHING_SUGGESTIONS,
-  HS_COACHING_APPOINTMENTS_AND_RESULTS:
-    process.env.HS_COACHING_APPOINTMENTS_AND_RESULTS,
-  HS_COACHING_COMMITMENTS: process.env.HS_COACHING_COMMITMENTS,
-  HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS:
-    process.env.HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS,
-  HS_COACHING_OUTSTANDING_SPECIAL_NEEDS:
-    process.env.HS_COACHING_OUTSTANDING_SPECIAL_NEEDS,
-  HS_COACHING_ACTIVITY: process.env.HS_COACHING_ACTIVITY,
-  HS_COACHING_ACTIVITY_SUMMARY: process.env.HS_COACHING_ACTIVITY_SUMMARY,
-  HS_CONTACTS_SUGGESTIONS: process.env.HS_CONTACTS_SUGGESTIONS,
-  HS_CONTACTS_CONTACT_SUGGESTIONS: process.env.HS_CONTACTS_CONTACT_SUGGESTIONS,
-  HS_HOME_SUGGESTIONS: process.env.HS_HOME_SUGGESTIONS,
-  HS_REPORTS_SUGGESTIONS: process.env.HS_REPORTS_SUGGESTIONS,
-  HS_TASKS_SUGGESTIONS: process.env.HS_TASKS_SUGGESTIONS,
 };
