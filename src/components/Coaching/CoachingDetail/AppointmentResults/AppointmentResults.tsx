@@ -56,6 +56,8 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
     },
   });
 
+  const appointmentResults = data?.appointmentResults ?? [];
+
   const averages = useMemo(
     () =>
       [
@@ -66,16 +68,16 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
         'newMonthlyPartners',
         'newSpecialPledges',
         'specialGifts',
-      ].reduce(
+      ].reduce<Record<string, number>>(
         (averages, field) => ({
           ...averages,
-          [field]: data
-            ? data.appointmentResults.reduce<number>((total, period) => {
-                return total + period[field];
-              }, 0) / data.appointmentResults.length
-            : 0,
+          [field]: appointmentResults.reduce(
+            (total, period) =>
+              total + period[field] / appointmentResults.length,
+            0,
+          ),
         }),
-        {} as Record<string, number>,
+        {},
       ),
     [data],
   );
@@ -101,7 +103,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
               <TableHead>
                 <TableRow>
                   <AlignedTableCell>{t('Appointments')}</AlignedTableCell>
-                  {data?.appointmentResults.map(({ id, startDate }) => (
+                  {appointmentResults.map(({ id, startDate }) => (
                     <AlignedTableCell key={id}>
                       {startDate &&
                         dateFormatWithoutYear(
@@ -116,21 +118,19 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
               <TableBody>
                 <TableRow>
                   <AlignedTableCell>{t('Scheduled')}</AlignedTableCell>
-                  {data?.appointmentResults.map(
-                    ({ id, appointmentsScheduled }) => (
-                      <AlignedTableCell
-                        key={id}
-                        sx={{
-                          color: getResultColor(
-                            appointmentsScheduled,
-                            appointmentGoal,
-                          ),
-                        }}
-                      >
-                        {appointmentsScheduled}
-                      </AlignedTableCell>
-                    ),
-                  )}
+                  {appointmentResults.map(({ id, appointmentsScheduled }) => (
+                    <AlignedTableCell
+                      key={id}
+                      sx={{
+                        color: getResultColor(
+                          appointmentsScheduled,
+                          appointmentGoal,
+                        ),
+                      }}
+                    >
+                      {appointmentsScheduled}
+                    </AlignedTableCell>
+                  ))}
                   <AlignedTableCell
                     sx={{
                       color: getResultColor(
@@ -146,21 +146,19 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                   <AlignedTableCell>
                     {t('Individual Completed')}
                   </AlignedTableCell>
-                  {data?.appointmentResults.map(
-                    ({ id, individualAppointments }) => (
-                      <AlignedTableCell
-                        key={id}
-                        sx={{
-                          color: getResultColor(
-                            individualAppointments,
-                            appointmentGoal,
-                          ),
-                        }}
-                      >
-                        {individualAppointments}
-                      </AlignedTableCell>
-                    ),
-                  )}
+                  {appointmentResults.map(({ id, individualAppointments }) => (
+                    <AlignedTableCell
+                      key={id}
+                      sx={{
+                        color: getResultColor(
+                          individualAppointments,
+                          appointmentGoal,
+                        ),
+                      }}
+                    >
+                      {individualAppointments}
+                    </AlignedTableCell>
+                  ))}
                   <AlignedTableCell
                     sx={{
                       color: getResultColor(
@@ -174,7 +172,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                 </TableRow>
                 <TableRow>
                   <AlignedTableCell
-                    colSpan={(data?.appointmentResults.length ?? 0) + 2}
+                    colSpan={(appointmentResults.length ?? 0) + 2}
                     sx={{ fontWeight: 'bold' }}
                   >
                     {t('Results')}
@@ -184,20 +182,18 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                   <AlignedTableCell>
                     {t('New Monthly Partners')}
                   </AlignedTableCell>
-                  {data?.appointmentResults.map(
-                    ({ id, newMonthlyPartners }) => (
-                      <AlignedTableCell key={id}>
-                        {newMonthlyPartners}
-                      </AlignedTableCell>
-                    ),
-                  )}
+                  {appointmentResults.map(({ id, newMonthlyPartners }) => (
+                    <AlignedTableCell key={id}>
+                      {newMonthlyPartners}
+                    </AlignedTableCell>
+                  ))}
                   <AlignedTableCell>
                     {Math.round(averages.newMonthlyPartners)}
                   </AlignedTableCell>
                 </TableRow>
                 <TableRow>
                   <AlignedTableCell>{t('New Appeal Pledges')}</AlignedTableCell>
-                  {data?.appointmentResults.map(({ id, newSpecialPledges }) => (
+                  {appointmentResults.map(({ id, newSpecialPledges }) => (
                     <AlignedTableCell key={id}>
                       {newSpecialPledges}
                     </AlignedTableCell>
@@ -210,7 +206,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                   <AlignedTableCell>
                     {t('Monthly Support Gained')}
                   </AlignedTableCell>
-                  {data?.appointmentResults.map(({ id, monthlyIncrease }) => (
+                  {appointmentResults.map(({ id, monthlyIncrease }) => (
                     <AlignedTableCell key={id}>
                       {currencyFormat(monthlyIncrease, currency, locale)}
                     </AlignedTableCell>
@@ -223,7 +219,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                   <AlignedTableCell>
                     {t('Monthly Support Lost')}
                   </AlignedTableCell>
-                  {data?.appointmentResults.map(({ id, monthlyDecrease }) => (
+                  {appointmentResults.map(({ id, monthlyDecrease }) => (
                     <AlignedTableCell key={id}>
                       {currencyFormat(monthlyDecrease, currency, locale)}
                     </AlignedTableCell>
@@ -236,7 +232,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                   <AlignedTableCell>
                     {t('Special Needs Gained')}
                   </AlignedTableCell>
-                  {data?.appointmentResults.map(({ id, specialGifts }) => (
+                  {appointmentResults.map(({ id, specialGifts }) => (
                     <AlignedTableCell key={id}>
                       {currencyFormat(specialGifts, currency, locale)}
                     </AlignedTableCell>
