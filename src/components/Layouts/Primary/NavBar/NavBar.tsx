@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
-import { Box, Drawer, Hidden, List, Theme } from '@mui/material';
+import { Box, Drawer, Hidden, List, Theme, useMediaQuery } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useRouter } from 'next/router';
 import NextLink, { LinkProps } from 'next/link';
@@ -106,7 +106,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
   mobileDrawer: {
     width: 290,
     backgroundColor: theme.palette.cruGrayDark.main,
-    zIndex: theme.zIndex.drawer + 200,
   },
 }));
 
@@ -154,37 +153,15 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
     },
   ];
 
+  const drawerHidden = useMediaQuery<Theme>((theme) =>
+    theme.breakpoints.up('md'),
+  );
+  // Close the drawer when the route changes or when the drawer is hidden because the screen is larger
   useEffect(() => {
-    if (openMobile && onMobileClose) {
+    if (drawerHidden || (openMobile && onMobileClose)) {
       onMobileClose();
     }
-  }, [pathname]);
-
-  const content = (
-    <Box height="100%" display="flex" flexDirection="column">
-      <Hidden lgUp>
-        <Box p={2} display="flex" justifyContent="center">
-          <NextLink href="/">
-            <img
-              src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
-              alt="logo"
-              style={{ cursor: 'pointer' }}
-            />
-          </NextLink>
-        </Box>
-      </Hidden>
-      <Box p={2}>
-        {renderNavItems({
-          accountListId,
-          items: sections,
-          pathname,
-        })}
-      </Box>
-      <Box p={2}>
-        <NavTools />
-      </Box>
-    </Box>
-  );
+  }, [pathname, drawerHidden]);
 
   return (
     <Hidden lgUp>
@@ -196,7 +173,25 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
         open={openMobile}
         variant="temporary"
       >
-        {content}
+        <Box p={2} display="flex" justifyContent="center">
+          <NextLink href="/">
+            <img
+              src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
+              alt="logo"
+              style={{ cursor: 'pointer' }}
+            />
+          </NextLink>
+        </Box>
+        <Box p={2}>
+          {renderNavItems({
+            accountListId,
+            items: sections,
+            pathname,
+          })}
+        </Box>
+        <Box p={2}>
+          <NavTools />
+        </Box>
       </Drawer>
     </Hidden>
   );

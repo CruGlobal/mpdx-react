@@ -22,8 +22,9 @@ interface TopBarProps {
   onMobileNavOpen?: () => void;
 }
 
+const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
+
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  zIndex: theme.zIndex.drawer + 100,
   backgroundColor: theme.palette.cruGrayDark.main,
 }));
 
@@ -37,18 +38,18 @@ const TopBar = ({
   });
 
   return (
-    <StyledAppBar elevation={trigger ? 3 : 0} data-testid="TopBar">
-      <Toolbar>
-        {accountListId && (
-          <Hidden lgUp>
-            <IconButton color="inherit" onClick={onMobileNavOpen}>
-              <SvgIcon fontSize="small">
-                <MenuIcon />
-              </SvgIcon>
-            </IconButton>
-          </Hidden>
-        )}
-        <Hidden mdDown={!!accountListId}>
+    <>
+      <StyledAppBar elevation={trigger ? 3 : 0} data-testid="TopBar">
+        <Toolbar>
+          {accountListId && (
+            <Hidden mdUp>
+              <IconButton color="inherit" onClick={onMobileNavOpen}>
+                <SvgIcon fontSize="small">
+                  <MenuIcon />
+                </SvgIcon>
+              </IconButton>
+            </Hidden>
+          )}
           <NextLink href="/">
             <img
               src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
@@ -56,20 +57,21 @@ const TopBar = ({
               style={{ cursor: 'pointer' }}
             />
           </NextLink>
-        </Hidden>
-        <Hidden mdDown>
-          <Box ml={10} flexGrow={1}>
-            <NavMenu />
-          </Box>
-          <SearchMenu />
-          <AddMenu />
-          <NotificationMenu />
-          <Box ml={2}>
-            <ProfileMenu />
-          </Box>
-        </Hidden>
-      </Toolbar>
-    </StyledAppBar>
+          <Hidden mdDown>
+            <Box ml={10} flexGrow={1}>
+              <NavMenu />
+            </Box>
+            <SearchMenu />
+            <AddMenu />
+            <NotificationMenu />
+            <Box ml={2}>
+              <ProfileMenu />
+            </Box>
+          </Hidden>
+        </Toolbar>
+      </StyledAppBar>
+      <Offset />
+    </>
   );
 };
 

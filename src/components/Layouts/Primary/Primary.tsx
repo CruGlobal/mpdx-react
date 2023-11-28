@@ -8,15 +8,13 @@ export const navBarHeight = '64px';
 
 const RootContainer = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
-  display: 'flex',
-  height: '100%',
-  overflow: 'hidden',
-  width: '100%',
+  width: '100vw',
+  height: '100vh',
+  overflow: 'scroll',
 }));
 
 const ContentContainer = styled('div')(() => ({
   display: 'flex',
-  flex: '1 1 auto',
   overflow: 'hidden',
 }));
 
@@ -24,13 +22,6 @@ const Content = styled('div')(() => ({
   flex: '1 1 auto',
   height: '100%',
   overflow: 'auto',
-}));
-
-const Wrapper = styled('div')(() => ({
-  display: 'flex',
-  flex: '1 1 auto',
-  overflow: 'hidden',
-  paddingTop: navBarHeight,
 }));
 
 interface Props {
@@ -53,11 +44,9 @@ const Primary = ({ children }: Props): ReactElement => {
           openMobile={isMobileNavOpen}
         />
       )}
-      <Wrapper>
-        <ContentContainer>
-          <Content>{children}</Content>
-        </ContentContainer>
-      </Wrapper>
+      <ContentContainer>
+        <Content>{children}</Content>
+      </ContentContainer>
     </RootContainer>
   );
 };

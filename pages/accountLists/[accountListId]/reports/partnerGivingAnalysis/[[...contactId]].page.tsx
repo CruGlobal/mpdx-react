@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
 import { sortBy } from 'lodash';
 import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
 
@@ -20,10 +18,6 @@ import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/C
 import { useRouter } from 'next/router';
 import { getQueryParam } from 'src/utils/queryParam';
 import { suggestArticles } from 'src/lib/helpScout';
-
-const PartnerGivingAnalysisReportPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
 
 // The order here is also the sort order and the display order
 const reportFilters = [
@@ -95,48 +89,46 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
         </title>
       </Head>
       {accountListId ? (
-        <PartnerGivingAnalysisReportPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={true}
-            leftPanel={
-              isNavListOpen && filtersLoading ? (
-                <Loading loading />
-              ) : (
-                <FilterPanel
-                  filters={filterGroups}
-                  defaultExpandedFilterGroups={new Set(['Report Filters'])}
-                  savedFilters={[]}
-                  selectedFilters={activeFilters}
-                  onClose={() => setNavListOpen(false)}
-                  onSelectedFiltersChanged={setActiveFilters}
-                />
-              )
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            mainContent={
-              <PartnerGivingAnalysisReport
-                accountListId={accountListId}
-                activeFilters={activeFilters}
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                onSelectContact={handleSelectContact}
-                title={t('Partner Giving Analysis')}
-                contactFilters={debouncedFilters}
-                contactDetailsOpen={!!selectedContactId}
+        <SidePanelsLayout
+          isScrollBox={true}
+          leftPanel={
+            isNavListOpen && filtersLoading ? (
+              <Loading loading />
+            ) : (
+              <FilterPanel
+                filters={filterGroups}
+                defaultExpandedFilterGroups={new Set(['Report Filters'])}
+                savedFilters={[]}
+                selectedFilters={activeFilters}
+                onClose={() => setNavListOpen(false)}
+                onSelectedFiltersChanged={setActiveFilters}
               />
-            }
-            rightPanel={
-              selectedContactId ? (
-                <ContactsPage>
-                  <ContactsRightPanel onClose={() => handleSelectContact('')} />
-                </ContactsPage>
-              ) : undefined
-            }
-            rightOpen={typeof selectedContactId !== 'undefined'}
-            rightWidth="60%"
-          />
-        </PartnerGivingAnalysisReportPageWrapper>
+            )
+          }
+          leftOpen={isNavListOpen}
+          leftWidth="290px"
+          mainContent={
+            <PartnerGivingAnalysisReport
+              accountListId={accountListId}
+              activeFilters={activeFilters}
+              isNavListOpen={isNavListOpen}
+              onNavListToggle={handleNavListToggle}
+              onSelectContact={handleSelectContact}
+              title={t('Partner Giving Analysis')}
+              contactFilters={debouncedFilters}
+              contactDetailsOpen={!!selectedContactId}
+            />
+          }
+          rightPanel={
+            selectedContactId ? (
+              <ContactsPage>
+                <ContactsRightPanel onClose={() => handleSelectContact('')} />
+              </ContactsPage>
+            ) : undefined
+          }
+          rightOpen={typeof selectedContactId !== 'undefined'}
+          rightWidth="60%"
+        />
       ) : (
         <Loading loading />
       )}
