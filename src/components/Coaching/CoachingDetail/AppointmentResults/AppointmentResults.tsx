@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import {
+  Box,
   CardContent,
   CardHeader,
   Table,
@@ -18,6 +19,7 @@ import AnimatedCard from 'src/components/AnimatedCard';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { getResultColor } from '../helpers';
+import { HelpButton } from '../HelpButton';
 import { useAppointmentResultsQuery } from './AppointmentResults.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
@@ -82,7 +84,14 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
 
   return (
     <AnimatedCard>
-      <CardHeader title={t('Appointments and Results')} />
+      <CardHeader
+        title={
+          <Box display="flex" alignItems="center">
+            <Box flex={1}>{t('Appointments and Results')}</Box>
+            <HelpButton articleVar="HS_COACHING_APPOINTMENTS_AND_RESULTS" />
+          </Box>
+        }
+      />
       <ContentContainer>
         {loading ? (
           <MultilineSkeleton lines={4} />

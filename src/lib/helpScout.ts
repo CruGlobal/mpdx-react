@@ -39,12 +39,33 @@ export const identifyUser = (id: string, email: string, name: string) => {
   });
 };
 
-export const suggestArticles = (envVar: keyof typeof env) => {
+export const suggestArticles = (envVar: ArticleVar) => {
   const articleIds = env[envVar];
   callBeacon('suggest', articleIds?.split(',') ?? []);
 };
 
+export const showArticle = (envVar: ArticleVar) => {
+  const articleId = env[envVar];
+  if (articleId) {
+    callBeacon('article', articleId);
+  } else {
+    callBeacon('open');
+  }
+};
+
+export type ArticleVar = keyof typeof env;
+
 const env = {
+  HS_COACHING_SUGGESTIONS: process.env.HS_COACHING_SUGGESTIONS,
+  HS_COACHING_APPOINTMENTS_AND_RESULTS:
+    process.env.HS_COACHING_APPOINTMENTS_AND_RESULTS,
+  HS_COACHING_COMMITMENTS: process.env.HS_COACHING_COMMITMENTS,
+  HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS:
+    process.env.HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS,
+  HS_COACHING_OUTSTANDING_SPECIAL_NEEDS:
+    process.env.HS_COACHING_OUTSTANDING_SPECIAL_NEEDS,
+  HS_COACHING_ACTIVITY: process.env.HS_COACHING_ACTIVITY,
+  HS_COACHING_ACTIVITY_SUMMARY: process.env.HS_COACHING_ACTIVITY_SUMMARY,
   HS_CONTACTS_SUGGESTIONS: process.env.HS_CONTACTS_SUGGESTIONS,
   HS_CONTACTS_CONTACT_SUGGESTIONS: process.env.HS_CONTACTS_CONTACT_SUGGESTIONS,
   HS_HOME_SUGGESTIONS: process.env.HS_HOME_SUGGESTIONS,
