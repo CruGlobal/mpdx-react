@@ -19,7 +19,7 @@ import {
   useGetOrganizationsQuery,
   useCreateOrganizationAccountMutation,
 } from '../Organizations.generated';
-import { showArticle, variables } from 'src/lib/helpScout';
+import { showArticle, articles } from 'src/lib/helpScout';
 import theme from 'src/theme';
 import { Organization } from '../../../../../../graphql/types.generated';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
@@ -232,12 +232,11 @@ export const OrganizationAddAccountModal: React.FC<
               />
             </StyledBox>
 
-            {!selectedOrganization &&
-              !!variables.HS_SETUP_FIND_ORGANIZATION && (
-                <Button onClick={showOrganizationHelp}>
-                  {t("Can't find your organization?")}
-                </Button>
-              )}
+            {!selectedOrganization && !!articles.HS_SETUP_FIND_ORGANIZATION && (
+              <Button onClick={showOrganizationHelp}>
+                {t("Can't find your organization?")}
+              </Button>
+            )}
 
             {organizationType === OrganizationTypesEnum.MINISTRY && (
               <WarningBox>

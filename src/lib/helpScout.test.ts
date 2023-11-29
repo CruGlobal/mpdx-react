@@ -100,14 +100,6 @@ describe('HelpScout', () => {
     it('calls callBeacon when the article exists', () => {
       Object.assign(process.env, {
         HS_SETUP_FIND_ORGANIZATION: 'organization-activity',
-        HS_COACHING_ACTIVITY_SUMMARY: 'coaching-activity-summary',
-        HS_COACHING_APPOINTMENTS_AND_RESULTS:
-          'coaching-appointments-and-results',
-        HS_COACHING_COMMITMENTS: 'coaching-commitments',
-        HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS:
-          'coaching-outstanding-recurring-commitments',
-        HS_COACHING_OUTSTANDING_SPECIAL_NEEDS:
-          'coaching-outstanding-special-needs',
       });
 
       showArticle('HS_SETUP_FIND_ORGANIZATION');
@@ -115,8 +107,8 @@ describe('HelpScout', () => {
     });
 
     it('calls callBeacon when the article does not exist', () => {
-      process.env.HS_COACHING_ACTIVITY = undefined;
-      showArticle('HS_COACHING_ACTIVITY');
+      process.env.HS_SETUP_FIND_ORGANIZATION = undefined;
+      showArticle('HS_SETUP_FIND_ORGANIZATION');
       expect(beacon).toHaveBeenCalledWith('open', undefined);
     });
   });
