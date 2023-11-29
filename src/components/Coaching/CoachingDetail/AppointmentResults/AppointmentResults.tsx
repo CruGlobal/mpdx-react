@@ -92,7 +92,10 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
           <MultilineSkeleton lines={4} />
         ) : (
           <TableContainer sx={{ minWidth: 600 }}>
-            <Table size="small" aria-label="appointments and results table">
+            <Table
+              size="small"
+              aria-label={t('appointments and results table')}
+            >
               <TableBody>
                 <HeaderRow role="rowheader">
                   <AlignedTableCell>{t('Appointments')}</AlignedTableCell>
