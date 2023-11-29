@@ -19,6 +19,7 @@ import AnimatedCard from 'src/components/AnimatedCard';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { getResultColor } from '../helpers';
+import { HeaderRow, AlignedTableCell, DividerRow } from '../StyledComponents';
 import { HelpButton } from '../HelpButton';
 import { useActivitySummaryQuery } from './ActivitySummary.generated';
 
@@ -45,27 +46,6 @@ const ContentContainer = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
   overflowX: 'scroll',
 }));
-
-const DividerRow = styled(TableRow)(({ theme }) => ({
-  td: {
-    border: 'none',
-    padding: `${theme.spacing(2)} 0`,
-  },
-}));
-
-const HeaderRow = styled(TableRow)({
-  td: {
-    fontWeight: 'bold',
-  },
-});
-
-const AlignedTableCell = styled(TableCell)({
-  border: 'none',
-  textAlign: 'right',
-  ':first-of-type': {
-    textAlign: 'unset',
-  },
-});
 
 interface ActivitySummaryProps {
   accountListId: string;
