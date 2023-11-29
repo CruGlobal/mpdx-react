@@ -1,9 +1,5 @@
-import {
-  render,
-  waitFor,
-  act,
-  PropsWithChildren,
-} from '@testing-library/react';
+import { PropsWithChildren } from 'react';
+import { render, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getSession } from 'next-auth/react';
 import { ThemeProvider } from '@mui/material/styles';

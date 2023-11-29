@@ -1,10 +1,5 @@
-import {
-  render,
-  waitFor,
-  within,
-  act,
-  PropsWithChildren,
-} from '@testing-library/react';
+import { PropsWithChildren } from 'react';
+import { render, waitFor, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
