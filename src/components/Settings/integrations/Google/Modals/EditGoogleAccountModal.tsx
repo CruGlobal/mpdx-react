@@ -283,7 +283,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
             disabled={isSubmitting}
             variant="contained"
           />
-          <Button href={oAuth} variant="contained">
+          <Button href={oAuth} variant="text">
             {t('Refresh Google Account')}
           </Button>
         </StyledDialogActions>

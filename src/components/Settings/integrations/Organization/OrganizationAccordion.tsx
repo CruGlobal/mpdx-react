@@ -212,7 +212,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
               );
 
               return (
-                <Card key={organization.id}>
+                <Card key={organization.id} style={{ marginBottom: '20px' }}>
                   <Box
                     sx={{
                       p: 1,

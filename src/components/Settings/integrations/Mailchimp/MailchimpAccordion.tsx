@@ -231,7 +231,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
               },
             )}
           </Typography>
-          <StyledServicesButton variant="outlined" href={oAuth}>
+          <StyledServicesButton variant="contained" href={oAuth}>
             {t('Connect MailChimp')}
           </StyledServicesButton>
         </>
