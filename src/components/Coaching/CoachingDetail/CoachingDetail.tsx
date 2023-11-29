@@ -25,6 +25,7 @@ import { SideContainerText } from './StyledComponents';
 import { CollapsibleEmailList } from './CollapsibleEmailList';
 import { CollapsiblePhoneList } from './CollapsiblePhoneList';
 import { getLastNewsletter } from './helpers';
+import { ActivitySummary } from './ActivitySummary/ActivitySummary';
 
 export enum CoachingPeriodEnum {
   Weekly = 'Weekly',
@@ -64,6 +65,7 @@ const CoachingSideTitleContainer = styled(Box)(({ theme }) => ({
 
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
+  paddingBottom: theme.spacing(6), // prevent the HelpScout beacon from obscuring content at the bottom
   width: 'calc(100vw - 20rem)',
 }));
 
@@ -335,6 +337,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 currency={accountListData?.currency}
                 period={period}
               />
+              <ActivitySummary accountListId={accountListId} period={period} />
             </CoachingItemContainer>
           </>
         )}
