@@ -6,11 +6,19 @@ import {
   showArticle,
 } from './helpScout';
 
+const env = process.env;
+
 describe('HelpScout', () => {
   const beacon = jest.fn() as BeaconFn;
   beforeEach(() => {
     beacon.readyQueue = [];
     window.Beacon = beacon;
+    jest.resetModules();
+    process.env = { ...env };
+  });
+
+  afterEach(() => {
+    process.env = env;
   });
 
   describe('initBeacon', () => {
@@ -41,42 +49,75 @@ describe('HelpScout', () => {
       });
     });
   });
-
   describe('suggestArticles', () => {
-    it('calls beacon with no envVar defined', () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      suggestArticles('');
-      expect(beacon).toHaveBeenCalledWith('suggest', []);
+    it('calls callBeacon when the suggestions exist', () => {
+      const makeSuggestions = (key: string) => `${key}-1,${key}-2`;
+      Object.assign(process.env, {
+        HS_COACHING_SUGGESTIONS: makeSuggestions('coaching'),
+        HS_CONTACTS_CONTACT_SUGGESTIONS: makeSuggestions('contacts-contact'),
+        HS_CONTACTS_SUGGESTIONS: makeSuggestions('contacts'),
+        HS_HOME_SUGGESTIONS: makeSuggestions('home'),
+        HS_REPORTS_SUGGESTIONS: makeSuggestions('reports'),
+        HS_TASKS_SUGGESTIONS: makeSuggestions('tasks'),
+      });
+
+      suggestArticles('HS_CONTACTS_CONTACT_SUGGESTIONS');
+      expect(beacon).toHaveBeenLastCalledWith('suggest', [
+        'contacts-contact-1',
+        'contacts-contact-2',
+      ]);
+
+      suggestArticles('HS_CONTACTS_SUGGESTIONS');
+      expect(beacon).toHaveBeenLastCalledWith('suggest', [
+        'contacts-1',
+        'contacts-2',
+      ]);
+
+      suggestArticles('HS_HOME_SUGGESTIONS');
+      expect(beacon).toHaveBeenLastCalledWith('suggest', ['home-1', 'home-2']);
+
+      suggestArticles('HS_REPORTS_SUGGESTIONS');
+      expect(beacon).toHaveBeenLastCalledWith('suggest', [
+        'reports-1',
+        'reports-2',
+      ]);
+
+      suggestArticles('HS_TASKS_SUGGESTIONS');
+      expect(beacon).toHaveBeenLastCalledWith('suggest', [
+        'tasks-1',
+        'tasks-2',
+      ]);
     });
 
-    it('calls beacon wiht one envVar defined', () => {
-      suggestArticles('HS_CONTACTS_CONTACT_SUGGESTIONS');
-      expect(beacon).toHaveBeenCalledWith('suggest', ['ContactArticleId']);
+    it('calls callBeacon when the suggestions do not exist', () => {
+      process.env.HS_HOME_SUGGESTIONS = undefined;
+      suggestArticles('HS_HOME_SUGGESTIONS');
+      expect(beacon).toHaveBeenCalledWith('suggest', []);
     });
   });
 
   describe('showArticle', () => {
-    it('articleId not defined', () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      showArticle();
-      expect(beacon).toHaveBeenCalledWith('open', undefined);
+    it('calls callBeacon when the article exists', () => {
+      Object.assign(process.env, {
+        HS_SETUP_FIND_ORGANIZATION: 'organization-activity',
+        HS_COACHING_ACTIVITY_SUMMARY: 'coaching-activity-summary',
+        HS_COACHING_APPOINTMENTS_AND_RESULTS:
+          'coaching-appointments-and-results',
+        HS_COACHING_COMMITMENTS: 'coaching-commitments',
+        HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS:
+          'coaching-outstanding-recurring-commitments',
+        HS_COACHING_OUTSTANDING_SPECIAL_NEEDS:
+          'coaching-outstanding-special-needs',
+      });
+
+      showArticle('HS_SETUP_FIND_ORGANIZATION');
+      expect(beacon).toHaveBeenCalledWith('article', 'organization-activity');
     });
 
-    it('articleId is defined but is not env variable', () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      showArticle('TestArticleId');
+    it('calls callBeacon when the article does not exist', () => {
+      process.env.HS_COACHING_ACTIVITY = undefined;
+      showArticle('HS_COACHING_ACTIVITY');
       expect(beacon).toHaveBeenCalledWith('open', undefined);
-    });
-
-    it('should call beacon with article', () => {
-      process.env.HS_SETUP_FIND_ORGANIZATION;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      showArticle('HS_CONTACTS_CONTACT_SUGGESTIONS');
-      expect(beacon).toHaveBeenCalledWith('article', 'ContactArticleId');
     });
   });
 });
