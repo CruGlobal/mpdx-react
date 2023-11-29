@@ -58,13 +58,25 @@ describe('HelpScout', () => {
 
   describe('showArticle', () => {
     it('articleId not defined', () => {
-      showArticle('');
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      showArticle();
       expect(beacon).toHaveBeenCalledWith('open', undefined);
     });
 
-    it('articleId is defined', () => {
+    it('articleId is defined but is not env variable', () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       showArticle('TestArticleId');
-      expect(beacon).toHaveBeenCalledWith('article', 'TestArticleId');
+      expect(beacon).toHaveBeenCalledWith('open', undefined);
+    });
+
+    it('should call beacon with article', () => {
+      process.env.HS_SETUP_FIND_ORGANIZATION;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      showArticle('HS_CONTACTS_CONTACT_SUGGESTIONS');
+      expect(beacon).toHaveBeenCalledWith('article', 'ContactArticleId');
     });
   });
 });

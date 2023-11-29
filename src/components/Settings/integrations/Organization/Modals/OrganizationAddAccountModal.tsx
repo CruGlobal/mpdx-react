@@ -133,7 +133,7 @@ export const OrganizationAddAccountModal: React.FC<
   };
 
   const showOrganizationHelp = () => {
-    showArticle(variables.HS_SETUP_FIND_ORGANIZATION);
+    showArticle('HS_SETUP_FIND_ORGANIZATION');
   };
 
   const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> = yup.object(
