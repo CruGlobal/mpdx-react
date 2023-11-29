@@ -394,7 +394,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       onChange={handleChange('churchName')}
                       fullWidth
                       multiline
-                      inputProps={{ 'aria-label': 'Church' }}
+                      inputProps={{ 'aria-label': t('Church') }}
                     />
                   </FormControl>
                 </Grid>

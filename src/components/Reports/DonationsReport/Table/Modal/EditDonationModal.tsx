@@ -189,7 +189,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     label={t('Amount')}
                     onChange={handleChange('convertedAmount')}
                     fullWidth
-                    inputProps={{ 'aria-label': 'Amount' }}
+                    inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
                     helperText={
                       errors.convertedAmount &&
@@ -274,7 +274,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     label={t('Motivation')}
                     onChange={handleChange('motivation')}
                     fullWidth
-                    inputProps={{ 'aria-label': 'motivation' }}
+                    inputProps={{ 'aria-label': t('motivation') }}
                     disabled
                   />
                 </Grid>
@@ -284,7 +284,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     label={t('Gift ID')}
                     onChange={handleChange('giftId')}
                     fullWidth
-                    inputProps={{ 'aria-label': 'giftId' }}
+                    inputProps={{ 'aria-label': t('giftId') }}
                     disabled
                   />
                 </Grid>

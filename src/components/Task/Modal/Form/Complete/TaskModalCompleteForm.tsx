@@ -315,7 +315,7 @@ const TaskModalCompleteForm = ({
                   onChange={(event) => changeCommentBody(event.target.value)}
                   fullWidth
                   multiline
-                  inputProps={{ 'aria-label': 'Add New Comment' }}
+                  inputProps={{ 'aria-label': t('Add New Comment') }}
                 />
               </Grid>
             </FormFieldsGridContainer>
