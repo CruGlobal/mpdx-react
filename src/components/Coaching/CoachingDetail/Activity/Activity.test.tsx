@@ -233,10 +233,12 @@ describe('Activity', () => {
   });
 
   it('renders the activity sections', async () => {
-    const { findByTestId, getByTestId } = render(<TestComponent />);
+    const { getByTestId } = render(<TestComponent />);
 
-    expect(await findByTestId('ActivitySectionContacts')).toHaveTextContent(
-      'Contacts20Active22Referrals On-hand21Referrals Gained',
+    await waitFor(() =>
+      expect(getByTestId('ActivitySectionContacts')).toHaveTextContent(
+        'Contacts20Active22Referrals On-hand21Referrals Gained',
+      ),
     );
     expect(getByTestId('ActivitySectionAppointments')).toHaveTextContent(
       'Appointments10Completed',
@@ -254,18 +256,22 @@ describe('Activity', () => {
 
   describe('appeal', () => {
     it('renders when provided', async () => {
-      const { findByTestId } = render(<TestComponent />);
+      const { getByTestId } = render(<TestComponent />);
 
-      expect(await findByTestId('ActivitySectionAppeal')).toHaveTextContent(
-        'Primary Appeal$200 / $1,000Ask$200 (20%) / $500 (50%) / $600 (60%)',
+      await waitFor(() =>
+        expect(getByTestId('ActivitySectionAppeal')).toHaveTextContent(
+          'Primary Appeal$200 / $1,000Ask$200 (20%) / $500 (50%) / $600 (60%)',
+        ),
       );
     });
 
     it('renders a placeholder when missing', async () => {
-      const { findByTestId } = render(<TestComponent noAppeal />);
+      const { getByTestId } = render(<TestComponent noAppeal />);
 
-      expect(await findByTestId('ActivitySectionAppeal')).toHaveTextContent(
-        'Primary AppealNo Primary Appeal Set$0 (0%) / $0 (0%) / $0 (0%)',
+      await waitFor(() =>
+        expect(getByTestId('ActivitySectionAppeal')).toHaveTextContent(
+          'Primary AppealNo Primary Appeal Set$0 (0%) / $0 (0%) / $0 (0%)',
+        ),
       );
     });
   });

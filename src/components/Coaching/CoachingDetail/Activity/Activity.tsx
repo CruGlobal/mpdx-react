@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import NextLink from 'next/link';
 import {
-  Box,
   Button,
   ButtonGroup,
   CardHeader,
@@ -74,6 +73,7 @@ const ActivitySection = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
+  height: '280px',
   paddingTop: theme.spacing(2),
   // Only apply inner borders to the grid of sections
   borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
@@ -267,15 +267,13 @@ export const Activity: React.FC<ActivityProps> = ({
           </Header>
         }
       />
-      {loading ? (
-        <Box sx={{ padding: 1 }}>
-          <MultilineSkeleton lines={4} />
-        </Box>
-      ) : (
-        <SectionsContainer>
-          <ActivitySection data-testid="ActivitySectionContacts">
-            <PeopleOutline sx={{ fontSize: '6rem' }} />
-            <SectionTitle>{t('Contacts')}</SectionTitle>
+      <SectionsContainer>
+        <ActivitySection data-testid="ActivitySectionContacts">
+          <PeopleOutline sx={{ fontSize: '6rem' }} />
+          <SectionTitle>{t('Contacts')}</SectionTitle>
+          {loading ? (
+            <MultilineSkeleton lines={2} width="90%" />
+          ) : (
             <StatsRow>
               <StatsColumn>
                 <Link
@@ -319,10 +317,14 @@ export const Activity: React.FC<ActivityProps> = ({
                 <StatsColumnTitle>{t('Referrals Gained')}</StatsColumnTitle>
               </StatsColumn>
             </StatsRow>
-          </ActivitySection>
-          <ActivitySection data-testid="ActivitySectionAppointments">
-            <CalendarMonthOutlined sx={{ fontSize: '6rem' }} />
-            <SectionTitle>{t('Appointments')}</SectionTitle>
+          )}
+        </ActivitySection>
+        <ActivitySection data-testid="ActivitySectionAppointments">
+          <CalendarMonthOutlined sx={{ fontSize: '6rem' }} />
+          <SectionTitle>{t('Appointments')}</SectionTitle>
+          {loading ? (
+            <MultilineSkeleton lines={2} width="90%" />
+          ) : (
             <StatsRow>
               <StatsColumn>
                 <Link
@@ -339,360 +341,389 @@ export const Activity: React.FC<ActivityProps> = ({
                 </Link>
               </StatsColumn>
             </StatsRow>
-          </ActivitySection>
-          <ActivitySection data-testid="ActivitySectionCorrespondence">
-            <MailOutline sx={{ fontSize: '6rem' }} />
-            <SectionTitle>{t('Correspondence')}</SectionTitle>
-            <StatsRow>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskBaseFilter,
-                    activityType: [ActivityTypeEnum.PreCallLetter],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.correspondence.precall}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Pre-call')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskBaseFilter,
-                    activityType: [ActivityTypeEnum.SupportLetter],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.correspondence.supportLetters}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Support')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-            </StatsRow>
-            <StatsRow>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskBaseFilter,
-                    activityType: [ActivityTypeEnum.Thank],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.correspondence.thankYous}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Thank You')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskBaseFilter,
-                    activityType: [ActivityTypeEnum.ReminderLetter],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.correspondence.reminders}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Reminder')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-            </StatsRow>
-          </ActivitySection>
-          <ActivitySection data-testid="ActivitySectionPhone">
-            <SmartphoneOutlined sx={{ fontSize: '6rem' }} />
-            <SectionTitle>{t('Phone Calls')}</SectionTitle>
-            <StatsRow>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskCallFilter,
-                    result: [
-                      ResultEnum.Attempted,
-                      ResultEnum.AttemptedLeftMessage,
-                      ResultEnum.Completed,
-                      ResultEnum.Done,
-                    ],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data &&
-                      data.accountListAnalytics.phone.attempted +
-                        data.accountListAnalytics.phone.completed}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Outgoing')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskCallFilter,
-                    result: [
-                      ResultEnum.Received,
-                      ResultEnum.Completed,
-                      ResultEnum.Done,
-                    ],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data &&
-                      data.accountListAnalytics.phone.completed +
-                        data.accountListAnalytics.phone.received}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Talked To')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskBaseFilter,
-                    activityType: [
-                      ActivityTypeEnum.Call,
-                      ActivityTypeEnum.TalkToInPerson,
-                    ],
-                    nextAction: [ActivityTypeEnum.Appointment],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.phone.appointments}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Appts Produced')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-            </StatsRow>
-            <StatsRow>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskCallFilter,
-                    result: [ResultEnum.Completed, ResultEnum.Done],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.phone.completed}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Completed')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskCallFilter,
-                    result: [
-                      ResultEnum.Attempted,
-                      ResultEnum.AttemptedLeftMessage,
-                    ],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.phone.attempted}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Attempted')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskCallFilter,
-                    result: [ResultEnum.Received],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.phone.received}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Received')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-            </StatsRow>
-          </ActivitySection>
-          <ActivitySection data-testid="ActivitySectionElectronic">
-            <ChatBubbleOutline sx={{ fontSize: '6rem' }} />
-            <SectionTitle>{t('Electronic Messages')}</SectionTitle>
-            <StatsRow>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskElectronicFilter,
-                    result: [ResultEnum.Completed, ResultEnum.Done],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.electronic.sent}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Sent')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskElectronicFilter,
-                    result: [ResultEnum.Received],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.electronic.received}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Received')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-              <StatsColumn>
-                <Link
-                  href={tasksLink({
-                    ...taskElectronicFilter,
-                    nextAction: [ActivityTypeEnum.Appointment],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.electronic.appointments}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Appts Produced')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-            </StatsRow>
-            <StatsRow>
-              <StatsColumn>
-                <StatsText>
+          )}
+        </ActivitySection>
+        <ActivitySection data-testid="ActivitySectionCorrespondence">
+          <MailOutline sx={{ fontSize: '6rem' }} />
+          <SectionTitle>{t('Correspondence')}</SectionTitle>
+          {loading ? (
+            <MultilineSkeleton lines={2} width="90%" />
+          ) : (
+            <>
+              <StatsRow>
+                <StatsColumn>
                   <Link
                     href={tasksLink({
                       ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.Email],
+                      activityType: [ActivityTypeEnum.PreCallLetter],
+                    })}
+                    accountListType={accountListType}
+                  >
+                    <StatsText>
+                      {data?.accountListAnalytics.correspondence.precall}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Pre-call')}</StatsColumnTitle>
+                  </Link>
+                </StatsColumn>
+                <StatsColumn>
+                  <Link
+                    href={tasksLink({
+                      ...taskBaseFilter,
+                      activityType: [ActivityTypeEnum.SupportLetter],
+                    })}
+                    accountListType={accountListType}
+                  >
+                    <StatsText>
+                      {data?.accountListAnalytics.correspondence.supportLetters}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Support')}</StatsColumnTitle>
+                  </Link>
+                </StatsColumn>
+              </StatsRow>
+              <StatsRow>
+                <StatsColumn>
+                  <Link
+                    href={tasksLink({
+                      ...taskBaseFilter,
+                      activityType: [ActivityTypeEnum.Thank],
+                    })}
+                    accountListType={accountListType}
+                  >
+                    <StatsText>
+                      {data?.accountListAnalytics.correspondence.thankYous}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Thank You')}</StatsColumnTitle>
+                  </Link>
+                </StatsColumn>
+                <StatsColumn>
+                  <Link
+                    href={tasksLink({
+                      ...taskBaseFilter,
+                      activityType: [ActivityTypeEnum.ReminderLetter],
+                    })}
+                    accountListType={accountListType}
+                  >
+                    <StatsText>
+                      {data?.accountListAnalytics.correspondence.reminders}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Reminder')}</StatsColumnTitle>
+                  </Link>
+                </StatsColumn>
+              </StatsRow>
+            </>
+          )}
+        </ActivitySection>
+        <ActivitySection data-testid="ActivitySectionPhone">
+          <SmartphoneOutlined sx={{ fontSize: '6rem' }} />
+          <SectionTitle>{t('Phone Calls')}</SectionTitle>
+          {loading ? (
+            <MultilineSkeleton lines={2} width="90%" />
+          ) : (
+            <>
+              <StatsRow>
+                <StatsColumn>
+                  <Link
+                    href={tasksLink({
+                      ...taskCallFilter,
+                      result: [
+                        ResultEnum.Attempted,
+                        ResultEnum.AttemptedLeftMessage,
+                        ResultEnum.Completed,
+                        ResultEnum.Done,
+                      ],
+                    })}
+                    accountListType={accountListType}
+                  >
+                    <StatsText>
+                      {data &&
+                        data.accountListAnalytics.phone.attempted +
+                          data.accountListAnalytics.phone.completed}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Outgoing')}</StatsColumnTitle>
+                  </Link>
+                </StatsColumn>
+                <StatsColumn>
+                  <Link
+                    href={tasksLink({
+                      ...taskCallFilter,
+                      result: [
+                        ResultEnum.Received,
+                        ResultEnum.Completed,
+                        ResultEnum.Done,
+                      ],
+                    })}
+                    accountListType={accountListType}
+                  >
+                    <StatsText>
+                      {data &&
+                        data.accountListAnalytics.phone.completed +
+                          data.accountListAnalytics.phone.received}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Talked To')}</StatsColumnTitle>
+                  </Link>
+                </StatsColumn>
+                <StatsColumn>
+                  <Link
+                    href={tasksLink({
+                      ...taskBaseFilter,
+                      activityType: [
+                        ActivityTypeEnum.Call,
+                        ActivityTypeEnum.TalkToInPerson,
+                      ],
+                      nextAction: [ActivityTypeEnum.Appointment],
+                    })}
+                    accountListType={accountListType}
+                  >
+                    <StatsText>
+                      {data?.accountListAnalytics.phone.appointments}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Appts Produced')}</StatsColumnTitle>
+                  </Link>
+                </StatsColumn>
+              </StatsRow>
+              <StatsRow>
+                <StatsColumn>
+                  <Link
+                    href={tasksLink({
+                      ...taskCallFilter,
                       result: [ResultEnum.Completed, ResultEnum.Done],
                     })}
                     accountListType={accountListType}
                   >
-                    {data?.accountListAnalytics.email.sent} {t('Sent')}
+                    <StatsText>
+                      {data?.accountListAnalytics.phone.completed}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Completed')}</StatsColumnTitle>
                   </Link>
-                  {' / '}
+                </StatsColumn>
+                <StatsColumn>
                   <Link
                     href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.Email],
+                      ...taskCallFilter,
+                      result: [
+                        ResultEnum.Attempted,
+                        ResultEnum.AttemptedLeftMessage,
+                      ],
+                    })}
+                    accountListType={accountListType}
+                  >
+                    <StatsText>
+                      {data?.accountListAnalytics.phone.attempted}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Attempted')}</StatsColumnTitle>
+                  </Link>
+                </StatsColumn>
+                <StatsColumn>
+                  <Link
+                    href={tasksLink({
+                      ...taskCallFilter,
                       result: [ResultEnum.Received],
                     })}
                     accountListType={accountListType}
                   >
-                    {data?.accountListAnalytics.email.received} {t('Received')}
+                    <StatsText>
+                      {data?.accountListAnalytics.phone.received}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Received')}</StatsColumnTitle>
                   </Link>
-                </StatsText>
-                <StatsColumnTitle>{t('Email')}</StatsColumnTitle>
-              </StatsColumn>
-              <StatsColumn>
-                <StatsText>
+                </StatsColumn>
+              </StatsRow>
+            </>
+          )}
+        </ActivitySection>
+        <ActivitySection data-testid="ActivitySectionElectronic">
+          <ChatBubbleOutline sx={{ fontSize: '6rem' }} />
+          <SectionTitle>{t('Electronic Messages')}</SectionTitle>
+          {loading ? (
+            <MultilineSkeleton lines={2} width="90%" />
+          ) : (
+            <>
+              <StatsRow>
+                <StatsColumn>
                   <Link
                     href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.FacebookMessage],
+                      ...taskElectronicFilter,
                       result: [ResultEnum.Completed, ResultEnum.Done],
                     })}
                     accountListType={accountListType}
                   >
-                    {data?.accountListAnalytics.facebook.sent} {t('Sent')}
+                    <StatsText>
+                      {data?.accountListAnalytics.electronic.sent}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Sent')}</StatsColumnTitle>
                   </Link>
-                  {' / '}
+                </StatsColumn>
+                <StatsColumn>
                   <Link
                     href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.FacebookMessage],
+                      ...taskElectronicFilter,
                       result: [ResultEnum.Received],
                     })}
                     accountListType={accountListType}
                   >
-                    {data?.accountListAnalytics.facebook.received}{' '}
-                    {t('Received')}
+                    <StatsText>
+                      {data?.accountListAnalytics.electronic.received}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Received')}</StatsColumnTitle>
                   </Link>
-                </StatsText>
-                <StatsColumnTitle>{t('Facebook')}</StatsColumnTitle>
-              </StatsColumn>
-              <StatsColumn>
-                <StatsText>
+                </StatsColumn>
+                <StatsColumn>
                   <Link
                     href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.TextMessage],
-                      result: [ResultEnum.Completed, ResultEnum.Done],
+                      ...taskElectronicFilter,
+                      nextAction: [ActivityTypeEnum.Appointment],
                     })}
                     accountListType={accountListType}
                   >
-                    {data?.accountListAnalytics.textMessage.sent} {t('Sent')}
+                    <StatsText>
+                      {data?.accountListAnalytics.electronic.appointments}
+                    </StatsText>
+                    <StatsColumnTitle>{t('Appts Produced')}</StatsColumnTitle>
                   </Link>
-                  {' / '}
-                  <Link
-                    href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.TextMessage],
-                      result: [ResultEnum.Received],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    {data?.accountListAnalytics.textMessage.received}{' '}
-                    {t('Received')}
-                  </Link>
-                </StatsText>
-                <StatsColumnTitle>{t('Text Message')}</StatsColumnTitle>
-              </StatsColumn>
-            </StatsRow>
-          </ActivitySection>
-          <ActivitySection data-testid="ActivitySectionAppeal">
-            <MoneyOutlined sx={{ fontSize: '6rem' }} />
-            <SectionTitle>
-              {accountListType === AccountListTypeEnum.Own ? (
-                <HandoffLink path="/tools/appeals">
-                  <MuiLink underline="none">{t('Primary Appeal')}</MuiLink>
-                </HandoffLink>
-              ) : (
-                t('Primary Appeal')
-              )}
-            </SectionTitle>
-            <StatsRow>
-              {primaryAppeal ? (
+                </StatsColumn>
+              </StatsRow>
+              <StatsRow>
                 <StatsColumn>
                   <StatsText>
-                    {currencyFormat(
-                      primaryAppeal.pledgesAmountProcessed,
-                      currency,
-                      locale,
-                    )}
+                    <Link
+                      href={tasksLink({
+                        ...taskBaseFilter,
+                        activityType: [ActivityTypeEnum.Email],
+                        result: [ResultEnum.Completed, ResultEnum.Done],
+                      })}
+                      accountListType={accountListType}
+                    >
+                      {data?.accountListAnalytics.email.sent} {t('Sent')}
+                    </Link>
                     {' / '}
-                    {currencyFormat(
-                      primaryAppeal.amount ?? 0,
-                      currency,
-                      locale,
-                    )}
+                    <Link
+                      href={tasksLink({
+                        ...taskBaseFilter,
+                        activityType: [ActivityTypeEnum.Email],
+                        result: [ResultEnum.Received],
+                      })}
+                      accountListType={accountListType}
+                    >
+                      {data?.accountListAnalytics.email.received}{' '}
+                      {t('Received')}
+                    </Link>
                   </StatsText>
-                  <StatsColumnTitle>
-                    {accountListType === AccountListTypeEnum.Own ? (
-                      <HandoffLink path={`/tools/appeals/${primaryAppeal.id}`}>
-                        <MuiLink underline="none">{primaryAppeal.name}</MuiLink>
-                      </HandoffLink>
-                    ) : (
-                      primaryAppeal.name
-                    )}
-                  </StatsColumnTitle>
+                  <StatsColumnTitle>{t('Email')}</StatsColumnTitle>
                 </StatsColumn>
-              ) : (
-                <StatsColumn>{t('No Primary Appeal Set')}</StatsColumn>
-              )}
-            </StatsRow>
-            <StatsRow sx={{ display: 'block' }}>
-              <AppealProgress appeal={primaryAppeal} currency={currency} />
-            </StatsRow>
-          </ActivitySection>
-        </SectionsContainer>
-      )}
+                <StatsColumn>
+                  <StatsText>
+                    <Link
+                      href={tasksLink({
+                        ...taskBaseFilter,
+                        activityType: [ActivityTypeEnum.FacebookMessage],
+                        result: [ResultEnum.Completed, ResultEnum.Done],
+                      })}
+                      accountListType={accountListType}
+                    >
+                      {data?.accountListAnalytics.facebook.sent} {t('Sent')}
+                    </Link>
+                    {' / '}
+                    <Link
+                      href={tasksLink({
+                        ...taskBaseFilter,
+                        activityType: [ActivityTypeEnum.FacebookMessage],
+                        result: [ResultEnum.Received],
+                      })}
+                      accountListType={accountListType}
+                    >
+                      {data?.accountListAnalytics.facebook.received}{' '}
+                      {t('Received')}
+                    </Link>
+                  </StatsText>
+                  <StatsColumnTitle>{t('Facebook')}</StatsColumnTitle>
+                </StatsColumn>
+                <StatsColumn>
+                  <StatsText>
+                    <Link
+                      href={tasksLink({
+                        ...taskBaseFilter,
+                        activityType: [ActivityTypeEnum.TextMessage],
+                        result: [ResultEnum.Completed, ResultEnum.Done],
+                      })}
+                      accountListType={accountListType}
+                    >
+                      {data?.accountListAnalytics.textMessage.sent} {t('Sent')}
+                    </Link>
+                    {' / '}
+                    <Link
+                      href={tasksLink({
+                        ...taskBaseFilter,
+                        activityType: [ActivityTypeEnum.TextMessage],
+                        result: [ResultEnum.Received],
+                      })}
+                      accountListType={accountListType}
+                    >
+                      {data?.accountListAnalytics.textMessage.received}{' '}
+                      {t('Received')}
+                    </Link>
+                  </StatsText>
+                  <StatsColumnTitle>{t('Text Message')}</StatsColumnTitle>
+                </StatsColumn>
+              </StatsRow>
+            </>
+          )}
+        </ActivitySection>
+        <ActivitySection data-testid="ActivitySectionAppeal">
+          <MoneyOutlined sx={{ fontSize: '6rem' }} />
+          <SectionTitle>
+            {accountListType === AccountListTypeEnum.Own ? (
+              <HandoffLink path="/tools/appeals">
+                <MuiLink underline="none">{t('Primary Appeal')}</MuiLink>
+              </HandoffLink>
+            ) : (
+              t('Primary Appeal')
+            )}
+          </SectionTitle>
+          {loading ? (
+            <MultilineSkeleton lines={2} width="90%" />
+          ) : (
+            <>
+              <StatsRow>
+                {primaryAppeal ? (
+                  <StatsColumn>
+                    <StatsText>
+                      {currencyFormat(
+                        primaryAppeal.pledgesAmountProcessed,
+                        currency,
+                        locale,
+                      )}
+                      {' / '}
+                      {currencyFormat(
+                        primaryAppeal.amount ?? 0,
+                        currency,
+                        locale,
+                      )}
+                    </StatsText>
+                    <StatsColumnTitle>
+                      {accountListType === AccountListTypeEnum.Own ? (
+                        <HandoffLink
+                          path={`/tools/appeals/${primaryAppeal.id}`}
+                        >
+                          <MuiLink underline="none">
+                            {primaryAppeal.name}
+                          </MuiLink>
+                        </HandoffLink>
+                      ) : (
+                        primaryAppeal.name
+                      )}
+                    </StatsColumnTitle>
+                  </StatsColumn>
+                ) : (
+                  <StatsColumn>{t('No Primary Appeal Set')}</StatsColumn>
+                )}
+              </StatsRow>
+              <StatsRow sx={{ display: 'block' }}>
+                <AppealProgress appeal={primaryAppeal} currency={currency} />
+              </StatsRow>
+            </>
+          )}
+        </ActivitySection>
+      </SectionsContainer>
     </AnimatedCard>
   );
 };
