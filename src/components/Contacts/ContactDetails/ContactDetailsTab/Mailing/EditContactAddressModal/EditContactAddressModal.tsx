@@ -1,7 +1,4 @@
 import React, { ReactElement } from 'react';
-import { Formik } from 'formik';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
 import {
   Alert,
   AlertTitle,
@@ -20,28 +17,31 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { ContactMailingFragment } from '../ContactMailing.generated';
+import { Formik } from 'formik';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import {
+  CancelButton,
+  DeleteButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
+import { ContactMailingFragment } from '../ContactMailing.generated';
+import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
+import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
+import { useUpdateCache } from '../useUpdateCache';
 import {
   useDeleteContactAddressMutation,
   useDonationServicesEmailQuery,
   useUpdateContactAddressMutation,
 } from './EditContactAddress.generated';
-import {
-  SubmitButton,
-  CancelButton,
-  DeleteButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useUpdateCache } from '../useUpdateCache';
-import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
-import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
-import { updateAddressSchema } from './updateAddressSchema';
 import { generateEmailBody } from './helpers';
+import { updateAddressSchema } from './updateAddressSchema';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

@@ -1,18 +1,18 @@
-import React, { ReactElement, useState, useEffect } from 'react';
-import Head from 'next/head';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { getToken } from 'next-auth/jwt';
-import useGetAppSettings from '../../src/hooks/useGetAppSettings';
+import Head from 'next/head';
+import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import { suggestArticles } from 'src/lib/helpScout';
 import Dashboard from '../../src/components/Dashboard';
+import useGetAppSettings from '../../src/hooks/useGetAppSettings';
+import useTaskModal from '../../src/hooks/useTaskModal';
 import { ssrClient } from '../../src/lib/client';
 import {
   GetDashboardDocument,
   GetDashboardQuery,
   GetDashboardQueryVariables,
 } from './GetDashboard.generated';
-import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
-import useTaskModal from '../../src/hooks/useTaskModal';
-import { suggestArticles } from 'src/lib/helpScout';
 
 interface Props {
   data: GetDashboardQuery;

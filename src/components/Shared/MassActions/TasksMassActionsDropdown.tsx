@@ -1,21 +1,21 @@
 import React, { ReactElement, useState } from 'react';
+import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
-import { dispatch } from 'src/lib/analytics';
-import { useAccountListId } from '../../../hooks/useAccountListId';
-import { ResultEnum } from '../../../../graphql/types.generated';
+import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
 import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
 import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
-import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
-import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
 import {
   useMassActionsDeleteTasksMutation,
   useMassActionsUpdateTasksMutation,
 } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
-import { MassActionsDropdown } from './MassActionsDropdown';
+import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { dispatch } from 'src/lib/analytics';
+import { ResultEnum } from '../../../../graphql/types.generated';
+import { useAccountListId } from '../../../hooks/useAccountListId';
+import { MassActionsDropdown } from './MassActionsDropdown';
 
 interface TasksMassActionsDropdownProps {
   buttonGroup?: ReactElement | null;

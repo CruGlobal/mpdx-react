@@ -1,42 +1,42 @@
 import React, { ReactElement, useState } from 'react';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Brightness1Outlined from '@mui/icons-material/Brightness1Outlined';
+import CakeIcon from '@mui/icons-material/Cake';
+import DoneIcon from '@mui/icons-material/Done';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import {
   Box,
-  Typography,
-  CardHeader,
-  CardActions,
   Button,
+  CardActions,
+  CardContent,
+  CardHeader,
+  IconButton,
   List,
   ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  Tabs,
-  Tab,
   ListItemIcon,
-  CardContent,
-  IconButton,
+  ListItemSecondaryAction,
+  ListItemText,
+  Tab,
+  Tabs,
+  Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import CakeIcon from '@mui/icons-material/Cake';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import Brightness1Outlined from '@mui/icons-material/Brightness1Outlined';
-import DoneIcon from '@mui/icons-material/Done';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import useTaskModal from 'src/hooks/useTaskModal';
+import theme from 'src/theme';
 import {
   Contact,
   PersonWithParentContact,
 } from '../../../../../graphql/types.generated';
-import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
-import AnimatedCard from '../../../AnimatedCard';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
+import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
+import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
-import theme from 'src/theme';
-import useTaskModal from 'src/hooks/useTaskModal';
-import { useLocale } from 'src/hooks/useLocale';
 
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({
   flex: 'flex',

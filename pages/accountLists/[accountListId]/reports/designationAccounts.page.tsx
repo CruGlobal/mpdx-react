@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import Head from 'next/head';
-import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { suggestArticles } from 'src/lib/helpScout';
+import Head from 'next/head';
+import { useTranslation } from 'react-i18next';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { DesignationAccountsReport } from 'src/components/Reports/DesignationAccountsReport/DesignationAccountsReport';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { suggestArticles } from 'src/lib/helpScout';
 
 const DesignationAccountsReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,

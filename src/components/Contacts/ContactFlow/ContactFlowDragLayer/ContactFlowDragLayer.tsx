@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import { XYCoord, useDragLayer } from 'react-dnd';
-import theme from '../../../../../src/theme';
+import theme from '../../../../theme';
 import { ContactFlowRowPreview } from './ContactFlowRowPreview';
 
 const layerStyles: CSSProperties = {

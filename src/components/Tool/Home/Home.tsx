@@ -1,9 +1,8 @@
 import React, { ReactElement } from 'react';
-import { Theme, Grid, Box } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import { Box, Grid, Theme } from '@mui/material';
 import { motion } from 'framer-motion';
-
 import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import Tool from './Tool';
 import { ToolsList } from './ToolList';
 

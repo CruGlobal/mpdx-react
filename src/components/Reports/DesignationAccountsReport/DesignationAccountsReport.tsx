@@ -1,19 +1,19 @@
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { currencyFormat } from 'src/lib/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
-import { useDesignationAccountsQuery } from './GetDesignationAccounts.generated';
-import { useSetActiveDesignationAccountMutation } from './SetActiveDesignationAccount.generated';
-import {
-  MultiPageHeader,
-  HeaderTypeEnum,
-} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
-import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
+import {
+  HeaderTypeEnum,
+  MultiPageHeader,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
+import { useDesignationAccountsQuery } from './GetDesignationAccounts.generated';
+import { useSetActiveDesignationAccountMutation } from './SetActiveDesignationAccount.generated';
+import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
 
 interface Props {
   accountListId: string;

@@ -1,9 +1,8 @@
-import { Box, Link, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import Phone from '@mui/icons-material/Phone';
-import Skeleton from '@mui/material/Skeleton';
-
 import React, { ReactElement } from 'react';
+import Phone from '@mui/icons-material/Phone';
+import { Box, Link, Typography } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
 import theme from '../../../../../theme';
 import { ContactHeaderPhoneFragment } from './ContactHeaderPhone.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';

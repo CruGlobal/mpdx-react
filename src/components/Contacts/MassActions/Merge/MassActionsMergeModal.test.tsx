@@ -1,13 +1,13 @@
 import React from 'react';
-import { render, waitFor, queryByText } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { queryByText, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { StatusEnum } from '../../../../../graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { StatusEnum } from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
-import { MassActionsMergeModal } from './MassActionsMergeModal';
 import { GetContactsForMergingQuery } from './MassActionsMerge.generated';
+import { MassActionsMergeModal } from './MassActionsMergeModal';
 
 const handleClose = jest.fn();
 const accountListId = '123';

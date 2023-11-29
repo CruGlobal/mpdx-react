@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks';
 import {
-  isDataDogConfigured,
   clearDataDogUser,
+  isDataDogConfigured,
   setDataDogUser,
 } from '../useDataDog';
 

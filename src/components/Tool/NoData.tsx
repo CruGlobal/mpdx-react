@@ -1,5 +1,4 @@
 import React from 'react';
-import { Typography } from '@mui/material';
 import {
   mdiAccountGroup,
   mdiCurrencyUsd,
@@ -10,6 +9,7 @@ import {
   mdiPhone,
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Typography } from '@mui/material';
 import i18n from 'i18next';
 import { NullStateBox } from '../Shared/Filters/NullState/NullStateBox';
 

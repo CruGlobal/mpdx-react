@@ -2,12 +2,12 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import theme from '../../../../theme';
-import { FilterTagDeleteModal } from './FilterTagDeleteModal';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import theme from '../../../../theme';
 import { DeleteTagMutation } from './Chip/DeleteTag.generated';
-import { SnackbarProvider } from 'notistack';
+import { FilterTagDeleteModal } from './FilterTagDeleteModal';
 
 const handleClose = jest.fn();
 

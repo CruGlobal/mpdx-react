@@ -1,19 +1,19 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { ThemeProvider } from '@mui/material/styles';
-import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import { ContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
-import theme from '../../../../../src/theme';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
 } from '../../../../../graphql/types.generated';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { ContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import theme from '../../../../theme';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
 const accountListId = 'abc';

@@ -1,14 +1,14 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
 import * as nextRouter from 'next/router';
 import { SnackbarProvider } from 'notistack';
-import theme from '../../../../theme';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
+import theme from '../../../../theme';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
-import { getTopBarMultipleMock } from './TopBar.mock';
 import TopBar from './TopBar';
+import { getTopBarMultipleMock } from './TopBar.mock';
 
 const accountListId = 'accountListId';
 const onMobileNavOpen = jest.fn();

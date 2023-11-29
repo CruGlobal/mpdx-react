@@ -1,26 +1,26 @@
 import React from 'react';
-import NextLink from 'next/link';
-import { useTranslation } from 'react-i18next';
+import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
+import Map from '@mui/icons-material/Map';
+import Settings from '@mui/icons-material/Settings';
+import ViewColumn from '@mui/icons-material/ViewColumn';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Hidden from '@mui/material/Hidden';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { styled } from '@mui/material/styles';
-import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
-import Map from '@mui/icons-material/Map';
-import Settings from '@mui/icons-material/Settings';
-import ViewColumn from '@mui/icons-material/ViewColumn';
 import _ from 'lodash';
-import {
-  ContactsContext,
-  ContactsType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
+import NextLink from 'next/link';
+import { useTranslation } from 'react-i18next';
+import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   ListHeader,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
-import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  ContactsContext,
+  ContactsType,
+} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 
 const ViewSettingsButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',

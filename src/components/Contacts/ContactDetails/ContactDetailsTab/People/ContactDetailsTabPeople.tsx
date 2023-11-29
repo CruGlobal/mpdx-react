@@ -1,25 +1,27 @@
-import { DateTime } from 'luxon';
 import React, { useState } from 'react';
-import {
-  Avatar,
-  Box,
-  Grid,
-  IconButton,
-  Typography,
-  Button,
-  Link,
-  SxProps,
-  Theme,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
-import MergeIcon from '@mui/icons-material/Merge';
 import Cake from '@mui/icons-material/Cake';
 import CreateIcon from '@mui/icons-material/Create';
 import Email from '@mui/icons-material/Email';
+import MergeIcon from '@mui/icons-material/Merge';
 import Phone from '@mui/icons-material/Phone';
+import {
+  Avatar,
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  Link,
+  SxProps,
+  Theme,
+  Typography,
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { MergePeopleModal } from 'src/components/Contacts/MassActions/MergePeople/MergePeopleModal';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
 import { RingIcon } from '../../../RingIcon';
 import {
   ContactDetailContext,
@@ -30,8 +32,6 @@ import {
   ContactPersonFragment,
 } from './ContactPeople.generated';
 import { PersonModal } from './Items/PersonModal/PersonModal';
-import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
 
 const ContactPersonAvatar = styled(Avatar)(({ theme }) => ({
   margin: theme.spacing(1),

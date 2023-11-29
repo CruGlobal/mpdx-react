@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   FilterPanelTagsSection,
   FilterPanelTagsSectionProps,

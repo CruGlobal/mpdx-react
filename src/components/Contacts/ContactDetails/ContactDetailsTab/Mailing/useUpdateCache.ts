@@ -1,7 +1,7 @@
 import { ApolloCache, MutationUpdaterFunction } from '@apollo/client';
 import {
-  PrimaryMailingAddressFragmentDoc,
   ContactPrimaryAddressRelationFragmentDoc,
+  PrimaryMailingAddressFragmentDoc,
   SetContactPrimaryAddressMutation,
 } from './SetPrimaryAddress.generated';
 

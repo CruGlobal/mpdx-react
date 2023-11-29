@@ -1,5 +1,5 @@
-import { DateTime, Interval } from 'luxon';
 import { MockedResponse } from '@apollo/client/testing';
+import { DateTime, Interval } from 'luxon';
 import {
   GetWeeklyActivityDocument,
   GetWeeklyActivityQuery,

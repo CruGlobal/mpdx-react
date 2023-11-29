@@ -1,8 +1,8 @@
 import React from 'react';
-import { Box, Divider, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import CreateIcon from '@mui/icons-material/Create';
+import { Box, Divider, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   ContactDetailContext,
@@ -11,10 +11,10 @@ import {
 import { useContactDetailsTabQuery } from './ContactDetailsTab.generated';
 import { ContactDetailsTabMailing } from './Mailing/ContactDetailsTabMailing';
 import { ContactDetailsOther } from './Other/ContactDetailsOther';
-import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
-import { ContactTags } from './Tags/ContactTags';
 import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
 import { ContactDetailsPartnerAccounts } from './PartnerAccounts/ContactDetailsPartnerAccounts';
+import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
+import { ContactTags } from './Tags/ContactTags';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',

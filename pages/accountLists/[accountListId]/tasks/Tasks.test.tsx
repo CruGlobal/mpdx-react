@@ -1,15 +1,15 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import { dispatch } from 'src/lib/analytics';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
-import theme from '../../../../src/theme';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import useTaskModal from '../../../../src/hooks/useTaskModal';
-import Tasks from './[[...contactId]].page';
+import theme from '../../../../src/theme';
 import { TasksQuery } from './Tasks.generated';
+import Tasks from './[[...contactId]].page';
 
 const accountListId = 'account-list-1';
 

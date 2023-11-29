@@ -1,26 +1,26 @@
 import React from 'react';
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { InMemoryCache } from '@apollo/client';
+import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import {
-  ContactPeopleFragment,
-  ContactPeopleFragmentDoc,
-} from '../../ContactPeople.generated';
-import {
-  gqlMock,
   GqlMockedProvider,
+  gqlMock,
 } from '../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../theme';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../../ContactDetailsTab.generated';
+import {
+  ContactPeopleFragment,
+  ContactPeopleFragmentDoc,
+} from '../../ContactPeople.generated';
 import { PersonModal } from './PersonModal';
-import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import { uploadAvatar, validateAvatar } from './uploadAvatar';
 
 jest.mock('./uploadAvatar');

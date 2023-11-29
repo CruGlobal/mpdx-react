@@ -1,9 +1,9 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../theme';
 import useTaskModal from '../../../hooks/useTaskModal';
+import theme from '../../../theme';
 import TaskStatus from '.';
 
 jest.mock('../../../hooks/useTaskModal');

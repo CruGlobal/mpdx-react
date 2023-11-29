@@ -1,15 +1,15 @@
 import React from 'react';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
 import {
   FinancialAccountsDocument,
   FinancialAccountsQuery,
 } from './GetFinancialAccounts.generated';
 import { ResponsibilityCentersReport } from './ResponsibilityCentersReport';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
-import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 
 jest.mock('next/router', () => ({
   useRouter: () => {

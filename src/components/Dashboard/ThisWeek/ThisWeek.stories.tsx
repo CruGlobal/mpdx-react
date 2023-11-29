@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import withMargin from '../../../decorators/withMargin';
-import { GetWeeklyActivityQueryLoadingMocks } from './WeeklyActivity/WeeklyActivity.mock';
 import {
-  GetThisWeekEmptyMocks,
   GetThisWeekDefaultMocks,
+  GetThisWeekEmptyMocks,
 } from './ThisWeek.mock';
+import { GetWeeklyActivityQueryLoadingMocks } from './WeeklyActivity/WeeklyActivity.mock';
 import ThisWeek from '.';
 
 export default {

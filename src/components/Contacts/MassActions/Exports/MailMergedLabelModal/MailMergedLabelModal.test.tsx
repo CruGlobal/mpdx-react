@@ -1,14 +1,14 @@
 import React from 'react';
-import { SnackbarProvider } from 'notistack';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import theme from 'src/theme';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MailMergedLabelModal } from './MailMergedLabelModal';
+import theme from 'src/theme';
 import { exportRest } from '../exportRest';
+import { MailMergedLabelModal } from './MailMergedLabelModal';
 
 jest.mock('next-auth/react');
 jest.mock('../exportRest');

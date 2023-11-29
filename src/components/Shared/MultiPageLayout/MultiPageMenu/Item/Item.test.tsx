@@ -1,9 +1,9 @@
 import React from 'react';
-import { Item } from './Item';
-import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import TestWrapper from '__tests__/util/TestWrapper';
-import { NavTypeEnum } from '../MultiPageMenu';
 import userEvent from '@testing-library/user-event';
+import TestWrapper from '__tests__/util/TestWrapper';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { NavTypeEnum } from '../MultiPageMenu';
+import { Item } from './Item';
 
 const item = {
   id: 'testItem',

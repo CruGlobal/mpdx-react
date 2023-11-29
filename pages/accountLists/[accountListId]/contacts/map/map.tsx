@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import {
-  GoogleMap,
-  Marker,
-  MarkerClusterer,
-  InfoWindow,
-  useJsApiLoader,
-} from '@react-google-maps/api';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import {
+  GoogleMap,
+  InfoWindow,
+  Marker,
+  MarkerClusterer,
+  useJsApiLoader,
+} from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
-import { StatusEnum } from '../../../../../graphql/types.generated';
-import { ContactsContext, ContactsType } from '../ContactsContext';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
+import { StatusEnum } from '../../../../../graphql/types.generated';
+import { ContactsContext, ContactsType } from '../ContactsContext';
 
 const ContactLink = styled(Typography)(({ theme }) => ({
   color: theme.palette.mpdxBlue.main,

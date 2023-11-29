@@ -1,13 +1,13 @@
 import React, { ReactElement, useEffect } from 'react';
-import Head from 'next/head';
-import { GetServerSideProps } from 'next';
-import { useTranslation } from 'react-i18next';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { clearDataDogUser } from 'src/hooks/useDataDog';
+import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
+import { GetServerSideProps } from 'next';
 import { signOut } from 'next-auth/react';
+import Head from 'next/head';
+import { useTranslation } from 'react-i18next';
+import { clearDataDogUser } from 'src/hooks/useDataDog';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,

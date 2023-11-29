@@ -1,14 +1,14 @@
 import React from 'react';
-import { SnackbarProvider } from 'notistack';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import theme from 'src/theme';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MassActionsAddToAppealModal } from './MassActionsAddToAppealModal';
+import theme from 'src/theme';
 import { GetAppealsForMassActionQuery } from './GetAppealsForMassAction.generated';
+import { MassActionsAddToAppealModal } from './MassActionsAddToAppealModal';
 
 const selectedIds: string[] = ['abc'];
 const accountListId = '123456789';

@@ -1,9 +1,9 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { mdiAlert } from '@mdi/js';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../../src/theme';
+import { render } from '@testing-library/react';
 import TestRouter from '../../../../__tests__/util/TestRouter';
+import theme from '../../../theme';
 import Tool from './Tool';
 
 const accountListId = 'account-list-1';

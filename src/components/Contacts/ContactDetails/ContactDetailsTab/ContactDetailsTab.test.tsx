@@ -1,20 +1,20 @@
 import React from 'react';
-import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { cloneDeep } from '@apollo/client/utilities';
-import { render, waitFor, within } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import { SnackbarProvider } from 'notistack';
-import userEvent from '@testing-library/user-event';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
+import { SnackbarProvider } from 'notistack';
+import { DeepPartial } from 'ts-essentials';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
-import theme from '../../../../theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../theme';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsTab } from './ContactDetailsTab';
 import { ContactDetailsTabQuery } from './ContactDetailsTab.generated';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import { DeepPartial } from 'ts-essentials';
 
 const accountListId = '111';
 const contactId = 'contact-1';

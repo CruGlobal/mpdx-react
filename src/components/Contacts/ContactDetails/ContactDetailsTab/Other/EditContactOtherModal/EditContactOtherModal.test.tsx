@@ -1,24 +1,24 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { SnackbarProvider } from 'notistack';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { PreferredContactMethodEnum } from '../../../../../../../graphql/types.generated';
+import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
-  gqlMock,
   GqlMockedProvider,
+  gqlMock,
 } from '../../../../../../../__tests__/util/graphqlMocking';
+import { PreferredContactMethodEnum } from '../../../../../../../graphql/types.generated';
 import theme from '../../../../../../theme';
+import { ContactDetailProvider } from '../../../ContactDetailContext';
 import {
   ContactOtherFragment,
   ContactOtherFragmentDoc,
 } from '../ContactOther.generated';
-import { ContactDetailProvider } from '../../../ContactDetailContext';
 import { UpdateContactOtherMutation } from './EditContactOther.generated';
 import { EditContactOtherModal } from './EditContactOtherModal';
-import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
-import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const handleClose = jest.fn();
 const mock = gqlMock<ContactOtherFragment>(ContactOtherFragmentDoc);

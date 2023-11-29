@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import Typography from '@mui/material/Typography';
-import type { Theme } from '@mui/material/styles/createTheme';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import type { Theme } from '@mui/material/styles/createTheme';
 
 export enum ContactLateStatusEnum {
   OnTime,

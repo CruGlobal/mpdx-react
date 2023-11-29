@@ -1,9 +1,9 @@
-import { readFile } from 'fs/promises';
-import fetch, { File, FormData } from 'node-fetch';
 import formidable, { IncomingForm } from 'formidable';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
+import fetch, { File, FormData } from 'node-fetch';
 import { v4 as uuidv4 } from 'uuid';
+import { readFile } from 'fs/promises';
 
 export const config = {
   api: {

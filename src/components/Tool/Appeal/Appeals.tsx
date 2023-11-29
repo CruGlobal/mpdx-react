@@ -1,16 +1,16 @@
 import React from 'react';
-import { Box, Typography, Divider, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import {
   GetAppealsDocument,
   useGetAppealsQuery,
 } from '../../../../pages/accountLists/[accountListId]/tools/GetAppeals.generated';
-import Appeal from '../../../../src/components/Tool/Appeal/Appeal';
-import NoAppeals from '../../../../src/components/Tool/Appeal/NoAppeals';
+import Appeal from './Appeal';
 import { useChangePrimaryAppealMutation } from './ChangePrimaryAppeal.generated';
-import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import NoAppeals from './NoAppeals';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),

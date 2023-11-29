@@ -1,15 +1,15 @@
 import {
-  mdiTrophy,
-  mdiGoogle,
-  mdiTable,
+  mdiAccountGroup,
   mdiCloudUpload,
   mdiCurrencyUsd,
   mdiEmail,
-  mdiMap,
-  mdiPhone,
-  mdiNewspaperVariantOutline,
+  mdiGoogle,
   mdiHome,
-  mdiAccountGroup,
+  mdiMap,
+  mdiNewspaperVariantOutline,
+  mdiPhone,
+  mdiTable,
+  mdiTrophy,
   mdiWrench,
 } from '@mdi/js';
 

@@ -1,9 +1,9 @@
 import { render, waitFor } from '@testing-library/react';
+import { getSession } from 'next-auth/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { identifyUser } from 'src/lib/helpScout';
 import { GetUserQuery } from '../User/GetUser.generated';
 import HelpscoutBeacon from './HelpscoutBeacon';
-import { getSession } from 'next-auth/react';
 
 jest.mock('next-auth/react');
 

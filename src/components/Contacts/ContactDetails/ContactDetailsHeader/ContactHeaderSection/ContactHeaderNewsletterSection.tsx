@@ -1,15 +1,14 @@
+import React, { ReactElement } from 'react';
+import { mdiNewspaperVariantOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import { mdiNewspaperVariantOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-
-import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import theme from '../../../../../theme';
 import { ContactHeaderNewsletterFragment } from './ContactHeaderNewsletter.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 
 interface Props {
   loading: boolean;

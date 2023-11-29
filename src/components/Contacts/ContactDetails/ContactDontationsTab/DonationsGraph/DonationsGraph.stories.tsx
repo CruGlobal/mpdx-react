@@ -1,7 +1,7 @@
+import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Box } from '@mui/material';
 import { DateTime } from 'luxon';
-import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { GetContactDonationsQuery } from '../ContactDonationsTab.generated';
 import { DonationsGraph } from './DonationsGraph';

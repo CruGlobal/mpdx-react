@@ -1,5 +1,5 @@
 import { AdapterLuxon as BaseAdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { Info, DateTime } from 'luxon';
+import { DateTime, Info } from 'luxon';
 
 // Customize AdapterLuxon to make the start of the week Sunday instead of Monday
 // Based on https://github.com/mui/material-ui-pickers/issues/1270#issuecomment-567075962

@@ -1,15 +1,15 @@
+import React, { useState } from 'react';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { styled } from '@mui/material/styles';
-import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CoachedPersonFragment } from '../LoadCoachingList.generated';
-import { AppealProgress } from '../AppealProgress/AppealProgress';
 import HandoffLink from 'src/components/HandoffLink';
-import { useDeleteCoachingAccountListMutation } from './CoachingRow.generated';
 import { Confirmation } from '../../common/Modal/Confirmation/Confirmation';
+import { AppealProgress } from '../AppealProgress/AppealProgress';
+import { CoachedPersonFragment } from '../LoadCoachingList.generated';
+import { useDeleteCoachingAccountListMutation } from './CoachingRow.generated';
 
 interface Props {
   coachingAccount: CoachedPersonFragment;

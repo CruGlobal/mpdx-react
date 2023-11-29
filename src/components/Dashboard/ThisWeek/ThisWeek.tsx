@@ -1,16 +1,16 @@
 import React, { ReactElement } from 'react';
-import { Box, Typography, Grid } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Box, Grid, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import AnimatedBox from '../../AnimatedBox';
-import PartnerCare from './PartnerCare/PartnerCare';
-import TasksDueThisWeek from './TasksDueThisWeek/TasksDueThisWeek';
-import LateCommitments from './LateCommitments/LateCommitments';
-import Referrals from './Referrals';
 import Appeals from './Appeals';
-import WeeklyActivity from './WeeklyActivity';
 import { useGetThisWeekQuery } from './GetThisWeek.generated';
+import LateCommitments from './LateCommitments/LateCommitments';
 import NewsletterMenu from './NewsletterMenu/NewsletterMenu';
+import PartnerCare from './PartnerCare/PartnerCare';
+import Referrals from './Referrals';
+import TasksDueThisWeek from './TasksDueThisWeek/TasksDueThisWeek';
+import WeeklyActivity from './WeeklyActivity';
 
 interface Props {
   accountListId: string;

@@ -1,16 +1,16 @@
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
 import { Box, Drawer, Hidden, List, Theme } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import { useRouter } from 'next/router';
 import NextLink, { LinkProps } from 'next/link';
+import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import { toolsRedirectLinks } from '../TopBar/Items/NavMenu/NavMenu';
+import { makeStyles } from 'tss-react/mui';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
-import { NavItem } from './NavItem/NavItem';
-import { NavTools } from './NavTools/NavTools';
 import { ToolsList } from 'src/components/Tool/Home/ToolList';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { toolsRedirectLinks } from '../TopBar/Items/NavMenu/NavMenu';
+import { NavItem } from './NavItem/NavItem';
+import { NavTools } from './NavTools/NavTools';
 
 interface NavBarProps {
   onMobileClose: () => void;

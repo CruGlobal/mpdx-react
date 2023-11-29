@@ -1,12 +1,12 @@
 import React from 'react';
-import { SnackbarProvider } from 'notistack';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import theme from 'src/theme';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
 import { ExportsModal } from './ExportsModal';
 import { exportRest } from './exportRest';
 

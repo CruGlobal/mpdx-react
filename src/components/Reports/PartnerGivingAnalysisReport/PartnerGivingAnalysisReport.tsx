@@ -1,24 +1,24 @@
 import React, { useMemo, useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useDebouncedValue } from 'src/hooks/useDebounce';
-import { useMassSelection } from 'src/hooks/useMassSelection';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
-import {
-  ReportContactFilterSetInput,
-  PartnerGivingAnalysisReportContact,
-  SortDirection,
-} from '../../../../graphql/types.generated';
-import type { Order } from '../Reports.type';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { ListHeader } from 'src/components/Shared/Header/ListHeader';
 import {
-  MultiPageHeader,
   HeaderTypeEnum,
+  MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { useMassSelection } from 'src/hooks/useMassSelection';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import {
+  PartnerGivingAnalysisReportContact,
+  ReportContactFilterSetInput,
+  SortDirection,
+} from '../../../../graphql/types.generated';
+import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
+import type { Order } from '../Reports.type';
 
 interface Props {
   accountListId: string;

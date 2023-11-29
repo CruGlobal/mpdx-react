@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
-import { Container, Grid, Box } from '@mui/material';
+import { Box, Container, Grid } from '@mui/material';
 import { motion } from 'framer-motion';
 import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
-import Welcome from './Welcome';
-import MonthlyGoal from './MonthlyGoal/MonthlyGoal';
 import Balance from './Balance';
 import DonationHistories from './DonationHistories';
+import MonthlyGoal from './MonthlyGoal/MonthlyGoal';
 import ThisWeek from './ThisWeek';
+import Welcome from './Welcome';
 
 interface Props {
   data: GetDashboardQuery;

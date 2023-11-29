@@ -1,15 +1,15 @@
 import React, { FC, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { DateTime } from 'luxon';
 import { TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 // eslint-disable-next-line import/extensions
-import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
-import type { Order, Unarray } from '../../../../Reports.type';
-import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 import { Totals } from '../../../FourteenMonthReport';
+import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
 import { StyledTableCell } from '../Table';
+import { TableHeadCell } from './TableHeadCell/TableHeadCell';
+import type { Order, Unarray } from '../../../../Reports.type';
 
 export type Contacts =
   FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];

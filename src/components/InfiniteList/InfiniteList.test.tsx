@@ -1,9 +1,8 @@
 import React from 'react';
-import { VirtuosoMockContext } from 'react-virtuoso';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import theme from '../../theme';
-
 import { InfiniteList } from './InfiniteList';
 
 const endReached = jest.fn();

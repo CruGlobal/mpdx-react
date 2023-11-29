@@ -1,6 +1,6 @@
+import React, { ReactElement, ReactNode } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import React, { ReactElement, ReactNode } from 'react';
 
 interface Props {
   children?: ReactNode;

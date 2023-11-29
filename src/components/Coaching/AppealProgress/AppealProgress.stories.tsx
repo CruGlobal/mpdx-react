@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
 import React, { ReactElement } from 'react';
+import { Box } from '@mui/material';
 import { AppealProgress } from './AppealProgress';
 
 const control = {

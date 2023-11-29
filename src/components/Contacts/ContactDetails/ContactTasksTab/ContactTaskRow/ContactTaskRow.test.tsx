@@ -1,15 +1,15 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import {
+  GqlMockedProvider,
+  gqlMock,
+} from '../../../../../../__tests__/util/graphqlMocking';
 import {
   ActivityTypeEnum,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import {
-  gqlMock,
-  GqlMockedProvider,
-} from '../../../../../../__tests__/util/graphqlMocking';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
 import {

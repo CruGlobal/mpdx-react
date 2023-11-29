@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-const fs = require('fs');
 const onesky = require('@brainly/onesky-utils');
+const fs = require('fs');
 
 const options = {
   secret: process.env.ONESKY_API_SECRET,

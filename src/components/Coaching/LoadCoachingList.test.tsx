@@ -1,12 +1,12 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
+import { render } from '__tests__/util/testingLibraryReactMock';
 import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
 import { CoachingList } from './CoachingList';
 import {
   LoadCoachingListQuery,
   useLoadCoachingListQuery,
 } from './LoadCoachingList.generated';
-import { render } from '__tests__/util/testingLibraryReactMock';
 
 describe('LoadCoaching', () => {
   it('query correct', async () => {

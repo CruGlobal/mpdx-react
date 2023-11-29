@@ -1,6 +1,6 @@
 import React from 'react';
-import { ContactDetails } from '../ContactDetails/ContactDetails';
 import { ContactDetailProvider } from '../ContactDetails/ContactDetailContext';
+import { ContactDetails } from '../ContactDetails/ContactDetails';
 
 interface Props {
   onClose: () => void;

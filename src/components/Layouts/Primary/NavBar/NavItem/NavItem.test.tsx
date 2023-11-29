@@ -1,8 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import { NavItem } from './NavItem';
+import { render } from '@testing-library/react';
 import theme from 'src/theme';
+import { NavItem } from './NavItem';
 
 const accountListId = 'test-id';
 const title = 'Test NavItem Button';

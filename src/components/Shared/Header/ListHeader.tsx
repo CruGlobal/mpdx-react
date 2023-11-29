@@ -1,18 +1,18 @@
 import React, { ReactElement } from 'react';
+import FilterList from '@mui/icons-material/FilterList';
+import ViewList from '@mui/icons-material/ViewList';
 import { Box, Checkbox, Hidden, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import theme from 'src/theme';
-import FilterList from '@mui/icons-material/FilterList';
 import { useTranslation } from 'react-i18next';
-import ViewList from '@mui/icons-material/ViewList';
-import { SearchBox } from '../../common/SearchBox/SearchBox';
+import theme from 'src/theme';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from '../../../../graphql/types.generated';
-import { StarFilterButton } from './StarFilterButton/StarFilterButton';
+import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { ContactsMassActionsDropdown } from '../MassActions/ContactsMassActionsDropdown';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
+import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 
 export const headerHeight = theme.spacing(12);
 

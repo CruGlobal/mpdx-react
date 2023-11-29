@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Button,
   CircularProgress,
@@ -5,10 +6,9 @@ import {
   DialogContent,
   DialogContentText,
 } from '@mui/material';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import Modal from 'src/components/common/Modal/Modal';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 interface MoreActionHideContactProps {
   open: boolean;

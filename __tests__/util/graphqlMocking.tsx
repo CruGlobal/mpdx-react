@@ -1,11 +1,12 @@
 import React, { PropsWithChildren, ReactElement } from 'react';
+import { mergeSchemas } from '@graphql-tools/schema';
 import {
-  buildASTSchema,
   DocumentNode,
   ExecutionResult,
   GraphQLInterfaceType,
   GraphQLObjectType,
   GraphQLSchema,
+  buildASTSchema,
   isSchema,
 } from 'graphql';
 import {
@@ -14,12 +15,11 @@ import {
   ErgonomockOptions,
   ergonomock,
 } from 'graphql-ergonomock';
-import { mergeSchemas } from '@graphql-tools/schema';
+import { DefaultMockResolvers } from 'graphql-ergonomock/dist/mock';
 import { gql } from 'graphql-tag';
 import seedrandom from 'seedrandom';
 import { DeepPartial } from 'ts-essentials';
 import schema from '../../graphql/schema.graphql';
-import { DefaultMockResolvers } from 'graphql-ergonomock/dist/mock';
 
 const seed = 'seed';
 const rng = seedrandom(seed);

@@ -1,11 +1,11 @@
-import { Button, Grid, Typography, Box, CircularProgress } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { exportRest } from './exportRest';
-import Modal from '../../../common/Modal/Modal';
+import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import styled from '@mui/system/styled';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
+import Modal from '../../../common/Modal/Modal';
+import { exportRest } from './exportRest';
 
 interface ExportsModalProps {
   ids: string[];

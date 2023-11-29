@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@mui/material';
 import { MockedProvider } from '@apollo/client/testing';
+import { Box } from '@mui/material';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
-import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import {
   createTasksMutationMock,
   updateTaskMutationMock,
 } from '../../../Task/Modal/Form/TaskModalForm.mock';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import PartnerCare from './PartnerCare';
 
 export default {

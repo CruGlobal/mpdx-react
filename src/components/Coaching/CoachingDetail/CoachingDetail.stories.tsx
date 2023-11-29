@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
 import {
   LoadAccountListCoachingDetailQuery,
   LoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
-import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 
 export default {
   title: 'Coaching/CoachingDetail',

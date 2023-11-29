@@ -1,8 +1,8 @@
+import React from 'react';
+import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
 import { Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
-import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
-import React from 'react';
 
 const TaskRowWrap = styled(Button, {
   shouldForwardProp: (prop) => prop !== 'small' && prop !== 'detailsPage',

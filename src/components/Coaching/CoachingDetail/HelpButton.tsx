@@ -1,5 +1,5 @@
-import { IconButton } from '@mui/material';
 import QuestionMark from '@mui/icons-material/QuestionMark';
+import { IconButton } from '@mui/material';
 import { ArticleVar, showArticle } from 'src/lib/helpScout';
 
 interface HelpButtonProps {

@@ -1,3 +1,5 @@
+import React, { ReactElement } from 'react';
+import Remove from '@mui/icons-material/Remove';
 import {
   Button,
   CircularProgress,
@@ -7,12 +9,16 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Remove from '@mui/icons-material/Remove';
-import * as yup from 'yup';
 import { Formik } from 'formik';
-import React, { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import theme from 'src/theme';
 import {
   Contact,
   ContactUpdateInput,
@@ -21,12 +27,6 @@ import Modal from '../../../common/Modal/Modal';
 import { useGetContactTagListQuery } from '../../ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { useGetContactsForTagsQuery } from '../GetContactsForTags.generated';
 import { useMassActionsUpdateContactsMutation } from '../MassActionsUpdateContacts.generated';
-import theme from 'src/theme';
-import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsRemoveTagsModalProps {
   ids: string[];
