@@ -54,18 +54,22 @@ describe('AppointmentResults', () => {
       </GqlMockedProvider>,
     );
 
-    expect(await findByRole('cell', { name: 'Results' })).toBeInTheDocument();
+    expect(
+      await findByRole('cell', { name: 'Appointments' }),
+    ).toBeInTheDocument();
 
-    const rows = getAllByRole('row');
-
-    const appointmentsRow = rows[0];
+    const headers = getAllByRole('rowheader');
+    const appointmentsRow = headers[0];
     expect(appointmentsRow.children[0]).toHaveTextContent('Appointments');
     expect(appointmentsRow.children[1]).toHaveTextContent('Sep 1');
     expect(appointmentsRow.children[2]).toHaveTextContent('Oct 1');
     expect(appointmentsRow.children[3]).toHaveTextContent('Nov 1');
     expect(appointmentsRow.children[4]).toHaveTextContent('Average');
+    expect(headers[1]).toHaveTextContent('Results');
 
-    const scheduledRow = rows[1];
+    const rows = getAllByRole('row');
+
+    const scheduledRow = rows[0];
     expect(scheduledRow.children[0]).toHaveTextContent('Scheduled');
     expect(scheduledRow.children[1]).toHaveTextContent('6');
     expect(scheduledRow.children[1]).toHaveStyle('color: #A94442');
@@ -76,7 +80,7 @@ describe('AppointmentResults', () => {
     expect(scheduledRow.children[4]).toHaveTextContent('8');
     expect(scheduledRow.children[4]).toHaveStyle('color: #8A6D3B');
 
-    const completedRow = rows[2];
+    const completedRow = rows[1];
     expect(completedRow.children[0]).toHaveTextContent('Individual Completed');
     expect(completedRow.children[1]).toHaveTextContent('7');
     expect(completedRow.children[1]).toHaveStyle('color: #A94442');
@@ -87,21 +91,21 @@ describe('AppointmentResults', () => {
     expect(completedRow.children[4]).toHaveTextContent('9');
     expect(completedRow.children[4]).toHaveStyle('color: #8A6D3B');
 
-    const newMonthlyRow = rows[4];
+    const newMonthlyRow = rows[3];
     expect(newMonthlyRow.children[0]).toHaveTextContent('New Monthly Partners');
     expect(newMonthlyRow.children[1]).toHaveTextContent('1');
     expect(newMonthlyRow.children[2]).toHaveTextContent('2');
     expect(newMonthlyRow.children[3]).toHaveTextContent('4');
     expect(newMonthlyRow.children[4]).toHaveTextContent('2');
 
-    const newSpecialRow = rows[5];
+    const newSpecialRow = rows[4];
     expect(newSpecialRow.children[0]).toHaveTextContent('New Appeal Pledges');
     expect(newSpecialRow.children[1]).toHaveTextContent('2');
     expect(newSpecialRow.children[2]).toHaveTextContent('3');
     expect(newSpecialRow.children[3]).toHaveTextContent('5');
     expect(newSpecialRow.children[4]).toHaveTextContent('3');
 
-    const monthlyIncreaseRow = rows[6];
+    const monthlyIncreaseRow = rows[5];
     expect(monthlyIncreaseRow.children[0]).toHaveTextContent(
       'Monthly Support Gained',
     );
@@ -110,7 +114,7 @@ describe('AppointmentResults', () => {
     expect(monthlyIncreaseRow.children[3]).toHaveTextContent('$778');
     expect(monthlyIncreaseRow.children[4]).toHaveTextContent('$519');
 
-    const monthlyDecreaseRow = rows[7];
+    const monthlyDecreaseRow = rows[6];
     expect(monthlyDecreaseRow.children[0]).toHaveTextContent(
       'Monthly Support Lost',
     );
@@ -119,7 +123,7 @@ describe('AppointmentResults', () => {
     expect(monthlyDecreaseRow.children[3]).toHaveTextContent('-$889');
     expect(monthlyDecreaseRow.children[4]).toHaveTextContent('-$519');
 
-    const specialIncreaseRow = rows[8];
+    const specialIncreaseRow = rows[7];
     expect(specialIncreaseRow.children[0]).toHaveTextContent(
       'Special Needs Gained',
     );
