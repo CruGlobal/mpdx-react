@@ -565,7 +565,6 @@ export const Activity: React.FC<ActivityProps> = ({
             </StatsRow>
             <StatsRow>
               <StatsColumn>
-                <StatsColumnTitle>{t('Email')}</StatsColumnTitle>
                 <StatsText>
                   <Link
                     href={tasksLink({
@@ -589,9 +588,9 @@ export const Activity: React.FC<ActivityProps> = ({
                     {data?.accountListAnalytics.email.received} {t('Received')}
                   </Link>
                 </StatsText>
+                <StatsColumnTitle>{t('Email')}</StatsColumnTitle>
               </StatsColumn>
               <StatsColumn>
-                <StatsColumnTitle>{t('Facebook')}</StatsColumnTitle>
                 <StatsText>
                   <Link
                     href={tasksLink({
@@ -616,9 +615,9 @@ export const Activity: React.FC<ActivityProps> = ({
                     {t('Received')}
                   </Link>
                 </StatsText>
+                <StatsColumnTitle>{t('Facebook')}</StatsColumnTitle>
               </StatsColumn>
               <StatsColumn>
-                <StatsColumnTitle>{t('Text Message')}</StatsColumnTitle>
                 <StatsText>
                   <Link
                     href={tasksLink({
@@ -643,6 +642,7 @@ export const Activity: React.FC<ActivityProps> = ({
                     {t('Received')}
                   </Link>
                 </StatsText>
+                <StatsColumnTitle>{t('Text Message')}</StatsColumnTitle>
               </StatsColumn>
             </StatsRow>
           </ActivitySection>

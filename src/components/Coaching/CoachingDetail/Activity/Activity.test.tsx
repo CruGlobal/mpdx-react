@@ -248,7 +248,7 @@ describe('Activity', () => {
       'Phone Calls142Outgoing145Talked To71Appts Produced72Completed70Attempted73Received',
     );
     expect(getByTestId('ActivitySectionElectronic')).toHaveTextContent(
-      'Electronic Messages42Sent41Received40Appts ProducedEmail51 Sent / 50 ReceivedFacebook61 Sent / 60 ReceivedText Message81 Sent / 80 Received',
+      'Electronic Messages42Sent41Received40Appts Produced51 Sent / 50 ReceivedEmail61 Sent / 60 ReceivedFacebook81 Sent / 80 ReceivedText Message',
     );
   });
 
