@@ -1,9 +1,9 @@
 import { Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import { Appeal } from '../../../../../graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useTranslation } from 'react-i18next';
 
 const Amounts = styled('div')(({ theme }) => ({
   fontSize: '0.9em',
