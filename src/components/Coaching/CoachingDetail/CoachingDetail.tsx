@@ -65,6 +65,7 @@ const CoachingSideTitleContainer = styled(Box)(({ theme }) => ({
 
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
+  paddingBottom: theme.spacing(6), // prevent the HelpScout beacon from obscuring content at the bottom
   width: 'calc(100vw - 20rem)',
 }));
 
