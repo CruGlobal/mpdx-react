@@ -25,6 +25,7 @@ import { SideContainerText } from './StyledComponents';
 import { CollapsibleEmailList } from './CollapsibleEmailList';
 import { CollapsiblePhoneList } from './CollapsiblePhoneList';
 import { getLastNewsletter } from './helpers';
+import { WeeklyReport } from './WeeklyReport/WeeklyReport';
 
 export enum CoachingPeriodEnum {
   Weekly = 'Weekly',
@@ -335,6 +336,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 currency={accountListData?.currency}
                 period={period}
               />
+              <WeeklyReport accountListId={accountListId} />
             </CoachingItemContainer>
           </>
         )}
