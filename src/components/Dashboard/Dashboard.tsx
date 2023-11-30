@@ -7,10 +7,12 @@ import MonthlyGoal from './MonthlyGoal/MonthlyGoal';
 import Balance from './Balance';
 import DonationHistories from './DonationHistories';
 import ThisWeek from './ThisWeek';
+import { StaticBanner } from '../Shared/staticBanner/StaticBanner';
 
 interface Props {
   data: GetDashboardQuery;
   accountListId: string;
+  shouldShowBanner?: boolean;
 }
 
 const variants = {
@@ -27,7 +29,11 @@ const variants = {
   },
 };
 
-const Dashboard = ({ data, accountListId }: Props): ReactElement => {
+const Dashboard = ({
+  data,
+  accountListId,
+  shouldShowBanner = false,
+}: Props): ReactElement => {
   return (
     <>
       <Welcome firstName={data.user.firstName ?? undefined} />
@@ -39,6 +45,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             exit="exit"
             variants={variants}
           >
+            {shouldShowBanner && <StaticBanner />}
             <Grid container spacing={3} alignItems="stretch">
               <Grid xs={12} sm={8} item>
                 <MonthlyGoal

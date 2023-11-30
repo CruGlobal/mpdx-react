@@ -216,3 +216,49 @@ describe('Dashboard', () => {
     ).toEqual('Committed $700');
   });
 });
+
+describe('Static Banner', () => {
+  beforeEach(() => {
+    beforeTestResizeObserver();
+  });
+
+  afterAll(() => {
+    afterTestResizeObserver();
+  });
+
+  it('should show the banner if the shouldShowBanner prop is true', () => {
+    const shouldShowBanner = true;
+
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <MockedProvider>
+          <Dashboard
+            accountListId="abc"
+            data={data}
+            shouldShowBanner={shouldShowBanner}
+          />
+        </MockedProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('staticBanner')).toBeInTheDocument();
+  });
+
+  it('should NOT show the banner if the shouldShowBanner prop is false', () => {
+    const shouldShowBanner = false;
+
+    const { queryByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <MockedProvider>
+          <Dashboard
+            accountListId="abc"
+            data={data}
+            shouldShowBanner={shouldShowBanner}
+          />
+        </MockedProvider>
+      </ThemeProvider>,
+    );
+
+    expect(queryByTestId('staticBanner')).not.toBeInTheDocument();
+  });
+});

@@ -29,6 +29,7 @@ const AccountListIdPage = ({
   const { openTaskModal } = useTaskModal();
   const [selectedMenuItem, setSelectedMenuItem] = useState(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const shouldShowBanner = process.env.SHOW_BANNER === 'true';
 
   useEffect(() => {
     suggestArticles('HS_HOME_SUGGESTIONS');
@@ -65,7 +66,11 @@ const AccountListIdPage = ({
           {appName} | {data.accountList.name}
         </title>
       </Head>
-      <Dashboard data={data} accountListId={accountListId} />
+      <Dashboard
+        data={data}
+        accountListId={accountListId}
+        shouldShowBanner={shouldShowBanner}
+      />
 
       {modal && renderDialog(selectedMenuItem, dialogOpen, setDialogOpen)}
     </>

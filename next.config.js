@@ -109,6 +109,7 @@ module.exports = withPlugins([
         process.env.HS_SETTINGS_SERVICES_SUGGESTIONS,
       HS_SETUP_FIND_ORGANIZATION: process.env.HS_SETUP_FIND_ORGANIZATION,
       ALERT_MESSAGE: process.env.ALERT_MESSAGE,
+      SHOW_BANNER: process.env.SHOW_BANNER,
     },
     experimental: {
       modularizeImports: {
