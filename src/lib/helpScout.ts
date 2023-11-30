@@ -82,7 +82,7 @@ const suggestions = {
   },
 };
 
-const articles = {
+export const articles = {
   get HS_SETUP_FIND_ORGANIZATION() {
     return process.env.HS_SETUP_FIND_ORGANIZATION;
   },
