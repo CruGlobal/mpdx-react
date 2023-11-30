@@ -782,7 +782,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                 secondaryAction={
                                   <IconButton
                                     edge="end"
-                                    aria-label="delete"
+                                    aria-label={t('Delete')}
                                     data-testid="deleteSavedFilter"
                                     onClick={() =>
                                       handleDeleteSavedFilter(filter)

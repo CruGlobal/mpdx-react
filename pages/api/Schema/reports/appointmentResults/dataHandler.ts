@@ -1,4 +1,4 @@
-import { ReportsAppointmentResultsPeriods } from '../../../../../graphql/types.generated';
+import { ReportsAppointmentResultsPeriod } from '../../../../../graphql/types.generated';
 
 const getAppointmentResults = (
   data: [
@@ -7,7 +7,6 @@ const getAppointmentResults = (
       type: string;
       attributes: {
         appointments_scheduled: number;
-        created_at: string;
         end_date: string;
         group_appointments: number;
         individual_appointments: number;
@@ -18,21 +17,18 @@ const getAppointmentResults = (
         pledge_increase: string;
         special_gifts: number;
         start_date: string;
-        updated_at: string;
-        updated_in_db_at: string;
-        weekly_individual_appointment_goal: number | string;
+        weekly_individual_appointment_goal: number;
       };
     },
   ],
-): ReportsAppointmentResultsPeriods[] => {
-  const appointmentResultsPeriods: ReportsAppointmentResultsPeriods[] =
-    data.map((resultPeriod) => {
+): ReportsAppointmentResultsPeriod[] => {
+  const appointmentResultsPeriods: ReportsAppointmentResultsPeriod[] = data
+    .map((resultPeriod) => {
       const {
         id,
         type,
         attributes: {
           appointments_scheduled,
-          created_at,
           end_date,
           group_appointments,
           individual_appointments,
@@ -43,8 +39,6 @@ const getAppointmentResults = (
           pledge_increase,
           special_gifts,
           start_date,
-          updated_at,
-          updated_in_db_at,
           weekly_individual_appointment_goal,
         },
       } = resultPeriod;
@@ -52,7 +46,6 @@ const getAppointmentResults = (
         id: id,
         type: type,
         appointmentsScheduled: appointments_scheduled,
-        createdAt: created_at,
         endDate: end_date,
         groupAppointments: group_appointments,
         individualAppointments: individual_appointments,
@@ -63,13 +56,10 @@ const getAppointmentResults = (
         pledgeIncrease: Number(pledge_increase),
         specialGifts: special_gifts,
         startDate: start_date,
-        updatedAt: updated_at,
-        updatedInDbAt: updated_in_db_at,
-        weeklyIndividualAppointmentGoal: Number(
-          weekly_individual_appointment_goal,
-        ),
+        weeklyIndividualAppointmentGoal: weekly_individual_appointment_goal,
       };
-    });
+    })
+    .reverse();
   return appointmentResultsPeriods;
 };
 

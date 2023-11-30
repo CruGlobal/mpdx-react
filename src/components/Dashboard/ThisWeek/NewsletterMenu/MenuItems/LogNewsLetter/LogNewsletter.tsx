@@ -177,7 +177,7 @@ const LogNewsletter = ({
                     onChange={handleChange('subject')}
                     fullWidth
                     multiline
-                    inputProps={{ 'aria-label': 'Subject' }}
+                    inputProps={{ 'aria-label': t('Subject') }}
                     error={!!errors.subject && touched.subject}
                     helperText={
                       errors.subject &&
@@ -275,7 +275,7 @@ const LogNewsletter = ({
                     onChange={(event) => changeCommentBody(event.target.value)}
                     fullWidth
                     multiline
-                    inputProps={{ 'aria-label': 'Comment' }}
+                    inputProps={{ 'aria-label': t('Comment') }}
                     variant="outlined"
                   />
                 </LogFormControl>

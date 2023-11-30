@@ -4,7 +4,6 @@ import { Box, Button, ButtonGroup, Divider, Typography } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
@@ -20,10 +19,18 @@ import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useLocale } from 'src/hooks/useLocale';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
+import { AppointmentResults } from './AppointmentResults/AppointmentResults';
+import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { SideContainerText } from './StyledComponents';
 import { CollapsibleEmailList } from './CollapsibleEmailList';
 import { CollapsiblePhoneList } from './CollapsiblePhoneList';
 import { getLastNewsletter } from './helpers';
+import { ActivitySummary } from './ActivitySummary/ActivitySummary';
+
+export enum CoachingPeriodEnum {
+  Weekly = 'Weekly',
+  Monthly = 'Monthly',
+}
 
 export enum AccountListTypeEnum {
   Own = 'Own',
@@ -35,12 +42,6 @@ interface CoachingDetailProps {
   // Whether the account list belongs to the user or someone that the user coaches
   accountListType: AccountListTypeEnum;
 }
-
-const CoachingLoadingSkeleton = styled(Skeleton)(({ theme }) => ({
-  width: '100%',
-  padding: theme.spacing(1),
-  margin: theme.spacing(1),
-}));
 
 const CoachingDetailContainer = styled(Box)(({}) => ({
   width: '100%',
@@ -64,10 +65,14 @@ const CoachingSideTitleContainer = styled(Box)(({ theme }) => ({
 
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
-  flexGrow: 4,
+  paddingBottom: theme.spacing(6), // prevent the HelpScout beacon from obscuring content at the bottom
+  width: 'calc(100vw - 20rem)',
 }));
 
 const CoachingItemContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(3),
   margin: theme.spacing(2),
 }));
 
@@ -148,10 +153,10 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     },
   });
 
+  const [period, setPeriod] = useState(CoachingPeriodEnum.Weekly);
+
   const formatOptionalDate = (isoDate: string | null | undefined): string =>
     isoDate ? dateFormat(DateTime.fromISO(isoDate), locale) : t('None');
-
-  const [isMonthly, setIsMonthly] = useState(false);
 
   return (
     <CoachingDetailContainer>
@@ -176,14 +181,18 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           size="large"
         >
           <Button
-            variant={isMonthly ? 'outlined' : 'contained'}
-            onClick={() => setIsMonthly(false)}
+            variant={
+              period === CoachingPeriodEnum.Weekly ? 'contained' : 'outlined'
+            }
+            onClick={() => setPeriod(CoachingPeriodEnum.Weekly)}
           >
             {t('Weekly')}
           </Button>
           <Button
-            variant={isMonthly ? 'contained' : 'outlined'}
-            onClick={() => setIsMonthly(true)}
+            variant={
+              period === CoachingPeriodEnum.Monthly ? 'contained' : 'outlined'
+            }
+            onClick={() => setPeriod(CoachingPeriodEnum.Monthly)}
           >
             {t('Monthly')}
           </Button>
@@ -246,12 +255,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           {t('Users')}
         </SideContainerText>
         {loading ? (
-          <>
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-          </>
+          <MultilineSkeleton lines={4} />
         ) : (
           accountListData?.users.nodes.map((user) => (
             <Fragment key={user.id}>
@@ -270,12 +274,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           {t('Coaches')}
         </SideContainerText>
         {loading ? (
-          <>
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-          </>
+          <MultilineSkeleton lines={4} />
         ) : (
           accountListData?.coaches.nodes.map((coach) => (
             <Fragment key={coach.id}>
@@ -291,13 +290,8 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
         )}
       </CoachingSideContainer>
       <CoachingMainContainer>
-        {ownLoading || coachingLoading ? (
-          <>
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-            <CoachingLoadingSkeleton />
-          </>
+        {loading ? (
+          <MultilineSkeleton lines={4} />
         ) : (
           <>
             <CoachingMainTitleContainer>
@@ -333,13 +327,17 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 }
                 currencyCode={accountListData?.currency}
               />
-              <Box style={{ margin: theme.spacing(3, 0) }}>
-                <MonthlyCommitment
-                  coachingId={accountListId}
-                  currencyCode={accountListData?.currency}
-                  goal={accountListData?.monthlyGoal ?? 0}
-                />
-              </Box>
+              <MonthlyCommitment
+                coachingId={accountListId}
+                currencyCode={accountListData?.currency}
+                goal={accountListData?.monthlyGoal ?? 0}
+              />
+              <AppointmentResults
+                accountListId={accountListId}
+                currency={accountListData?.currency}
+                period={period}
+              />
+              <ActivitySummary accountListId={accountListId} period={period} />
             </CoachingItemContainer>
           </>
         )}

@@ -1,10 +1,15 @@
 import React from 'react';
 import { DateTime } from 'luxon';
+import userEvent from '@testing-library/user-event';
 import {
   LoadCoachingDetailQuery,
   LoadAccountListCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
-import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
+import {
+  AccountListTypeEnum,
+  CoachingDetail,
+  CoachingPeriodEnum,
+} from './CoachingDetail';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import TestRouter from '__tests__/util/TestRouter';
@@ -12,6 +17,9 @@ import {
   beforeTestResizeObserver,
   afterTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
+import { AppointmentResults } from './AppointmentResults/AppointmentResults';
+
+jest.mock('./AppointmentResults/AppointmentResults');
 
 const push = jest.fn();
 
@@ -139,6 +147,59 @@ describe('LoadCoachingDetail', () => {
     expect(await findByText('John Doe')).toBeVisible();
     expect(await findByText('Monthly $0')).toBeVisible();
     expect(await findByText('Monthly Activity')).toBeVisible();
+  });
+
+  describe('period', () => {
+    it('toggles between weekly and monthly', async () => {
+      const { getByRole } = render(
+        <TestRouter router={router}>
+          <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
+            mocks={{
+              LoadCoachingDetail: {
+                coachingAccountList: {
+                  balance: 1000,
+                  currency: 'USD',
+                },
+              },
+            }}
+          >
+            <CoachingDetail
+              accountListId={accountListId}
+              accountListType={AccountListTypeEnum.Coaching}
+            />
+          </GqlMockedProvider>
+        </TestRouter>,
+      );
+
+      await waitFor(() =>
+        expect(AppointmentResults).toHaveBeenLastCalledWith(
+          expect.objectContaining({ period: CoachingPeriodEnum.Weekly }),
+          expect.anything(),
+        ),
+      );
+
+      userEvent.click(
+        getByRole('button', {
+          name: 'Monthly',
+        }),
+      );
+
+      expect(AppointmentResults).toHaveBeenLastCalledWith(
+        expect.objectContaining({ period: CoachingPeriodEnum.Monthly }),
+        expect.anything(),
+      );
+
+      userEvent.click(
+        getByRole('button', {
+          name: 'Weekly',
+        }),
+      );
+
+      expect(AppointmentResults).toHaveBeenLastCalledWith(
+        expect.objectContaining({ period: CoachingPeriodEnum.Weekly }),
+        expect.anything(),
+      );
+    });
   });
 
   describe('balance', () => {

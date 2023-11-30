@@ -174,11 +174,12 @@ class MpdxRestApi extends RESTDataSource {
 
   async getAppointmentResults(
     accountListId: string,
-    endDate: string,
+    endDate: string | null | undefined,
     range: string,
   ) {
     const { data } = await this.get(
-      `reports/appointment_results?filter[account_list_id]=${accountListId}&filter[end_date]=${endDate}&filter[range]=${range}`,
+      `reports/appointment_results?filter[account_list_id]=${accountListId}&filter[range]=${range}` +
+        (endDate ? `&filter[end_date]=${endDate}` : ''),
     );
 
     return getAppointmentResults(data);

@@ -1,4 +1,4 @@
-import { Link, Typography } from '@mui/material';
+import { Link, TableCell, TableRow, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const SideContainerText = styled(Typography)(({ theme }) => ({
@@ -13,4 +13,25 @@ export const ContrastLink = styled(Link)(({ theme }) => ({
 
 export const ContactInfoText = styled('span')({
   overflow: 'hidden',
+});
+
+export const HeaderRow = styled(TableRow)({
+  td: {
+    fontWeight: 'bold',
+  },
+});
+
+export const DividerRow = styled(TableRow)(({ theme }) => ({
+  td: {
+    border: 'none',
+    padding: `${theme.spacing(2)} 0`,
+  },
+}));
+
+export const AlignedTableCell = styled(TableCell)({
+  border: 'none',
+  textAlign: 'right',
+  ':first-of-type': {
+    textAlign: 'unset',
+  },
 });
