@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import {
-  GetUsersOrganizationsQuery,
+  GetUsersOrganizationsAccountsQuery,
   GetOrganizationsQuery,
 } from './Organizations.generated';
 import * as Types from '../../../../../graphql/types.generated';
@@ -64,7 +64,7 @@ const GetOrganizationsMock: Pick<
   },
 ];
 
-const GetUsersOrganizationsMock: Array<
+const GetUsersOrganizationsAccountsMock: Array<
   Pick<
     Types.OrganizationAccount,
     'latestDonationDate' | 'lastDownloadedAt' | 'username' | 'id'
@@ -93,8 +93,8 @@ const standardMocks = {
   GetOrganizations: {
     organizations: GetOrganizationsMock,
   },
-  GetUsersOrganizations: {
-    userOrganizationAccounts: GetUsersOrganizationsMock,
+  GetUsersOrganizationsAccounts: {
+    userOrganizationAccounts: GetUsersOrganizationsAccountsMock,
   },
 };
 
@@ -140,13 +140,13 @@ describe('OrganizationAccordion', () => {
         <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
-            GetUsersOrganizations: GetUsersOrganizationsQuery;
+            GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
           }>
             mocks={{
               GetOrganizations: {
                 organizations: [],
               },
-              GetUsersOrganizations: {
+              GetUsersOrganizationsAccounts: {
                 userOrganizationAccounts: [],
               },
             }}
@@ -180,7 +180,7 @@ describe('OrganizationAccordion', () => {
         <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
-            GetUsersOrganizations: GetUsersOrganizationsQuery;
+            GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
           }>
             mocks={mocks}
           >
@@ -198,7 +198,7 @@ describe('OrganizationAccordion', () => {
 
       await waitFor(() => {
         expect(
-          getByText(GetUsersOrganizationsMock[0].organization.name),
+          getByText(GetUsersOrganizationsAccountsMock[0].organization.name),
         ).toBeInTheDocument();
 
         expect(getByText('Last Updated')).toBeInTheDocument();
@@ -219,13 +219,13 @@ describe('OrganizationAccordion', () => {
 
     it('should render Ministry Account Organization', async () => {
       const mutationSpy = jest.fn();
-      mocks.GetUsersOrganizations.userOrganizationAccounts[0].organization.apiClass =
+      mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].organization.apiClass =
         'Siebel';
       const { getByText, queryByText } = render(
         <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
-            GetUsersOrganizations: GetUsersOrganizationsQuery;
+            GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
           }>
             mocks={mocks}
             onCall={mutationSpy}
@@ -261,19 +261,19 @@ describe('OrganizationAccordion', () => {
         'SyncOrganizationAccount',
       );
       expect(mutationSpy.mock.calls[1][0].operation.variables.input).toEqual({
-        id: mocks.GetUsersOrganizations.userOrganizationAccounts[0].id,
+        id: mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].id,
       });
     });
 
     it('should render Login Organization', async () => {
       const mutationSpy = jest.fn();
-      mocks.GetUsersOrganizations.userOrganizationAccounts[0].organization.apiClass =
+      mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].organization.apiClass =
         'DataServer';
       const { getByText, getByTestId } = render(
         <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
-            GetUsersOrganizations: GetUsersOrganizationsQuery;
+            GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
           }>
             mocks={mocks}
             onCall={mutationSpy}
@@ -300,15 +300,15 @@ describe('OrganizationAccordion', () => {
 
     it('should render OAuth Organization', async () => {
       const mutationSpy = jest.fn();
-      mocks.GetUsersOrganizations.userOrganizationAccounts[0].organization.apiClass =
+      mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].organization.apiClass =
         'DataServer';
-      mocks.GetUsersOrganizations.userOrganizationAccounts[0].organization.oauth =
+      mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].organization.oauth =
         true;
       const { getByText, queryByTestId } = render(
         <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
-            GetUsersOrganizations: GetUsersOrganizationsQuery;
+            GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
           }>
             mocks={mocks}
             onCall={mutationSpy}
@@ -345,7 +345,7 @@ describe('OrganizationAccordion', () => {
         <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
-            GetUsersOrganizations: GetUsersOrganizationsQuery;
+            GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
           }>
             mocks={mocks}
             onCall={mutationSpy}
@@ -376,7 +376,8 @@ describe('OrganizationAccordion', () => {
           'DeleteOrganizationAccount',
         );
         expect(mutationSpy.mock.calls[1][0].operation.variables.input).toEqual({
-          id: mocks.GetUsersOrganizations.userOrganizationAccounts[0].id,
+          id: mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0]
+            .id,
         });
         expect(mockEnqueue).toHaveBeenCalledWith(
           '{{appName}} removed your organization integration',
@@ -386,15 +387,15 @@ describe('OrganizationAccordion', () => {
     });
 
     it("should not render Organization's download and last gift date", async () => {
-      mocks.GetUsersOrganizations.userOrganizationAccounts[0].lastDownloadedAt =
+      mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].lastDownloadedAt =
         null;
-      mocks.GetUsersOrganizations.userOrganizationAccounts[0].latestDonationDate =
+      mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].latestDonationDate =
         null;
       const { queryByText } = render(
         <Components>
           <GqlMockedProvider<{
             GetOrganizations: GetOrganizationsQuery;
-            GetUsersOrganizations: GetUsersOrganizationsQuery;
+            GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
           }>
             mocks={mocks}
           >

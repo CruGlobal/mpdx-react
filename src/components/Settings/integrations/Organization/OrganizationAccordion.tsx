@@ -16,7 +16,7 @@ import Edit from '@mui/icons-material/Edit';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
-  useGetUsersOrganizationsQuery,
+  useGetUsersOrganizationsAccountsQuery,
   useDeleteOrganizationAccountMutation,
   useSyncOrganizationAccountMutation,
 } from './Organizations.generated';
@@ -100,7 +100,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
     data,
     loading,
     refetch: refetchOrganizations,
-  } = useGetUsersOrganizationsQuery();
+  } = useGetUsersOrganizationsAccountsQuery();
   const organizations = data?.userOrganizationAccounts;
 
   const handleReconnect = async (organizationId) => {
