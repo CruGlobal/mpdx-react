@@ -239,7 +239,7 @@ describe('PartnerCare', () => {
       'Prayer (2,560)',
     );
     userEvent.click(
-      queryAllByRole('button', { hidden: true, name: 'Complete Button' })[0],
+      queryAllByRole('button', { hidden: true, name: 'Complete' })[0],
     );
     expect(openTaskModal).toHaveBeenCalledWith({
       taskId: 'task_1',
@@ -269,7 +269,7 @@ describe('PartnerCare', () => {
       'John DoeJan 1',
     );
     userEvent.click(
-      queryAllByRole('button', { hidden: true, name: 'Complete Button' })[0],
+      queryAllByRole('button', { hidden: true, name: 'Complete' })[0],
     );
     expect(openTaskModal).toHaveBeenCalledWith({
       view: 'add',
@@ -299,7 +299,7 @@ describe('PartnerCare', () => {
     );
     expect(queryByTestId('CelebrationItem-3')).toBeInTheDocument();
     userEvent.click(
-      queryAllByRole('button', { hidden: true, name: 'Complete Button' })[2],
+      queryAllByRole('button', { hidden: true, name: 'Complete' })[2],
     );
     expect(openTaskModal).toHaveBeenCalledWith({
       view: 'add',

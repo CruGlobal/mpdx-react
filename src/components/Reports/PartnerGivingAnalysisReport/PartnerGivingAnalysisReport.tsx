@@ -184,7 +184,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             rowsPerPageOptions={[10, 25, 50]}
             SelectProps={{
               inputProps: {
-                'aria-label': 'rows per page',
+                'aria-label': t('rows per page'),
               },
               native: true,
             }}

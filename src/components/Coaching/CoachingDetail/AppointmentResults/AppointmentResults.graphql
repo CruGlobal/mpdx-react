@@ -1,0 +1,21 @@
+query AppointmentResults(
+  $accountListId: ID!
+  $endDate: String
+  $range: String!
+) {
+  appointmentResults(
+    accountListId: $accountListId
+    endDate: $endDate
+    range: $range
+  ) {
+    id
+    startDate
+    appointmentsScheduled
+    individualAppointments
+    monthlyDecrease
+    monthlyIncrease
+    newMonthlyPartners
+    newSpecialPledges
+    specialGifts
+  }
+}

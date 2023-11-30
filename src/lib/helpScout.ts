@@ -59,6 +59,9 @@ export const showArticle = (envVar: ArticleVar) => {
 
 // We are using getters so that when tests override environment variables, the changes will be picked up
 const suggestions = {
+  get HS_COACHING_SUGGESTIONS() {
+    return process.env.HS_COACHING_SUGGESTIONS;
+  },
   get HS_CONTACTS_CONTACT_SUGGESTIONS() {
     return process.env.HS_CONTACTS_CONTACT_SUGGESTIONS;
   },
@@ -79,8 +82,26 @@ const suggestions = {
   },
 };
 
-export const articles = {
+const articles = {
   get HS_SETUP_FIND_ORGANIZATION() {
     return process.env.HS_SETUP_FIND_ORGANIZATION;
+  },
+  get HS_COACHING_ACTIVITY() {
+    return process.env.HS_COACHING_ACTIVITY;
+  },
+  get HS_COACHING_ACTIVITY_SUMMARY() {
+    return process.env.HS_COACHING_ACTIVITY_SUMMARY;
+  },
+  get HS_COACHING_APPOINTMENTS_AND_RESULTS() {
+    return process.env.HS_COACHING_APPOINTMENTS_AND_RESULTS;
+  },
+  get HS_COACHING_COMMITMENTS() {
+    return process.env.HS_COACHING_COMMITMENTS;
+  },
+  get HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS() {
+    return process.env.HS_COACHING_OUTSTANDING_RECURRING_COMMITMENTS;
+  },
+  get HS_COACHING_OUTSTANDING_SPECIAL_NEEDS() {
+    return process.env.HS_COACHING_OUTSTANDING_SPECIAL_NEEDS;
   },
 };

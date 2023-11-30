@@ -63,7 +63,6 @@ import {
   UpdateComment,
 } from './Schema/Tasks/Comments/UpdateComments/datahandler';
 import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/dataHandler';
-import { getAccountListCoachUsers } from './Schema/AccountListCoachUser/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
 import { getReportsPledgeHistories } from './Schema/reports/pledgeHistories/dataHandler';
 import {
@@ -209,18 +208,14 @@ class MpdxRestApi extends RESTDataSource {
     return getAccountListAnalytics(data);
   }
 
-  async getAccountListCoachUsers(accountListId: string) {
-    const { data } = await this.get(`account_lists/${accountListId}/coaches`);
-    return getAccountListCoachUsers(data);
-  }
-
   async getAppointmentResults(
     accountListId: string,
-    endDate: string,
+    endDate: string | null | undefined,
     range: string,
   ) {
     const { data } = await this.get(
-      `reports/appointment_results?filter[account_list_id]=${accountListId}&filter[end_date]=${endDate}&filter[range]=${range}`,
+      `reports/appointment_results?filter[account_list_id]=${accountListId}&filter[range]=${range}` +
+        (endDate ? `&filter[end_date]=${endDate}` : ''),
     );
 
     return getAppointmentResults(data);

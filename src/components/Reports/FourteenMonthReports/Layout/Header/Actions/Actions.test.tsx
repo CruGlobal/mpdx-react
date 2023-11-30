@@ -25,7 +25,7 @@ describe('FourteenMonthReportActions', () => {
     );
 
     expect(
-      getByRole('group', { hidden: true, name: 'report header button group' }),
+      getByRole('group', { hidden: true, name: 'Report header button group' }),
     ).toBeInTheDocument();
     userEvent.click(getByRole('button', { hidden: true, name: 'Expand' }));
     userEvent.click(getByRole('button', { hidden: true, name: 'Print' }));

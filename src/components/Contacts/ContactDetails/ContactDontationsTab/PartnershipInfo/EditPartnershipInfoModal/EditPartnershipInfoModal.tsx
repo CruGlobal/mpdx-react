@@ -536,7 +536,7 @@ export const EditPartnershipInfoModal: React.FC<
                   InputProps={{
                     endAdornment: (
                       <InputAdornment
-                        aria-label="change start date"
+                        aria-label={t('Change start date')}
                         position="end"
                       >
                         <CalendarToday />
@@ -630,7 +630,7 @@ export const EditPartnershipInfoModal: React.FC<
                   InputProps={{
                     endAdornment: (
                       <InputAdornment
-                        aria-label="change next ask date"
+                        aria-label={t('Change next ask date')}
                         position="end"
                       >
                         <CalendarToday />

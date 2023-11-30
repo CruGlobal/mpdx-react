@@ -3,7 +3,10 @@ import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { CoachingDetail } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
+import {
+  AccountListTypeEnum,
+  CoachingDetail,
+} from 'src/components/Coaching/CoachingDetail/CoachingDetail';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import Loading from 'src/components/Loading';
 
@@ -23,8 +26,8 @@ const CoachingPage: React.FC = () => {
       </Head>
       {accountListId && coachingId && isReady ? (
         <CoachingDetail
-          coachingId={coachingId as string}
-          isAccountListId={false}
+          accountListId={coachingId as string}
+          accountListType={AccountListTypeEnum.Coaching}
         />
       ) : (
         <Loading loading />

@@ -163,7 +163,7 @@ export const MassActionsEditTasksModal: React.FC<
                       onChange={handleChange('subject')}
                       fullWidth
                       multiline
-                      inputProps={{ 'aria-label': 'Task Name' }}
+                      inputProps={{ 'aria-label': t('Task Name') }}
                     />
                   </FormControl>
                 </Grid>
@@ -330,7 +330,7 @@ export const MassActionsEditTasksModal: React.FC<
                       onChange={handleChange('body')}
                       fullWidth
                       multiline
-                      inputProps={{ 'aria-label': 'Add New Comment' }}
+                      inputProps={{ 'aria-label': t('Add New Comment') }}
                     />
                   </FormControl>
                 </Grid>
