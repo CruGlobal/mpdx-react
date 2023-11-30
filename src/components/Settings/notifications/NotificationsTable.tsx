@@ -123,15 +123,17 @@ export const NotificationsTable: React.FC = () => {
       accountListId: accountListId ?? '',
     },
   });
-  const { data: notificationConstants } = useNotificationConstantsQuery();
+  const { data: notificationConstants } = useNotificationConstantsQuery({
+    fetchPolicy: 'cache-first',
+  });
 
   const defaultIfInSetup = (
-    notificationPreference: any,
-    type: string,
+    notificationPreference: Notification | undefined,
+    type: 'app' | 'email' | 'task',
   ): boolean => {
     // If Setup, show preference or default to TRUE
     // If not setup, show preference or default to FALSE.
-    return notificationPreference[type] || isSetup;
+    return notificationPreference?.[type] || isSetup;
   };
 
   const notifications = useMemo(() => {
@@ -142,19 +144,16 @@ export const NotificationsTable: React.FC = () => {
 
     if (!notificationsData.length || !notificationsOrder.length) return [];
 
-    return notificationsOrder.reduce((result: Notification[], notification) => {
+    return notificationsOrder.map((notification) => {
       const notificationPreference = notificationsData.find(
         (object) => object.notificationType.id === notification.key,
       );
-      return [
-        ...result,
-        {
-          notificationType: notificationPreference?.notificationType || {},
-          app: defaultIfInSetup(notificationPreference, 'app'),
-          email: defaultIfInSetup(notificationPreference, 'email'),
-          task: defaultIfInSetup(notificationPreference, 'task'),
-        } as Notification,
-      ];
+      return {
+        notificationType: notificationPreference?.notificationType || {},
+        app: defaultIfInSetup(notificationPreference, 'app'),
+        email: defaultIfInSetup(notificationPreference, 'email'),
+        task: defaultIfInSetup(notificationPreference, 'task'),
+      } as Notification;
     }, []);
   }, [data, notificationConstants]);
 
@@ -222,7 +221,7 @@ export const NotificationsTable: React.FC = () => {
               <Box textAlign={'right'} padding={'10px'}>
                 <SubmitButton
                   disabled={!isValid || isSubmitting}
-                  variant={'contained'}
+                  variant={t('contained')}
                 >
                   {t('Save Changes')}
                 </SubmitButton>
@@ -234,7 +233,7 @@ export const NotificationsTable: React.FC = () => {
                     <Table
                       sx={{ minWidth: 700 }}
                       stickyHeader
-                      aria-label="Notifications table"
+                      aria-label={t('Notifications table')}
                     >
                       <TableHead>
                         <TableRow>
