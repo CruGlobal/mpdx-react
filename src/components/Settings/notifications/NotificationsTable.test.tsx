@@ -68,7 +68,7 @@ const mocks = {
   },
 };
 const mutationSpy = jest.fn();
-const Components = (
+const Components: React.FC = () => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
@@ -85,15 +85,15 @@ describe('NotificationsTable', () => {
     mutationSpy.mockReset();
   });
   it('Should render the Table and request data', async () => {
-    const { getByTestId, queryByTestId, getByText } = render(Components);
+    const { getByTestId, queryByTestId, getByText } = render(<Components />);
 
     expect(getByTestId('skeleton-notifications')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(queryByTestId('skeleton-notifications')).not.toBeInTheDocument(),
-        expect(
-          mutationSpy.mock.calls[0][0].operation.variables.accountListId,
-        ).toEqual(accountListId);
+      expect(queryByTestId('skeleton-notifications')).not.toBeInTheDocument();
+      expect(
+        mutationSpy.mock.calls[0][0].operation.variables.accountListId,
+      ).toEqual(accountListId);
       expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
         'PreferencesNotifications',
       );
@@ -118,7 +118,7 @@ describe('NotificationsTable', () => {
   });
 
   it('Should select all', async () => {
-    const { queryByTestId, getByTestId, getAllByRole } = render(Components);
+    const { queryByTestId, getByTestId, getAllByRole } = render(<Components />);
 
     await waitFor(() =>
       expect(queryByTestId('skeleton-notifications')).not.toBeInTheDocument(),
@@ -154,7 +154,7 @@ describe('NotificationsTable', () => {
   });
 
   it('Should select Call Partner Once Per Year checkboxes', async () => {
-    const { queryByTestId, getByTestId } = render(Components);
+    const { queryByTestId, getByTestId } = render(<Components />);
 
     await waitFor(() =>
       expect(queryByTestId('skeleton-notifications')).not.toBeInTheDocument(),
@@ -185,7 +185,7 @@ describe('NotificationsTable', () => {
   });
 
   it('Should send data to server on submit', async () => {
-    const { queryByTestId, getByTestId, getAllByRole } = render(Components);
+    const { queryByTestId, getByTestId, getAllByRole } = render(<Components />);
 
     await waitFor(() =>
       expect(queryByTestId('skeleton-notifications')).not.toBeInTheDocument(),
