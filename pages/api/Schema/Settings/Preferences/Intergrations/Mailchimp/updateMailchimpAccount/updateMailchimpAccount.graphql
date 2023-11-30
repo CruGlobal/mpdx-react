@@ -1,0 +1,14 @@
+extend type Mutation {
+  updateMailchimpAccount(input: UpdateMailchimpAccountInput!): MailchimpAccount!
+}
+
+input UpdateMailchimpAccountInput {
+  accountListId: ID!
+  mailchimpAccountId: ID!
+  mailchimpAccount: UpdateMailchimpAccountInputAccount!
+}
+
+input UpdateMailchimpAccountInputAccount {
+  primaryListId: ID
+  autoLogCampaigns: Boolean!
+}

@@ -1,0 +1,19 @@
+query GoogleAccounts {
+  googleAccounts {
+    email
+    primary
+    remoteId
+    id
+    tokenExpired
+  }
+}
+
+mutation SyncGoogleAccount($input: SyncGoogleAccountInput!) {
+  syncGoogleAccount(input: $input)
+}
+
+mutation DeleteGoogleAccount($input: DeleteGoogleAccountInput!) {
+  deleteGoogleAccount(input: $input) {
+    success
+  }
+}

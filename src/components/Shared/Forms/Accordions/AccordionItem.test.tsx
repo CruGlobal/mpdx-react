@@ -11,7 +11,7 @@ describe('AccordionItem', () => {
   beforeEach(() => {
     onAccordionChange.mockClear();
   });
-  it('Should not render Accordian Details', () => {
+  it('Should not render Accordion Details', () => {
     const { queryByText } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
@@ -66,7 +66,7 @@ describe('AccordionItem', () => {
       <ThemeProvider theme={theme}>
         <AccordionItem
           label={'expandedPanel'}
-          value={'AccordianValue'}
+          value={'AccordionValue'}
           expandedPanel=""
           onAccordionChange={onAccordionChange}
         >
@@ -75,15 +75,15 @@ describe('AccordionItem', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('AccordianValue')).toBeInTheDocument();
+    expect(getByText('AccordionValue')).toBeInTheDocument();
   });
 
-  it('Should render Accordian Details', () => {
+  it('Should render Accordion Details', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
           label={'expandedPanel'}
-          value={'AccordianValue'}
+          value={'AccordionValue'}
           expandedPanel={expandedPanel}
           onAccordionChange={onAccordionChange}
         >
@@ -100,7 +100,7 @@ describe('AccordionItem', () => {
       <ThemeProvider theme={theme}>
         <AccordionItem
           label={'expandedPanel'}
-          value={'AccordianValue'}
+          value={'AccordionValue'}
           expandedPanel={expandedPanel}
           fullWidth={true}
           onAccordionChange={onAccordionChange}
@@ -118,7 +118,7 @@ describe('AccordionItem', () => {
       <ThemeProvider theme={theme}>
         <AccordionItem
           label={'expandedPanel'}
-          value={'AccordianValue'}
+          value={'AccordionValue'}
           expandedPanel={expandedPanel}
           fullWidth={true}
           image={'image.png'}
@@ -137,7 +137,7 @@ describe('AccordionItem', () => {
       <ThemeProvider theme={theme}>
         <AccordionItem
           label={'expandedPanel'}
-          value={'AccordianValue'}
+          value={'AccordionValue'}
           expandedPanel={expandedPanel}
           onAccordionChange={onAccordionChange}
         >

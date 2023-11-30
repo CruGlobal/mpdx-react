@@ -1,3 +1,13 @@
+import { DateTime, Duration, Interval } from 'luxon';
+import {
+  RequestOptions,
+  Response,
+  RESTDataSource,
+} from 'apollo-datasource-rest';
+import Cors from 'micro-cors';
+import { PageConfig, NextApiRequest } from 'next';
+import { ApolloServer } from 'apollo-server-micro';
+import schema from './Schema';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
@@ -13,7 +23,6 @@ import {
   CoachingAnswerSet,
   ContactFilterNotesInput,
 } from './graphql-rest.page.generated';
-import schema from './Schema';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
   getCoachingAnswer,
@@ -56,15 +65,6 @@ import {
 import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
 import { getReportsPledgeHistories } from './Schema/reports/pledgeHistories/dataHandler';
-import { DateTime, Duration, Interval } from 'luxon';
-import {
-  RequestOptions,
-  Response,
-  RESTDataSource,
-} from 'apollo-datasource-rest';
-import Cors from 'micro-cors';
-import { PageConfig, NextApiRequest } from 'next';
-import { ApolloServer } from 'apollo-server-micro';
 import {
   DonationReponseData,
   DonationReponseIncluded,
@@ -74,9 +74,45 @@ import {
   DestroyDonorAccount,
   DestroyDonorAccountResponse,
 } from './Schema/Contacts/DonorAccounts/Destroy/datahander';
+import {
+  GoogleAccounts,
+  GoogleAccountsResponse,
+} from './Schema/Settings/Preferences/Intergrations/Google/googleAccounts/datahandler';
+import {
+  GoogleAccountIntegrationsResponse,
+  GoogleAccountIntegrations,
+} from './Schema/Settings/Preferences/Intergrations/Google/googleAccountIntegrations/datahandler';
+import { SyncGoogleIntegration } from './Schema/Settings/Preferences/Intergrations/Google/syncGoogleIntegration/datahandler';
+import {
+  UpdateGoogleIntegrationResponse,
+  UpdateGoogleIntegration,
+} from './Schema/Settings/Preferences/Intergrations/Google/updateGoogleIntegration/datahandler';
+import { DeleteGoogleAccount } from './Schema/Settings/Preferences/Intergrations/Google/deleteGoogleAccount/datahandler';
+import {
+  CreateGoogleIntegrationResponse,
+  CreateGoogleIntegration,
+} from './Schema/Settings/Preferences/Intergrations/Google/createGoogleIntegration/datahandler';
+
+import {
+  MailchimpAccountResponse,
+  MailchimpAccount,
+} from './Schema/Settings/Preferences/Intergrations/Mailchimp/mailchimpAccount/datahandler';
+import { SyncMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/syncMailchimpAccount/datahandler';
+import { DeleteMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/datahandler';
+import {
+  UpdateMailchimpAccount,
+  UpdateMailchimpAccountResponse,
+} from './Schema/Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/datahandler';
+import {
+  PrayerlettersAccountResponse,
+  PrayerlettersAccount,
+} from './Schema/Settings/Preferences/Intergrations/Prayerletters/prayerlettersAccount/datahandler';
+import { SyncPrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/datahandler';
+import { DeletePrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/datahandler';
+import { SendToChalkline } from './Schema/Settings/Preferences/Intergrations/Chalkine/sendToChalkline/datahandler';
 
 function camelToSnake(str: string): string {
-  return str.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 }
 
 class MpdxRestApi extends RESTDataSource {
@@ -813,6 +849,207 @@ class MpdxRestApi extends RESTDataSource {
       },
     );
     return data;
+  }
+
+  // Google Integration
+  //
+  //
+
+  async googleAccounts() {
+    const { data }: { data: GoogleAccountsResponse[] } = await this.get(
+      'user/google_accounts',
+      {
+        sort: 'created_at',
+        include: 'contact_groups',
+      },
+    );
+    return GoogleAccounts(data);
+  }
+
+  async googleAccountIntegrations(
+    googleAccountId: string,
+    accountListId: string,
+  ) {
+    const { data }: { data: GoogleAccountIntegrationsResponse[] } =
+      await this.get(
+        `user/google_accounts/${googleAccountId}/google_integrations?${encodeURI(
+          `filter[account_list_id]=${accountListId}`,
+        )}`,
+      );
+    return GoogleAccountIntegrations(data);
+  }
+
+  async syncGoogleIntegration(
+    googleAccountId,
+    googleIntegrationId,
+    integrationName,
+  ) {
+    const { data }: { data: string } = await this.get(
+      `user/google_accounts/${googleAccountId}/google_integrations/${googleIntegrationId}/sync?integration=${integrationName}`,
+    );
+    return SyncGoogleIntegration(data);
+  }
+
+  async createGoogleIntegration(
+    googleAccountId,
+    googleIntegration,
+    accountListId,
+  ) {
+    const attributes = {};
+    Object.keys(googleIntegration).forEach((key) => {
+      attributes[camelToSnake(key)] = googleIntegration[key];
+    });
+    const { data }: { data: CreateGoogleIntegrationResponse } = await this.post(
+      `user/google_accounts/${googleAccountId}/google_integrations`,
+      {
+        data: {
+          attributes: {
+            ...attributes,
+          },
+          relationships: {
+            account_list: {
+              data: {
+                type: 'account_lists',
+                id: accountListId,
+              },
+            },
+          },
+          type: 'google_integrations',
+        },
+      },
+    );
+    return CreateGoogleIntegration(data);
+  }
+
+  async updateGoogleIntegration(
+    googleAccountId,
+    googleIntegrationId,
+    googleIntegration,
+  ) {
+    const attributes = {};
+    Object.keys(googleIntegration).map((key) => {
+      attributes[camelToSnake(key)] = googleIntegration[key];
+    });
+
+    const { data }: { data: UpdateGoogleIntegrationResponse } = await this.put(
+      `user/google_accounts/${googleAccountId}/google_integrations/${googleIntegrationId}`,
+      {
+        data: {
+          attributes: {
+            ...attributes,
+          },
+          id: googleIntegrationId,
+          type: 'google_integrations',
+        },
+      },
+    );
+    return UpdateGoogleIntegration(data);
+  }
+
+  async deleteGoogleAccount(accountId) {
+    await this.delete(
+      `user/google_accounts/${accountId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'google_accounts',
+          },
+        }),
+      },
+    );
+    return DeleteGoogleAccount();
+  }
+
+  // Mailchimp Integration
+  //
+  //
+  async mailchimpAccount(accountListId) {
+    // Catch since it will return an error if no account found
+    try {
+      const { data }: { data: MailchimpAccountResponse } = await this.get(
+        `account_lists/${accountListId}/mail_chimp_account`,
+      );
+      return MailchimpAccount(data);
+    } catch {
+      return MailchimpAccount(null);
+    }
+  }
+
+  async updateMailchimpAccount(
+    accountListId,
+    mailchimpAccountId,
+    mailchimpAccount,
+  ) {
+    const attributes = {};
+    Object.keys(mailchimpAccount).map((key) => {
+      attributes[camelToSnake(key)] = mailchimpAccount[key];
+    });
+
+    const { data }: { data: UpdateMailchimpAccountResponse } = await this.put(
+      `account_lists/${accountListId}/mail_chimp_account`,
+      {
+        data: {
+          attributes: {
+            overwrite: true,
+            ...attributes,
+          },
+          id: mailchimpAccountId,
+          type: 'mail_chimp_accounts',
+        },
+      },
+    );
+    return UpdateMailchimpAccount(data);
+  }
+
+  async syncMailchimpAccount(accountListId) {
+    await this.get(`account_lists/${accountListId}/mail_chimp_account/sync`);
+    return SyncMailchimpAccount();
+  }
+
+  async deleteMailchimpAccount(accountListId) {
+    await this.delete(`account_lists/${accountListId}/mail_chimp_account`);
+    return DeleteMailchimpAccount();
+  }
+
+  // Prayerletters Integration
+  //
+  //
+  async prayerlettersAccount(accountListId) {
+    // Catch since it will return an error if no account found
+    try {
+      const { data }: { data: PrayerlettersAccountResponse } = await this.get(
+        `account_lists/${accountListId}/prayer_letters_account`,
+      );
+      return PrayerlettersAccount(data);
+    } catch {
+      return PrayerlettersAccount(null);
+    }
+  }
+
+  async syncPrayerlettersAccount(accountListId) {
+    await this.get(
+      `account_lists/${accountListId}/prayer_letters_account/sync`,
+    );
+    return SyncPrayerlettersAccount();
+  }
+
+  async deletePrayerlettersAccount(accountListId) {
+    await this.delete(`account_lists/${accountListId}/prayer_letters_account`);
+    return DeletePrayerlettersAccount();
+  }
+
+  // Chalkline Integration
+  //
+  //
+
+  async sendToChalkline(accountListId) {
+    await this.post(`account_lists/${accountListId}/chalkline_mail`, {
+      data: {
+        type: 'chalkline_mails',
+      },
+    });
+    return SendToChalkline();
   }
 }
 
