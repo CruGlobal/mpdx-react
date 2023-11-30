@@ -1,0 +1,42 @@
+query GoogleAccountIntegrations($input: GoogleAccountIntegrationsInput!) {
+  googleAccountIntegrations(input: $input) {
+    calendarId
+    calendarIntegration
+    calendarIntegrations
+    calendarName
+    calendars {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+    id
+    updatedInDbAt
+  }
+}
+
+query GetIntegrationActivities {
+  constant {
+    activities {
+      id
+      value
+    }
+  }
+}
+
+mutation CreateGoogleIntegration($input: CreateGoogleIntegrationInput!) {
+  createGoogleIntegration(input: $input) {
+    calendarId
+    calendarIntegration
+    calendarIntegrations
+    calendarName
+    calendars {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+    id
+    updatedInDbAt
+  }
+}

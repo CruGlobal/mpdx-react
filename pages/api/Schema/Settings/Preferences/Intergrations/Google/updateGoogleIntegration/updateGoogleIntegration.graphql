@@ -1,0 +1,11 @@
+extend type Mutation {
+  updateGoogleIntegration(
+    input: UpdateGoogleIntegrationInput!
+  ): GoogleAccountIntegration!
+}
+
+input UpdateGoogleIntegrationInput {
+  googleAccountId: ID!
+  googleIntegrationId: ID!
+  googleIntegration: GoogleAccountIntegrationInput!
+}

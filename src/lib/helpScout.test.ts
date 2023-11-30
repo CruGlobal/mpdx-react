@@ -13,6 +13,12 @@ describe('HelpScout', () => {
   beforeEach(() => {
     beacon.readyQueue = [];
     window.Beacon = beacon;
+    jest.resetModules();
+    process.env = { ...env };
+  });
+
+  afterEach(() => {
+    process.env = env;
   });
 
   beforeEach(() => {
@@ -52,7 +58,6 @@ describe('HelpScout', () => {
       });
     });
   });
-
   describe('suggestArticles', () => {
     it('calls callBeacon when the suggestions exist', () => {
       const makeSuggestions = (key: string) => `${key}-1,${key}-2`;
@@ -118,7 +123,11 @@ describe('HelpScout', () => {
           'coaching-outstanding-recurring-commitments',
         HS_COACHING_OUTSTANDING_SPECIAL_NEEDS:
           'coaching-outstanding-special-needs',
+        HS_SETUP_FIND_ORGANIZATION: 'organization-activity',
       });
+
+      showArticle('HS_SETUP_FIND_ORGANIZATION');
+      expect(beacon).toHaveBeenCalledWith('article', 'organization-activity');
 
       showArticle('HS_COACHING_ACTIVITY');
       expect(beacon).toHaveBeenCalledWith('article', 'coaching-activity');
