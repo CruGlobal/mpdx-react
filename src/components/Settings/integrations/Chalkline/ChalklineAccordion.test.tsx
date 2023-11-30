@@ -82,6 +82,8 @@ describe('PrayerlettersAccount', () => {
   });
 
   it('should send contacts to Chalkline', async () => {
+    const openMock = jest.fn();
+    window.open = openMock;
     const mutationSpy = jest.fn();
     const { getByText } = render(
       <Components>
@@ -116,5 +118,14 @@ describe('PrayerlettersAccount', () => {
         accountListId: accountListId,
       });
     });
+
+    await waitFor(
+      () =>
+        expect(openMock).toHaveBeenCalledWith(
+          'https://chalkline.org/order_mpdx/',
+          '_blank',
+        ),
+      { timeout: 3000 },
+    );
   });
 });
