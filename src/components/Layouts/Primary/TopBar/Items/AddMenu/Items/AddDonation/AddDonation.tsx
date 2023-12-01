@@ -125,6 +125,10 @@ export const AddDonation = ({
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
+  const newDesignationAccounts =
+    data?.designationAccounts &&
+    data?.designationAccounts.flatMap((x) => x.designationAccounts);
+
   const initialDonation: Omit<DonationCreateInput, 'id'> = {
     amount: 0,
     appealAmount: null,
@@ -425,16 +429,14 @@ export const AddDonation = ({
                             autoSelect
                             autoHighlight
                             options={
-                              (data?.designationAccounts &&
-                                data?.designationAccounts[0]?.designationAccounts.map(
-                                  ({ id }) => id,
-                                )) ??
+                              (newDesignationAccounts &&
+                                newDesignationAccounts.map(({ id }) => id)) ??
                               []
                             }
                             getOptionLabel={(accountId): string => {
                               const account =
-                                data?.designationAccounts &&
-                                data?.designationAccounts[0]?.designationAccounts.find(
+                                newDesignationAccounts &&
+                                newDesignationAccounts.find(
                                   ({ id }) => id === accountId,
                                 );
                               return account
