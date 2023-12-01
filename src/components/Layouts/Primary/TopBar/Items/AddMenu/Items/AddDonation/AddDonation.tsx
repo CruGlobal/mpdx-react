@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { DonationCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
@@ -310,7 +310,7 @@ export const AddDonation = ({
                     <FastField name="donationDate">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <MobileDatePicker
+                          <DatePicker
                             renderInput={(params) => (
                               <TextField
                                 id="date-input"
