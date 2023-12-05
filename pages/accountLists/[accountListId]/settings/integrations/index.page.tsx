@@ -1,5 +1,5 @@
-import React, { ReactElement, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { getToken } from 'next-auth/jwt';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';

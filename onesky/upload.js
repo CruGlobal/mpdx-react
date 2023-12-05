@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-const onesky = require('@brainly/onesky-utils');
 const fs = require('fs');
+const onesky = require('@brainly/onesky-utils');
 
 const translations = fs.readFileSync(
   'public/locales/en/translation.json',

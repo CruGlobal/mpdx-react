@@ -1,5 +1,5 @@
-import React, { ReactElement } from 'react';
 import { GetServerSideProps, GetServerSidePropsResult } from 'next';
+import React, { ReactElement } from 'react';
 import { getToken } from 'next-auth/jwt';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';

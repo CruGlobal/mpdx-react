@@ -19,6 +19,7 @@ module.exports = {
       'error',
       {
         groups: [
+          'builtin',
           'external',
           'internal',
           'parent',
@@ -31,7 +32,7 @@ module.exports = {
         'newlines-between': 'never',
         pathGroups: [
           {
-            pattern: 'react',
+            pattern: '{next,react}',
             group: 'external',
             position: 'before',
           },

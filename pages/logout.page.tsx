@@ -1,8 +1,8 @@
+import { GetServerSideProps } from 'next';
 import React, { ReactElement, useEffect } from 'react';
 import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { GetServerSideProps } from 'next';
 import { signOut } from 'next-auth/react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';

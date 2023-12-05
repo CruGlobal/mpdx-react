@@ -1,9 +1,9 @@
+const path = require('path');
 const bundleAnalyzer = require('@next/bundle-analyzer');
 const withPlugins = require('next-compose-plugins');
 const withOptimizedImages = require('next-optimized-images');
 const withGraphql = require('next-plugin-graphql');
 const withPWA = require('next-pwa');
-const path = require('path');
 require('dotenv').config();
 
 if (process.env.secrets) {

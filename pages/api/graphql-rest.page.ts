@@ -1,3 +1,4 @@
+import { NextApiRequest, PageConfig } from 'next';
 import {
   RESTDataSource,
   RequestOptions,
@@ -6,7 +7,6 @@ import {
 import { ApolloServer } from 'apollo-server-micro';
 import { DateTime, Duration, Interval } from 'luxon';
 import Cors from 'micro-cors';
-import { NextApiRequest, PageConfig } from 'next';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,

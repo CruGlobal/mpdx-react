@@ -1,8 +1,8 @@
+import { GetServerSideProps } from 'next';
 import React, { ReactElement, useEffect } from 'react';
 import SubjectIcon from '@mui/icons-material/Subject';
 import { Button } from '@mui/material';
 import i18n from 'i18next';
-import { GetServerSideProps } from 'next';
 import { getSession, signIn } from 'next-auth/react';
 import Head from 'next/head';
 import BaseLayout from '../src/components/Layouts/Basic';

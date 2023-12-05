@@ -1,3 +1,4 @@
+import { NextPage } from 'next';
 import React, { ReactElement } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { Box } from '@mui/material';
@@ -9,7 +10,6 @@ import {
 } from '@mui/x-date-pickers/LocalizationProvider';
 import { ErrorBoundary, Provider } from '@rollbar/react';
 import { AnimatePresence } from 'framer-motion';
-import { NextPage } from 'next';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import Head from 'next/head';
