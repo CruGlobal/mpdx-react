@@ -1,7 +1,7 @@
 import { TFunction } from 'react-i18next';
 import {
-  NotificationTypeEnum,
   NotificationTimeUnitEnum,
+  NotificationTypeEnum,
 } from '../../../graphql/types.generated';
 
 export const getLocalizedNotificationType = (

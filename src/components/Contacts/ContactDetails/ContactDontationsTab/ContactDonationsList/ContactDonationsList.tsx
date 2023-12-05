@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   Button,
@@ -6,17 +7,16 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
 import {
   currencyFormat,
   dateFormat,
 } from '../../../../../lib/intlFormat/intlFormat';
 import { useContactDonationsListQuery } from './ContactDonationsList.generated';
-import { useLocale } from 'src/hooks/useLocale';
 
 interface ContactDonationsListProp {
   accountListId: string;

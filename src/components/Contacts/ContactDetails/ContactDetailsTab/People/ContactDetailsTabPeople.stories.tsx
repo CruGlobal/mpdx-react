@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
 import React, { ReactElement } from 'react';
+import { Box } from '@mui/material';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import { ContactDetailsTabPeople } from './ContactDetailsTabPeople';

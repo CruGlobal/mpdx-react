@@ -1,11 +1,9 @@
+import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import React, { ReactElement } from 'react';
-
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-
 import { ContactTasksTab } from './ContactTasksTab';
 import { ContactTasksTabDocument } from './ContactTasksTab.generated';
 

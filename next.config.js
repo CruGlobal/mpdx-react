@@ -1,8 +1,9 @@
 const path = require('path');
+const bundleAnalyzer = require('@next/bundle-analyzer');
 const withPlugins = require('next-compose-plugins');
-const withPWA = require('next-pwa');
 const withOptimizedImages = require('next-optimized-images');
 const withGraphql = require('next-plugin-graphql');
+const withPWA = require('next-pwa');
 require('dotenv').config();
 
 if (process.env.secrets) {
@@ -26,7 +27,7 @@ if (prod && !process.env.JWT_SECRET) {
 
 const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000';
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
+const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 

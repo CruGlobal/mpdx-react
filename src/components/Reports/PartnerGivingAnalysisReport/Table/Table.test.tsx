@@ -1,12 +1,12 @@
-import { PartnerGivingAnalysisReportContact } from '../../../../../graphql/types.generated';
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { PartnerGivingAnalysisReportTable } from './Table';
 import theme from 'src/theme';
-import type { Order } from '../../Reports.type';
+import { PartnerGivingAnalysisReportContact } from '../../../../../graphql/types.generated';
 import { GetPartnerGivingAnalysisReportQuery } from '../PartnerGivingAnalysisReport.generated';
+import { PartnerGivingAnalysisReportTable } from './Table';
+import type { Order } from '../../Reports.type';
 
 type Contact = PartnerGivingAnalysisReportContact;
 

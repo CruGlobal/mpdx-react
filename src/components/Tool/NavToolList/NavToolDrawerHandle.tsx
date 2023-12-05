@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
-import { Box, Theme, IconButton } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
+import { Box, IconButton, Theme } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import theme from 'src/theme';
 
 const useStyles = makeStyles()((theme: Theme) => ({

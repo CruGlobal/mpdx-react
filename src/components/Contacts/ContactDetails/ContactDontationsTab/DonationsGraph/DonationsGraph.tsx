@@ -1,9 +1,9 @@
+import React, { useMemo } from 'react';
 import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
-import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
@@ -14,10 +14,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import theme from '../../../../../theme';
 import { useGetDonationsGraphQuery } from './DonationsGraph.generated';
-import { currencyFormat } from 'src/lib/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
 
 const LegendText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(3, 0),

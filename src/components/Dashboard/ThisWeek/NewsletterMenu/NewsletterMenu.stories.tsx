@@ -1,16 +1,16 @@
+import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { GraphQLError } from 'graphql';
-import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import {
+  GetEmailNewsletterContactsDocument,
+  GetEmailNewsletterContactsQuery,
+} from './MenuItems/ExportEmail/GetNewsletterContacts.generated';
+import NewsletterMenu from './NewsletterMenu';
 import {
   GetTaskAnalyticsDocument,
   GetTaskAnalyticsQuery,
 } from './NewsletterMenu.generated';
-import {
-  GetEmailNewsletterContactsQuery,
-  GetEmailNewsletterContactsDocument,
-} from './MenuItems/ExportEmail/GetNewsletterContacts.generated';
-import NewsletterMenu from './NewsletterMenu';
 
 export default {
   title: 'Dashboard/ThisWeek/NewsletterMenu',

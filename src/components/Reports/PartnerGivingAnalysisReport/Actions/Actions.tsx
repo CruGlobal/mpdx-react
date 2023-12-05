@@ -1,9 +1,9 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Box, Button, InputAdornment, SvgIcon, TextField } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import SearchIcon from '@mui/icons-material/Search';
+import { Box, Button, InputAdornment, SvgIcon, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 interface PartnerGivingAnalysisReportActionsProps {
   query: string;

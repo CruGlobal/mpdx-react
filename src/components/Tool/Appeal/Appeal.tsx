@@ -1,12 +1,12 @@
-import { Box, CardContent, Typography } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import React, { ReactElement } from 'react';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import { Box, CardContent, Typography } from '@mui/material';
 import NextLink from 'next/link';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import theme from '../../../../src/theme';
-import AnimatedCard from '../../../../src/components/AnimatedCard';
+import { makeStyles } from 'tss-react/mui';
+import { useAccountListId } from '../../../hooks/useAccountListId';
+import theme from '../../../theme';
+import AnimatedCard from '../../AnimatedCard';
 import AppealProgressBar from './AppealProgressBar';
 
 export interface Props {

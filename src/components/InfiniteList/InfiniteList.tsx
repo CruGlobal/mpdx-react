@@ -1,17 +1,17 @@
 import React, { ReactElement, useMemo } from 'react';
 import { List, ListItem, Typography } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
-import theme from 'src/theme';
 import {
-  ListProps,
-  ItemProps,
   GroupedVirtuoso,
   GroupedVirtuosoProps,
   ItemContent,
+  ItemProps,
+  ListProps,
   Virtuoso,
   VirtuosoProps,
 } from 'react-virtuoso';
-import Skeleton from '@mui/material/Skeleton';
+import theme from 'src/theme';
 import { groupItems } from './groupItems';
 
 const height = 72;

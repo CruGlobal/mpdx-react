@@ -1,16 +1,16 @@
-import React, { ReactElement, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { GetServerSideProps } from 'next';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { getToken } from 'next-auth/jwt';
 import { useRouter } from 'next/router';
-import { suggestArticles } from 'src/lib/helpScout';
-import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
-import { TheKeyAccordion } from 'src/components/Settings/integrations/Key/TheKeyAccordion';
-import { OrganizationAccordion } from 'src/components/Settings/integrations/Organization/OrganizationAccordion';
-import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';
-import { MailchimpAccordion } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccordion';
-import { PrayerlettersAccordion } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordion';
+import { useTranslation } from 'react-i18next';
 import { ChalklineAccordion } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordion';
+import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';
+import { TheKeyAccordion } from 'src/components/Settings/integrations/Key/TheKeyAccordion';
+import { MailchimpAccordion } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccordion';
+import { OrganizationAccordion } from 'src/components/Settings/integrations/Organization/OrganizationAccordion';
+import { PrayerlettersAccordion } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordion';
+import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
+import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from '../wrapper';
 import { IntegrationsContextProvider } from './IntegrationsContext';
 

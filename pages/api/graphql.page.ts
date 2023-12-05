@@ -1,11 +1,11 @@
-import { ApolloServer } from 'apollo-server-micro';
-import { PageConfig, NextApiRequest } from 'next';
-import Cors from 'micro-cors';
+import { NextApiRequest, PageConfig } from 'next';
 import {
   ApolloGateway,
   IntrospectAndCompose,
   RemoteGraphQLDataSource,
 } from '@apollo/gateway';
+import { ApolloServer } from 'apollo-server-micro';
+import Cors from 'micro-cors';
 import { getToken } from 'next-auth/jwt';
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {

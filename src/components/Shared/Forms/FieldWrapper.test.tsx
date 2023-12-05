@@ -1,8 +1,8 @@
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
 import theme from 'src/theme';
-import { FieldWrapper } from './FieldWrapper';
 import { HelperPositionEnum } from './FieldHelper';
+import { FieldWrapper } from './FieldWrapper';
 
 describe('FieldWrapper', () => {
   it('Should render children', () => {

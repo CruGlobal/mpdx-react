@@ -1,15 +1,14 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
-import { withDesign } from 'storybook-addon-designs';
-
+import { Meta, Story } from '@storybook/react';
 import { DateTime } from 'luxon';
+import { withDesign } from 'storybook-addon-designs';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { ContactRow } from './ContactRow';
 import {
   ContactRowFragment,
   ContactRowFragmentDoc,
 } from './ContactRow.generated';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 export default {
   title: 'Contacts/ContactRow',

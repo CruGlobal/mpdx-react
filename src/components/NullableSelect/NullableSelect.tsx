@@ -1,4 +1,4 @@
-import { forwardRef, ReactElement } from 'react';
+import { ReactElement, forwardRef } from 'react';
 import { MenuItem, Select, SelectProps } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { ExpandMore } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -7,7 +8,6 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { ExpandMore } from '@mui/icons-material';
 
 export const accordionShared = {
   '&:before': {

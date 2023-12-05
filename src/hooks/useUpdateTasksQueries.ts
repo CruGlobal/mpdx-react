@@ -1,17 +1,17 @@
 import { useApolloClient } from '@apollo/client';
 import {
-  TasksQueryVariables,
-  TasksQuery,
   TasksDocument,
+  TasksQuery,
+  TasksQueryVariables,
 } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import {
   TaskRowFragment,
   TaskRowFragmentDoc,
 } from 'src/components/Task/TaskRow/TaskRow.generated';
 import {
+  GetTaskIdsForMassSelectionDocument,
   GetTaskIdsForMassSelectionQuery,
   GetTaskIdsForMassSelectionQueryVariables,
-  GetTaskIdsForMassSelectionDocument,
 } from './GetIdsForMassSelection.generated';
 
 const isNotNull = <T>(item: T | null): item is T => item !== null;

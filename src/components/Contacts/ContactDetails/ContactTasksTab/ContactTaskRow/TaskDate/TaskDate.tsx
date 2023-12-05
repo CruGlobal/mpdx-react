@@ -1,10 +1,10 @@
+import React from 'react';
+import CalendarToday from '@mui/icons-material/CalendarToday';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import theme from 'src/theme';
-import CalendarToday from '@mui/icons-material/CalendarToday';
 import { DateTime } from 'luxon';
-import React from 'react';
 import { useLocale } from 'src/hooks/useLocale';
+import theme from 'src/theme';
 
 const TaskRowWrap = styled(Box)(({ theme }) => ({
   display: 'flex',

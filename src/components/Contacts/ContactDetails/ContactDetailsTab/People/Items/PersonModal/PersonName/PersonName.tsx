@@ -1,8 +1,7 @@
+import React, { useRef } from 'react';
 import { Avatar, Box, Grid, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FormikProps } from 'formik';
-import React, { useRef } from 'react';
-
 import { useTranslation } from 'react-i18next';
 import {
   PersonCreateInput,

@@ -1,25 +1,25 @@
-import {
-  Box,
-  Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Button,
-  ButtonGroup,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import React, { useState } from 'react';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import LocalOffer from '@mui/icons-material/LocalOffer';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  ButtonGroup,
+  Typography,
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import theme from 'src/theme';
 import {
   ContactFilterSetInput,
   FilterOption,
   TaskFilterSetInput,
 } from '../../../../../graphql/types.generated';
 import { FilterTagChip } from './Chip/FilterTagChip';
-import theme from 'src/theme';
 import { FilterTagDeleteModal } from './FilterTagDeleteModal';
 
 export interface FilterPanelTagsSectionProps {

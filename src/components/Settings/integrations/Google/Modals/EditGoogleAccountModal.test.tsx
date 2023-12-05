@@ -1,19 +1,19 @@
 import { PropsWithChildren } from 'react';
-import { render, waitFor, act } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getSession } from 'next-auth/react';
-import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import * as Types from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
-import {
-  GoogleAccountIntegrationsQuery,
-  GetIntegrationActivitiesQuery,
-} from './googleIntegrations.generated';
 import { EditGoogleAccountModal } from './EditGoogleAccountModal';
+import {
+  GetIntegrationActivitiesQuery,
+  GoogleAccountIntegrationsQuery,
+} from './googleIntegrations.generated';
 
 jest.mock('next-auth/react');
 

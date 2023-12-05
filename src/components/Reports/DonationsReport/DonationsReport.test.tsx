@@ -1,17 +1,17 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import theme from '../../../theme';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { DonationsReport } from './DonationsReport';
 import TestRouter from '__tests__/util/TestRouter';
 import {
-  beforeTestResizeObserver,
   afterTestResizeObserver,
+  beforeTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import theme from '../../../theme';
 import { GetDonationsGraphQuery } from '../../Contacts/ContactDetails/ContactDontationsTab/DonationsGraph/DonationsGraph.generated';
+import { DonationsReport } from './DonationsReport';
 import { GetDonationsTableQuery } from './GetDonationsTable.generated';
 
 const title = 'test title';

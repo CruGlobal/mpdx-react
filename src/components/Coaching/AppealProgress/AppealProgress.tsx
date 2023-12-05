@@ -1,11 +1,11 @@
+import React, { ReactElement } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import StyledProgress from 'src/components/StyledProgress';
-import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 
 interface Props {
   currency?: string;

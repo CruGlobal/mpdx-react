@@ -1,23 +1,23 @@
 import React, { useMemo } from 'react';
-import { useSnackbar } from 'notistack';
 import {
   CircularProgress,
   DialogActions,
   DialogContent,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import Modal from '../../../common/Modal/Modal';
-import { UserOptionFragment } from '../FilterPanel.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useDeleteUserOptionMutation } from './DeleteFilterModal.generated';
 import {
   GetUserOptionsDocument,
   GetUserOptionsQuery,
 } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from '../../../common/Modal/Modal';
+import { UserOptionFragment } from '../FilterPanel.generated';
+import { useDeleteUserOptionMutation } from './DeleteFilterModal.generated';
 
 interface DeleteFilterModalProps {
   isOpen: boolean;

@@ -1,22 +1,22 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  Box,
-  Grid,
-  Button,
-  Typography,
-  Avatar,
-  NativeSelect,
-} from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import { useTranslation } from 'react-i18next';
-import { Icon } from '@mdi/react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
+import { Icon } from '@mdi/react';
+import {
+  Avatar,
+  Box,
+  Button,
+  Grid,
+  NativeSelect,
+  Typography,
+} from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import theme from '../../../theme';
-import { StyledInput } from './StyledInput';
 import {
   ContactPrimaryAddressFragment,
   ContactPrimaryPersonFragment,
 } from './GetInvalidNewsletter.generated';
+import { StyledInput } from './StyledInput';
 
 const useStyles = makeStyles()(() => ({
   left: {

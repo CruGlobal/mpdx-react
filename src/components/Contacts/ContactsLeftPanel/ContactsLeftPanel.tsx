@@ -1,12 +1,12 @@
-import _ from 'lodash';
 import React from 'react';
-import { ContactsMapPanel } from '../ContactsMap/ContactsMapPanel';
+import _ from 'lodash';
 import {
   ContactsContext,
   ContactsType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
-import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
-import { TableViewModeEnum } from '../../../../src/components/Shared/Header/ListHeader';
+import { FilterPanel } from '../../Shared/Filters/FilterPanel';
+import { TableViewModeEnum } from '../../Shared/Header/ListHeader';
+import { ContactsMapPanel } from '../ContactsMap/ContactsMapPanel';
 
 export const ContactsLeftPanel: React.FC = () => {
   const {

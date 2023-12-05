@@ -1,16 +1,16 @@
 import React, { ReactElement, useState } from 'react';
-import { Button, Menu, MenuItem, Dialog, ListItemText } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
-import { useTranslation } from 'react-i18next';
-import { DateTime } from 'luxon';
+import { Button, Dialog, ListItemText, Menu, MenuItem } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
-import { useGetTaskAnalyticsQuery } from './NewsletterMenu.generated';
-import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
-import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';
-import ExportPhysical from './MenuItems/ExportPhysical/ExportPhysical';
+import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
+import ExportPhysical from './MenuItems/ExportPhysical/ExportPhysical';
+import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';
+import { useGetTaskAnalyticsQuery } from './NewsletterMenu.generated';
 
 interface Props {
   accountListId: string;

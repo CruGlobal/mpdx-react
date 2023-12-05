@@ -1,35 +1,35 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
-import { styled } from '@mui/material/styles';
 import {
-  DialogContent,
-  DialogActions,
-  Typography,
-  Tabs,
-  Tab,
   Box,
-  Skeleton,
   Button,
+  DialogActions,
+  DialogContent,
+  Skeleton,
+  Tab,
+  Tabs,
+  Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import {
+  ActionButton,
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
+import { useSyncGoogleAccountMutation } from '../googleAccounts.generated';
+import { EditGoogleIntegrationForm } from './EditGoogleIntegrationForm';
 import {
-  useGoogleAccountIntegrationsQuery,
   GoogleAccountIntegrationsDocument,
   GoogleAccountIntegrationsQuery,
   useCreateGoogleIntegrationMutation,
+  useGoogleAccountIntegrationsQuery,
 } from './googleIntegrations.generated';
-import { useSyncGoogleAccountMutation } from '../googleAccounts.generated';
 import { useUpdateGoogleIntegrationMutation } from './updateGoogleIntegration.generated';
-import Modal from 'src/components/common/Modal/Modal';
-import {
-  SubmitButton,
-  CancelButton,
-  ActionButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
-import { EditGoogleIntegrationForm } from './EditGoogleIntegrationForm';
 
 interface EditGoogleAccountModalProps {
   handleClose: () => void;

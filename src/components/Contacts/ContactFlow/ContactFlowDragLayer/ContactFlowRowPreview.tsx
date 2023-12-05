@@ -1,10 +1,10 @@
-import { Avatar, Box, Typography } from '@mui/material';
+import React, { memo } from 'react';
 import Star from '@mui/icons-material/Star';
 import StarBorder from '@mui/icons-material/StarBorder';
-import React, { memo } from 'react';
+import { Avatar, Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { IdValue } from '../../../../../graphql/types.generated';
-import theme from '../../../../../src/theme';
+import theme from '../../../../theme';
 
 interface Props {
   name: string;

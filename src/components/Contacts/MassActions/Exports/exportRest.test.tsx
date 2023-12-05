@@ -1,6 +1,5 @@
-import fetchMock from 'jest-fetch-mock';
 import { waitFor } from '@testing-library/react';
-
+import fetchMock from 'jest-fetch-mock';
 import { exportRest } from './exportRest';
 
 const accountListId = '111';

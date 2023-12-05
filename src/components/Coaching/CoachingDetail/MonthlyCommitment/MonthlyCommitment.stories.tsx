@@ -2,12 +2,12 @@ import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Box } from '@mui/material';
 import { DateTime } from 'luxon';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MonthlyCommitment } from './MonthlyCommitment';
 import {
   GetReportsPledgeHistoriesDocument,
   GetReportsPledgeHistoriesQuery,
 } from './MonthlyCommitment.generated';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 
 export default {
   title: 'Coaching/CoachingDetail/MonthlyCommitment',

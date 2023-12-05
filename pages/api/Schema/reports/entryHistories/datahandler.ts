@@ -1,6 +1,6 @@
 import {
-  EntryHistoryRest,
   EntryHistoriesGroup,
+  EntryHistoryRest,
 } from '../../../graphql-rest.page.generated';
 
 export interface EntryHistoriesResponse {

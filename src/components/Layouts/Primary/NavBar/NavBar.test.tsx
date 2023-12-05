@@ -1,10 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { ThemeProvider } from '@mui/material/styles';
 import { MockedProvider } from '@apollo/client/testing';
+import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
+import theme from 'src/theme';
 import { getTopBarMultipleMock } from '../TopBar/TopBar.mock';
 import { NavBar } from './NavBar';
-import theme from 'src/theme';
 
 jest.mock('next/router', () => ({
   useRouter: () => {

@@ -1,24 +1,24 @@
-import { Box, Card, CardContent, IconButton, TextField } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import theme from 'src/theme';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import Clear from '@mui/icons-material/Clear';
 import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
 import Menu from '@mui/icons-material/Menu';
-import React, {
-  useRef,
-  useLayoutEffect,
-  Dispatch,
-  SetStateAction,
-  useState,
-  useCallback,
-} from 'react';
-import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
-import type { Identifier, XYCoord } from 'dnd-core';
+import { Box, Card, CardContent, IconButton, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import debounce from 'lodash/fp/debounce';
+import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
+import theme from 'src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
-import { colorMap } from '../../../../../../src/components/Contacts/ContactFlow/ContactFlow';
-import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
+import { colorMap } from '../../ContactFlow';
 import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
+import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
+import type { Identifier, XYCoord } from 'dnd-core';
 
 const DeleteColumnButton = styled(IconButton)(() => ({
   color: theme.palette.error.main,

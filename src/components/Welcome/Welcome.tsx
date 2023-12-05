@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react';
-import { Box, Container, Typography, Theme, Grid } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import { Box, Container, Grid, Theme, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
+import { makeStyles } from 'tss-react/mui';
 import illustration2 from '../../images/drawkit/grape/drawkit-grape-pack-illustration-2.svg';
 
 interface Props {
