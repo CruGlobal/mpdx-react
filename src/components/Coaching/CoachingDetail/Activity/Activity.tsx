@@ -1,13 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import NextLink from 'next/link';
-import {
-  Button,
-  ButtonGroup,
-  CardHeader,
-  Link as MuiLink,
-  Typography,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
 import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined';
 import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
@@ -16,16 +7,17 @@ import MailOutline from '@mui/icons-material/MailOutline';
 import MoneyOutlined from '@mui/icons-material/MoneyOutlined';
 import PeopleOutline from '@mui/icons-material/PeopleOutline';
 import SmartphoneOutlined from '@mui/icons-material/SmartphoneOutlined';
-import { DateTime, DateTimeUnit } from 'luxon';
-import { useTranslation } from 'react-i18next';
 import {
-  ActivityTypeEnum,
-  Appeal,
-  ContactFilterSetInput,
-  ContactFilterStatusEnum,
-  ResultEnum,
-  TaskFilterSetInput,
-} from '../../../../../graphql/types.generated';
+  Button,
+  ButtonGroup,
+  CardHeader,
+  Link as MuiLink,
+  Typography,
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { DateTime, DateTimeUnit } from 'luxon';
+import NextLink from 'next/link';
+import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import HandoffLink from 'src/components/HandoffLink';
 import { useLocale } from 'src/hooks/useLocale';
@@ -34,6 +26,14 @@ import {
   dateFormat,
   dateFormatWithoutYear,
 } from 'src/lib/intlFormat';
+import {
+  ActivityTypeEnum,
+  Appeal,
+  ContactFilterSetInput,
+  ContactFilterStatusEnum,
+  ResultEnum,
+  TaskFilterSetInput,
+} from '../../../../../graphql/types.generated';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum, CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';

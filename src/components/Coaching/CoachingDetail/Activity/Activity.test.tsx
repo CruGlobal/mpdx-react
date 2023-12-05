@@ -2,9 +2,9 @@ import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Settings } from 'luxon';
-import theme from 'src/theme';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
 import { AccountListTypeEnum, CoachingPeriodEnum } from '../CoachingDetail';
 import { Activity } from './Activity';
 
