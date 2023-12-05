@@ -1,0 +1,16 @@
+mutation UpdateGoogleIntegration($input: UpdateGoogleIntegrationInput!) {
+  updateGoogleIntegration(input: $input) {
+    calendarId
+    calendarIntegration
+    calendarIntegrations
+    calendarName
+    calendars {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+    id
+    updatedInDbAt
+  }
+}
