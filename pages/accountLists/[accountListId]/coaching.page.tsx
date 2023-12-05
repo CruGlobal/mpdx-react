@@ -1,10 +1,10 @@
 import React from 'react';
 import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { CoachingList } from 'src/components/Coaching/CoachingList';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import Loading from 'src/components/Loading';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const CoachingPage: React.FC = () => {
   const { t } = useTranslation();

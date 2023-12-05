@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
+import Icon from '@mdi/react';
 import {
   Box,
-  Typography,
-  Grid,
-  Divider,
   Button,
-  NativeSelect,
   CircularProgress,
+  Divider,
+  Grid,
+  NativeSelect,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import { Trans, useTranslation } from 'react-i18next';
-import Icon from '@mdi/react';
-import { mdiCheckboxMarkedCircle } from '@mdi/js';
+import { makeStyles } from 'tss-react/mui';
 import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import NoData from '../NoData';
-import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
+import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {

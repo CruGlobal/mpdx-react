@@ -1,14 +1,14 @@
-import React, { ReactElement, Fragment } from 'react';
+import React, { Fragment, ReactElement } from 'react';
+import Icon from '@mdi/react';
 import {
   Box,
-  Theme,
   List,
   ListItem,
-  ListItemText,
   ListItemIcon,
+  ListItemText,
+  Theme,
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import Icon from '@mdi/react';
 import { ToolsList } from '../Home/ToolList';
 import { Item } from './Item/Item';
 

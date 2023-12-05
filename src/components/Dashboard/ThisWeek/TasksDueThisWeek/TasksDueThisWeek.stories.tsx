@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@mui/material';
 import { MockedProvider } from '@apollo/client/testing';
-import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import { Box } from '@mui/material';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import TasksDueThisWeek from '.';
 
 export default {

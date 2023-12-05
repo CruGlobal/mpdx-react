@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
+import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import {
   CoachedPersonFragment,
   CoachedPersonFragmentDoc,
 } from '../LoadCoachingList.generated';
-import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { CoachingRow } from './CoachingRow';
 
 export default {

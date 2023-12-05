@@ -1,7 +1,7 @@
 import React from 'react';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 
 const ActionsButton = styled(Button)(({ theme }) => ({
   width: 114,

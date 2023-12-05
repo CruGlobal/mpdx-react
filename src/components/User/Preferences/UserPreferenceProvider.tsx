@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useGetUserQuery } from '../GetUser.generated';
 import i18next from 'src/lib/i18n';
+import { useGetUserQuery } from '../GetUser.generated';
 
 export type UserPreferenceType = {
   defaultCurrency?: string;

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { DialogActions, DialogContent, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DialogContent, DialogActions, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import Modal from 'src/components/common/Modal/Modal';
+import { useTranslation } from 'react-i18next';
 import {
-  SubmitButton,
   CancelButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/common/Modal/Modal';
 import { useDeleteMailchimpAccountMutation } from '../MailchimpAccount.generated';
 
 interface DeleteMailchimpAccountModalProps {

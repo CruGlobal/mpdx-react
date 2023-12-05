@@ -1,6 +1,6 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Alert, DialogActions, DialogContent } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { CancelButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface WeeklyReportAlertsProps {

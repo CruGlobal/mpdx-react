@@ -1,12 +1,12 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
-import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
-import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
 import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import theme from 'src/theme';
+import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
+import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 
 const accountListId = '111';
 const title = 'test title';

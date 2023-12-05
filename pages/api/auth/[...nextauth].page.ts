@@ -5,15 +5,15 @@ import OktaProvider from 'next-auth/providers/okta';
 import Rollbar from 'rollbar';
 import client from '../../../src/lib/client';
 import {
-  OktaSignInDocument,
-  OktaSignInMutation,
-  OktaSignInMutationVariables,
-} from './oktaSignIn.generated';
-import {
   ApiOauthSignInDocument,
   ApiOauthSignInMutation,
   ApiOauthSignInMutationVariables,
 } from './apiOauthSignIn';
+import {
+  OktaSignInDocument,
+  OktaSignInMutation,
+  OktaSignInMutationVariables,
+} from './oktaSignIn.generated';
 import { setUserInfo } from './setUserInfo';
 
 const rollbar = new Rollbar({

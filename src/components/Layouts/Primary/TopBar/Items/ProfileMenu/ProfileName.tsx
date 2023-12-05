@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Box, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const StyledAvatar = styled(AccountCircleIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,

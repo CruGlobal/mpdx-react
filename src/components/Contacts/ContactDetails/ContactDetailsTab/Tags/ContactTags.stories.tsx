@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../theme';
 import { ContactTags } from './ContactTags';
 
 export default {

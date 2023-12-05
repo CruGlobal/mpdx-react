@@ -1,20 +1,20 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
 import { VirtuosoMockContext } from 'react-virtuoso';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
-import theme from '../../../../src/theme';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import {
-  StatusEnum,
   PledgeFrequencyEnum,
   SendNewsletterEnum,
+  StatusEnum,
 } from '../../../../graphql/types.generated';
-import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import { ListHeaderCheckBoxState } from '../../../../src/components/Shared/Header/ListHeader';
-import Contacts from './[[...contactId]].page';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import theme from '../../../../src/theme';
 import { ContactsQuery } from './Contacts.generated';
+import Contacts from './[[...contactId]].page';
 
 const accountListId = 'account-list-1';
 

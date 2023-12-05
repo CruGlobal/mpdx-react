@@ -4,8 +4,8 @@ import { ActivityTypeEnum } from '../../../../graphql/types.generated';
 import { GetThisWeekDocument, GetThisWeekQuery } from './GetThisWeek.generated';
 import {
   GetWeeklyActivityQueryDefaultMocks,
-  GetWeeklyActivityQueryLoadingMocks,
   GetWeeklyActivityQueryEmptyMocks,
+  GetWeeklyActivityQueryLoadingMocks,
 } from './WeeklyActivity/WeeklyActivity.mock';
 
 export const GetThisWeekDefaultMocks = (): MockedResponse[] => {

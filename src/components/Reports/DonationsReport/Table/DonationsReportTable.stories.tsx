@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { DateTime } from 'luxon';
-import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
 import { DonationsReportTable } from './DonationsReportTable';
 
 export default {

@@ -1,21 +1,21 @@
 import React, { useContext } from 'react';
-import { render, waitFor, within } from '@testing-library/react';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import userEvent from '@testing-library/user-event';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { ThemeProvider } from '@mui/material/styles';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import {
   filterPanelDefaultMock,
   filterPanelFeaturedMock,
   filterPanelTagsMock,
   savedFiltersMock,
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
-import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import theme from 'src/theme';
-import { ContactsPage } from './ContactsPage';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { ContactsContext, ContactsType } from './ContactsContext';
+import { ContactsPage } from './ContactsPage';
 
 const onSelectedFiltersChanged = jest.fn();
 const onClose = jest.fn();

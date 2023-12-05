@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import { StarTaskIconButton } from './StarTaskIconButton';
 import { SetTaskStarredMutation } from './SetTaskStarred.generated';
+import { StarTaskIconButton } from './StarTaskIconButton';
 
 export default {
   title: 'Contacts/ContactRow/Widgets/StarContactIconButton',

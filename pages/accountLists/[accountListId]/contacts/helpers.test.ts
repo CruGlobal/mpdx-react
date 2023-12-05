@@ -1,9 +1,9 @@
+import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
 } from '../../../../graphql/types.generated';
-import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { coordinatesFromContacts, getRedirectPathname } from './helpers';
 
 const accountListId = 'account-list-1';

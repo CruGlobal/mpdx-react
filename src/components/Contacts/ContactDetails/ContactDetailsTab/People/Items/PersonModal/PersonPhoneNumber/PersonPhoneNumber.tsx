@@ -1,16 +1,16 @@
-import { Button, Grid, InputLabel, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import React, { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import { useTranslation } from 'react-i18next';
-import { FormikProps, FieldArray } from 'formik';
 import Phone from '@mui/icons-material/Phone';
-import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
-import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
+import { Button, Grid, InputLabel, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { FieldArray, FormikProps } from 'formik';
+import { useTranslation } from 'react-i18next';
 import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
+import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { NewSocial } from '../PersonModal';
 import { PersonPhoneNumberItem } from './PersonPhoneNumberItem';
 

@@ -1,9 +1,8 @@
-import { Box } from '@mui/material';
 import React from 'react';
+import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { ContactsDocument } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import Loading from '../../Loading';
+import useTaskModal from 'src/hooks/useTaskModal';
 import {
   ActivityTypeEnum,
   ContactFilterSetInput,
@@ -11,11 +10,12 @@ import {
   IdValue,
   StatusEnum,
 } from '../../../../graphql/types.generated';
+import { ContactsDocument } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
+import Loading from '../../Loading';
 import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
-import useTaskModal from 'src/hooks/useTaskModal';
 
 interface Props {
   accountListId: string;

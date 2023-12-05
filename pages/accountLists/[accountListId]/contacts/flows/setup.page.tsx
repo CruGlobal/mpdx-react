@@ -1,33 +1,33 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
+import _ from 'lodash';
 import Head from 'next/head';
-import { useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import Box from '@mui/material/Box';
+import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
-import { useSnackbar } from 'notistack';
-import _ from 'lodash';
 import theme from 'src/theme';
-import useGetAppSettings from '../../../../../src/hooks/useGetAppSettings';
-import { ContactFlowSetupDragLayer } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
-import { UnusedStatusesColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
 import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
+import {
+  ContactFlowOption,
+  colorMap,
+  statusMap,
+} from '../../../../../src/components/Contacts/ContactFlow/ContactFlow';
+import { ContactFlowSetupColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
+import { UnusedStatusesColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
+import { ContactFlowSetupDragLayer } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
+import { ContactFlowSetupHeader } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Header/ContactFlowSetupHeader';
+import { useUpdateUserOptionsMutation } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import {
   GetUserOptionsDocument,
   GetUserOptionsQuery,
   useGetUserOptionsQuery,
 } from '../../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import Loading from '../../../../../src/components/Loading';
-import { ContactFlowSetupHeader } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Header/ContactFlowSetupHeader';
 import { useAccountListId } from '../../../../../src/hooks/useAccountListId';
-import {
-  colorMap,
-  ContactFlowOption,
-  statusMap,
-} from '../../../../../src/components/Contacts/ContactFlow/ContactFlow';
-import { ContactFlowSetupColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
-import { useUpdateUserOptionsMutation } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import { styled } from '@mui/material/styles';
+import useGetAppSettings from '../../../../../src/hooks/useGetAppSettings';
 
 const StickyBox = styled(Box)(() => ({
   ['@media (min-width:900px)']: {

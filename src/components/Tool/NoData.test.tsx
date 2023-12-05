@@ -1,7 +1,7 @@
-import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { render } from '../../../__tests__/util/testingLibraryReactMock';
+import { ThemeProvider } from '@mui/material/styles';
 import TestWrapper from '../../../__tests__/util/TestWrapper';
+import { render } from '../../../__tests__/util/testingLibraryReactMock';
 import theme from '../../theme';
 import NoData from './NoData';
 

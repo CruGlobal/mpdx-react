@@ -1,19 +1,19 @@
 import React from 'react';
+import CakeIcon from '@mui/icons-material/Cake';
 import TextField from '@mui/material/TextField';
 import { MobileDatePicker } from '@mui/x-date-pickers';
+import { FormikProps } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import CakeIcon from '@mui/icons-material/Cake';
-import { FormikProps } from 'formik';
-import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
-import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
+import { useLocale } from 'src/hooks/useLocale';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
+import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { NewSocial } from '../PersonModal';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
 
 interface PersonBirthdayProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;

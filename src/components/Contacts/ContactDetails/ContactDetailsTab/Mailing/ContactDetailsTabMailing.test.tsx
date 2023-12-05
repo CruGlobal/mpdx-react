@@ -1,9 +1,9 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import { SendNewsletterEnum } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';

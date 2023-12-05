@@ -1,10 +1,10 @@
+import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import React from 'react';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
-import theme from '../../../../../src/theme';
 import { IdValue } from '../../../../../graphql/types.generated';
+import theme from '../../../../theme';
 import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 
 interface Props {

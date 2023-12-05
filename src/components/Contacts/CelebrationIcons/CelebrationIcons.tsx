@@ -1,8 +1,8 @@
+import React from 'react';
+import Cake from '@mui/icons-material/Cake';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import Cake from '@mui/icons-material/Cake';
 import { DateTime, Interval } from 'luxon';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { RingIcon } from '../RingIcon';
 import { CelebrationItemsFragment } from './CelebrationItems.generated';

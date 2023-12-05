@@ -1,6 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
-import Router, { NextRouter, Router as IRouter } from 'next/router'; // eslint-disable-line import/no-named-as-default
 import { RouterContext } from 'next/dist/shared/lib/router-context';
+import Router, { Router as IRouter, NextRouter } from 'next/router'; // eslint-disable-line import/no-named-as-default
 
 interface Props {
   children: ReactNode;

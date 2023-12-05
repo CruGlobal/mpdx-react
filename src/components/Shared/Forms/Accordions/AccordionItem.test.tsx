@@ -1,6 +1,6 @@
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
 import theme from 'src/theme';
 import { AccordionItem } from './AccordionItem';
 

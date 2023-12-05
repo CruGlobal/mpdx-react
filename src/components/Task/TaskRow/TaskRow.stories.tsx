@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
-import { ResultEnum } from '../../../../graphql/types.generated';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
+import { ResultEnum } from '../../../../graphql/types.generated';
 import { TaskRow } from './TaskRow';
 import { TaskRowFragment, TaskRowFragmentDoc } from './TaskRow.generated';
 

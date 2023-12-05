@@ -1,17 +1,17 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import { SnackbarProvider } from 'notistack';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
-import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
-import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
-import theme from '../../../../../../theme';
-import LogNewsletter from './LogNewsletter';
-import { createNewsletterTaskMutationMock } from './LogNewsLetter.mock';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Settings } from 'luxon';
+import { SnackbarProvider } from 'notistack';
+import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
+import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
+import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
+import theme from '../../../../../../theme';
+import { createNewsletterTaskMutationMock } from './LogNewsLetter.mock';
+import LogNewsletter from './LogNewsletter';
 
 const accountListId = 'abc';
 const handleClose = jest.fn();

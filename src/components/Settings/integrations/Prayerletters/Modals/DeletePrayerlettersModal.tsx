@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
+import { DialogActions, DialogContent, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DialogContent, DialogActions, Typography } from '@mui/material';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useDeletePrayerlettersAccountMutation } from '../PrayerlettersAccount.generated';
-import Modal from 'src/components/common/Modal/Modal';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface DeletePrayerlettersAccountModalProps {
   handleClose: () => void;

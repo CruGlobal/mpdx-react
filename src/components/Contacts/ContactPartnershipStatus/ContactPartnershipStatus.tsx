@@ -1,18 +1,18 @@
 import React, { useMemo } from 'react';
 import { Box, Hidden, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
-import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { StatusEnum as ContactPartnershipStatusEnum } from '../../../../graphql/types.generated';
+import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import {
   ContactLateStatusEnum,
   ContactLateStatusLabel,
 } from './ContactLateStatusLabel/ContactLateStatusLabel';
-import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/ContactPartnershipStatusLabel';
-import { currencyFormat } from 'src/lib/intlFormat';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
-import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
+import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 
 interface ContactPartnershipStatusProps {
   lateAt: ContactRowFragment['lateAt'];

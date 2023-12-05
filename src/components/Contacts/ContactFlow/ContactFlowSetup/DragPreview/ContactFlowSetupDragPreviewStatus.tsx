@@ -1,8 +1,8 @@
+import React, { memo } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import theme from 'src/theme';
-import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import theme from 'src/theme';
 
 interface Props {
   status: string;

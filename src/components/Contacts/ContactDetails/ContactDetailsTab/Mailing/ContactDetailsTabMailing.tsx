@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import CreateIcon from '@mui/icons-material/Create';
+import LocationOn from '@mui/icons-material/LocationOn';
 import { Box, Grid, IconButton, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import LocationOn from '@mui/icons-material/LocationOn';
-import CreateIcon from '@mui/icons-material/Create';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
+import { sourceToStr } from 'src/utils/sourceToStr';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../../ContactDetailContext';
+import { ContactDetailEditIcon } from '../ContactDetailsTab';
 import {
   ContactDetailsAddButton,
   ContactDetailsAddIcon,
   ContactDetailsAddText,
 } from '../People/ContactDetailsTabPeople';
-import {
-  ContactDetailContext,
-  ContactDetailsType,
-} from '../../ContactDetailContext';
+import { AddAddressModal } from './AddAddressModal/AddAddressModal';
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
-import { AddAddressModal } from './AddAddressModal/AddAddressModal';
 import { EditMailingInfoModal } from './EditMailingInfoModal/EditMailingInfoModal';
-import { ContactDetailEditIcon } from '../ContactDetailsTab';
-import { sourceToStr } from 'src/utils/sourceToStr';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
-import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
