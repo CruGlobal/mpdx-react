@@ -1,0 +1,7 @@
+extend type Mutation {
+  deleteMailchimpAccount(input: DeleteMailchimpAccountInput!): String!
+}
+
+input DeleteMailchimpAccountInput {
+  accountListId: ID!
+}
