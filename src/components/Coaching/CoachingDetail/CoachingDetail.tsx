@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import {
   Box,
   Divider,
@@ -9,23 +10,22 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-// TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
+import DonationHistories from 'src/components/Dashboard/DonationHistories';
+import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
+import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
+import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
-import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
+import { ActivitySummary } from './ActivitySummary/ActivitySummary';
+import { AppointmentResults } from './AppointmentResults/AppointmentResults';
+import { CoachingSidebar } from './CoachingSidebar';
 import {
   useGetCoachingDonationGraphQuery,
   useLoadAccountListCoachingDetailQuery,
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
-import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
-import DonationHistories from 'src/components/Dashboard/DonationHistories';
-import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
-import { AppointmentResults } from './AppointmentResults/AppointmentResults';
-import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
-import { CoachingSidebar } from './CoachingSidebar';
-import { useTranslation } from 'react-i18next';
+import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 
 export enum CoachingPeriodEnum {
   Weekly = 'Weekly',
@@ -50,6 +50,7 @@ const CoachingDetailContainer = styled(Box)({
 
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
+  paddingBottom: theme.spacing(6), // prevent the HelpScout beacon from obscuring content at the bottom
   width: '100vw',
   [theme.breakpoints.up('md')]: {
     width: 'calc(100vw - 20rem)',
@@ -208,6 +209,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 currency={accountListData?.currency}
                 period={period}
               />
+              <ActivitySummary accountListId={accountListId} period={period} />
             </CoachingItemContainer>
           </>
         )}

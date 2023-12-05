@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
-import { Toolbar, AppBar, useScrollTrigger, Theme, Grid } from '@mui/material';
+import { AppBar, Grid, Theme, Toolbar, useScrollTrigger } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 

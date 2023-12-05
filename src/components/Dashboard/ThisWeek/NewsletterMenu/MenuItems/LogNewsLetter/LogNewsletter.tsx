@@ -1,38 +1,37 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  IconButton,
-  FormControl,
-  TextField,
-  Grid,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormLabel,
-  InputAdornment,
-  CircularProgress,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import * as yup from 'yup';
-import CloseIcon from '@mui/icons-material/Close';
-import { useTranslation } from 'react-i18next';
-import { Formik } from 'formik';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import ClockIcon from '@mui/icons-material/AccessTime';
 import CalendarIcon from '@mui/icons-material/CalendarToday';
+import CloseIcon from '@mui/icons-material/Close';
+import {
+  CircularProgress,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Grid,
+  IconButton,
+  InputAdornment,
+  Radio,
+  RadioGroup,
+  TextField,
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
-
-import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import {
-  SubmitButton,
   CancelButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useLocale } from 'src/hooks/useLocale';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
+import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 
 interface Props {
   accountListId: string;
@@ -177,7 +176,7 @@ const LogNewsletter = ({
                     onChange={handleChange('subject')}
                     fullWidth
                     multiline
-                    inputProps={{ 'aria-label': 'Subject' }}
+                    inputProps={{ 'aria-label': t('Subject') }}
                     error={!!errors.subject && touched.subject}
                     helperText={
                       errors.subject &&
@@ -275,7 +274,7 @@ const LogNewsletter = ({
                     onChange={(event) => changeCommentBody(event.target.value)}
                     fullWidth
                     multiline
-                    inputProps={{ 'aria-label': 'Comment' }}
+                    inputProps={{ 'aria-label': t('Comment') }}
                     variant="outlined"
                   />
                 </LogFormControl>

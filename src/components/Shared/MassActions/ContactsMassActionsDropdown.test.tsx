@@ -1,18 +1,18 @@
 import React from 'react';
-import { useSession } from 'next-auth/react';
-import { SnackbarProvider } from 'notistack';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import theme from 'src/theme';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { useSession } from 'next-auth/react';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import useTaskModal from '../../../hooks/useTaskModal';
-import { ContactsMassActionsDropdown } from './ContactsMassActionsDropdown';
-import { TableViewModeEnum } from '../Header/ListHeader';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import theme from 'src/theme';
+import useTaskModal from '../../../hooks/useTaskModal';
+import { TableViewModeEnum } from '../Header/ListHeader';
+import { ContactsMassActionsDropdown } from './ContactsMassActionsDropdown';
 
 const selectedIds: string[] = ['abc'];
 const massDeselectAll = jest.fn();

@@ -2,15 +2,15 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ResultEnum } from '../../../../graphql/types.generated';
 import {
-  gqlMock,
   GqlMockedProvider,
+  gqlMock,
 } from '../../../../__tests__/util/graphqlMocking';
-import theme from '../../../theme';
+import { ResultEnum } from '../../../../graphql/types.generated';
 import useTaskModal from '../../../hooks/useTaskModal';
-import { TaskRowFragment, TaskRowFragmentDoc } from './TaskRow.generated';
+import theme from '../../../theme';
 import { TaskRow } from './TaskRow';
+import { TaskRowFragment, TaskRowFragmentDoc } from './TaskRow.generated';
 
 const onContactSelected = jest.fn();
 const onTaskCheckSelected = jest.fn();

@@ -1,14 +1,14 @@
 import React from 'react';
+import Button from '@mui/material/Button';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import Button from '@mui/material/Button';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../theme';
 import TestRouter from '__tests__/util/TestRouter';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { TasksMassActionsDropdown } from '../../Shared/MassActions/TasksMassActionsDropdown';
+import theme from '../../../theme';
+import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
 import {
   ListHeader,
   ListHeaderCheckBoxState,

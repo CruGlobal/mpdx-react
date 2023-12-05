@@ -1,3 +1,5 @@
+import React from 'react';
+import Lock from '@mui/icons-material/Lock';
 import {
   Checkbox,
   FormControl,
@@ -7,24 +9,21 @@ import {
   Select,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React from 'react';
-
-import { useTranslation } from 'react-i18next';
 import { FormikErrors, getIn } from 'formik';
-import Lock from '@mui/icons-material/Lock';
-import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
-import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
+import { useTranslation } from 'react-i18next';
+import { InputMaybe } from 'pages/api/graphql-rest.page.generated';
 import {
   PersonCreateInput,
   PersonEmailAddressInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
+import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import {
   ContactInputField,
   NewSocial,
   PrimaryControlLabel,
 } from '../PersonModal';
-import { InputMaybe } from 'pages/api/graphql-rest.page.generated';
 
 interface Props {
   emailAddress: PersonEmailAddressInput;

@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
 import {
   CheckboxFilter,
-  DaterangeFilter,
   DateRangeInput,
   DateRangeOption,
+  DaterangeFilter,
   MultiselectFilter,
   NumericRangeFilter,
   NumericRangeInput,

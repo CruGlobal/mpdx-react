@@ -1,17 +1,17 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
-import theme from 'src/theme';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import TestRouter from '__tests__/util/TestRouter';
-import { LoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
-import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
+import theme from 'src/theme';
 import {
-  beforeTestResizeObserver,
   afterTestResizeObserver,
+  beforeTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
+import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
+import { LoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
 
 jest.mock('./AppointmentResults/AppointmentResults');
 

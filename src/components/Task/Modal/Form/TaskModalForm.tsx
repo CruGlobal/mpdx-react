@@ -1,38 +1,55 @@
 import React, {
+  ChangeEventHandler,
   ReactElement,
   useCallback,
-  useState,
-  useRef,
   useEffect,
-  ChangeEventHandler,
+  useRef,
+  useState,
 } from 'react';
-import {
-  TextField,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Chip,
-  Grid,
-  CircularProgress,
-  InputAdornment,
-  Typography,
-  Tooltip,
-  Autocomplete,
-  DialogContent,
-  DialogActions,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
-import InfoIcon from '@mui/icons-material/InfoOutlined';
-import { Formik } from 'formik';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
-import { DateTime } from 'luxon';
 import CalendarToday from '@mui/icons-material/CalendarToday';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
 import Schedule from '@mui/icons-material/Schedule';
+import {
+  Autocomplete,
+  Chip,
+  CircularProgress,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  Grid,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { Formik } from 'formik';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';
+import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
+import {
+  CancelButton,
+  DeleteButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
+import { useLocale } from 'src/hooks/useLocale';
+import useTaskModal from 'src/hooks/useTaskModal';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import {
+  getLocalizedNotificationTimeUnit,
+  getLocalizedNotificationType,
+} from 'src/utils/functions/getLocalizedNotificationStrings';
+import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -41,34 +58,17 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
-import {
-  useGetDataForTaskModalQuery,
-  useCreateTasksMutation,
-  useUpdateTaskMutation,
-  useGetTaskModalContactsFilteredQuery,
-} from '../../Modal/Form/TaskModal.generated';
-import theme from '../../../../../src/theme';
-import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
-import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
-import {
-  SubmitButton,
-  CancelButton,
-  DeleteButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { possibleResults } from './PossibleResults';
-import { possibleNextActions } from './PossibleNextActions';
-import useTaskModal from 'src/hooks/useTaskModal';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
-import {
-  getLocalizedNotificationTimeUnit,
-  getLocalizedNotificationType,
-} from 'src/utils/functions/getLocalizedNotificationStrings';
+import theme from '../../../../theme';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
-import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { useLocale } from 'src/hooks/useLocale';
+import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
+import { possibleNextActions } from './PossibleNextActions';
+import { possibleResults } from './PossibleResults';
+import {
+  useCreateTasksMutation,
+  useGetDataForTaskModalQuery,
+  useGetTaskModalContactsFilteredQuery,
+  useUpdateTaskMutation,
+} from './TaskModal.generated';
 
 const taskSchema = yup.object({
   id: yup.string().nullable(),
@@ -298,7 +298,7 @@ const TaskModalForm = ({
                   onChange={handleChange('subject')}
                   fullWidth
                   multiline
-                  inputProps={{ 'aria-label': 'Subject' }}
+                  inputProps={{ 'aria-label': t('Subject') }}
                   error={!!errors.subject && touched.subject}
                   helperText={
                     errors.subject && touched.subject && t('Field is required')
@@ -354,7 +354,7 @@ const TaskModalForm = ({
                     onChange={handleChange('location')}
                     fullWidth
                     multiline
-                    inputProps={{ 'aria-label': 'Location' }}
+                    inputProps={{ 'aria-label': t('Location') }}
                   />
                 </Grid>
               )}
@@ -677,7 +677,7 @@ const TaskModalForm = ({
                           value={notificationTimeBefore ?? ''}
                           onChange={handleChange('notificationTimeBefore')}
                           inputProps={{
-                            'aria-label': 'Time',
+                            'aria-label': t('Time'),
                             type: 'number',
                             min: 0,
                           }}
@@ -736,7 +736,7 @@ const TaskModalForm = ({
                     }
                     fullWidth
                     multiline
-                    inputProps={{ 'aria-label': 'Comment' }}
+                    inputProps={{ 'aria-label': t('Comment') }}
                   />
                 </Grid>
               )}

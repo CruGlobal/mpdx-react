@@ -1,7 +1,16 @@
 import React from 'react';
-import { DateTime } from 'luxon';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { DeepPartial } from 'ts-essentials';
+import { gqlMock } from '__tests__/util/graphqlMocking';
+import { render } from '__tests__/util/testingLibraryReactMock';
+import {
+  GetTaskAnalyticsDocument,
+  GetTaskAnalyticsQuery,
+  GetTaskAnalyticsQueryVariables,
+} from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
+import { AccountListTypeEnum, CoachingPeriodEnum } from './CoachingDetail';
+import { CoachingSidebar } from './CoachingSidebar';
 import {
   LoadAccountListCoachingDetailDocument,
   LoadAccountListCoachingDetailQuery,
@@ -10,15 +19,6 @@ import {
   LoadCoachingDetailQuery,
   LoadCoachingDetailQueryVariables,
 } from './LoadCoachingDetail.generated';
-import { AccountListTypeEnum, CoachingPeriodEnum } from './CoachingDetail';
-import { gqlMock } from '__tests__/util/graphqlMocking';
-import { render } from '__tests__/util/testingLibraryReactMock';
-import { CoachingSidebar } from './CoachingSidebar';
-import {
-  GetTaskAnalyticsDocument,
-  GetTaskAnalyticsQuery,
-  GetTaskAnalyticsQueryVariables,
-} from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
 
 interface TestComponentProps {
   accountListType?: AccountListTypeEnum;

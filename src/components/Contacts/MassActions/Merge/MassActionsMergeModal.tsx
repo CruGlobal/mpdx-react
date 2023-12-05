@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Alert,
   Avatar,
@@ -8,23 +9,22 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
-import Modal from '../../../common/Modal/Modal';
-import {
-  useMassActionsMergeMutation,
-  useGetContactsForMergingQuery,
-} from './MassActionsMerge.generated';
-import theme from 'src/theme';
 import { DateTime } from 'luxon';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import theme from 'src/theme';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import Modal from '../../../common/Modal/Modal';
+import {
+  useGetContactsForMergingQuery,
+  useMassActionsMergeMutation,
+} from './MassActionsMerge.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),

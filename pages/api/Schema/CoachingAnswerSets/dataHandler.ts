@@ -1,6 +1,6 @@
 import {
-  CoachingAnswerSet,
   CoachingAnswer,
+  CoachingAnswerSet,
   CoachingQuestion,
 } from '../../../../graphql/types.generated';
 

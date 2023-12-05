@@ -1,5 +1,5 @@
-import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
+import { DateTime } from 'luxon';
 import { TaskDate } from './TaskDate';
 
 export default {

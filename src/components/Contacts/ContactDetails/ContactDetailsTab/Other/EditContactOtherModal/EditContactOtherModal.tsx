@@ -1,8 +1,4 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
-import { Formik } from 'formik';
-import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
 import {
   Autocomplete,
   Box,
@@ -18,32 +14,36 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { Formik } from 'formik';
 import debounce from 'lodash/fp/debounce';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
+import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import {
   ContactUpdateInput,
   PreferredContactMethodEnum,
   UserScopedToAccountList,
 } from '../../../../../../../graphql/types.generated';
-import Modal from '../../../../../common/Modal/Modal';
-import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import { useGetTimezones } from '../../../../../../hooks/useGetTimezones';
-import { localizedContactMethod } from '../ContactDetailsOther';
-import { ContactOtherFragment } from '../ContactOther.generated';
+import { useApiConstants } from '../../../../../Constants/UseApiConstants';
+import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
+import { localizedContactMethod } from '../ContactDetailsOther';
+import { ContactOtherFragment } from '../ContactOther.generated';
 import {
-  useUpdateContactOtherMutation,
   useAssigneeOptionsQuery,
   useChurchOptionsQuery,
+  useUpdateContactOtherMutation,
 } from './EditContactOther.generated';
-import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

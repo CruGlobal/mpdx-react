@@ -1,20 +1,20 @@
 import React, { Dispatch, ReactElement, SetStateAction } from 'react';
 import { Box, TextField } from '@mui/material';
 import { Formik, FormikHelpers } from 'formik';
-import * as yup from 'yup';
-import { DateTime } from 'luxon';
 import { motion } from 'framer-motion';
 import reject from 'lodash/fp/reject';
-import { v4 as uuidv4 } from 'uuid';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { v4 as uuidv4 } from 'uuid';
+import * as yup from 'yup';
+import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
+import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { TaskCommentCreateInput } from '../../../../../../graphql/types.generated';
+import { useUser } from '../../../../User/useUser';
 import {
   GetCommentsForTaskModalCommentListDocument,
   GetCommentsForTaskModalCommentListQuery,
 } from '../TaskListComments.generated';
-import { useUser } from '../../../../User/useUser';
-import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
-import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 export const commentSchema: yup.SchemaOf<Omit<TaskCommentCreateInput, 'id'>> =
   yup.object({
@@ -116,7 +116,7 @@ const TaskModalCommentsListForm = ({
                 onChange={handleChange('body')}
                 fullWidth
                 multiline
-                inputProps={{ 'aria-label': 'Body' }}
+                inputProps={{ 'aria-label': t('Body') }}
                 required
                 onKeyPress={(event): void => {
                   if (event.key === 'Enter' && !event.shiftKey) {

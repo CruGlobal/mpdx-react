@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import {
-  cookieDefaultInfo,
-  clearNextAuthSessionCookies,
-} from './utils/cookies';
 import { returnRedirectUrl } from './handoff.page';
+import {
+  clearNextAuthSessionCookies,
+  cookieDefaultInfo,
+} from './utils/cookies';
 
 const mpdxWebHandoff = async (
   req: NextApiRequest,

@@ -1,21 +1,21 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { SendNewsletterEnum } from '../../../../../../../../graphql/types.generated';
 import {
-  gqlMock,
   GqlMockedProvider,
+  gqlMock,
 } from '../../../../../../../../__tests__/util/graphqlMocking';
+import { SendNewsletterEnum } from '../../../../../../../../graphql/types.generated';
 import theme from '../../../../../../../theme';
-import { EditContactDetailsModal } from './EditContactDetailsModal';
 import {
   ContactDetailsFragment,
   ContactDetailsFragmentDoc,
 } from './EditContactDetails.generated';
+import { EditContactDetailsModal } from './EditContactDetailsModal';
 
 const handleClose = jest.fn();
 const mock = gqlMock<ContactDetailsFragment>(ContactDetailsFragmentDoc);

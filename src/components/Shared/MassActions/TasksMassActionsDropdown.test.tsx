@@ -1,15 +1,15 @@
 import React from 'react';
-import { SnackbarProvider } from 'notistack';
-import { render, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import theme from '../../../theme';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import { GetTasksForAddingTagsQuery } from 'src/components/Task/MassActions/AddTags/TasksAddTags.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import theme from '../../../theme';
 import { TasksMassActionsDropdown } from './TasksMassActionsDropdown';
-import { GetTasksForAddingTagsQuery } from 'src/components/Task/MassActions/AddTags/TasksAddTags.generated';
 
 const selectedIds: string[] = ['abc'];
 const massDeselectAll = jest.fn();

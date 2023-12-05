@@ -1,3 +1,4 @@
+import React, { ReactElement, useState } from 'react';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import {
   CircularProgress,
@@ -17,23 +18,22 @@ import {
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
-import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
-  DeleteButton,
   CancelButton,
+  DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
-import * as yup from 'yup';
 import { Donation } from '../DonationsReportTable';
 import {
   useDeleteDonationMutation,
@@ -189,7 +189,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     label={t('Amount')}
                     onChange={handleChange('convertedAmount')}
                     fullWidth
-                    inputProps={{ 'aria-label': 'Amount' }}
+                    inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
                     helperText={
                       errors.convertedAmount &&
@@ -274,7 +274,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     label={t('Motivation')}
                     onChange={handleChange('motivation')}
                     fullWidth
-                    inputProps={{ 'aria-label': 'motivation' }}
+                    inputProps={{ 'aria-label': t('motivation') }}
                     disabled
                   />
                 </Grid>
@@ -284,7 +284,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     label={t('Gift ID')}
                     onChange={handleChange('giftId')}
                     fullWidth
-                    inputProps={{ 'aria-label': 'giftId' }}
+                    inputProps={{ 'aria-label': t('giftId') }}
                     disabled
                   />
                 </Grid>

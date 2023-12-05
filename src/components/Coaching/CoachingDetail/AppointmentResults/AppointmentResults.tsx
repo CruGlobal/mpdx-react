@@ -3,37 +3,30 @@ import {
   Box,
   CardContent,
   CardHeader,
+  Divider,
   Table,
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
-import AnimatedCard from 'src/components/AnimatedCard';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
-import { getResultColor } from '../helpers';
 import { HelpButton } from '../HelpButton';
+import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
+import { getResultColor } from '../helpers';
 import { useAppointmentResultsQuery } from './AppointmentResults.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
   overflowX: 'scroll',
 }));
-
-const AlignedTableCell = styled(TableCell)({
-  border: 'none',
-  textAlign: 'right',
-  ':first-of-type': {
-    textAlign: 'unset',
-  },
-});
 
 interface AppointmentResultsProps {
   accountListId: string;
@@ -99,9 +92,12 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
           <MultilineSkeleton lines={4} />
         ) : (
           <TableContainer sx={{ minWidth: 600 }}>
-            <Table size="small" aria-label="appointments and results table">
-              <TableHead>
-                <TableRow>
+            <Table
+              size="small"
+              aria-label={t('appointments and results table')}
+            >
+              <TableBody>
+                <HeaderRow role="rowheader">
                   <AlignedTableCell>{t('Appointments')}</AlignedTableCell>
                   {appointmentResults.map(({ id, startDate }) => (
                     <AlignedTableCell key={id}>
@@ -113,9 +109,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                     </AlignedTableCell>
                   ))}
                   <AlignedTableCell>{t('Average')}</AlignedTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+                </HeaderRow>
                 <TableRow>
                   <AlignedTableCell>{t('Scheduled')}</AlignedTableCell>
                   {appointmentResults.map(({ id, appointmentsScheduled }) => (
@@ -170,14 +164,16 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                     {Math.round(averages.individualAppointments)}
                   </AlignedTableCell>
                 </TableRow>
-                <TableRow>
-                  <AlignedTableCell
-                    colSpan={(appointmentResults.length ?? 0) + 2}
-                    sx={{ fontWeight: 'bold' }}
-                  >
+                <DividerRow>
+                  <TableCell colSpan={appointmentResults.length + 2}>
+                    <Divider />
+                  </TableCell>
+                </DividerRow>
+                <HeaderRow role="rowheader">
+                  <AlignedTableCell colSpan={appointmentResults.length + 2}>
                     {t('Results')}
                   </AlignedTableCell>
-                </TableRow>
+                </HeaderRow>
                 <TableRow>
                   <AlignedTableCell>
                     {t('New Monthly Partners')}

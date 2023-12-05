@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   FormControl,
   InputLabel,
@@ -5,7 +6,6 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import React from 'react';
 import { RadioFilter } from '../../../../graphql/types.generated';
 
 interface Props {

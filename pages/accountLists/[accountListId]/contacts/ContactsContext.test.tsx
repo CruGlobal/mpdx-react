@@ -1,24 +1,24 @@
 import React, { useContext } from 'react';
-import { render, waitFor } from '@testing-library/react';
 import { Box, Button, Typography } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import TestRouter from '../../../../__tests__/util/TestRouter';
-import theme from '../../../../src/theme';
-import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../../../src/components/Shared/Header/ListHeader';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import theme from '../../../../src/theme';
+import { ContactFiltersQuery } from './Contacts.generated';
 import {
   ContactsContext,
-  ContactsType,
   ContactsContextSavedFilters,
+  ContactsType,
 } from './ContactsContext';
-import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { ContactsPage } from './ContactsPage';
-import { ContactFiltersQuery } from './Contacts.generated';
 
 const accountListId = 'account-list-1';
 const push = jest.fn();

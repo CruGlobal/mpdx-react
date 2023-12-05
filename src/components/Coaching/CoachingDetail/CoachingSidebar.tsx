@@ -1,25 +1,26 @@
 import React, { Fragment, useMemo } from 'react';
-import { Box, Button, ButtonGroup, Divider, IconButton } from '@mui/material';
+// TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CloseIcon from '@mui/icons-material/Close';
+import { Box, Button, ButtonGroup, Divider, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import { GetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
-import theme from 'src/theme';
+import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
+import theme from 'src/theme';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
-import { SideContainerText } from './StyledComponents';
+import { CoachingPeriodEnum } from './CoachingDetail';
 import { CollapsibleEmailList } from './CollapsibleEmailList';
 import { CollapsiblePhoneList } from './CollapsiblePhoneList';
-import { getLastNewsletter } from './helpers';
-import { CoachingPeriodEnum } from './CoachingDetail';
 import {
   LoadAccountListCoachingDetailQuery,
   LoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
+import { SideContainerText } from './StyledComponents';
+import { getLastNewsletter } from './helpers';
 
 const CoachingSideContainer = styled(Box)(({ theme }) => ({
   width: '20rem',

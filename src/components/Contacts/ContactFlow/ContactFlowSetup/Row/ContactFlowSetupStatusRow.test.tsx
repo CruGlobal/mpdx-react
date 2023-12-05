@@ -1,11 +1,11 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../../../../src/theme';
 import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
+import theme from '../../../../../theme';
 import { ContactFlowSetupStatusRow } from './ContactFlowSetupStatusRow';
 
 describe('ContactFlowSetupStatusRow', () => {

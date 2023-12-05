@@ -1,22 +1,22 @@
+import React, { ReactElement } from 'react';
+import { LoadingButton } from '@mui/lab';
 import {
-  Grid,
   DialogActions,
   DialogContent,
   FormControl,
+  Grid,
   InputLabel,
-  Select,
   MenuItem,
+  Select,
 } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
+import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
-import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { Formik } from 'formik';
-import { exportRest } from '../exportRest';
-import Modal from '../../../../common/Modal/Modal';
 import theme from '../../../../../theme';
 import { ActionButton } from '../../../../common/Modal/ActionButtons/ActionButtons';
+import Modal from '../../../../common/Modal/Modal';
+import { exportRest } from '../exportRest';
 
 interface MailMergedLabelModalProps {
   ids: string[];

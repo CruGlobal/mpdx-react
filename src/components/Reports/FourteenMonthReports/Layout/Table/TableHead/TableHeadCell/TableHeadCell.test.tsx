@@ -1,8 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import { TableHeadCell } from './TableHeadCell';
+import { render } from '@testing-library/react';
 import theme from 'src/theme';
+import { TableHeadCell } from './TableHeadCell';
 
 const onClick = jest.fn();
 const direction = 'desc';

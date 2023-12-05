@@ -1,12 +1,10 @@
-import { MockedProvider } from '@apollo/client/testing';
 import React, { ReactElement } from 'react';
-
+import { MockedProvider } from '@apollo/client/testing';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from '../ContactDetailContext';
-
 import { ContactDetailsHeader } from './ContactDetailsHeader';
 import { GetContactDetailsHeaderDocument } from './ContactDetailsHeader.generated';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'accountList-1';
 const contactId = 'contact-1';

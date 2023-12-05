@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import {
   Autocomplete,
   Checkbox,
@@ -9,8 +9,8 @@ import {
   TextField,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import Tooltip from '@mui/material/Tooltip';
+import { useTranslation } from 'react-i18next';
 import { MultiselectFilter } from '../../../../graphql/types.generated';
 import { ReverseFiltersMap } from './FilterPanel';
 

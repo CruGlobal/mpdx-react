@@ -1,8 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import { AccountListSubheader as ListSubheader } from './ListSubheader';
+import { render } from '@testing-library/react';
 import theme from 'src/theme';
+import { AccountListSubheader as ListSubheader } from './ListSubheader';
 
 const organizationName = 'test org';
 

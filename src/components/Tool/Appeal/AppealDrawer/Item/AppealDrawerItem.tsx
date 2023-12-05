@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
+import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import { makeStyles } from 'tss-react/mui';
-import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
 import theme from '../../../../../theme';
 import { useAppealContext } from '../../AppealContextProvider/AppealContextProvider';
 

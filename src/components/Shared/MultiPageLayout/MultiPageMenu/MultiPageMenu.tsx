@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import Close from '@mui/icons-material/Close';
 import {
   Box,
   BoxProps,
@@ -9,15 +9,15 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import Close from '@mui/icons-material/Close';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { Item } from './Item/Item';
-import { MultiselectFilter } from '../../../../../graphql/types.generated';
-import { FilterListItemMultiselect } from 'src/components/Shared/Filters/FilterListItemMultiselect';
 import { useGetDesignationAccountsQuery } from 'src/components/Reports/DonationsReport/Table/Modal/EditDonation.generated';
-import { useGetUserAccessQuery } from './MultiPageMenuItems.generated';
+import { FilterListItemMultiselect } from 'src/components/Shared/Filters/FilterListItemMultiselect';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { MultiselectFilter } from '../../../../../graphql/types.generated';
+import { Item } from './Item/Item';
 import { reportNavItems, settingsNavItems } from './MultiPageMenuItems';
+import { useGetUserAccessQuery } from './MultiPageMenuItems.generated';
 
 export enum NavTypeEnum {
   Reports = 'reports',

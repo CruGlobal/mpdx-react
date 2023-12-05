@@ -1,5 +1,5 @@
-import { Checkbox, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import React from 'react';
+import { Checkbox, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { CheckboxFilter } from '../../../../graphql/types.generated';
 
 interface Props {

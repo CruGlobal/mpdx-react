@@ -1,17 +1,17 @@
 import React from 'react';
 import type { FC } from 'react';
-import { List } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AddIcon from '@mui/icons-material/Add';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SearchIcon from '@mui/icons-material/Search';
+import { List } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { NavItem } from '../NavItem/NavItem';
-import NotificationMenu from '../../TopBar/Items/NotificationMenu/NotificationMenu';
 import { useGetTopBarQuery } from '../../TopBar/GetTopBar.generated';
-import { SearchMenuPanel } from './SearchMenuPanel/SearchMenuPanel';
+import NotificationMenu from '../../TopBar/Items/NotificationMenu/NotificationMenu';
+import { NavItem } from '../NavItem/NavItem';
 import { AddMenuPanel } from './AddMenuPanel/AddMenuPanel';
 import { ProfileMenuPanel } from './ProfileMenuPanel/ProfileMenuPanel';
+import { SearchMenuPanel } from './SearchMenuPanel/SearchMenuPanel';
 
 export const NavTools: FC = () => {
   const { data } = useGetTopBarQuery();

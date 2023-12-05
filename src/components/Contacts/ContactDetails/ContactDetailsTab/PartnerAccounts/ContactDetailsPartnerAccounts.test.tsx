@@ -1,12 +1,12 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import React from 'react';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
-import TestRouter from '__tests__/util/TestRouter';
 import { ContactDetailsPartnerAccounts } from './ContactDetailsPartnerAccounts';
 
 const accountListId = 'account-list-1';
@@ -141,7 +141,7 @@ describe('ContactDetailsPartnerAccounts', () => {
       getByRole('textbox', { name: 'Account Number' }),
       'new-account',
     );
-    userEvent.click(getByRole('button', { name: 'submit' }));
+    userEvent.click(getByRole('button', { name: 'Submit' }));
     await waitFor(() =>
       expect(
         queryByRole('textbox', { name: 'Account Number' }),

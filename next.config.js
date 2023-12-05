@@ -1,8 +1,9 @@
 const path = require('path');
+const bundleAnalyzer = require('@next/bundle-analyzer');
 const withPlugins = require('next-compose-plugins');
-const withPWA = require('next-pwa');
 const withOptimizedImages = require('next-optimized-images');
 const withGraphql = require('next-plugin-graphql');
+const withPWA = require('next-pwa');
 require('dotenv').config();
 
 if (process.env.secrets) {
@@ -26,7 +27,7 @@ if (prod && !process.env.JWT_SECRET) {
 
 const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000';
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
+const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
@@ -50,6 +51,7 @@ module.exports = withPlugins([
       API_URL: process.env.API_URL ?? 'https://api.stage.mpdx.org/graphql',
       REST_API_URL:
         process.env.REST_API_URL ?? 'https://api.stage.mpdx.org/api/v2/',
+      OAUTH_URL: process.env.OAUTH_URL ?? 'https://auth.stage.mpdx.org',
       SITE_URL: siteUrl,
       CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
       CLIENT_SECRET: process.env.CLIENT_SECRET,
@@ -104,6 +106,9 @@ module.exports = withPlugins([
       HS_HOME_SUGGESTIONS: process.env.HS_HOME_SUGGESTIONS,
       HS_REPORTS_SUGGESTIONS: process.env.HS_REPORTS_SUGGESTIONS,
       HS_TASKS_SUGGESTIONS: process.env.HS_TASKS_SUGGESTIONS,
+      HS_SETTINGS_SERVICES_SUGGESTIONS:
+        process.env.HS_SETTINGS_SERVICES_SUGGESTIONS,
+      HS_SETUP_FIND_ORGANIZATION: process.env.HS_SETUP_FIND_ORGANIZATION,
       ALERT_MESSAGE: process.env.ALERT_MESSAGE,
     },
     experimental: {

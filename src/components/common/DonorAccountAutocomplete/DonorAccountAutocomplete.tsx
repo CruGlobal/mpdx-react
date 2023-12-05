@@ -1,11 +1,11 @@
+import { ReactElement } from 'react';
 import {
-  TextField,
-  CircularProgress,
   Autocomplete,
   BaseTextFieldProps,
+  CircularProgress,
+  TextField,
 } from '@mui/material';
 import { map, unionBy } from 'lodash';
-import { ReactElement } from 'react';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useGetDonorAccountsLazyQuery } from './DonorAccountAutocomplete.generated';
 

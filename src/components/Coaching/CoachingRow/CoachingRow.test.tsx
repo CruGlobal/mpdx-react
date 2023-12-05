@@ -1,10 +1,10 @@
+import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
-import theme from 'src/theme';
-import { gqlMock, GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
 import {
   CoachedPersonFragment,
   CoachedPersonFragmentDoc,

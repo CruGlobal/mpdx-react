@@ -1,3 +1,4 @@
+import React, { ReactElement } from 'react';
 import {
   Autocomplete,
   CircularProgress,
@@ -7,19 +8,18 @@ import {
   TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
-import React, { ReactElement } from 'react';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
-import Modal from '../../../common/Modal/Modal';
-import { useGetAppealsForMassActionQuery } from './GetAppealsForMassAction.generated';
-import { useAddToAppealMutation } from './AddToAppealMutation.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
-  SubmitButton,
   CancelButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import Modal from '../../../common/Modal/Modal';
+import { useAddToAppealMutation } from './AddToAppealMutation.generated';
+import { useGetAppealsForMassActionQuery } from './GetAppealsForMassAction.generated';
 
 interface MassActionsAddToAppealModalProps {
   ids: string[];

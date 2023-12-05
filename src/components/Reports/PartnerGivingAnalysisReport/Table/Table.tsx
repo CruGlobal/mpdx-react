@@ -1,6 +1,4 @@
 import React, { FC } from 'react';
-import { useTranslation } from 'react-i18next';
-import { DateTime } from 'luxon';
 import {
   Checkbox,
   Table,
@@ -11,11 +9,13 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import type { Contact } from '../PartnerGivingAnalysisReport';
-import type { Order } from '../../Reports.type';
-import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
+import type { Order } from '../../Reports.type';
+import type { Contact } from '../PartnerGivingAnalysisReport';
 
 interface PartnerGivingAnalysisReportTableProps {
   onClick: (contactId: string) => void;
@@ -79,7 +79,7 @@ export const PartnerGivingAnalysisReportTable: FC<
     <StickyTableContainer>
       <StickyTable
         stickyHeader={true}
-        aria-label="partner giving analysis report table"
+        aria-label={t('Partner giving analysis report table')}
         data-testid="PartnerGivingAnalysisReport"
       >
         <TableHead
