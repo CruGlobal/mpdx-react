@@ -25,6 +25,7 @@ import { getLastNewsletter } from './helpers';
 const CoachingSideContainer = styled(Box)(({ theme }) => ({
   width: '20rem',
   minHeight: '100%',
+  overflow: 'scroll',
   padding: theme.spacing(1),
 }));
 
