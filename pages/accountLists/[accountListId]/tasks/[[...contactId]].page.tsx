@@ -1,45 +1,45 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Head from 'next/head';
-import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/router';
-import { Box, Button, ButtonGroup, Hidden } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { Box, Button, ButtonGroup, Hidden } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
-import theme from 'src/theme';
-import { suggestArticles } from 'src/lib/helpScout';
-import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
-import Loading from '../../../../src/components/Loading';
-import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { TaskFilterSetInput } from '../../../../graphql/types.generated';
-import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
-import {
-  headerHeight,
-  ListHeader,
-} from '../../../../src/components/Shared/Header/ListHeader';
-import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
-import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
-import { useMassSelection } from '../../../../src/hooks/useMassSelection';
-import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
-import { ContactsProvider } from '../contacts/ContactsContext';
-import {
-  useTaskFiltersQuery,
-  useTasksQuery,
-  TaskFiltersQuery,
-} from './Tasks.generated';
-import useTaskModal from 'src/hooks/useTaskModal';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import useTaskModal from 'src/hooks/useTaskModal';
+import { suggestArticles } from 'src/lib/helpScout';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import theme from 'src/theme';
+import { TaskFilterSetInput } from '../../../../graphql/types.generated';
+import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
+import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
+import Loading from '../../../../src/components/Loading';
+import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
+import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
+import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
+import {
+  ListHeader,
+  headerHeight,
+} from '../../../../src/components/Shared/Header/ListHeader';
+import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import {
   TaskFilterTabsTypes,
   taskFiltersTabs,
 } from '../../../../src/utils/tasks/taskFilterTabs';
-import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { ContactsProvider } from '../contacts/ContactsContext';
+import {
+  TaskFiltersQuery,
+  useTaskFiltersQuery,
+  useTasksQuery,
+} from './Tasks.generated';
 
 const buttonBarHeight = theme.spacing(6);
 

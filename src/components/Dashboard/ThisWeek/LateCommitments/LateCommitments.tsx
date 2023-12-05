@@ -1,22 +1,22 @@
 import React, { ReactElement } from 'react';
 import {
-  CardHeader,
-  CardActions,
   Button,
+  CardActions,
+  CardContent,
+  CardHeader,
   List,
   ListItem,
   ListItemText,
-  CardContent,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
 import { useRouter } from 'next/router';
-import AnimatedCard from '../../../AnimatedCard';
-import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
-import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useLocale } from 'src/hooks/useLocale';
+import { numberFormat } from 'src/lib/intlFormat/intlFormat';
 import {
   Contact,
   ContactConnection,
@@ -24,9 +24,9 @@ import {
   Scalars,
   StatusEnum,
 } from '../../../../../graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { numberFormat } from 'src/lib/intlFormat/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
+import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
+import AnimatedCard from '../../../AnimatedCard';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const LateCommitmentsContainer = styled(AnimatedCard)(({ theme }) => ({
   display: 'flex',

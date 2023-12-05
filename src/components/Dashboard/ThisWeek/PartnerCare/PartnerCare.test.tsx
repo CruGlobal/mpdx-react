@@ -1,14 +1,14 @@
 import React from 'react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
+import userEvent from '@testing-library/user-event';
 import {
-  render,
   fireEvent,
+  render,
 } from '../../../../../__tests__/util/testingLibraryReactMock';
-import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
-import theme from '../../../../theme';
 import useTaskModal from '../../../../hooks/useTaskModal';
+import theme from '../../../../theme';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import PartnerCare from './PartnerCare';
 
 jest.mock('../../../../hooks/useTaskModal');

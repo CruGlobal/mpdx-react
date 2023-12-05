@@ -1,19 +1,19 @@
 import React, { ReactElement, useMemo } from 'react';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Button,
-  DialogTitle,
   DialogActions,
   DialogContent,
   DialogContentText,
+  DialogTitle,
   IconButton,
   TextareaAutosize,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import Skeleton from '@mui/material/Skeleton';
-import CloseIcon from '@mui/icons-material/Close';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useGetEmailNewsletterContactsQuery } from './GetNewsletterContacts.generated';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useGetEmailNewsletterContactsQuery } from './GetNewsletterContacts.generated';
 
 interface Props {
   accountListId: string;

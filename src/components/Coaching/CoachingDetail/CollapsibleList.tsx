@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { styled } from '@mui/material/styles';
-import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import { styled } from '@mui/material/styles';
 import { SideContainerText } from './StyledComponents';
 
 const ExpandMoreIcon = styled(ExpandMore)(({ theme }) => ({

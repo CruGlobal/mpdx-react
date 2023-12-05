@@ -1,22 +1,22 @@
-import { ListItem, ListItemText } from '@mui/material';
 import React from 'react';
+import { ListItem, ListItemText } from '@mui/material';
 import {
   CheckboxFilter,
+  DateRangeInput,
   DaterangeFilter,
+  InputMaybe,
   MultiselectFilter,
   NumericRangeFilter,
+  NumericRangeInput,
   RadioFilter,
   TextFilter,
-  DateRangeInput,
-  NumericRangeInput,
-  InputMaybe,
 } from '../../../../graphql/types.generated';
 import { FilterListItemCheckbox } from './FilterListItemCheckbox';
 import { FilterListItemDateRange } from './FilterListItemDateRange';
 import { FilterListItemMultiselect } from './FilterListItemMultiselect';
 import { FilterListItemNumericRange } from './FilterListItemNumericRange';
-import { FilterListItemSlider } from './FilterListItemSlider';
 import { FilterListItemSelect } from './FilterListItemSelect';
+import { FilterListItemSlider } from './FilterListItemSlider';
 import { FilterListItemTextField } from './FilterListItemTextField';
 import { FilterValue } from './FilterPanel';
 

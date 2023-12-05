@@ -1,15 +1,15 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
-import React from 'react';
-import { SnackbarProvider } from 'notistack';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import theme from 'src/theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader';
 import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
-import TestRouter from '__tests__/util/TestRouter';
-import theme from 'src/theme';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 const accountListId = 'abc';
 const contactId = 'contact-1';

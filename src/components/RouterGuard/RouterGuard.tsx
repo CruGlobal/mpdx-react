@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { Box, CircularProgress } from '@mui/material';
+import { DateTime } from 'luxon';
 import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { DateTime } from 'luxon';
-import { Box, CircularProgress } from '@mui/material';
 
 interface Props {
   children?: React.ReactElement;

@@ -1,17 +1,17 @@
-import { StatusEnum } from '../../../../../../graphql/types.generated';
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import { SnackbarProvider } from 'notistack';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TestRouter from '../../../../../../__tests__/util/TestRouter';
-import theme from '../../../../../theme';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import useTaskModal from '../../../../../hooks/useTaskModal';
-import { UpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
-import { ContactDetailProvider } from '../../ContactDetailContext';
-import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions';
+import { SnackbarProvider } from 'notistack';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import TestRouter from '../../../../../../__tests__/util/TestRouter';
+import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
+import { StatusEnum } from '../../../../../../graphql/types.generated';
+import useTaskModal from '../../../../../hooks/useTaskModal';
+import theme from '../../../../../theme';
+import { ContactDetailProvider } from '../../ContactDetailContext';
+import { UpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions';
 
 const accountListId = '111';
 const contactId = 'contact-1';

@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import PageHeading from '../../PageHeading';
 import illustration9 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-9.svg';
+import PageHeading from '../../PageHeading';
 
 interface Props {
   firstName?: string;

@@ -1,33 +1,33 @@
 import React, { ReactElement } from 'react';
 import {
   Box,
-  Typography,
-  Theme,
-  CardHeader,
-  CardActions,
   Button,
+  CardActions,
+  CardContent,
+  CardHeader,
   List,
   ListItem,
-  ListItemText,
   ListItemSecondaryAction,
-  CardContent,
+  ListItemText,
+  Theme,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import Link from 'next/link';
 import { DateTime } from 'luxon';
+import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
+import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import useTaskModal from 'src/hooks/useTaskModal';
+import { numberFormat } from 'src/lib/intlFormat/intlFormat';
+import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
 import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import AnimatedCard from '../../../AnimatedCard';
 import TaskStatus from '../../../Task/Status';
-import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
-import useTaskModal from 'src/hooks/useTaskModal';
-import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
-import { numberFormat } from 'src/lib/intlFormat/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {

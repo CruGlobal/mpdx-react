@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
-  Table,
   Link,
+  Table,
   TableBody,
   TableCell,
   TableContainer,
@@ -11,17 +11,17 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import theme from 'src/theme';
-import InfoIcon from '@mui/icons-material/Info';
+import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
+import { Totals } from '../../FourteenMonthReport';
 import {
   FourteenMonthReportTableHead as TableHead,
   FourteenMonthReportTableHeadProps as TableHeadProps,
 } from './TableHead/TableHead';
 import type { Contact, Month } from './TableHead/TableHead';
-import { Totals } from '../../FourteenMonthReport';
 
 interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;

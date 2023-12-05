@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import List from '@mui/material/List';
 import { styled } from '@mui/material/styles';
-import { AccountListSubheader as ListSubheader } from './ListSubheader/ListSubheader';
 import { Account, AccountListItem as ListItem } from './ListItem/ListItem';
+import { AccountListSubheader as ListSubheader } from './ListSubheader/ListSubheader';
 
 export interface AccountsListProps {
   accounts: Account[];

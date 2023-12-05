@@ -1,5 +1,5 @@
 import React from 'react';
-import { OptionsObject, useSnackbar, WithSnackbarProps } from 'notistack';
+import { OptionsObject, WithSnackbarProps, useSnackbar } from 'notistack';
 
 // Adapted from https://github.com/iamhosseindhv/notistack/issues/30#issuecomment-832261019
 // Must be imported at least once in the app to initialize the ref

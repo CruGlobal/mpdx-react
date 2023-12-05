@@ -2,8 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { taskFiltersTabs } from '../../src/utils/tasks/taskFilterTabs';
 import {
-  cookieDefaultInfo,
   clearNextAuthSessionCookies,
+  cookieDefaultInfo,
 } from './utils/cookies';
 
 interface defineRedirectUrlProps {

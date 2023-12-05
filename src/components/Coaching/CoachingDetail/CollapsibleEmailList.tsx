@@ -1,10 +1,10 @@
 import { EmailAddress } from '../../../../graphql/types.generated';
+import { CollapsibleList } from './CollapsibleList';
 import {
-  ContrastLink,
   ContactInfoText,
+  ContrastLink,
   SideContainerText,
 } from './StyledComponents';
-import { CollapsibleList } from './CollapsibleList';
 
 interface EmailProps {
   email: Pick<EmailAddress, 'email' | 'location'>;

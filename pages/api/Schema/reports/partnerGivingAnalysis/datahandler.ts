@@ -1,9 +1,9 @@
+import { array, boolean, number, object, string } from 'yup';
 import {
   PartnerGivingAnalysisReport,
   PartnerGivingAnalysisReportContact,
   PartnerGivingAnalysisReportPagination,
 } from '../../../../../graphql/types.generated';
-import { array, boolean, number, object, string } from 'yup';
 
 const partnerGivingAnalysisSchema = object({
   data: array()

@@ -1,23 +1,23 @@
 import React, { FC } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Box, CardHeader, CardContent, Grid, Typography } from '@mui/material';
+import { Box, CardContent, CardHeader, Grid, Typography } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
-import type { Theme } from '@mui/material/styles/createTheme';
+import { useTranslation } from 'react-i18next';
 import {
-  ReferenceLine,
-  BarChart,
   Bar,
-  XAxis,
-  YAxis,
+  BarChart,
   CartesianGrid,
-  Tooltip,
   Legend,
+  ReferenceLine,
   ResponsiveContainer,
   Text,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
-import { currencyFormat } from 'src/lib/intlFormat';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+import type { Theme } from '@mui/material/styles/createTheme';
 
 type EntryHistory = {
   [key: string]: number | string;

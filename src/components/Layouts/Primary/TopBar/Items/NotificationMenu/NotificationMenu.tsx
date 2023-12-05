@@ -1,3 +1,6 @@
+import React, { ReactElement, useState } from 'react';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import {
   Badge,
   Box,
@@ -9,20 +12,17 @@ import {
   Theme,
   Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import React, { ReactElement, useState } from 'react';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useTranslation } from 'react-i18next';
-import illustration13 from '../../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
+import { makeStyles } from 'tss-react/mui';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
-import NotificationMenuItem from './Item';
+import illustration13 from '../../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
+import { useAcknowledgeAllUserNotificationsMutation } from './AcknowledgeAllUserNotifications.generated';
 import {
   GetNotificationsDocument,
   GetNotificationsQuery,
   useGetNotificationsQuery,
 } from './GetNotificationsQuery.generated';
-import { useAcknowledgeAllUserNotificationsMutation } from './AcknowledgeAllUserNotifications.generated';
+import NotificationMenuItem from './Item';
 
 interface NotificationMenuProps {
   isInDrawer?: boolean;

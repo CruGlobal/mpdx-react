@@ -1,32 +1,32 @@
-import React, { Fragment, useState, useMemo } from 'react';
-import { Box, Button, ButtonGroup, Divider, Typography } from '@mui/material';
+import React, { Fragment, useMemo, useState } from 'react';
 // TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import { Box, Button, ButtonGroup, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import DonationHistories from 'src/components/Dashboard/DonationHistories';
+import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
+import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import theme from 'src/theme';
+import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
-import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
+import { ActivitySummary } from './ActivitySummary/ActivitySummary';
+import { AppointmentResults } from './AppointmentResults/AppointmentResults';
+import { CollapsibleEmailList } from './CollapsibleEmailList';
+import { CollapsiblePhoneList } from './CollapsiblePhoneList';
 import {
   useGetCoachingDonationGraphQuery,
   useLoadAccountListCoachingDetailQuery,
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
-import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
-import theme from 'src/theme';
-import { currencyFormat } from 'src/lib/intlFormat';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
-import DonationHistories from 'src/components/Dashboard/DonationHistories';
-import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
-import { AppointmentResults } from './AppointmentResults/AppointmentResults';
-import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
+import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import { SideContainerText } from './StyledComponents';
-import { CollapsibleEmailList } from './CollapsibleEmailList';
-import { CollapsiblePhoneList } from './CollapsiblePhoneList';
-import { getLastNewsletter } from './helpers';
-import { ActivitySummary } from './ActivitySummary/ActivitySummary';
 import { WeeklyReport } from './WeeklyReport/WeeklyReport';
+import { getLastNewsletter } from './helpers';
 
 export enum CoachingPeriodEnum {
   Weekly = 'Weekly',

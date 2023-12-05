@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
-import { ContactsProvider } from './ContactsContext';
-import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { ContactFilterSetInput } from '../../../../graphql/types.generated';
+import { ContactsProvider } from './ContactsContext';
 
 interface Props {
   children?: React.ReactNode;

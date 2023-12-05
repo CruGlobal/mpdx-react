@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { act } from '@testing-library/react-hooks';
-import { useEffect, useState } from 'react';
 
 export const place = {
   address_components: [

@@ -1,18 +1,18 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { cloneDeep } from 'lodash';
-import { WeeklyReportModal } from './WeeklyReportModal';
-import theme from 'src/theme';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetTopBarQuery } from 'src/components/Layouts/Primary/TopBar/GetTopBar.generated';
+import theme from 'src/theme';
+import { WeeklyReportModal } from './WeeklyReportModal';
 import {
   CurrentCoachingAnswerSetDocument,
   CurrentCoachingAnswerSetQuery,
 } from './WeeklyReportModal.generated';
-import { GetTopBarQuery } from 'src/components/Layouts/Primary/TopBar/GetTopBar.generated';
 
 const organizationId = 'org-1';
 const accountListId = 'account-list-1';

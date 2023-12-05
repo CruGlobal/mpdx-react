@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Box, InputAdornment, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { Box, InputAdornment, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 export const SearchMenuPanel = (): ReactElement => {

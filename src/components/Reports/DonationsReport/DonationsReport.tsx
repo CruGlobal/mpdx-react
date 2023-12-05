@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Box } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useRouter } from 'next/router';
-import { useGetDonationGraphQuery } from './GetDonationGraph.generated';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import {
-  MultiPageHeader,
   HeaderTypeEnum,
+  MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useGetDonationGraphQuery } from './GetDonationGraph.generated';
 import { DonationsReportTable } from './Table/DonationsReportTable';
 
 interface DonationReportsProps {

@@ -1,8 +1,4 @@
 import React, { ReactElement } from 'react';
-import { Formik } from 'formik';
-import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
 import {
   Box,
   CircularProgress,
@@ -15,18 +11,22 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { Formik } from 'formik';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
+import {
+  Contact,
   ContactUpdateInput,
   SendNewsletterEnum,
-  Contact,
 } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import { useEditMailingInfoMutation } from './EditMailingInfoModal.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

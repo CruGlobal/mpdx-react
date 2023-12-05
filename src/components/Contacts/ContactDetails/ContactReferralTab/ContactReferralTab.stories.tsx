@@ -1,6 +1,6 @@
+import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Box } from '@mui/material';
-import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactReferralTab } from './ContactReferralTab';
 import { ContactReferralTabDocument } from './ContactReferralTab.generated';

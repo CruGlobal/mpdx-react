@@ -1,6 +1,6 @@
-import { useTranslation } from 'react-i18next';
 import { Box, TextField } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
+import { useTranslation } from 'react-i18next';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { useGetKeyAccountsQuery } from './Key.generated';

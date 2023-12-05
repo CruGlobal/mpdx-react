@@ -1,5 +1,5 @@
-import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
+import { DateTime } from 'luxon';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
 import {
   ContactDonorAccountsFragment,

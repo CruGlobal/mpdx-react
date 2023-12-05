@@ -1,22 +1,22 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Box, Button, Checkbox, Divider, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Add from '@mui/icons-material/Add';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
-import { useTranslation } from 'react-i18next';
+import { Box, Button, Checkbox, Divider, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
+import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
+import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
+import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
+import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import useTaskModal from 'src/hooks/useTaskModal';
 import { TaskFilterSetInput } from '../../../../../graphql/types.generated';
+import { useMassSelection } from '../../../../hooks/useMassSelection';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
-import { useMassSelection } from '../../../../../src/hooks/useMassSelection';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 import { ContactTasksTabNullState } from './NullState/ContactTasksTabNullState';
-import useTaskModal from 'src/hooks/useTaskModal';
-import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
-import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
-import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
-import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
   width: '100%',

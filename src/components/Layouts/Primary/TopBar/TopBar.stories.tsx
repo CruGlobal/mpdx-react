@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import { Box, Container } from '@mui/material';
 import { MockedProvider } from '@apollo/client/testing';
+import { Box, Container } from '@mui/material';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
-import { getTopBarMock } from './TopBar.mock';
 import TopBar from './TopBar';
+import { getTopBarMock } from './TopBar.mock';
 
 export default {
   title: 'Layouts/Primary/TopBar',

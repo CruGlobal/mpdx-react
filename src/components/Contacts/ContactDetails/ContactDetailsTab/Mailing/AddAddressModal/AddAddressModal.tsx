@@ -1,7 +1,4 @@
 import React, { ReactElement } from 'react';
-import { Formik } from 'formik';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
 import {
   Box,
   Checkbox,
@@ -17,20 +14,23 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { Formik } from 'formik';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
-import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useUpdateCache } from '../useUpdateCache';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
+import { useUpdateCache } from '../useUpdateCache';
+import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
 import { createAddressSchema } from './createAddressSchema';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({

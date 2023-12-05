@@ -1,38 +1,38 @@
+import { NextPage } from 'next';
 import React, { ReactElement } from 'react';
-import Rollbar from 'rollbar';
-import { ErrorBoundary, Provider } from '@rollbar/react';
-import type { AppProps } from 'next/app';
+import { ApolloProvider } from '@apollo/client';
+import { Box } from '@mui/material';
 import StyledEngineProvider from '@mui/material/StyledEngineProvider';
 import { ThemeProvider } from '@mui/material/styles';
-import { Box } from '@mui/material';
-import { ApolloProvider } from '@apollo/client';
+import {
+  LocalizationProviderProps,
+  LocalizationProvider as RawLocalizationProvider,
+} from '@mui/x-date-pickers/LocalizationProvider';
+import { ErrorBoundary, Provider } from '@rollbar/react';
 import { AnimatePresence } from 'framer-motion';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-import { NextPage } from 'next';
 import Head from 'next/head';
-import { I18nextProvider, useTranslation } from 'react-i18next';
-import {
-  LocalizationProvider as RawLocalizationProvider,
-  LocalizationProviderProps,
-} from '@mui/x-date-pickers/LocalizationProvider';
 import { SnackbarProvider } from 'notistack';
-import theme from '../src/theme';
-import client from '../src/lib/client';
+import { I18nextProvider, useTranslation } from 'react-i18next';
+import Rollbar from 'rollbar';
+import DataDog from 'src/components/DataDog/DataDog';
+import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
+import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { useLocale } from 'src/hooks/useLocale';
+import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
+import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
 import PrimaryLayout from '../src/components/Layouts/Primary';
 import Loading from '../src/components/Loading';
-import i18n from '../src/lib/i18n';
-import TaskModalProvider from '../src/components/Task/Modal/TaskModalProvider';
-import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
-import { GlobalStyles } from '../src/components/GlobalStyles/GlobalStyles';
 import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
-import HelpscoutBeacon from '../src/components/Helpscout/HelpscoutBeacon';
-import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
+import TaskModalProvider from '../src/components/Task/Modal/TaskModalProvider';
 import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
-import DataDog from 'src/components/DataDog/DataDog';
-import { useLocale } from 'src/hooks/useLocale';
-import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
+import client from '../src/lib/client';
+import i18n from '../src/lib/i18n';
+import theme from '../src/theme';
 import { AdapterLuxon } from './api/utils/AdapterLuxon';
+import type { AppProps } from 'next/app';
 import './helpscout.css';
 import './print.css';
 

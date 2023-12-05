@@ -1,7 +1,7 @@
-import { Box } from '@mui/material';
 import React from 'react';
+import { Box } from '@mui/material';
 import { useDrop } from 'react-dnd';
-import theme from '../../../../../../src/theme';
+import theme from '../../../../../theme';
 import { ContactFlowSetupItemDrag } from '../Row/ContactFlowSetupStatusRow';
 
 interface Props {

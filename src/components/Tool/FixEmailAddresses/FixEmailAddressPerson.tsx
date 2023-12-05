@@ -1,32 +1,32 @@
 import React, { Fragment, useState } from 'react';
 import {
-  Box,
-  Grid,
-  Button,
-  Typography,
+  mdiCheckboxMarkedCircle,
+  mdiDelete,
+  mdiLock,
+  mdiPlus,
+  mdiStar,
+  mdiStarOutline,
+} from '@mdi/js';
+import { Icon } from '@mdi/react';
+import {
   Avatar,
+  Box,
+  Button,
+  Grid,
   Hidden,
   TextField,
   Theme,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
-import { useTranslation } from 'react-i18next';
-import { Icon } from '@mdi/react';
-import {
-  mdiCheckboxMarkedCircle,
-  mdiLock,
-  mdiPlus,
-  mdiDelete,
-  mdiStarOutline,
-  mdiStar,
-} from '@mdi/js';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 import { PersonEmailAddressInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon, EmailAddressData } from './FixEmailAddresses';
-import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {

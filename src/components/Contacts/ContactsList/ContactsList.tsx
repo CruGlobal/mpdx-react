@@ -1,18 +1,18 @@
-import { Box } from '@mui/material';
 import React from 'react';
-import { ContactRow } from '../ContactRow/ContactRow';
-import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
-import NullState from 'src/components/Shared/Filters/NullState/NullState';
+import { Box } from '@mui/material';
 import {
   ContactsContext,
   ContactsType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
-import {
-  headerHeight,
-  TableViewModeEnum,
-} from 'src/components/Shared/Header/ListHeader';
+import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import NullState from 'src/components/Shared/Filters/NullState/NullState';
+import {
+  TableViewModeEnum,
+  headerHeight,
+} from 'src/components/Shared/Header/ListHeader';
+import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactRow } from '../ContactRow/ContactRow';
 
 export const ContactsList: React.FC = () => {
   const {
