@@ -24,7 +24,7 @@ const CommittedText = styled('span')(({ theme }) => ({
 }));
 
 const ProgressWrapper = styled('div')(({ theme }) => ({
-  padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
+  padding: theme.spacing(0.5, 1),
 }));
 
 const ProgressBar = styled('div')(({ theme }) => ({
