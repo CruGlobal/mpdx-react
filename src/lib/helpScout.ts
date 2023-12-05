@@ -77,9 +77,15 @@ const suggestions = {
   get HS_TASKS_SUGGESTIONS() {
     return process.env.HS_TASKS_SUGGESTIONS;
   },
+  get HS_SETTINGS_SERVICES_SUGGESTIONS() {
+    return process.env.HS_SETTINGS_SERVICES_SUGGESTIONS;
+  },
 };
 
-const articles = {
+export const articles = {
+  get HS_SETUP_FIND_ORGANIZATION() {
+    return process.env.HS_SETUP_FIND_ORGANIZATION;
+  },
   get HS_COACHING_ACTIVITY() {
     return process.env.HS_COACHING_ACTIVITY;
   },
