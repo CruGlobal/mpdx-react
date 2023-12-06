@@ -54,8 +54,9 @@ const httpLink = new BatchHttpLink({
   fetch,
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
+const clientErrorLink = onError(({ graphQLErrors, networkError }) => {
+  // Don't show sign out and display errors on the login page because the user won't be logged in
+  if (graphQLErrors && window.location.pathname !== '/login') {
     graphQLErrors.map(({ message, extensions }) => {
       if (extensions?.code === 'AUTHENTICATION_ERROR') {
         signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
@@ -101,7 +102,7 @@ if (process.browser && process.env.NODE_ENV === 'production') {
 }
 
 const client = new ApolloClient({
-  link: errorLink.concat(httpLink),
+  link: clientErrorLink.concat(httpLink),
   cache,
   assumeImmutableResults: true,
   defaultOptions: {
