@@ -1,3 +1,4 @@
+import { NextRouter, useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -8,7 +9,6 @@ import React, {
   useState,
 } from 'react';
 import _, { debounce } from 'lodash';
-import { NextRouter, useRouter } from 'next/router';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';

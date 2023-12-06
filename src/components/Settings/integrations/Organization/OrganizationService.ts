@@ -1,5 +1,5 @@
-import { getSession } from 'next-auth/react';
 import Router from 'next/router';
+import { getSession } from 'next-auth/react';
 import { getQueryParam } from 'src/utils/queryParam';
 
 export const getOauthUrl = async (

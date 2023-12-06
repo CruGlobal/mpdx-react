@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -9,7 +10,6 @@ import {
 } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,

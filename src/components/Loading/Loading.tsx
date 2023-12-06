@@ -1,7 +1,7 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { CircularProgress, Fab, Theme } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useRouter } from 'next/router';
 import { makeStyles } from 'tss-react/mui';
 
 const useStyles = makeStyles()((theme: Theme) => ({

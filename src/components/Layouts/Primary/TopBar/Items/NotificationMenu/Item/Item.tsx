@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Avatar,
@@ -12,7 +13,6 @@ import {
 } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
-import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { NotificationTypeTypeEnum } from '../../../../../../../../graphql/types.generated';

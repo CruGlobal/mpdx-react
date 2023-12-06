@@ -1,8 +1,8 @@
+import Head from 'next/head';
 import React, { useCallback, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
-import Head from 'next/head';
 import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';

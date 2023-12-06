@@ -1,7 +1,7 @@
+import Head from 'next/head';
 import React from 'react';
 import { Box, Divider, Grid, Theme, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
