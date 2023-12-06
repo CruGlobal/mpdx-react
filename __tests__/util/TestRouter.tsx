@@ -1,5 +1,5 @@
 import { RouterContext } from 'next/dist/shared/lib/router-context';
-import Router, { Router as IRouter, NextRouter } from 'next/router'; // eslint-disable-line import/no-named-as-default
+import Router, { Router as IRouter, NextRouter } from 'next/router';
 import React, { ReactElement, ReactNode } from 'react';
 
 interface Props {
