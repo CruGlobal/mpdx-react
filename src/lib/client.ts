@@ -48,7 +48,7 @@ export const cache = new InMemoryCache({
 
 const httpLink = new BatchHttpLink({
   uri: `${process.env.SITE_URL}/api/graphql`,
-  batchMax: 25,
+  batchMax: 2,
   batchDebounce: true,
   batchInterval: 20,
   fetch,
