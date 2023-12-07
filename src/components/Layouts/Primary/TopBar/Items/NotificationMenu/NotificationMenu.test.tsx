@@ -1,19 +1,19 @@
 import React from 'react';
-import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
+import userEvent from '@testing-library/user-event';
+import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import {
   render,
   waitFor,
 } from '../../../../../../../__tests__/util/testingLibraryReactMock';
-import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
+import { GetNotificationsDocument } from './GetNotificationsQuery.generated';
+import NotificationMenu from './NotificationMenu';
 import {
   acknowledgeAllUserNotificationsMutationMock,
   getNotificationsEmptyMock,
   getNotificationsLoadingMock,
   getNotificationsMocks,
 } from './NotificationMenu.mock';
-import { GetNotificationsDocument } from './GetNotificationsQuery.generated';
-import NotificationMenu from './NotificationMenu';
 
 jest.mock('next/router', () => ({
   useRouter: () => {

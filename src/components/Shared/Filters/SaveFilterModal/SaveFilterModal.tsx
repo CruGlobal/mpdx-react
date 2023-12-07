@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { Field, FieldProps, Form, Formik } from 'formik';
-import { useSnackbar } from 'notistack';
 import {
   CircularProgress,
   DialogActions,
@@ -10,22 +8,24 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import * as yup from 'yup';
-import { useTranslation } from 'react-i18next';
+import { Field, FieldProps, Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import {
   ContactFilterSetInput,
   CreateOrUpdateOptionMutationInput,
   TaskFilterSetInput,
 } from '../../../../../graphql/types.generated';
-import Modal from '../../../common/Modal/Modal';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
+import Modal from '../../../common/Modal/Modal';
 import { UserOptionFragment } from '../FilterPanel.generated';
 import { useSaveFilterMutation } from './SaveFilterModal.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface SaveFilterModalProps {
   isOpen: boolean;

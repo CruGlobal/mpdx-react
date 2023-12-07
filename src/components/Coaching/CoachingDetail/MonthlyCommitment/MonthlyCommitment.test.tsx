@@ -1,16 +1,16 @@
+import { render, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
+import { DateTime } from 'luxon';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  afterTestResizeObserver,
+  beforeTestResizeObserver,
+} from 'src/utils/tests/windowResizeObserver';
+import { MonthlyCommitment } from './MonthlyCommitment';
 import {
   GetReportsPledgeHistoriesQuery,
   useGetReportsPledgeHistoriesQuery,
 } from './MonthlyCommitment.generated';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render, waitFor } from '@testing-library/react';
-import { DateTime } from 'luxon';
-import { MonthlyCommitment } from './MonthlyCommitment';
-import {
-  beforeTestResizeObserver,
-  afterTestResizeObserver,
-} from 'src/utils/tests/windowResizeObserver';
 
 const coachingId = 'coaching-id';
 describe('MonthlyCommitment', () => {

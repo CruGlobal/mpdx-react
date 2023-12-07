@@ -1,19 +1,19 @@
-import fetchMock from 'jest-fetch-mock';
 import React from 'react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
+import userEvent from '@testing-library/user-event';
+import fetchMock from 'jest-fetch-mock';
 import { signOut, useSession } from 'next-auth/react';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
+import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import {
   render,
   waitFor,
 } from '../../../../../../../__tests__/util/testingLibraryReactMock';
+import theme from '../../../../../../theme';
 import {
   getTopBarMock,
   getTopBarMockWithMultipleAccountLists,
 } from '../../TopBar.mock';
-import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
-import theme from '../../../../../../theme';
 import ProfileMenu from './ProfileMenu';
 
 const session = {

@@ -1,9 +1,9 @@
 import React, { FC, ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Box, IconButton, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import FilterList from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
+import { Box, IconButton, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 
 export enum HeaderTypeEnum {

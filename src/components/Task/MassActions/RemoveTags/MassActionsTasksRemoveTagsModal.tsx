@@ -1,3 +1,5 @@
+import React, { ReactElement } from 'react';
+import Remove from '@mui/icons-material/Remove';
 import {
   Button,
   CircularProgress,
@@ -7,30 +9,28 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import * as yup from 'yup';
 import { Formik } from 'formik';
-import React, { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import Remove from '@mui/icons-material/Remove';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import theme from 'src/theme';
 import {
   ContactUpdateInput,
   Task,
 } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {
-  useGetTasksForAddingTagsQuery,
   useGetTaskTagListQuery,
+  useGetTasksForAddingTagsQuery,
 } from '../AddTags/TasksAddTags.generated';
-import { useMassActionsUpdateTasksMutation } from '../MassActionsUpdateTasks.generated';
-import theme from 'src/theme';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
-import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { useMassActionsUpdateTasksMutation } from '../MassActionsUpdateTasks.generated';
 
 interface MassActionsTasksRemoveTagsModalProps {
   ids: string[];

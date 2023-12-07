@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { signOut } from 'next-auth/react';
-import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
+import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../../../theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';

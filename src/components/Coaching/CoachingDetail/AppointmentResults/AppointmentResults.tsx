@@ -13,14 +13,14 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
-import AnimatedCard from 'src/components/AnimatedCard';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
-import { getResultColor } from '../helpers';
 import { HelpButton } from '../HelpButton';
-import { HeaderRow, AlignedTableCell, DividerRow } from '../StyledComponents';
+import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
+import { getResultColor } from '../helpers';
 import { useAppointmentResultsQuery } from './AppointmentResults.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({

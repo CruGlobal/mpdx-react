@@ -1,7 +1,7 @@
 import React from 'react';
-import { SnackbarProvider } from 'notistack';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactNotesTab } from './ContactNotesTab';

@@ -1,12 +1,12 @@
 import { PropsWithChildren } from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../../../theme';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import TestRouter from '__tests__/util/TestRouter';
+import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
+import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../theme';
 import { OrganizationEditAccountModal } from './OrganizationEditAccountModal';
 
 jest.mock('next-auth/react');

@@ -1,47 +1,47 @@
-import { useState, useContext, useMemo, ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
-import { Formik } from 'formik';
-import * as yup from 'yup';
-import { styled } from '@mui/material/styles';
+import { ReactElement, useContext, useMemo, useState } from 'react';
 import {
-  Box,
-  Typography,
-  Skeleton,
   Alert,
+  Box,
   Button,
-  Select,
-  MenuItem,
   Checkbox,
   FormControlLabel,
   FormHelperText,
   List,
   ListItem,
   ListItemText,
+  MenuItem,
+  Select,
+  Skeleton,
+  Typography,
 } from '@mui/material';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import {
-  useMailchimpAccountQuery,
-  useUpdateMailchimpAccountMutation,
-  MailchimpAccountDocument,
-  MailchimpAccountQuery,
-  useSyncMailchimpAccountMutation,
-} from './MailchimpAccount.generated';
-import * as Types from '../../../../../graphql/types.generated';
+import { styled } from '@mui/material/styles';
+import { Formik } from 'formik';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import {
   IntegrationsContext,
   IntegrationsContextType,
 } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
-import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
+import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { DeleteMailchimpAccountModal } from './Modals/DeleteMailchimpModal';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import * as Types from '../../../../../graphql/types.generated';
 import {
-  StyledListItem,
   StyledList,
+  StyledListItem,
   StyledServicesButton,
 } from '../integrationsHelper';
+import {
+  MailchimpAccountDocument,
+  MailchimpAccountQuery,
+  useMailchimpAccountQuery,
+  useSyncMailchimpAccountMutation,
+  useUpdateMailchimpAccountMutation,
+} from './MailchimpAccount.generated';
+import { DeleteMailchimpAccountModal } from './Modals/DeleteMailchimpModal';
 
 interface MailchimpAccordionProps {
   handleAccordionChange: (panel: string) => void;

@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Typography,
-  Grid,
-  Divider,
   Button,
   CircularProgress,
+  Divider,
+  Grid,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import { Trans, useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
-import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 import Contact from './Contact';
+import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {

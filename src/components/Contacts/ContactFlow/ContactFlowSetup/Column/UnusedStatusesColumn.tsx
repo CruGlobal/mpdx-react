@@ -1,11 +1,11 @@
-import { Box, Card, CardContent, IconButton, Typography } from '@mui/material';
-import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
-import { useTranslation } from 'react-i18next';
 import React, { useRef } from 'react';
-import theme from '../../../../../../src/theme';
+import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
+import { Box, Card, CardContent, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
-import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
+import theme from '../../../../../theme';
 import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
+import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
 
 interface Props {
   statuses: { id: ContactFilterStatusEnum; value: string }[];

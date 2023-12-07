@@ -1,42 +1,42 @@
 import React, { useMemo, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Link,
-  Divider,
-  Table,
-  TableCell,
-  TableRow,
-  CircularProgress,
-  TableHead,
-  TableBody,
-  LinearProgress,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useTranslation } from 'react-i18next';
+import EditIcon from '@mui/icons-material/Edit';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  LinearProgress,
+  Link,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
 import {
   DataGrid,
-  GridColDef,
   GridCellParams,
+  GridColDef,
   GridSortModel,
 } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
-import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
-import {
-  useGetDonationsTableQuery,
-  ExpectedDonationDataFragment,
-  useGetAccountListCurrencyQuery,
-  GetDonationsTableQueryVariables,
-} from '../GetDonationsTable.generated';
-import { EditDonationModal } from './Modal/EditDonationModal';
+import { useTranslation } from 'react-i18next';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
+import {
+  ExpectedDonationDataFragment,
+  GetDonationsTableQueryVariables,
+  useGetAccountListCurrencyQuery,
+  useGetDonationsTableQuery,
+} from '../GetDonationsTable.generated';
+import { EditDonationModal } from './Modal/EditDonationModal';
 
 interface DonationReportTableProps {
   accountListId: string;

@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Alert,
   Box,
@@ -6,16 +7,15 @@ import {
   DialogContent,
   Typography,
 } from '@mui/material';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import { Person } from '../../../../../graphql/types.generated';
-import Modal from '../../../common/Modal/Modal';
-import { useMassActionsMergePeopleMutation } from './MergePeople.generated';
+import { useTranslation } from 'react-i18next';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { Person } from '../../../../../graphql/types.generated';
+import Modal from '../../../common/Modal/Modal';
+import { useMassActionsMergePeopleMutation } from './MergePeople.generated';
 
 interface MergePeopleModalProps {
   people: Pick<Person, 'id' | 'firstName' | 'lastName'>[];

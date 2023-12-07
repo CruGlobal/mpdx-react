@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import useGetAppSettings from '../../src/hooks/useGetAppSettings';
-import Dashboard from '../../src/components/Dashboard';
-import { useGetDashboardQuery } from './GetDashboard.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import useTaskModal from '../../src/hooks/useTaskModal';
-import { suggestArticles } from 'src/lib/helpScout';
 import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { suggestArticles } from 'src/lib/helpScout';
+import Dashboard from '../../src/components/Dashboard';
+import useGetAppSettings from '../../src/hooks/useGetAppSettings';
+import useTaskModal from '../../src/hooks/useTaskModal';
+import { useGetDashboardQuery } from './GetDashboard.generated';
 
 const AccountListIdPage: React.FC = () => {
   const { appName } = useGetAppSettings();

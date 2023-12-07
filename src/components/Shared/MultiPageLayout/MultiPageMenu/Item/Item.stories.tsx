@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Item } from './Item';
 import { NavTypeEnum } from '../MultiPageMenu';
+import { Item } from './Item';
 
 export default {
   title: 'Reports/ReportLayout/NavReportsList/Item',

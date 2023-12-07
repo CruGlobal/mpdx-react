@@ -1,5 +1,5 @@
-import { Box, Button, Typography } from '@mui/material';
 import React, { ReactElement } from 'react';
+import { Box, Button, Typography } from '@mui/material';
 import { MoreActionHideContactModal } from './MoreActionHideContactModal';
 
 export default {

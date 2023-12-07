@@ -1,24 +1,24 @@
 import React, { ReactElement, useState } from 'react';
+import Add from '@mui/icons-material/Add';
+import Delete from '@mui/icons-material/Delete';
+import { TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/system';
-import Delete from '@mui/icons-material/Delete';
-import Add from '@mui/icons-material/Add';
-import * as yup from 'yup';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
-import { TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
+import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
 import {
   ContactPartnerAccountsFragment,
   useGetAccountListSalaryOrganizationQuery,
 } from './ContactPartnerAccounts.generated';
 import { useDeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
-import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
 
 const newPartnerAccountSchema = yup.object({
   accountNumber: yup.string(),

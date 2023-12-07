@@ -1,6 +1,5 @@
-import { Box } from '@mui/material';
 import React, { ReactElement } from 'react';
-
+import { Box } from '@mui/material';
 import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import theme from '../../../../theme';
 import AppealDetailsFlowColumn from './AppealDetailsFlowColumn';

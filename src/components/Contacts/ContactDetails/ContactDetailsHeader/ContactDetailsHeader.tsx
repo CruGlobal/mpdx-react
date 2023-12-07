@@ -1,27 +1,26 @@
-import { StatusEnum } from '../../../../../graphql/types.generated';
-import { Avatar, Box, IconButton, Typography } from '@mui/material';
-import Close from '@mui/icons-material/Close';
-import { styled } from '@mui/material/styles';
-import Skeleton from '@mui/material/Skeleton';
 import React, { useEffect } from 'react';
+import Close from '@mui/icons-material/Close';
+import { Avatar, Box, IconButton, Typography } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { StatusEnum } from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
-
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
-import { ContactDetailEditIcon } from '../ContactDetailsTab/ContactDetailsTab';
 import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../ContactDetailContext';
+import { ContactDetailEditIcon } from '../ContactDetailsTab/ContactDetailsTab';
 import { EditContactDetailsModal } from '../ContactDetailsTab/People/Items/EditContactDetailsModal/EditContactDetailsModal';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
-import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
-import { ContactHeaderPhoneSection } from './ContactHeaderSection/ContactHeaderPhoneSection';
-import { ContactHeaderEmailSection } from './ContactHeaderSection/ContactHeaderEmailSection';
-import { ContactHeaderStatusSection } from './ContactHeaderSection/ContactHeaderStatusSection';
 import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
-import { ContactHeaderPartnerSection } from './ContactHeaderSection/ContactHeaderPartnerSection';
+import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
+import { ContactHeaderEmailSection } from './ContactHeaderSection/ContactHeaderEmailSection';
 import { ContactHeaderNewsletterSection } from './ContactHeaderSection/ContactHeaderNewsletterSection';
+import { ContactHeaderPartnerSection } from './ContactHeaderSection/ContactHeaderPartnerSection';
+import { ContactHeaderPhoneSection } from './ContactHeaderSection/ContactHeaderPhoneSection';
+import { ContactHeaderStatusSection } from './ContactHeaderSection/ContactHeaderStatusSection';
 
 interface Props {
   accountListId: string;

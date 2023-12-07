@@ -1,10 +1,10 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { waitFor } from '@testing-library/dom';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { waitFor } from '@testing-library/dom';
-import theme from '../../../theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import theme from '../../../theme';
 import { StarContactIconButton } from './StarContactIconButton';
 
 const accountListId = 'abc';

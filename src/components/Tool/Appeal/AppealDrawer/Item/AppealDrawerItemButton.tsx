@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { ListItem, ListItemText, Box, Button } from '@mui/material';
+import { Box, Button, ListItem, ListItemText } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import theme from '../../../../../theme';
 

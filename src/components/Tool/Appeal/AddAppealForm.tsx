@@ -1,31 +1,31 @@
+import React, { ReactElement, useState } from 'react';
+import { mdiClose, mdiEqual, mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import {
   Autocomplete,
   Box,
+  Button,
   CardContent,
   CardHeader,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  Theme,
   CircularProgress,
   FormControl,
+  Grid,
+  TextField,
+  Theme,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
-import { Formik, Field, Form } from 'formik';
-import React, { ReactElement, useState } from 'react';
-import Icon from '@mdi/react';
-import { mdiPlus, mdiClose, mdiEqual } from '@mdi/js';
-import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
+import { Field, Form, Formik } from 'formik';
 import i18n from 'i18next';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
+import * as yup from 'yup';
 import { MultiselectFilter } from '../../../../graphql/types.generated';
-import theme from '../../../../src/theme';
-import AnimatedCard from '../../../../src/components/AnimatedCard';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { useAccountListId } from '../../../hooks/useAccountListId';
+import theme from '../../../theme';
+import AnimatedCard from '../../AnimatedCard';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
 import { useGetContactTagsQuery } from './GetContactTags.generated';
 

@@ -1,25 +1,25 @@
+import React from 'react';
+import { mdiCloseThick } from '@mdi/js';
+import Icon from '@mdi/react';
 import {
+  Box,
   Card,
   CardActions,
   CardContent,
   CardHeader,
-  Modal,
-  Typography,
-  Theme,
   IconButton,
-  Box,
+  Modal,
+  Theme,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import Icon from '@mdi/react';
-import React from 'react';
-import { mdiCloseThick } from '@mdi/js';
 import { useTranslation } from 'react-i18next';
-import theme from '../../../theme';
-import { ModalState } from './FixPhoneNumbers';
+import { makeStyles } from 'tss-react/mui';
 import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import theme from '../../../theme';
+import { ModalState } from './FixPhoneNumbers';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   modal: {

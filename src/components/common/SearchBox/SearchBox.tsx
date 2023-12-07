@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { styled } from '@mui/material/styles';
-import Icon from '@mdi/react';
 import { mdiAccountSearch } from '@mdi/js';
-import { InputAdornment, TextField } from '@mui/material';
+import Icon from '@mdi/react';
 import SearchIcon from '@mui/icons-material/Search';
+import { InputAdornment, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 export interface SearchBoxProps {
   onChange: (searchTerm: string) => void;

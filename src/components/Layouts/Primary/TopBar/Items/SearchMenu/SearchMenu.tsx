@@ -1,29 +1,29 @@
 import React, { ReactElement, useCallback, useState } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import CompassIcon from '@mui/icons-material/Explore';
+import PeopleIcon from '@mui/icons-material/People';
+import PersonIcon from '@mui/icons-material/Person';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Autocomplete,
   Box,
-  IconButton,
   Dialog,
+  IconButton,
+  Popper,
   TextField,
   Typography,
-  Popper,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import SearchIcon from '@mui/icons-material/Search';
-import { useTranslation } from 'react-i18next';
-import CompassIcon from '@mui/icons-material/Explore';
-import PersonIcon from '@mui/icons-material/Person';
-import PeopleIcon from '@mui/icons-material/People';
-import AddIcon from '@mui/icons-material/Add';
 import debounce from 'lodash/debounce';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import { useTranslation } from 'react-i18next';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
 } from '../../../../../../../graphql/types.generated';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
 

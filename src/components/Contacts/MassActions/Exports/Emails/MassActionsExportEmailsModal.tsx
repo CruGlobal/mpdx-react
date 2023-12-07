@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import Modal from '../../../../common/Modal/Modal';
-import { useGetEmailsForExportingQuery } from './GetEmailsForExporting.generated';
-import theme from 'src/theme';
-import { Box, CircularProgress, TextField, Typography } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { Box, CircularProgress, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import { useTranslation } from 'react-i18next';
+import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import theme from 'src/theme';
+import Modal from '../../../../common/Modal/Modal';
+import { useGetEmailsForExportingQuery } from './GetEmailsForExporting.generated';
 
 interface MassActionsExportEmailsModalProps {
   ids: string[];

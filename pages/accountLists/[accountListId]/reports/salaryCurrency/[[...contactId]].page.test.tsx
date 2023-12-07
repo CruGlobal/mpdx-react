@@ -1,11 +1,11 @@
-import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import SalaryCurrencyReportPage from './[[...contactId]].page';
-import userEvent from '@testing-library/user-event';
 
 const push = jest.fn();
 

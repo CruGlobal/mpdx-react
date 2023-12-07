@@ -1,9 +1,9 @@
 import React, { ReactElement } from 'react';
-import { Theme, Box } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import { Box, Theme } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
-import { percentageFormat } from '../../lib/intlFormat';
+import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
+import { percentageFormat } from '../../lib/intlFormat';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   box: {

@@ -1,9 +1,9 @@
 import React from 'react';
-import { useTheme } from '@mui/material/styles';
-import type { Theme } from '@mui/material/styles/createTheme';
-import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import type { Theme } from '@mui/material/styles/createTheme';
 
 interface ContactPledgeReceivedIconProps {
   pledgeReceived: boolean;

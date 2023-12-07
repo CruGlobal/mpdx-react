@@ -2,9 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 import { ssrClient } from 'src/lib/client';
 import {
+  GetDefaultAccountDocument,
   GetDefaultAccountQuery,
   GetDefaultAccountQueryVariables,
-  GetDefaultAccountDocument,
 } from './getDefaultAccount.generated';
 
 if (!process.env.JWT_SECRET) {

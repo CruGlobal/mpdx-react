@@ -2,8 +2,8 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { GetTaskAnalyticsQuery } from './NewsletterMenu.generated';
 import NewsletterMenu from './NewsletterMenu';
+import { GetTaskAnalyticsQuery } from './NewsletterMenu.generated';
 
 const accountListId = '111';
 
