@@ -50,14 +50,22 @@ const MonthlyWeeklyButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
 }));
 
+const SectionHeaderText = styled(SideContainerText)(({ theme }) => ({
+  margin: theme.spacing(1),
+}));
+
 const StyledCloseIcon = styled(CloseIcon)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
   margin: theme.spacing(0, 1),
 }));
 
-const SideContainerIcon = styled(AccountCircleIcon)(({ theme }) => ({
+const StyledUserIcon = styled(AccountCircleIcon)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
   margin: theme.spacing(0, 1),
+}));
+
+const UserDivider = styled(Divider)(({ theme }) => ({
+  margin: theme.spacing(1),
 }));
 
 interface CoachingSidebarProps {
@@ -140,7 +148,7 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
             {t('Monthly')}
           </Button>
         </MonthlyWeeklyButtonGroup>
-        <SideContainerText variant="h5" data-testid="Balance">
+        <SectionHeaderText variant="h5" data-testid="Balance">
           {t('Balance:')}{' '}
           {accountListData &&
             currencyFormat(
@@ -148,7 +156,7 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
               accountListData.currency,
               locale,
             )}
-        </SideContainerText>
+        </SectionHeaderText>
         <SideContainerText>{t('Staff IDs:')}</SideContainerText>
         <SideContainerText data-testid="StaffIds">
           {staffIds.length ? staffIds.join(', ') : t('None')}
@@ -166,9 +174,7 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
             )}
         </SideContainerText>
         <ContrastDivider />
-        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
-          {t('MPD Info')}
-        </SideContainerText>
+        <SectionHeaderText variant="h5">{t('MPD Info')}</SectionHeaderText>
         <SideContainerText data-testid="WeeksOnMpd">
           {t('Weeks on MPD:')} {accountListData?.weeksOnMpd}
         </SideContainerText>
@@ -194,40 +200,36 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
               : t('None'))}
         </SideContainerText>
         <ContrastDivider />
-        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
-          {t('Users')}
-        </SideContainerText>
+        <SectionHeaderText variant="h5">{t('Users')}</SectionHeaderText>
         {loading ? (
           <MultilineSkeleton lines={4} />
         ) : (
           accountListData?.users.nodes.map((user) => (
             <Fragment key={user.id}>
-              <SideContainerIcon />
+              <StyledUserIcon />
               <SideContainerText>
                 {user.firstName + ' ' + user.lastName}
               </SideContainerText>
               <CollapsibleEmailList emails={user.emailAddresses.nodes} />
               <CollapsiblePhoneList phones={user.phoneNumbers.nodes} />
-              <Divider style={{ margin: theme.spacing(1) }} />
+              <UserDivider />
             </Fragment>
           ))
         )}
         <ContrastDivider />
-        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
-          {t('Coaches')}
-        </SideContainerText>
+        <SectionHeaderText variant="h5">{t('Coaches')}</SectionHeaderText>
         {loading ? (
           <MultilineSkeleton lines={4} />
         ) : (
           accountListData?.coaches.nodes.map((coach) => (
             <Fragment key={coach.id}>
-              <SideContainerIcon />
+              <StyledUserIcon />
               <SideContainerText>
                 {coach.firstName + ' ' + coach.lastName}
               </SideContainerText>
               <CollapsibleEmailList emails={coach.emailAddresses.nodes} />
               <CollapsiblePhoneList phones={coach.phoneNumbers.nodes} />
-              <Divider style={{ margin: theme.spacing(1) }} />
+              <UserDivider />
             </Fragment>
           ))
         )}
