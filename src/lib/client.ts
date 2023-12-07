@@ -3,6 +3,7 @@ import {
   createHttpLink,
   InMemoryCache,
   NormalizedCacheObject,
+  split,
 } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { onError } from '@apollo/client/link/error';
@@ -46,13 +47,25 @@ export const cache = new InMemoryCache({
   },
 });
 
-const httpLink = new BatchHttpLink({
+const batchHttpLink = new BatchHttpLink({
   uri: `${process.env.SITE_URL}/api/graphql`,
-  batchMax: 2,
+  batchMax: 25,
   batchDebounce: true,
   batchInterval: 20,
   fetch,
 });
+
+// link to use if not batching
+const httpLink = createHttpLink({
+  uri: `${process.env.SITE_URL}/api/graphql`,
+  fetch,
+});
+
+const batchLink = split(
+  (operation) => operation.getContext().doNotBatch === true,
+  httpLink,
+  batchHttpLink,
+);
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
@@ -101,7 +114,7 @@ if (process.browser && process.env.NODE_ENV === 'production') {
 }
 
 const client = new ApolloClient({
-  link: errorLink.concat(httpLink),
+  link: errorLink.concat(batchLink),
   cache,
   assumeImmutableResults: true,
   defaultOptions: {
