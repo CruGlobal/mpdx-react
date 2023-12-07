@@ -29,6 +29,9 @@ const ThisWeek = ({ accountListId }: Props): ReactElement => {
       threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
       twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
     },
+    context: {
+      doNotBatch: true,
+    },
   });
 
   const {

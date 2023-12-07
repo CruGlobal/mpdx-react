@@ -256,6 +256,9 @@ export const ContactsProvider: React.FC<Props> = ({
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
+    context: {
+      doNotBatch: true,
+    },
   });
 
   const toggleFilterPanel = () => {

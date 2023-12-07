@@ -107,6 +107,9 @@ const AddAppealForm = (): ReactElement => {
       variables: {
         accountListId,
       },
+      context: {
+        doNotBatch: true,
+      },
     });
 
   const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
