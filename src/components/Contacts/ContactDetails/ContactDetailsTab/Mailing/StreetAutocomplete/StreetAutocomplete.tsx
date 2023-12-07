@@ -181,6 +181,7 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
           <TextField
             {...params}
             {...TextFieldProps}
+            multiline
             onChange={(event) => {
               const street = event.target.value;
               onStreetChange(street);
