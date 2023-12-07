@@ -22,20 +22,30 @@ import {
 import { SideContainerText } from './StyledComponents';
 import { getLastNewsletter } from './helpers';
 
-const CoachingSideContainer = styled(Box)(({ theme }) => ({
+const Container = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
   width: '20rem',
-  minHeight: '100%',
-  overflow: 'scroll',
-  padding: theme.spacing(1),
+  height: '100vh',
+  padding: theme.spacing(0, 1),
 }));
 
-const CoachingSideTitleContainer = styled(Box)(({ theme }) => ({
+const TitleContainer = styled('div')(({ theme }) => ({
   margin: theme.spacing(1),
   display: 'flex',
   alignItems: 'center',
 }));
 
-const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
+const ContrastDivider = styled(Divider)(({ theme }) => ({
+  background: theme.palette.primary.contrastText,
+}));
+
+const ContentContainer = styled('div')({
+  flex: 1,
+  overflow: 'scroll',
+});
+
+const MonthlyWeeklyButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   margin: theme.spacing(2, 0),
   color: theme.palette.primary.contrastText,
 }));
@@ -87,8 +97,8 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
     isoDate ? dateFormat(DateTime.fromISO(isoDate), locale) : t('None');
 
   return (
-    <CoachingSideContainer bgcolor={theme.palette.progressBarGray.main}>
-      <CoachingSideTitleContainer>
+    <Container bgcolor={theme.palette.progressBarGray.main}>
+      <TitleContainer>
         {/* TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
           <EcoOutlined
             style={{
@@ -104,121 +114,124 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
             <StyledCloseIcon />
           </IconButton>
         )}
-      </CoachingSideTitleContainer>
-      <Divider style={{ background: theme.palette.primary.contrastText }} />
-      <CoachingMonthYearButtonGroup
-        variant="outlined"
-        color="inherit"
-        fullWidth
-        size="large"
-      >
-        <Button
-          variant={
-            period === CoachingPeriodEnum.Weekly ? 'contained' : 'outlined'
-          }
-          onClick={() => setPeriod(CoachingPeriodEnum.Weekly)}
+      </TitleContainer>
+      <ContrastDivider />
+      <ContentContainer>
+        <MonthlyWeeklyButtonGroup
+          variant="outlined"
+          color="inherit"
+          fullWidth
+          size="large"
         >
-          {t('Weekly')}
-        </Button>
-        <Button
-          variant={
-            period === CoachingPeriodEnum.Monthly ? 'contained' : 'outlined'
-          }
-          onClick={() => setPeriod(CoachingPeriodEnum.Monthly)}
-        >
-          {t('Monthly')}
-        </Button>
-      </CoachingMonthYearButtonGroup>
-      <SideContainerText variant="h5" data-testid="Balance">
-        {t('Balance:')}{' '}
-        {accountListData &&
-          currencyFormat(
-            accountListData.balance,
-            accountListData.currency,
-            locale,
-          )}
-      </SideContainerText>
-      <SideContainerText>{t('Staff IDs:')}</SideContainerText>
-      <SideContainerText data-testid="StaffIds">
-        {staffIds.length ? staffIds.join(', ') : t('None')}
-      </SideContainerText>
-      <SideContainerText data-testid="LastPrayerLetter">
-        {t('Last Prayer Letter:')}{' '}
-        {taskAnalyticsData &&
-          formatOptionalDate(
-            getLastNewsletter(
-              taskAnalyticsData.taskAnalytics
-                .lastElectronicNewsletterCompletedAt,
-              taskAnalyticsData.taskAnalytics.lastPhysicalNewsletterCompletedAt,
-            ),
-          )}
-      </SideContainerText>
-      <Divider style={{ background: theme.palette.primary.contrastText }} />
-      <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
-        {t('MPD Info')}
-      </SideContainerText>
-      <SideContainerText data-testid="WeeksOnMpd">
-        {t('Weeks on MPD:')} {accountListData?.weeksOnMpd}
-      </SideContainerText>
-      <SideContainerText data-testid="MpdStartDate">
-        {t('Start Date:')}{' '}
-        {accountListData &&
-          formatOptionalDate(accountListData?.activeMpdStartAt)}
-      </SideContainerText>
-      <SideContainerText data-testid="MpdEndDate">
-        {t('End Date:')}{' '}
-        {accountListData &&
-          formatOptionalDate(accountListData?.activeMpdFinishAt)}
-      </SideContainerText>
-      <SideContainerText data-testid="MpdCommitmentGoal">
-        {t('Commitment Goal:')}{' '}
-        {accountListData &&
-          (typeof accountListData.activeMpdMonthlyGoal === 'number'
-            ? currencyFormat(
-                accountListData.activeMpdMonthlyGoal,
-                accountListData?.currency,
-                locale,
-              )
-            : t('None'))}
-      </SideContainerText>
-      <Divider style={{ background: theme.palette.primary.contrastText }} />
-      <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
-        {t('Users')}
-      </SideContainerText>
-      {loading ? (
-        <MultilineSkeleton lines={4} />
-      ) : (
-        accountListData?.users.nodes.map((user) => (
-          <Fragment key={user.id}>
-            <SideContainerIcon />
-            <SideContainerText>
-              {user.firstName + ' ' + user.lastName}
-            </SideContainerText>
-            <CollapsibleEmailList emails={user.emailAddresses.nodes} />
-            <CollapsiblePhoneList phones={user.phoneNumbers.nodes} />
-            <Divider style={{ margin: theme.spacing(1) }} />
-          </Fragment>
-        ))
-      )}
-      <Divider style={{ background: theme.palette.primary.contrastText }} />
-      <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
-        {t('Coaches')}
-      </SideContainerText>
-      {loading ? (
-        <MultilineSkeleton lines={4} />
-      ) : (
-        accountListData?.coaches.nodes.map((coach) => (
-          <Fragment key={coach.id}>
-            <SideContainerIcon />
-            <SideContainerText>
-              {coach.firstName + ' ' + coach.lastName}
-            </SideContainerText>
-            <CollapsibleEmailList emails={coach.emailAddresses.nodes} />
-            <CollapsiblePhoneList phones={coach.phoneNumbers.nodes} />
-            <Divider style={{ margin: theme.spacing(1) }} />
-          </Fragment>
-        ))
-      )}
-    </CoachingSideContainer>
+          <Button
+            variant={
+              period === CoachingPeriodEnum.Weekly ? 'contained' : 'outlined'
+            }
+            onClick={() => setPeriod(CoachingPeriodEnum.Weekly)}
+          >
+            {t('Weekly')}
+          </Button>
+          <Button
+            variant={
+              period === CoachingPeriodEnum.Monthly ? 'contained' : 'outlined'
+            }
+            onClick={() => setPeriod(CoachingPeriodEnum.Monthly)}
+          >
+            {t('Monthly')}
+          </Button>
+        </MonthlyWeeklyButtonGroup>
+        <SideContainerText variant="h5" data-testid="Balance">
+          {t('Balance:')}{' '}
+          {accountListData &&
+            currencyFormat(
+              accountListData.balance,
+              accountListData.currency,
+              locale,
+            )}
+        </SideContainerText>
+        <SideContainerText>{t('Staff IDs:')}</SideContainerText>
+        <SideContainerText data-testid="StaffIds">
+          {staffIds.length ? staffIds.join(', ') : t('None')}
+        </SideContainerText>
+        <SideContainerText data-testid="LastPrayerLetter">
+          {t('Last Prayer Letter:')}{' '}
+          {taskAnalyticsData &&
+            formatOptionalDate(
+              getLastNewsletter(
+                taskAnalyticsData.taskAnalytics
+                  .lastElectronicNewsletterCompletedAt,
+                taskAnalyticsData.taskAnalytics
+                  .lastPhysicalNewsletterCompletedAt,
+              ),
+            )}
+        </SideContainerText>
+        <ContrastDivider />
+        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
+          {t('MPD Info')}
+        </SideContainerText>
+        <SideContainerText data-testid="WeeksOnMpd">
+          {t('Weeks on MPD:')} {accountListData?.weeksOnMpd}
+        </SideContainerText>
+        <SideContainerText data-testid="MpdStartDate">
+          {t('Start Date:')}{' '}
+          {accountListData &&
+            formatOptionalDate(accountListData?.activeMpdStartAt)}
+        </SideContainerText>
+        <SideContainerText data-testid="MpdEndDate">
+          {t('End Date:')}{' '}
+          {accountListData &&
+            formatOptionalDate(accountListData?.activeMpdFinishAt)}
+        </SideContainerText>
+        <SideContainerText data-testid="MpdCommitmentGoal">
+          {t('Commitment Goal:')}{' '}
+          {accountListData &&
+            (typeof accountListData.activeMpdMonthlyGoal === 'number'
+              ? currencyFormat(
+                  accountListData.activeMpdMonthlyGoal,
+                  accountListData?.currency,
+                  locale,
+                )
+              : t('None'))}
+        </SideContainerText>
+        <ContrastDivider />
+        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
+          {t('Users')}
+        </SideContainerText>
+        {loading ? (
+          <MultilineSkeleton lines={4} />
+        ) : (
+          accountListData?.users.nodes.map((user) => (
+            <Fragment key={user.id}>
+              <SideContainerIcon />
+              <SideContainerText>
+                {user.firstName + ' ' + user.lastName}
+              </SideContainerText>
+              <CollapsibleEmailList emails={user.emailAddresses.nodes} />
+              <CollapsiblePhoneList phones={user.phoneNumbers.nodes} />
+              <Divider style={{ margin: theme.spacing(1) }} />
+            </Fragment>
+          ))
+        )}
+        <ContrastDivider />
+        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
+          {t('Coaches')}
+        </SideContainerText>
+        {loading ? (
+          <MultilineSkeleton lines={4} />
+        ) : (
+          accountListData?.coaches.nodes.map((coach) => (
+            <Fragment key={coach.id}>
+              <SideContainerIcon />
+              <SideContainerText>
+                {coach.firstName + ' ' + coach.lastName}
+              </SideContainerText>
+              <CollapsibleEmailList emails={coach.emailAddresses.nodes} />
+              <CollapsiblePhoneList phones={coach.phoneNumbers.nodes} />
+              <Divider style={{ margin: theme.spacing(1) }} />
+            </Fragment>
+          ))
+        )}
+      </ContentContainer>
+    </Container>
   );
 };
