@@ -135,7 +135,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1"],\
             ["next-compose-plugins", "npm:2.2.1"],\
             ["next-optimized-images", "npm:2.6.2"],\
-            ["next-plugin-graphql", "npm:0.0.2"],\
             ["next-pwa", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.6.0"],\
             ["node-fetch", "npm:3.3.1"],\
             ["node-mocks-http", "npm:1.11.0"],\
@@ -15307,7 +15306,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["async-retry", "npm:1.3.3"],\
             ["fast-json-stable-stringify", "npm:2.1.0"],\
             ["graphql", null],\
-            ["graphql-tag", "virtual:5ff95f58ca19a6fc4bf1880a939d9c7c0d2159a5533a7e22a66151e87432b0743f6d21e8796da636ce12de57926bf58d3ab8a1bc9d957d14bc483a10c07e653d#npm:2.12.6"],\
+            ["graphql-tag", "virtual:47767f696ec587612fe645cf41f3221a1eb86bdb7ed327c13f86bbbb6a0cfa45fdc8260a4cf4e460540464e28a44fc49b63b62221474729fe9ed0636293b54ba#npm:2.12.6"],\
             ["loglevel", "npm:1.8.0"],\
             ["lru-cache", "npm:6.0.0"],\
             ["node-abort-controller", "npm:3.0.1"],\
@@ -22335,10 +22334,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:5ff95f58ca19a6fc4bf1880a939d9c7c0d2159a5533a7e22a66151e87432b0743f6d21e8796da636ce12de57926bf58d3ab8a1bc9d957d14bc483a10c07e653d#npm:2.12.6", {\
-          "packageLocation": "./.yarn/__virtual__/graphql-tag-virtual-723c34be0b/0/cache/graphql-tag-npm-2.12.6-99a5a7f6de-b15162a3d6.zip/node_modules/graphql-tag/",\
+        ["virtual:47767f696ec587612fe645cf41f3221a1eb86bdb7ed327c13f86bbbb6a0cfa45fdc8260a4cf4e460540464e28a44fc49b63b62221474729fe9ed0636293b54ba#npm:2.12.6", {\
+          "packageLocation": "./.yarn/__virtual__/graphql-tag-virtual-5a3372472e/0/cache/graphql-tag-npm-2.12.6-99a5a7f6de-b15162a3d6.zip/node_modules/graphql-tag/",\
           "packageDependencies": [\
-            ["graphql-tag", "virtual:5ff95f58ca19a6fc4bf1880a939d9c7c0d2159a5533a7e22a66151e87432b0743f6d21e8796da636ce12de57926bf58d3ab8a1bc9d957d14bc483a10c07e653d#npm:2.12.6"],\
+            ["graphql-tag", "virtual:47767f696ec587612fe645cf41f3221a1eb86bdb7ed327c13f86bbbb6a0cfa45fdc8260a4cf4e460540464e28a44fc49b63b62221474729fe9ed0636293b54ba#npm:2.12.6"],\
             ["@types/graphql", null],\
             ["graphql", null],\
             ["tslib", "npm:2.4.0"]\
@@ -27146,7 +27145,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1"],\
             ["next-compose-plugins", "npm:2.2.1"],\
             ["next-optimized-images", "npm:2.6.2"],\
-            ["next-plugin-graphql", "npm:0.0.2"],\
             ["next-pwa", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.6.0"],\
             ["node-fetch", "npm:3.3.1"],\
             ["node-mocks-http", "npm:1.11.0"],\
@@ -27487,16 +27485,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["img-loader", "virtual:2fe1ece027ff30f369c3de5509f3950f9c30afeb8f723ccea6047c930693bb4a30be2d19ba55fff56ed53904b395062f08e626c5a8ad4c5229c621d61994ab36#npm:3.0.2"],\
             ["raw-loader", "virtual:2fe1ece027ff30f369c3de5509f3950f9c30afeb8f723ccea6047c930693bb4a30be2d19ba55fff56ed53904b395062f08e626c5a8ad4c5229c621d61994ab36#npm:2.0.0"],\
             ["url-loader", "virtual:2fe1ece027ff30f369c3de5509f3950f9c30afeb8f723ccea6047c930693bb4a30be2d19ba55fff56ed53904b395062f08e626c5a8ad4c5229c621d61994ab36#npm:1.1.2"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["next-plugin-graphql", [\
-        ["npm:0.0.2", {\
-          "packageLocation": "./.yarn/cache/next-plugin-graphql-npm-0.0.2-5ff95f58ca-75f1e752ec.zip/node_modules/next-plugin-graphql/",\
-          "packageDependencies": [\
-            ["next-plugin-graphql", "npm:0.0.2"],\
-            ["graphql-tag", "virtual:5ff95f58ca19a6fc4bf1880a939d9c7c0d2159a5533a7e22a66151e87432b0743f6d21e8796da636ce12de57926bf58d3ab8a1bc9d957d14bc483a10c07e653d#npm:2.12.6"]\
           ],\
           "linkType": "HARD"\
         }]\

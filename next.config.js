@@ -1,8 +1,6 @@
-const path = require('path');
 const bundleAnalyzer = require('@next/bundle-analyzer');
 const withPlugins = require('next-compose-plugins');
 const withOptimizedImages = require('next-optimized-images');
-const withGraphql = require('next-plugin-graphql');
 const withPWA = require('next-pwa');
 require('dotenv').config();
 
@@ -72,11 +70,11 @@ const config = {
     REWRITE_DOMAIN: process.env.REWRITE_DOMAIN ?? 'mpdx.org',
     DATADOG_APP_ID: process.env.DATADOG_APP_ID,
     DATADOG_CLIENT_TOKEN: process.env.DATADOG_CLIENT_TOKEN,
-    DATADOG_CONFIGURED: !!(
+    DATADOG_CONFIGURED: Boolean(
       process.env.NODE_ENV === 'production' &&
-      process.env.DATADOG_APP_ID &&
-      process.env.DATADOG_CLIENT_TOKEN
-    ),
+        process.env.DATADOG_APP_ID &&
+        process.env.DATADOG_CLIENT_TOKEN,
+    ).toString(),
     HS_COACHING_ACTIVITY_SUMMARY: process.env.HS_COACHING_ACTIVITY_SUMMARY,
     HS_COACHING_ACTIVITY: process.env.HS_COACHING_ACTIVITY,
     HS_COACHING_APPOINTMENTS_AND_RESULTS:
@@ -118,14 +116,11 @@ const config = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: true,
-  styledComponents: true,
   swcMinify: true,
   webpack: (config) => {
     config.experiments = {
       ...config.experiments,
-      ...{
-        topLevelAwait: true,
-      },
+      topLevelAwait: true,
     };
     config.module.rules.push(
       {
@@ -135,7 +130,6 @@ const config = {
       },
       {
         test: /\.(graphql|gql)$/,
-        include: path.resolve(__dirname, '../'),
         exclude: /node_modules/,
         use: [
           {
@@ -190,7 +184,6 @@ module.exports = withPlugins([
     },
   ],
   withOptimizedImages,
-  withGraphql,
   // Workaround @next/bundle-analyzer not playing nicely with next-compose-plugins
   // https://github.com/cyrilwanner/next-compose-plugins/issues/26
   withBundleAnalyzer(config),
