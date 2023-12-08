@@ -1,5 +1,5 @@
-import React from 'react';
 import Head from 'next/head';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CoachingList } from 'src/components/Coaching/CoachingList';
 import Loading from 'src/components/Loading';

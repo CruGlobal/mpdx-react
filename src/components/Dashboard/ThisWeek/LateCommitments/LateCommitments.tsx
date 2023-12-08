@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import {
   Button,
@@ -12,7 +13,6 @@ import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';

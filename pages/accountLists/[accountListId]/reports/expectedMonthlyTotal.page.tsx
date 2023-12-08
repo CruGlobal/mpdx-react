@@ -1,7 +1,7 @@
+import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';

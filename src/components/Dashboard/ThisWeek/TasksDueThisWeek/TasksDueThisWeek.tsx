@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -15,7 +16,6 @@ import {
 import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
-import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';

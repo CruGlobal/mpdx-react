@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import LocalOffer from '@mui/icons-material/LocalOffer';
@@ -11,7 +12,6 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 import {

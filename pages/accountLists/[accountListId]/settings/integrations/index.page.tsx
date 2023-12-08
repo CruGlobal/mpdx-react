@@ -1,7 +1,7 @@
 import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { getToken } from 'next-auth/jwt';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { ChalklineAccordion } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordion';
 import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';

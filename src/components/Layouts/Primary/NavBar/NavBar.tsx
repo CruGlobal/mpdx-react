@@ -1,8 +1,8 @@
+import NextLink, { LinkProps } from 'next/link';
+import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
 import { Box, Drawer, Hidden, List, Theme } from '@mui/material';
-import NextLink, { LinkProps } from 'next/link';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
