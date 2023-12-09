@@ -16,11 +16,54 @@ const router = {
   isReady: true,
 };
 
+const mockedDonations = {
+  GetExpectedMonthlyTotals: {
+    expectedMonthlyTotalReport: {
+      currency: 'CAD',
+      currencySymbol: '$',
+      received: {
+        donations: [
+          {
+            contactId: 'a6c5a4c2-9ae4-445d-a430-1d12c664f179',
+            convertedCurrency: 'CAD',
+            donationCurrency: 'CAD',
+            pledgeCurrency: 'CAD',
+          },
+        ],
+      },
+      likely: {
+        donations: [
+          {
+            contactId: 'a6c5a4c2-9ae4-445d-a430-1d12c664f179',
+            convertedCurrency: 'CAD',
+            donationCurrency: 'CAD',
+            pledgeCurrency: 'CAD',
+          },
+        ],
+      },
+      unlikely: {
+        donations: [
+          {
+            contactId: 'a6c5a4c2-9ae4-445d-a430-1d12c664f179',
+            convertedCurrency: 'CAD',
+            donationCurrency: 'CAD',
+            pledgeCurrency: 'CAD',
+          },
+        ],
+      },
+    },
+  },
+};
+
 describe('ExpectedMonthlyTotalReport', () => {
   it('renders with data', async () => {
     const { getAllByTestId, queryByRole, queryAllByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
+        <GqlMockedProvider<{
+          GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
+        }>
+          mocks={mockedDonations}
+        >
           <ExpectedMonthlyTotalReport
             accountListId={'abc'}
             isNavListOpen={true}
@@ -90,7 +133,7 @@ describe('ExpectedMonthlyTotalReport', () => {
     render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy} mocks={mockedDonations}>
             <ExpectedMonthlyTotalReport
               accountListId={'abc'}
               designationAccounts={['account-1']}
@@ -120,7 +163,7 @@ describe('ExpectedMonthlyTotalReport', () => {
     render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy} mocks={mockedDonations}>
             <ExpectedMonthlyTotalReport
               accountListId={'abc'}
               isNavListOpen={true}
@@ -148,7 +191,7 @@ describe('ExpectedMonthlyTotalReport', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider>
+          <GqlMockedProvider mocks={mockedDonations}>
             <ExpectedMonthlyTotalReport
               accountListId={'abc'}
               isNavListOpen={true}

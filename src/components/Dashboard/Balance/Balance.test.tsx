@@ -19,7 +19,7 @@ describe('Balance', () => {
         <Balance balance={1000.99} />
       </GqlMockedProvider>,
     );
-    expect(getByTestId('BalanceTypography').textContent).toEqual('$1,001');
+    expect(getByTestId('BalanceTypography').textContent).toEqual('$1,000.99');
     // TODO: needs fix, switching from the HandOffLink to NextLink breaks this
     // expect(
     //   getByRole('link', { hidden: true, name: 'View Gifts' }),
@@ -32,7 +32,7 @@ describe('Balance', () => {
         <Balance balance={1000.99} currencyCode="EUR" />
       </GqlMockedProvider>,
     );
-    expect(getByTestId('BalanceTypography').textContent).toEqual('€1,001');
+    expect(getByTestId('BalanceTypography').textContent).toEqual('€1,000.99');
   });
 
   it('loading', () => {
