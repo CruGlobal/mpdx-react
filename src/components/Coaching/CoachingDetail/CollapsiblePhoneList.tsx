@@ -12,7 +12,9 @@ interface PhoneProps {
 
 const Phone: React.FC<PhoneProps> = ({ phone }) => (
   <ContactInfoText data-testid="PhoneNumber">
-    <ContrastLink href={`mailto:${phone.number}`}>{phone.number}</ContrastLink>
+    <ContrastLink href={`mailto:${phone.number}`} underline="hover">
+      {phone.number}
+    </ContrastLink>
     {phone.location ? ` - ${phone.location}` : null}
   </ContactInfoText>
 );

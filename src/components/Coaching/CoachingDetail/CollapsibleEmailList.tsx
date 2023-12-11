@@ -12,7 +12,9 @@ interface EmailProps {
 
 const Email: React.FC<EmailProps> = ({ email }) => (
   <ContactInfoText data-testid="EmailAddress">
-    <ContrastLink href={`mailto:${email.email}`}>{email.email}</ContrastLink>
+    <ContrastLink href={`mailto:${email.email}`} underline="hover">
+      {email.email}
+    </ContrastLink>
     {email.location ? ` - ${email.location}` : null}
   </ContactInfoText>
 );
