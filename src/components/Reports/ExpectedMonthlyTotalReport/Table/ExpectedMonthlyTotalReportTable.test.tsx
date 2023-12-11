@@ -38,7 +38,7 @@ it('renders donation table', async () => {
     variables: { accountListId: 'abc' },
     mocks: {
       expectedMonthlyTotalReport: {
-        likely: {
+        received: {
           donations: [
             {
               convertedCurrency: 'USD',
@@ -66,7 +66,7 @@ it('renders donation table', async () => {
       <ExpectedMonthlyTotalReportTable
         accountListId={'abc'}
         title={'Donations So Far This Month'}
-        data={data.expectedMonthlyTotalReport.likely.donations}
+        data={data.expectedMonthlyTotalReport.received.donations}
         donations={true}
         total={0}
         currency={'USD'}
