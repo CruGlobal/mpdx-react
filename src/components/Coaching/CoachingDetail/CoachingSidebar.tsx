@@ -26,7 +26,7 @@ const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   width: '20rem',
-  height: '100vh',
+  minHeight: '100vh',
   padding: theme.spacing(0, 1),
 }));
 
