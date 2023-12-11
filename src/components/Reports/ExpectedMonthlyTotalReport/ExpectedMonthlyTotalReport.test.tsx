@@ -20,11 +20,9 @@ const mockedDonations = {
   GetExpectedMonthlyTotals: {
     expectedMonthlyTotalReport: {
       currency: 'CAD',
-      currencySymbol: '$',
       received: {
         donations: [
           {
-            contactId: 'a6c5a4c2-9ae4-445d-a430-1d12c664f179',
             convertedCurrency: 'CAD',
             donationCurrency: 'CAD',
             pledgeCurrency: 'CAD',
@@ -34,7 +32,6 @@ const mockedDonations = {
       likely: {
         donations: [
           {
-            contactId: 'a6c5a4c2-9ae4-445d-a430-1d12c664f179',
             convertedCurrency: 'CAD',
             donationCurrency: 'CAD',
             pledgeCurrency: 'CAD',
@@ -44,7 +41,6 @@ const mockedDonations = {
       unlikely: {
         donations: [
           {
-            contactId: 'a6c5a4c2-9ae4-445d-a430-1d12c664f179',
             convertedCurrency: 'CAD',
             donationCurrency: 'CAD',
             pledgeCurrency: 'CAD',

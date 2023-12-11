@@ -31,7 +31,6 @@ const mocks = {
   },
   GetDonationsTable: {
     currency: 'CAD',
-    currencySymbol: '$',
     donations: {
       nodes: [
         {
@@ -292,7 +291,6 @@ describe('DonationsReportTable', () => {
     const mocks = {
       GetAccountListCurrency: {
         accountList: {
-          id: 'abc',
           currency: 'CAD',
         },
       },

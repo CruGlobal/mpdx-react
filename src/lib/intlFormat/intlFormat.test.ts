@@ -148,8 +148,8 @@ describe('intlFormat', () => {
 
     describe('different language', () => {
       it('handles language', () => {
-        expect(dateFormat(DateTime.local(2020, 1, 5), 'fr')).toEqual(
-          '5 janv. 2020',
+        expect(dateFormat(DateTime.local(2020, 1, 5), 'es-419')).toEqual(
+          '5 ene 2020',
         );
       });
     });
@@ -170,9 +170,9 @@ describe('intlFormat', () => {
 
     describe('different language', () => {
       it('handles language', () => {
-        expect(dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'fr')).toEqual(
-          '5 janv.',
-        );
+        expect(
+          dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'es-419'),
+        ).toEqual('5 ene');
       });
     });
   });
