@@ -22,13 +22,12 @@ import {
 import { SideContainerText } from './StyledComponents';
 import { getLastNewsletter } from './helpers';
 
-const Container = styled(Box)(({ theme }) => ({
+const Container = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   width: '20rem',
   minHeight: '100vh',
-  padding: theme.spacing(0, 1),
-}));
+});
 
 const TitleContainer = styled('div')(({ theme }) => ({
   margin: theme.spacing(1),
@@ -43,6 +42,7 @@ const ContrastDivider = styled(Divider)(({ theme }) => ({
 const ContentContainer = styled('div')({
   flex: 1,
   overflow: 'scroll',
+  padding: theme.spacing(0, 1),
 });
 
 const MonthlyWeeklyButtonGroup = styled(ButtonGroup)(({ theme }) => ({
