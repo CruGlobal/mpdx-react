@@ -56,7 +56,6 @@ const SectionHeaderText = styled(SideContainerText)(({ theme }) => ({
 
 const StyledCloseIcon = styled(CloseIcon)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
-  margin: theme.spacing(0, 1),
 }));
 
 const StyledUserIcon = styled(AccountCircleIcon)(({ theme }) => ({
