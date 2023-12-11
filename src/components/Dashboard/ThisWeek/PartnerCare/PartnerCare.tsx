@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { ReactElement, useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Brightness1Outlined from '@mui/icons-material/Brightness1Outlined';
@@ -23,7 +24,6 @@ import {
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';

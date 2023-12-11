@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import {
   CircularProgress,
@@ -10,7 +11,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';

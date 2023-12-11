@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { sortBy } from 'lodash';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import React, { useEffect, useMemo, useState } from 'react';
+import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';

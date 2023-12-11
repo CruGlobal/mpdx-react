@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
@@ -10,7 +11,6 @@ import {
   useScrollTrigger,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import NextLink from 'next/link';
 import AddMenu from './Items/AddMenu/AddMenu';
 import NavMenu from './Items/NavMenu/NavMenu';
 import NotificationMenu from './Items/NotificationMenu/NotificationMenu';

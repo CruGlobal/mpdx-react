@@ -1,10 +1,10 @@
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import { Box, Button, Drawer, Link, List } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';

@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React from 'react';
 import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
 import Map from '@mui/icons-material/Map';
@@ -10,7 +11,6 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
-import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {

@@ -1,10 +1,10 @@
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import React, { ReactElement, useEffect } from 'react';
 import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
-import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';

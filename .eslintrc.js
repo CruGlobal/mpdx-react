@@ -32,7 +32,7 @@ module.exports = {
         'newlines-between': 'never',
         pathGroups: [
           {
-            pattern: '{next,react}',
+            pattern: '{next,next/**,react}',
             group: 'external',
             position: 'before',
           },

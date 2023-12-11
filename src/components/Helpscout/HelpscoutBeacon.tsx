@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import Script from 'next/script';
+import { useEffect } from 'react';
 import { callBeacon, identifyUser, initBeacon } from 'src/lib/helpScout';
 import { useUser } from '../User/useUser';
 
