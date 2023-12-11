@@ -15,10 +15,10 @@ i18next
       useSuspense: false,
     },
     detection: {
-      order: ['navigator', 'htmlTag'],
+      order: ['localStorage', 'navigator', 'htmlTag'],
     },
     backend: {
-      loadPath: '../../locales/{{lng}}/translation.json',
+      loadPath: '/locales/{{lng}}/translation.json',
     },
   });
 
