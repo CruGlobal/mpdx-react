@@ -5,7 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Box, Button, ButtonGroup, Hidden } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import debounce from 'lodash/debounce';
+import { debounce } from 'lodash';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';

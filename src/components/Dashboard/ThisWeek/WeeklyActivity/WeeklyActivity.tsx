@@ -7,6 +7,7 @@ import {
   CardActions,
   CardHeader,
   IconButton,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -15,7 +16,6 @@ import {
   TableRow,
   Theme,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';

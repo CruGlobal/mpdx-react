@@ -7,10 +7,10 @@ import {
   CardHeader,
   Grid,
   Link,
+  Skeleton,
   Theme,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';

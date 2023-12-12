@@ -7,6 +7,7 @@ import {
   Button,
   CircularProgress,
   Divider,
+  IconButton,
   LinearProgress,
   Link,
   Table,
@@ -16,7 +17,6 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { EditDonationModal } from 'src/components/EditDonationModal/EditDonationModal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
 import {
   DonationTableRowFragment,

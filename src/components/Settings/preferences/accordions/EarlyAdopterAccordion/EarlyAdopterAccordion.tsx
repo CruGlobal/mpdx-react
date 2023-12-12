@@ -7,10 +7,16 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
+
+const accountPreferencesSchema: yup.SchemaOf<
+  Pick<AccountListSettingsInput, 'tester'>
+> = yup.object({
+  tester: yup.boolean().required(),
+});
 
 interface EarlyAdopterAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -32,14 +38,8 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
   const label = t('Early Adopter');
 
-  const AccountPreferencesSchema: yup.SchemaOf<
-    Pick<Types.AccountListSettingsInput, 'tester'>
-  > = yup.object({
-    tester: yup.boolean().required(),
-  });
-
   const onSubmit = async (
-    attributes: Pick<Types.AccountListSettingsInput, 'tester'>,
+    attributes: Pick<AccountListSettingsInput, 'tester'>,
   ) => {
     await updateAccountPreferences({
       variables: {
@@ -95,7 +95,7 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
         initialValues={{
           tester: tester,
         }}
-        validationSchema={AccountPreferencesSchema}
+        validationSchema={accountPreferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
       >

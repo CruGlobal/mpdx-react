@@ -19,7 +19,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { MergePeopleModal } from 'src/components/Contacts/MassActions/MergePeople/MergePeopleModal';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFromParts } from 'src/lib/intlFormat/intlFormat';
+import { dateFromParts } from 'src/lib/intlFormat';
 import { RingIcon } from '../../../RingIcon';
 import {
   ContactDetailContext,

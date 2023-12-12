@@ -15,7 +15,7 @@ import { DialogActionsLeft } from 'src/components/Shared/Forms/DialogActions';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import * as Types from 'src/graphql/types.generated';
+import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
@@ -37,7 +37,7 @@ const formikSchema: yup.SchemaOf<FormikSchema> = yup.object({
 });
 
 type InviteFormProps = {
-  type: Types.InviteTypeEnum;
+  type: InviteTypeEnum;
 };
 
 export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
@@ -168,7 +168,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
             title={t('Confirm')}
             message={
               <>
-                {type === Types.InviteTypeEnum.User && (
+                {type === InviteTypeEnum.User && (
                   <>
                     <Typography>
                       {t(
@@ -188,7 +188,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
                     </Typography>
                   </>
                 )}
-                {type === Types.InviteTypeEnum.Coach && (
+                {type === InviteTypeEnum.Coach && (
                   <Typography>
                     {t(`Are you sure you want to proceed?`)}
                   </Typography>

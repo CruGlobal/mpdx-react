@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Paper,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -12,7 +13,6 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/It
 import Modal from 'src/components/common/Modal/Modal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateFormat } from 'src/lib/intlFormat';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
