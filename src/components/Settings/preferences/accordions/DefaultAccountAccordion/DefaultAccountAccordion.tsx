@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { User } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
 import { useUpdateUserDefaultAccountMutation } from './UpdateDefaultAccount.generated';
@@ -19,6 +19,11 @@ interface DefaultAccountAccordionProps {
   accountListId: string;
   defaultAccountList: string;
 }
+
+const preferencesSchema: yup.SchemaOf<Pick<User, 'defaultAccountList'>> =
+  yup.object({
+    defaultAccountList: yup.string().required(),
+  });
 
 export const DefaultAccountAccordion: React.FC<
   DefaultAccountAccordionProps
@@ -36,15 +41,7 @@ export const DefaultAccountAccordion: React.FC<
     [accounts, defaultAccountList],
   );
 
-  const PreferencesSchema: yup.SchemaOf<
-    Pick<Types.User, 'defaultAccountList'>
-  > = yup.object({
-    defaultAccountList: yup.string().required(),
-  });
-
-  const onSubmit = async (
-    attributes: Pick<Types.User, 'defaultAccountList'>,
-  ) => {
+  const onSubmit = async (attributes: Pick<User, 'defaultAccountList'>) => {
     await updateUserDefaultAccount({
       variables: {
         input: {
@@ -79,7 +76,7 @@ export const DefaultAccountAccordion: React.FC<
         initialValues={{
           defaultAccountList: defaultAccountList,
         }}
-        validationSchema={PreferencesSchema}
+        validationSchema={preferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
         validateOnMount

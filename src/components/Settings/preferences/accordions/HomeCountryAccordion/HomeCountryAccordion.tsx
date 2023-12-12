@@ -7,8 +7,14 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
+
+const preferencesSchema: yup.SchemaOf<
+  Pick<AccountListSettingsInput, 'homeCountry'>
+> = yup.object({
+  homeCountry: yup.string(),
+});
 
 interface HomeCountryAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -36,14 +42,8 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
     [countries, homeCountry],
   );
 
-  const PreferencesSchema: yup.SchemaOf<
-    Pick<Types.AccountListSettingsInput, 'homeCountry'>
-  > = yup.object({
-    homeCountry: yup.string(),
-  });
-
   const onSubmit = async (
-    attributes: Pick<Types.AccountListSettingsInput, 'homeCountry'>,
+    attributes: Pick<AccountListSettingsInput, 'homeCountry'>,
   ) => {
     await updateAccountPreferencesMutation({
       variables: {
@@ -83,7 +83,7 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
         initialValues={{
           homeCountry: homeCountry,
         }}
-        validationSchema={PreferencesSchema}
+        validationSchema={preferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
         validateOnMount

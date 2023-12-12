@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import StyledProgress from 'src/components/StyledProgress';

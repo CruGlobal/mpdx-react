@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 interface Props {

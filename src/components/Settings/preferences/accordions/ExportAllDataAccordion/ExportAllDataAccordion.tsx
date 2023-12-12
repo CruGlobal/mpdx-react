@@ -16,7 +16,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateTimeFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateTimeFormat } from 'src/lib/intlFormat';
 import { useExportDataMutation } from '../../GetAccountPreferences.generated';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
 

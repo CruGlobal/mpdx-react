@@ -1,10 +1,7 @@
 import NextLink from 'next/link';
 import React, { useState } from 'react';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import { Box, Button, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';

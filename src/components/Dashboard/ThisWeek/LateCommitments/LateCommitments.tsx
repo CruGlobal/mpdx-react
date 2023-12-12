@@ -8,8 +8,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Skeleton,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
@@ -23,7 +23,7 @@ import {
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
-import { numberFormat } from 'src/lib/intlFormat/intlFormat';
+import { numberFormat } from 'src/lib/intlFormat';
 import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';

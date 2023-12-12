@@ -18,7 +18,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { ExpectedDonationRowFragment } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat/intlFormat';
+import { currencyFormat } from 'src/lib/intlFormat';
 import theme from '../../../../theme';
 
 interface Props {
