@@ -13,38 +13,9 @@ import { clearDataDogUser } from 'src/hooks/useDataDog';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
 import snackNotifications from '../components/Snackbar/Snackbar';
 import { dispatch } from './analytics';
-import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
+import { createCache } from './apolloCache';
 
-const ignoredkeyArgsForPagination = ['before', 'after'];
-const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
-  args
-    ? Object.keys(args).filter(
-        (arg) => !ignoredkeyArgsForPagination.includes(arg),
-      )
-    : undefined,
-);
-
-export const cache = new InMemoryCache({
-  possibleTypes: generatedIntrospection.possibleTypes,
-  typePolicies: {
-    AccountList: { merge: true },
-    User: { merge: true },
-    Contact: {
-      fields: {
-        contactReferralsByMe: paginationFieldPolicy,
-      },
-      merge: true,
-    },
-    Query: {
-      fields: {
-        contacts: paginationFieldPolicy,
-        donations: paginationFieldPolicy,
-        tasks: paginationFieldPolicy,
-        userNotifications: paginationFieldPolicy,
-      },
-    },
-  },
-});
+const cache = createCache();
 
 const httpLink = new BatchHttpLink({
   uri: `${process.env.SITE_URL}/api/graphql`,

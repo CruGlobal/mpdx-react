@@ -19,6 +19,7 @@ import { DefaultMockResolvers } from 'graphql-ergonomock/dist/mock';
 import { gql } from 'graphql-tag';
 import seedrandom from 'seedrandom';
 import { DeepPartial } from 'ts-essentials';
+import { createCache } from 'src/lib/apolloCache';
 import schema from '../../graphql/schema.graphql';
 
 const seed = 'seed';
@@ -42,6 +43,7 @@ const resolvers: DefaultMockResolvers = {
 export const GqlMockedProvider = <TData,>({
   children,
   mocks,
+  cache = createCache(),
   ...props
 }: PropsWithChildren<
   Omit<ErgonoMockedProviderProps, 'schema'> & {
@@ -51,6 +53,7 @@ export const GqlMockedProvider = <TData,>({
   <ErgonoMockedProvider
     {...props}
     mocks={mocks}
+    cache={cache}
     schema={schema}
     resolvers={resolvers}
   >

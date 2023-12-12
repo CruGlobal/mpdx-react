@@ -12,6 +12,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
+import { ReportsTagHistoriesAssociationEnum } from '../../../../graphql/types.generated';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { ActivitySummary } from './ActivitySummary/ActivitySummary';
@@ -25,6 +26,7 @@ import {
 } from './LoadCoachingDetail.generated';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import { SideContainerText } from './StyledComponents';
+import { TagsSummary } from './TagsSummary/TagsSummary';
 import { getLastNewsletter } from './helpers';
 
 export enum CoachingPeriodEnum {
@@ -338,6 +340,16 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 period={period}
               />
               <ActivitySummary accountListId={accountListId} period={period} />
+              <TagsSummary
+                accountListId={accountListId}
+                period={period}
+                association={ReportsTagHistoriesAssociationEnum.Contacts}
+              />
+              <TagsSummary
+                accountListId={accountListId}
+                period={period}
+                association={ReportsTagHistoriesAssociationEnum.Tasks}
+              />
             </CoachingItemContainer>
           </>
         )}

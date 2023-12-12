@@ -85,7 +85,6 @@ describe('ContactHeaderStatusSection', () => {
     expect(queryByText('$500 - Monthly')).toBeInTheDocument();
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
   it.each([
     ['NEVER_CONTACTED', 'Never Contacted'],
     ['ASK_IN_FUTURE', 'Ask In Future'],
