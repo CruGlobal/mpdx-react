@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
+import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import NoData from '../NoData';

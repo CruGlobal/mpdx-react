@@ -10,14 +10,14 @@ import {
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import client from 'src/lib/client';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import {
   MultiselectFilter,
   PledgeFrequencyEnum,
   StatusEnum,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import client from 'src/lib/client';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';

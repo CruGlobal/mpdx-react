@@ -25,7 +25,7 @@ import {
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
+import { AddressUpdateInput } from 'src/graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,

@@ -6,7 +6,7 @@ import {
   NotificationTypeEnum,
   TaskCreateInput,
   TaskUpdateInput,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { TaskRowFragment } from '../../TaskRow/TaskRow.generated';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import {

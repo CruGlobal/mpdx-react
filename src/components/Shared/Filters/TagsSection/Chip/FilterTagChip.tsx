@@ -1,11 +1,11 @@
 import React from 'react';
 import { Chip } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import theme from 'src/theme';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
-} from '../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import theme from 'src/theme';
 
 interface FilterTagChipProps {
   name: string;

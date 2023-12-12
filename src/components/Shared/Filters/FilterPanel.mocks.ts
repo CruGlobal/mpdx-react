@@ -5,7 +5,7 @@ import {
   MultiselectFilter,
   NumericRangeFilter,
   TextFilter,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import {
   FilterPanelGroupFragment,
   FilterPanelGroupFragmentDoc,

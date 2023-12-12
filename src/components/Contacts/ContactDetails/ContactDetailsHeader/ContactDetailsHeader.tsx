@@ -4,7 +4,7 @@ import { Avatar, Box, IconButton, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { StatusEnum } from '../../../../../graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 import {

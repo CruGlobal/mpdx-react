@@ -26,15 +26,12 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ActivityTypeEnum, TaskUpdateInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import {
-  ActivityTypeEnum,
-  TaskUpdateInput,
-} from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 

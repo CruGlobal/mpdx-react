@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
-import { IdValue } from '../../../../../graphql/types.generated';
+import { IdValue } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 

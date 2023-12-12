@@ -2,14 +2,14 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import useTaskModal from 'src/hooks/useTaskModal';
 import {
   ActivityTypeEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   IdValue,
   StatusEnum,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactsDocument } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
 import Loading from '../../Loading';
