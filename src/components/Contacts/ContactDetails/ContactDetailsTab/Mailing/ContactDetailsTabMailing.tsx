@@ -13,7 +13,7 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../../ContactDetailContext';
-import { ContactDetailEditIcon } from '../ContactDetailsTab';
+import { EditIcon } from '../EditIcon';
 import {
   ContactDetailsAddButton,
   ContactDetailsAddIcon,
@@ -230,7 +230,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 onClick={() => setEditMailingModalOpen(true)}
                 aria-label={t('Edit Mailing')}
               >
-                <ContactDetailEditIcon />
+                <EditIcon />
               </AddressEditIconContainer>
             </ContactDetailsMailingLabelTextContainer>
             {/* Envelope Name Section */}

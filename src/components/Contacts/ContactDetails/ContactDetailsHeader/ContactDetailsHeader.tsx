@@ -11,7 +11,7 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../ContactDetailContext';
-import { ContactDetailEditIcon } from '../ContactDetailsTab/ContactDetailsTab';
+import { EditIcon } from '../ContactDetailsTab/EditIcon';
 import { EditContactDetailsModal } from '../ContactDetailsTab/People/Items/EditContactDetailsModal/EditContactDetailsModal';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
@@ -112,7 +112,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
                 onClick={() => setEditModalOpen(true)}
                 aria-label={t('Edit Icon')}
               >
-                <ContactDetailEditIcon />
+                <EditIcon />
               </IconButton>
             </>
           ) : null}
