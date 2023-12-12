@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   ContactsContext,

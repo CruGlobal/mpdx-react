@@ -20,7 +20,6 @@ import {
   Typography,
 } from '@mui/material';
 import { Formik } from 'formik';
-import _ from 'lodash';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';

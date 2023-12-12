@@ -2,7 +2,6 @@ import Head from 'next/head';
 import React, { useContext } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import _ from 'lodash';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';

@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import _, { debounce } from 'lodash';
+import { type DebouncedFunc, debounce, omit } from 'lodash';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useLocale } from 'src/hooks/useLocale';
@@ -51,7 +51,7 @@ export type ContactsType = {
     flows?: boolean,
     map?: boolean,
   ) => void;
-  setSearchTerm: _.DebouncedFunc<(searchTerm: string) => void>;
+  setSearchTerm: DebouncedFunc<(searchTerm: string) => void>;
   handleViewModeChange: (
     event: React.MouseEvent<HTMLElement>,
     view: string,
@@ -295,7 +295,7 @@ export const ContactsProvider: React.FC<Props> = ({
       filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
     }
     if (viewMode !== TableViewModeEnum.Map && urlFilters && urlFilters.ids) {
-      const newFilters = _.omit(activeFilters, 'ids');
+      const newFilters = omit(activeFilters, 'ids');
       if (Object.keys(newFilters).length > 0) {
         filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
       } else {

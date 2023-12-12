@@ -10,7 +10,6 @@ import Hidden from '@mui/material/Hidden';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { styled } from '@mui/material/styles';
-import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
