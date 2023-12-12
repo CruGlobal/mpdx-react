@@ -1,8 +1,8 @@
+import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
 import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import useGetAppSettings from '../src/hooks/useGetAppSettings';
 

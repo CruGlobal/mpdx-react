@@ -1,7 +1,7 @@
+import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import Icon from '@mdi/react';
 import { Box, CardActionArea, CardContent, Typography } from '@mui/material';
-import NextLink from 'next/link';
 import { makeStyles } from 'tss-react/mui';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { useAccountListId } from '../../../hooks/useAccountListId';

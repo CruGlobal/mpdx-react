@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, {
   Dispatch,
   SetStateAction,
@@ -16,7 +17,6 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
 import theme from 'src/theme';

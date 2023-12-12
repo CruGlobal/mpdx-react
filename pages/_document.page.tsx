@@ -1,5 +1,3 @@
-import React, { ReactElement } from 'react';
-import { ServerStyleSheets } from '@mui/styles';
 import { RenderPageResult } from 'next/dist/shared/lib/utils';
 import Document, {
   DocumentContext,
@@ -10,6 +8,8 @@ import Document, {
   NextScript,
 } from 'next/document';
 import Script from 'next/script';
+import React, { ReactElement } from 'react';
+import { ServerStyleSheets } from '@mui/styles';
 import theme from '../src/theme';
 
 class MyDocument extends Document {

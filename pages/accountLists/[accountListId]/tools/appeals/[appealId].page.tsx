@@ -1,6 +1,6 @@
+import Head from 'next/head';
 import React, { ReactElement, useState } from 'react';
 import { Box, Container, Theme } from '@mui/material';
-import Head from 'next/head';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';

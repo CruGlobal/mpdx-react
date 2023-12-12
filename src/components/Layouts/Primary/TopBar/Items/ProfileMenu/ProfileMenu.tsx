@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
@@ -17,7 +18,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut, useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { clearDataDogUser } from 'src/hooks/useDataDog';

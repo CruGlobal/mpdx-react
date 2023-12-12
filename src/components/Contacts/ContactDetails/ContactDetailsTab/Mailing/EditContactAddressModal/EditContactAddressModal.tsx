@@ -47,7 +47,7 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   width: '100%',
   flexDirection: 'column',
-  margin: theme.spacing(4, 0),
+  margin: theme.spacing(1, 0),
 }));
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
@@ -234,6 +234,7 @@ export const EditContactAddressModal: React.FC<
                             href={`mailto:donation.services@cru.org?subject=Donor+address+change&body=${encodeURIComponent(
                               generateEmailBody(emailData, address),
                             )}`}
+                            underline="hover"
                             sx={{ fontWeight: 'bold' }}
                           >
                             {t('Email Donation Services here')}
@@ -245,7 +246,7 @@ export const EditContactAddressModal: React.FC<
                 )}
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
-                    <Grid item sm={12} md={9}>
+                    <Grid item xs={12} sm={8} md={9}>
                       <StreetAutocomplete
                         streetValue={street}
                         onStreetChange={(street) =>
@@ -268,7 +269,7 @@ export const EditContactAddressModal: React.FC<
                         disabled={editingDisabled}
                       />
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid item xs={12} sm={4} md={3}>
                       <FormControl fullWidth>
                         <InputLabel id="location-select-label">
                           {t('Location')}
@@ -297,7 +298,7 @@ export const EditContactAddressModal: React.FC<
                 </ContactInputWrapper>
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
-                    <Grid item sm={12} md={6}>
+                    <Grid item xs={12} sm={6}>
                       <TextField
                         name="city"
                         label={t('City')}
@@ -308,7 +309,7 @@ export const EditContactAddressModal: React.FC<
                         disabled={editingDisabled}
                       />
                     </Grid>
-                    <Grid item sm={12} md={3}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <TextField
                         name="state"
                         label={t('State')}
@@ -319,7 +320,7 @@ export const EditContactAddressModal: React.FC<
                         disabled={editingDisabled}
                       />
                     </Grid>
-                    <Grid item sm={12} md={3}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <TextField
                         name="postalCode"
                         label={t('Zip')}
@@ -334,7 +335,7 @@ export const EditContactAddressModal: React.FC<
                 </ContactInputWrapper>
                 <ContactInputWrapper>
                   <Grid container spacing={1}>
-                    <Grid item sm={12} md={6}>
+                    <Grid item xs={12} sm={6}>
                       <TextField
                         name="country"
                         label={t('Country')}
@@ -345,7 +346,7 @@ export const EditContactAddressModal: React.FC<
                         disabled={editingDisabled}
                       />
                     </Grid>
-                    <Grid item sm={12} md={3}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <TextField
                         name="region"
                         label={t('Region')}
@@ -356,7 +357,7 @@ export const EditContactAddressModal: React.FC<
                         disabled={editingDisabled}
                       />
                     </Grid>
-                    <Grid item sm={12} md={3}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <TextField
                         name="metroArea"
                         label={t('Metro')}
@@ -380,8 +381,7 @@ export const EditContactAddressModal: React.FC<
                     }
                     label={t('Primary')}
                   />
-                </ContactInputWrapper>
-                <ContactInputWrapper>
+                  <br />
                   <FormControlLabel
                     control={
                       <Checkbox
