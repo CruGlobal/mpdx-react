@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import { ContactsContainer } from 'src/components/Contacts/ContactsContainer';
 import { ContactsPage } from './ContactsPage';
 
