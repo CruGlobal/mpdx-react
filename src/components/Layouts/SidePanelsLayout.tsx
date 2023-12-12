@@ -143,7 +143,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           transform: rightOpen ? 'none' : 'translate(100%)',
         }}
       >
-        {rightPanel}
+        {rightOpen && rightPanel}
       </RightPanelWrapper>
     </OuterWrapper>
   );

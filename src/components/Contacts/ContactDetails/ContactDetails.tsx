@@ -15,10 +15,10 @@ import {
   ContactDetailsType,
 } from './ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
-import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
-import { ContactDonationsTab } from './ContactDonationsTab/ContactDonationsTab';
-import { ContactNotesTab } from './ContactNotesTab/ContactNotesTab';
-import { ContactReferralTab } from './ContactReferralTab/ContactReferralTab';
+import { DynamicContactDetailsTab } from './ContactDetailsTab/DynamicContactDetailsTab';
+import { DynamicContactDonationsTab } from './ContactDonationsTab/DynamicContactDonationsTab';
+import { DynamicContactNotesTab } from './ContactNotesTab/DynamicContactNotesTab';
+import { DynamicContactReferralTab } from './ContactReferralTab/DynamicContactReferralTab';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 
 interface Props {
@@ -123,22 +123,24 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
         </TabPanelNoBottomPadding>
         <TabPanel value={TabKey.Donations}>
           {contactId && accountListId && (
-            <ContactDonationsTab
+            <DynamicContactDonationsTab
               accountListId={accountListId}
               contactId={contactId}
             />
           )}
         </TabPanel>
         <TabPanel value={TabKey.Referrals}>
-          <ContactReferralTab
-            accountListId={accountListId ?? ''}
-            contactId={contactId ?? ''}
-            onContactSelected={setContactFocus}
-          />
+          {contactId && accountListId && (
+            <DynamicContactReferralTab
+              accountListId={accountListId}
+              contactId={contactId}
+              onContactSelected={setContactFocus}
+            />
+          )}
         </TabPanel>
         <TabPanel value={TabKey.ContactDetails}>
           {contactId && accountListId && (
-            <ContactDetailsTab
+            <DynamicContactDetailsTab
               accountListId={accountListId}
               contactId={contactId}
               onContactSelected={setContactFocus}
@@ -147,7 +149,7 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
         </TabPanel>
         <TabPanel value={TabKey.Notes}>
           {contactId && accountListId && (
-            <ContactNotesTab
+            <DynamicContactNotesTab
               accountListId={accountListId}
               contactId={contactId}
             />

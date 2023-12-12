@@ -1,5 +1,4 @@
 import React from 'react';
-import CreateIcon from '@mui/icons-material/Create';
 import { Box, Divider, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
@@ -31,13 +30,6 @@ const ContactDetailSectionContainer = styled(Box)(({ theme }) => ({
 const ContactDetailHeadingContainer = styled(Box)(() => ({
   display: 'flex',
   alignItems: 'center',
-}));
-
-export const ContactDetailEditIcon = styled(CreateIcon)(({ theme }) => ({
-  width: '18px',
-  height: '18px',
-  margin: theme.spacing(0),
-  color: theme.palette.cruGrayMedium.main,
 }));
 
 const ContactDetailHeadingText = styled(Typography)(() => ({

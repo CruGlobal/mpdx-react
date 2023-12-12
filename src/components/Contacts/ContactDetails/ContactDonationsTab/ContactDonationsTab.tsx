@@ -15,6 +15,7 @@ import {
   GetContactDonationsQueryVariables,
   useGetContactDonationsQuery,
 } from './ContactDonationsTab.generated';
+import { DonationTabKey } from './DonationTabKey';
 import { DonationsGraph } from './DonationsGraph/DonationsGraph';
 import { PartnershipInfo } from './PartnershipInfo/PartnershipInfo';
 
@@ -60,11 +61,6 @@ export type ContactDonationsFilter = Omit<
   GetContactDonationsQueryVariables,
   'accountListId'
 >;
-
-export enum DonationTabKey {
-  Donations = 'Donations',
-  PartnershipInfo = 'Partnership Info',
-}
 
 export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
   accountListId,
