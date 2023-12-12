@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Cake from '@mui/icons-material/Cake';
-import CreateIcon from '@mui/icons-material/Create';
 import Email from '@mui/icons-material/Email';
 import MergeIcon from '@mui/icons-material/Merge';
 import Phone from '@mui/icons-material/Phone';
@@ -26,6 +25,7 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../../ContactDetailContext';
+import { EditIcon } from '../EditIcon';
 import {
   ContactPeopleFragment,
   ContactPersonFragment,
@@ -68,13 +68,6 @@ const ContactPersonIconContainer = styled(Box)(() => ({
   width: '18px',
   height: '18px',
   marginRight: '35px',
-}));
-
-const ContactDetailEditIcon = styled(CreateIcon)(({ theme }) => ({
-  width: '18px',
-  height: '18px',
-  margin: theme.spacing(0),
-  color: theme.palette.cruGrayMedium.main,
 }));
 
 export const ContactDetailsAddButton = styled(Button)(({ theme }) => ({
@@ -199,7 +192,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               onClick={() => setEditPersonModalOpen(person.id)}
               aria-label={t('Edit Icon')}
             >
-              <ContactDetailEditIcon />
+              <EditIcon />
             </ContactEditIconContainer>
           </ContactPersonRowContainer>
           {/* Phone Number */}

@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
@@ -452,7 +452,7 @@ const TasksPage: React.FC = () => {
               }
               rightPanel={
                 contactDetailsId ? (
-                  <ContactsRightPanel
+                  <DynamicContactsRightPanel
                     onClose={() => setContactFocus(undefined)}
                   />
                 ) : undefined

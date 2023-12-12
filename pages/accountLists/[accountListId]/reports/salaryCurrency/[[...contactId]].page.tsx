@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
@@ -83,7 +83,9 @@ const SalaryCurrencyReportPage: React.FC = () => {
             rightPanel={
               selectedContactId ? (
                 <ContactsPage>
-                  <ContactsRightPanel onClose={() => handleSelectContact('')} />
+                  <DynamicContactsRightPanel
+                    onClose={() => handleSelectContact('')}
+                  />
                 </ContactsPage>
               ) : undefined
             }
