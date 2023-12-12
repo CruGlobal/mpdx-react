@@ -17,7 +17,7 @@ import { TableViewModeEnum, headerHeight } from '../Shared/Header/ListHeader';
 import { ContactFlowDragLayer } from './ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { ContactsLeftPanel } from './ContactsLeftPanel/ContactsLeftPanel';
 import { ContactsMainPanel } from './ContactsMainPanel/ContactsMainPanel';
-import { ContactsRightPanel } from './ContactsRightPanel/ContactsRightPanel';
+import { DynamicContactsRightPanel } from './ContactsRightPanel/DynamicContactsRightPanel';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -56,7 +56,7 @@ export const ContactsContainer: React.FC = ({}) => {
               leftWidth="290px"
               mainContent={<ContactsMainPanel />}
               rightPanel={
-                <ContactsRightPanel
+                <DynamicContactsRightPanel
                   onClose={() =>
                     setContactFocus(
                       undefined,

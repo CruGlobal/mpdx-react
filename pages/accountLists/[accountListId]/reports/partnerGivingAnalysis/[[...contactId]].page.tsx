@@ -5,7 +5,7 @@ import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
@@ -166,7 +166,9 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           rightPanel={
             selectedContactId ? (
               <ContactsPage>
-                <ContactsRightPanel onClose={() => handleSelectContact('')} />
+                <DynamicContactsRightPanel
+                  onClose={() => handleSelectContact('')}
+                />
               </ContactsPage>
             ) : undefined
           }

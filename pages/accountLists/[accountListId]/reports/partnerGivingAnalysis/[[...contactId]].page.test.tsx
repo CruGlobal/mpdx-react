@@ -108,12 +108,12 @@ describe('partnerGivingAnalysis page', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders contact panel', () => {
-    const { getByRole } = render(
+  it('renders contact panel', async () => {
+    const { findByRole } = render(
       <TestingComponent routerContactId={'contact-1'} />,
     );
 
-    expect(getByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
+    expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
 
   it('renders navigation panel', () => {
