@@ -2,11 +2,11 @@ import { InMemoryCache } from '@apollo/client';
 import generatedIntrospection from '../../graphql/possibleTypes.generated';
 import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
 
-const ignoredkeyArgsForPagination = ['before', 'after'];
+const ignoredKeyArgsForPagination = ['before', 'after'];
 const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
   args
     ? Object.keys(args).filter(
-        (arg) => !ignoredkeyArgsForPagination.includes(arg),
+        (arg) => !ignoredKeyArgsForPagination.includes(arg),
       )
     : undefined,
 );
