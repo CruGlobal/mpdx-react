@@ -1,6 +1,5 @@
 import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
-import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import {
@@ -79,7 +78,7 @@ describe('TagsSummary', () => {
                   reportsTagHistories: {
                     periods: [
                       {
-                        endDate: DateTime.local(2023, 1, 31).toISODate(),
+                        endDate: '2013-01-31',
                         tags: [
                           {
                             id: 'tag-1',
@@ -94,7 +93,7 @@ describe('TagsSummary', () => {
                         ],
                       },
                       {
-                        endDate: DateTime.local(2023, 2, 28).toISODate(),
+                        endDate: '2013-02-28',
                         tags: [
                           {
                             id: 'tag-1',
@@ -109,7 +108,7 @@ describe('TagsSummary', () => {
                         ],
                       },
                       {
-                        endDate: DateTime.local(2023, 1, 31).toISODate(),
+                        endDate: '2013-01-31',
                         tags: [
                           {
                             id: 'tag-1',
