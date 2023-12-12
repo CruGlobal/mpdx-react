@@ -1,31 +1,34 @@
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
+import { getToken } from 'next-auth/jwt';
 import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { suggestArticles } from 'src/lib/helpScout';
 import Dashboard from '../../src/components/Dashboard';
 import useGetAppSettings from '../../src/hooks/useGetAppSettings';
 import useTaskModal from '../../src/hooks/useTaskModal';
-import { useGetDashboardQuery } from './GetDashboard.generated';
+import { ssrClient } from '../../src/lib/client';
+import {
+  GetDashboardDocument,
+  GetDashboardQuery,
+  GetDashboardQueryVariables,
+} from './GetDashboard.generated';
 
-const AccountListIdPage: React.FC = () => {
+interface Props {
+  data: GetDashboardQuery;
+  accountListId: string;
+  modal: string;
+}
+
+const AccountListIdPage = ({
+  data,
+  accountListId,
+  modal,
+}: Props): ReactElement => {
   const { appName } = useGetAppSettings();
-  const { query, push } = useRouter();
-  const accountListId = useAccountListId() || '';
   const { openTaskModal } = useTaskModal();
   const [selectedMenuItem, setSelectedMenuItem] = useState(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const modal = query?.modal?.toString() ?? '';
-  const { data, loading, error } = useGetDashboardQuery({
-    variables: {
-      accountListId,
-    },
-  });
-
-  if (error) {
-    push('/');
-  }
 
   useEffect(() => {
     suggestArticles('HS_HOME_SUGGESTIONS');
@@ -59,16 +62,75 @@ const AccountListIdPage: React.FC = () => {
     <>
       <Head>
         <title>
-          {appName} | {data?.accountList?.name}
+          {appName} | {data.accountList.name}
         </title>
       </Head>
-      {!loading && data && (
-        <Dashboard data={data} accountListId={accountListId} />
-      )}
+      <Dashboard data={data} accountListId={accountListId} />
 
       {modal && renderDialog(selectedMenuItem, dialogOpen, setDialogOpen)}
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({
+  query,
+  req,
+}) => {
+  const jwtToken = (await getToken({
+    req,
+    secret: process.env.JWT_SECRET as string,
+  })) as { apiToken: string } | null;
+
+  // If no token from session, redirect to login page
+  if (!jwtToken?.apiToken) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  try {
+    const client = await ssrClient(jwtToken?.apiToken);
+    const response = await client.query<
+      GetDashboardQuery,
+      GetDashboardQueryVariables
+    >({
+      query: GetDashboardDocument,
+      variables: {
+        accountListId: query?.accountListId
+          ? Array.isArray(query.accountListId)
+            ? query.accountListId[0]
+            : query.accountListId
+          : '',
+        // TODO: implement these variables in query
+        // endOfDay: DateTime.local().endOf('day').toISO(),
+        // today: DateTime.local().endOf('day').toISODate(),
+        // twoWeeksFromNow: DateTime.local()
+        //   .endOf('day')
+        //   .plus({ weeks: 2 })
+        //   .toISODate(),
+      },
+    });
+
+    if (!response) throw new Error('Undefined response');
+
+    return {
+      props: {
+        data: response?.data,
+        accountListId: query?.accountListId?.toString(),
+        modal: query?.modal?.toString() ?? '',
+      },
+    };
+  } catch {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
 };
 
 export default AccountListIdPage;
