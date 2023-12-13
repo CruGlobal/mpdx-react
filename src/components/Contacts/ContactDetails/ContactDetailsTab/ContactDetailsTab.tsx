@@ -1,6 +1,5 @@
 import React from 'react';
-import { Box, Divider, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Box, Divider, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {

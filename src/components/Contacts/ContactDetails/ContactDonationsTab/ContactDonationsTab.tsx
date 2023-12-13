@@ -2,8 +2,7 @@ import React from 'react';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Box, Tab } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Box, Skeleton, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next/';
 import {

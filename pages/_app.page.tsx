@@ -5,8 +5,7 @@ import React, { ReactElement } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
-import { Box } from '@mui/material';
-import StyledEngineProvider from '@mui/material/StyledEngineProvider';
+import { Box, StyledEngineProvider } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import {

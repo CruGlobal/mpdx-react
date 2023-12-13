@@ -17,11 +17,11 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
+  Skeleton,
   Tab,
   Tabs,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';

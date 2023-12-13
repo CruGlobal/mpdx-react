@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Close from '@mui/icons-material/Close';
-import { Avatar, Box, IconButton, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Avatar, Box, IconButton, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';

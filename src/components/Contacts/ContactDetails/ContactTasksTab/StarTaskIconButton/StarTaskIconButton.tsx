@@ -1,5 +1,5 @@
 import React from 'react';
-import IconButton from '@mui/material/IconButton';
+import { IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { useSetTaskStarredMutation } from './SetTaskStarred.generated';

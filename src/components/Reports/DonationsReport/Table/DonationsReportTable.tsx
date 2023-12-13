@@ -7,6 +7,7 @@ import {
   Button,
   CircularProgress,
   Divider,
+  IconButton,
   LinearProgress,
   Link,
   Table,
@@ -14,9 +15,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
-} from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+ Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';

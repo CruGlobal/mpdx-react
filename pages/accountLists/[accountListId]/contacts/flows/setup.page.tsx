@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import React, { useCallback, useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { isEqual } from 'lodash';
 import { useSnackbar } from 'notistack';

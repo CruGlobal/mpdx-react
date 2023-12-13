@@ -1,6 +1,5 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Box , Typography } from '@mui/material';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import { IdValue } from 'src/graphql/types.generated';

@@ -3,13 +3,11 @@ import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import {
   Autocomplete,
   Checkbox,
+  IconButton,
   ListItem,
   ListItemIcon,
   ListItemText,
-  TextField,
-} from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+ TextField , Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import { ReverseFiltersMap } from './FilterPanel';

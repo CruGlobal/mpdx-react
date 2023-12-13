@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '@mui/material/Button';
+import { Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 

@@ -9,12 +9,12 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
+  Skeleton,
   Tab,
   Tabs,
   Theme,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';

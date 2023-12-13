@@ -8,8 +8,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Skeleton,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
