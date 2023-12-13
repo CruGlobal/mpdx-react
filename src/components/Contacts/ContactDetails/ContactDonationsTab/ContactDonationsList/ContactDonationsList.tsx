@@ -3,13 +3,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   IconButton,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';

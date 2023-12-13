@@ -1,7 +1,5 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import { Box , IconButton , Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';

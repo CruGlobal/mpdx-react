@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Paper,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -12,7 +13,6 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';

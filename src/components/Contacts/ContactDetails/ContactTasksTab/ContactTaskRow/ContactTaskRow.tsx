@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Checkbox, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Box, Checkbox, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';

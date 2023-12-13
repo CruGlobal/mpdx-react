@@ -5,10 +5,10 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  Skeleton,
   Theme,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {

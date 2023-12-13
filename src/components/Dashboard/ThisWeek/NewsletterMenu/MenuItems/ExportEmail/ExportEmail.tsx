@@ -7,9 +7,9 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  Skeleton,
   TextareaAutosize,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';

@@ -9,9 +9,9 @@ import {
   ListItemAvatar,
   ListItemText,
   ListSubheader,
+  Skeleton,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
