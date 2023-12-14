@@ -1,10 +1,10 @@
 import React, {
+  ReactElement,
+  ReactNode,
   createContext,
   useContext,
-  useState,
-  ReactNode,
-  ReactElement,
   useMemo,
+  useState,
 } from 'react';
 
 const initialState: StateType = {

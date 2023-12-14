@@ -1,6 +1,6 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import React from 'react';
 import theme from '../../../theme';
 import { ContactUncompletedTasksCount } from './ContactUncompletedTasksCount';
 

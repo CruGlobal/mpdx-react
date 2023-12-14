@@ -1,18 +1,18 @@
 import React, { ReactElement, useState } from 'react';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import EditIcon from '@mui/icons-material/Edit';
+import ListIcon from '@mui/icons-material/FormatListBulleted';
+import PeopleIcon from '@mui/icons-material/People';
+import PersonIcon from '@mui/icons-material/Person';
 import { List } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import PersonIcon from '@mui/icons-material/Person';
-import PeopleIcon from '@mui/icons-material/People';
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
-import ListIcon from '@mui/icons-material/FormatListBulleted';
-import EditIcon from '@mui/icons-material/Edit';
 import { useTranslation } from 'react-i18next';
-import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
-import useTaskModal from 'src/hooks/useTaskModal';
 import {
   AddMenuItemsEnum,
   renderDialog,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import useTaskModal from 'src/hooks/useTaskModal';
+import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
 
 type MenuContent = {
   text: string;

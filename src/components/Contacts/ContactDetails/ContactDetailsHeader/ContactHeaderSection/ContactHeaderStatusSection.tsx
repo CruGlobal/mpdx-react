@@ -1,25 +1,25 @@
 import React, { useMemo, useState } from 'react';
+import CreateIcon from '@mui/icons-material/Create';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import CreateIcon from '@mui/icons-material/Create';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
+import { StatusEnum } from '../../../../../../graphql/types.generated';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import {
   ContactLateStatusEnum,
   ContactLateStatusLabel,
 } from '../../../ContactPartnershipStatus/ContactLateStatusLabel/ContactLateStatusLabel';
-import { StatusEnum } from '../../../../../../graphql/types.generated';
 import { EditPartnershipInfoModal } from '../../ContactDontationsTab/PartnershipInfo/EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
-import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   loading: boolean;

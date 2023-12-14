@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
-import { ContactsContainer } from './ContactsContainer';
 import { ContactsPage } from '../../../pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsContainer } from './ContactsContainer';
 
 export default {
   title: 'Contacts/Container',

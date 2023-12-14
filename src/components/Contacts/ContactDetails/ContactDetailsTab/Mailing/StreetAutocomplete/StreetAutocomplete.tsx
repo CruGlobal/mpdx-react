@@ -1,5 +1,4 @@
-import { useDebouncedCallback } from 'src/hooks/useDebounce';
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Autocomplete,
   CircularProgress,
@@ -8,6 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useJsApiLoader } from '@react-google-maps/api';
+import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
 
 interface MapsApi {
@@ -181,6 +181,7 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
           <TextField
             {...params}
             {...TextFieldProps}
+            multiline
             onChange={(event) => {
               const street = event.target.value;
               onStreetChange(street);

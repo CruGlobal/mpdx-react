@@ -1,10 +1,10 @@
+import React, { useEffect } from 'react';
 import { Avatar, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useEffect } from 'react';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import theme from '../../../../../src/theme';
 import { IdValue } from '../../../../../graphql/types.generated';
+import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 
 interface Props {

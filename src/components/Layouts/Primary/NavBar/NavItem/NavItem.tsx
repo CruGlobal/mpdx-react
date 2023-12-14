@@ -1,10 +1,10 @@
+import NextLink, { LinkProps } from 'next/link';
 import React, { useState } from 'react';
 import type { FC, ReactNode } from 'react';
-import NextLink, { LinkProps } from 'next/link';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { Button, Collapse, ListItemButton } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HandoffLink from 'src/components/HandoffLink';
 
 interface NavItemProps {

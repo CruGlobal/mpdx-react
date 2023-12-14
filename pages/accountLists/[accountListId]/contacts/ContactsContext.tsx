@@ -1,4 +1,3 @@
-import _, { debounce } from 'lodash';
 import { NextRouter, useRouter } from 'next/router';
 import React, {
   Dispatch,
@@ -9,6 +8,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import _, { debounce } from 'lodash';
+import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { useUpdateUserOptionsMutation } from '../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { useGetUserOptionsQuery } from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
@@ -24,11 +27,8 @@ import {
   useContactFiltersQuery,
   useContactsQuery,
 } from './Contacts.generated';
-import { Coordinates } from './map/map';
-import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { coordinatesFromContacts, getRedirectPathname } from './helpers';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { useLocale } from 'src/hooks/useLocale';
+import { Coordinates } from './map/map';
 
 export type ContactsType = {
   accountListId: string | undefined;

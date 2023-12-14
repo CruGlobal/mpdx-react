@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { Box, IconButton, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import Clear from '@mui/icons-material/Clear';
 import CreateIcon from '@mui/icons-material/Create';
 import DateRangeOutlined from '@mui/icons-material/DateRangeOutlined';
 import FiberManualRecordOutlined from '@mui/icons-material/FiberManualRecordOutlined';
+import { Box, IconButton, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal/EditPartnershipInfoModal';
-import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
-import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 
 const IconAndTextContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0, 4),

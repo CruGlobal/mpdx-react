@@ -1,9 +1,8 @@
-import { Link, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import Email from '@mui/icons-material/Email';
-import Skeleton from '@mui/material/Skeleton';
-
 import React, { ReactElement } from 'react';
+import Email from '@mui/icons-material/Email';
+import { Link, Typography } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
 import theme from '../../../../../theme';
 import { ContactHeaderEmailFragment } from './ContactHeaderEmail.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';

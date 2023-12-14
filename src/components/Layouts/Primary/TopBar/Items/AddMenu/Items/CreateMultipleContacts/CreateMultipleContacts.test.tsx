@@ -1,15 +1,15 @@
 import React from 'react';
-import { act, render, waitFor } from '@testing-library/react';
-import { SnackbarProvider } from 'notistack';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import { setupMocks, placePromise } from '__tests__/util/googlePlacesMock';
-import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
+import { act, render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
+import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
+import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../../theme';
 import { CreateContactMutation } from '../CreateContact/CreateContact.generated';
 import { CreateMultipleContacts } from './CreateMultipleContacts';
-import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 
 jest.mock('@react-google-maps/api');
 

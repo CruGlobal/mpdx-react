@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Box,
   DialogContent,
@@ -11,17 +10,18 @@ import {
   TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
+import { useTranslation } from 'react-i18next';
 import { ElementOf } from 'ts-essentials';
 import * as yup from 'yup';
-import Modal from '../../../../common/Modal/Modal';
+import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import theme from '../../../../../theme';
+import Modal from '../../../../common/Modal/Modal';
 import {
   CurrentCoachingAnswerSetDocument,
   CurrentCoachingAnswerSetQuery,
   useCurrentCoachingAnswerSetQuery,
   useSaveCoachingAnswerMutation,
 } from './WeeklyReportModal.generated';
-import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import { WeeklyReportActions } from './WeeklyReportModalActions';
 import { WeeklyReportAlerts } from './WeeklyReportModalAlerts';
 import { WeeklyReportProgress } from './WeeklyReportModalProgress';

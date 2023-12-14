@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { TableCell, TableHead, TableRow } from '@mui/material';
+import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 import type { Order } from '../../../Reports.type';
 import type { Contact } from '../../PartnerGivingAnalysisReport';
-import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 
 export type Item = {
   id: keyof Contact;

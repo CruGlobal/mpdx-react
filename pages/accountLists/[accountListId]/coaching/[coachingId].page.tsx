@@ -1,14 +1,14 @@
-import React from 'react';
 import Head from 'next/head';
-import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AccountListTypeEnum,
   CoachingDetail,
 } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import Loading from 'src/components/Loading';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const CoachingPage: React.FC = () => {
   const { t } = useTranslation();

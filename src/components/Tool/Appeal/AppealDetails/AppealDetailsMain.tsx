@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
-import AppealDetailsReceived from '../../../../../src/components/Tool/Appeal/AppealDetails/AppealDetailsReceived';
-import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
-import AppealDetailsHeader from './AppealDetailsHeader';
-import AppealDetailsCommitted from './AppealDetailsCommitted';
-import AppealDetailsGiven from './AppealDetailsGiven';
+import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 import AppealDetailsAsked from './AppealDetailsAsked';
+import AppealDetailsCommitted from './AppealDetailsCommitted';
 import AppealDetailsExcluded from './AppealDetailsExcluded';
 import AppealDetailsFlow from './AppealDetailsFlow';
+import AppealDetailsGiven from './AppealDetailsGiven';
+import AppealDetailsHeader from './AppealDetailsHeader';
+import AppealDetailsReceived from './AppealDetailsReceived';
 
 export interface Row {
   id: number;

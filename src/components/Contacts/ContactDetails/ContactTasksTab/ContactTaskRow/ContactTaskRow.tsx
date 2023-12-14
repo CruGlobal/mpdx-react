@@ -1,19 +1,19 @@
-import { Box, Checkbox, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import Skeleton from '@mui/material/Skeleton';
-import { DateTime } from 'luxon';
 import React, { useState } from 'react';
+import { Box, Checkbox, Typography } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import useTaskModal from 'src/hooks/useTaskModal';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import theme from '../../../../../theme';
-import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { TaskRowFragment } from '../../../../Task/TaskRow/TaskRow.generated';
-import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
+import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { DeleteTaskIconButton } from '../DeleteTaskIconButton/DeleteTaskIconButton';
+import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from './TaskCompleteButton/TaskCompleteButton';
 import { TaskDate } from './TaskDate/TaskDate';
-import useTaskModal from 'src/hooks/useTaskModal';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 const TaskRowWrap = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isChecked',

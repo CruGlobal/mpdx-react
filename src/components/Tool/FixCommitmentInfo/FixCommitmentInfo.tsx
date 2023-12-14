@@ -1,34 +1,34 @@
 import React from 'react';
 import {
-  Theme,
   Box,
-  Typography,
-  Grid,
-  Divider,
   CircularProgress,
+  Divider,
+  Grid,
+  Theme,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import { Trans, useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
+import { Trans, useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import client from 'src/lib/client';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import {
   MultiselectFilter,
   PledgeFrequencyEnum,
   StatusEnum,
 } from '../../../../graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
-import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import Contact from './Contact';
 import {
   GetInvalidStatusesDocument,
   GetInvalidStatusesQuery,
   useGetInvalidStatusesQuery,
 } from './GetInvalidStatuses.generated';
-import Contact from './Contact';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
-import client from 'src/lib/client';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {

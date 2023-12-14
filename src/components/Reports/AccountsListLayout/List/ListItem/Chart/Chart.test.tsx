@@ -1,12 +1,12 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import { AccountListItemChart as Chart } from './Chart';
+import { render } from '@testing-library/react';
 import theme from 'src/theme';
 import {
-  beforeTestResizeObserver,
   afterTestResizeObserver,
+  beforeTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
+import { AccountListItemChart as Chart } from './Chart';
 
 const averageMock = 123;
 const currencyCodeMock = 'CAD';

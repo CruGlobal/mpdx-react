@@ -1,9 +1,9 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AccountsList as List } from './List';
 import theme from 'src/theme';
+import { AccountsList as List } from './List';
 
 const onCheckToggle = jest.fn();
 

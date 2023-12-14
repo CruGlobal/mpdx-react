@@ -1,22 +1,21 @@
 import React, { ReactElement, useState } from 'react';
 import { DialogContent, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-
-import Modal from '../../common/Modal/Modal';
-import Loading from '../../Loading';
 import {
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../graphql/types.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
+import Loading from '../../Loading';
+import Modal from '../../common/Modal/Modal';
+import TaskModalCommentsList from './Comments/TaskModalCommentsList';
+import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
+import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
+import TaskModalForm from './Form/TaskModalForm';
 import {
   GetTaskForTaskModalQuery,
   useGetTaskForTaskModalQuery,
-} from '../Modal/TaskModalTask.generated';
-import TaskModalForm from './Form/TaskModalForm';
-import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
-import TaskModalCommentsList from './Comments/TaskModalCommentsList';
-import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
+} from './TaskModalTask.generated';
 
 export interface TaskModalProps {
   taskId?: string;

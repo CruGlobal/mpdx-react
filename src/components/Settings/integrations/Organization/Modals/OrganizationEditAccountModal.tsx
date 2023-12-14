@@ -1,18 +1,18 @@
 import React, { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
-import { Formik } from 'formik';
-import * as yup from 'yup';
-import { Box, DialogActions, TextField, FormHelperText } from '@mui/material';
+import { Box, DialogActions, FormHelperText, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { Formik } from 'formik';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdateOrganizationAccountMutation } from '../Organizations.generated';
-import Modal from 'src/components/common/Modal/Modal';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { OrganizationFormikSchema } from './OrganizationAddAccountModal';
 
 interface OrganizationEditAccountModalProps {

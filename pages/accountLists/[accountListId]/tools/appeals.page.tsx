@@ -1,15 +1,14 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
 import Head from 'next/head';
-import { Theme, Grid, Box, Typography, Divider } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import React from 'react';
+import { Box, Divider, Grid, Theme, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
-
-import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
 import Loading from '../../../../src/components/Loading';
+import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
+import Appeals from '../../../../src/components/Tool/Appeal/Appeals';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {

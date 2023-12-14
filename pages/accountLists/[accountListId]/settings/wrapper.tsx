@@ -1,17 +1,17 @@
+import Head from 'next/head';
+import React, { useState } from 'react';
 import { Box, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useState } from 'react';
-import Head from 'next/head';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import {
+  HeaderTypeEnum,
+  MultiPageHeader,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import {
-  MultiPageHeader,
-  HeaderTypeEnum,
-} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const PageContentWrapper = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(3),

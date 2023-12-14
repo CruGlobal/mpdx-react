@@ -1,7 +1,7 @@
 import React from 'react';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import { ContactDetailProvider } from '../ContactDetails/ContactDetailContext';
 import { ContactsRightPanel } from './ContactsRightPanel';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 
 export default {
   title: 'Contacts/RightPanel',

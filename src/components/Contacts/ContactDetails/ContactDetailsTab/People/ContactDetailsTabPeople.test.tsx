@@ -1,5 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { DeepPartial } from 'ts-essentials';
+import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import TestRouter from '../../../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import {
   render,
@@ -7,12 +10,9 @@ import {
   within,
 } from '../../../../../../__tests__/util/testingLibraryReactMock';
 import theme from '../../../../../theme';
-import { ContactDetailsTabPeople } from './ContactDetailsTabPeople';
-import { DeepPartial } from 'ts-essentials';
-import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
 import { ContactDetailProvider } from '../../ContactDetailContext';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import TestRouter from '../../../../../../__tests__/util/TestRouter';
+import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
+import { ContactDetailsTabPeople } from './ContactDetailsTabPeople';
 
 const accountListId = '123';
 

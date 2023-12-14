@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, waitFor, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { fireEvent, render, waitFor } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { ThemeProvider } from '@mui/material/styles';
-import { SnackbarProvider } from 'notistack';
 import TestRouter from '../../../../../../__tests__/util/TestRouter';
-import theme from '../../../../../../src/theme';
 import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
+import theme from '../../../../../theme';
 import { ContactFlowSetupColumn } from '../Column/ContactFlowSetupColumn';
 
 const accountListId = 'abc';

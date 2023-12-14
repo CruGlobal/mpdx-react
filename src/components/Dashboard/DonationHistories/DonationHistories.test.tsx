@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import DonationHistories from '.';
 import TestRouter from '__tests__/util/TestRouter';
 import {
-  beforeTestResizeObserver,
   afterTestResizeObserver,
+  beforeTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
+import DonationHistories from '.';
 
 const setTime = jest.fn();
 

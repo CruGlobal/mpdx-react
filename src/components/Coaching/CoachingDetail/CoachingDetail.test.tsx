@@ -1,23 +1,23 @@
 import React from 'react';
-import { DateTime } from 'luxon';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import {
-  LoadCoachingDetailQuery,
-  LoadAccountListCoachingDetailQuery,
-} from './LoadCoachingDetail.generated';
+  afterTestResizeObserver,
+  beforeTestResizeObserver,
+} from 'src/utils/tests/windowResizeObserver';
+import { AppointmentResults } from './AppointmentResults/AppointmentResults';
 import {
   AccountListTypeEnum,
   CoachingDetail,
   CoachingPeriodEnum,
 } from './CoachingDetail';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import TestRouter from '__tests__/util/TestRouter';
 import {
-  beforeTestResizeObserver,
-  afterTestResizeObserver,
-} from 'src/utils/tests/windowResizeObserver';
-import { AppointmentResults } from './AppointmentResults/AppointmentResults';
+  LoadAccountListCoachingDetailQuery,
+  LoadCoachingDetailQuery,
+} from './LoadCoachingDetail.generated';
 
 jest.mock('./AppointmentResults/AppointmentResults');
 

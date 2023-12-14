@@ -1,6 +1,4 @@
 import React, { FC, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { DateTime } from 'luxon';
 import {
   Box,
   Checkbox,
@@ -11,13 +9,15 @@ import {
   Typography,
 } from '@mui/material';
 import { Maybe } from 'graphql/jsutils/Maybe';
-import { Unarray } from '../../../Reports.type';
-import { AccountListItemChart as Chart } from './Chart/Chart';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import HandoffLink from 'src/components/HandoffLink';
 import { EntryHistoriesQuery } from 'src/components/Reports/ResponsibilityCentersReport/GetEntryHistories.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { Unarray } from '../../../Reports.type';
+import { AccountListItemChart as Chart } from './Chart/Chart';
 
 type EntryHistoriesGroup = Unarray<EntryHistoriesQuery['entryHistories']>;
 type EntryHistory = Unarray<NonNullable<EntryHistoriesGroup>['entryHistories']>;

@@ -1,13 +1,13 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
-import { StatusEnum } from '../../../../graphql/types.generated';
-import TestRouter from '../../../../__tests__/util/TestRouter';
-import theme from '../../../../src/theme';
-import { ContactsMapPanel } from './ContactsMapPanel';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import TestRouter from '../../../../__tests__/util/TestRouter';
+import { StatusEnum } from '../../../../graphql/types.generated';
+import theme from '../../../theme';
+import { ContactsMapPanel } from './ContactsMapPanel';
 
 const accountListId = 'account-list-1';
 

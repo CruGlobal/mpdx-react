@@ -1,10 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import theme from 'src/theme';
 import { FourteenMonthReportCurrencyType } from '../../../../../../graphql/types.generated';
 import { FourteenMonthReportHeader } from './Header';
-import theme from 'src/theme';
 
 const title = 'test title';
 const onExpandToggle = jest.fn();
