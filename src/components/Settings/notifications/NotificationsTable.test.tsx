@@ -39,13 +39,13 @@ const createNotification = (type, id) => ({
   },
 });
 
-const createConstant = (type, id) => ({
-  id: type,
-  key: id,
-  value: type,
+const createNotificationType = (type, id) => ({
+  id: id,
+  type: type,
+  descriptionTemplate: type,
 });
 const mocks = {
-  PreferencesNotifications: {
+  NotificationsPreferences: {
     notificationPreferences: {
       nodes: [
         createNotification(
@@ -57,14 +57,15 @@ const mocks = {
       ],
     },
   },
-  NotificationConstants: {
-    constant: {
-      notificationTranslatedHashes: [
-        createConstant(NotificationTypeTypeEnum.CallPartnerOncePerYear, '111'),
-        createConstant(NotificationTypeTypeEnum.LargerGift, '222'),
-        createConstant(NotificationTypeTypeEnum.LongTimeFrameGift, '333'),
-      ],
-    },
+  NotificationTypes: {
+    notificationTypes: [
+      createNotificationType(
+        NotificationTypeTypeEnum.CallPartnerOncePerYear,
+        '111',
+      ),
+      createNotificationType(NotificationTypeTypeEnum.LargerGift, '222'),
+      createNotificationType(NotificationTypeTypeEnum.LongTimeFrameGift, '333'),
+    ],
   },
 };
 const mutationSpy = jest.fn();
@@ -95,10 +96,10 @@ describe('NotificationsTable', () => {
         mutationSpy.mock.calls[0][0].operation.variables.accountListId,
       ).toEqual(accountListId);
       expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
-        'PreferencesNotifications',
+        'NotificationsPreferences',
       );
       expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
-        'NotificationConstants',
+        'NotificationTypes',
       );
     });
 
