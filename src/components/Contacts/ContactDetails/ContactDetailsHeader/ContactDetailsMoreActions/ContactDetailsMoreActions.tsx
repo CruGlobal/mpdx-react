@@ -1,25 +1,14 @@
-import { Box, IconButton, ListItemText, Menu } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import React, { ReactElement, useState } from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import ListIcon from '@mui/icons-material/FormatListBulleted';
+import MoreVert from '@mui/icons-material/MoreVert';
 import PersonIcon from '@mui/icons-material/Person';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ListIcon from '@mui/icons-material/FormatListBulleted';
-import EditIcon from '@mui/icons-material/Edit';
-import React, { ReactElement, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import MoreVert from '@mui/icons-material/MoreVert';
+import { Box, IconButton, ListItemText, Menu } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
-import { StatusEnum } from '../../../../../../graphql/types.generated';
-import useTaskModal from '../../../../../hooks/useTaskModal';
-import Modal from '../../../../common/Modal/Modal';
-import { useDeleteContactMutation } from '../../ContactDetailsTab/ContactDetailsTab.generated';
-import { DeleteContactModal } from '../DeleteContactModal/DeleteContactModal';
-import { useUpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
-import {
-  ContactDetailContext,
-  ContactDetailsType,
-} from '../../ContactDetailContext';
-import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
+import { useTranslation } from 'react-i18next';
 import {
   ContactsDocument,
   ContactsQuery,
@@ -28,6 +17,17 @@ import {
   ContactsContext,
   ContactsType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
+import { StatusEnum } from '../../../../../../graphql/types.generated';
+import useTaskModal from '../../../../../hooks/useTaskModal';
+import Modal from '../../../../common/Modal/Modal';
+import {
+  ContactDetailContext,
+  ContactDetailsType,
+} from '../../ContactDetailContext';
+import { useDeleteContactMutation } from '../../ContactDetailsTab/ContactDetailsTab.generated';
+import { useUpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { DeleteContactModal } from '../DeleteContactModal/DeleteContactModal';
 import { MoreActionHideContactModal } from './MoreActionHideContactModal';
 
 type AddMenuItem = {

@@ -1,3 +1,5 @@
+import React, { ReactElement } from 'react';
+import Add from '@mui/icons-material/Add';
 import {
   Autocomplete,
   Button,
@@ -8,12 +10,16 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import * as yup from 'yup';
 import { Formik } from 'formik';
-import React, { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
-import Add from '@mui/icons-material/Add';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import theme from 'src/theme';
 import { ContactUpdateInput } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {
@@ -25,12 +31,6 @@ import {
   useContactsAddTagsMutation,
   useGetContactsForAddingTagsQuery,
 } from './ContactsAddTags.generated';
-import theme from 'src/theme';
-import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface MassActionsAddTagsModalProps {
   ids: string[];

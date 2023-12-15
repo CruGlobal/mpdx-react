@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
-import { Box, Typography, Tooltip, Theme } from '@mui/material';
+import { Box, Theme, Tooltip, Typography } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import theme from '../../../../src/theme';
+import theme from '../../../theme';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   colorYellow: {

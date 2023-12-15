@@ -7,18 +7,18 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
-import { GetTaskForTaskModalQuery } from '../../Modal/TaskModalTask.generated';
+import { TaskRowFragment } from '../../TaskRow/TaskRow.generated';
+import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import {
   CreateTasksDocument,
   CreateTasksMutation,
   DeleteTaskDocument,
   DeleteTaskMutation,
-  UpdateTaskDocument,
-  UpdateTaskMutation,
   GetDataForTaskModalDocument,
   GetDataForTaskModalQuery,
-} from '../../Modal/Form/TaskModal.generated';
-import { TaskRowFragment } from '../../TaskRow/TaskRow.generated';
+  UpdateTaskDocument,
+  UpdateTaskMutation,
+} from './TaskModal.generated';
 
 export const getDataForTaskModalMock = (
   accountListId: string,

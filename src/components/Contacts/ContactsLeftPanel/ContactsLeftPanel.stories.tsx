@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
-import { ContactsLeftPanel } from './ContactsLeftPanel';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsLeftPanel } from './ContactsLeftPanel';
 
 export default {
   title: 'Contacts/LeftPanel',

@@ -3,8 +3,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from '../../../../theme';
 import {
-  ContactLateStatusLabel,
   ContactLateStatusEnum,
+  ContactLateStatusLabel,
 } from './ContactLateStatusLabel';
 
 describe('ContactLateStatusLabel', () => {

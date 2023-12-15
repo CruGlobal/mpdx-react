@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode, useState } from 'react';
-import theme from 'src/theme';
 import { v4 as uuidv4 } from 'uuid';
-import TaskModal, { TaskModalProps } from '../Modal/TaskModal';
+import theme from 'src/theme';
+import TaskModal, { TaskModalProps } from './TaskModal';
 import TaskModalContext from './TaskModalContext';
 
 interface Props {

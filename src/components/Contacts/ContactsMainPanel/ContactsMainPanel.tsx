@@ -1,14 +1,14 @@
 import React from 'react';
 import _ from 'lodash';
-import { ContactFlow } from '../ContactFlow/ContactFlow';
-import { ContactsList } from '../ContactsList/ContactsList';
-import { ContactsMap } from '../../../../pages/accountLists/[accountListId]/contacts/map/map';
+import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   ContactsContext,
   ContactsType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
+import { ContactsMap } from '../../../../pages/accountLists/[accountListId]/contacts/map/map';
+import { ContactFlow } from '../ContactFlow/ContactFlow';
+import { ContactsList } from '../ContactsList/ContactsList';
 import { ContactsMainPanelHeader } from './ContactsMainPanelHeader';
-import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 
 export const ContactsMainPanel: React.FC = () => {
   const {

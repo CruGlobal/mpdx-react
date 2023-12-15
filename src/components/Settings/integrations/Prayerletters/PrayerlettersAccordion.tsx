@@ -1,21 +1,21 @@
-import { useState, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useContext, useState } from 'react';
+import { Alert, Box, Button, Skeleton, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { Box, Typography, Skeleton, Alert, Button } from '@mui/material';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import {
-  usePrayerlettersAccountQuery,
-  useSyncPrayerlettersAccountMutation,
-} from './PrayerlettersAccount.generated';
-import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
+import { useTranslation } from 'react-i18next';
 import {
   IntegrationsContext,
   IntegrationsContextType,
 } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
+import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AccordionProps, StyledServicesButton } from '../integrationsHelper';
 import { DeletePrayerlettersAccountModal } from './Modals/DeletePrayerlettersModal';
-import { StyledServicesButton, AccordionProps } from '../integrationsHelper';
+import {
+  usePrayerlettersAccountQuery,
+  useSyncPrayerlettersAccountMutation,
+} from './PrayerlettersAccount.generated';
 
 export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,

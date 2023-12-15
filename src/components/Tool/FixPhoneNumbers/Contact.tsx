@@ -1,27 +1,27 @@
 import React, { Fragment, useState } from 'react';
+import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock, mdiPlus } from '@mdi/js';
+import { Icon } from '@mdi/react';
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import {
-  Box,
-  Grid,
-  Button,
-  Typography,
   Avatar,
+  Box,
+  Button,
+  Grid,
   Hidden,
   TextField,
   Theme,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import clsx from 'clsx';
-import { useTranslation } from 'react-i18next';
-import { Icon } from '@mdi/react';
-import { mdiCheckboxMarkedCircle, mdiPlus, mdiLock, mdiDelete } from '@mdi/js';
-import StarIcon from '@mui/icons-material/Star';
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 import { PersonPhoneNumberInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { PhoneNumberData } from './FixPhoneNumbers';
-import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   left: {

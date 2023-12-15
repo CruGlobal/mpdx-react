@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import React, { ReactElement } from 'react';
 import {
   Avatar,
   Badge,
@@ -10,23 +12,21 @@ import {
   Typography,
 } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
-import Link from 'next/link';
-import React, { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { NotificationTypeTypeEnum } from '../../../../../../../../graphql/types.generated';
+import { useAccountListId } from '../../../../../../../hooks/useAccountListId';
 import {
   currencyFormat,
   dateFormat,
   monthYearFormat,
 } from '../../../../../../../lib/intlFormat/intlFormat';
-import { NotificationTypeTypeEnum } from '../../../../../../../../graphql/types.generated';
 import {
   GetNotificationsDocument,
   GetNotificationsQuery,
 } from '../GetNotificationsQuery.generated';
-import { useAccountListId } from '../../../../../../../hooks/useAccountListId';
 import { useAcknowledgeUserNotificationMutation } from './AcknowledgeUserNotification.generated';
-import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   item?: GetNotificationsQuery['userNotifications']['nodes'][0];

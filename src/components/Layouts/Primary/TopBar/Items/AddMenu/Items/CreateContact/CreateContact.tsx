@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import {
   CircularProgress,
@@ -9,21 +10,20 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
 import { Formik } from 'formik';
-import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { useRouter } from 'next/router';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import {
   ContactCreateInput,
   PersonCreateInput,
 } from '../../../../../../../../../graphql/types.generated';
 import { useCreateContactMutation } from './CreateContact.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 
 interface Props {
   accountListId: string;

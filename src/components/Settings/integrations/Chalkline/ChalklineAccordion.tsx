@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useSendToChalklineMutation } from './SendToChalkline.generated';
+import { useTranslation } from 'react-i18next';
+import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
+import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
-import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { StyledServicesButton, AccordionProps } from '../integrationsHelper';
+import { AccordionProps, StyledServicesButton } from '../integrationsHelper';
+import { useSendToChalklineMutation } from './SendToChalkline.generated';
 
 export const ChalklineAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,

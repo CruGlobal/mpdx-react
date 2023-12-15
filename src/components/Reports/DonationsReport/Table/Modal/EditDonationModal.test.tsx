@@ -1,17 +1,17 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../../../theme';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import TestRouter from '__tests__/util/TestRouter';
-import { SnackbarProvider } from 'notistack';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
+import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../theme';
+import { Donation } from '../DonationsReportTable';
 import { UpdateDonationMutation } from './EditDonation.generated';
 import { EditDonationModal } from './EditDonationModal';
-import { Donation } from '../DonationsReportTable';
-import { DateTime } from 'luxon';
 
 const time = DateTime.fromISO('2021-03-25');
 const router = {

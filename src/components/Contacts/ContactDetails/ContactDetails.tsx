@@ -1,25 +1,25 @@
-import { Box, Tab } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import React, { useState } from 'react';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import React, { useState } from 'react';
+import { Box, Tab } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import theme from '../../../theme';
 import {
   ContactsContext,
   ContactsType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
-import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
-import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
-import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
-import { ContactDonationsTab } from './ContactDontationsTab/ContactDonationsTab';
-import { ContactReferralTab } from './ContactReferralTab/ContactReferralTab';
-import { ContactNotesTab } from './ContactNotesTab/ContactNotesTab';
+import theme from '../../../theme';
 import {
   ContactDetailContext,
   ContactDetailsType,
 } from './ContactDetailContext';
+import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
+import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
+import { ContactDonationsTab } from './ContactDontationsTab/ContactDonationsTab';
+import { ContactNotesTab } from './ContactNotesTab/ContactNotesTab';
+import { ContactReferralTab } from './ContactReferralTab/ContactReferralTab';
+import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 
 interface Props {
   onClose: () => void;

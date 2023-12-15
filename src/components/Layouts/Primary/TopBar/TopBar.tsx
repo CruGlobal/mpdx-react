@@ -1,21 +1,21 @@
-import React, { ReactElement } from 'react';
 import NextLink from 'next/link';
+import React, { ReactElement } from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
 import {
-  Box,
-  Toolbar,
   AppBar,
+  Box,
+  Hidden,
   IconButton,
   SvgIcon,
+  Toolbar,
   useScrollTrigger,
-  Hidden,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import MenuIcon from '@mui/icons-material/Menu';
-import NotificationMenu from './Items/NotificationMenu/NotificationMenu';
 import AddMenu from './Items/AddMenu/AddMenu';
-import SearchMenu from './Items/SearchMenu/SearchMenu';
 import NavMenu from './Items/NavMenu/NavMenu';
+import NotificationMenu from './Items/NotificationMenu/NotificationMenu';
 import ProfileMenu from './Items/ProfileMenu/ProfileMenu';
+import SearchMenu from './Items/SearchMenu/SearchMenu';
 
 interface TopBarProps {
   accountListId: string | undefined;

@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
+import { Icon } from '@mdi/react';
 import {
   Box,
-  Typography,
-  Grid,
-  Divider,
-  CircularProgress,
-  NativeSelect,
   Button,
+  CircularProgress,
+  Divider,
+  Grid,
+  NativeSelect,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import { Icon } from '@mdi/react';
-import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Trans, useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import NoData from '../NoData';
-import {
-  useInvalidAddressesQuery,
-  ContactAddressFragment,
-} from './GetInvalidAddresses.generated';
-import Contact from './Contact';
 import AddressModal from './AddressModal';
+import Contact from './Contact';
+import {
+  ContactAddressFragment,
+  useInvalidAddressesQuery,
+} from './GetInvalidAddresses.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {

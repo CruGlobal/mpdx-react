@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
-import { TFunction } from 'i18next';
-import { styled } from '@mui/material/styles';
 import {
   Box,
-  DialogActions,
-  Typography,
   Button,
-  Paper,
+  DialogActions,
   Grid,
+  Paper,
+  Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { TFunction } from 'i18next';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import {
-  SubmitButton,
   CancelButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import theme from 'src/theme';
 import Modal from 'src/components/common/Modal/Modal';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
+import theme from 'src/theme';
 
 export const validateFile = ({
   file,

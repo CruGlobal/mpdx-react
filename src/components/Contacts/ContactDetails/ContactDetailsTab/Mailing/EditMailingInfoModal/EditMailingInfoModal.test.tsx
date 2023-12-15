@@ -1,10 +1,10 @@
-import { SendNewsletterEnum } from '../../../../../../../graphql/types.generated';
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { SnackbarProvider } from 'notistack';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
+import { SendNewsletterEnum } from '../../../../../../../graphql/types.generated';
 import theme from '../../../../../../theme';
 import { EditMailingInfoModal } from './EditMailingInfoModal';
 

@@ -1,17 +1,17 @@
 import React from 'react';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
+import { Icon } from '@mdi/react';
 import {
   Box,
-  Typography,
-  Grid,
-  Divider,
-  CircularProgress,
   Button,
+  CircularProgress,
+  Divider,
+  Grid,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import { Icon } from '@mdi/react';
-import { mdiCheckboxMarkedCircle } from '@mdi/js';
-import { useTranslation, Trans } from 'react-i18next';
 import { useSnackbar } from 'notistack';
+import { Trans, useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import { SendNewsletterEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';

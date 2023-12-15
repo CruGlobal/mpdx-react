@@ -1,33 +1,33 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
-import { styled } from '@mui/material/styles';
-import {
-  Grid,
-  Box,
-  IconButton,
-  Typography,
-  Card,
-  Divider,
-} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Edit from '@mui/icons-material/Edit';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
-  useGetUsersOrganizationsAccountsQuery,
-  useDeleteOrganizationAccountMutation,
-  useSyncOrganizationAccountMutation,
-} from './Organizations.generated';
-import theme from 'src/theme';
+  Box,
+  Card,
+  Divider,
+  Grid,
+  IconButton,
+  Typography,
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { OrganizationAddAccountModal } from './Modals/OrganizationAddAccountModal';
-import { OrganizationImportDataSyncModal } from './Modals/OrganizationImportDataSyncModal';
-import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
-import { getOauthUrl } from './OrganizationService';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import theme from 'src/theme';
 import { StyledServicesButton } from '../integrationsHelper';
+import { OrganizationAddAccountModal } from './Modals/OrganizationAddAccountModal';
+import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
+import { OrganizationImportDataSyncModal } from './Modals/OrganizationImportDataSyncModal';
+import { getOauthUrl } from './OrganizationService';
+import {
+  useDeleteOrganizationAccountMutation,
+  useGetUsersOrganizationsAccountsQuery,
+  useSyncOrganizationAccountMutation,
+} from './Organizations.generated';
 
 interface OrganizationAccordionProps {
   handleAccordionChange: (panel: string) => void;

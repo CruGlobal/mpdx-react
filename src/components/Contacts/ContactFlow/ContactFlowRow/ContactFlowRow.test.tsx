@@ -1,12 +1,12 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import { StatusEnum } from '../../../../../graphql/types.generated';
-import theme from '../../../../../src/theme';
+import theme from '../../../../theme';
 import { ContactFlowRow } from './ContactFlowRow';
 
 const accountListId = 'abc';

@@ -1,6 +1,4 @@
 import React, { FC } from 'react';
-import { useTranslation } from 'react-i18next';
-import { DateTime } from 'luxon';
 import {
   Checkbox,
   Table,
@@ -11,11 +9,13 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import type { Contact } from '../PartnerGivingAnalysisReport';
-import type { Order } from '../../Reports.type';
-import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
+import type { Order } from '../../Reports.type';
+import type { Contact } from '../PartnerGivingAnalysisReport';
 
 interface PartnerGivingAnalysisReportTableProps {
   onClick: (contactId: string) => void;
@@ -67,14 +67,6 @@ export const PartnerGivingAnalysisReportTable: FC<
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const formatCurrency = (amount: number, currency: string): string =>
-    // Force to 2 decimal places and add separators between thousands
-    Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
   return (
     <StickyTableContainer>
       <StickyTable
@@ -138,22 +130,25 @@ export const PartnerGivingAnalysisReportTable: FC<
                   </ContactName>
                 </TableCell>
                 <TableCell>
-                  {formatCurrency(
+                  {currencyFormat(
                     contact.donationPeriodSum,
                     contact.pledgeCurrency,
+                    locale,
                   )}
                 </TableCell>
                 <TableCell>{contact.donationPeriodCount}</TableCell>
                 <TableCell>
-                  {formatCurrency(
+                  {currencyFormat(
                     contact.donationPeriodAverage,
                     contact.pledgeCurrency,
+                    locale,
                   )}
                 </TableCell>
                 <TableCell>
-                  {formatCurrency(
+                  {currencyFormat(
                     contact.lastDonationAmount,
                     contact.lastDonationCurrency,
+                    locale,
                   )}
                 </TableCell>
                 <TableCell>
@@ -163,9 +158,10 @@ export const PartnerGivingAnalysisReportTable: FC<
                   )}
                 </TableCell>
                 <TableCell>
-                  {formatCurrency(
+                  {currencyFormat(
                     contact.totalDonations,
                     contact.pledgeCurrency,
+                    locale,
                   )}
                 </TableCell>
               </TableRow>

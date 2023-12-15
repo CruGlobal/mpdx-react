@@ -1,14 +1,14 @@
-import React, { ReactElement, useEffect } from 'react';
-import { signIn, getSession } from 'next-auth/react';
-import { Button } from '@mui/material';
-import SubjectIcon from '@mui/icons-material/Subject';
 import { GetServerSideProps } from 'next';
-import i18n from 'i18next';
 import Head from 'next/head';
-import useGetAppSettings from '../src/hooks/useGetAppSettings';
-import Welcome from '../src/components/Welcome';
+import React, { ReactElement, useEffect } from 'react';
+import SubjectIcon from '@mui/icons-material/Subject';
+import { Button } from '@mui/material';
+import i18n from 'i18next';
+import { getSession, signIn } from 'next-auth/react';
 import BaseLayout from '../src/components/Layouts/Basic';
 import Loading from '../src/components/Loading';
+import Welcome from '../src/components/Welcome';
+import useGetAppSettings from '../src/hooks/useGetAppSettings';
 
 interface IndexPageProps {
   signInButtonText: string;

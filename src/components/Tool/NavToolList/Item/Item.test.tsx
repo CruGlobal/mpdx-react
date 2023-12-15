@@ -1,6 +1,6 @@
 import React from 'react';
-import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import TestWrapper from '../../../../../__tests__/util/TestWrapper';
+import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import { Item } from './Item';
 
 const item = {

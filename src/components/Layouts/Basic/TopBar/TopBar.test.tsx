@@ -1,6 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../theme';
 import TopBar from '.';

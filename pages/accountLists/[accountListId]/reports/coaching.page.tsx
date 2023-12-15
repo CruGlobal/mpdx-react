@@ -1,14 +1,14 @@
-import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
+import React, { ReactElement, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import Loading from '../../../../src/components/Loading';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 import {
   AccountListTypeEnum,
   CoachingDetail,
 } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
+import Loading from '../../../../src/components/Loading';
+import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 const CoachingReportPage = (): ReactElement => {
   const { t } = useTranslation();

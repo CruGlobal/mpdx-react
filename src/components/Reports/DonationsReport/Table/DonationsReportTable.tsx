@@ -1,42 +1,42 @@
 import React, { useMemo, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Link,
-  Divider,
-  Table,
-  TableCell,
-  TableRow,
-  CircularProgress,
-  TableHead,
-  TableBody,
-  LinearProgress,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useTranslation } from 'react-i18next';
+import EditIcon from '@mui/icons-material/Edit';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  LinearProgress,
+  Link,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
 import {
   DataGrid,
-  GridColDef,
   GridCellParams,
+  GridColDef,
   GridSortModel,
 } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
-import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
-import {
-  useGetDonationsTableQuery,
-  ExpectedDonationDataFragment,
-  useGetAccountListCurrencyQuery,
-  GetDonationsTableQueryVariables,
-} from '../GetDonationsTable.generated';
-import { EditDonationModal } from './Modal/EditDonationModal';
+import { useTranslation } from 'react-i18next';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
+import {
+  ExpectedDonationDataFragment,
+  GetDonationsTableQueryVariables,
+  useGetAccountListCurrencyQuery,
+  useGetDonationsTableQuery,
+} from '../GetDonationsTable.generated';
+import { EditDonationModal } from './Modal/EditDonationModal';
 
 interface DonationReportTableProps {
   accountListId: string;
@@ -199,6 +199,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
     return (
       <Typography sx={{ cursor: 'pointer' }}>
         <Link
+          underline="hover"
           onClick={() =>
             donation.contactId && onSelectContact(donation.contactId)
           }
@@ -214,9 +215,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
 
     return (
       <Typography>
-        {`${Math.round(donation.convertedAmount * 100) / 100} ${
-          donation.currency
-        }`}
+        {currencyFormat(donation.convertedAmount, donation.currency, locale)}
       </Typography>
     );
   };
@@ -225,9 +224,11 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
     const donation = params.row as Donation;
     return (
       <Typography>
-        {`${Math.round(donation.foreignAmount * 100) / 100} ${
-          donation.foreignCurrency
-        }`}
+        {currencyFormat(
+          donation.foreignAmount,
+          donation.foreignCurrency,
+          locale,
+        )}
       </Typography>
     );
   };
@@ -439,16 +440,18 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
                         <Typography
                           style={{ float: 'left', fontWeight: 'bold' }}
                         >
-                          {Math.round(total.convertedTotal * 100) / 100}{' '}
-                          {accountCurrency}
+                          {currencyFormat(
+                            total.convertedTotal,
+                            accountCurrency,
+                            locale,
+                          )}
                         </Typography>
                       </TableCell>
                       <TableCell style={{}}>
                         <Typography
                           style={{ float: 'left', fontWeight: 'bold' }}
                         >
-                          {Math.round(total.foreignTotal * 100) / 100}{' '}
-                          {currency}
+                          {currencyFormat(total.foreignTotal, currency, locale)}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -464,7 +467,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
                   </TableCell>
                   <TableCell>
                     <Typography style={{ float: 'left', fontWeight: 'bold' }}>
-                      {Math.round(totalDonations * 100) / 100}
+                      {currencyFormat(totalDonations, accountCurrency, locale)}
                     </Typography>
                   </TableCell>
                   <TableCell />

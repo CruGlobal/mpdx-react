@@ -1,3 +1,5 @@
+import React, { ReactElement } from 'react';
+import Add from '@mui/icons-material/Add';
 import {
   Autocomplete,
   Button,
@@ -8,32 +10,30 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Add from '@mui/icons-material/Add';
-import * as yup from 'yup';
 import { Formik } from 'formik';
-import React, { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import theme from 'src/theme';
 import { ContactUpdateInput } from '../../../../../graphql/types.generated';
-import Modal from '../../../common/Modal/Modal';
 import {
   ContactTagIcon,
   ContactTagInput,
 } from '../../../Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags';
+import Modal from '../../../common/Modal/Modal';
+import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 import {
-  useGetTasksForAddingTagsQuery,
   useGetTaskTagListQuery,
+  useGetTasksForAddingTagsQuery,
   useTasksAddTagsMutation,
 } from './TasksAddTags.generated';
-import theme from 'src/theme';
-import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
-import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
-import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 
 interface MassActionsTasksAddTagsModalProps {
   ids: string[];

@@ -1,3 +1,6 @@
+import React, { ReactElement } from 'react';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import Schedule from '@mui/icons-material/Schedule';
 import {
   Autocomplete,
   Checkbox,
@@ -10,33 +13,30 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material';
-import CalendarToday from '@mui/icons-material/CalendarToday';
-import Schedule from '@mui/icons-material/Schedule';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
-import React, { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
+import * as yup from 'yup';
+import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
+import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
+import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useLocale } from 'src/hooks/useLocale';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import theme from 'src/theme';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import {
   ActivityTypeEnum,
   TaskUpdateInput,
 } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
-import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
-import theme from 'src/theme';
-import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
-import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { useLocale } from 'src/hooks/useLocale';
 
 interface MassActionsEditTasksModalProps {
   ids: string[];

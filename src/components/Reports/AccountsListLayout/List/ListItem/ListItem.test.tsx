@@ -1,13 +1,13 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AccountListItem as ListItem } from './ListItem';
 import theme from 'src/theme';
 import {
-  beforeTestResizeObserver,
   afterTestResizeObserver,
+  beforeTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
+import { AccountListItem as ListItem } from './ListItem';
 
 const onCheckToggle = jest.fn();
 

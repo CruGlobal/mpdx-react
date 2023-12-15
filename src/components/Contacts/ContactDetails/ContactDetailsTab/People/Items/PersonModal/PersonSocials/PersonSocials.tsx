@@ -1,5 +1,9 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import AddIcon from '@mui/icons-material/Add';
+import Facebook from '@mui/icons-material/Facebook';
+import SocialIcon from '@mui/icons-material/Language';
+import LinkedIn from '@mui/icons-material/LinkedIn';
+import Twitter from '@mui/icons-material/Twitter';
 import {
   Button,
   FormControl,
@@ -11,19 +15,15 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import AddIcon from '@mui/icons-material/Add';
-import Facebook from '@mui/icons-material/Facebook';
-import LinkedIn from '@mui/icons-material/LinkedIn';
-import SocialIcon from '@mui/icons-material/Language';
-import Twitter from '@mui/icons-material/Twitter';
-import { FormikProps, FieldArray, getIn } from 'formik';
-import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
-import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
-import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
+import { FieldArray, FormikProps, getIn } from 'formik';
+import { useTranslation } from 'react-i18next';
 import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
+import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
+import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { NewSocial } from '../PersonModal';
 
 const ContactAddIcon = styled(AddIcon)(({ theme }) => ({

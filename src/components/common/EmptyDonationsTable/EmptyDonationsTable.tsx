@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import LocalAtmIcon from '@mui/icons-material/LocalAtm';
+import HandoffLink from 'src/components/HandoffLink';
 import { AddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import Modal from '../Modal/Modal';
-import HandoffLink from 'src/components/HandoffLink';
 
 interface Props {
   title: string;

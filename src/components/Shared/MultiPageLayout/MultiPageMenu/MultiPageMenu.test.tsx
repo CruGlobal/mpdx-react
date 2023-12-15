@@ -1,12 +1,12 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
-import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
 import { GetDesignationAccountsQuery } from 'src/components/Reports/DonationsReport/Table/Modal/EditDonation.generated';
+import theme from 'src/theme';
+import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
 import { GetUserAccessQuery } from './MultiPageMenuItems.generated';
 
 const accountListId = 'account-list-1';

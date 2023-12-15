@@ -1,13 +1,13 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import theme from 'src/theme';
+import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import { StatusEnum } from '../../../../../../../graphql/types.generated';
-import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import SearchMenu from './SearchMenu';
 import { GetSearchMenuContactsQuery } from './SearchMenu.generated';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from 'src/theme';
 
 const router = {
   pathname: '/accountLists/[accountListId]',

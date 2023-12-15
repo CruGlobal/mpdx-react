@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { render, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import { DateTime } from 'luxon';
-import { cloneDeep } from 'lodash';
-import theme from '../../../../theme';
-import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { DonationsReportTable } from './DonationsReportTable';
-import TestRouter from '__tests__/util/TestRouter';
-import { SnackbarProvider } from 'notistack';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { cloneDeep } from 'lodash';
+import { DateTime } from 'luxon';
+import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../theme';
+import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
+import { DonationsReportTable } from './DonationsReportTable';
 
 const time = DateTime.now();
 const setTime = jest.fn();
@@ -30,6 +30,7 @@ const mocks = {
     },
   },
   GetDonationsTable: {
+    currency: 'CAD',
     donations: {
       nodes: [
         {
@@ -288,6 +289,11 @@ describe('DonationsReportTable', () => {
 
   it('is not clickable when contact is missing', async () => {
     const mocks = {
+      GetAccountListCurrency: {
+        accountList: {
+          currency: 'CAD',
+        },
+      },
       GetDonationsTable: {
         donations: {
           nodes: [
@@ -405,14 +411,14 @@ describe('DonationsReportTable', () => {
     ).toBeInTheDocument();
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const cellsAsc = getAllByRole('cell', { name: /CAD/ });
-    expect(cellsAsc[0]).toHaveTextContent('10 CAD');
-    expect(cellsAsc[1]).toHaveTextContent('100 CAD');
+    const cellsAsc = getAllByRole('cell', { name: /CA/ });
+    expect(cellsAsc[0]).toHaveTextContent('CA$10');
+    expect(cellsAsc[1]).toHaveTextContent('CA$100');
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const cellsDesc = getAllByRole('cell', { name: /CAD/ });
-    expect(cellsDesc[0]).toHaveTextContent('100 CAD');
-    expect(cellsDesc[1]).toHaveTextContent('10 CAD');
+    const cellsDesc = getAllByRole('cell', { name: /CA/ });
+    expect(cellsDesc[0]).toHaveTextContent('CA$100');
+    expect(cellsDesc[1]).toHaveTextContent('CA$10');
   });
 
   it('updates the page size without rerendering until the month changes', async () => {

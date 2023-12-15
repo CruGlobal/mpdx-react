@@ -1,15 +1,15 @@
 import React from 'react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
+import userEvent from '@testing-library/user-event';
+import theme from 'src/theme';
+import TestRouter from '../../../../../../../__tests__/util/TestRouter';
+import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import {
   render,
   waitFor,
 } from '../../../../../../../__tests__/util/testingLibraryReactMock';
-import TestRouter from '../../../../../../../__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
-import NavMenu from './NavMenu';
 import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
-import theme from 'src/theme';
+import NavMenu from './NavMenu';
 
 const accountListId = 'test121';
 

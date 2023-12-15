@@ -11,15 +11,15 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
-import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
-import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
-import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
-import { ContactRowFragment } from './ContactRow.generated';
 import {
   ContactsContext,
   ContactsType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
+import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
+import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
+import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
+import { ContactRowFragment } from './ContactRow.generated';
 
 interface Props {
   contact: ContactRowFragment;

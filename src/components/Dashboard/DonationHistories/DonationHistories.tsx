@@ -1,36 +1,36 @@
-import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalChart.d';
+import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import {
-  CardContent,
   Box,
-  Typography,
-  Grid,
+  CardContent,
   CardHeader,
+  Grid,
   Theme,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import Skeleton from '@mui/material/Skeleton';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 import {
-  ReferenceLine,
-  BarChart,
   Bar,
-  XAxis,
-  YAxis,
+  BarChart,
   CartesianGrid,
-  Tooltip,
   Legend,
+  ReferenceLine,
   ResponsiveContainer,
   Text,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
-import { DateTime } from 'luxon';
-import Skeleton from '@mui/material/Skeleton';
-import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/router';
-import { currencyFormat } from '../../../lib/intlFormat';
-import AnimatedCard from '../../AnimatedCard';
-import AnimatedBox from '../../AnimatedBox';
-import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
+import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalChart.d';
+import { makeStyles } from 'tss-react/mui';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
+import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
+import { currencyFormat } from '../../../lib/intlFormat';
+import AnimatedBox from '../../AnimatedBox';
+import AnimatedCard from '../../AnimatedCard';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   cardHeader: {

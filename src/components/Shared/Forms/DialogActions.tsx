@@ -1,5 +1,5 @@
-import { DialogActions, DialogActionsProps } from '@mui/material';
 import React from 'react';
+import { DialogActions, DialogActionsProps } from '@mui/material';
 
 export const DialogActionsLeft: React.FC<DialogActionsProps> = ({
   children,

@@ -1,13 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import { Collapse, ListItem, ListItemText } from '@mui/material';
-import { ArrowForwardIos } from '@mui/icons-material';
 import NextLink from 'next/link';
+import React, { useMemo, useState } from 'react';
+import { ArrowForwardIos } from '@mui/icons-material';
+import { Collapse, ListItem, ListItemText } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import HandoffLink from 'src/components/HandoffLink';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import theme from 'src/theme';
 import { NavTypeEnum } from '../MultiPageMenu';
 import { NavItems } from '../MultiPageMenuItems';
-import theme from 'src/theme';
 
 interface Props {
   item: NavItems;

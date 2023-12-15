@@ -1,22 +1,22 @@
+import Link from 'next/link';
 import React, { ReactElement } from 'react';
 import {
-  Theme,
-  Container,
-  Typography,
-  Grid,
+  Box,
   CardActionArea,
   CardContent,
-  Box,
+  Container,
+  Grid,
+  Theme,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import PageHeading from '../PageHeading';
-import AnimatedCard from '../AnimatedCard';
-import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
-import { GetAccountListsQuery } from '../../../pages/GetAccountLists.generated';
+import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
+import { GetAccountListsQuery } from '../../../pages/GetAccountLists.generated';
+import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
+import AnimatedCard from '../AnimatedCard';
+import PageHeading from '../PageHeading';
 
 interface Props {
   data: GetAccountListsQuery;

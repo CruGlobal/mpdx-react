@@ -3,11 +3,11 @@ import { Box, Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../theme';
-import { EditContactDetailsModal } from './EditContactDetailsModal';
 import {
   ContactDetailsFragment,
   ContactDetailsFragmentDoc,
 } from './EditContactDetails.generated';
+import { EditContactDetailsModal } from './EditContactDetailsModal';
 
 export default {
   title: 'Contacts/Tab/ContactDetailsTab/People/Items/EditContactDetailsModal',

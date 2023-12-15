@@ -1,19 +1,19 @@
 import { PropsWithChildren } from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
-import { SnackbarProvider } from 'notistack';
-import {
-  GetUsersOrganizationsAccountsQuery,
-  GetOrganizationsQuery,
-} from './Organizations.generated';
-import * as Types from '../../../../../graphql/types.generated';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
-import theme from '../../../../theme';
-import TestRouter from '__tests__/util/TestRouter';
-import { OrganizationAccordion } from './OrganizationAccordion';
 import { cloneDeep } from 'lodash';
+import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
+import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import * as Types from '../../../../../graphql/types.generated';
+import theme from '../../../../theme';
+import { OrganizationAccordion } from './OrganizationAccordion';
+import {
+  GetOrganizationsQuery,
+  GetUsersOrganizationsAccountsQuery,
+} from './Organizations.generated';
 
 jest.mock('next-auth/react');
 

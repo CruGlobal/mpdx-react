@@ -1,29 +1,21 @@
-import { DateTime, Duration, Interval } from 'luxon';
+import { NextApiRequest, PageConfig } from 'next';
 import {
+  RESTDataSource,
   RequestOptions,
   Response,
-  RESTDataSource,
 } from 'apollo-datasource-rest';
-import Cors from 'micro-cors';
-import { PageConfig, NextApiRequest } from 'next';
 import { ApolloServer } from 'apollo-server-micro';
-import schema from './Schema';
+import { DateTime, Duration, Interval } from 'luxon';
+import Cors from 'micro-cors';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from '../../graphql/types.generated';
-import {
-  ContactFilterNewsletterEnum,
-  ReportContactFilterSetInput,
-  ContactFilterStatusEnum,
-  DateRangeInput,
-  FourteenMonthReportCurrencyType,
-  NumericRangeInput,
-  CoachingAnswerSet,
-  ContactFilterNotesInput,
-} from './graphql-rest.page.generated';
-import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
+import schema from './Schema';
+import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
+import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
+import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/dataHandler';
 import {
   getCoachingAnswer,
   getCoachingAnswerSet,
@@ -31,85 +23,92 @@ import {
 } from './Schema/CoachingAnswerSets/dataHandler';
 import { readExistingAddresses } from './Schema/ContactPrimaryAddress/datahandler';
 import {
-  FourteenMonthReportResponse,
-  mapFourteenMonthReport,
-} from './Schema/reports/fourteenMonth/datahandler';
-import { mapPartnerGivingAnalysisResponse } from './Schema/reports/partnerGivingAnalysis/datahandler';
+  DestroyDonorAccount,
+  DestroyDonorAccountResponse,
+} from './Schema/Contacts/DonorAccounts/Destroy/datahander';
+import { SendToChalkline } from './Schema/Settings/Preferences/Intergrations/Chalkine/sendToChalkline/datahandler';
 import {
-  ExpectedMonthlyTotalResponse,
-  mapExpectedMonthlyTotalReport,
-} from './Schema/reports/expectedMonthlyTotal/datahandler';
+  CreateGoogleIntegration,
+  CreateGoogleIntegrationResponse,
+} from './Schema/Settings/Preferences/Intergrations/Google/createGoogleIntegration/datahandler';
+import { DeleteGoogleAccount } from './Schema/Settings/Preferences/Intergrations/Google/deleteGoogleAccount/datahandler';
+import {
+  GoogleAccountIntegrations,
+  GoogleAccountIntegrationsResponse,
+} from './Schema/Settings/Preferences/Intergrations/Google/googleAccountIntegrations/datahandler';
+import {
+  GoogleAccounts,
+  GoogleAccountsResponse,
+} from './Schema/Settings/Preferences/Intergrations/Google/googleAccounts/datahandler';
+import { SyncGoogleIntegration } from './Schema/Settings/Preferences/Intergrations/Google/syncGoogleIntegration/datahandler';
+import {
+  UpdateGoogleIntegration,
+  UpdateGoogleIntegrationResponse,
+} from './Schema/Settings/Preferences/Intergrations/Google/updateGoogleIntegration/datahandler';
+import { DeleteMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/datahandler';
+import {
+  MailchimpAccount,
+  MailchimpAccountResponse,
+} from './Schema/Settings/Preferences/Intergrations/Mailchimp/mailchimpAccount/datahandler';
+import { SyncMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/syncMailchimpAccount/datahandler';
+import {
+  UpdateMailchimpAccount,
+  UpdateMailchimpAccountResponse,
+} from './Schema/Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/datahandler';
+import { DeletePrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/datahandler';
+import {
+  PrayerlettersAccount,
+  PrayerlettersAccountResponse,
+} from './Schema/Settings/Preferences/Intergrations/Prayerletters/prayerlettersAccount/datahandler';
+import { SyncPrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/datahandler';
+import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
+import {
+  DeleteComment,
+  DeleteCommentResponse,
+} from './Schema/Tasks/Comments/DeleteComments/datahandler';
+import {
+  UpdateComment,
+  UpdateCommentResponse,
+} from './Schema/Tasks/Comments/UpdateComments/datahandler';
+import {
+  DonationReponseData,
+  DonationReponseIncluded,
+  getDesignationDisplayNames,
+} from './Schema/donations/datahandler';
+import { getAppointmentResults } from './Schema/reports/appointmentResults/dataHandler';
 import {
   DesignationAccountsResponse,
   createDesignationAccountsGroup,
   setActiveDesignationAccount,
 } from './Schema/reports/designationAccounts/datahandler';
 import {
+  EntryHistoriesResponse,
+  createEntryHistoriesGroup,
+} from './Schema/reports/entryHistories/datahandler';
+import {
+  ExpectedMonthlyTotalResponse,
+  mapExpectedMonthlyTotalReport,
+} from './Schema/reports/expectedMonthlyTotal/datahandler';
+import {
   FinancialAccountResponse,
   setActiveFinancialAccount,
 } from './Schema/reports/financialAccounts/datahandler';
 import {
-  createEntryHistoriesGroup,
-  EntryHistoriesResponse,
-} from './Schema/reports/entryHistories/datahandler';
-import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
-import { getAppointmentResults } from './Schema/reports/appointmentResults/dataHandler';
-import {
-  DeleteCommentResponse,
-  DeleteComment,
-} from './Schema/Tasks/Comments/DeleteComments/datahandler';
-import {
-  UpdateCommentResponse,
-  UpdateComment,
-} from './Schema/Tasks/Comments/UpdateComments/datahandler';
-import { getAccountListDonorAccounts } from './Schema/AccountListDonorAccounts/dataHandler';
-import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
+  FourteenMonthReportResponse,
+  mapFourteenMonthReport,
+} from './Schema/reports/fourteenMonth/datahandler';
+import { mapPartnerGivingAnalysisResponse } from './Schema/reports/partnerGivingAnalysis/datahandler';
 import { getReportsPledgeHistories } from './Schema/reports/pledgeHistories/dataHandler';
 import {
-  DonationReponseData,
-  DonationReponseIncluded,
-  getDesignationDisplayNames,
-} from './Schema/donations/datahandler';
-import {
-  DestroyDonorAccount,
-  DestroyDonorAccountResponse,
-} from './Schema/Contacts/DonorAccounts/Destroy/datahander';
-import {
-  GoogleAccounts,
-  GoogleAccountsResponse,
-} from './Schema/Settings/Preferences/Intergrations/Google/googleAccounts/datahandler';
-import {
-  GoogleAccountIntegrationsResponse,
-  GoogleAccountIntegrations,
-} from './Schema/Settings/Preferences/Intergrations/Google/googleAccountIntegrations/datahandler';
-import { SyncGoogleIntegration } from './Schema/Settings/Preferences/Intergrations/Google/syncGoogleIntegration/datahandler';
-import {
-  UpdateGoogleIntegrationResponse,
-  UpdateGoogleIntegration,
-} from './Schema/Settings/Preferences/Intergrations/Google/updateGoogleIntegration/datahandler';
-import { DeleteGoogleAccount } from './Schema/Settings/Preferences/Intergrations/Google/deleteGoogleAccount/datahandler';
-import {
-  CreateGoogleIntegrationResponse,
-  CreateGoogleIntegration,
-} from './Schema/Settings/Preferences/Intergrations/Google/createGoogleIntegration/datahandler';
-
-import {
-  MailchimpAccountResponse,
-  MailchimpAccount,
-} from './Schema/Settings/Preferences/Intergrations/Mailchimp/mailchimpAccount/datahandler';
-import { SyncMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/syncMailchimpAccount/datahandler';
-import { DeleteMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/datahandler';
-import {
-  UpdateMailchimpAccount,
-  UpdateMailchimpAccountResponse,
-} from './Schema/Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/datahandler';
-import {
-  PrayerlettersAccountResponse,
-  PrayerlettersAccount,
-} from './Schema/Settings/Preferences/Intergrations/Prayerletters/prayerlettersAccount/datahandler';
-import { SyncPrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/datahandler';
-import { DeletePrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/datahandler';
-import { SendToChalkline } from './Schema/Settings/Preferences/Intergrations/Chalkine/sendToChalkline/datahandler';
+  CoachingAnswerSet,
+  ContactFilterNewsletterEnum,
+  ContactFilterNotesInput,
+  ContactFilterStatusEnum,
+  DateRangeInput,
+  FourteenMonthReportCurrencyType,
+  NumericRangeInput,
+  ReportContactFilterSetInput,
+} from './graphql-rest.page.generated';
 
 function camelToSnake(str: string): string {
   return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);

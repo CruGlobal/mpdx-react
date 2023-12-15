@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { StarContactIconButton } from './StarContactIconButton';
 import { SetContactStarredMutation } from './SetContactStarred.generated';
+import { StarContactIconButton } from './StarContactIconButton';
 
 export default {
   title: 'Contacts/ContactRow/Widgets/StarContactIconButton',

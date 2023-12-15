@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
+import { DialogActions, DialogContent, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DialogContent, DialogActions, Typography } from '@mui/material';
-import { useDeleteGoogleAccountMutation } from '../googleAccounts.generated';
-import Modal from 'src/components/common/Modal/Modal';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import {
-  SubmitButton,
   CancelButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/common/Modal/Modal';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
+import { useDeleteGoogleAccountMutation } from '../googleAccounts.generated';
 
 interface DeleteGoogleAccountModalProps {
   handleClose: () => void;

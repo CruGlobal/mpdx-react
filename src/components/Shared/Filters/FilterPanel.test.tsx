@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { render, waitFor, within } from '@testing-library/react';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import userEvent from '@testing-library/user-event';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { ThemeProvider } from '@mui/material/styles';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import theme from 'src/theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
+import { FilterPanel, FilterPanelProps } from './FilterPanel';
 import {
   filterPanelDefaultMock,
   filterPanelFeaturedMock,
@@ -21,8 +23,6 @@ import {
   savedGraphQLContactMock,
   savedGraphQLTaskMock,
 } from './FilterPanel.mocks';
-import { FilterPanel, FilterPanelProps } from './FilterPanel';
-import theme from 'src/theme';
 
 const onSelectedFiltersChanged = jest.fn();
 const onClose = jest.fn();

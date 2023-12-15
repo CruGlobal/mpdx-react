@@ -1,11 +1,11 @@
 import { PropsWithChildren } from 'react';
-import { render, waitFor, act } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { ThemeProvider } from '@mui/material/styles';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import TestRouter from '__tests__/util/TestRouter';
+import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
+import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
 import {
   OrganizationImportDataSyncModal,

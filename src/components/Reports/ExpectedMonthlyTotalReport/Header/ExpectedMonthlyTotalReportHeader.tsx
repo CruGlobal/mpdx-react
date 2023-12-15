@@ -1,7 +1,9 @@
 import React from 'react';
-import { Box, Typography, Tooltip } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import theme from '../../../../theme';
 
 interface Props {
@@ -40,6 +42,7 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = ({
   currency,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const calculateWidth = (amount: number) => {
     return (amount / total) * 100;
@@ -49,7 +52,9 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = ({
     <ProgressBarWrapper data-testid="progressBarWrapper">
       <Tooltip
         title={
-          <Typography>{Math.round(totalDonations) + ' ' + currency}</Typography>
+          <Typography>
+            {currencyFormat(totalDonations, currency, locale)}
+          </Typography>
         }
         arrow
       >
@@ -64,7 +69,9 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = ({
       </Tooltip>
       <Tooltip
         title={
-          <Typography>{Math.round(totalLikely) + ' ' + currency}</Typography>
+          <Typography>
+            {currencyFormat(totalLikely, currency, locale)}
+          </Typography>
         }
         arrow
       >
@@ -79,7 +86,9 @@ export const ExpectedMonthlyTotalReportHeader: React.FC<Props> = ({
       </Tooltip>
       <Tooltip
         title={
-          <Typography>{Math.round(totalUnlikely) + ' ' + currency}</Typography>
+          <Typography>
+            {currencyFormat(totalUnlikely, currency, locale)}
+          </Typography>
         }
         arrow
       >

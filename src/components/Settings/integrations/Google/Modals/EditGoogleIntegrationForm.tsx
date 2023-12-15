@@ -1,34 +1,34 @@
 import React, { ReactElement } from 'react';
-import { Formik } from 'formik';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
-import { styled } from '@mui/material/styles';
 import {
   Box,
-  DialogActions,
-  Typography,
-  Select,
-  MenuItem,
-  FormControlLabel,
   Checkbox,
-  Skeleton,
+  DialogActions,
+  FormControlLabel,
   FormHelperText,
+  MenuItem,
+  Select,
+  Skeleton,
+  Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { Formik } from 'formik';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import {
+  DeleteButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { GoogleAccountIntegration } from '../../../../../../graphql/types.generated';
+import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import {
   GoogleAccountIntegrationsDocument,
   GoogleAccountIntegrationsQuery,
   useGetIntegrationActivitiesQuery,
 } from './googleIntegrations.generated';
 import { useUpdateGoogleIntegrationMutation } from './updateGoogleIntegration.generated';
-import { GoogleAccountIntegration } from '../../../../../../graphql/types.generated';
-import {
-  SubmitButton,
-  DeleteButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 
 type GoogleAccountIntegrationSlimmed = Pick<
   GoogleAccountIntegration,

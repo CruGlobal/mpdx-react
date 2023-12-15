@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
 import {
-  Box,
-  Grid,
-  Typography,
-  Avatar,
-  Hidden,
-  IconButton,
-} from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import { useTranslation } from 'react-i18next';
-import { Icon } from '@mdi/react';
-import {
+  mdiArrowDownBold,
   mdiArrowLeftBold,
   mdiArrowRightBold,
   mdiArrowUpBold,
-  mdiArrowDownBold,
   mdiCloseThick,
 } from '@mdi/js';
+import { Icon } from '@mdi/react';
+import {
+  Avatar,
+  Box,
+  Grid,
+  Hidden,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import { DateTime } from 'luxon';
-import theme from '../../../theme';
-import { RecordInfoFragment } from './GetContactDuplicates.generated';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import theme from '../../../theme';
+import { RecordInfoFragment } from './GetContactDuplicates.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {

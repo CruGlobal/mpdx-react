@@ -1,8 +1,7 @@
-import { DateTime } from 'luxon';
 import React, { ReactElement } from 'react';
-import { StatusEnum } from '../../../../../../graphql/types.generated';
+import { DateTime } from 'luxon';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
-
+import { StatusEnum } from '../../../../../../graphql/types.generated';
 import {
   ContactDetailsHeaderFragment,
   ContactDetailsHeaderFragmentDoc,

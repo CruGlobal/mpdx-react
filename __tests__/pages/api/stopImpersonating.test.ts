@@ -1,7 +1,7 @@
-import { createMocks } from 'node-mocks-http';
 import { getToken } from 'next-auth/jwt';
-import stopImpersonating from '../../../pages/api/stop-impersonating.page';
+import { createMocks } from 'node-mocks-http';
 import { ssrClient } from 'src/lib/client';
+import stopImpersonating from '../../../pages/api/stop-impersonating.page';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
 jest.mock('src/lib/client', () => ({ ssrClient: jest.fn() }));

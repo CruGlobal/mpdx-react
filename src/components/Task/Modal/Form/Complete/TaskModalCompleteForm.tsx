@@ -1,52 +1,52 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  Autocomplete,
-  TextField,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Chip,
-  Grid,
-  CircularProgress,
-  InputAdornment,
-  Typography,
-  DialogContent,
-  DialogActions,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
-import { Formik } from 'formik';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
-import { DateTime } from 'luxon';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
+import {
+  Autocomplete,
+  Chip,
+  CircularProgress,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  Grid,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { Formik } from 'formik';
+import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
+import * as yup from 'yup';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useLocale } from 'src/hooks/useLocale';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { dispatch } from 'src/lib/analytics';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import {
   ActivityTypeEnum,
   ResultEnum,
   TaskUpdateInput,
 } from '../../../../../../graphql/types.generated';
-import { useGetDataForTaskModalQuery } from '../../../Modal/Form/TaskModal.generated';
-import theme from '../../../../../../src/theme';
-import { useCreateTaskCommentMutation } from '../../../Modal/Comments/Form/CreateTaskComment.generated';
+import useTaskModal from '../../../../../hooks/useTaskModal';
+import theme from '../../../../../theme';
+import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';
+import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
+import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
+import { useGetDataForTaskModalQuery } from '../TaskModal.generated';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
-import useTaskModal from '../../../../../../src/hooks/useTaskModal';
-import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
-import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
-import { dispatch } from 'src/lib/analytics';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { useLocale } from 'src/hooks/useLocale';
 
 const taskSchema: yup.SchemaOf<
   Pick<

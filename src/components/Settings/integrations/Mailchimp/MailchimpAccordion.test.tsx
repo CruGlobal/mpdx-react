@@ -1,15 +1,15 @@
 import { PropsWithChildren } from 'react';
-import { render, waitFor, within, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
+import { act, render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { MailchimpAccountQuery } from './MailchimpAccount.generated';
+import TestRouter from '__tests__/util/TestRouter';
+import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import * as Types from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
-import TestRouter from '__tests__/util/TestRouter';
 import { MailchimpAccordion } from './MailchimpAccordion';
+import { MailchimpAccountQuery } from './MailchimpAccount.generated';
 
 jest.mock('next-auth/react');
 

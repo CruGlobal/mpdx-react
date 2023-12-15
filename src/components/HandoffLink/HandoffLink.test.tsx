@@ -1,7 +1,7 @@
+import * as nextRouter from 'next/router';
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import * as nextRouter from 'next/router';
 import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
 import HandoffLink from '.';
 

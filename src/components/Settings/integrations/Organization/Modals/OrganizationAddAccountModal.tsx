@@ -1,39 +1,39 @@
-import React, { useState, ReactElement } from 'react';
-import { signOut } from 'next-auth/react';
-import { useTranslation } from 'react-i18next';
-import { Formik } from 'formik';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
+import React, { ReactElement, useState } from 'react';
 import {
-  Box,
-  DialogActions,
   Autocomplete,
-  TextField,
+  Box,
   Button,
-  Typography,
+  DialogActions,
   Link,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { Formik } from 'formik';
+import { signOut } from 'next-auth/react';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import {
-  useGetOrganizationsQuery,
-  useCreateOrganizationAccountMutation,
-} from '../Organizations.generated';
-import { showArticle, articles } from 'src/lib/helpScout';
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/common/Modal/Modal';
+import { clearDataDogUser } from 'src/hooks/useDataDog';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { articles, showArticle } from 'src/lib/helpScout';
 import theme from 'src/theme';
 import { Organization } from '../../../../../../graphql/types.generated';
-import { clearDataDogUser } from 'src/hooks/useDataDog';
-import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import Modal from 'src/components/common/Modal/Modal';
 import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import {
-  getOrganizationType,
   OrganizationTypesEnum,
+  getOrganizationType,
 } from '../OrganizationAccordion';
 import { getOauthUrl } from '../OrganizationService';
+import {
+  useCreateOrganizationAccountMutation,
+  useGetOrganizationsQuery,
+} from '../Organizations.generated';
 
 interface OrganizationAddAccountModalProps {
   handleClose: () => void;

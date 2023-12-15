@@ -1,20 +1,20 @@
 import React from 'react';
-import { render, waitFor, within } from '@testing-library/react';
-import { SnackbarProvider } from 'notistack';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import userEvent from '@testing-library/user-event';
 import { MockedProvider } from '@apollo/client/testing';
-import { dispatch } from 'src/lib/analytics';
-import useTaskModal from '../../../../../hooks/useTaskModal';
-import TaskModalLogForm from './TaskModalLogForm';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
   getDataForTaskModalMock,
   updateTaskMutationMock,
 } from 'src/components/Task/Modal/Form/TaskModalForm.mock';
+import { dispatch } from 'src/lib/analytics';
+import useTaskModal from '../../../../../hooks/useTaskModal';
+import TaskModalLogForm from './TaskModalLogForm';
 
 const accountListId = 'abc';
 

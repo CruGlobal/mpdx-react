@@ -1,15 +1,15 @@
+import { useContext, useEffect } from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   ContactsContext,
   ContactsType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import { useContext, useEffect } from 'react';
 import theme from 'src/theme';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import TestRouter from '__tests__/util/TestRouter';
 import { GetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
 import { ContactsLeftPanel } from './ContactsLeftPanel';
 

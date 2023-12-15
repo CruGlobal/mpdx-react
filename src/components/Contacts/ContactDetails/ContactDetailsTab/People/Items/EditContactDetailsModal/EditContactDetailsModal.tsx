@@ -1,31 +1,31 @@
 import React, { ReactElement } from 'react';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import {
   Box,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  CircularProgress,
   DialogActions,
   DialogContent,
-  CircularProgress,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
+import { Formik } from 'formik';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
-import { Formik } from 'formik';
-import Modal from '../../../../../../common/Modal/Modal';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { ContactUpdateInput } from '../../../../../../../../graphql/types.generated';
+import Modal from '../../../../../../common/Modal/Modal';
 import {
   ContactDetailsFragment,
   useUpdateContactDetailsMutation,
 } from './EditContactDetails.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

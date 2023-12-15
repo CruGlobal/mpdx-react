@@ -1,7 +1,7 @@
 import React from 'react';
-import { DateTime } from 'luxon';
-import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
+import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import TestWrapper from '../../../../../../../../__tests__/util/TestWrapper';
 import {
   render,

@@ -1,5 +1,5 @@
-import { IconButton } from '@mui/material';
 import React from 'react';
+import { IconButton } from '@mui/material';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { useSetContactStarredMutation } from './SetContactStarred.generated';
 

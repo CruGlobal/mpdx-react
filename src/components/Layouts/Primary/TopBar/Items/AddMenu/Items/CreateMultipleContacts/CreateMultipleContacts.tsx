@@ -1,3 +1,4 @@
+import React, { ReactElement } from 'react';
 import {
   CircularProgress,
   DialogActions,
@@ -13,25 +14,24 @@ import {
 import { styled } from '@mui/material/styles';
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik';
 import { useSnackbar } from 'notistack';
-import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
-import { ContactReferralTabDocument } from 'src/components/Contacts/ContactDetails/ContactReferralTab/ContactReferralTab.generated';
-import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import theme from '../../../../../../../../theme';
-import { PersonCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useCreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
+import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
   AddressFields,
   StreetAutocomplete,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/StreetAutocomplete/StreetAutocomplete';
-import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
+import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
+import { ContactReferralTabDocument } from 'src/components/Contacts/ContactDetails/ContactReferralTab/ContactReferralTab.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { PersonCreateInput } from '../../../../../../../../../graphql/types.generated';
+import theme from '../../../../../../../../theme';
+import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 
 const InputRow = styled(TableRow)(() => ({
   display: 'flex',

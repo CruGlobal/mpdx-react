@@ -1,62 +1,62 @@
 import React, {
+  ChangeEventHandler,
   ReactElement,
   useCallback,
-  useState,
-  useRef,
   useEffect,
-  ChangeEventHandler,
+  useRef,
+  useState,
 } from 'react';
+import CalendarToday from '@mui/icons-material/CalendarToday';
+import Schedule from '@mui/icons-material/Schedule';
 import {
   Autocomplete,
-  TextField,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
   Chip,
-  Grid,
   CircularProgress,
   DialogActions,
   DialogContent,
-  InputAdornment,
+  FormControl,
   FormControlLabel,
+  Grid,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
   Switch,
+  TextField,
 } from '@mui/material';
-import CalendarToday from '@mui/icons-material/CalendarToday';
-import Schedule from '@mui/icons-material/Schedule';
-import { useTranslation } from 'react-i18next';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
-import { DateTime } from 'luxon';
 import { AnimatePresence, motion } from 'framer-motion';
 import { debounce } from 'lodash/fp';
+import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import {
-  ActivityTypeEnum,
-  TaskCreateInput,
-  ResultEnum,
-} from '../../../../../../graphql/types.generated';
-import {
-  useGetDataForTaskModalQuery,
-  useCreateTasksMutation,
-  useGetTaskModalContactsFilteredQuery,
-} from '../../../Modal/Form/TaskModal.generated';
-import theme from '../../../../../../src/theme';
-import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
-import useTaskModal from 'src/hooks/useTaskModal';
-import {
-  SubmitButton,
   CancelButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
-import { possibleNextActions } from '../PossibleNextActions';
-import { possibleResults } from '../PossibleResults';
+import { useLocale } from 'src/hooks/useLocale';
+import useTaskModal from 'src/hooks/useTaskModal';
+import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { useLocale } from 'src/hooks/useLocale';
+import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import {
+  ActivityTypeEnum,
+  ResultEnum,
+  TaskCreateInput,
+} from '../../../../../../graphql/types.generated';
+import theme from '../../../../../theme';
+import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
+import { possibleNextActions } from '../PossibleNextActions';
+import { possibleResults } from '../PossibleResults';
+import {
+  useCreateTasksMutation,
+  useGetDataForTaskModalQuery,
+  useGetTaskModalContactsFilteredQuery,
+} from '../TaskModal.generated';
 
 const taskSchema = yup.object({
   activityType: yup.mixed<ActivityTypeEnum>().nullable(),

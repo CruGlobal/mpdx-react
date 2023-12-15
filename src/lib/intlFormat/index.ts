@@ -1,12 +1,12 @@
 import {
-  numberFormat,
-  percentageFormat,
   currencyFormat,
-  dayMonthFormat,
-  monthYearFormat,
   dateFormat,
   dateFormatShort,
   dateFormatWithoutYear,
+  dayMonthFormat,
+  monthYearFormat,
+  numberFormat,
+  percentageFormat,
 } from './intlFormat';
 
 export {

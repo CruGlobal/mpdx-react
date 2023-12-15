@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useTranslation } from 'react-i18next';
+import HelpIcon from '@mui/icons-material/Help';
 import {
   Box,
   Divider,
@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import HelpIcon from '@mui/icons-material/Help';
+import { useTranslation } from 'react-i18next';
 
 export interface AccountListSubheaderProps {
   organizationName: string;

@@ -1,29 +1,29 @@
 import React, { ReactElement } from 'react';
 import {
-  Typography,
-  Theme,
-  Grid,
-  CardContent,
   Box,
-  Hidden,
   Button,
+  CardContent,
+  Grid,
+  Hidden,
+  Theme,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
+import { useLocale } from 'src/hooks/useLocale';
+import {
+  ContactFilterPledgeReceivedEnum,
+  StatusEnum,
+} from '../../../../graphql/types.generated';
 import {
   currencyFormat,
   numberFormat,
   percentageFormat,
 } from '../../../lib/intlFormat';
-import AnimatedCard from '../../AnimatedCard';
 import AnimatedBox from '../../AnimatedBox';
+import AnimatedCard from '../../AnimatedCard';
 import StyledProgress from '../../StyledProgress';
-import {
-  ContactFilterPledgeReceivedEnum,
-  StatusEnum,
-} from '../../../../graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((_theme: Theme) => ({
   received: {

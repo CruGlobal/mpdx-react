@@ -1,15 +1,10 @@
-import { useState, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useContext, useState } from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { Alert, Box, Card, IconButton, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { useGoogleAccountsQuery } from './googleAccounts.generated';
-import { GoogleAccountAttributes } from '../../../../../graphql/types.generated';
-import theme from 'src/theme';
+import { useTranslation } from 'react-i18next';
 import {
   IntegrationsContext,
   IntegrationsContextType,
@@ -17,13 +12,18 @@ import {
 import HandoffLink from 'src/components/HandoffLink';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
-import { EditGoogleAccountModal } from './Modals/EditGoogleAccountModal';
-import { DeleteGoogleAccountModal } from './Modals/DeleteGoogleAccountModal';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import theme from 'src/theme';
+import { GoogleAccountAttributes } from '../../../../../graphql/types.generated';
 import {
-  StyledListItem,
   StyledList,
+  StyledListItem,
   StyledServicesButton,
 } from '../integrationsHelper';
+import { DeleteGoogleAccountModal } from './Modals/DeleteGoogleAccountModal';
+import { EditGoogleAccountModal } from './Modals/EditGoogleAccountModal';
+import { useGoogleAccountsQuery } from './googleAccounts.generated';
 
 interface GoogleAccordionProps {
   handleAccordionChange: (panel: string) => void;

@@ -1,18 +1,18 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   CheckboxFilter,
-  DaterangeFilter,
   DateRangeInput,
+  DaterangeFilter,
   MultiselectFilter,
   NumericRangeFilter,
   NumericRangeInput,
   TextFilter,
 } from '../../../../graphql/types.generated';
 import { FilterListItem } from './FilterListItem';
-import userEvent from '@testing-library/user-event';
 
 const checkboxFilter: CheckboxFilter = {
   __typename: 'CheckboxFilter',

@@ -1,11 +1,11 @@
-import { DialogActions, DialogContent, Typography } from '@mui/material';
 import React from 'react';
+import { DialogActions, DialogContent, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import Modal from '../../../common/Modal/Modal';
 import {
-  SubmitButton,
   CancelButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from '../../../common/Modal/Modal';
 
 interface MassActionsTasksConfirmationModalProps {
   open: boolean;

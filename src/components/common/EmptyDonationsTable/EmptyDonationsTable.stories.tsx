@@ -1,5 +1,4 @@
 import React, { ReactElement } from 'react';
-
 import { EmptyDonationsTable } from './EmptyDonationsTable';
 
 export default {

@@ -1,15 +1,15 @@
-import { act, render } from '@testing-library/react';
-import { parsePlace, StreetAutocomplete } from './StreetAutocomplete';
 import { useState } from 'react';
+import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
-  getPlacePredictions,
   getDetails,
-  placePromise,
+  getPlacePredictions,
   place,
+  placePromise,
   setupMocks,
   useJsApiLoaderMock,
 } from '__tests__/util/googlePlacesMock';
+import { StreetAutocomplete, parsePlace } from './StreetAutocomplete';
 
 jest.mock('@react-google-maps/api');
 

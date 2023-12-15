@@ -1,14 +1,14 @@
 import React from 'react';
-import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
-import { GetThisWeekQuery } from '../GetThisWeek.generated';
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
-import theme from '../../../../theme';
-import useTaskModal from '../../../../hooks/useTaskModal';
-import TasksDueThisWeek from '.';
+import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
+import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import useTaskModal from '../../../../hooks/useTaskModal';
+import theme from '../../../../theme';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import TasksDueThisWeek from '.';
 
 jest.mock('../../../../hooks/useTaskModal');
 

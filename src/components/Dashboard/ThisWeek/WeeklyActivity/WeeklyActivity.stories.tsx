@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Box } from '@mui/material';
 import { MockedProvider } from '@apollo/client/testing';
+import { Box } from '@mui/material';
 import {
   GetWeeklyActivityQueryDefaultMocks,
   GetWeeklyActivityQueryLoadingMocks,

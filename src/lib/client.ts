@@ -1,12 +1,12 @@
 import {
   ApolloClient,
-  createHttpLink,
   InMemoryCache,
   NormalizedCacheObject,
+  createHttpLink,
 } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { onError } from '@apollo/client/link/error';
-import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
+import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
 import { signOut } from 'next-auth/react';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
@@ -54,8 +54,9 @@ const httpLink = new BatchHttpLink({
   fetch,
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
+const clientErrorLink = onError(({ graphQLErrors, networkError }) => {
+  // Don't show sign out and display errors on the login page because the user won't be logged in
+  if (graphQLErrors && window.location.pathname !== '/login') {
     graphQLErrors.map(({ message, extensions }) => {
       if (extensions?.code === 'AUTHENTICATION_ERROR') {
         signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
@@ -101,7 +102,7 @@ if (process.browser && process.env.NODE_ENV === 'production') {
 }
 
 const client = new ApolloClient({
-  link: errorLink.concat(httpLink),
+  link: clientErrorLink.concat(httpLink),
   cache,
   assumeImmutableResults: true,
   defaultOptions: {

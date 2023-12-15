@@ -1,30 +1,30 @@
 import React, { ReactElement, useState } from 'react';
-import {
-  Theme,
-  CardHeader,
-  CardActions,
-  Button,
-  IconButton,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TableContainer,
-} from '@mui/material';
-import { makeStyles, withStyles } from 'tss-react/mui';
-import { motion } from 'framer-motion';
-import { DateTime, Interval } from 'luxon';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import {
+  Button,
+  CardActions,
+  CardHeader,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Theme,
+} from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
+import { motion } from 'framer-motion';
+import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import AnimatedCard from '../../../AnimatedCard';
+import { makeStyles, withStyles } from 'tss-react/mui';
+import { useLocale } from 'src/hooks/useLocale';
 import { numberFormat } from '../../../../lib/intlFormat';
+import AnimatedCard from '../../../AnimatedCard';
 import HandoffLink from '../../../HandoffLink';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
 import { WeeklyReportModal } from './WeeklyReportModal/WeeklyReportModal';
-import { useLocale } from 'src/hooks/useLocale';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {

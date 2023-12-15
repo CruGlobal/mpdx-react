@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
-import { Tooltip, Theme, Avatar } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import { styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import { DateTime } from 'luxon';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import Check from '@mui/icons-material/Check';
+import { Avatar, Theme, Tooltip } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import useTaskModal from 'src/hooks/useTaskModal';
 
 const TaskCompleteButton = styled(IconButton)(({ theme }) => ({

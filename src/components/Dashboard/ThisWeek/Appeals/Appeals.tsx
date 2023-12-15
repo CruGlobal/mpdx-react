@@ -1,26 +1,26 @@
 import React, { ReactElement } from 'react';
 import {
-  Theme,
-  CardHeader,
-  CardActions,
+  Box,
   Button,
+  CardActions,
   CardContent,
-  Typography,
+  CardHeader,
   Grid,
   Link,
-  Box,
+  Theme,
+  Typography,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import AnimatedCard from '../../../AnimatedCard';
-import StyledProgress from '../../../StyledProgress';
-import { currencyFormat, percentageFormat } from '../../../../lib/intlFormat';
-import HandoffLink from '../../../HandoffLink';
-import illustration13 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
-import { GetThisWeekQuery } from '../GetThisWeek.generated';
+import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
+import illustration13 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
+import { currencyFormat, percentageFormat } from '../../../../lib/intlFormat';
+import AnimatedCard from '../../../AnimatedCard';
+import HandoffLink from '../../../HandoffLink';
+import StyledProgress from '../../../StyledProgress';
+import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -161,7 +161,6 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                           appeal?.amountCurrency,
                           locale,
                         )}
-                      {' ' + appeal?.amountCurrency}
                     </Box>
                   </Box>
                 </Typography>

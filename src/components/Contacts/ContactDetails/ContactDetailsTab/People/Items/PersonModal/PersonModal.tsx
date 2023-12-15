@@ -1,4 +1,5 @@
 import React, { ReactElement, useEffect, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import {
   Box,
   Button,
@@ -10,48 +11,47 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
-import { useApolloClient } from '@apollo/client';
 import { Formik } from 'formik';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
 import _ from 'lodash';
-import {
-  ContactDetailsTabDocument,
-  ContactDetailsTabQuery,
-} from '../../../ContactDetailsTab.generated';
-import { ContactPeopleFragment } from '../../ContactPeople.generated';
-import Modal from '../../../../../../common/Modal/Modal';
-import {
-  PersonCreateInput,
-  PersonUpdateInput,
-} from '../../../../../../../../graphql/types.generated';
-import { DeleteConfirmation } from '../../../../../../../../src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
-import { PersonName } from './PersonName/PersonName';
-import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
-import { PersonEmail } from './PersonEmail/PersonEmail';
-import { PersonBirthday } from './PersonBirthday/PersonBirthday';
-import { PersonShowMore } from './PersonShowMore/PersonShowMore';
-import {
-  useCreatePersonMutation,
-  useDeletePersonMutation,
-  useUpdatePersonMutation,
-} from './PersonModal.generated';
-import { useEditMailingInfoMutation } from '../../../Mailing/EditMailingInfoModal/EditMailingInfoModal.generated';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import {
   ContactDetailContext,
   ContactDetailsType,
 } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import {
-  SubmitButton,
   CancelButton,
   DeleteButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { uploadAvatar, validateAvatar } from './uploadAvatar';
+import {
+  PersonCreateInput,
+  PersonUpdateInput,
+} from '../../../../../../../../graphql/types.generated';
+import { DeleteConfirmation } from '../../../../../../common/Modal/DeleteConfirmation/DeleteConfirmation';
+import Modal from '../../../../../../common/Modal/Modal';
 import {
   GetContactDetailsHeaderDocument,
   GetContactDetailsHeaderQuery,
 } from '../../../../ContactDetailsHeader/ContactDetailsHeader.generated';
+import {
+  ContactDetailsTabDocument,
+  ContactDetailsTabQuery,
+} from '../../../ContactDetailsTab.generated';
+import { useEditMailingInfoMutation } from '../../../Mailing/EditMailingInfoModal/EditMailingInfoModal.generated';
+import { ContactPeopleFragment } from '../../ContactPeople.generated';
+import { PersonBirthday } from './PersonBirthday/PersonBirthday';
+import { PersonEmail } from './PersonEmail/PersonEmail';
+import {
+  useCreatePersonMutation,
+  useDeletePersonMutation,
+  useUpdatePersonMutation,
+} from './PersonModal.generated';
+import { PersonName } from './PersonName/PersonName';
+import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
+import { PersonShowMore } from './PersonShowMore/PersonShowMore';
+import { uploadAvatar, validateAvatar } from './uploadAvatar';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',

@@ -1,9 +1,8 @@
 import React from 'react';
-import { render, within, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { dispatch } from 'src/lib/analytics';
-import { getDataForTaskModalMock } from '../TaskModalForm.mock';
 import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import {
   ActivityTypeEnum,
@@ -11,15 +10,16 @@ import {
   NotificationTypeEnum,
   ResultEnum,
 } from '../../../../../../graphql/types.generated';
-import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
 import useTaskModal from '../../../../../hooks/useTaskModal';
-import {
-  completeTaskMutationMock,
-  completeSimpleTaskMutationMock,
-  addTaskMutationMock,
-} from './TaskModalCompleteForm.mock';
-import TaskModalCompleteForm from './TaskModalCompleteForm';
+import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
+import { getDataForTaskModalMock } from '../TaskModalForm.mock';
 import { CompleteTaskDocument } from './CompleteTask.generated';
+import TaskModalCompleteForm from './TaskModalCompleteForm';
+import {
+  addTaskMutationMock,
+  completeSimpleTaskMutationMock,
+  completeTaskMutationMock,
+} from './TaskModalCompleteForm.mock';
 
 jest.mock('../../../../../hooks/useTaskModal');
 

@@ -1,9 +1,9 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { DialogActions } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import {
-  SubmitButton,
   CancelButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 
 interface WeeklyReportActionsProps {

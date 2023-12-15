@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { AppBar, Box } from '@mui/material';
+import NotificationMenu from './NotificationMenu';
 import {
-  getNotificationsMocks,
+  acknowledgeAllUserNotificationsMutationMock,
   getNotificationsEmptyMock,
   getNotificationsLoadingMock,
-  acknowledgeAllUserNotificationsMutationMock,
+  getNotificationsMocks,
 } from './NotificationMenu.mock';
-import NotificationMenu from './NotificationMenu';
 
 export default {
   title: 'Layouts/Primary/TopBar/Items/NotificationMenu',

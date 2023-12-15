@@ -1,12 +1,12 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../theme';
-import { GetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { GetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import theme from '../../../theme';
+import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 
 const title = 'test title';
 const onNavListToggle = jest.fn();
@@ -16,11 +16,50 @@ const router = {
   isReady: true,
 };
 
+const mockedDonations = {
+  GetExpectedMonthlyTotals: {
+    expectedMonthlyTotalReport: {
+      currency: 'CAD',
+      received: {
+        donations: [
+          {
+            convertedCurrency: 'CAD',
+            donationCurrency: 'CAD',
+            pledgeCurrency: 'CAD',
+          },
+        ],
+      },
+      likely: {
+        donations: [
+          {
+            convertedCurrency: 'CAD',
+            donationCurrency: 'CAD',
+            pledgeCurrency: 'CAD',
+          },
+        ],
+      },
+      unlikely: {
+        donations: [
+          {
+            convertedCurrency: 'CAD',
+            donationCurrency: 'CAD',
+            pledgeCurrency: 'CAD',
+          },
+        ],
+      },
+    },
+  },
+};
+
 describe('ExpectedMonthlyTotalReport', () => {
   it('renders with data', async () => {
     const { getAllByTestId, queryByRole, queryAllByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
+        <GqlMockedProvider<{
+          GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
+        }>
+          mocks={mockedDonations}
+        >
           <ExpectedMonthlyTotalReport
             accountListId={'abc'}
             isNavListOpen={true}
@@ -90,7 +129,7 @@ describe('ExpectedMonthlyTotalReport', () => {
     render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy} mocks={mockedDonations}>
             <ExpectedMonthlyTotalReport
               accountListId={'abc'}
               designationAccounts={['account-1']}
@@ -120,7 +159,7 @@ describe('ExpectedMonthlyTotalReport', () => {
     render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider onCall={mutationSpy} mocks={mockedDonations}>
             <ExpectedMonthlyTotalReport
               accountListId={'abc'}
               isNavListOpen={true}
@@ -148,7 +187,7 @@ describe('ExpectedMonthlyTotalReport', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider>
+          <GqlMockedProvider mocks={mockedDonations}>
             <ExpectedMonthlyTotalReport
               accountListId={'abc'}
               isNavListOpen={true}

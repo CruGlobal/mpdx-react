@@ -1,13 +1,13 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../../theme';
+import { render } from '@testing-library/react';
+import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
 import {
   GetExpectedMonthlyTotalsDocument,
   GetExpectedMonthlyTotalsQuery,
   GetExpectedMonthlyTotalsQueryVariables,
 } from '../../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../theme';
 import { ExpectedMonthlyTotalReportHeader } from './ExpectedMonthlyTotalReportHeader';
 
 it('renders with data', () => {
@@ -24,7 +24,7 @@ it('renders with data', () => {
         totalLikely={data.expectedMonthlyTotalReport.likely.total}
         totalUnlikely={data.expectedMonthlyTotalReport.unlikely.total}
         total={1000}
-        currency={data.expectedMonthlyTotalReport.currency || ''}
+        currency={'USD'}
       />
     </ThemeProvider>,
   );
