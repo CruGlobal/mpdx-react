@@ -21,7 +21,10 @@ ErrorPage.getInitialProps = ({
     : 404;
 
   if (!process.browser) {
-    if (process.env.NODE_ENV === 'production') {
+    if (
+      process.env.NODE_ENV === 'production' &&
+      process.env.ROLLBAR_SERVER_ACCESS_TOKEN
+    ) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const Rollbar = require('rollbar');
       const rollbar = new Rollbar({

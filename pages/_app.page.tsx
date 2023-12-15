@@ -78,6 +78,7 @@ const App = ({
         },
       },
     },
+    enabled: !!process.env.ROLLBAR_ACCESS_TOKEN,
   };
 
   return (

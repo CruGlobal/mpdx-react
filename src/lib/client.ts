@@ -76,20 +76,22 @@ const clientErrorLink = onError(({ graphQLErrors, networkError }) => {
 const serverErrorLink = onError(({ graphQLErrors, networkError }) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const Rollbar = require('rollbar');
+  const rollbarServerAccessToken = process.env.ROLLBAR_SERVER_ACCESS_TOKEN;
   const rollbar = new Rollbar({
-    accessToken: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
+    accessToken: rollbarServerAccessToken,
     environment: 'react_development_server',
     captureUncaught: true,
     captureUnhandledRejections: true,
+    enabled: !!rollbarServerAccessToken,
   });
 
-  if (graphQLErrors) {
+  if (graphQLErrors && rollbarServerAccessToken) {
     graphQLErrors.map(({ message, extensions }) => {
       rollbar.error(message, extensions);
     });
   }
 
-  if (networkError) {
+  if (networkError && rollbarServerAccessToken) {
     rollbar.error(networkError);
   }
 });

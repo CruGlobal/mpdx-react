@@ -16,11 +16,13 @@ import {
 } from './oktaSignIn.generated';
 import { setUserInfo } from './setUserInfo';
 
+const rollbarServerAccessToken = process.env.ROLLBAR_SERVER_ACCESS_TOKEN;
 const rollbar = new Rollbar({
-  accessToken: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
+  accessToken: rollbarServerAccessToken,
   environment: `react_${process.env.NODE_ENV}_server`,
   captureUncaught: true,
   captureUnhandledRejections: true,
+  enabled: !!rollbarServerAccessToken,
 });
 
 declare module 'next-auth' {
@@ -244,7 +246,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             ? metadata?.error
             : code;
         const customData = { code, ...metadata };
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV === 'production' && rollbarServerAccessToken) {
           rollbar.error(errorMsg, customData);
         } else {
           // eslint-disable-next-line no-console
