@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { NotificationTypeTypeEnum } from '../../../../graphql/types.generated';
-import theme from "../../../theme";
+import theme from '../../../theme';
 import { NotificationsTable } from './NotificationsTable';
 
 const mockEnqueue = jest.fn();
