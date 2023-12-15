@@ -1,8 +1,8 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useTranslation } from 'react-i18next';
 import { NotificationsTable } from 'src/components/Settings/notifications/NotificationsTable';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { SettingsWrapper } from './wrapper';
 
 const Notifications: React.FC = () => {

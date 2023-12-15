@@ -1,13 +1,13 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { NotificationsTable } from './NotificationsTable';
-import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import TestRouter from '../../../../__tests__/util/TestRouter';
-import theme from '../../../../src/theme';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { NotificationTypeTypeEnum } from '../../../../graphql/types.generated';
+import theme from "../../../theme";
+import { NotificationsTable } from './NotificationsTable';
 
 const mockEnqueue = jest.fn();
 

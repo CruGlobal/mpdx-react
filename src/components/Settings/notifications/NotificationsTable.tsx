@@ -1,30 +1,30 @@
-import React, { useState, useMemo, ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Formik, FieldArray } from 'formik';
-import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
-import { styled } from '@mui/material/styles';
+import React, { ReactElement, useMemo, useState } from 'react';
+import { Email, Smartphone, Task } from '@mui/icons-material';
 import {
   Box,
   Checkbox,
-  TableContainer,
+  Paper,
   Table,
+  TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
-  TableBody,
-  Paper,
 } from '@mui/material';
-import { Email, Smartphone, Task } from '@mui/icons-material';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import {
-  usePreferencesNotificationsQuery,
-  useNotificationConstantsQuery,
-} from './Notifications.generated';
-import { useUpdateNotificationPreferencesMutation } from './UpdateNotifications.generated';
-import * as Types from '../../../../graphql/types.generated';
+import { styled } from '@mui/material/styles';
+import { FieldArray, Formik } from 'formik';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import * as Types from '../../../../graphql/types.generated';
+import {
+  useNotificationConstantsQuery,
+  usePreferencesNotificationsQuery,
+} from './Notifications.generated';
 import { NotificationsTableSkeleton } from './NotificationsTableSkeleton';
+import { useUpdateNotificationPreferencesMutation } from './UpdateNotifications.generated';
 
 export enum notificationsEnum {
   App = 'app',

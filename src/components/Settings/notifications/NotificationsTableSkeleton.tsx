@@ -1,24 +1,24 @@
 import React from 'react';
 import {
   Box,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableBody,
   Paper,
   Skeleton,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
+  SelectAllBox,
+  StyledEmail,
+  StyledSmartphone,
+  StyledTableCell,
   StyledTableHeadCell,
   StyledTableHeadSelectCell,
-  StyledTableCell,
   StyledTableRow,
-  StyledSmartphone,
-  StyledEmail,
   StyledTask,
-  SelectAllBox,
 } from './NotificationsTable';
 
 export const NotificationsTableSkeleton: React.FC = () => {
