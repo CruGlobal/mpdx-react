@@ -10,6 +10,12 @@ const cruColors = {
   grayLight: '#EBECEC',
 };
 
+const statusColors = {
+  success: '#5CB85C',
+  warning: '#8A6D3B',
+  danger: '#A94442',
+};
+
 const mpdxColors = {
   green: '#00CA99',
   blue: '#05699B',
@@ -38,6 +44,9 @@ declare module '@mui/material/styles/createPalette' {
     progressBarYellow: Palette['primary'];
     progressBarOrange: Palette['primary'];
     progressBarGray: Palette['primary'];
+    statusSuccess: Palette['primary'];
+    statusWarning: Palette['primary'];
+    statusDanger: Palette['primary'];
   }
   interface PaletteOptions {
     cruYellow: PaletteOptions['primary'];
@@ -52,6 +61,9 @@ declare module '@mui/material/styles/createPalette' {
     progressBarYellow: PaletteOptions['primary'];
     progressBarOrange: PaletteOptions['primary'];
     progressBarGray: PaletteOptions['primary'];
+    statusSuccess: PaletteOptions['primary'];
+    statusWarning: PaletteOptions['primary'];
+    statusDanger: PaletteOptions['primary'];
   }
 }
 
@@ -108,6 +120,15 @@ const theme = createTheme({
     },
     progressBarGray: {
       main: progressBarColors.gray,
+    },
+    statusSuccess: {
+      main: statusColors.success,
+    },
+    statusWarning: {
+      main: statusColors.warning,
+    },
+    statusDanger: {
+      main: statusColors.danger,
     },
   },
   components: {

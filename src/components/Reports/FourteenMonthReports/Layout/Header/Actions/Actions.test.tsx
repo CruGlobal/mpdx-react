@@ -1,10 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import theme from 'src/theme';
 import { FourteenMonthReportCurrencyType } from '../../../../../../../graphql/types.generated';
 import { FourteenMonthReportActions } from './Actions';
-import theme from 'src/theme';
 
 const onExpandToggle = jest.fn();
 const onPrint = jest.fn();
@@ -25,7 +25,7 @@ describe('FourteenMonthReportActions', () => {
     );
 
     expect(
-      getByRole('group', { hidden: true, name: 'report header button group' }),
+      getByRole('group', { hidden: true, name: 'Report header button group' }),
     ).toBeInTheDocument();
     userEvent.click(getByRole('button', { hidden: true, name: 'Expand' }));
     userEvent.click(getByRole('button', { hidden: true, name: 'Print' }));

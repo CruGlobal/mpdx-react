@@ -1,0 +1,7 @@
+extend type Mutation {
+  syncPrayerlettersAccount(input: SyncPrayerlettersAccountInput!): String
+}
+
+input SyncPrayerlettersAccountInput {
+  accountListId: ID!
+}

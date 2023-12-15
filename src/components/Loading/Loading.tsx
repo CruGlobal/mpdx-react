@@ -1,8 +1,8 @@
-import React, { ReactElement, useEffect, useState } from 'react';
-import { Theme, Fab, CircularProgress } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import { useRouter } from 'next/router';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { ReactElement, useEffect, useState } from 'react';
+import { CircularProgress, Fab, Theme } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import { makeStyles } from 'tss-react/mui';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   box: {

@@ -1,14 +1,15 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
 import {
   FinancialAccountsDocument,
   FinancialAccountsQuery,
 } from './GetFinancialAccounts.generated';
 import { ResponsibilityCentersReport } from './ResponsibilityCentersReport';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
-import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 
 jest.mock('next/router', () => ({
   useRouter: () => {
@@ -64,6 +65,9 @@ const emptyMocks = {
 };
 
 describe('ResponsibilityCentersReport', () => {
+  beforeEach(() => {
+    onNavListToggle.mockClear();
+  });
   it('default', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
@@ -91,6 +95,27 @@ describe('ResponsibilityCentersReport', () => {
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
     expect(getByTestId('AccountsGroupList')).toBeInTheDocument();
     expect(getByTestId('ResponsibilityCentersScrollBox')).toBeInTheDocument();
+  });
+
+  it('renders nav list icon and onclick triggers onNavListToggle', async () => {
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
+          mocks={mocks}
+        >
+          <ResponsibilityCentersReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsFilterIcon'));
+    await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 
   it('loading', async () => {

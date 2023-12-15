@@ -1,16 +1,16 @@
+import NextLink, { LinkProps } from 'next/link';
+import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
 import { Box, Drawer, Hidden, List, Theme } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import { useRouter } from 'next/router';
-import NextLink, { LinkProps } from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { toolsRedirectLinks } from '../TopBar/Items/NavMenu/NavMenu';
-import { ReportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
-import { NavItem } from './NavItem/NavItem';
-import { NavTools } from './NavTools/NavTools';
+import { makeStyles } from 'tss-react/mui';
+import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { ToolsList } from 'src/components/Tool/Home/ToolList';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { toolsRedirectLinks } from '../TopBar/Items/NavMenu/NavMenu';
+import { NavItem } from './NavItem/NavItem';
+import { NavTools } from './NavTools/NavTools';
 
 interface NavBarProps {
   onMobileClose: () => void;
@@ -131,7 +131,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
     },
     {
       title: t('Reports'),
-      items: ReportNavItems.map((item) => ({
+      items: reportNavItems.map((item) => ({
         ...item,
         title: item.title,
         href: `/accountLists/${accountListId}/reports/${item.id}`,
@@ -139,14 +139,14 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
     },
     {
       title: t('Tools'),
-      items: ToolsList.flatMap((toolsGroup) => [
-        ...toolsGroup.items.map((tool) => ({
+      items: ToolsList.flatMap((toolsGroup) =>
+        toolsGroup.items.map((tool) => ({
           title: tool.tool,
           href: `https://${process.env.REWRITE_DOMAIN}/tools/${
             toolsRedirectLinks[tool.id]
           }`,
         })),
-      ]),
+      ),
     },
     {
       title: t('Coaches'),

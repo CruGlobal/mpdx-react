@@ -1,14 +1,15 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
+import { DesignationAccountsReport } from './DesignationAccountsReport';
 import {
   DesignationAccountsDocument,
   DesignationAccountsQuery,
 } from './GetDesignationAccounts.generated';
-import { DesignationAccountsReport } from './DesignationAccountsReport';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
-import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 
 jest.mock('next/router', () => ({
   useRouter: () => {
@@ -153,5 +154,27 @@ describe('DesignationAccountsReport', () => {
 
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByTestId('EmptyReport')).toBeInTheDocument();
+  });
+
+  it('renders nav list icon and onclick triggers onNavListToggle', async () => {
+    onNavListToggle.mockClear();
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{ DesignationAccounts: DesignationAccountsQuery }>
+          mocks={mocks}
+        >
+          <DesignationAccountsReport
+            accountListId={accountListId}
+            isNavListOpen={true}
+            title={title}
+            onNavListToggle={onNavListToggle}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsFilterIcon'));
+    await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 });

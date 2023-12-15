@@ -1,27 +1,27 @@
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import React from 'react';
-import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import {
+  GqlMockedProvider,
+  gqlMock,
+} from '../../../../../../../__tests__/util/graphqlMocking';
+import {
+  LikelyToGiveEnum,
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
-  LikelyToGiveEnum,
 } from '../../../../../../../graphql/types.generated';
-import {
-  gqlMock,
-  GqlMockedProvider,
-} from '../../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../../theme';
 import {
   ContactDonorAccountsFragment,
   ContactDonorAccountsFragmentDoc,
 } from '../../ContactDonationsTab.generated';
-import theme from '../../../../../../theme';
-import { UpdateContactPartnershipMutation } from './EditPartnershipInfoModal.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal';
+import { UpdateContactPartnershipMutation } from './EditPartnershipInfoModal.generated';
 
 const handleClose = jest.fn();
 const contactMock = gqlMock<ContactDonorAccountsFragment>(
@@ -497,7 +497,7 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const datePickerButton = getByLabelText('change start date');
+    const datePickerButton = getByLabelText('Change start date');
     userEvent.click(datePickerButton);
 
     const day = await waitFor(async () => getAllByText('30')[0]);
@@ -723,7 +723,7 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const datePickerButton = getByLabelText('change next ask date');
+    const datePickerButton = getByLabelText('Change next ask date');
     userEvent.click(datePickerButton);
 
     const day = await waitFor(async () => getAllByText('30')[0]);

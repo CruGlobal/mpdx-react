@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   CircularProgress,
   DialogActions,
@@ -5,13 +6,12 @@ import {
   DialogContentText,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Modal from 'src/components/common/Modal/Modal';
 import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/common/Modal/Modal';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),

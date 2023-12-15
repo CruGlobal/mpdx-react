@@ -1,6 +1,6 @@
+import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { renderHook } from '@testing-library/react-hooks';
-import React from 'react';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { render } from '../../../../../../__tests__/util/testingLibraryReactMock';
 import { DonationsGraph } from './DonationsGraph';

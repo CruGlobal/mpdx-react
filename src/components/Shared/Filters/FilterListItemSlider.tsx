@@ -1,5 +1,5 @@
-import { ListItem, ListItemText, Slider } from '@mui/material';
 import React from 'react';
+import { ListItem, ListItemText, Slider } from '@mui/material';
 import {
   NumericRangeFilter,
   NumericRangeInput,

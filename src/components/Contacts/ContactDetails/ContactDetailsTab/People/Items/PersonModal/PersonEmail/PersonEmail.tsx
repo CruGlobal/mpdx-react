@@ -1,3 +1,6 @@
+import React, { useEffect, useState } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import Mail from '@mui/icons-material/Mail';
 import {
   Button,
   Checkbox,
@@ -7,18 +10,14 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useEffect, useState } from 'react';
-
-import AddIcon from '@mui/icons-material/Add';
-import { useTranslation } from 'react-i18next';
 import { FieldArray, FormikProps } from 'formik';
-import Mail from '@mui/icons-material/Mail';
-import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
-import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
+import { useTranslation } from 'react-i18next';
 import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
+import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { NewSocial } from '../PersonModal';
 import { PersonEmailItem } from './PersonEmailItem';
 

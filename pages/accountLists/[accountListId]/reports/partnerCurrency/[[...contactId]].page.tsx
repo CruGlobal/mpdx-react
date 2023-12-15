@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import { FourteenMonthReportCurrencyType } from '../../../../../graphql/types.generated';
-import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
-import Loading from 'src/components/Loading';
+import { useTranslation } from 'react-i18next';
+import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import Loading from 'src/components/Loading';
+import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
-import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { FourteenMonthReportCurrencyType } from '../../../../../graphql/types.generated';
 import { ContactsPage } from '../../contacts/ContactsPage';
 
 const PartnerCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({

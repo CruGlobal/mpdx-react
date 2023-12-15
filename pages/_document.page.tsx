@@ -1,15 +1,15 @@
-import React, { ReactElement } from 'react';
+import { RenderPageResult } from 'next/dist/shared/lib/utils';
 import Document, {
-  Html,
-  Head,
-  Main,
-  NextScript,
   DocumentContext,
   DocumentInitialProps,
+  Head,
+  Html,
+  Main,
+  NextScript,
 } from 'next/document';
 import Script from 'next/script';
+import React, { ReactElement } from 'react';
 import { ServerStyleSheets } from '@mui/styles';
-import { RenderPageResult } from 'next/dist/shared/lib/utils';
 import theme from '../src/theme';
 
 class MyDocument extends Document {

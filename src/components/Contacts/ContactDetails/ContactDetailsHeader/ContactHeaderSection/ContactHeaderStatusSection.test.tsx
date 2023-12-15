@@ -1,18 +1,18 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
-import { ThemeProvider } from '@mui/material/styles';
-import {
-  PledgeFrequencyEnum,
-  StatusEnum as ContactPartnershipStatusEnum,
-} from '../../../../../../graphql/types.generated';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
+import {
+  StatusEnum as ContactPartnershipStatusEnum,
+  PledgeFrequencyEnum,
+} from '../../../../../../graphql/types.generated';
+import i18n from '../../../../../lib/i18n';
+import theme from '../../../../../theme';
 import {
   ContactDetailsHeaderFragment,
   ContactDetailsHeaderFragmentDoc,
 } from '../ContactDetailsHeader.generated';
-import i18n from '../../../../../lib/i18n';
-import theme from '../../../../../theme';
 import { ContactHeaderStatusSection } from './ContactHeaderStatusSection';
 
 const contactMock = (status: ContactPartnershipStatusEnum) => {

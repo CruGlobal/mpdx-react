@@ -1,16 +1,17 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
-import theme from '../../../theme';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { DonationsReport } from './DonationsReport';
 import TestRouter from '__tests__/util/TestRouter';
 import {
-  beforeTestResizeObserver,
   afterTestResizeObserver,
+  beforeTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import theme from '../../../theme';
 import { GetDonationsGraphQuery } from '../../Contacts/ContactDetails/ContactDontationsTab/DonationsGraph/DonationsGraph.generated';
+import { DonationsReport } from './DonationsReport';
 import { GetDonationsTableQuery } from './GetDonationsTable.generated';
 
 const title = 'test title';
@@ -234,5 +235,27 @@ describe('DonationsReport', () => {
         },
       }),
     );
+  });
+  it('renders nav list icon and onclick triggers onNavListToggle', async () => {
+    onNavListToggle.mockClear();
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<Mocks> mocks={mocks}>
+            <DonationsReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              onSelectContact={onSelectContact}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsFilterIcon'));
+    await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 });

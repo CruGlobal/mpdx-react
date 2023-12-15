@@ -1,9 +1,9 @@
 import React, { FC, ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Box, IconButton, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import FilterList from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
+import { Box, IconButton, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 
 export enum HeaderTypeEnum {
@@ -84,10 +84,16 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
       >
         <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
           {headerType === HeaderTypeEnum.Report && (
-            <NavFilterIcon titleAccess={t(titleAccess)} />
+            <NavFilterIcon
+              titleAccess={titleAccess}
+              data-testid="ReportsFilterIcon"
+            />
           )}
           {headerType === HeaderTypeEnum.Settings && (
-            <NavMenuIcon titleAccess={t(titleAccess)} />
+            <NavMenuIcon
+              titleAccess={titleAccess}
+              data-testid="SettingsMenuIcon"
+            />
           )}
         </NavListButton>
         <Typography variant="h5" sx={{ flex: 1 }}>

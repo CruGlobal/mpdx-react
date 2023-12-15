@@ -1,11 +1,14 @@
-import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
+import React, { ReactElement, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  AccountListTypeEnum,
+  CoachingDetail,
+} from 'src/components/Coaching/CoachingDetail/CoachingDetail';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { suggestArticles } from 'src/lib/helpScout';
 import Loading from '../../../../src/components/Loading';
 import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { CoachingDetail } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
-import { suggestArticles } from 'src/lib/helpScout';
 
 const CoachingReportPage = (): ReactElement => {
   const { t } = useTranslation();
@@ -24,7 +27,10 @@ const CoachingReportPage = (): ReactElement => {
         </title>
       </Head>
       {accountListId ? (
-        <CoachingDetail coachingId={accountListId} isAccountListId={true} />
+        <CoachingDetail
+          accountListId={accountListId}
+          accountListType={AccountListTypeEnum.Own}
+        />
       ) : (
         <Loading loading />
       )}

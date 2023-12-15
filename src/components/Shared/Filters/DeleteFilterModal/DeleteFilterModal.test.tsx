@@ -1,7 +1,7 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { DeleteFilterModal } from './DeleteFilterModal';

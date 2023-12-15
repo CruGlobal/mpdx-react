@@ -1,14 +1,13 @@
 import React, {
-  createContext,
   Dispatch,
   SetStateAction,
+  createContext,
   useContext,
   useEffect,
   useState,
 } from 'react';
-import { useSession } from 'next-auth/react';
-import { useGetUserQuery } from '../GetUser.generated';
 import i18next from 'src/lib/i18n';
+import { useGetUserQuery } from '../GetUser.generated';
 
 export type UserPreferenceType = {
   defaultCurrency?: string;
@@ -30,28 +29,24 @@ interface Props {
   children?: React.ReactNode;
 }
 export const UserPreferenceProvider: React.FC<Props> = ({ children }) => {
-  const { data: session } = useSession();
-  const { data: user, loading } = useGetUserQuery({ skip: !session });
+  const { data } = useGetUserQuery();
   const [locale, setLocale] = useState('en-US');
   const [language, setLanguage] = useState('en');
 
   useEffect(() => {
-    if (user) {
-      setLanguage(user.user.preferences?.language ?? 'en');
-      setLocale(user.user.preferences?.locale ?? 'en-US');
+    if (data) {
+      setLanguage(data.user.preferences?.language ?? 'en');
+      setLocale(data.user.preferences?.locale ?? 'en-US');
     }
-  }, [user]);
+  }, [data]);
 
   useEffect(() => {
-    //console.log('useEffect, language', language);
-    //console.log('resolvedLanguage', i18next.resolvedLanguage);
     i18next.changeLanguage(language ?? 'en');
-    //console.log('resolvedLanguage later', i18next.resolvedLanguage);
   }, [language]);
 
   return (
     <UserPreferenceContext.Provider value={{ locale, setLocale, setLanguage }}>
-      {!loading && children}
+      {children}
     </UserPreferenceContext.Provider>
   );
 };

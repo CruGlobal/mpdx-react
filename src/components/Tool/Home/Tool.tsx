@@ -1,11 +1,11 @@
-import React, { ReactElement } from 'react';
-import { Typography, CardContent, CardActionArea, Box } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import Icon from '@mdi/react';
 import NextLink from 'next/link';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import theme from '../../../theme';
+import React, { ReactElement } from 'react';
+import Icon from '@mdi/react';
+import { Box, CardActionArea, CardContent, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import AnimatedCard from 'src/components/AnimatedCard';
+import { useAccountListId } from '../../../hooks/useAccountListId';
+import theme from '../../../theme';
 
 const useStyles = makeStyles()(() => ({
   cardContainer: {

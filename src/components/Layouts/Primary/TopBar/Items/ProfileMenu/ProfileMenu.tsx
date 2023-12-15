@@ -1,30 +1,30 @@
-import React, { useState, ReactElement } from 'react';
+import { useRouter } from 'next/router';
+import React, { ReactElement, useState } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Avatar,
   Box,
+  Button,
+  Divider,
+  Link,
+  ListItemAvatar,
   ListItemText,
   Menu,
-  Divider,
-  ListItemAvatar,
   MenuItem,
-  Button,
-  Link,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import { useTranslation } from 'react-i18next';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
+import { useAccountListId } from '../../../../../../hooks/useAccountListId';
+import theme from '../../../../../../theme';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
-import theme from '../../../../../../theme';
 import ProfileName from './ProfileName';
 
 const AccountName = styled(Typography)(({ theme }) => ({

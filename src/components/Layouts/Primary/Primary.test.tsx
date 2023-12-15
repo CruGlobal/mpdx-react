@@ -1,12 +1,11 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import { ThemeProvider } from '@mui/material/styles';
 import * as nextRouter from 'next/router';
-import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
+import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
 import TestWrapper from '../../../../__tests__/util/TestWrapper';
+import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
 import theme from '../../../theme';
 import { getNotificationsMocks } from './TopBar/Items/NotificationMenu/NotificationMenu.mock';
-
 import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
 

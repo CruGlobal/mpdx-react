@@ -1,12 +1,12 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import theme from '../../../../../../theme';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import useTaskModal from '../../../../../../hooks/useTaskModal';
+import theme from '../../../../../../theme';
 import AddMenu from './AddMenu';
 
 const openTaskModal = jest.fn();

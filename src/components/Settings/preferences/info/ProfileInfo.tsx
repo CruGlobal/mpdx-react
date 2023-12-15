@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { DateTime } from 'luxon';
-import { Avatar, Box, Button, Typography, useMediaQuery } from '@mui/material';
-import { Theme, styled, useTheme } from '@mui/material/styles';
-import { profile2 } from '../DemoContent';
-import { PersonModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
 import { Edit } from '@mui/icons-material';
-import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
-import { ProfileInfoData } from './ProfileInfoData';
+import {
+  Avatar,
+  Box,
+  Button,
+  Skeleton,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
+import { Theme, styled, useTheme } from '@mui/material/styles';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { PersonModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
 import { Facebook } from 'src/components/common/Links/Facebook';
-import { Twitter } from 'src/components/common/Links/Twitter';
 import { LinkedIn } from 'src/components/common/Links/LinkedIn';
+import { Twitter } from 'src/components/common/Links/Twitter';
 import { Website } from 'src/components/common/Links/Website';
 import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
+import { profile2 } from '../DemoContent';
 import { GetProfileInfoQuery } from '../GetProfileInfo.generated';
+import { ProfileInfoData } from './ProfileInfoData';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -49,13 +56,14 @@ const StyledContactEdit = styled(Button)(({ theme }) => ({
 interface ProfileInfoProps {
   //profile: ContactDetailsTabQuery['contact']['people']['nodes'][0];
   accountListId: string;
-  data: GetProfileInfoQuery;
+  data: GetProfileInfoQuery | undefined;
   loading?: boolean;
 }
 
 export const ProfileInfo: React.FC<ProfileInfoProps> = ({
   accountListId,
   data,
+  loading,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -76,98 +84,103 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
 
   return (
     <ProfileInfoWrapper component="section">
-      <Box marginBottom={isMobile ? theme.spacing(2) : 0}>
-        {/* Avatar */}
-        <StyledAvatar
-          src={profile.avatar}
-          alt={`${user?.firstName} ${user?.lastName}`}
-        />
+      {loading && <Skeleton variant="rectangular" height={30} />}
+      {!loading && (
+        <>
+          <Box marginBottom={isMobile ? theme.spacing(2) : 0}>
+            {/* Avatar */}
+            <StyledAvatar
+              src={profile.avatar}
+              alt={`${user?.firstName} ${user?.lastName}`}
+            />
 
-        {/* Name */}
-        <Typography component="h3" variant="h5">
-          {user?.title} {user?.firstName} {user?.lastName} {user?.suffix}
-        </Typography>
+            {/* Name */}
+            <Typography component="h3" variant="h5">
+              {user?.title} {user?.firstName} {user?.lastName} {user?.suffix}
+            </Typography>
 
-        {/* Work */}
-        {(user?.occupation || user?.employer) && (
-          <Typography component="h4">
-            {`${user?.occupation} ${
-              user?.occupation && user?.employer ? '-' : ''
-            } ${user?.employer}`}
-          </Typography>
-        )}
-      </Box>
+            {/* Work */}
+            {(user?.occupation || user?.employer) && (
+              <Typography component="h4">
+                {`${user?.occupation} ${
+                  user?.occupation && user?.employer ? '-' : ''
+                } ${user?.employer}`}
+              </Typography>
+            )}
+          </Box>
 
-      {user?.primaryEmailAddress && (
-        <ProfileInfoData
-          primaryData={user.primaryEmailAddress}
-          additionalData={user.emailAddresses?.nodes}
-        />
-      )}
-
-      {user?.primaryPhoneNumber && (
-        <ProfileInfoData
-          primaryData={user.primaryPhoneNumber}
-          additionalData={user.phoneNumbers?.nodes}
-        />
-      )}
-
-      {user.maritalStatus && (
-        <Box>
-          {user.maritalStatus}
-          {' : '}
-          {dayMonthFormat(
-            user?.anniversaryDay || 0,
-            user?.anniversaryMonth || 0,
-            locale,
+          {user?.primaryEmailAddress && (
+            <ProfileInfoData
+              primaryData={user.primaryEmailAddress}
+              additionalData={user.emailAddresses?.nodes}
+            />
           )}
-        </Box>
+
+          {user?.primaryPhoneNumber && (
+            <ProfileInfoData
+              primaryData={user.primaryPhoneNumber}
+              additionalData={user.phoneNumbers?.nodes}
+            />
+          )}
+
+          {user.maritalStatus && (
+            <Box>
+              {user.maritalStatus}
+              {' : '}
+              {dayMonthFormat(
+                user?.anniversaryDay || 0,
+                user?.anniversaryMonth || 0,
+                locale,
+              )}
+            </Box>
+          )}
+
+          <Box>
+            {user.facebookAccounts?.nodes?.map((account) => (
+              <Facebook account={account} key={account.id} />
+            ))}
+            {user.twitterAccounts?.nodes?.map((account) => (
+              <Twitter account={account} key={account.id} />
+            ))}
+            {user.linkedinAccounts?.nodes?.map((account) => (
+              <LinkedIn account={account} key={account.id} />
+            ))}
+            {user.websites?.nodes?.map((account) => (
+              <Website account={account} key={account.id} />
+            ))}
+          </Box>
+
+          {birthDate && (
+            <Box>
+              <Typography component="span">
+                {t('Birthday')}
+                {': '}
+                {dateFormat(DateTime.fromISO(birthDate.toISOString()), locale)}
+              </Typography>
+            </Box>
+          )}
+
+          {/* Edit Info Button */}
+          <StyledContactEdit
+            onClick={() => setEditProfileModalOpen(true)}
+            startIcon={<Edit />}
+            variant="outlined"
+          >
+            {t('Edit')}
+          </StyledContactEdit>
+
+          {/* Edit Info Modal */}
+          {editProfileModalOpen ? (
+            <PersonModal
+              accountListId={accountListId}
+              handleClose={() => setEditProfileModalOpen(false)}
+              userProfile={true}
+              contactId=""
+              person={data.user}
+            />
+          ) : null}
+        </>
       )}
-
-      <Box>
-        {user.facebookAccounts?.nodes?.map((account) => (
-          <Facebook account={account} key={account.id} />
-        ))}
-        {user.twitterAccounts?.nodes?.map((account) => (
-          <Twitter account={account} key={account.id} />
-        ))}
-        {user.linkedinAccounts?.nodes?.map((account) => (
-          <LinkedIn account={account} key={account.id} />
-        ))}
-        {user.websites?.nodes?.map((account) => (
-          <Website account={account} key={account.id} />
-        ))}
-      </Box>
-
-      {birthDate && (
-        <Box>
-          <Typography component="span">
-            {t('Birthday')}
-            {': '}
-            {dateFormat(DateTime.fromISO(birthDate.toISOString()), locale)}
-          </Typography>
-        </Box>
-      )}
-
-      {/* Edit Info Button */}
-      <StyledContactEdit
-        onClick={() => setEditProfileModalOpen(true)}
-        startIcon={<Edit />}
-        variant="outlined"
-      >
-        {t('Edit')}
-      </StyledContactEdit>
-
-      {/* Edit Info Modal */}
-      {editProfileModalOpen ? (
-        <PersonModal
-          accountListId={accountListId}
-          handleClose={() => setEditProfileModalOpen(false)}
-          userProfile={true}
-          contactId=""
-          person={data.user}
-        />
-      ) : null}
     </ProfileInfoWrapper>
   );
 };

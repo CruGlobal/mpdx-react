@@ -1,3 +1,5 @@
+import React, { ReactElement } from 'react';
+import CalendarToday from '@mui/icons-material/CalendarToday';
 import {
   CircularProgress,
   DialogActions,
@@ -10,13 +12,23 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import CalendarToday from '@mui/icons-material/CalendarToday';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
-import React, { ReactElement } from 'react';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useLocale } from 'src/hooks/useLocale';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import theme from 'src/theme';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import {
   LikelyToGiveEnum,
   SendNewsletterEnum,
@@ -24,18 +36,6 @@ import {
 } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
-import theme from 'src/theme';
-import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
-import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import {
-  SubmitButton,
-  CancelButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
-import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
 
 interface MassActionsEditFieldsModalProps {
   ids: string[];
@@ -394,7 +394,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       onChange={handleChange('churchName')}
                       fullWidth
                       multiline
-                      inputProps={{ 'aria-label': 'Church' }}
+                      inputProps={{ 'aria-label': t('Church') }}
                     />
                   </FormControl>
                 </Grid>

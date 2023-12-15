@@ -1,23 +1,23 @@
+import Head from 'next/head';
+import React, { useContext } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import React, { useContext } from 'react';
-import Head from 'next/head';
-import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import _ from 'lodash';
-import { SidePanelsLayout } from '../Layouts/SidePanelsLayout';
+import { useTranslation } from 'react-i18next';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
   ContactsContext,
   ContactsType,
 } from '../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { headerHeight, TableViewModeEnum } from '../Shared/Header/ListHeader';
+import { SidePanelsLayout } from '../Layouts/SidePanelsLayout';
 import Loading from '../Loading';
-import { ContactsMainPanel } from './ContactsMainPanel/ContactsMainPanel';
-import { ContactsLeftPanel } from './ContactsLeftPanel/ContactsLeftPanel';
-import { ContactsRightPanel } from './ContactsRightPanel/ContactsRightPanel';
+import { TableViewModeEnum, headerHeight } from '../Shared/Header/ListHeader';
 import { ContactFlowDragLayer } from './ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
+import { ContactsLeftPanel } from './ContactsLeftPanel/ContactsLeftPanel';
+import { ContactsMainPanel } from './ContactsMainPanel/ContactsMainPanel';
+import { ContactsRightPanel } from './ContactsRightPanel/ContactsRightPanel';
 
 const WhiteBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,

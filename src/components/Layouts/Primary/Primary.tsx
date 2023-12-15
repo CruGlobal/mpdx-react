@@ -1,8 +1,8 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
 import { styled } from '@mui/material/styles';
-import TopBar from './TopBar/TopBar';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import TopBar from './TopBar/TopBar';
 
 export const navBarHeight = '64px';
 
@@ -44,7 +44,7 @@ const Primary = ({ children }: Props): ReactElement => {
   return (
     <RootContainer>
       <TopBar
-        onMobileNavOpen={() => setMobileNavOpen(true)}
+        onMobileNavOpen={() => setMobileNavOpen(!isMobileNavOpen)}
         accountListId={accountListId}
       />
       {accountListId && (

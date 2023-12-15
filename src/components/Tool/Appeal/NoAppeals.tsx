@@ -1,9 +1,9 @@
-import { Box, CardContent, Typography } from '@mui/material';
 import React, { ReactElement } from 'react';
-import Icon from '@mdi/react';
 import { mdiTrophy } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Box, CardContent, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import AnimatedCard from '../../../../src/components/AnimatedCard';
+import AnimatedCard from '../../AnimatedCard';
 
 export interface Props {
   primary?: boolean;

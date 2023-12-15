@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import Close from '@mui/icons-material/Close';
 import {
   Box,
   BoxProps,
@@ -8,15 +9,15 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
-import Close from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
-import { Item } from './Item/Item';
-import { MultiselectFilter } from '../../../../../graphql/types.generated';
-import { FilterListItemMultiselect } from 'src/components/Shared/Filters/FilterListItemMultiselect';
+import { makeStyles } from 'tss-react/mui';
 import { useGetDesignationAccountsQuery } from 'src/components/Reports/DonationsReport/Table/Modal/EditDonation.generated';
+import { FilterListItemMultiselect } from 'src/components/Shared/Filters/FilterListItemMultiselect';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ReportNavItems, SettingsNavItems } from './MultiPageMenuItems';
+import { MultiselectFilter } from '../../../../../graphql/types.generated';
+import { Item } from './Item/Item';
+import { reportNavItems, settingsNavItems } from './MultiPageMenuItems';
+import { useGetUserAccessQuery } from './MultiPageMenuItems.generated';
 
 export enum NavTypeEnum {
   Reports = 'reports',
@@ -65,8 +66,9 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { data: userPrivileges } = useGetUserAccessQuery();
   const navItems =
-    navType === NavTypeEnum.Reports ? ReportNavItems : SettingsNavItems;
+    navType === NavTypeEnum.Reports ? reportNavItems : settingsNavItems;
   const navTitle =
     navType === NavTypeEnum.Reports ? t('Reports') : t('Settings');
 
@@ -120,14 +122,35 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
                     }}
                   />
                 )}
-              {navItems.map((item) => (
-                <Item
-                  key={item.id}
-                  item={item}
-                  isSelected={item.id === selectedId}
-                  navType={navType}
-                />
-              ))}
+              {navItems.map((item) => {
+                const showItem = useMemo(() => {
+                  if (item?.grantedAccess?.length) {
+                    if (
+                      item.grantedAccess.indexOf('admin') !== -1 &&
+                      userPrivileges?.user.admin
+                    ) {
+                      return true;
+                    }
+                    if (
+                      item.grantedAccess.indexOf('developer') !== -1 &&
+                      userPrivileges?.user.developer
+                    ) {
+                      return true;
+                    }
+                  } else return true;
+                  return false;
+                }, [item, userPrivileges]);
+
+                if (!showItem) return null;
+                return (
+                  <Item
+                    key={item.id}
+                    item={item}
+                    selectedId={selectedId}
+                    navType={navType}
+                  />
+                );
+              })}
             </FilterList>
           </Box>
         </Slide>

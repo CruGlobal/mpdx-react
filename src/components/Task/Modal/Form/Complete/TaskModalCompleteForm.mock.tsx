@@ -1,7 +1,3 @@
-import {
-  CompleteTaskDocument,
-  CompleteTaskMutation,
-} from './CompleteTask.generated';
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
 import {
@@ -12,13 +8,17 @@ import {
   TaskUpdateInput,
 } from '../../../../../../graphql/types.generated';
 import {
+  CreateTaskCommentDocument,
+  CreateTaskCommentMutation,
+} from '../../Comments/Form/CreateTaskComment.generated';
+import {
   GetTaskForTaskModalDocument,
   GetTaskForTaskModalQuery,
 } from '../../TaskModalTask.generated';
 import {
-  CreateTaskCommentDocument,
-  CreateTaskCommentMutation,
-} from '../../Comments/Form/CreateTaskComment.generated';
+  CompleteTaskDocument,
+  CompleteTaskMutation,
+} from './CompleteTask.generated';
 
 export const getCompleteTaskForTaskModalMock = (
   accountListId: string,

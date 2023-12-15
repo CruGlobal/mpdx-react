@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { ExpandMore } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -7,7 +8,6 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { ExpandMore } from '@mui/icons-material';
 
 export const accordionShared = {
   '&:before': {
@@ -63,22 +63,49 @@ const AccordionLeftDetails = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     width: 'calc((100% - 36px) * 0.338)',
   },
+  [theme.breakpoints.down('md')]: {
+    width: '200px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    marginBottom: '10px',
+    width: '100%',
+  },
 }));
 
 const AccordionRightDetails = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     width: 'calc((100% - 36px) * 0.661)',
   },
+  [theme.breakpoints.down('md')]: {
+    width: 'calc(100% - 200px)',
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
+  },
 }));
 
-const AccordionLImageDetails = styled(Box)(() => ({
+const AccordionLImageDetails = styled(Box)(({ theme }) => ({
   display: 'flex',
+  [theme.breakpoints.down('sm')]: {
+    flexWrap: 'wrap',
+  },
 }));
 
-const AccordionLeftDetailsImage = styled(Box)(() => ({
+const AccordionLeftDetailsImage = styled(Box)(({ theme }) => ({
   maxWidth: '200px',
   ' & > img': {
     width: '100%',
+  },
+
+  [theme.breakpoints.down('md')]: {
+    ' & > img': {
+      maxWidth: '150px',
+    },
+  },
+  [theme.breakpoints.down('sm')]: {
+    ' & > img': {
+      maxWidth: '100px',
+    },
   },
 }));
 
@@ -105,7 +132,6 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
     () => expandedPanel.toLowerCase() === label.toLowerCase(),
     [expandedPanel, label],
   );
-
   return (
     <StyledAccordion
       onChange={() => onAccordionChange(label)}
@@ -117,25 +143,27 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
           <Typography component="span">{label}</Typography>
         </StyledAccordionColumn>
         {value && (
-          <StyledAccordionColumn>
+          <StyledAccordionColumn data-testid="AccordionSummaryValue">
             <Typography component="span">{value}</Typography>
           </StyledAccordionColumn>
         )}
       </StyledAccordionSummary>
-      <AccordionDetails>
-        {!fullWidth && !image && (
-          <StyledAccordionDetails>{children}</StyledAccordionDetails>
-        )}
-        {fullWidth && !image && <Box>{children}</Box>}
-        {image && (
-          <AccordionLImageDetails>
-            <AccordionLeftDetails>
-              <AccordionLeftDetailsImage>{image}</AccordionLeftDetailsImage>
-            </AccordionLeftDetails>
-            <AccordionRightDetails>{children}</AccordionRightDetails>
-          </AccordionLImageDetails>
-        )}
-      </AccordionDetails>
+      {expanded && (
+        <AccordionDetails data-testid="AccordionDetails">
+          {!fullWidth && !image && (
+            <StyledAccordionDetails>{children}</StyledAccordionDetails>
+          )}
+          {fullWidth && !image && <Box>{children}</Box>}
+          {image && (
+            <AccordionLImageDetails data-testid="AccordionLImageDetails">
+              <AccordionLeftDetails>
+                <AccordionLeftDetailsImage>{image}</AccordionLeftDetailsImage>
+              </AccordionLeftDetails>
+              <AccordionRightDetails>{children}</AccordionRightDetails>
+            </AccordionLImageDetails>
+          )}
+        </AccordionDetails>
+      )}
     </StyledAccordion>
   );
 };

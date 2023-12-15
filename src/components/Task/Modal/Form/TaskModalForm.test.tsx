@@ -1,21 +1,21 @@
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import React from 'react';
-import { render, waitFor, within } from '@testing-library/react';
-import { MockedProvider } from '@apollo/client/testing';
-import { SnackbarProvider } from 'notistack';
-import { DateTime, Settings } from 'luxon';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import userEvent from '@testing-library/user-event';
 import { InMemoryCache } from '@apollo/client';
-import {
-  getDataForTaskModalMock,
-  createTasksMutationMock,
-  updateTaskMutationMock,
-  deleteTaskMutationMock,
-} from './TaskModalForm.mock';
-import TaskModalForm from './TaskModalForm';
+import { MockedProvider } from '@apollo/client/testing';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { DateTime, Settings } from 'luxon';
+import { SnackbarProvider } from 'notistack';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
+import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import TaskModalForm from './TaskModalForm';
+import {
+  createTasksMutationMock,
+  deleteTaskMutationMock,
+  getDataForTaskModalMock,
+  updateTaskMutationMock,
+} from './TaskModalForm.mock';
 
 const accountListId = 'abc';
 

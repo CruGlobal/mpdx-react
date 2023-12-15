@@ -7,3 +7,6 @@
   bottom: 90px !important;
   z-index: 1350 !important;
 }
+.BeaconFabButtonFrame {
+  z-index: 1500 !important;
+}

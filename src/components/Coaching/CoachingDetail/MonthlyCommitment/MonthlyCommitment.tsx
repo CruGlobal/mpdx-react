@@ -1,25 +1,25 @@
+import React from 'react';
+import { Box, CardContent, CardHeader, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
-import React from 'react';
-import {
-  ResponsiveContainer,
-  BarChart,
-  XAxis,
-  Bar,
-  Legend,
-  CartesianGrid,
-  Tooltip,
-  YAxis,
-  Text,
-  ReferenceLine,
-} from 'recharts';
 import { useTranslation } from 'react-i18next';
-import { Box, CardContent, CardHeader, Typography } from '@mui/material';
-import { useGetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ReferenceLine,
+  ResponsiveContainer,
+  Text,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import AnimatedCard from 'src/components/AnimatedCard';
+import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useLocale } from 'src/hooks/useLocale';
+import { useGetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated';
 
 interface MonthlyCommitmentProps {
   coachingId: string;
@@ -82,8 +82,8 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
           </Box>
         }
       />
-      <CardContent>
-        <ResponsiveContainer>
+      <CardContent sx={{ overflowX: 'scroll' }}>
+        <ResponsiveContainer minWidth={600}>
           {loading ? (
             <>
               <Skeleton variant="text" />

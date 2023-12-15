@@ -1,15 +1,14 @@
 import { DateTime } from 'luxon';
-
 import {
   dateFormat,
   getDateFormatPattern,
   monthYearFormat,
 } from './intlFormat';
 import {
-  numberFormat,
-  percentageFormat,
   currencyFormat,
   dayMonthFormat,
+  numberFormat,
+  percentageFormat,
 } from '.';
 
 describe('intlFormat', () => {

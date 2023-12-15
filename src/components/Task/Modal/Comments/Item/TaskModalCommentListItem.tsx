@@ -1,26 +1,26 @@
-import { Box, Typography, Tooltip, TextField } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import React, { ReactElement, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Box, TextField, Tooltip, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import {
+  CancelButton,
+  DeleteButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { CommentUpdateMutationInput } from '../../../../../../graphql/types.generated';
-import theme from '../../../../../../src/theme';
+import theme from '../../../../../theme';
+import { commentSchema } from '../Form/TaskModalCommentsListForm';
 import {
   GetCommentsForTaskModalCommentListDocument,
   GetCommentsForTaskModalCommentListQuery,
 } from '../TaskListComments.generated';
-import { commentSchema } from '../Form/TaskModalCommentsListForm';
 import { useDeleteCommentMutation } from './DeleteTaskComment.generated';
 import { useUpdateCommentMutation } from './UpdateTaskComment.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import {
-  SubmitButton,
-  CancelButton,
-  DeleteButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
 
 interface Props {
   comment?: GetCommentsForTaskModalCommentListQuery['task']['comments']['nodes'][0];
@@ -124,7 +124,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
                 onChange={handleChange('body')}
                 fullWidth
                 multiline
-                inputProps={{ 'aria-label': 'Body' }}
+                inputProps={{ 'aria-label': t('Body') }}
                 required
                 onKeyPress={(event): void => {
                   if (event.key === 'Enter' && !event.shiftKey) {

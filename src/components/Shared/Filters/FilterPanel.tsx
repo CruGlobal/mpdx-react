@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import Close from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
   AccordionDetails,
@@ -14,35 +17,32 @@ import {
   Slide,
   Typography,
 } from '@mui/material';
-import { useTheme, styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
-import Close from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+import { styled, useTheme } from '@mui/material/styles';
 import { filter } from 'lodash';
+import { useTranslation } from 'react-i18next';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   ActivityTypeEnum,
   ContactFilterNewsletterEnum,
+  ContactFilterNotesInput,
+  ContactFilterPledgeReceivedEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
-  ContactFilterPledgeReceivedEnum,
   FilterGroup,
   MultiselectFilter,
   ReportContactFilterSetInput,
   ResultEnum,
   TaskFilterSetInput,
-  ContactFilterNotesInput,
 } from '../../../../graphql/types.generated';
+import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
+import { FilterListItem } from './FilterListItem';
+import { FilterListItemShowAll } from './FilterListItemShowAll';
 import {
   FilterPanelGroupFragment,
   UserOptionFragment,
 } from './FilterPanel.generated';
-import { FilterListItemShowAll } from './FilterListItemShowAll';
-import { FilterListItem } from './FilterListItem';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
-import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
@@ -782,7 +782,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                 secondaryAction={
                                   <IconButton
                                     edge="end"
-                                    aria-label="delete"
+                                    aria-label={t('Delete')}
                                     data-testid="deleteSavedFilter"
                                     onClick={() =>
                                       handleDeleteSavedFilter(filter)

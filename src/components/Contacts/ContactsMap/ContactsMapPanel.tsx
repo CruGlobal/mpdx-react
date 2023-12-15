@@ -1,3 +1,13 @@
+import Image from 'next/image';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import Close from '@mui/icons-material/Close';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
   AccordionDetails,
@@ -7,21 +17,11 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
 import { useTranslation } from 'react-i18next';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import Close from '@mui/icons-material/Close';
-import Image from 'next/image';
-import { StatusEnum } from '../../../../graphql/types.generated';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
+import { StatusEnum } from '../../../../graphql/types.generated';
 
 interface ContactMapsPanelProps {
   data: Coordinates[] | undefined;

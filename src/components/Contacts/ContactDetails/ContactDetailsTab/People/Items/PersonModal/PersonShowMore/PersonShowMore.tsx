@@ -1,4 +1,6 @@
 import React from 'react';
+import BusinessIcon from '@mui/icons-material/Business';
+import SchoolIcon from '@mui/icons-material/School';
 import {
   Checkbox,
   FormControl,
@@ -10,23 +12,21 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
 import { MobileDatePicker } from '@mui/x-date-pickers';
-import { DateTime } from 'luxon';
-import SchoolIcon from '@mui/icons-material/School';
-import BusinessIcon from '@mui/icons-material/Business';
 import { FormikProps } from 'formik';
-import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
-import { RingIcon } from '../../../../../../RingIcon';
-import { PersonSocial } from '../PersonSocials/PersonSocials';
-import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import {
   PersonCreateInput,
   PersonUpdateInput,
 } from '../../../../../../../../../graphql/types.generated';
+import { RingIcon } from '../../../../../../RingIcon';
+import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
+import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { NewSocial } from '../PersonModal';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { useLocale } from 'src/hooks/useLocale';
+import { PersonSocial } from '../PersonSocials/PersonSocials';
 
 const DeceasedLabel = styled(FormControlLabel)(() => ({
   margin: 'none',

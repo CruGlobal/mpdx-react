@@ -1,9 +1,9 @@
-import { getSession } from 'next-auth/react';
 import Router from 'next/router';
+import { getSession } from 'next-auth/react';
 import { getQueryParam } from 'src/utils/queryParam';
 
-export const oAuth = async (
-  organizationId,
+export const getOauthUrl = async (
+  organizationId: string,
   route = 'preferences/integrations?selectedTab=organization',
 ) => {
   const session = await getSession();
@@ -16,11 +16,4 @@ export const oAuth = async (
     `&access_token=${token}` +
     `&organization_id=${organizationId}`
   );
-};
-
-export const sync = async () => {
-  // TODO
-  return new Promise((resolve) => {
-    return resolve;
-  });
 };

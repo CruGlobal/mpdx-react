@@ -1,13 +1,13 @@
+import { useEffect, useRef } from 'react';
 import { InMemoryCache } from '@apollo/client';
 import { render, waitFor } from '@testing-library/react';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   TasksDocument,
   TasksQuery,
   TasksQueryVariables,
   useTasksQuery,
 } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
-import { useEffect, useRef } from 'react';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { useUpdateTasksQueries } from './useUpdateTasksQueries';
 
 const accountListId = 'account-list-1';

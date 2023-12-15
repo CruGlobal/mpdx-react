@@ -1,8 +1,8 @@
+import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import Head from 'next/head';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import ToolHome from 'src/components/Tool/Home/Home';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const ToolsPage = (): ReactElement => {
   const { t } = useTranslation();

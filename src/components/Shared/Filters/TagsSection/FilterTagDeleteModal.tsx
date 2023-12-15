@@ -1,10 +1,10 @@
-import { DialogActions, DialogContent, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
+import * as React from 'react';
+import { DialogActions, DialogContent, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { ContactFiltersDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { TaskFiltersDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { DeleteButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';

@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from 'react';
+import Add from '@mui/icons-material/Add';
 import {
   Box,
   Card,
@@ -9,13 +10,12 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import Add from '@mui/icons-material/Add';
-import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
-import TaskModalCommentsListItem from '../Comments/Item/TaskModalCommentListItem';
-import theme from '../../../../../src/theme';
-import { useGetCommentsForTaskModalCommentListQuery } from './TaskListComments.generated';
-import TaskModalCommentsListForm from './Form/TaskModalCommentsListForm';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
+import theme from '../../../../theme';
+import TaskModalCommentsListForm from './Form/TaskModalCommentsListForm';
+import TaskModalCommentsListItem from './Item/TaskModalCommentListItem';
+import { useGetCommentsForTaskModalCommentListQuery } from './TaskListComments.generated';
 
 const ImageWrap = styled(Box)(() => ({
   height: '120px',

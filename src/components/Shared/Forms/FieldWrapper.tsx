@@ -1,33 +1,29 @@
 import React from 'react';
+import { FormControl, FormControlProps } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
-  FormControl,
-  FormControlProps,
-  FormHelperTextProps,
-} from '@mui/material';
-import {
-  helperPositionEnum,
+  HelperPositionEnum,
   StyledFormHelperText,
   StyledFormLabel,
-} from './Field';
+} from './FieldHelper';
 
 interface FieldWrapperProps {
   labelText?: string;
   helperText?: string;
-  helperPosition?: helperPositionEnum;
+  helperPosition?: HelperPositionEnum;
   formControlDisabled?: FormControlProps['disabled'];
   formControlError?: FormControlProps['error'];
   formControlFullWidth?: FormControlProps['fullWidth'];
   formControlRequired?: FormControlProps['required'];
   formControlVariant?: FormControlProps['variant'];
-  formHelperTextProps?: { variant?: FormHelperTextProps['variant'] };
+  formHelperTextProps?: object;
   children?: React.ReactNode;
 }
 
 export const FieldWrapper: React.FC<FieldWrapperProps> = ({
   labelText = '',
   helperText = '',
-  helperPosition = helperPositionEnum.Top,
+  helperPosition = HelperPositionEnum.Top,
   formControlDisabled = false,
   formControlError = false,
   formControlFullWidth = true,
@@ -68,9 +64,9 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
       variant={formControlVariant}
     >
       {labelOutput}
-      {helperPosition === helperPositionEnum.Top && helperTextOutput}
+      {helperPosition === HelperPositionEnum.Top && helperTextOutput}
       {children}
-      {helperPosition === helperPositionEnum.Bottom && helperTextOutput}
+      {helperPosition === HelperPositionEnum.Bottom && helperTextOutput}
     </FormControl>
   );
 };

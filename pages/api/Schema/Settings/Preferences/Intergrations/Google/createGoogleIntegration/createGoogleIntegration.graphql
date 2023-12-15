@@ -1,0 +1,29 @@
+extend type Mutation {
+  createGoogleIntegration(
+    input: CreateGoogleIntegrationInput!
+  ): GoogleAccountIntegration!
+}
+
+input CreateGoogleIntegrationInput {
+  googleAccountId: ID!
+  googleIntegration: GoogleAccountIntegrationInput
+  accountListId: String!
+}
+
+input GoogleAccountIntegrationInput {
+  overwrite: Boolean
+  calendarIntegration: Boolean
+  calendarId: String
+  calendarIntegrations: [String]
+  calendarName: String
+  calendars: [GoogleAccountIntegrationCalendarsInput]
+  createdAt: String
+  updatedAt: String
+  id: String
+  updatedInDbAt: String
+}
+
+input GoogleAccountIntegrationCalendarsInput {
+  id: String
+  name: String
+}

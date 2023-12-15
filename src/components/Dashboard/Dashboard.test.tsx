@@ -1,18 +1,18 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 import matchMediaMock from '../../../__tests__/util/matchMediaMock';
 import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
-import theme from '../../theme';
 import useTaskModal from '../../hooks/useTaskModal';
+import theme from '../../theme';
+import {
+  afterTestResizeObserver,
+  beforeTestResizeObserver,
+} from '../../utils/tests/windowResizeObserver';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
-import {
-  beforeTestResizeObserver,
-  afterTestResizeObserver,
-} from '../../../src/utils/tests/windowResizeObserver';
 
 jest.mock('../../hooks/useTaskModal');
 jest.mock('next/router', () => ({

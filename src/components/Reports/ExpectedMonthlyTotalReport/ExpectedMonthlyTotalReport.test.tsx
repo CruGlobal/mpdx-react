@@ -1,11 +1,12 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '../../../theme';
-import { GetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { GetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import theme from '../../../theme';
+import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 
 const title = 'test title';
 const onNavListToggle = jest.fn();
@@ -141,5 +142,26 @@ describe('ExpectedMonthlyTotalReport', () => {
         },
       }),
     );
+  });
+  it('renders nav list icon and onclick triggers onNavListToggle', async () => {
+    onNavListToggle.mockClear();
+    const { getByTestId } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <ExpectedMonthlyTotalReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsFilterIcon'));
+    await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 });

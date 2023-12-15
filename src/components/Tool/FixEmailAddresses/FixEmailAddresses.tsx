@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
+import Icon from '@mdi/react';
 import {
   Box,
-  Typography,
-  Grid,
-  Divider,
   Button,
-  NativeSelect,
   CircularProgress,
+  Divider,
+  Grid,
+  NativeSelect,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
-
-import Icon from '@mdi/react';
-import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { PersonEmailAddressInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import NoData from '../NoData';
 import DeleteModal from './DeleteModal';
-import { useGetInvalidEmailAddressesQuery } from './GetInvalidEmailAddresses.generated';
 import { FixEmailAddressPerson } from './FixEmailAddressPerson';
+import { useGetInvalidEmailAddressesQuery } from './GetInvalidEmailAddresses.generated';
 
 const Container = styled(Box)(() => ({
   padding: theme.spacing(3),

@@ -1,9 +1,9 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MultiPageHeader, HeaderTypeEnum } from './MultiPageHeader';
 import theme from 'src/theme';
+import { HeaderTypeEnum, MultiPageHeader } from './MultiPageHeader';
 
 const totalBalance = 'CA111';
 const title = 'test title';
@@ -45,5 +45,22 @@ describe('MultiPageHeader', () => {
     );
 
     expect(queryByText('CA111')).toBeNull();
+  });
+
+  it('should render the Settings menu', async () => {
+    const { getByTestId, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <MultiPageHeader
+          isNavListOpen={true}
+          title={title}
+          onNavListToggle={onNavListToggle}
+          rightExtra={undefined}
+          headerType={HeaderTypeEnum.Settings}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByText('Toggle Preferences Menu')).toBeInTheDocument();
+    expect(getByTestId('SettingsMenuIcon')).toBeInTheDocument();
   });
 });

@@ -1,0 +1,6 @@
+query GetUserAccess {
+  user {
+    admin
+    developer
+  }
+}

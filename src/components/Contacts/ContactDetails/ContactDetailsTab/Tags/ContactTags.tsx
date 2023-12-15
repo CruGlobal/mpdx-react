@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
+import TagIcon from '@mui/icons-material/LocalOfferOutlined';
 import { Autocomplete, Box, Button, Chip, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import TagIcon from '@mui/icons-material/LocalOfferOutlined';
-import { useSnackbar } from 'notistack';
-import * as yup from 'yup';
 import { Formik, FormikHelpers } from 'formik';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import {
   useGetContactTagListQuery,
   useUpdateContactTagsMutation,

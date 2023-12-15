@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Tooltip } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../theme';

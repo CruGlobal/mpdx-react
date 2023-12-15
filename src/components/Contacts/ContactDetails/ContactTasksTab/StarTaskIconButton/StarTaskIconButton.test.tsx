@@ -1,8 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import theme from '../../../../../theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
+import theme from '../../../../../theme';
 import { StarTaskIconButton } from './StarTaskIconButton';
 
 const accountListId = 'abc';

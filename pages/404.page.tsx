@@ -1,9 +1,9 @@
-import React, { ReactElement } from 'react';
 import Head from 'next/head';
-import { Box, Typography, Button } from '@mui/material';
+import React, { ReactElement } from 'react';
+import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
+import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
 import useGetAppSettings from '../src/hooks/useGetAppSettings';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({

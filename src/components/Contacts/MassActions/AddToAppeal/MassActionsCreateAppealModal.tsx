@@ -1,3 +1,4 @@
+import React, { ReactElement } from 'react';
 import {
   CircularProgress,
   DialogActions,
@@ -6,17 +7,16 @@ import {
   TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
-import React, { ReactElement } from 'react';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useSnackbar } from 'notistack';
-import Modal from '../../../common/Modal/Modal';
-import { useAddToAppealMutation } from './AddToAppealMutation.generated';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
-  SubmitButton,
   CancelButton,
+  SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import Modal from '../../../common/Modal/Modal';
+import { useAddToAppealMutation } from './AddToAppealMutation.generated';
 
 interface MassActionsCreateAppealModalProps {
   ids: string[];
