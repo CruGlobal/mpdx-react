@@ -1,4 +1,4 @@
-query PreferencesNotifications($accountListId: ID!) {
+query NotificationsPreferences($accountListId: ID!) {
   notificationPreferences(accountListId: $accountListId) {
     nodes {
       id
@@ -14,12 +14,10 @@ query PreferencesNotifications($accountListId: ID!) {
   }
 }
 
-query NotificationConstants {
-  constant {
-    notificationTranslatedHashes {
-      id
-      key
-      value
-    }
+query NotificationTypes {
+  notificationTypes {
+    id
+    type
+    descriptionTemplate
   }
 }

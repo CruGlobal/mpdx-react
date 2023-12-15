@@ -20,8 +20,8 @@ import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionBu
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import * as Types from '../../../../graphql/types.generated';
 import {
-  useNotificationConstantsQuery,
-  usePreferencesNotificationsQuery,
+  useNotificationTypesQuery,
+  useNotificationsPreferencesQuery,
 } from './Notifications.generated';
 import { NotificationsTableSkeleton } from './NotificationsTableSkeleton';
 import { useUpdateNotificationPreferencesMutation } from './UpdateNotifications.generated';
@@ -32,7 +32,7 @@ export enum notificationsEnum {
   Task = 'task',
 }
 
-type Notification = Pick<
+type NotificationPreference = Pick<
   Types.NotificationPreference,
   'app' | 'email' | 'task'
 > & {
@@ -41,7 +41,10 @@ type Notification = Pick<
     'id' | 'descriptionTemplate' | 'type'
   >;
 };
-type NotificationConstant = Pick<Types.IdKeyValue, 'id' | 'key' | 'value'>;
+type NotificationType = Pick<
+  Types.NotificationType,
+  'id' | 'type' | 'descriptionTemplate'
+>;
 
 export const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -99,7 +102,7 @@ export const NotificationsTable: React.FC = () => {
   const [updateNotifications] = useUpdateNotificationPreferencesMutation();
 
   const NotificationSchema: yup.SchemaOf<{
-    notifications: Notification[];
+    notifications: NotificationPreference[];
   }> = yup.object({
     notifications: yup.array(
       yup.object({
@@ -118,17 +121,19 @@ export const NotificationsTable: React.FC = () => {
     ),
   });
 
-  const { data, loading } = usePreferencesNotificationsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-    },
-  });
-  const { data: notificationConstants } = useNotificationConstantsQuery({
+  const { data: notificationsPreferences, loading } =
+    useNotificationsPreferencesQuery({
+      variables: {
+        accountListId: accountListId ?? '',
+      },
+      fetchPolicy: 'cache-and-network',
+    });
+  const { data: notificationTypes } = useNotificationTypesQuery({
     fetchPolicy: 'cache-first',
   });
 
   const defaultIfInSetup = (
-    notificationPreference: Notification | undefined,
+    notificationPreference: NotificationPreference | undefined,
     type: 'app' | 'email' | 'task',
   ): boolean => {
     // If Setup, show preference or default to TRUE
@@ -137,25 +142,23 @@ export const NotificationsTable: React.FC = () => {
   };
 
   const notifications = useMemo(() => {
-    const notificationsData: Notification[] =
-      data?.notificationPreferences?.nodes || [];
-    const notificationsOrder: NotificationConstant[] =
-      notificationConstants?.constant?.notificationTranslatedHashes || [];
+    const notificationsPreferencesData: NotificationPreference[] =
+      notificationsPreferences?.notificationPreferences?.nodes || [];
+    const notificationTypesData: NotificationType[] =
+      notificationTypes?.notificationTypes || [];
 
-    if (!notificationsData.length || !notificationsOrder.length) return [];
-
-    return notificationsOrder.map((notification) => {
-      const notificationPreference = notificationsData.find(
-        (object) => object.notificationType.id === notification.key,
+    return notificationTypesData.map((notification) => {
+      const notificationPreference = notificationsPreferencesData.find(
+        (object) => object.notificationType.id === notification.id,
       );
       return {
-        notificationType: notificationPreference?.notificationType || {},
+        notificationType: notification,
         app: defaultIfInSetup(notificationPreference, 'app'),
         email: defaultIfInSetup(notificationPreference, 'email'),
         task: defaultIfInSetup(notificationPreference, 'task'),
-      } as Notification;
+      } as NotificationPreference;
     });
-  }, [data, notificationConstants]);
+  }, [notificationsPreferences, notificationTypes]);
 
   const handleSelectAll = (
     type,
@@ -173,7 +176,7 @@ export const NotificationsTable: React.FC = () => {
   const onSubmit = async ({
     notifications,
   }: {
-    notifications: Notification[];
+    notifications: NotificationPreference[];
   }) => {
     const attributes = notifications.map((notification) => {
       return {
