@@ -154,7 +154,7 @@ export const NotificationsTable: React.FC = () => {
         email: defaultIfInSetup(notificationPreference, 'email'),
         task: defaultIfInSetup(notificationPreference, 'task'),
       } as Notification;
-    }, []);
+    });
   }, [data, notificationConstants]);
 
   const handleSelectAll = (
@@ -221,7 +221,7 @@ export const NotificationsTable: React.FC = () => {
               <Box textAlign={'right'} padding={'10px'}>
                 <SubmitButton
                   disabled={!isValid || isSubmitting}
-                  variant={t('contained')}
+                  variant="contained"
                 >
                   {t('Save Changes')}
                 </SubmitButton>
