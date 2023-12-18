@@ -11,11 +11,11 @@ import {
 import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { useLocale } from 'src/hooks/useLocale';
 import {
   ContactFilterPledgeReceivedEnum,
   StatusEnum,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
 import {
   currencyFormat,
   numberFormat,

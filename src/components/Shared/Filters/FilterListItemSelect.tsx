@@ -6,7 +6,7 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import { RadioFilter } from '../../../../graphql/types.generated';
+import { RadioFilter } from 'src/graphql/types.generated';
 
 interface Props {
   filter: RadioFilter;

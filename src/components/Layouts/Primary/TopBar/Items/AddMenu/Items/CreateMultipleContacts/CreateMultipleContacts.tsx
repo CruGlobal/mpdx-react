@@ -29,7 +29,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { PersonCreateInput } from '../../../../../../../../../graphql/types.generated';
+import { PersonCreateInput } from 'src/graphql/types.generated';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 

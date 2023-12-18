@@ -1,4 +1,4 @@
-import { AccountListCoaches } from '../../../../graphql/types.generated';
+import { AccountListCoaches } from 'src/graphql/types.generated';
 
 const getAccountListCoaches = (
   data: [

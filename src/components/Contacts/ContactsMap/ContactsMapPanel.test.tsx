@@ -4,8 +4,8 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { StatusEnum } from 'src/graphql/types.generated';
 import TestRouter from '../../../../__tests__/util/TestRouter';
-import { StatusEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { ContactsMapPanel } from './ContactsMapPanel';
 

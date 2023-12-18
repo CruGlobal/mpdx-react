@@ -25,13 +25,10 @@ import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Contact, PersonWithParentContact } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
 import theme from 'src/theme';
-import {
-  Contact,
-  PersonWithParentContact,
-} from '../../../../../graphql/types.generated';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
 import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';

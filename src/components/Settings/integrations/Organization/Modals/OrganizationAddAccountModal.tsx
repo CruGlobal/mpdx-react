@@ -20,11 +20,11 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
+import { Organization } from 'src/graphql/types.generated';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { articles, showArticle } from 'src/lib/helpScout';
 import theme from 'src/theme';
-import { Organization } from '../../../../../../graphql/types.generated';
 import {
   OrganizationTypesEnum,
   getOrganizationType,

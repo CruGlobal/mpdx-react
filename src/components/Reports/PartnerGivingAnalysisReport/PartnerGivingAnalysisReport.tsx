@@ -7,15 +7,15 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useDebouncedValue } from 'src/hooks/useDebounce';
-import { useMassSelection } from 'src/hooks/useMassSelection';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   PartnerGivingAnalysisReportContact,
   ReportContactFilterSetInput,
   SortDirection,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { useMassSelection } from 'src/hooks/useMassSelection';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import type { Order } from '../Reports.type';

@@ -1,4 +1,4 @@
-import { ReportsAppointmentResultsPeriod } from '../../../../../graphql/types.generated';
+import { ReportsAppointmentResultsPeriod } from 'src/graphql/types.generated';
 
 const getAppointmentResults = (
   data: [

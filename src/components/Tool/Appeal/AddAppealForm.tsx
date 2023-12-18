@@ -21,7 +21,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
-import { MultiselectFilter } from '../../../../graphql/types.generated';
+import { MultiselectFilter } from 'src/graphql/types.generated';
 import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import theme from '../../../theme';

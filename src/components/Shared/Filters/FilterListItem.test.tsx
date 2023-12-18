@@ -11,7 +11,7 @@ import {
   NumericRangeFilter,
   NumericRangeInput,
   TextFilter,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { FilterListItem } from './FilterListItem';
 
 const checkboxFilter: CheckboxFilter = {

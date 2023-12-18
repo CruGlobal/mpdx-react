@@ -28,7 +28,7 @@ import {
 import {
   PersonCreateInput,
   PersonUpdateInput,
-} from '../../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { DeleteConfirmation } from '../../../../../../common/Modal/DeleteConfirmation/DeleteConfirmation';
 import Modal from '../../../../../../common/Modal/Modal';
 import {

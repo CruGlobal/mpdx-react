@@ -1,4 +1,4 @@
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 
 export const possibleNextActions = (
   activityType: ActivityTypeEnum,

@@ -9,9 +9,9 @@ import {
   useJsApiLoader,
 } from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
-import { StatusEnum } from '../../../../../graphql/types.generated';
 import { ContactsContext, ContactsType } from '../ContactsContext';
 
 const ContactLink = styled(Typography)(({ theme }) => ({

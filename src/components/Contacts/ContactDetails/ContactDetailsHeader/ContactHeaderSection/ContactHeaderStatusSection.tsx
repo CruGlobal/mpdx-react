@@ -7,10 +7,10 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
-import { StatusEnum } from '../../../../../../graphql/types.generated';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import {
   ContactLateStatusEnum,

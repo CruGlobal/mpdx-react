@@ -2,9 +2,9 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
+import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
-import { StatusEnum as ContactPartnershipStatusEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { ContactPartnershipStatus } from './ContactPartnershipStatus';
 

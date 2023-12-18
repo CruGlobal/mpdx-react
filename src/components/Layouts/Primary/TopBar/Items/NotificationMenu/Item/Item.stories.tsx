@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { NotificationTypeTypeEnum } from '../../../../../../../../graphql/types.generated';
+import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
 import { GetNotificationsQuery } from '../GetNotificationsQuery.generated';
 import acknowledgeUserNotificationMutationMock from './Item.mock';
 import NotificationMenuItem from '.';

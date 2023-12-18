@@ -12,11 +12,11 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
-import { FourteenMonthReportCurrencyType } from '../../../../../graphql/types.generated';
 import { ContactsPage } from '../../contacts/ContactsPage';
 
 const PartnerCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({

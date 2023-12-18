@@ -19,10 +19,10 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ContactUpdateInput } from 'src/graphql/types.generated';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import theme from 'src/theme';
-import { ContactUpdateInput } from '../../../../../graphql/types.generated';
 import {
   ContactTagIcon,
   ContactTagInput,

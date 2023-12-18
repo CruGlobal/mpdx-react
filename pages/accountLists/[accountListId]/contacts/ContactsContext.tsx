@@ -9,10 +9,10 @@ import React, {
   useState,
 } from 'react';
 import _, { debounce } from 'lodash';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { useUpdateUserOptionsMutation } from '../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { useGetUserOptionsQuery } from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';

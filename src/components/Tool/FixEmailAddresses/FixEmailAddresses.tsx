@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
-import { PersonEmailAddressInput } from '../../../../graphql/types.generated';
+import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import NoData from '../NoData';

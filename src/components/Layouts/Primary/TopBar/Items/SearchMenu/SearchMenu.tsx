@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
-} from '../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';

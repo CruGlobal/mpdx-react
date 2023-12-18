@@ -1,6 +1,6 @@
 import React from 'react';
 import { ListItem, TextField } from '@mui/material';
-import { TextFilter } from '../../../../graphql/types.generated';
+import { TextFilter } from 'src/graphql/types.generated';
 
 interface Props {
   filter: TextFilter;

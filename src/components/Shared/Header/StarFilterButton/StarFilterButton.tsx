@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
 
 const StarIconWrap = styled(Box)(({ theme }) => ({

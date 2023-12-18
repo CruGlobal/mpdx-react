@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import { renderDialog } from '../../../Layouts/Primary/TopBar/Items/AddMenu/AddMenu';

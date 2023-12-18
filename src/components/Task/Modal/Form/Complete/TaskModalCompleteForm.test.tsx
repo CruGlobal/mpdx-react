@@ -2,14 +2,14 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
-import { dispatch } from 'src/lib/analytics';
-import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
   ResultEnum,
-} from '../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { dispatch } from 'src/lib/analytics';
+import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
 import { getDataForTaskModalMock } from '../TaskModalForm.mock';

@@ -18,11 +18,8 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { Contact, ContactUpdateInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import {
-  Contact,
-  ContactUpdateInput,
-} from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { useGetContactTagListQuery } from '../../ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { useGetContactsForTagsQuery } from '../GetContactsForTags.generated';
