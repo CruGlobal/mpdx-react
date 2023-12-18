@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client';
-import generatedIntrospection from '../../graphql/possibleTypes.generated';
+import generatedIntrospection from 'src/graphql/possibleTypes.generated';
 import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
 
 const ignoredKeyArgsForPagination = ['before', 'after'];

@@ -1,11 +1,11 @@
 import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
 import {
   QueryReportsTagHistoriesArgs,
   ReportsTagHistoriesAssociationEnum,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import theme from 'src/theme';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { TagsSummary } from './TagsSummary';
 
