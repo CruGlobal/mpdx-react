@@ -65,6 +65,7 @@ export const TagsSummary: React.FC<TagsSummaryProps> = ({
     },
   });
   const periods = data?.reportsTagHistories.periods ?? [];
+  const noTags = periods[0]?.tags.length === 0;
 
   return (
     <AnimatedCard>
@@ -75,62 +76,52 @@ export const TagsSummary: React.FC<TagsSummaryProps> = ({
             : t('Task Tags')
         }
       />
-      {periods[0]?.tags.length === 0 ? (
-        <ContentContainer>
-          {t('No tags added in last 6 {{period}}.', {
+      <ContentContainer style={{ padding: noTags ? undefined : 0 }}>
+        {noTags &&
+          t('No tags added in last 6 {{period}}.', {
             period:
               period === CoachingPeriodEnum.Weekly ? t('weeks') : t('months'),
           })}
-        </ContentContainer>
-      ) : (
-        <ContentContainer style={{ padding: 0 }}>
-          {loading ? (
-            <MultilineSkeleton lines={4} />
-          ) : (
-            <TableContainer sx={{ minWidth: 600 }}>
-              <StyledTable
-                size="small"
-                aria-label={
-                  association === ReportsTagHistoriesAssociationEnum.Contacts
-                    ? t('contact tags summary table')
-                    : t('task tags summary table')
-                }
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell>{t('Tag Name')}</TableCell>
-                    {periods.slice(0, -1).map(({ endDate }) => (
-                      <TableCell key={endDate}>
-                        {dateFormatWithoutYear(
-                          DateTime.fromISO(endDate),
-                          locale,
-                        )}
+        {!noTags && loading && <MultilineSkeleton lines={4} />}
+        {!noTags && !loading && (
+          <TableContainer sx={{ minWidth: 600 }}>
+            <StyledTable
+              size="small"
+              aria-label={
+                association === ReportsTagHistoriesAssociationEnum.Contacts
+                  ? t('contact tags summary table')
+                  : t('task tags summary table')
+              }
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>{t('Tag Name')}</TableCell>
+                  {periods.slice(0, -1).map(({ endDate }) => (
+                    <TableCell key={endDate}>
+                      {dateFormatWithoutYear(DateTime.fromISO(endDate), locale)}
+                    </TableCell>
+                  ))}
+                  <TableCell>{t('Total')}</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {periods[0].tags.map((tag) => (
+                  <TableRow key={tag.id}>
+                    <TableCell>
+                      <TagText>{tag.name}</TagText>
+                    </TableCell>
+                    {periods.map((period) => (
+                      <TableCell key={`${period.startDate}..${period.endDate}`}>
+                        {period.tags.find(({ id }) => id === tag.id)?.count}
                       </TableCell>
                     ))}
-                    <TableCell>{t('Total')}</TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {periods[0].tags.map((tag) => (
-                    <TableRow key={tag.id}>
-                      <TableCell>
-                        <TagText>{tag.name}</TagText>
-                      </TableCell>
-                      {periods.map((period) => (
-                        <TableCell
-                          key={`${period.startDate}..${period.endDate}`}
-                        >
-                          {period.tags.find(({ id }) => id === tag.id)?.count}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </StyledTable>
-            </TableContainer>
-          )}
-        </ContentContainer>
-      )}
+                ))}
+              </TableBody>
+            </StyledTable>
+          </TableContainer>
+        )}
+      </ContentContainer>
     </AnimatedCard>
   );
 };
