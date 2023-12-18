@@ -1,4 +1,4 @@
-import { ActivityTypeEnum } from '../../../graphql/types.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 
 //  This is a work around to match the Activity Types with Constant Activity Id
 export const constantIdFromActivityType = (

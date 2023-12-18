@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   ContactFilterSetInput,
   ReportContactFilterSetInput,
-} from '../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { ListHeaderCheckBoxState } from '../components/Shared/Header/ListHeader';
 
 export const useMassSelection = (

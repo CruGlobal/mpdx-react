@@ -3,8 +3,8 @@ import FilterList from '@mui/icons-material/FilterList';
 import { Box, Grid, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { FourteenMonthReportCurrencyType } from '../../../../../../graphql/types.generated';
 import { FourteenMonthReportActions } from './Actions/Actions';
 
 interface FourteenMonthReportHeaderProps {

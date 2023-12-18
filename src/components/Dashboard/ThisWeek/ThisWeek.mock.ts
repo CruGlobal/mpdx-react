@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
-import { ActivityTypeEnum } from '../../../../graphql/types.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { GetThisWeekDocument, GetThisWeekQuery } from './GetThisWeek.generated';
 import {
   GetWeeklyActivityQueryDefaultMocks,

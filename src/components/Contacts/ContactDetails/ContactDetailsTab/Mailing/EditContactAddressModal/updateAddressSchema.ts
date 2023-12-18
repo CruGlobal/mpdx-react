@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
+import { AddressUpdateInput } from 'src/graphql/types.generated';
 
 export const updateAddressSchema: yup.SchemaOf<
   Omit<AddressUpdateInput, 'validValues'>

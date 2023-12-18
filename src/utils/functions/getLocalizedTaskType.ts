@@ -1,5 +1,5 @@
 import { TFunction } from 'react-i18next';
-import { ActivityTypeEnum } from '../../../graphql/types.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 
 export const getLocalizedTaskType = (
   t: TFunction,

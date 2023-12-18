@@ -43,7 +43,7 @@ yarn-error.log*
 /public/workbox*
 
 # GraphQL Codegen
-/graphql
+/src/graphql
 *.generated.ts
 
 # IntelliJ

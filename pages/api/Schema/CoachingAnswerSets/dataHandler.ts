@@ -2,7 +2,7 @@ import {
   CoachingAnswer,
   CoachingAnswerSet,
   CoachingQuestion,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 
 const isNotNull = <T>(item: T | null): item is T => item !== null;
 

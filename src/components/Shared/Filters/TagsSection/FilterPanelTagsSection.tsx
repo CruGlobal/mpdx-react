@@ -13,12 +13,12 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import theme from 'src/theme';
 import {
   ContactFilterSetInput,
   FilterOption,
   TaskFilterSetInput,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import theme from 'src/theme';
 import { FilterTagChip } from './Chip/FilterTagChip';
 import { FilterTagDeleteModal } from './FilterTagDeleteModal';
 

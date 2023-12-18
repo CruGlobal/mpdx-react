@@ -1,5 +1,5 @@
 import { TFunction } from 'react-i18next';
-import { StatusEnum } from '../../../graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 
 export const getLocalizedContactStatus = (
   t: TFunction,

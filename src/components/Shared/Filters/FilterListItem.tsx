@@ -10,7 +10,7 @@ import {
   NumericRangeInput,
   RadioFilter,
   TextFilter,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { FilterListItemCheckbox } from './FilterListItemCheckbox';
 import { FilterListItemDateRange } from './FilterListItemDateRange';
 import { FilterListItemMultiselect } from './FilterListItemMultiselect';

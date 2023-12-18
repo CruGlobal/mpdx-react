@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import {
   dateFormat,
+  dateFormatWithoutYear,
   getDateFormatPattern,
   monthYearFormat,
 } from './intlFormat';
@@ -42,9 +43,12 @@ describe('intlFormat', () => {
       expect(numberFormat(1000.01, 'fr')).toEqual('1 000,01');
     });
 
-    describe('diferent language', () => {
+    describe('different language', () => {
       it('formats number', () => {
-        expect(numberFormat(1000.01, 'fr')).toEqual('1 000,01');
+        expect(numberFormat(1000.01, 'fr-FR')).toEqual('1 000,01');
+        expect(currencyFormat(1000.1, 'EUR', 'fr-FR')).toEqual('1 000,10 €');
+        expect(currencyFormat(25000.1, 'EUR', 'de-DE')).toEqual('25.000,10 €');
+        expect(currencyFormat(6000.5, 'JPY', 'ja-JP')).toEqual('￥6,000.50');
       });
     });
   });
@@ -71,11 +75,11 @@ describe('intlFormat', () => {
 
   describe('currencyFormat', () => {
     it('formats number as currency', () => {
-      expect(currencyFormat(1234.56, 'USD', 'en-US')).toEqual('$1,235');
+      expect(currencyFormat(1234.56, 'USD', 'en-US')).toEqual('$1,234.56');
     });
 
     it('handles language', () => {
-      expect(currencyFormat(1000.1, 'EUR', 'fr')).toEqual('1 000 €');
+      expect(currencyFormat(1000.1, 'EUR', 'fr')).toEqual('1 000,10 €');
     });
 
     describe('value', () => {
@@ -92,7 +96,7 @@ describe('intlFormat', () => {
 
     describe('different language', () => {
       it('handles language', () => {
-        expect(currencyFormat(1000.1, 'EUR', 'fr')).toEqual('1 000 €');
+        expect(currencyFormat(1000.1, 'EUR', 'fr')).toEqual('1 000,10 €');
       });
     });
   });
@@ -144,9 +148,31 @@ describe('intlFormat', () => {
 
     describe('different language', () => {
       it('handles language', () => {
-        expect(dateFormat(DateTime.local(2020, 1, 5), 'fr')).toEqual(
-          '5 janv. 2020',
+        expect(dateFormat(DateTime.local(2020, 1, 5), 'es-419')).toEqual(
+          '5 ene 2020',
         );
+      });
+    });
+  });
+
+  describe('dateFormatWithoutYear', () => {
+    it('formats day and month as date', () => {
+      expect(
+        dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'en-US'),
+      ).toEqual('Jan 5');
+    });
+
+    it('handles language', () => {
+      expect(dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'fr')).toEqual(
+        '5 janv.',
+      );
+    });
+
+    describe('different language', () => {
+      it('handles language', () => {
+        expect(
+          dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'es-419'),
+        ).toEqual('5 ene');
       });
     });
   });

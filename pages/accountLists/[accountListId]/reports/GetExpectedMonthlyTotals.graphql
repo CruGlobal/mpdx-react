@@ -25,7 +25,6 @@ query GetExpectedMonthlyTotals(
       total
     }
     currency
-    currencySymbol
   }
 }
 

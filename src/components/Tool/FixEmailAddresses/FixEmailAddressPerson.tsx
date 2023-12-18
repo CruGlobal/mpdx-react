@@ -22,9 +22,9 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
-import { PersonEmailAddressInput } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon, EmailAddressData } from './FixEmailAddresses';
 

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import { SendNewsletterEnum } from '../../../../../../graphql/types.generated';
+import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import { ContactDetailsTabMailing } from './ContactDetailsTabMailing';

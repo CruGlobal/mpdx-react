@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Box } from '@mui/material';
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 import TasksDueThisWeek from '.';
 

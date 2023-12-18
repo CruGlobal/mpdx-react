@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
 import { Box, Card, CardContent, IconButton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
+import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';

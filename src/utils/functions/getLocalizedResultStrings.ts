@@ -1,5 +1,5 @@
 import { TFunction } from 'react-i18next';
-import { ResultEnum } from '../../../graphql/types.generated';
+import { ResultEnum } from 'src/graphql/types.generated';
 
 export const getLocalizedResultString = (
   t: TFunction,

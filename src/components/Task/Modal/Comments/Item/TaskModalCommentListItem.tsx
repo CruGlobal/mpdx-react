@@ -9,10 +9,10 @@ import {
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { CommentUpdateMutationInput } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
-import { CommentUpdateMutationInput } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
 import { commentSchema } from '../Form/TaskModalCommentsListForm';
 import {

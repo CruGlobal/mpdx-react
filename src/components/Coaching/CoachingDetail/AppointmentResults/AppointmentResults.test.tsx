@@ -110,9 +110,9 @@ describe('AppointmentResults', () => {
       'Monthly Support Gained',
     );
     expect(monthlyIncreaseRow.children[1]).toHaveTextContent('$111');
-    expect(monthlyIncreaseRow.children[2]).toHaveTextContent('$667');
-    expect(monthlyIncreaseRow.children[3]).toHaveTextContent('$778');
-    expect(monthlyIncreaseRow.children[4]).toHaveTextContent('$519');
+    expect(monthlyIncreaseRow.children[2]).toHaveTextContent('$666.66');
+    expect(monthlyIncreaseRow.children[3]).toHaveTextContent('$777.77');
+    expect(monthlyIncreaseRow.children[4]).toHaveTextContent('$518.51');
 
     const monthlyDecreaseRow = rows[6];
     expect(monthlyDecreaseRow.children[0]).toHaveTextContent(
@@ -120,17 +120,17 @@ describe('AppointmentResults', () => {
     );
     expect(monthlyDecreaseRow.children[1]).toHaveTextContent('-$222');
     expect(monthlyDecreaseRow.children[2]).toHaveTextContent('-$444');
-    expect(monthlyDecreaseRow.children[3]).toHaveTextContent('-$889');
-    expect(monthlyDecreaseRow.children[4]).toHaveTextContent('-$519');
+    expect(monthlyDecreaseRow.children[3]).toHaveTextContent('-$888.88');
+    expect(monthlyDecreaseRow.children[4]).toHaveTextContent('-$518.51');
 
     const specialIncreaseRow = rows[7];
     expect(specialIncreaseRow.children[0]).toHaveTextContent(
       'Special Needs Gained',
     );
     expect(specialIncreaseRow.children[1]).toHaveTextContent('$333');
-    expect(specialIncreaseRow.children[2]).toHaveTextContent('$556');
-    expect(specialIncreaseRow.children[3]).toHaveTextContent('$1,000');
-    expect(specialIncreaseRow.children[4]).toHaveTextContent('$630');
+    expect(specialIncreaseRow.children[2]).toHaveTextContent('$555.55');
+    expect(specialIncreaseRow.children[3]).toHaveTextContent('$999.99');
+    expect(specialIncreaseRow.children[4]).toHaveTextContent('$629.62');
   });
 
   it('loads data for the weekly period', async () => {

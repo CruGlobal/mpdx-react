@@ -29,7 +29,7 @@ import {
   ContactUpdateInput,
   PreferredContactMethodEnum,
   UserScopedToAccountList,
-} from '../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { useGetTimezones } from '../../../../../../hooks/useGetTimezones';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import Modal from '../../../../../common/Modal/Modal';

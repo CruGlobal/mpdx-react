@@ -26,9 +26,9 @@ import {
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import * as Types from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import * as Types from '../../../../../graphql/types.generated';
 import {
   StyledList,
   StyledListItem,

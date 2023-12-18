@@ -17,6 +17,8 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ExpectedDonationRowFragment } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat/intlFormat';
 import theme from '../../../../theme';
 
 interface Props {
@@ -37,6 +39,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
   currency,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const [visible, setVisible] = useState(true);
 
@@ -67,11 +70,14 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
           onClick={() => setVisible((v) => !v)}
         >
           <Typography>{t(title)}</Typography>
-          <Typography style={{ fontSize: 12, margin: 4 }}>
+          <Typography
+            style={{ fontSize: 12, margin: 4 }}
+            data-testid="totalPartners"
+          >
             {showTotalPartners()}
           </Typography>
           <Typography style={{ marginLeft: 'auto' }}>
-            {Math.round(total) + ' ' + currency}
+            {currencyFormat(total, currency, locale)}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -106,26 +112,35 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                     <TableCell align="left">
                       <Link
                         href={`../../${accountListId}/contacts/${row.contactId}`}
+                        underline="hover"
                       >
                         {row.contactName}
                       </Link>
                     </TableCell>
                     <TableCell align="left">{row.contactStatus}</TableCell>
                     <TableCell align="right">
-                      {row.pledgeAmount + ' ' + row.pledgeCurrency}
+                      {currencyFormat(
+                        row.pledgeAmount || 0,
+                        row.pledgeCurrency,
+                        locale,
+                      )}
                     </TableCell>
                     <TableCell align="right">{row.pledgeFrequency}</TableCell>
                     {donations ? (
                       <TableCell data-testid="donationColumn" align="right">
-                        {Math.round(row.donationAmount || 0) +
-                          ' ' +
-                          row.donationCurrency}
+                        {currencyFormat(
+                          row.donationAmount || 0,
+                          row.donationCurrency,
+                          locale,
+                        )}
                       </TableCell>
                     ) : null}
                     <TableCell align="right">
-                      {Math.round(row.convertedAmount || 0) +
-                        ' ' +
-                        row.convertedCurrency}
+                      {currencyFormat(
+                        row.convertedAmount || 0,
+                        row.convertedCurrency,
+                        locale,
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

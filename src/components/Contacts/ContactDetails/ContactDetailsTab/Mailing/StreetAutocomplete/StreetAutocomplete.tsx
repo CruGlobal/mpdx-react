@@ -7,8 +7,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useJsApiLoader } from '@react-google-maps/api';
+import { AddressCreateInput } from 'src/graphql/types.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
-import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
 
 interface MapsApi {
   autocompleteService: google.maps.places.AutocompleteService;

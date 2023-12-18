@@ -2,10 +2,10 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
-import { StatusEnum } from '../../../../../../../graphql/types.generated';
 import SearchMenu from './SearchMenu';
 import { GetSearchMenuContactsQuery } from './SearchMenu.generated';
 

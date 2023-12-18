@@ -8,7 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { DateTime, Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { TasksDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import TaskModalForm from './TaskModalForm';
 import {
   createTasksMutationMock,

@@ -1,5 +1,5 @@
 import { TFunction } from 'react-i18next';
-import { SendNewsletterEnum } from '../../../graphql/types.generated';
+import { SendNewsletterEnum } from 'src/graphql/types.generated';
 
 export const getLocalizedSendNewsletter = (
   t: TFunction,

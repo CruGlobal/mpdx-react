@@ -83,7 +83,7 @@ describe('MonthlyGoal', () => {
       />,
     );
     expect(getByTestId('MonthlyGoalTypographyGoal').textContent).toEqual(
-      '€1,000',
+      '€999.50',
     );
     expect(
       getByTestId('MonthlyGoalTypographyReceivedPercentage').textContent,
@@ -101,7 +101,7 @@ describe('MonthlyGoal', () => {
       getByTestId('MonthlyGoalTypographyBelowGoalPercentage').textContent,
     ).toEqual('25%');
     expect(getByTestId('MonthlyGoalTypographyBelowGoal').textContent).toEqual(
-      '€250',
+      '€249.50',
     );
     expect(
       queryByTestId('MonthlyGoalTypographyAboveGoalPercentage'),
@@ -131,7 +131,7 @@ describe('MonthlyGoal', () => {
       getByTestId('MonthlyGoalTypographyAboveGoalPercentage').textContent,
     ).toEqual('650%');
     expect(getByTestId('MonthlyGoalTypographyAboveGoal').textContent).toEqual(
-      '€6,501',
+      '€6,500.50',
     );
     expect(
       queryByTestId('MonthlyGoalTypographyBelowGoalPercentage'),
@@ -176,7 +176,7 @@ describe('MonthlyGoal', () => {
       );
       expect(
         getByTestId('MonthlyGoalTypographyGoalMobile').textContent,
-      ).toEqual('€1,000');
+      ).toEqual('€999.50');
     });
   });
 });

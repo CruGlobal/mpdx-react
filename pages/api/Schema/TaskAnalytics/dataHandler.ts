@@ -1,4 +1,4 @@
-import { TaskAnalytics } from '../../../../graphql/types.generated';
+import { TaskAnalytics } from 'src/graphql/types.generated';
 
 const getTaskAnalytics = (data: {
   id: string;

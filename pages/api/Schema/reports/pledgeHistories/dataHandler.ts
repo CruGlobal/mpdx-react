@@ -1,4 +1,4 @@
-import { ReportsPledgeHistories } from '../../../../../graphql/types.generated';
+import { ReportsPledgeHistories } from 'src/graphql/types.generated';
 
 const getReportsPledgeHistories = (
   data: [

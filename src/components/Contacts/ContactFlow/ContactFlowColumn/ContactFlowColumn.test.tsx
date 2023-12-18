@@ -6,12 +6,12 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import TestRouter from '../../../../../__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import TestRouter from '../../../../../__tests__/util/TestRouter';
+import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../../theme';
 import { ContactFlowColumn } from './ContactFlowColumn';

@@ -20,7 +20,6 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { filter } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   ActivityTypeEnum,
   ContactFilterNewsletterEnum,
@@ -33,7 +32,8 @@ import {
   ReportContactFilterSetInput,
   ResultEnum,
   TaskFilterSetInput,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterListItem } from './FilterListItem';
 import { FilterListItemShowAll } from './FilterListItemShowAll';

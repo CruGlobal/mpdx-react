@@ -1,10 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
 import { TaskRowFragment } from 'src/components/Task/TaskRow/TaskRow.generated';
-import {
-  ActivityTypeEnum,
-  TaskCreateInput,
-} from '../../../../../../../graphql/types.generated';
+import { ActivityTypeEnum, TaskCreateInput } from 'src/graphql/types.generated';
 import {
   CreateTasksDocument,
   CreateTasksMutation,
