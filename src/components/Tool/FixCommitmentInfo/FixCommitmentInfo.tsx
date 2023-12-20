@@ -81,6 +81,9 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
       variables: {
         accountListId,
       },
+      context: {
+        doNotBatch: true,
+      },
     });
   const [updateInvalidStatus, { loading: updating }] =
     useUpdateInvalidStatusMutation();

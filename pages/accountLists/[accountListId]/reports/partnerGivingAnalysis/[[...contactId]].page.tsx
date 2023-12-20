@@ -52,6 +52,9 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
+    context: {
+      doNotBatch: true,
+    },
   });
 
   const filterGroups = useMemo(() => {

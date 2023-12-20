@@ -161,6 +161,9 @@ const TasksPage: React.FC = () => {
       tasksFilter,
     },
     skip: !accountListId,
+    context: {
+      doNotBatch: true,
+    },
   });
 
   useEffect(() => {
