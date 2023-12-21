@@ -34,13 +34,13 @@ import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
-import { Donation } from '../DonationsReportTable';
+import { Donation } from '../Reports/DonationsReport/Table/DonationsReportTable';
 import {
   useDeleteDonationMutation,
   useEditDonationModalGetAppealsQuery,
   useGetDesignationAccountsQuery,
   useUpdateDonationMutation,
-} from './EditDonation.generated';
+} from './EditDonationModal.generated';
 
 interface EditDonationModalProps {
   open: boolean;

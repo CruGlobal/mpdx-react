@@ -7,11 +7,11 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import theme from '../../../../../theme';
-import { Donation } from '../DonationsReportTable';
-import { UpdateDonationMutation } from './EditDonation.generated';
+import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
+import theme from '../../theme';
+import { Donation } from '../Reports/DonationsReport/Table/DonationsReportTable';
 import { EditDonationModal } from './EditDonationModal';
+import { UpdateDonationMutation } from './EditDonationModal.generated';
 
 const time = DateTime.fromISO('2021-03-25');
 const router = {
@@ -74,7 +74,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-describe('DonationsReportTable', () => {
+describe('EditDonationModal', () => {
   it('renders with data', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(

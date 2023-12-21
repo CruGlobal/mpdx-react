@@ -26,6 +26,7 @@ import {
 } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { EditDonationModal } from 'src/components/EditDonationModal/EditDonationModal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat/intlFormat';
@@ -36,7 +37,6 @@ import {
   useGetAccountListCurrencyQuery,
   useGetDonationsTableQuery,
 } from '../GetDonationsTable.generated';
-import { EditDonationModal } from './Modal/EditDonationModal';
 
 interface DonationReportTableProps {
   accountListId: string;
