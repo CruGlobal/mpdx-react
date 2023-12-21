@@ -49,7 +49,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
 
   return (
     <Box>
-      {loading ? (
+      {loading && !data ? (
         <>
           <DonationLoadingPlaceHolder />
           <DonationLoadingPlaceHolder />
@@ -102,28 +102,6 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                 fetchMore({
                   variables: {
                     after: data.contact.donations.pageInfo.endCursor,
-                  },
-                  updateQuery: (prev, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) {
-                      return prev;
-                    }
-                    return {
-                      ...prev,
-                      ...fetchMoreResult,
-                      contact: {
-                        ...prev.contact,
-                        ...fetchMoreResult.contact,
-                        donations: {
-                          ...prev.contact.donations,
-                          ...fetchMoreResult.contact.donations,
-                          pageInfo: fetchMoreResult.contact.donations.pageInfo,
-                          nodes: [
-                            ...prev.contact.donations.nodes,
-                            ...fetchMoreResult.contact.donations.nodes,
-                          ],
-                        },
-                      },
-                    };
                   },
                 });
               }}

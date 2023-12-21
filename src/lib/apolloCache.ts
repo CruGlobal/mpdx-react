@@ -20,6 +20,7 @@ export const createCache = () =>
       Contact: {
         fields: {
           contactReferralsByMe: paginationFieldPolicy,
+          donations: paginationFieldPolicy,
         },
         merge: true,
       },
