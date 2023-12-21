@@ -51,7 +51,7 @@ const ContactDonationsLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
 
-interface ContactDontationsProp {
+interface ContactDonationsProp {
   accountListId: string;
   contactId: string;
 }
@@ -66,7 +66,7 @@ export enum DonationTabKey {
   PartnershipInfo = 'Partnership Info',
 }
 
-export const ContactDonationsTab: React.FC<ContactDontationsProp> = ({
+export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
   accountListId,
   contactId,
 }) => {
