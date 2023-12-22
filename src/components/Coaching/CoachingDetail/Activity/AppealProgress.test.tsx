@@ -19,7 +19,7 @@ describe('AppealProgress', () => {
     );
 
     expect(getByTestId('AppealProgressAmounts')).toHaveTextContent(
-      '$23 (12%) / $58 (29%) / $70 (35%)',
+      '$23.45 (12%) / $58.01 (29%) / $70.35 (35%)',
     );
     expect(getByTestId('AppealProgressSegmentProcessed')).toHaveStyle(
       'width: 11.72%',
