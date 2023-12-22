@@ -56,7 +56,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
 
   const handleConfirmInviteClose = () => setIsInviteConfirmationOpen(false);
 
-  const handleConfirmInvite = async (email: string) => {
+  const handleConfirmInvite = async (email: string, onComplete: () => void) => {
     await createAccountListInvite({
       variables: {
         input: {
@@ -101,6 +101,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
             variant: 'success',
           },
         );
+        onComplete();
       },
       onError: () => {
         enqueueSnackbar(
@@ -129,8 +130,8 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
         values: { email },
         handleChange,
         handleSubmit,
-        isSubmitting,
         isValid,
+        resetForm,
         errors,
       }): ReactElement => (
         <form onSubmit={handleSubmit}>
@@ -145,7 +146,6 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
                 type="email"
                 name="email"
                 value={email}
-                disabled={isSubmitting}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus={true}
                 placeholder="person.to.share@cru.org"
@@ -158,10 +158,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
           </StyledBox>
 
           <DialogActionsLeft>
-            <SubmitButton
-              disabled={!isValid || isSubmitting}
-              variant="contained"
-            >
+            <SubmitButton disabled={!isValid} variant="contained">
               {t('Share Account')}
             </SubmitButton>
           </DialogActionsLeft>
@@ -199,7 +196,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
               </>
             }
             handleClose={handleConfirmInviteClose}
-            mutation={() => handleConfirmInvite(email)}
+            mutation={() => handleConfirmInvite(email, () => resetForm())}
           />
         </form>
       )}

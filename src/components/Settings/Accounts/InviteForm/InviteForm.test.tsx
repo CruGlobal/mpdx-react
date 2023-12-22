@@ -41,19 +41,24 @@ const Components = ({ children }: PropsWithChildren) => (
 describe('InviteForm', () => {
   it('should invite a user', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByTestId, getByRole, queryByText, queryByTestId } =
-      render(
-        <Components>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <InviteForm type={InviteTypeEnum.User} />
-          </GqlMockedProvider>
-        </Components>,
-      );
-    await waitFor(() => {
-      expect(
-        getByText('Invite someone to share this account'),
-      ).toBeInTheDocument();
-    });
+    const {
+      getByText,
+      getByTestId,
+      getByRole,
+      queryByText,
+      findByRole,
+      queryByTestId,
+    } = render(
+      <Components>
+        <GqlMockedProvider onCall={mutationSpy}>
+          <InviteForm type={InviteTypeEnum.User} />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    expect(
+      getByText('Invite someone to share this account'),
+    ).toBeInTheDocument();
     expect(getByTestId('action-button')).toBeDisabled();
 
     userEvent.type(getByRole('textbox'), 'test@');
@@ -80,13 +85,6 @@ describe('InviteForm', () => {
     userEvent.click(getByText('Yes'));
 
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} sent an invite to {{email}}',
-        {
-          variant: 'success',
-        },
-      );
-
       const createInviteCall = mutationSpy.mock.calls[0][0];
       expect(createInviteCall.operation.operationName).toEqual(
         'CreateAccountListInvite',
@@ -97,22 +95,30 @@ describe('InviteForm', () => {
         recipientEmail: 'test@test.org',
       });
     });
+
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      '{{appName}} sent an invite to {{email}}',
+      {
+        variant: 'success',
+      },
+    );
+    expect(await findByRole('textbox')).toHaveValue('');
   });
 
   it('should invite a coach', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByTestId, getByRole, queryByText } = render(
-      <Components>
-        <GqlMockedProvider onCall={mutationSpy}>
-          <InviteForm type={InviteTypeEnum.Coach} />
-        </GqlMockedProvider>
-      </Components>,
-    );
-    await waitFor(() => {
-      expect(
-        getByText('Invite someone to share this account'),
-      ).toBeInTheDocument();
-    });
+    const { getByText, getByTestId, getByRole, findByRole, queryByText } =
+      render(
+        <Components>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <InviteForm type={InviteTypeEnum.Coach} />
+          </GqlMockedProvider>
+        </Components>,
+      );
+
+    expect(
+      getByText('Invite someone to share this account'),
+    ).toBeInTheDocument();
 
     userEvent.type(getByRole('textbox'), 'test@test.org');
     userEvent.click(getByTestId('action-button'));
@@ -128,13 +134,6 @@ describe('InviteForm', () => {
     userEvent.click(getByText('Yes'));
 
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} sent an invite to {{email}}',
-        {
-          variant: 'success',
-        },
-      );
-
       const createInviteCall = mutationSpy.mock.calls[0][0];
       expect(createInviteCall.operation.operationName).toEqual(
         'CreateAccountListInvite',
@@ -145,5 +144,13 @@ describe('InviteForm', () => {
         recipientEmail: 'test@test.org',
       });
     });
+
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      '{{appName}} sent an invite to {{email}}',
+      {
+        variant: 'success',
+      },
+    );
+    expect(await findByRole('textbox')).toHaveValue('');
   });
 });
