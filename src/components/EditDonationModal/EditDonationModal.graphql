@@ -1,3 +1,35 @@
+fragment EditDonationModalDonation on Donation {
+  id
+  amount {
+    amount
+    currency
+  }
+  appeal {
+    id
+  }
+  appealAmount {
+    amount
+  }
+  donationDate
+  donorAccount {
+    id
+    contacts(first: 25) {
+      nodes {
+        id
+      }
+    }
+    displayName
+  }
+  designationAccount {
+    id
+    name
+  }
+  memo
+  motivation
+  paymentMethod
+  remoteId
+}
+
 query GetDesignationAccounts($accountListId: ID!) {
   designationAccounts(accountListId: $accountListId) {
     designationAccounts {

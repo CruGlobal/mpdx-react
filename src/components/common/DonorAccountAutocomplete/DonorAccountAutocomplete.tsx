@@ -1,4 +1,3 @@
-import { ReactElement } from 'react';
 import {
   Autocomplete,
   BaseTextFieldProps,
@@ -58,10 +57,10 @@ export const DonorAccountAutocomplete: React.FC<
       autoHighlight
       loading={loading}
       options={map(donors, 'id')}
-      getOptionLabel={(donorAccountId): string =>
+      getOptionLabel={(donorAccountId) =>
         donors.find((donor) => donor.id === donorAccountId)?.name ?? ''
       }
-      renderInput={(params): ReactElement => (
+      renderInput={(params) => (
         <TextField
           {...params}
           size={size}
@@ -78,11 +77,12 @@ export const DonorAccountAutocomplete: React.FC<
               </>
             ),
           }}
+          required
         />
       )}
       value={value}
       onChange={(_, donorAccountId) => onChange(donorAccountId)}
-      isOptionEqualToValue={(option, value): boolean => option === value}
+      isOptionEqualToValue={(option, value) => option === value}
     />
   );
 };
