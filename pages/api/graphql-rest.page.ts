@@ -61,6 +61,34 @@ import {
   PrayerlettersAccountResponse,
 } from './Schema/Settings/Preferences/Intergrations/Prayerletters/prayerlettersAccount/datahandler';
 import { SyncPrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/datahandler';
+import { AdminDeleteOrganizationCoach } from './Schema/Settings/Preferences/Organizations/AdminDeleteOrganizationCoach/datahandler';
+import { AdminDeleteOrganizationInvite } from './Schema/Settings/Preferences/Organizations/AdminDeleteOrganizationInvites/datahandler';
+import { AdminDeleteOrganizationUser } from './Schema/Settings/Preferences/Organizations/AdminDeleteOrganizationUser/datahandler';
+import { CreateOrganizationInvite } from './Schema/Settings/Preferences/Organizations/CreateOrganizationInvite/datahandler';
+import { DestroyOrganizationAdmin } from './Schema/Settings/Preferences/Organizations/DeleteOrganizationAdmin/datahandler';
+import { DeleteOrganizationContact } from './Schema/Settings/Preferences/Organizations/DeleteOrganizationContact/datahandler';
+import { DestroyOrganizationInvite } from './Schema/Settings/Preferences/Organizations/DeleteOrganizationInvite/datahandler';
+import {
+  OrganizationAdmins,
+  OrganizationAdminsResponse,
+} from './Schema/Settings/Preferences/Organizations/OrganizationAdmins/datahandler';
+import { OrganizationInvites } from './Schema/Settings/Preferences/Organizations/OrganizationInvites/datahandler';
+import {
+  Organizations,
+  OrganizationsResponse,
+} from './Schema/Settings/Preferences/Organizations/Organizations/datahandler';
+import {
+  SearchOrganizationsAccountLists,
+  SearchOrganizationsAccountListsResponse,
+} from './Schema/Settings/Preferences/Organizations/SearchOrganizationsAccountLists/datahandler';
+import {
+  SearchOrganizationsContacts,
+  SearchOrganizationsContactsResponse,
+} from './Schema/Settings/Preferences/Organizations/SearchOrganizationsContacts/datahandler';
+import {
+  OrganizationInvite,
+  OrganizationInvitesResponse,
+} from './Schema/Settings/Preferences/Organizations/helper';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
   DeleteComment,
@@ -1049,6 +1077,202 @@ class MpdxRestApi extends RESTDataSource {
       },
     });
     return SendToChalkline();
+  }
+
+  // =========================================
+  // ORGANIZATION
+  // =========================================
+
+  // Manage Organization
+  //
+  //
+
+  async organizations() {
+    const data: OrganizationsResponse = await this.get(
+      `organizations?fields[organization]=name&per_page=2500`,
+    );
+    return Organizations(data);
+  }
+
+  async organizationAdmins(organizationId) {
+    const data: OrganizationAdminsResponse = await this.get(
+      `organizations/${organizationId}/admins`,
+    );
+    return OrganizationAdmins(data);
+  }
+
+  async organizationInvites(organizationId) {
+    const data: OrganizationInvitesResponse = await this.get(
+      `organizations/${organizationId}/invites`,
+    );
+    return OrganizationInvites(data);
+  }
+
+  async destroyOrganizationInvite(organizationId, inviteId) {
+    await this.delete(
+      `organizations/${organizationId}/invites/${inviteId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'organization_invites',
+          },
+        }),
+      },
+    );
+    return DestroyOrganizationInvite();
+  }
+
+  async destroyOrganizationAdmin(organizationId, adminId) {
+    await this.delete(
+      `organizations/${organizationId}/admins/${adminId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'admins',
+          },
+        }),
+      },
+    );
+    return DestroyOrganizationAdmin();
+  }
+
+  async createOrganizationInvite(organizationId, recipientEmail) {
+    const { data }: { data: OrganizationInvite } = await this.post(
+      `organizations/${organizationId}/invites`,
+      {
+        data: {
+          attributes: {
+            invite_user_as: 'admin',
+            recipient_email: recipientEmail,
+          },
+          type: 'organization_invites',
+        },
+      },
+    );
+    return CreateOrganizationInvite(data);
+  }
+
+  // Organization Contacts
+  //
+  //
+
+  async searchOrganizationsContacts(organizationId, search, pageNumber = 1) {
+    const include =
+      'people,people.email_addresses,people.phone_numbers,addresses,account_list,' +
+      'account_list.account_list_users,account_list.account_list_users.email_addresses';
+    const filters =
+      `filter[organization_id]=${organizationId}` +
+      `&filter[wildcard_search]=${search}` +
+      '&filter[status]=active,hidden,null';
+    const fields =
+      'fields[contact]=name,people,account_list,addresses,allow_deletion,square_avatar' +
+      '&fields[people]=first_name,last_name,email_addresses,phone_numbers,deceased' +
+      '&fields[email_addresses]=email,primary,historic' +
+      '&fields[phone_numbers]=number,primary,historic' +
+      '&fields[account_lists]=name,account_list_users' +
+      '&fields[account_list_users]=first_name,last_name,email_addresses' +
+      '&fields[addresses]=primary_mailing_address,street,city,state,postal_code';
+
+    const data: SearchOrganizationsContactsResponse = await this.get(
+      `organizations/contacts?data[type]=organizationId&${fields}&${filters}&include=${include}&page=${pageNumber}`,
+    );
+    return SearchOrganizationsContacts(data);
+  }
+
+  async deleteOrganizationContact(contactId) {
+    await this.delete(
+      `organizations/contacts/${contactId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'contacts',
+          },
+        }),
+      },
+    );
+    return DeleteOrganizationContact();
+  }
+
+  // Organization AccountLists
+  //
+  //
+
+  async searchOrganizationsAccountLists(
+    organizationId,
+    search,
+    pageNumber = 1,
+  ) {
+    const include =
+      'account_list_users,account_list_coaches,account_list_users.user_email_addresses,' +
+      'account_list_coaches.coach_email_addresses,designation_accounts,' +
+      'designation_accounts.organization,account_list_invites,' +
+      'account_list_invites.invited_by_user';
+    const filters =
+      `filter[organization_id]=${organizationId}` +
+      `&filter[wildcard_search]=${search}`;
+    const fields =
+      'fields[account_lists]=name,account_list_coaches,account_list_users,account_list_invites,designation_accounts' +
+      '&fields[account_list_coaches]=coach_first_name,coach_last_name,coach_email_addresses' +
+      '&fields[account_list_users]=user_first_name,user_last_name,user_email_addresses,allow_deletion' +
+      '&fields[email_addresses]=email,primary' +
+      '&fields[designation_accounts]=display_name,organization' +
+      '&fields[organizations]=name' +
+      '&fields[account_list_invites]=recipient_email,invite_user_as,invited_by_user' +
+      '&fields[users]=first_name,last_name';
+
+    const data: SearchOrganizationsAccountListsResponse = await this.get(
+      `organizations/account_lists?data[type]=account_lists&${fields}&${filters}&include=${include}&page=${pageNumber}`,
+    );
+
+    return SearchOrganizationsAccountLists(data);
+  }
+
+  async adminDeleteOrganizationUser(accountListId, userId) {
+    await this.delete(
+      `organizations/account_lists/${accountListId}/account_list_users/${userId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'account_list_users',
+          },
+        }),
+      },
+    );
+    return AdminDeleteOrganizationUser();
+  }
+
+  async adminDeleteOrganizationCoach(accountListId, coachId) {
+    await this.delete(
+      `organizations/account_lists/${accountListId}/account_list_coaches/${coachId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'account_list_coaches',
+          },
+        }),
+      },
+    );
+    return AdminDeleteOrganizationCoach();
+  }
+
+  async adminDeleteOrganizationInvite(accountListId, inviteId) {
+    await this.delete(
+      `organizations/account_lists/${accountListId}/invites/${inviteId}`,
+      {},
+      {
+        body: JSON.stringify({
+          data: {
+            type: 'account_list_invites',
+          },
+        }),
+      },
+    );
+    return AdminDeleteOrganizationInvite();
   }
 }
 

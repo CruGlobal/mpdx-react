@@ -1,0 +1,14 @@
+extend type Mutation {
+  destroyOrganizationInvite(
+    input: DeleteOrganizationInviteInput!
+  ): DeleteOrganizationInviteResponse!
+}
+
+input DeleteOrganizationInviteInput {
+  organizationId: String!
+  inviteId: String!
+}
+
+type DeleteOrganizationInviteResponse {
+  success: Boolean!
+}

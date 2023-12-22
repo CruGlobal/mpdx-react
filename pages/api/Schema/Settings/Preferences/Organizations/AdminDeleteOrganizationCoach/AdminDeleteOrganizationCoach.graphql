@@ -1,0 +1,14 @@
+extend type Mutation {
+  adminDeleteOrganizationCoach(
+    input: AdminDeleteOrganizationCoachInput!
+  ): AdminDeleteOrganizationCoachResponse!
+}
+
+input AdminDeleteOrganizationCoachInput {
+  accountListId: String!
+  coachId: String!
+}
+
+type AdminDeleteOrganizationCoachResponse {
+  success: Boolean!
+}

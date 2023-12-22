@@ -1,0 +1,73 @@
+extend type Query {
+  searchOrganizationsContacts(
+    input: SearchOrganizationsContactsInput!
+  ): SearchOrganizationsContactsResponse!
+}
+
+input SearchOrganizationsContactsInput {
+  organizationId: String!
+  search: String!
+  pageNumber: Int
+}
+
+type SearchOrganizationsContactsResponse {
+  contacts: [OrganizationsContact]!
+  pagination: Pagination!
+}
+
+type OrganizationsContact {
+  id: ID!
+  allowDeletion: Boolean!
+  name: String!
+  squareAvatar: String
+  people: [ContactPeople]!
+  accountList: ContactPeopleAccountLists
+  addresses: [ContactAddresses]!
+}
+
+type ContactPeople {
+  firstName: String
+  lastName: String
+  deceased: Boolean
+  emailAddresses: [ContactPeopleEmailAddresses]
+  phoneNumbers: [ContactPeoplePhoneNumbers]
+}
+
+type ContactPeopleEmailAddresses {
+  email: String
+  primary: Boolean
+  historic: Boolean
+}
+type ContactPeoplePhoneNumbers {
+  number: String
+  primary: Boolean
+  historic: Boolean
+}
+
+type ContactAddresses {
+  primaryMailingAddress: String
+  street: String
+  city: String
+  state: String
+  postalCode: String
+}
+
+type Pagination {
+  page: Int!
+  perPage: Int!
+  totalCount: Int!
+  totalPages: Int!
+}
+
+type ContactPeopleAccountLists {
+  name: String
+  accountListUsers: [ContactPeopleAccountListsUsers]
+}
+
+type ContactPeopleAccountListsUsers {
+  id: String
+  firstName: String
+  lastName: String
+  emailAddresses: [ContactPeopleEmailAddresses]
+  phoneNumbers: [ContactPeoplePhoneNumbers]
+}

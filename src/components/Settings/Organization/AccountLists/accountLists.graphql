@@ -1,0 +1,65 @@
+query SearchOrganizationsAccountLists(
+  $input: SearchOrganizationsAccountListsInput!
+) {
+  searchOrganizationsAccountLists(input: $input) {
+    pagination {
+      page
+      perPage
+      totalCount
+      totalPages
+    }
+    accountLists {
+      name
+      id
+      designationAccounts {
+        id
+        displayName
+        organization {
+          id
+          name
+        }
+      }
+      accountListUsersInvites {
+        id
+        inviteUserAs
+        recipientEmail
+        invitedByUser {
+          id
+          firstName
+          lastName
+        }
+      }
+      accountListUsers {
+        id
+        userFirstName
+        userLastName
+        allowDeletion
+        userEmailAddresses {
+          id
+          email
+          primary
+        }
+      }
+      accountListCoaches {
+        id
+        coachFirstName
+        coachLastName
+        coachEmailAddresses {
+          id
+          email
+          primary
+        }
+      }
+      accountListCoachInvites {
+        id
+        inviteUserAs
+        recipientEmail
+        invitedByUser {
+          id
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+}
