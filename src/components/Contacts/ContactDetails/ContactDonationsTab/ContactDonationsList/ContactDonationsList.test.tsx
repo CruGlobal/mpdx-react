@@ -1,96 +1,93 @@
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import { ThemeProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
-import { DateTime } from 'luxon';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import { render } from '../../../../../../__tests__/util/testingLibraryReactMock';
-import { ContactDonationsList } from './ContactDonationsList';
+import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
-  ContactDonationsListQuery,
-  useContactDonationsListQuery,
-} from './ContactDonationsList.generated';
+  render,
+  waitFor,
+  within,
+} from '__tests__/util/testingLibraryReactMock';
+import theme from 'src/theme';
+import { ContactDonationsList } from './ContactDonationsList';
+import { ContactDonationsListQuery } from './ContactDonationsList.generated';
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-id-1';
 
-describe('ContactDonationsList', () => {
-  it('test query', async () => {
-    const { result, waitForNextUpdate } = renderHook(
-      () =>
-        useContactDonationsListQuery({
-          variables: {
-            accountListId: accountListId,
-            contactId: contactId,
-          },
-        }),
-      {
-        wrapper: GqlMockedProvider,
-      },
-    );
-    await waitForNextUpdate();
-    expect(result.current.variables).toMatchInlineSnapshot(`
-      Object {
-        "accountListId": "account-list-1",
-        "contactId": "contact-id-1",
-      }
-    `);
-  });
+const router = {
+  query: { accountListId },
+  isReady: true,
+};
 
-  it('test Renderer', async () => {
-    const { findByRole, getByRole, getAllByRole } = render(
-      <GqlMockedProvider<{ ContactDonationsList: ContactDonationsListQuery }>
-        mocks={{
-          ContactDonationsList: {
-            contact: {
-              id: contactId,
-              donations: {
-                nodes: [...Array(13)].map((x, i) => {
-                  return {
-                    donationDate: DateTime.local()
-                      .minus({ month: i })
-                      .toISO()
-                      .toString(),
+const TestComponent: React.FC = () => (
+  <ThemeProvider theme={theme}>
+    <TestRouter router={router}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <GqlMockedProvider<{ ContactDonationsList: ContactDonationsListQuery }>
+          mocks={{
+            ContactDonationsList: {
+              contact: {
+                id: contactId,
+                donations: {
+                  nodes: [...Array(5)].map(() => ({
                     amount: {
                       currency: 'USD',
                       convertedCurrency: 'EUR',
                       amount: 10,
                       convertedAmount: 9.9,
                     },
-                  };
-                }),
-                pageInfo: {
-                  hasNextPage: true,
+                  })),
+                  pageInfo: {
+                    hasNextPage: true,
+                  },
                 },
               },
             },
-          },
-        }}
-      >
-        <ContactDonationsList
-          accountListId={accountListId}
-          contactId={contactId}
-        />
-      </GqlMockedProvider>,
-    );
+          }}
+        >
+          <SnackbarProvider>
+            <ContactDonationsList
+              accountListId={accountListId}
+              contactId={contactId}
+            />
+          </SnackbarProvider>
+        </GqlMockedProvider>
+      </LocalizationProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
 
-    expect(await (await findByRole('button')).className).toMatchInlineSnapshot(
-      `"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium css-zj2tbm-MuiButtonBase-root-MuiButton-root"`,
-    );
-    expect(
-      await (
-        await findByRole('table')
-      ).childElementCount,
-    ).toMatchInlineSnapshot(`14`);
-    userEvent.click(getByRole('button'));
-    expect(
-      await (
-        await findByRole('table')
-      ).childElementCount,
-    ).toMatchInlineSnapshot(`14`);
-    // TODO: Fix toMatchInlineSnapshot to be `27`
-    const rows = getAllByRole('row');
+describe('ContactDonationsList', () => {
+  it('renders donations', async () => {
+    const { findAllByRole } = render(<TestComponent />);
+
+    const rows = await findAllByRole('row');
+    expect(rows).toHaveLength(6);
+
     const donationRow = rows[1];
     expect(donationRow.children[1]).toHaveTextContent('$10');
     expect(donationRow.children[2]).toHaveTextContent('€9.90');
+  });
+
+  it('loads more donations', async () => {
+    const { findByRole, getAllByRole } = render(<TestComponent />);
+
+    userEvent.click(await findByRole('button', { name: 'Load More' }));
+    await waitFor(() => expect(getAllByRole('row')).toHaveLength(11));
+  });
+
+  it('edits donations', async () => {
+    const { findAllByRole, getByText } = render(<TestComponent />);
+
+    const rows = await findAllByRole('row');
+    expect(rows).toHaveLength(6);
+
+    const donationRow = rows[1];
+    userEvent.click(within(donationRow).getByRole('button'));
+    expect(getByText('Edit Donation')).toBeInTheDocument();
   });
 });

@@ -9,19 +9,6 @@ query GetContactDonations($accountListId: ID!, $contactId: ID!) {
   }
 }
 
-fragment DonationsContact on DonationConnection {
-  pageInfo {
-    endCursor
-    hasNextPage
-    hasPreviousPage
-    startCursor
-  }
-
-  nodes {
-    ...ContactDonation
-  }
-}
-
 fragment ContactDonorAccounts on Contact {
   id
   name
