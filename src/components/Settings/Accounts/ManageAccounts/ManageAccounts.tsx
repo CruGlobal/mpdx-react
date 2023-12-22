@@ -11,9 +11,9 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import * as Types from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import * as Types from '../../../../../graphql/types.generated';
 import { InviteForm } from '../InviteForm/InviteForm';
 import {
   useCancelAccountListInviteMutation,

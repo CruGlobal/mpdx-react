@@ -4,9 +4,9 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
+import * as Types from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import * as Types from '../../../../../graphql/types.generated';
 import { AccordianProps } from '../../accordianHelper';
 import {
   ManageAccounts,

@@ -15,9 +15,9 @@ import { DialogActionsLeft } from 'src/components/Shared/Forms/DialogActions';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import * as Types from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import * as Types from '../../../../../graphql/types.generated';
 import {
   GetAccountListInvitesDocument,
   GetAccountListInvitesQuery,

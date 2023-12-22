@@ -5,8 +5,8 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import * as Types from 'src/graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import * as Types from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
 import { CoachProp, ManageAccounts } from './ManageAccounts';
 import {
