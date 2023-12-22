@@ -1,0 +1,42 @@
+import React from 'react';
+import { Button } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
+
+interface FormWrapperProps {
+  onSubmit: () => void;
+  isValid: boolean;
+  isSubmitting: boolean;
+  formAttrs?: { action?: string; method?: string };
+  children: React.ReactNode;
+  buttonText?: string;
+}
+
+export const FormWrapper: React.FC<FormWrapperProps> = ({
+  onSubmit,
+  isValid,
+  isSubmitting,
+  formAttrs = {},
+  children,
+  buttonText = 'Save',
+}) => {
+  const { t } = useTranslation();
+  const theme = useTheme();
+
+  // TODO - Add Formik to this.
+
+  return (
+    <form {...formAttrs} onSubmit={onSubmit}>
+      {children}
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ marginTop: theme.spacing(2) }}
+        type="submit"
+        disabled={!isValid || isSubmitting}
+      >
+        {t(buttonText)}
+      </Button>
+    </form>
+  );
+};

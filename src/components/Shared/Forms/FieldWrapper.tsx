@@ -5,7 +5,7 @@ import {
   HelperPositionEnum,
   StyledFormHelperText,
   StyledFormLabel,
-} from './FieldHelper';
+} from './Field';
 
 interface FieldWrapperProps {
   labelText?: string;

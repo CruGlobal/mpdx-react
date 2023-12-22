@@ -1,0 +1,18 @@
+query GetAccountsSharingWith($accountListId: ID!) {
+  accountListUsers(accountListId: $accountListId) {
+    nodes {
+      user {
+        id
+        firstName
+        lastName
+      }
+      id
+    }
+  }
+}
+
+mutation DeleteAccountListUser($input: AccountListUserDeleteMutationInput!) {
+  deleteAccountListUser(input: $input) {
+    id
+  }
+}
