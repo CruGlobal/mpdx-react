@@ -7,11 +7,8 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import {
-  Coach,
-  CoachProp,
-  ManageAccounts,
-} from '../../Accounts/ManageAccounts/ManageAccounts';
+import { ManageAccounts } from '../../Accounts/ManageAccounts/ManageAccounts';
+import { SharedAccountUserFragment } from '../../Accounts/ManageAccounts/ManageAccounts.generated';
 import { AccordionProps } from '../../accordionHelper';
 import {
   useDeleteAccountListCoachMutation,
@@ -36,17 +33,18 @@ export const ManageCoachesAccessAccordion: React.FC<AccordionProps> = ({
     });
   const [deleteAccountListCoach] = useDeleteAccountListCoachMutation();
 
-  const coaches = accountListCoaches?.accountListCoaches.nodes;
+  const coaches = accountListCoaches?.accountListCoaches.nodes ?? [];
 
-  const handleRemoveCoach = async (coach: Coach) => {
+  const handleRemoveCoach = async (coach: SharedAccountUserFragment) => {
     await deleteAccountListCoach({
       variables: {
         input: {
-          id: coach.id,
+          id: accountListId,
+          coachId: coach.id,
         },
       },
       update: (cache) => {
-        cache.evict({ id: `AccountListCoach:${coach.id}` });
+        cache.evict({ id: `UserScopedToAccountList:${coach.id}` });
         cache.gc();
       },
       onCompleted: () => {
@@ -95,9 +93,9 @@ export const ManageCoachesAccessAccordion: React.FC<AccordionProps> = ({
             </Alert>
           </>
         }
-        loadingItems={loadingCoaches}
-        accountsSharingWith={(coaches as CoachProp[]) || []}
-        handleRemoveItem={handleRemoveCoach}
+        loading={loadingCoaches}
+        accountsSharingWith={coaches}
+        handleRemoveAccount={handleRemoveCoach}
       />
     </AccordionItem>
   );

@@ -1,7 +1,13 @@
-query getUserId {
+query GetUserId {
   user {
     id
   }
+}
+
+fragment SharedAccountUser on UserScopedToAccountList {
+  id
+  firstName
+  lastName
 }
 
 query GetAccountListInvites($accountListId: ID!, $inviteType: InviteTypeEnum!) {

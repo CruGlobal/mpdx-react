@@ -8,11 +8,8 @@ import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { AccordionProps } from '../../accordionHelper';
-import {
-  ManageAccounts,
-  User,
-  UserProp,
-} from '../ManageAccounts/ManageAccounts';
+import { ManageAccounts } from '../ManageAccounts/ManageAccounts';
+import { SharedAccountUserFragment } from '../ManageAccounts/ManageAccounts.generated';
 import {
   useDeleteAccountListUserMutation,
   useGetAccountsSharingWithQuery,
@@ -36,17 +33,25 @@ export const ManageAccountAccessAccordion: React.FC<AccordionProps> = ({
     });
   const [deleteAccountListUser] = useDeleteAccountListUserMutation();
 
-  const users = accountListUsers?.accountListUsers.nodes;
+  const users =
+    accountListUsers?.accountListUsers.nodes.map(({ user }) => user) ?? [];
 
-  const handleRemoveUser = async (user: User) => {
+  const handleRemoveUser = async (user: SharedAccountUserFragment) => {
+    const accountListId = accountListUsers?.accountListUsers.nodes.find(
+      (accountListUser) => accountListUser.user.id === user.id,
+    )?.id;
+    if (!accountListId) {
+      return;
+    }
+
     await deleteAccountListUser({
       variables: {
         input: {
-          id: user.id,
+          id: accountListId,
         },
       },
       update: (cache) => {
-        cache.evict({ id: `AccountListUser:${user.id}` });
+        cache.evict({ id: `AccountListUser:${accountListId}` });
         cache.gc();
       },
       onCompleted: () => {
@@ -87,7 +92,7 @@ export const ManageAccountAccessAccordion: React.FC<AccordionProps> = ({
             </Typography>
             <Alert severity="warning" style={{ marginTop: '15px' }}>
               {t(
-                ` If you want to allow another {{appName}} user to have access to this ministry account, you can share access with them. Make
+                `If you want to allow another {{appName}} user to have access to this ministry account, you can share access with them. Make
               sure you have the proper permissions and leadership consensus around this sharing before you do this. You will be
               able to remove access later.`,
                 { appName },
@@ -95,9 +100,9 @@ export const ManageAccountAccessAccordion: React.FC<AccordionProps> = ({
             </Alert>
           </>
         }
-        loadingItems={loadingUsers}
-        accountsSharingWith={(users as UserProp[]) || []}
-        handleRemoveItem={handleRemoveUser}
+        loading={loadingUsers}
+        accountsSharingWith={users}
+        handleRemoveAccount={handleRemoveUser}
       />
     </AccordionItem>
   );

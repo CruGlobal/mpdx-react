@@ -11,7 +11,7 @@ import { InviteTypeEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import { CoachProp, ManageAccounts } from './ManageAccounts';
+import { ManageAccounts } from './ManageAccounts';
 import {
   GetAccountListInvitesQuery,
   GetUserIdQuery,
@@ -40,20 +40,14 @@ jest.mock('notistack', () => ({
 
 const accountsSharingWith = [
   {
-    id: '1',
-    user: {
-      id: '111',
-      firstName: 'userFirstname1',
-      lastName: 'userLastname1',
-    },
+    id: '111',
+    firstName: 'userFirstname1',
+    lastName: 'userLastname1',
   },
   {
-    id: '2',
-    user: {
-      id: '22',
-      firstName: 'userFirstname2',
-      lastName: 'userLastname2',
-    },
+    id: 'userID',
+    firstName: 'userFirstname2',
+    lastName: 'userLastname2',
   },
 ];
 
@@ -91,7 +85,7 @@ const getAccountListInvitesMock = {
 };
 
 const getUserIdMock = {
-  getUserId: {
+  GetUserId: {
     user: {
       id: 'userID',
     },
@@ -116,10 +110,10 @@ const Components = ({ children }: PropsWithChildren) => (
 );
 
 describe('ManageAccounts', () => {
-  const handleRemoveItem = jest.fn();
+  const handleRemoveAccount = jest.fn();
 
   beforeEach(() => {
-    handleRemoveItem.mockClear();
+    handleRemoveAccount.mockClear();
   });
 
   it('should show loading and User intro', async () => {
@@ -141,9 +135,9 @@ describe('ManageAccounts', () => {
           <ManageAccounts
             type={InviteTypeEnum.User}
             intro={<UserIntro />}
-            loadingItems={true}
+            loading={true}
             accountsSharingWith={[]}
-            handleRemoveItem={handleRemoveItem}
+            handleRemoveAccount={handleRemoveAccount}
           />
         </GqlMockedProvider>
       </Components>,
@@ -174,9 +168,9 @@ describe('ManageAccounts', () => {
           <ManageAccounts
             type={InviteTypeEnum.User}
             intro={<UserIntro />}
-            loadingItems={false}
+            loading={false}
             accountsSharingWith={accountsSharingWith}
-            handleRemoveItem={handleRemoveItem}
+            handleRemoveAccount={handleRemoveAccount}
           />
         </GqlMockedProvider>
       </Components>,
@@ -224,9 +218,9 @@ describe('ManageAccounts', () => {
           <ManageAccounts
             type={InviteTypeEnum.User}
             intro={<UserIntro />}
-            loadingItems={false}
+            loading={false}
             accountsSharingWith={accountsSharingWith}
-            handleRemoveItem={handleRemoveItem}
+            handleRemoveAccount={handleRemoveAccount}
           />
         </GqlMockedProvider>
       </Components>,
@@ -242,7 +236,7 @@ describe('ManageAccounts', () => {
 
   it('should remove users and pending invites', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getAllByLabelText } = render(
+    const { findAllByRole, getByText, getAllByRole } = render(
       <Components>
         <GqlMockedProvider<{
           GetAccountListInvites: GetAccountListInvitesQuery;
@@ -257,27 +251,34 @@ describe('ManageAccounts', () => {
           <ManageAccounts
             type={InviteTypeEnum.User}
             intro={<UserIntro />}
-            loadingItems={false}
+            loading={false}
             accountsSharingWith={accountsSharingWith}
-            handleRemoveItem={handleRemoveItem}
+            handleRemoveAccount={handleRemoveAccount}
           />
         </GqlMockedProvider>
       </Components>,
     );
 
-    await waitFor(() => {
-      expect(getByText('Account currently shared with')).toBeInTheDocument();
-    });
+    expect(getByText('Account currently shared with')).toBeInTheDocument();
 
-    userEvent.click(getAllByLabelText('Delete access')[0]);
+    // There are two accounts, but one of them can't be deleted because it is the user's own account
+    const deleteAccessButtons = await findAllByRole('button', {
+      name: 'Delete access',
+    });
+    expect(deleteAccessButtons).toHaveLength(1);
+    userEvent.click(deleteAccessButtons[0]);
     await waitFor(() => {
-      expect(handleRemoveItem).toHaveBeenCalled();
+      expect(handleRemoveAccount).toHaveBeenCalled();
     });
 
     await waitFor(() => {
       expect(getByText('Pending Invites')).toBeInTheDocument();
     });
-    userEvent.click(getAllByLabelText('Delete invite')[0]);
+    const deleteInviteButtons = getAllByRole('button', {
+      name: 'Delete invite',
+    });
+    expect(deleteInviteButtons).toHaveLength(2);
+    userEvent.click(deleteInviteButtons[0]);
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
         'MPDX removed the invite successfully',
@@ -298,7 +299,7 @@ describe('ManageAccounts', () => {
 
   it('should remove a coach', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getAllByLabelText, queryByText } = render(
+    const { getByText, getAllByRole, queryByText } = render(
       <Components>
         <GqlMockedProvider<{
           GetAccountListInvites: GetAccountListInvitesQuery;
@@ -313,39 +314,26 @@ describe('ManageAccounts', () => {
           <ManageAccounts
             type={InviteTypeEnum.Coach}
             intro={CoachIntro()}
-            loadingItems={false}
-            accountsSharingWith={
-              [
-                {
-                  id: '111',
-                  firstName: 'userFirstname1',
-                  lastName: 'userLastname1',
-                },
-                {
-                  id: '22',
-                  firstName: 'userFirstname2',
-                  lastName: 'userLastname2',
-                },
-              ] as CoachProp[]
-            }
-            handleRemoveItem={handleRemoveItem}
+            loading={false}
+            accountsSharingWith={accountsSharingWith}
+            handleRemoveAccount={handleRemoveAccount}
           />
         </GqlMockedProvider>
       </Components>,
     );
 
-    await waitFor(() => {
-      expect(getByText('Account currently coached by')).toBeInTheDocument();
-      expect(
-        queryByText('Account currently shared with'),
-      ).not.toBeInTheDocument();
-    });
+    expect(getByText('Account currently coached by')).toBeInTheDocument();
+    expect(
+      queryByText('Account currently shared with'),
+    ).not.toBeInTheDocument();
 
     await waitFor(() => {
       expect(getByText('Pending Invites')).toBeInTheDocument();
     });
 
-    userEvent.click(getAllByLabelText('Delete invite')[1]);
+    const deleteButtons = getAllByRole('button', { name: 'Delete invite' });
+    expect(deleteButtons).toHaveLength(2);
+    userEvent.click(deleteButtons[1]);
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
         'MPDX removed the coaching invite successfully',
@@ -356,7 +344,7 @@ describe('ManageAccounts', () => {
     });
 
     await waitFor(() => {
-      expect(getAllByLabelText('Delete invite')[1]).toBeFalsy();
+      expect(getAllByRole('button', { name: 'Delete invite' })).toHaveLength(1);
     });
   });
 });

@@ -11,50 +11,35 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import * as Types from 'src/graphql/types.generated';
+import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { InviteForm } from '../InviteForm/InviteForm';
 import {
+  GetAccountListInvitesQuery,
+  SharedAccountUserFragment,
   useCancelAccountListInviteMutation,
   useGetAccountListInvitesQuery,
   useGetUserIdQuery,
 } from './ManageAccounts.generated';
 
-export type Coach = Pick<
-  Types.UserScopedToAccountList,
-  'firstName' | 'lastName' | 'id'
->;
-export type User = Pick<Types.User, 'firstName' | 'id' | 'lastName'>;
-export type UserProp = {
-  user: { __typename?: 'User' } & User;
-};
-
-type HandleCancelInviteProp = Pick<
-  Types.AccountListInvite,
-  'id' | 'accountListId' | 'inviteUserAs' | 'recipientEmail'
-> & {
-  invitedByUser: Pick<
-    Types.UserScopedToAccountList,
-    'firstName' | 'lastName' | 'id'
-  >;
-};
-export type CoachProp = Coach;
+type ManageAccountsInvite =
+  GetAccountListInvitesQuery['accountListInvites']['nodes'][0];
 
 type ManageAccountsProp = {
-  type: Types.InviteTypeEnum;
+  type: InviteTypeEnum;
   intro: ReactElement;
-  loadingItems: boolean;
-  accountsSharingWith: (CoachProp & UserProp)[] | (UserProp | CoachProp)[];
-  handleRemoveItem: (item: Coach | User) => void;
+  loading: boolean;
+  accountsSharingWith: SharedAccountUserFragment[];
+  handleRemoveAccount: (account: SharedAccountUserFragment) => void;
 };
 
 export const ManageAccounts: React.FC<ManageAccountsProp> = ({
   type,
   intro,
-  loadingItems,
+  loading,
   accountsSharingWith,
-  handleRemoveItem,
+  handleRemoveAccount,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
@@ -79,15 +64,15 @@ export const ManageAccounts: React.FC<ManageAccountsProp> = ({
     [accountListInvites],
   );
 
-  const handleCancelInvite = async (invite: HandleCancelInviteProp) => {
+  const handleCancelInvite = async (invite: ManageAccountsInvite) => {
     const completedText =
-      type === Types.InviteTypeEnum.User
+      type === InviteTypeEnum.User
         ? t('{{appName}} removed the invite successfully', { appName })
         : t('{{appName}} removed the coaching invite successfully', {
             appName,
           });
     const errorText =
-      type === Types.InviteTypeEnum.User
+      type === InviteTypeEnum.User
         ? t("{{appName}} couldn't remove the invite", { appName })
         : t("{{appName}} couldn't remove the coaching invite", { appName });
 
@@ -115,38 +100,32 @@ export const ManageAccounts: React.FC<ManageAccountsProp> = ({
     <Box>
       {intro}
 
-      {loadingItems && <Skeleton height={'100px'} />}
+      {loading && <Skeleton height={'100px'} />}
 
       {!!accountsSharingWith?.length && (
         <>
           <Typography marginTop={4}>
-            {type === Types.InviteTypeEnum.User
+            {type === InviteTypeEnum.User
               ? t('Account currently shared with')
               : t('Account currently coached by')}
           </Typography>
           <List>
-            {accountsSharingWith.map((item) => (
+            {accountsSharingWith.map((user) => (
               <ListItem
-                key={item.id}
+                key={user.id}
                 secondaryAction={
-                  item.id !== userId ? (
+                  userId && user.id !== userId ? (
                     <IconButton
                       edge="end"
                       aria-label={t('Delete access')}
-                      onClick={() => handleRemoveItem(item)}
+                      onClick={() => handleRemoveAccount(user)}
                     >
                       <DeleteIcon />
                     </IconButton>
                   ) : null
                 }
               >
-                <ListItemText
-                  primary={
-                    type === Types.InviteTypeEnum.User
-                      ? `${item.user.firstName} ${item.user.lastName}`
-                      : `${item.firstName} ${item.lastName}`
-                  }
-                />
+                <ListItemText primary={`${user.firstName} ${user.lastName}`} />
               </ListItem>
             ))}
           </List>
