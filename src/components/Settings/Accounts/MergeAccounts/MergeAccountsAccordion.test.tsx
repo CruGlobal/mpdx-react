@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import { ManageAccountAccessAccordian } from './ManageAccountAccessAccordian';
+import { MergeAccountsAccordion } from './MergeAccountsAccordion';
 
 jest.mock('next-auth/react');
 
@@ -38,12 +38,12 @@ const Components = ({ children }: PropsWithChildren) => (
   </SnackbarProvider>
 );
 
-describe('ManageAccountAccessAccordian', () => {
-  it('should render accordian closed', async () => {
-    const { queryByText } = render(
+describe('MergeAccountsAccordion', () => {
+  it('should render accordion closed', async () => {
+    const { queryAllByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ManageAccountAccessAccordian
+          <MergeAccountsAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -51,24 +51,21 @@ describe('ManageAccountAccessAccordian', () => {
         ,
       </Components>,
     );
-    expect(
-      queryByText('Share this ministry account with other team members'),
-    ).toBeNull();
+    expect(queryAllByText('Merge Your Accounts')[0]).toBeInTheDocument();
+    expect(queryAllByText('Merge Your Accounts')[1]).toBeUndefined();
   });
-  it('should render accordian open', async () => {
-    const { getByText } = render(
+  it('should render accordion open', async () => {
+    const { getAllByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ManageAccountAccessAccordian
+          <MergeAccountsAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Manage Account Access'}
+            expandedPanel={'Merge Your Accounts'}
           />
         </GqlMockedProvider>
         ,
       </Components>,
     );
-    expect(
-      getByText('Share this ministry account with other team members'),
-    ).toBeVisible();
+    expect(getAllByText('Merge Your Accounts')[1]).toBeInTheDocument();
   });
 });

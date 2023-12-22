@@ -7,7 +7,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { GetAccountListCoachesQuery } from './ManageAccountAccess.generated';
-import { ManageCoachesAccessAccordian } from './ManageCoachesAccessAccordian';
+import { ManageCoachesAccessAccordion } from './ManageCoachesAccessAccordion';
 
 jest.mock('next-auth/react');
 
@@ -40,12 +40,12 @@ const Components = ({ children }: PropsWithChildren) => (
   </SnackbarProvider>
 );
 
-describe('ManageCoachesAccessAccordian', () => {
-  it('should render accordian closed', async () => {
+describe('ManageCoachesAccessAccordion', () => {
+  it('should render accordion closed', async () => {
     const { queryByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ManageCoachesAccessAccordian
+          <ManageCoachesAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -57,11 +57,11 @@ describe('ManageCoachesAccessAccordian', () => {
       queryByText('Share this ministry account with other team members'),
     ).toBeNull();
   });
-  it('should render accordian open', async () => {
+  it('should render accordion open', async () => {
     const { getByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ManageCoachesAccessAccordian
+          <ManageCoachesAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Manage Account Coaching Access'}
           />
@@ -96,7 +96,7 @@ describe('ManageCoachesAccessAccordian', () => {
             },
           }}
         >
-          <ManageCoachesAccessAccordian
+          <ManageCoachesAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Manage Account Coaching Access'}
           />

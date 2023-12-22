@@ -5,7 +5,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import * as Types from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { AccordianProps } from '../../accordianHelper';
+import { AccordionProps } from '../../accordionHelper';
 import { InviteForm } from '../InviteForm/InviteForm';
 import { MergeForm } from '../MergeForm/MergeForm';
 
@@ -14,23 +14,23 @@ const DividerWithPadding = styled(Divider)(() => ({
   marginBottom: '20px',
 }));
 
-export const MergeSpouseAccountsAccordian: React.FC<AccordianProps> = ({
+export const MergeSpouseAccountsAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
-  const accordianName = t('Merge Spouse Accounts');
+  const accordionName = t('Merge Spouse Accounts');
 
   return (
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
-      label={accordianName}
+      label={accordionName}
       value={''}
       fullWidth={true}
     >
-      <StyledFormLabel>{accordianName}</StyledFormLabel>
+      <StyledFormLabel>{accordionName}</StyledFormLabel>
       <Typography>
         {t("Merge your account with your spouse's account for a unified view")}
       </Typography>

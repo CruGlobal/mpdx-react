@@ -14,7 +14,7 @@ export const StyledServicesButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),
 }));
 
-export interface AccordianProps {
+export interface AccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
 }

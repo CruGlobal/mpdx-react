@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import { MergeSpouseAccountsAccordian } from './MergeSpouseAccountsAccordian';
+import { ManageAccountAccessAccordion } from './ManageAccountAccessAccordion';
 
 jest.mock('next-auth/react');
 
@@ -38,12 +38,12 @@ const Components = ({ children }: PropsWithChildren) => (
   </SnackbarProvider>
 );
 
-describe('MergeSpouseAccountsAccordian', () => {
-  it('should render accordian closed', async () => {
-    const { queryAllByText } = render(
+describe('ManageAccountAccessAccordion', () => {
+  it('should render accordion closed', async () => {
+    const { queryByText } = render(
       <Components>
         <GqlMockedProvider>
-          <MergeSpouseAccountsAccordian
+          <ManageAccountAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -51,21 +51,24 @@ describe('MergeSpouseAccountsAccordian', () => {
         ,
       </Components>,
     );
-    expect(queryAllByText('Merge Spouse Accounts')[0]).toBeInTheDocument();
-    expect(queryAllByText('Merge Spouse Accounts')[1]).toBeUndefined();
+    expect(
+      queryByText('Share this ministry account with other team members'),
+    ).toBeNull();
   });
-  it('should render accordian open', async () => {
-    const { getAllByText } = render(
+  it('should render accordion open', async () => {
+    const { getByText } = render(
       <Components>
         <GqlMockedProvider>
-          <MergeSpouseAccountsAccordian
+          <ManageAccountAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Merge Spouse Accounts'}
+            expandedPanel={'Manage Account Access'}
           />
         </GqlMockedProvider>
         ,
       </Components>,
     );
-    expect(getAllByText('Merge Spouse Accounts')[1]).toBeVisible();
+    expect(
+      getByText('Share this ministry account with other team members'),
+    ).toBeVisible();
   });
 });

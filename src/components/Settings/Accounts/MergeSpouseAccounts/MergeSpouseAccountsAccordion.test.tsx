@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import { MergeAccountsAccordian } from './MergeAccountsAccordian';
+import { MergeSpouseAccountsAccordion } from './MergeSpouseAccountsAccordion';
 
 jest.mock('next-auth/react');
 
@@ -38,12 +38,12 @@ const Components = ({ children }: PropsWithChildren) => (
   </SnackbarProvider>
 );
 
-describe('MergeAccountsAccordian', () => {
-  it('should render accordian closed', async () => {
+describe('MergeSpouseAccountsAccordion', () => {
+  it('should render accordion closed', async () => {
     const { queryAllByText } = render(
       <Components>
         <GqlMockedProvider>
-          <MergeAccountsAccordian
+          <MergeSpouseAccountsAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -51,21 +51,21 @@ describe('MergeAccountsAccordian', () => {
         ,
       </Components>,
     );
-    expect(queryAllByText('Merge Your Accounts')[0]).toBeInTheDocument();
-    expect(queryAllByText('Merge Your Accounts')[1]).toBeUndefined();
+    expect(queryAllByText('Merge Spouse Accounts')[0]).toBeInTheDocument();
+    expect(queryAllByText('Merge Spouse Accounts')[1]).toBeUndefined();
   });
-  it('should render accordian open', async () => {
+  it('should render accordion open', async () => {
     const { getAllByText } = render(
       <Components>
         <GqlMockedProvider>
-          <MergeAccountsAccordian
+          <MergeSpouseAccountsAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Merge Your Accounts'}
+            expandedPanel={'Merge Spouse Accounts'}
           />
         </GqlMockedProvider>
         ,
       </Components>,
     );
-    expect(getAllByText('Merge Your Accounts')[1]).toBeInTheDocument();
+    expect(getAllByText('Merge Spouse Accounts')[1]).toBeVisible();
   });
 });

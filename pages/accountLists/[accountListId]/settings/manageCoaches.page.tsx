@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ManageCoachesAccessAccordian } from 'src/components/Settings/Coaches/ManageCoachesAccess/ManageCoachesAccessAccordian';
+import { ManageCoachesAccessAccordion } from 'src/components/Settings/Coaches/ManageCoachesAccess/ManageCoachesAccessAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './wrapper';
@@ -29,7 +29,7 @@ const ManageAccounts = (): ReactElement => {
       selectedMenuId="manageCoaches"
     >
       <AccordionGroup title="">
-        <ManageCoachesAccessAccordian
+        <ManageCoachesAccessAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
         />

@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ManageAccountAccessAccordian } from 'src/components/Settings/Accounts/ManageAccountAccess/ManageAccountAccessAccordian';
-import { MergeAccountsAccordian } from 'src/components/Settings/Accounts/MergeAccounts/MergeAccountsAccordian';
-import { MergeSpouseAccountsAccordian } from 'src/components/Settings/Accounts/MergeSpouseAccounts/MergeSpouseAccountsAccordian';
+import { ManageAccountAccessAccordion } from 'src/components/Settings/Accounts/ManageAccountAccess/ManageAccountAccessAccordion';
+import { MergeAccountsAccordion } from 'src/components/Settings/Accounts/MergeAccounts/MergeAccountsAccordion';
+import { MergeSpouseAccountsAccordion } from 'src/components/Settings/Accounts/MergeSpouseAccounts/MergeSpouseAccountsAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './wrapper';
@@ -31,17 +31,17 @@ const ManageAccounts = (): ReactElement => {
       selectedMenuId="manageAccounts"
     >
       <AccordionGroup title="">
-        <ManageAccountAccessAccordian
+        <ManageAccountAccessAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
         />
 
-        <MergeAccountsAccordian
+        <MergeAccountsAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
         />
 
-        <MergeSpouseAccountsAccordian
+        <MergeSpouseAccountsAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
         />

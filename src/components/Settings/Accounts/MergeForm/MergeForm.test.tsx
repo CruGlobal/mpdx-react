@@ -69,7 +69,7 @@ const Components = ({ children }: PropsWithChildren) => (
   </SnackbarProvider>
 );
 
-describe('MergeAccountsAccordian', () => {
+describe('MergeAccountsAccordion', () => {
   it('should not show the merge form', async () => {
     const { queryByText } = render(
       <Components>

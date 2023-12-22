@@ -7,51 +7,51 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import * as Types from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AccordionProps } from '../../accordionHelper';
 import {
-  Coach,
-  CoachProp,
   ManageAccounts,
-} from '../../Accounts/ManageAccounts/ManageAccounts';
-import { AccordianProps } from '../../accordianHelper';
+  User,
+  UserProp,
+} from '../ManageAccounts/ManageAccounts';
 import {
-  useDeleteAccountListCoachMutation,
-  useGetAccountListCoachesQuery,
+  useDeleteAccountListUserMutation,
+  useGetAccountsSharingWithQuery,
 } from './ManageAccountAccess.generated';
 
-export const ManageCoachesAccessAccordian: React.FC<AccordianProps> = ({
+export const ManageAccountAccessAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-  const accordianName = t('Manage Account Coaching Access');
+  const accordionName = t('Manage Account Access');
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() || '';
   const { appName } = useGetAppSettings();
 
-  const { data: accountListCoaches, loading: loadingCoaches } =
-    useGetAccountListCoachesQuery({
+  const { data: accountListUsers, loading: loadingUsers } =
+    useGetAccountsSharingWithQuery({
       variables: {
         accountListId,
       },
     });
-  const [deleteAccountListCoach] = useDeleteAccountListCoachMutation();
+  const [deleteAccountListUser] = useDeleteAccountListUserMutation();
 
-  const coaches = accountListCoaches?.accountListCoaches.nodes;
+  const users = accountListUsers?.accountListUsers.nodes;
 
-  const handleRemoveCoach = async (coach: Coach) => {
-    await deleteAccountListCoach({
+  const handleRemoveUser = async (user: User) => {
+    await deleteAccountListUser({
       variables: {
         input: {
-          id: coach.id,
+          id: user.id,
         },
       },
       update: (cache) => {
-        cache.evict({ id: `AccountListCoach:${coach.id}` });
+        cache.evict({ id: `AccountListUser:${user.id}` });
         cache.gc();
       },
       onCompleted: () => {
         enqueueSnackbar(
-          t('{{appName}} removed the coach successfully', { appName }),
+          t('{{appName}} removed the user successfully', { appName }),
           {
             variant: 'success',
           },
@@ -59,7 +59,7 @@ export const ManageCoachesAccessAccordian: React.FC<AccordianProps> = ({
       },
       onError: () => {
         enqueueSnackbar(
-          t("{{appName}} couldn't remove the coach", { appName }),
+          t("{{appName}} couldn't remove the user", { appName }),
           {
             variant: 'error',
           },
@@ -72,14 +72,14 @@ export const ManageCoachesAccessAccordian: React.FC<AccordianProps> = ({
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
-      label={accordianName}
+      label={accordionName}
       value={''}
       fullWidth={true}
     >
-      <StyledFormLabel>{accordianName}</StyledFormLabel>
+      <StyledFormLabel>{accordionName}</StyledFormLabel>
 
       <ManageAccounts
-        type={Types.InviteTypeEnum.Coach}
+        type={Types.InviteTypeEnum.User}
         intro={
           <>
             <Typography>
@@ -87,17 +87,17 @@ export const ManageCoachesAccessAccordian: React.FC<AccordianProps> = ({
             </Typography>
             <Alert severity="warning" style={{ marginTop: '15px' }}>
               {t(
-                `If you want to allow another {{appName}} coach to have coaching access to this ministry account, you can share access with
-            them. Make sure you have the proper permissions and leadership consensus around this sharing before you do this. You
-            will be able to remove coaching access later.`,
+                ` If you want to allow another {{appName}} user to have access to this ministry account, you can share access with them. Make
+              sure you have the proper permissions and leadership consensus around this sharing before you do this. You will be
+              able to remove access later.`,
                 { appName },
               )}
             </Alert>
           </>
         }
-        loadingItems={loadingCoaches}
-        accountsSharingWith={(coaches as CoachProp[]) || []}
-        handleRemoveItem={handleRemoveCoach}
+        loadingItems={loadingUsers}
+        accountsSharingWith={(users as UserProp[]) || []}
+        handleRemoveItem={handleRemoveUser}
       />
     </AccordionItem>
   );
