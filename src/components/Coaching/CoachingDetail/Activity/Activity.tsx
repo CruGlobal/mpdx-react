@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined';
 import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
@@ -16,16 +17,9 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime, DateTimeUnit } from 'luxon';
-import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import HandoffLink from 'src/components/HandoffLink';
-import { useLocale } from 'src/hooks/useLocale';
-import {
-  currencyFormat,
-  dateFormat,
-  dateFormatWithoutYear,
-} from 'src/lib/intlFormat';
 import {
   ActivityTypeEnum,
   Appeal,
@@ -33,7 +27,13 @@ import {
   ContactFilterStatusEnum,
   ResultEnum,
   TaskFilterSetInput,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import {
+  currencyFormat,
+  dateFormat,
+  dateFormatWithoutYear,
+} from 'src/lib/intlFormat';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum, CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
