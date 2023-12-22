@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
-import * as Types from 'src/graphql/types.generated';
+import { InviteTypeEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { AccordionProps } from '../../accordionHelper';
 import { InviteForm } from '../InviteForm/InviteForm';
@@ -49,7 +49,7 @@ export const MergeSpouseAccountsAccordion: React.FC<AccordionProps> = ({
         {t('1. Share your accounts with each other.')}
       </Typography>
 
-      <InviteForm type={Types.InviteTypeEnum.User} />
+      <InviteForm type={InviteTypeEnum.User} />
 
       <Typography>
         {t(

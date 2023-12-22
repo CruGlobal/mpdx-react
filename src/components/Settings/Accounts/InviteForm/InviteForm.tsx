@@ -28,9 +28,18 @@ const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
 }));
 
+type FormikSchema = {
+  email: string;
+};
+
+const formikSchema: yup.SchemaOf<FormikSchema> = yup.object({
+  email: yup.string().email().required(),
+});
+
 type InviteFormProps = {
   type: Types.InviteTypeEnum;
 };
+
 export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -41,15 +50,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
 
   const [createAccountListInvite] = useCreateAccountListInviteMutation();
 
-  type formikSchemaType = {
-    email: string;
-  };
-
-  const formikSchema: yup.SchemaOf<formikSchemaType> = yup.object({
-    email: yup.string().email().required(),
-  });
-
-  const onSubmit = async () => {
+  const handleSubmit = () => {
     setIsInviteConfirmationOpen(true);
   };
 
@@ -121,7 +122,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
         email: '',
       }}
       validationSchema={formikSchema}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       isInitialValid={false}
     >
       {({
@@ -184,7 +185,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
                     </Alert>
                     <Typography>
                       {t(
-                        `If you are trying to share coaching access please click Cancel below and try again through the Manage
+                        `If you are trying to share coaching access please click No below and try again through the Manage
                   Coaches page in Settings.`,
                       )}
                     </Typography>

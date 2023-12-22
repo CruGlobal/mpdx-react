@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { ManageCoachesAccessAccordion } from 'src/components/Settings/Coaches/ManageCoachesAccess/ManageCoachesAccessAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { suggestArticles } from 'src/lib/helpScout';
-import { SettingsWrapper } from './wrapper';
+import { SettingsWrapper } from './Wrapper';
 
 const ManageAccounts = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
   const [expandedPanel, setExpandedPanel] = useState(
-    (query?.selectedTab as string) || '',
+    (query?.selectedTab as string | undefined) || '',
   );
 
   useEffect(() => {

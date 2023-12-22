@@ -42,9 +42,20 @@ const BorderBox = styled(Box, {
   padding: isSpouse ? '10px' : '0',
 }));
 
+type FormikSchema = {
+  selectedAccountId: string;
+  accept: boolean;
+};
+
+const formikSchema: yup.SchemaOf<FormikSchema> = yup.object({
+  selectedAccountId: yup.string().required(),
+  accept: yup.boolean().oneOf([true], 'Field must be checked').required(),
+});
+
 type MergeFormProps = {
   isSpouse: boolean;
 };
+
 export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -63,17 +74,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
     (account) => account.id !== currentAccount?.id,
   );
 
-  type formikSchemaType = {
-    selectedAccountId: string;
-    accept: boolean;
-  };
-
-  const formikSchema: yup.SchemaOf<formikSchemaType> = yup.object({
-    selectedAccountId: yup.string().required(),
-    accept: yup.boolean().oneOf([true], 'Field must be checked').required(),
-  });
-
-  const onSubmit = async (attributes: formikSchemaType) => {
+  const onSubmit = async (attributes: FormikSchema) => {
     const { selectedAccountId, accept } = attributes;
     if (!currentAccount?.id || !accept) return;
 
@@ -109,12 +110,11 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
 
   return (
     <>
-      <Typography>
+      <Typography component="div">
         <p>
           {t(
             'Merge multiple personal donation accounts into one with Multi-currency support',
           )}
-          .
         </p>
         <p>
           {t(
@@ -190,7 +190,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                           value={selectedAccountId}
                           name="selectedAccountId"
                           onChange={handleChange}
-                          label="Select an Account"
+                          label={t('Select an Account')}
                         >
                           {accountLists.map((account) => (
                             <MenuItem key={account.id} value={account.id}>

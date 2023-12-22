@@ -5,7 +5,11 @@ query getUserId {
 }
 
 query GetAccountListInvites($accountListId: ID!, $inviteType: InviteTypeEnum!) {
-  accountListInvites(accountListId: $accountListId, inviteType: $inviteType) {
+  accountListInvites(
+    accountListId: $accountListId
+    inviteType: $inviteType
+    first: 50
+  ) {
     nodes {
       id
       accountListId

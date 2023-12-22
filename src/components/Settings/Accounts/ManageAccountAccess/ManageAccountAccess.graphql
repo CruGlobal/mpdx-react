@@ -1,5 +1,5 @@
 query GetAccountsSharingWith($accountListId: ID!) {
-  accountListUsers(accountListId: $accountListId) {
+  accountListUsers(accountListId: $accountListId, first: 50) {
     nodes {
       user {
         id

@@ -39,8 +39,8 @@ const Components = ({ children }: PropsWithChildren) => (
 );
 
 describe('MergeSpouseAccountsAccordion', () => {
-  it('should render accordion closed', async () => {
-    const { queryAllByText } = render(
+  it('should render accordion closed', () => {
+    const { getAllByText } = render(
       <Components>
         <GqlMockedProvider>
           <MergeSpouseAccountsAccordion
@@ -48,13 +48,11 @@ describe('MergeSpouseAccountsAccordion', () => {
             expandedPanel={''}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
-    expect(queryAllByText('Merge Spouse Accounts')[0]).toBeInTheDocument();
-    expect(queryAllByText('Merge Spouse Accounts')[1]).toBeUndefined();
+    expect(getAllByText('Merge Spouse Accounts')).toHaveLength(1);
   });
-  it('should render accordion open', async () => {
+  it('should render accordion open', () => {
     const { getAllByText } = render(
       <Components>
         <GqlMockedProvider>
@@ -63,9 +61,8 @@ describe('MergeSpouseAccountsAccordion', () => {
             expandedPanel={'Merge Spouse Accounts'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
-    expect(getAllByText('Merge Spouse Accounts')[1]).toBeVisible();
+    expect(getAllByText('Merge Spouse Accounts')).toHaveLength(2);
   });
 });

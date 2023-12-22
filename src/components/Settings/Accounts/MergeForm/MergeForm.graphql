@@ -1,5 +1,5 @@
 query GetAccountListsForMerging {
-  accountLists {
+  accountLists(first: 50) {
     nodes {
       id
       name

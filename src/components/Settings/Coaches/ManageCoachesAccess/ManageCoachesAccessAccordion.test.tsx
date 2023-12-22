@@ -50,12 +50,11 @@ describe('ManageCoachesAccessAccordion', () => {
             expandedPanel={''}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(
       queryByText('Share this ministry account with other team members'),
-    ).toBeNull();
+    ).not.toBeInTheDocument();
   });
   it('should render accordion open', async () => {
     const { getByText } = render(
@@ -66,7 +65,6 @@ describe('ManageCoachesAccessAccordion', () => {
             expandedPanel={'Manage Account Coaching Access'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(
@@ -101,14 +99,13 @@ describe('ManageCoachesAccessAccordion', () => {
             expandedPanel={'Manage Account Coaching Access'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
     await waitFor(() => {
       expect(getByText('Account currently coached by')).toBeInTheDocument();
     });
-    userEvent.click(getAllByLabelText('Delete Access')[0]);
+    userEvent.click(getAllByLabelText('Delete access')[0]);
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
         '{{appName}} removed the coach successfully',

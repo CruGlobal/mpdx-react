@@ -4,8 +4,11 @@ import { Box } from '@mui/system';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
-import * as Types from 'src/graphql/types.generated';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import { InviteTypeEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { CoachProp, ManageAccounts } from './ManageAccounts';
@@ -54,7 +57,7 @@ const accountsSharingWith = [
   },
 ];
 
-const GetAccountListInvitesMock = {
+const getAccountListInvitesMock = {
   GetAccountListInvites: {
     accountListInvites: {
       nodes: [
@@ -62,7 +65,7 @@ const GetAccountListInvitesMock = {
           id: '1',
           accountListId: 'accountListId',
           cancelledByUser: null,
-          inviteUserAs: Types.InviteTypeEnum.User,
+          inviteUserAs: InviteTypeEnum.User,
           invitedByUser: {
             firstName: 'InviteFirstname',
             lastName: 'InviteLastname',
@@ -74,7 +77,7 @@ const GetAccountListInvitesMock = {
           id: '2',
           accountListId: 'accountListId2',
           cancelledByUser: null,
-          inviteUserAs: Types.InviteTypeEnum.Coach,
+          inviteUserAs: InviteTypeEnum.Coach,
           invitedByUser: {
             firstName: 'InviteFirstname2',
             lastName: 'InviteLastname2',
@@ -86,7 +89,8 @@ const GetAccountListInvitesMock = {
     },
   },
 };
-const GetUserIdMock = {
+
+const getUserIdMock = {
   getUserId: {
     user: {
       id: 'userID',
@@ -102,7 +106,11 @@ const CoachIntro = (): React.ReactElement => (
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <I18nextProvider i18n={i18n}>
+          <AppSettingsProvider>{children}</AppSettingsProvider>
+        </I18nextProvider>
+      </ThemeProvider>
     </TestRouter>
   </SnackbarProvider>
 );
@@ -127,18 +135,17 @@ describe('ManageAccounts', () => {
                 nodes: [],
               },
             },
-            ...GetUserIdMock,
+            ...getUserIdMock,
           }}
         >
           <ManageAccounts
-            type={Types.InviteTypeEnum.User}
-            intro={UserIntro()}
+            type={InviteTypeEnum.User}
+            intro={<UserIntro />}
             loadingItems={true}
             accountsSharingWith={[]}
             handleRemoveItem={handleRemoveItem}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -160,19 +167,18 @@ describe('ManageAccounts', () => {
           getUserId: GetUserIdQuery;
         }>
           mocks={{
-            ...GetAccountListInvitesMock,
-            ...GetUserIdMock,
+            ...getAccountListInvitesMock,
+            ...getUserIdMock,
           }}
         >
           <ManageAccounts
-            type={Types.InviteTypeEnum.User}
-            intro={UserIntro()}
+            type={InviteTypeEnum.User}
+            intro={<UserIntro />}
             loadingItems={false}
             accountsSharingWith={accountsSharingWith}
             handleRemoveItem={handleRemoveItem}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -203,7 +209,7 @@ describe('ManageAccounts', () => {
                     id: '1',
                     accountListId: 'accountListId',
                     cancelledByUser: null,
-                    inviteUserAs: Types.InviteTypeEnum.Coach,
+                    inviteUserAs: InviteTypeEnum.Coach,
                     invitedByUser: {
                       id: '11',
                     },
@@ -212,18 +218,17 @@ describe('ManageAccounts', () => {
                 ],
               },
             },
-            ...GetUserIdMock,
+            ...getUserIdMock,
           }}
         >
           <ManageAccounts
-            type={Types.InviteTypeEnum.User}
-            intro={UserIntro()}
+            type={InviteTypeEnum.User}
+            intro={<UserIntro />}
             loadingItems={false}
             accountsSharingWith={accountsSharingWith}
             handleRemoveItem={handleRemoveItem}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -245,19 +250,18 @@ describe('ManageAccounts', () => {
         }>
           onCall={mutationSpy}
           mocks={{
-            ...GetAccountListInvitesMock,
-            ...GetUserIdMock,
+            ...getAccountListInvitesMock,
+            ...getUserIdMock,
           }}
         >
           <ManageAccounts
-            type={Types.InviteTypeEnum.User}
-            intro={UserIntro()}
+            type={InviteTypeEnum.User}
+            intro={<UserIntro />}
             loadingItems={false}
             accountsSharingWith={accountsSharingWith}
             handleRemoveItem={handleRemoveItem}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -265,7 +269,7 @@ describe('ManageAccounts', () => {
       expect(getByText('Account currently shared with')).toBeInTheDocument();
     });
 
-    userEvent.click(getAllByLabelText('Delete Access')[0]);
+    userEvent.click(getAllByLabelText('Delete access')[0]);
     await waitFor(() => {
       expect(handleRemoveItem).toHaveBeenCalled();
     });
@@ -276,7 +280,7 @@ describe('ManageAccounts', () => {
     userEvent.click(getAllByLabelText('Delete invite')[0]);
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} removed the invite successfully',
+        'MPDX removed the invite successfully',
         {
           variant: 'success',
         },
@@ -302,12 +306,12 @@ describe('ManageAccounts', () => {
         }>
           onCall={mutationSpy}
           mocks={{
-            ...GetAccountListInvitesMock,
-            ...GetUserIdMock,
+            ...getAccountListInvitesMock,
+            ...getUserIdMock,
           }}
         >
           <ManageAccounts
-            type={Types.InviteTypeEnum.Coach}
+            type={InviteTypeEnum.Coach}
             intro={CoachIntro()}
             loadingItems={false}
             accountsSharingWith={
@@ -327,7 +331,6 @@ describe('ManageAccounts', () => {
             handleRemoveItem={handleRemoveItem}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -345,7 +348,7 @@ describe('ManageAccounts', () => {
     userEvent.click(getAllByLabelText('Delete invite')[1]);
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} removed the coaching invite successfully',
+        'MPDX removed the coaching invite successfully',
         {
           variant: 'success',
         },

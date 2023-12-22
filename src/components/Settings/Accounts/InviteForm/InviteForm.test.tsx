@@ -4,7 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import * as Types from 'src/graphql/types.generated';
+import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { InviteForm } from './InviteForm';
@@ -45,9 +45,8 @@ describe('InviteForm', () => {
       render(
         <Components>
           <GqlMockedProvider onCall={mutationSpy}>
-            <InviteForm type={Types.InviteTypeEnum.User} />
+            <InviteForm type={InviteTypeEnum.User} />
           </GqlMockedProvider>
-          ,
         </Components>,
       );
     await waitFor(() => {
@@ -74,7 +73,7 @@ describe('InviteForm', () => {
       expect(getByText('Confirm')).toBeInTheDocument();
       expect(
         getByText(
-          'If you are trying to share coaching access please click Cancel below and try again through the Manage Coaches page in Settings.',
+          'If you are trying to share coaching access please click No below and try again through the Manage Coaches page in Settings.',
         ),
       ).toBeInTheDocument();
     });
@@ -94,7 +93,7 @@ describe('InviteForm', () => {
       );
       expect(createInviteCall.operation.variables.input.attributes).toEqual({
         accountListId: 'account-list-1',
-        inviteUserAs: Types.InviteTypeEnum.User,
+        inviteUserAs: InviteTypeEnum.User,
         recipientEmail: 'test@test.org',
       });
     });
@@ -105,9 +104,8 @@ describe('InviteForm', () => {
     const { getByText, getByTestId, getByRole, queryByText } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
-          <InviteForm type={Types.InviteTypeEnum.Coach} />
+          <InviteForm type={InviteTypeEnum.Coach} />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     await waitFor(() => {
@@ -123,7 +121,7 @@ describe('InviteForm', () => {
       expect(getByText('Confirm')).toBeInTheDocument();
       expect(
         queryByText(
-          'If you are trying to share coaching access please click Cancel below and try again through the Manage Coaches page in Settings.',
+          'If you are trying to share coaching access please click No below and try again through the Manage Coaches page in Settings.',
         ),
       ).not.toBeInTheDocument();
     });
@@ -143,7 +141,7 @@ describe('InviteForm', () => {
       );
       expect(createInviteCall.operation.variables.input.attributes).toEqual({
         accountListId: 'account-list-1',
-        inviteUserAs: Types.InviteTypeEnum.Coach,
+        inviteUserAs: InviteTypeEnum.Coach,
         recipientEmail: 'test@test.org',
       });
     });

@@ -30,7 +30,7 @@ export type UserProp = {
   user: { __typename?: 'User' } & User;
 };
 
-type handleCancelInviteProp = Pick<
+type HandleCancelInviteProp = Pick<
   Types.AccountListInvite,
   'id' | 'accountListId' | 'inviteUserAs' | 'recipientEmail'
 > & {
@@ -79,15 +79,17 @@ export const ManageAccounts: React.FC<ManageAccountsProp> = ({
     [accountListInvites],
   );
 
-  const handleCancelInvite = async (invite: handleCancelInviteProp) => {
-    const CompletedText =
+  const handleCancelInvite = async (invite: HandleCancelInviteProp) => {
+    const completedText =
       type === Types.InviteTypeEnum.User
-        ? '{{appName}} removed the invite successfully'
-        : '{{appName}} removed the coaching invite successfully';
+        ? t('{{appName}} removed the invite successfully', { appName })
+        : t('{{appName}} removed the coaching invite successfully', {
+            appName,
+          });
     const errorText =
       type === Types.InviteTypeEnum.User
-        ? "{{appName}} couldn't remove the invite"
-        : "{{appName}} couldn't remove the coaching invite";
+        ? t("{{appName}} couldn't remove the invite", { appName })
+        : t("{{appName}} couldn't remove the coaching invite", { appName });
 
     await cancelAccountListInvite({
       variables: {
@@ -101,14 +103,10 @@ export const ManageAccounts: React.FC<ManageAccountsProp> = ({
         cache.gc();
       },
       onCompleted: () => {
-        enqueueSnackbar(t(CompletedText, { appName }), {
-          variant: 'success',
-        });
+        enqueueSnackbar(completedText, { variant: 'success' });
       },
       onError: () => {
-        enqueueSnackbar(t(errorText), {
-          variant: 'error',
-        });
+        enqueueSnackbar(errorText, { variant: 'error' });
       },
     });
   };
@@ -127,32 +125,30 @@ export const ManageAccounts: React.FC<ManageAccountsProp> = ({
               : t('Account currently coached by')}
           </Typography>
           <List>
-            {accountsSharingWith?.map((item) => {
-              return (
-                <ListItem
-                  key={item.id}
-                  secondaryAction={
-                    item.id !== userId ? (
-                      <IconButton
-                        edge="end"
-                        aria-label="Delete Access"
-                        onClick={() => handleRemoveItem(item)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    ) : null
+            {accountsSharingWith.map((item) => (
+              <ListItem
+                key={item.id}
+                secondaryAction={
+                  item.id !== userId ? (
+                    <IconButton
+                      edge="end"
+                      aria-label={t('Delete access')}
+                      onClick={() => handleRemoveItem(item)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  ) : null
+                }
+              >
+                <ListItemText
+                  primary={
+                    type === Types.InviteTypeEnum.User
+                      ? `${item.user.firstName} ${item.user.lastName}`
+                      : `${item.firstName} ${item.lastName}`
                   }
-                >
-                  <ListItemText
-                    primary={
-                      type === Types.InviteTypeEnum.User
-                        ? `${item.user.firstName} ${item.user.lastName}`
-                        : `${item.firstName} ${item.lastName}`
-                    }
-                  />
-                </ListItem>
-              );
-            })}
+                />
+              </ListItem>
+            ))}
           </List>
         </>
       )}
@@ -167,7 +163,10 @@ export const ManageAccounts: React.FC<ManageAccountsProp> = ({
             {invites?.map((invite) => {
               const { firstName = '', lastName = '' } = invite.invitedByUser;
               const showInvitedBy = !!firstName && !!lastName;
-              const invitedBy = `(Sent by ${firstName} ${lastName})`;
+              const invitedBy = t(`(Sent by {{firstName}} {{lastName}})`, {
+                firstName,
+                lastName,
+              });
 
               return (
                 <ListItem
@@ -175,7 +174,7 @@ export const ManageAccounts: React.FC<ManageAccountsProp> = ({
                   secondaryAction={
                     <IconButton
                       edge="end"
-                      aria-label="Delete invite"
+                      aria-label={t('Delete invite')}
                       onClick={() => handleCancelInvite(invite)}
                     >
                       <DeleteIcon />

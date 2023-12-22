@@ -95,7 +95,6 @@ describe('ContactTags', () => {
             </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
-        ,
       </TestRouter>,
     );
     await waitFor(() =>

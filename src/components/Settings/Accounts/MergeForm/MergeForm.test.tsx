@@ -33,7 +33,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const GetAccountListsForMerging = {
+const getAccountListsForMergingMock = {
   GetAccountListsForMerging: {
     accountLists: {
       nodes: [
@@ -52,7 +52,7 @@ const GetAccountListsForMerging = {
   },
 };
 
-const AccountList = {
+const accountListMock = {
   AccountList: {
     accountList: {
       id: '456',
@@ -83,12 +83,11 @@ describe('MergeAccountsAccordion', () => {
                 nodes: [],
               },
             },
-            ...AccountList,
+            ...accountListMock,
           }}
         >
           <MergeForm isSpouse={false} />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(queryByText('Merging From')).not.toBeInTheDocument();
@@ -101,13 +100,12 @@ describe('MergeAccountsAccordion', () => {
           AccountList: AccountListQuery;
         }>
           mocks={{
-            ...GetAccountListsForMerging,
-            ...AccountList,
+            ...getAccountListsForMergingMock,
+            ...accountListMock,
           }}
         >
           <MergeForm isSpouse={false} />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     await waitFor(() => {
@@ -118,7 +116,7 @@ describe('MergeAccountsAccordion', () => {
 
     userEvent.click(
       getByRole('button', {
-        name: /select an account ​/i,
+        name: /select an account/i,
       }),
     );
     await waitFor(() => {
@@ -142,13 +140,12 @@ describe('MergeAccountsAccordion', () => {
           AccountList: AccountListQuery;
         }>
           mocks={{
-            ...GetAccountListsForMerging,
-            ...AccountList,
+            ...getAccountListsForMergingMock,
+            ...accountListMock,
           }}
         >
           <MergeForm isSpouse={true} />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     await waitFor(() => {
@@ -156,7 +153,7 @@ describe('MergeAccountsAccordion', () => {
     });
   });
 
-  it('should fire merge Mutation', async () => {
+  it('should fire merge mutation', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole, getByTestId } = render(
       <Components>
@@ -166,13 +163,12 @@ describe('MergeAccountsAccordion', () => {
         }>
           onCall={mutationSpy}
           mocks={{
-            ...GetAccountListsForMerging,
-            ...AccountList,
+            ...getAccountListsForMergingMock,
+            ...accountListMock,
           }}
         >
           <MergeForm isSpouse={false} />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     await waitFor(() => {
@@ -181,7 +177,7 @@ describe('MergeAccountsAccordion', () => {
 
     userEvent.click(
       getByRole('button', {
-        name: /select an account ​/i,
+        name: /select an account/i,
       }),
     );
     await waitFor(() => {

@@ -48,7 +48,6 @@ describe('MergeAccountsAccordion', () => {
             expandedPanel={''}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(queryAllByText('Merge Your Accounts')[0]).toBeInTheDocument();
@@ -63,7 +62,6 @@ describe('MergeAccountsAccordion', () => {
             expandedPanel={'Merge Your Accounts'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getAllByText('Merge Your Accounts')[1]).toBeInTheDocument();

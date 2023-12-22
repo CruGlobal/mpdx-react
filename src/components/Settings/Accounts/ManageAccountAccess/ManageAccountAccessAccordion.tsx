@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
-import * as Types from 'src/graphql/types.generated';
+import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { AccordionProps } from '../../accordionHelper';
@@ -79,7 +79,7 @@ export const ManageAccountAccessAccordion: React.FC<AccordionProps> = ({
       <StyledFormLabel>{accordionName}</StyledFormLabel>
 
       <ManageAccounts
-        type={Types.InviteTypeEnum.User}
+        type={InviteTypeEnum.User}
         intro={
           <>
             <Typography>

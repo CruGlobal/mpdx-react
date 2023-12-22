@@ -48,12 +48,11 @@ describe('ManageAccountAccessAccordion', () => {
             expandedPanel={''}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(
       queryByText('Share this ministry account with other team members'),
-    ).toBeNull();
+    ).not.toBeInTheDocument();
   });
   it('should render accordion open', async () => {
     const { getByText } = render(
@@ -64,7 +63,6 @@ describe('ManageAccountAccessAccordion', () => {
             expandedPanel={'Manage Account Access'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(

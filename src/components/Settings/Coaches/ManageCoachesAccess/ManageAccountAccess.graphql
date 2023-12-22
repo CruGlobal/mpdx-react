@@ -1,5 +1,5 @@
 query GetAccountListCoaches($accountListId: ID!) {
-  accountListCoaches(accountListId: $accountListId) {
+  accountListCoaches(accountListId: $accountListId, first: 50) {
     nodes {
       firstName
       lastName
