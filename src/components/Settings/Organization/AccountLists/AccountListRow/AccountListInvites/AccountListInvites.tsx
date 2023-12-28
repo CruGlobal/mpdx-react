@@ -8,7 +8,7 @@ import { useAppSettingsContext } from 'src/components/common/AppSettings/AppSett
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import * as Types from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { useAdminDeleteOrganizationInviteMutation } from './deleteAccountListInvites.generated';
+import { useAdminDeleteOrganizationInviteMutation } from './DeleteAccountListInvites.generated';
 
 interface Props {
   name: string;
@@ -54,7 +54,7 @@ export const AccountListInvites: React.FC<Props> = ({
         });
       },
       onError: () => {
-        enqueueSnackbar(t('{{appName}} could not deleted user', { appName }), {
+        enqueueSnackbar(t('{{appName}} could not delete user', { appName }), {
           variant: 'error',
         });
       },

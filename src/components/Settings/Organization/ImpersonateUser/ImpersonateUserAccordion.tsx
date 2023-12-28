@@ -28,6 +28,18 @@ const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
 }));
 
+type ImpersonateUserFormType = {
+  user: string;
+  reason: string;
+};
+
+const impersonateUserSchema: yup.SchemaOf<ImpersonateUserFormType> = yup.object(
+  {
+    user: yup.string().email().required(),
+    reason: yup.string().required(),
+  },
+);
+
 export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
@@ -36,29 +48,17 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const [userId, setUserID] = useState('');
+  const [userId, setUserId] = useState('');
 
   const { selectedOrganizationId } = useContext(
     OrganizationsContext,
   ) as OrganizationsContextType;
 
   useEffect(() => {
-    (async () => {
-      const session = await getSession();
-      setUserID(session?.user.userID ?? '');
-    })();
-  }, []);
-
-  type ImpersonateUserFormType = {
-    user: string;
-    reason: string;
-  };
-
-  const ImpersonateUserSchema: yup.SchemaOf<ImpersonateUserFormType> =
-    yup.object({
-      user: yup.string().email().required(),
-      reason: yup.string().required(),
+    getSession().then((session) => {
+      setUserId(session?.user.userID ?? '');
     });
+  }, []);
 
   const onSubmit = async (attributes: ImpersonateUserFormType) => {
     try {
@@ -122,7 +122,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
           user: '',
           reason: '',
         }}
-        validationSchema={ImpersonateUserSchema}
+        validationSchema={impersonateUserSchema}
         onSubmit={onSubmit}
         isInitialValid={false}
       >
@@ -140,13 +140,14 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
                 <TextField
                   required
                   id="user"
+                  name="user"
                   label={t('User Name, ID or Key/Relay Email')}
                   type="email"
                   value={user}
                   disabled={isSubmitting}
                   // eslint-disable-next-line jsx-a11y/no-autofocus
                   autoFocus={true}
-                  onChange={handleChange('user')}
+                  onChange={handleChange}
                   inputProps={{
                     'data-testid': 'impersonateUsername',
                   }}
@@ -161,11 +162,12 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
                 <TextField
                   required
                   id="reason"
+                  name="reason"
                   label={t('Reason / Helpscout Ticket Link')}
                   type="reason"
                   value={reason}
                   disabled={isSubmitting}
-                  onChange={handleChange('reason')}
+                  onChange={handleChange}
                   inputProps={{
                     'data-testid': 'impersonateReason',
                   }}

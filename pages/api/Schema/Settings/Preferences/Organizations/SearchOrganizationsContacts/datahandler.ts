@@ -96,10 +96,10 @@ type SearchOrganizationsContactsContact = {
   }[];
 };
 
-export const SearchOrganizationsContacts = async (
+export const SearchOrganizationsContacts = (
   data: SearchOrganizationsContactsResponse,
-): Promise<SearchOrganizationsContactsReturned> => {
-  const contacts = (await data.data.map(async (contact) => {
+): SearchOrganizationsContactsReturned => {
+  const contacts = data.data.map((contact) => {
     const attributes = fetchAllData(contact, data.included) as Omit<
       SearchOrganizationsContactsContact,
       'id'
@@ -108,7 +108,7 @@ export const SearchOrganizationsContacts = async (
       id: contact.id,
       ...attributes,
     };
-  })) as unknown;
+  }) as unknown;
 
   const {
     page = 0,

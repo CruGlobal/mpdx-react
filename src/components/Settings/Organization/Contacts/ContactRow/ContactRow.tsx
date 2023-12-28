@@ -19,7 +19,7 @@ import {
   SearchOrganizationsContactsDocument,
   SearchOrganizationsContactsQuery,
   useDeleteOrganizationContactMutation,
-} from '../contact.generated';
+} from '../Contact.generated';
 
 const DeleteOutline = styled(DeleteOutlined)(({ theme }) => ({
   width: '24px',

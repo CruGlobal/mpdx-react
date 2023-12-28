@@ -1,12 +1,12 @@
+fragment SettingsOrganization on Organizations {
+  id
+  name
+}
+
 query Organizations {
   getOrganizations {
     organizations {
-      id
-      name
-    }
-    pagination {
-      page
-      totalPages
+      ...SettingsOrganization
     }
   }
   user {

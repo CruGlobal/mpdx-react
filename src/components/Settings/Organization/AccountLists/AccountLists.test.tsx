@@ -5,12 +5,12 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
-import { OrganizationsContextProvider } from 'pages/accountLists/[accountListId]/settings/organizations/organizationsContext';
+import { OrganizationsContextProvider } from 'pages/accountLists/[accountListId]/settings/organizations/OrganizationsContext';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { AccountLists } from './AccountLists';
+import { SearchOrganizationsAccountListsQuery } from './AccountLists.generated';
 import { AccountListsMocks } from './AccountLists.mock';
-import { SearchOrganizationsAccountListsQuery } from './accountLists.generated';
 
 jest.mock('next-auth/react');
 
@@ -119,7 +119,6 @@ describe('AccountLists', () => {
         >
           <AccountLists />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -162,7 +161,6 @@ describe('AccountLists', () => {
         >
           <AccountLists />
         </GqlMockedProvider>
-        ,
       </ComponentsWithNoData>,
     );
 
@@ -189,7 +187,6 @@ describe('AccountLists', () => {
         >
           <AccountLists />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 

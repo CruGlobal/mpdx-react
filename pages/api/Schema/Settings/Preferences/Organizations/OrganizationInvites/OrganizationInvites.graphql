@@ -3,11 +3,11 @@ extend type Query {
 }
 
 input OrganizationInvitesInput {
-  organizationId: String!
+  organizationId: ID!
 }
 
 type Invite {
-  id: String!
+  id: ID!
   acceptedAt: String
   createdAt: String!
   code: String!

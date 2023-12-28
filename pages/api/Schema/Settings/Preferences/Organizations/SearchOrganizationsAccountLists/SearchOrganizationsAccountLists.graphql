@@ -5,7 +5,7 @@ extend type Query {
 }
 
 input SearchOrganizationsAccountListsInput {
-  organizationId: String!
+  organizationId: ID!
   search: String!
   pageNumber: Int
 }
@@ -26,13 +26,13 @@ type OrganizationsAccountList {
 }
 
 type AccountListDesignationAccounts {
-  id: String
+  id: ID
   displayName: String
   organization: AccountListOrganization
 }
 
 type AccountListUsers {
-  id: String
+  id: ID
   userFirstName: String
   userLastName: String
   allowDeletion: Boolean
@@ -40,31 +40,32 @@ type AccountListUsers {
 }
 
 type AccountListInvites {
-  id: String
+  id: ID
   inviteUserAs: String
   recipientEmail: String
   invitedByUser: AccountListInvitedByUser
 }
 
 type OrganizationAccountListCoaches {
-  id: String
+  id: ID
   coachFirstName: String
   coachLastName: String
   coachEmailAddresses: [AccountListEmailAddresses]
 }
 
 type AccountListInvitedByUser {
-  id: String
+  id: ID
   firstName: String
   lastName: String
 }
+
 type AccountListOrganization {
-  id: String
+  id: ID
   name: String
 }
 
 type AccountListEmailAddresses {
-  id: String
+  id: ID
   email: String
   primary: Boolean
 }

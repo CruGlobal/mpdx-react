@@ -4,11 +4,11 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
-import { OrganizationsContextProvider } from 'pages/accountLists/[accountListId]/settings/organizations/organizationsContext';
+import { OrganizationsContextProvider } from 'pages/accountLists/[accountListId]/settings/organizations/OrganizationsContext';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
+import { SearchOrganizationsContactsQuery } from './Contact.generated';
 import { Contacts } from './Contacts';
-import { SearchOrganizationsContactsQuery } from './contact.generated';
 import { ContactsMocks } from './contactsMocks';
 
 jest.mock('next-auth/react');
@@ -107,7 +107,6 @@ describe('Contacts', () => {
         >
           <Contacts />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -137,7 +136,6 @@ describe('Contacts', () => {
         >
           <Contacts />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 

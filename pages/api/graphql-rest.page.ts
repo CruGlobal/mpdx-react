@@ -1094,21 +1094,21 @@ class MpdxRestApi extends RESTDataSource {
     return Organizations(data);
   }
 
-  async organizationAdmins(organizationId) {
+  async organizationAdmins(organizationId: string) {
     const data: OrganizationAdminsResponse = await this.get(
       `organizations/${organizationId}/admins`,
     );
     return OrganizationAdmins(data);
   }
 
-  async organizationInvites(organizationId) {
+  async organizationInvites(organizationId: string) {
     const data: OrganizationInvitesResponse = await this.get(
       `organizations/${organizationId}/invites`,
     );
     return OrganizationInvites(data);
   }
 
-  async destroyOrganizationInvite(organizationId, inviteId) {
+  async destroyOrganizationInvite(organizationId: string, inviteId: string) {
     await this.delete(
       `organizations/${organizationId}/invites/${inviteId}`,
       {},
@@ -1123,7 +1123,7 @@ class MpdxRestApi extends RESTDataSource {
     return DestroyOrganizationInvite();
   }
 
-  async destroyOrganizationAdmin(organizationId, adminId) {
+  async destroyOrganizationAdmin(organizationId: string, adminId: string) {
     await this.delete(
       `organizations/${organizationId}/admins/${adminId}`,
       {},
@@ -1138,7 +1138,10 @@ class MpdxRestApi extends RESTDataSource {
     return DestroyOrganizationAdmin();
   }
 
-  async createOrganizationInvite(organizationId, recipientEmail) {
+  async createOrganizationInvite(
+    organizationId: string,
+    recipientEmail: string,
+  ) {
     const { data }: { data: OrganizationInvite } = await this.post(
       `organizations/${organizationId}/invites`,
       {
@@ -1158,7 +1161,11 @@ class MpdxRestApi extends RESTDataSource {
   //
   //
 
-  async searchOrganizationsContacts(organizationId, search, pageNumber = 1) {
+  async searchOrganizationsContacts(
+    organizationId: string,
+    search: string,
+    pageNumber = 1,
+  ) {
     const include =
       'people,people.email_addresses,people.phone_numbers,addresses,account_list,' +
       'account_list.account_list_users,account_list.account_list_users.email_addresses';
@@ -1201,8 +1208,8 @@ class MpdxRestApi extends RESTDataSource {
   //
 
   async searchOrganizationsAccountLists(
-    organizationId,
-    search,
+    organizationId: string,
+    search: string,
     pageNumber = 1,
   ) {
     const include =
@@ -1230,7 +1237,7 @@ class MpdxRestApi extends RESTDataSource {
     return SearchOrganizationsAccountLists(data);
   }
 
-  async adminDeleteOrganizationUser(accountListId, userId) {
+  async adminDeleteOrganizationUser(accountListId: string, userId: string) {
     await this.delete(
       `organizations/account_lists/${accountListId}/account_list_users/${userId}`,
       {},
@@ -1245,7 +1252,7 @@ class MpdxRestApi extends RESTDataSource {
     return AdminDeleteOrganizationUser();
   }
 
-  async adminDeleteOrganizationCoach(accountListId, coachId) {
+  async adminDeleteOrganizationCoach(accountListId: string, coachId: string) {
     await this.delete(
       `organizations/account_lists/${accountListId}/account_list_coaches/${coachId}`,
       {},
@@ -1260,7 +1267,7 @@ class MpdxRestApi extends RESTDataSource {
     return AdminDeleteOrganizationCoach();
   }
 
-  async adminDeleteOrganizationInvite(accountListId, inviteId) {
+  async adminDeleteOrganizationInvite(accountListId: string, inviteId: string) {
     await this.delete(
       `organizations/account_lists/${accountListId}/invites/${inviteId}`,
       {},

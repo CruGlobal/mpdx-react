@@ -5,7 +5,7 @@ extend type Mutation {
 }
 
 input DeleteOrganizationContactInput {
-  contactId: String!
+  contactId: ID!
 }
 
 type DeleteOrganizationContactResponse {

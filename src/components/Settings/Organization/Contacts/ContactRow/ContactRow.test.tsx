@@ -51,7 +51,6 @@ describe('ContactRow', () => {
             useTopMargin={true}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getByText('Lastname, Firstnames')).toBeInTheDocument();
@@ -78,7 +77,6 @@ describe('ContactRow', () => {
             useTopMargin={true}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getByText('111 test, city, GA, 11111')).toBeInTheDocument();
@@ -96,7 +94,6 @@ describe('ContactRow', () => {
             useTopMargin={true}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getByText('Delete')).toBeInTheDocument();
@@ -117,7 +114,6 @@ describe('ContactRow', () => {
             useTopMargin={true}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getByText('Anonymize')).toBeInTheDocument();
@@ -136,7 +132,6 @@ describe('ContactRow', () => {
             useTopMargin={true}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     userEvent.click(getByText('Delete'));
@@ -180,7 +175,6 @@ describe('ContactRow', () => {
             useTopMargin={true}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     userEvent.click(getByText('Anonymize'));

@@ -9,7 +9,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
-import { useDeleteGoogleAccountMutation } from '../googleAccounts.generated';
+import { useDeleteGoogleAccountMutation } from '../GoogleAccounts.generated';
 
 interface DeleteGoogleAccountModalProps {
   handleClose: () => void;

@@ -101,7 +101,6 @@ describe('ManageOrganizationAccessAccordion', () => {
             expandedPanel={''}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(
@@ -132,7 +131,6 @@ describe('ManageOrganizationAccessAccordion', () => {
             expandedPanel={'Manage Organization Access'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(
@@ -167,7 +165,6 @@ describe('ManageOrganizationAccessAccordion', () => {
             expandedPanel={'Manage Organization Access'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     await waitFor(() => {
@@ -214,7 +211,6 @@ describe('ManageOrganizationAccessAccordion', () => {
             expandedPanel={'Manage Organization Access'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     await waitFor(() => {
@@ -275,7 +271,6 @@ describe('ManageOrganizationAccessAccordion', () => {
             expandedPanel={'Manage Organization Access'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     await waitFor(() => {

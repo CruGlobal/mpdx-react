@@ -19,7 +19,7 @@ const impersonateOrganization = async (
       return;
     }
 
-    res.setHeader('Set-Cookie', [...new Set(impersonateResponse.cookies)]);
+    res.setHeader('Set-Cookie', impersonateResponse.cookies);
     res.status(status).json({ success, errors });
   } catch (err) {
     res.status(500).json({ success: false, error: err });

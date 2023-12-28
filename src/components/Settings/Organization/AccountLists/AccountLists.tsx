@@ -6,11 +6,11 @@ import { useTranslation } from 'react-i18next';
 import {
   OrganizationsContext,
   OrganizationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/organizations/organizationsContext';
+} from 'pages/accountLists/[accountListId]/settings/organizations/OrganizationsContext';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { NullStateBox } from 'src/components/Shared/Filters/NullState/NullStateBox';
 import { AccountListRow } from './AccountListRow/AccountListRow';
-import { useSearchOrganizationsAccountListsQuery } from './accountLists.generated';
+import { useSearchOrganizationsAccountListsQuery } from './AccountLists.generated';
 
 const LoadingSpinner: React.FC<{ firstLoad: boolean }> = ({ firstLoad }) => (
   <CircularProgress
@@ -45,7 +45,7 @@ export const AccountLists: React.FC = () => {
         search: search,
       },
     },
-    skip: !!!selectedOrganizationId,
+    skip: !selectedOrganizationId,
   });
 
   const accountLists = data?.searchOrganizationsAccountLists.accountLists;
@@ -54,7 +54,7 @@ export const AccountLists: React.FC = () => {
   useEffect(() => {
     if (!accountListsRef.current) return;
     if (!window.visualViewport?.height) return;
-    // 24px for the padding which he parent page has added.
+    // 24px for the padding which the parent page has added.
     setInfiniteListHeight(
       window.visualViewport.height -
         (accountListsRef.current as HTMLElement).getBoundingClientRect().top -
@@ -87,7 +87,7 @@ export const AccountLists: React.FC = () => {
         }}
         endReached={() =>
           pagination &&
-          pagination?.page < pagination?.totalPages &&
+          pagination.page < pagination.totalPages &&
           fetchMore({
             variables: {
               input: {

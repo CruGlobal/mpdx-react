@@ -101,7 +101,6 @@ describe('AccountLists', () => {
             handleDelete={handleDelete}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getByText('userFirstName1 userLastName1')).toBeInTheDocument();
@@ -122,7 +121,6 @@ describe('AccountLists', () => {
             handleDelete={handleDelete}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -149,7 +147,6 @@ describe('AccountLists', () => {
             handleDelete={handleDelete}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -179,7 +176,6 @@ describe('AccountLists', () => {
             handleDelete={handleDelete}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getByText('coachFirstName1 coachLastName1')).toBeInTheDocument();

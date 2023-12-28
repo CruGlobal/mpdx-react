@@ -44,8 +44,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
   handleDelete,
 }) => {
   const { t } = useTranslation();
-  const [deleteUserEmailDialogOpen, setDeleteUserEmailDialogOpen] =
-    useState(false);
+  const [deleteUserDialogOpen, setDeleteUserDialogOpen] = useState(false);
 
   return (
     <>
@@ -59,7 +58,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
               : item.coachEmailAddresses;
 
           return (
-            <BorderBottomBox key={`designationAccounts-coachs-${idx}`}>
+            <BorderBottomBox key={`designationAccounts-coaches-${idx}`}>
               <Typography component="span">
                 <Box sx={{ fontWeight: 'bold', m: 1 }}>
                   {type === AccountListItemType.USER &&
@@ -102,9 +101,9 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
 
                   {type === AccountListItemType.USER && item?.allowDeletion && (
                     <IconButton
-                      aria-label="Delete"
+                      aria-label={t('Delete')}
                       color="error"
-                      onClick={() => setDeleteUserEmailDialogOpen(true)}
+                      onClick={() => setDeleteUserDialogOpen(true)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -119,7 +118,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                       data-testid="InformationButton"
                     >
                       <IconButton
-                        aria-label="Information"
+                        aria-label={t('Information')}
                         color="primary"
                         size="small"
                       >
@@ -129,7 +128,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                   )}
                   {type === AccountListItemType.USER && item?.allowDeletion && (
                     <Confirmation
-                      isOpen={deleteUserEmailDialogOpen}
+                      isOpen={deleteUserDialogOpen}
                       title={t('Confirm')}
                       message={t(
                         'Are you sure you want to remove {{user}} as a user from {{accountList}}?',
@@ -138,7 +137,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                           accountList: name,
                         },
                       )}
-                      handleClose={() => setDeleteUserEmailDialogOpen(false)}
+                      handleClose={() => setDeleteUserDialogOpen(false)}
                       mutation={() => handleDelete(item, type)}
                     />
                   )}
@@ -146,15 +145,15 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                   {type === AccountListItemType.COACH && (
                     <>
                       <IconButton
-                        aria-label="delete"
+                        aria-label={t('Delete')}
                         color="error"
-                        onClick={() => setDeleteUserEmailDialogOpen(true)}
+                        onClick={() => setDeleteUserDialogOpen(true)}
                       >
                         <DeleteIcon />
                       </IconButton>
 
                       <Confirmation
-                        isOpen={deleteUserEmailDialogOpen}
+                        isOpen={deleteUserDialogOpen}
                         title={t('Confirm')}
                         message={t(
                           'Are you sure you want to remove {{coach}} as a coach from {{accountList}}?',
@@ -163,7 +162,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                             accountList: name,
                           },
                         )}
-                        handleClose={() => setDeleteUserEmailDialogOpen(false)}
+                        handleClose={() => setDeleteUserDialogOpen(false)}
                         mutation={() => handleDelete(item, type)}
                       />
                     </>

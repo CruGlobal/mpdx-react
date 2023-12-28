@@ -39,11 +39,11 @@ export interface OrganizationInviteCamelCase {
 
 // As this request returns the data with a relationships object, we have to manually link the relationships to each contact
 // We first loop through each contact with a map line 143 ish.
-// Then for each realtionship we loop through to find the data and add it to a object called Attributes
+// Then for each relationship we loop through to find the data and add it to a object called Attributes
 // We then enter a recursion, where we call the fetchAllData again if we see a relationship object on the object we're investigating.
 // Sometimes this goes down into 4 objects deep before returning.
 // We save the Values data onto the attributes object before returning it
-// At the end we have mapped all the relationships abd gathered all the data.
+// At the end we have mapped all the relationships and gathered all the data.
 // Ask Daniel Bisgrove questions if needed.
 export const fetchAllData = (object, includedData) => {
   const attributes = {};
@@ -51,7 +51,7 @@ export const fetchAllData = (object, includedData) => {
     attributes[snakeToCamel(key)] = object.attributes[key];
   });
 
-  for (const relationship in object.relationships) {
+  Object.keys(object.relationships).forEach((relationship) => {
     const relationshipData = object.relationships[relationship].data;
     // check if array
     const isArray = Array.isArray(relationshipData);
@@ -88,6 +88,6 @@ export const fetchAllData = (object, includedData) => {
     if (object.id) {
       attributes['id'] = object.id;
     }
-  }
+  });
   return attributes;
 };

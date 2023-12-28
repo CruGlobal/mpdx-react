@@ -11,11 +11,13 @@ import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { AccountLists } from 'src/components/Settings/Organization/AccountLists/AccountLists';
-import * as Types from 'src/graphql/types.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
-import { useOrganizationsQuery } from '../organizations.generated';
+import {
+  SettingsOrganizationFragment,
+  useOrganizationsQuery,
+} from '../organizations.generated';
 import { SettingsWrapper } from '../wrapper';
-import { OrganizationsContextProvider } from './organizationsContext';
+import { OrganizationsContextProvider } from './OrganizationsContext';
 
 const HeaderAndDropdown = styled(Box)(() => ({
   fontSize: '16px',
@@ -29,12 +31,7 @@ const AccountListsOrganizations = (): ReactElement => {
   const [search, setSearch] = useState('');
   const matches = useMediaQuery('(max-width:600px)');
   const [selectedOrganization, setSelectedOrganization] = useState<
-    | Types.Maybe<
-        {
-          __typename?: 'Organizations' | undefined;
-        } & Pick<Types.Organizations, 'id' | 'name'>
-      >
-    | undefined
+    SettingsOrganizationFragment | null | undefined
   >();
   const { data } = useOrganizationsQuery();
   const organizations = data?.getOrganizations.organizations;
@@ -107,7 +104,7 @@ const AccountListsOrganizations = (): ReactElement => {
                     }}
                   />
                 )}
-                value={selectedOrganization?.id}
+                value={selectedOrganization?.id ?? null}
                 onChange={(_, organization): void => {
                   const org = organizations?.find(
                     (org) => org?.id === organization,
@@ -116,9 +113,6 @@ const AccountListsOrganizations = (): ReactElement => {
                     setSelectedOrganization(org);
                   }
                 }}
-                isOptionEqualToValue={(option, value): boolean =>
-                  option === value
-                }
               />
             </Box>
           </HeaderAndDropdown>

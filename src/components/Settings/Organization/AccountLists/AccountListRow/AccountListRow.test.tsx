@@ -45,7 +45,6 @@ describe('AccountLists', () => {
         <GqlMockedProvider>
           <AccountListRow accountList={accountList} />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getByText('Name1')).toBeInTheDocument();
@@ -75,7 +74,6 @@ describe('AccountLists', () => {
             }}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 
@@ -95,7 +93,6 @@ describe('AccountLists', () => {
             }}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
 

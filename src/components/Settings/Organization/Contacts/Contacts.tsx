@@ -6,11 +6,11 @@ import { useTranslation } from 'react-i18next';
 import {
   OrganizationsContext,
   OrganizationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/organizations/organizationsContext';
+} from 'pages/accountLists/[accountListId]/settings/organizations/OrganizationsContext';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { NullStateBox } from 'src/components/Shared/Filters/NullState/NullStateBox';
+import { useSearchOrganizationsContactsQuery } from './Contact.generated';
 import { ContactRow } from './ContactRow/ContactRow';
-import { useSearchOrganizationsContactsQuery } from './contact.generated';
 
 const LoadingSpinner: React.FC<{ firstLoad: boolean }> = ({ firstLoad }) => (
   <CircularProgress
@@ -45,7 +45,7 @@ export const Contacts: React.FC = () => {
         search: search,
       },
     },
-    skip: !!!(selectedOrganizationId && search),
+    skip: !(selectedOrganizationId && search),
   });
 
   const contacts = data?.searchOrganizationsContacts.contacts;
@@ -54,7 +54,7 @@ export const Contacts: React.FC = () => {
   useEffect(() => {
     if (!contactsRef.current) return;
     if (!window.visualViewport?.height) return;
-    // 24px for the padding which he parent page has added.
+    // 24px for the padding which the parent page has added.
     setInfiniteListHeight(
       window.visualViewport.height -
         (contactsRef.current as HTMLElement).getBoundingClientRect().top -
@@ -87,7 +87,7 @@ export const Contacts: React.FC = () => {
         }}
         endReached={() =>
           pagination &&
-          pagination?.page < pagination?.totalPages &&
+          pagination.page < pagination.totalPages &&
           fetchMore({
             variables: {
               input: {

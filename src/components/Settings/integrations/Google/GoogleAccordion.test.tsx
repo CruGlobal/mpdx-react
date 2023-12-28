@@ -9,7 +9,7 @@ import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { GoogleAccordion } from './GoogleAccordion';
-import { GoogleAccountsQuery } from './googleAccounts.generated';
+import { GoogleAccountsQuery } from './GoogleAccounts.generated';
 
 jest.mock('next-auth/react');
 

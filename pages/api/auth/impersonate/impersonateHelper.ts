@@ -82,7 +82,7 @@ export const impersonate = async (
       }),
     });
 
-    type FetchTokenforOrganizationType = {
+    type FetchTokenForOrganizationType = {
       data: {
         type: string;
         attributes: {
@@ -95,8 +95,7 @@ export const impersonate = async (
       errors: Errors[];
     };
 
-    const fetchRes: FetchTokenforOrganizationType =
-      (await fetchToken.json()) as FetchTokenforOrganizationType;
+    const fetchRes = (await fetchToken.json()) as FetchTokenForOrganizationType;
 
     const impersonate = fetchRes?.data?.attributes?.json_web_token;
 

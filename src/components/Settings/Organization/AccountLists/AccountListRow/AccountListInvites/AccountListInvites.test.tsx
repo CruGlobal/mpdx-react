@@ -52,7 +52,6 @@ describe('AccountLists', () => {
             accountListId={'accountListId'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getByText('inviteCoach@cru.org')).toBeInTheDocument();

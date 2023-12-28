@@ -33,12 +33,9 @@ interface AdminCamelCase {
 export const OrganizationAdmins = (
   data: OrganizationAdminsResponse,
 ): AdminCamelCase[] => {
-  return data.data.map(
-    (admin) =>
-      ({
-        id: admin.id,
-        firstName: admin.attributes.first_name,
-        lastName: admin.attributes.last_name,
-      } as AdminCamelCase),
-  );
+  return data.data.map((admin) => ({
+    id: admin.id,
+    firstName: admin.attributes.first_name,
+    lastName: admin.attributes.last_name,
+  }));
 };

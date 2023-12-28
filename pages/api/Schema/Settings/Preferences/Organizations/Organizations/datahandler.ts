@@ -39,14 +39,11 @@ interface OrganizationsCamelCase {
 export const Organizations = (
   data: OrganizationsResponse,
 ): OrganizationsReturnedResponse => {
-  const organizations = data.data.map(
-    (organization) =>
-      ({
-        id: organization.id,
-        name: organization.attributes.name,
-        type: organization.type,
-      } as OrganizationsCamelCase),
-  );
+  const organizations = data.data.map((organization) => ({
+    id: organization.id,
+    name: organization.attributes.name,
+    type: organization.type,
+  }));
 
   const {
     page,

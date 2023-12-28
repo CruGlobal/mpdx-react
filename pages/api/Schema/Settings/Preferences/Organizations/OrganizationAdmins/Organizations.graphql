@@ -3,11 +3,11 @@ extend type Query {
 }
 
 input OrganizationAdminsInput {
-  organizationId: String!
+  organizationId: ID!
 }
 
 type AdminList {
-  id: String!
+  id: ID!
   firstName: String!
   lastName: String!
 }

@@ -6,9 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordion';
 import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
-import * as Types from 'src/graphql/types.generated';
 import { suggestArticles } from 'src/lib/helpScout';
-import { useOrganizationsQuery } from './organizations.generated';
+import {
+  SettingsOrganizationFragment,
+  useOrganizationsQuery,
+} from './organizations.generated';
 import { SettingsWrapper } from './wrapper';
 
 export type OrganizationsContextType = {
@@ -44,20 +46,14 @@ const Organizations = (): ReactElement => {
   const [expandedPanel, setExpandedPanel] = useState('');
 
   const [selectedOrganization, setSelectedOrganization] = useState<
-    | Types.Maybe<
-        {
-          __typename?: 'Organizations' | undefined;
-        } & Pick<Types.Organizations, 'id' | 'name'>
-      >
-    | undefined
+    SettingsOrganizationFragment | null | undefined
   >();
   const { data } = useOrganizationsQuery();
 
   const organizations = data?.getOrganizations.organizations;
 
   useEffect(() => {
-    if (!organizations) return;
-    if (organizations[0]) setSelectedOrganization(organizations[0]);
+    setSelectedOrganization(organizations?.[0]);
   }, [organizations]);
 
   useEffect(() => {
@@ -90,7 +86,11 @@ const Organizations = (): ReactElement => {
         {organizations?.length && selectedOrganization && (
           <HeaderAndDropdown>
             <Box>
-              <h2>Manage {selectedOrganization.name}</h2>
+              <h2>
+                {t('Manage {{organizationName}}', {
+                  organizationName: selectedOrganization.name,
+                })}
+              </h2>
             </Box>
             <Box>
               <Autocomplete
@@ -99,6 +99,7 @@ const Organizations = (): ReactElement => {
                 }}
                 autoSelect
                 autoHighlight
+                disableClearable
                 options={organizations?.map((org) => org?.id) || []}
                 getOptionLabel={(orgId) =>
                   organizations.find((org) => org?.id === orgId)?.name ?? ''
@@ -121,9 +122,6 @@ const Organizations = (): ReactElement => {
                     setSelectedOrganization(org);
                   }
                 }}
-                isOptionEqualToValue={(option, value): boolean =>
-                  option === value
-                }
               />
             </Box>
           </HeaderAndDropdown>

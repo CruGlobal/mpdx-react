@@ -62,7 +62,6 @@ describe('ImpersonateUserAccordion', () => {
             expandedPanel={''}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getAllByText('Impersonate User')[1]).toBeUndefined();
@@ -78,7 +77,6 @@ describe('ImpersonateUserAccordion', () => {
             expandedPanel={'Impersonate User'}
           />
         </GqlMockedProvider>
-        ,
       </Components>,
     );
     expect(getAllByText('Impersonate User')[1]).toBeVisible();

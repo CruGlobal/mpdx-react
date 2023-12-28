@@ -8,7 +8,7 @@ type AllOrganizations {
 }
 
 type Organizations {
-  id: String!
+  id: ID!
   name: String!
   type: String
 }

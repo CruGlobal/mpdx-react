@@ -56,12 +56,12 @@ export const AccountListRow: React.FC<Props> = ({ accountList }) => {
     accountListCoaches,
   } = accountList;
 
-  const haneleDelete = async (
+  const handleDelete = async (
     item: Types.AccountListUsers | Types.OrganizationAccountListCoaches,
     type: AccountListItemType,
   ) => {
     if (!item?.id) {
-      enqueueSnackbar(t('{{appName}} could not deleted user', { appName }), {
+      enqueueSnackbar(t('{{appName}} could not delete user', { appName }), {
         variant: 'error',
       });
       return;
@@ -85,17 +85,12 @@ export const AccountListRow: React.FC<Props> = ({ accountList }) => {
           });
         },
         onError: () => {
-          enqueueSnackbar(
-            t('{{appName}} could not deleted user', { appName }),
-            {
-              variant: 'error',
-            },
-          );
+          enqueueSnackbar(t('{{appName}} could not delete user', { appName }), {
+            variant: 'error',
+          });
         },
       });
-    }
-
-    if (type === AccountListItemType.COACH) {
+    } else if (type === AccountListItemType.COACH) {
       await adminDeleteOrganizationCoach({
         variables: {
           input: {
@@ -114,7 +109,7 @@ export const AccountListRow: React.FC<Props> = ({ accountList }) => {
         },
         onError: () => {
           enqueueSnackbar(
-            t('{{appName}} could not deleted coach', { appName }),
+            t('{{appName}} could not delete coach', { appName }),
             {
               variant: 'error',
             },
@@ -212,7 +207,7 @@ export const AccountListRow: React.FC<Props> = ({ accountList }) => {
               accountListItems={accountListUsers}
               name={name}
               type={AccountListItemType.USER}
-              handleDelete={haneleDelete}
+              handleDelete={handleDelete}
             />
           )}
           {accountListUsersInvites && (
@@ -223,7 +218,7 @@ export const AccountListRow: React.FC<Props> = ({ accountList }) => {
             />
           )}
           {!accountListUsers?.length && !accountListUsersInvites?.length && (
-            <Box>{t(' No users')}</Box>
+            <Box>{t('No users')}</Box>
           )}
         </BorderRightGrid>
         <Grid
@@ -238,7 +233,7 @@ export const AccountListRow: React.FC<Props> = ({ accountList }) => {
               accountListItems={accountListCoaches}
               name={name}
               type={AccountListItemType.COACH}
-              handleDelete={haneleDelete}
+              handleDelete={handleDelete}
             />
           )}
           {accountListCoachInvites && (
@@ -251,7 +246,7 @@ export const AccountListRow: React.FC<Props> = ({ accountList }) => {
 
           {!accountListCoaches?.length && !accountListCoachInvites?.length && (
             <NoItemsBox>
-              <Typography>{t(' No coaches')}</Typography>
+              <Typography>{t('No coaches')}</Typography>
             </NoItemsBox>
           )}
         </Grid>

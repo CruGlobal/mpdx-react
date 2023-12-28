@@ -5,7 +5,7 @@ extend type Query {
 }
 
 input SearchOrganizationsContactsInput {
-  organizationId: String!
+  organizationId: ID!
   search: String!
   pageNumber: Int
 }
@@ -38,6 +38,7 @@ type ContactPeopleEmailAddresses {
   primary: Boolean
   historic: Boolean
 }
+
 type ContactPeoplePhoneNumbers {
   number: String
   primary: Boolean
@@ -65,7 +66,7 @@ type ContactPeopleAccountLists {
 }
 
 type ContactPeopleAccountListsUsers {
-  id: String
+  id: ID
   firstName: String
   lastName: String
   emailAddresses: [ContactPeopleEmailAddresses]

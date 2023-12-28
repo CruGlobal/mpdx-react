@@ -3,6 +3,6 @@ extend type Mutation {
 }
 
 input CreateOrganizationInviteInput {
-  organizationId: String!
-  recipientEmail: String!
+  organizationId: ID!
+  recipientEmail: ID!
 }

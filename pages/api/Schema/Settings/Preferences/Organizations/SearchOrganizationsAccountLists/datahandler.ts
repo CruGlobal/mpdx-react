@@ -101,10 +101,10 @@ type SearchOrganizationsAccountListsAccountList = {
   accountListCoachInvites: accountListInvites[];
 };
 
-export const SearchOrganizationsAccountLists = async (
+export const SearchOrganizationsAccountLists = (
   data: SearchOrganizationsAccountListsResponse,
-): Promise<SearchOrganizationsAccountListsReturned> => {
-  const accountLists = (await data.data.map(async (contact) => {
+): SearchOrganizationsAccountListsReturned => {
+  const accountLists = data.data.map((contact) => {
     const attributes = fetchAllData(contact, data.included) as Omit<
       SearchOrganizationsAccountListsAccountList,
       'id'
@@ -112,7 +112,7 @@ export const SearchOrganizationsAccountLists = async (
       accountListInvites?: accountListInvites[];
     };
 
-    // Added functionailty to seperate invites by user or coach
+    // Added functionality to separate invites by user or coach
     if (attributes.accountListInvites) {
       attributes.accountListInvites.forEach((invite) => {
         const userInvites = attributes.accountListUsersInvites || [];
@@ -131,7 +131,7 @@ export const SearchOrganizationsAccountLists = async (
       id: contact.id,
       ...attributes,
     };
-  })) as unknown;
+  }) as unknown;
 
   const {
     page = 0,

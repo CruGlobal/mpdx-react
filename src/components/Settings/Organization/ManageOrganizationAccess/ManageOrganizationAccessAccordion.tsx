@@ -56,6 +56,17 @@ const StyledListItem = styled(ListItem)(() => ({
     background: theme.palette.cruGrayLight.main,
   },
 }));
+
+type ImpersonateUserFormType = {
+  username: string;
+};
+
+const impersonateUserSchema: yup.SchemaOf<ImpersonateUserFormType> = yup.object(
+  {
+    username: yup.string().email().required(),
+  },
+);
+
 export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
@@ -88,15 +99,6 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
 
   const admins = adminsData?.organizationAdmins;
   const invites = invitesData?.organizationInvites;
-
-  type ImpersonateUserFormType = {
-    username: string;
-  };
-
-  const ImpersonateUserSchema: yup.SchemaOf<ImpersonateUserFormType> =
-    yup.object({
-      username: yup.string().email().required(),
-    });
 
   const handleSentInvite = async (attributes: ImpersonateUserFormType) => {
     await createOrganizationInvite({
@@ -153,7 +155,7 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
     });
   };
 
-  const handleDeleteAdmin = async (adminId) => {
+  const handleDeleteAdmin = async (adminId: string) => {
     await destroyOrganizationAdmin({
       variables: {
         input: {
@@ -194,7 +196,7 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
       },
     });
   };
-  const handleDeleteInvite = async (inviteId) => {
+  const handleDeleteInvite = async (inviteId: string) => {
     await destroyOrganizationInvite({
       variables: {
         input: {
@@ -259,24 +261,27 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
         <SharedWithBox>
           <Typography>{t(`Organization currently shared with`)}</Typography>
           <List>
-            {admins?.map((admin, idx) => (
-              <StyledListItem
-                key={`${idx}-admin-${admin?.id}`}
-                secondaryAction={
-                  <IconButton
-                    edge="end"
-                    aria-label="Delete Admin"
-                    onClick={() => handleDeleteAdmin(admin?.id)}
+            {admins.map(
+              (admin, idx) =>
+                admin && (
+                  <StyledListItem
+                    key={`${idx}-admin-${admin.id}`}
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        aria-label={t('Delete Admin')}
+                        onClick={() => handleDeleteAdmin(admin.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    }
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                }
-              >
-                <ListItemText
-                  primary={`${admin?.firstName} ${admin?.lastName}`}
-                />
-              </StyledListItem>
-            ))}
+                    <ListItemText
+                      primary={`${admin.firstName} ${admin.lastName}`}
+                    />
+                  </StyledListItem>
+                ),
+            )}
           </List>
         </SharedWithBox>
       )}
@@ -285,30 +290,34 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
         <SharedWithBox>
           <Typography>{t(`Pending Invites`)}</Typography>
           <List>
-            {invites?.map((invite, idx) => (
-              <StyledListItem
-                key={`${idx}-invite-${invite?.id}`}
-                secondaryAction={
-                  <IconButton
-                    edge="end"
-                    aria-label="Delete Invite"
-                    onClick={() => handleDeleteInvite(invite?.id)}
+            {invites.map(
+              (invite, idx) =>
+                invite && (
+                  <StyledListItem
+                    key={`${idx}-invite-${invite.id}`}
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        aria-label={t('Delete Invite')}
+                        onClick={() => handleDeleteInvite(invite.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    }
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                }
-              >
-                <ListItemText
-                  primary={invite?.recipientEmail}
-                  secondary={`Invited as ${
-                    invite?.inviteUserAs
-                  } on ${dateFormat(
-                    DateTime.fromISO(invite?.createdAt ?? ''),
-                    locale,
-                  )}`}
-                />
-              </StyledListItem>
-            ))}
+                    <ListItemText
+                      primary={invite.recipientEmail}
+                      secondary={t('Invited as {{role}} on {{date}}', {
+                        role: invite.inviteUserAs,
+                        date: dateFormat(
+                          DateTime.fromISO(invite.createdAt ?? ''),
+                          locale,
+                        ),
+                      })}
+                    />
+                  </StyledListItem>
+                ),
+            )}
           </List>
         </SharedWithBox>
       )}
@@ -318,8 +327,8 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
           initialValues={{
             username: '',
           }}
-          validationSchema={ImpersonateUserSchema}
           onSubmit={handleSentInvite}
+          validationSchema={impersonateUserSchema}
           isInitialValid={false}
         >
           {({
@@ -337,13 +346,14 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
                   <TextField
                     required
                     id="username"
+                    name="username"
                     label={t('User Name, ID or Key/Relay Email')}
                     type="email"
                     value={username}
                     disabled={isSubmitting}
                     // eslint-disable-next-line jsx-a11y/no-autofocus
                     autoFocus={true}
-                    onChange={handleChange('username')}
+                    onChange={handleChange}
                     inputProps={{
                       'data-testid': 'inviteUsername',
                     }}

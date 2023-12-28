@@ -5,8 +5,8 @@ extend type Mutation {
 }
 
 input DeleteOrganizationInviteInput {
-  organizationId: String!
-  inviteId: String!
+  organizationId: ID!
+  inviteId: ID!
 }
 
 type DeleteOrganizationInviteResponse {

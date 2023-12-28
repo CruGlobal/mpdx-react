@@ -5,8 +5,8 @@ extend type Mutation {
 }
 
 input AdminDeleteOrganizationCoachInput {
-  accountListId: String!
-  coachId: String!
+  accountListId: ID!
+  coachId: ID!
 }
 
 type AdminDeleteOrganizationCoachResponse {
