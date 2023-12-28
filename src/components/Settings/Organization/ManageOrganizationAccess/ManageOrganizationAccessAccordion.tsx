@@ -88,6 +88,7 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
         organizationId: selectedOrganizationId,
       },
     },
+    skip: !selectedOrganizationId,
   });
   const { data: invitesData } = useOrganizationInvitesQuery({
     variables: {
@@ -95,6 +96,7 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
         organizationId: selectedOrganizationId,
       },
     },
+    skip: !selectedOrganizationId,
   });
 
   const admins = adminsData?.organizationAdmins;
