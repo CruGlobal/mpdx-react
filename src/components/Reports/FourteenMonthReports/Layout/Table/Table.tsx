@@ -124,7 +124,10 @@ export const FourteenMonthReportTable: React.FC<
                     <Box display="flex" alignItems="center">
                       {!isExpanded && <StyledInfoIcon fontSize="small" />}
                       <NameTypography variant="body1" expanded={isExpanded}>
-                        <Link onClick={() => onSelectContact(contact.id)}>
+                        <Link
+                          onClick={() => onSelectContact(contact.id)}
+                          underline="hover"
+                        >
                           {contact.name}
                         </Link>
                       </NameTypography>

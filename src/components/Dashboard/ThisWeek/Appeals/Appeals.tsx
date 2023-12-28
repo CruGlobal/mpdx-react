@@ -161,7 +161,6 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                           appeal?.amountCurrency,
                           locale,
                         )}
-                      {' ' + appeal?.amountCurrency}
                     </Box>
                   </Box>
                 </Typography>

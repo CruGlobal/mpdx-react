@@ -2,10 +2,10 @@ import React, { useMemo } from 'react';
 import { Box, Hidden, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
-import { StatusEnum as ContactPartnershipStatusEnum } from '../../../../graphql/types.generated';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import {
   ContactLateStatusEnum,

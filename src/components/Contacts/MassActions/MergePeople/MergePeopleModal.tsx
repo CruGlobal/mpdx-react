@@ -13,7 +13,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { Person } from '../../../../../graphql/types.generated';
+import { Person } from 'src/graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { useMassActionsMergePeopleMutation } from './MergePeople.generated';
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
+import userEvent from '@testing-library/user-event';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   ExpectedDonationRowFragment,
   GetExpectedMonthlyTotalsDocument,
@@ -33,9 +34,34 @@ it('renders donation table', async () => {
   const data = gqlMock<
     GetExpectedMonthlyTotalsQuery,
     GetExpectedMonthlyTotalsQueryVariables
-  >(GetExpectedMonthlyTotalsDocument, { variables: { accountListId: 'abc' } });
-
-  const { queryAllByRole, getAllByTestId } = render(
+  >(GetExpectedMonthlyTotalsDocument, {
+    variables: { accountListId: 'abc' },
+    mocks: {
+      expectedMonthlyTotalReport: {
+        received: {
+          donations: [
+            {
+              convertedCurrency: 'USD',
+              donationCurrency: 'CAD',
+              pledgeCurrency: 'CAD',
+              convertedAmount: 175,
+              donationAmount: 150.0,
+              pledgeAmount: 150.01,
+            },
+            {
+              convertedCurrency: 'USD',
+              donationCurrency: 'CAD',
+              pledgeCurrency: 'CAD',
+              convertedAmount: 176,
+              donationAmount: 156.0,
+              pledgeAmount: 156.01,
+            },
+          ],
+        },
+      },
+    },
+  });
+  const { queryAllByRole, getAllByTestId, getByText, getByTestId } = render(
     <ThemeProvider theme={theme}>
       <ExpectedMonthlyTotalReportTable
         accountListId={'abc'}
@@ -51,14 +77,36 @@ it('renders donation table', async () => {
   expect(queryAllByRole('button')[0]).toBeInTheDocument();
 
   expect(getAllByTestId('donationColumn')[0]).toBeInTheDocument();
+
+  expect(getByText('CA$150.01')).toBeInTheDocument();
+  expect(getByText('$175')).toBeInTheDocument();
+
+  expect(getByTestId('totalPartners')).toHaveTextContent('Show 2 Partners');
+
+  userEvent.click(getByText('Show 2 Partners'));
+  expect(getByTestId('totalPartners')).toHaveTextContent('');
 });
 
 it('renders non-donation table', async () => {
   const data = gqlMock<
     GetExpectedMonthlyTotalsQuery,
     GetExpectedMonthlyTotalsQueryVariables
-  >(GetExpectedMonthlyTotalsDocument, { variables: { accountListId: 'abc' } });
-
+  >(GetExpectedMonthlyTotalsDocument, {
+    variables: { accountListId: 'abc' },
+    mocks: {
+      expectedMonthlyTotalReport: {
+        likely: {
+          donations: [
+            {
+              convertedCurrency: 'CAD',
+              donationCurrency: 'CAD',
+              pledgeCurrency: 'CAD',
+            },
+          ],
+        },
+      },
+    },
+  });
   const { queryAllByRole, queryByTestId } = render(
     <ThemeProvider theme={theme}>
       <ExpectedMonthlyTotalReportTable

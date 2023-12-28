@@ -17,6 +17,7 @@ import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/News
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
+import { Activity } from './Activity/Activity';
 import { ActivitySummary } from './ActivitySummary/ActivitySummary';
 import { AppointmentResults } from './AppointmentResults/AppointmentResults';
 import { CoachingSidebar } from './CoachingSidebar';
@@ -210,6 +211,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 period={period}
               />
               <ActivitySummary accountListId={accountListId} period={period} />
+              <Activity
+                accountListId={accountListId}
+                accountListType={accountListType}
+                period={period}
+                currency={accountListData?.currency}
+                primaryAppeal={accountListData?.primaryAppeal ?? undefined}
+              />
             </CoachingItemContainer>
           </>
         )}

@@ -11,9 +11,9 @@ import {
   useMassActionsUpdateTasksMutation,
 } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
+import { ResultEnum } from 'src/graphql/types.generated';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
-import { ResultEnum } from '../../../../graphql/types.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { MassActionsDropdown } from './MassActionsDropdown';
 

@@ -24,7 +24,7 @@ it('renders with data', () => {
         totalLikely={data.expectedMonthlyTotalReport.likely.total}
         totalUnlikely={data.expectedMonthlyTotalReport.unlikely.total}
         total={1000}
-        currency={data.expectedMonthlyTotalReport.currency || ''}
+        currency={'USD'}
       />
     </ThemeProvider>,
   );

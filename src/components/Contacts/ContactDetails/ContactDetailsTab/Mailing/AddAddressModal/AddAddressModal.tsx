@@ -21,7 +21,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
+import { AddressCreateInput } from 'src/graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,

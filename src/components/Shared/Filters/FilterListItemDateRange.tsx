@@ -4,12 +4,9 @@ import TextField from '@mui/material/TextField';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { DateRangeInput, DaterangeFilter } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import {
-  DateRangeInput,
-  DaterangeFilter,
-} from '../../../../graphql/types.generated';
 
 interface Props {
   filter: DaterangeFilter;

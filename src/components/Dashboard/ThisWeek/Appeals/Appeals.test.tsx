@@ -70,19 +70,19 @@ describe('Appeals', () => {
     );
 
     expect(getByTestId('AppealsBoxName').textContent).toEqual('My Appeal');
-    expect(getByTestId('AppealsBoxAmount').textContent).toEqual('€5,000 EUR');
+    expect(getByTestId('AppealsBoxAmount').textContent).toEqual('€4,999.99');
     expect(
       getByTestId('AppealsTypographyPledgesAmountProcessedPercentage')
         .textContent,
     ).toEqual('20%');
     expect(
       getByTestId('AppealsTypographyPledgesAmountProcessed').textContent,
-    ).toEqual('€1,000');
+    ).toEqual('€999.99');
     expect(
       getByTestId('AppealsTypographyPledgesAmountTotalPercentage').textContent,
     ).toEqual('50%');
     expect(
       getByTestId('AppealsTypographyPledgesAmountTotal').textContent,
-    ).toEqual('€2,500');
+    ).toEqual('€2,499.99');
   });
 });

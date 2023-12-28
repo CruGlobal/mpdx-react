@@ -19,7 +19,7 @@ import { DefaultMockResolvers } from 'graphql-ergonomock/dist/mock';
 import { gql } from 'graphql-tag';
 import seedrandom from 'seedrandom';
 import { DeepPartial } from 'ts-essentials';
-import schema from '../../graphql/schema.graphql';
+import schema from 'src/graphql/schema.graphql';
 
 const seed = 'seed';
 const rng = seedrandom(seed);

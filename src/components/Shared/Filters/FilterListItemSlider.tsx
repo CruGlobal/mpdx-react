@@ -3,7 +3,7 @@ import { ListItem, ListItemText, Slider } from '@mui/material';
 import {
   NumericRangeFilter,
   NumericRangeInput,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 
 interface Props {
   filter: NumericRangeFilter;

@@ -11,7 +11,7 @@ import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
-} from '../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';

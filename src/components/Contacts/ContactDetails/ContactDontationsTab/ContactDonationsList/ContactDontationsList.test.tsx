@@ -37,7 +37,7 @@ describe('ContactDonationsList', () => {
   });
 
   it('test Renderer', async () => {
-    const { findByRole, getByRole } = render(
+    const { findByRole, getByRole, getAllByRole } = render(
       <GqlMockedProvider<{ ContactDonationsList: ContactDonationsListQuery }>
         mocks={{
           ContactDonationsList: {
@@ -53,6 +53,8 @@ describe('ContactDonationsList', () => {
                     amount: {
                       currency: 'USD',
                       convertedCurrency: 'EUR',
+                      amount: 10,
+                      convertedAmount: 9.9,
                     },
                   };
                 }),
@@ -86,5 +88,9 @@ describe('ContactDonationsList', () => {
       ).childElementCount,
     ).toMatchInlineSnapshot(`14`);
     // TODO: Fix toMatchInlineSnapshot to be `27`
+    const rows = getAllByRole('row');
+    const donationRow = rows[1];
+    expect(donationRow.children[1]).toHaveTextContent('$10');
+    expect(donationRow.children[2]).toHaveTextContent('€9.90');
   });
 });

@@ -21,7 +21,7 @@ import {
   ContactFilterSetInput,
   CreateOrUpdateOptionMutationInput,
   TaskFilterSetInput,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
 import Modal from '../../../common/Modal/Modal';
 import { UserOptionFragment } from '../FilterPanel.generated';

@@ -11,9 +11,9 @@ import {
   filterPanelTagsMock,
   savedFiltersMock,
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
+import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { ContactsContext, ContactsType } from './ContactsContext';
 import { ContactsPage } from './ContactsPage';
 

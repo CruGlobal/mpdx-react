@@ -1,5 +1,5 @@
 import { TFunction } from 'react-i18next';
-import { LikelyToGiveEnum } from '../../../graphql/types.generated';
+import { LikelyToGiveEnum } from 'src/graphql/types.generated';
 
 export const getLocalizedLikelyToGive = (
   t: TFunction,

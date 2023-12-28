@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { NotificationTypeTypeEnum } from '../../../../../../../graphql/types.generated';
+import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
 import {
   AcknowledgeAllUserNotificationsDocument,
   AcknowledgeAllUserNotificationsMutation,

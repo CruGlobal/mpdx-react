@@ -11,7 +11,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useTranslation } from 'react-i18next';
-import { MultiselectFilter } from '../../../../graphql/types.generated';
+import { MultiselectFilter } from 'src/graphql/types.generated';
 import { ReverseFiltersMap } from './FilterPanel';
 
 interface Props {

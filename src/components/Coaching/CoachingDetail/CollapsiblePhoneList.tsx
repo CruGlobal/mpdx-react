@@ -1,4 +1,4 @@
-import { PhoneNumber } from '../../../../graphql/types.generated';
+import { PhoneNumber } from 'src/graphql/types.generated';
 import { CollapsibleList } from './CollapsibleList';
 import {
   ContactInfoText,

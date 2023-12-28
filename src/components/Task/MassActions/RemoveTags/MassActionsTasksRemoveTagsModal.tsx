@@ -17,13 +17,10 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ContactUpdateInput, Task } from 'src/graphql/types.generated';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import theme from 'src/theme';
-import {
-  ContactUpdateInput,
-  Task,
-} from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {
   useGetTaskTagListQuery,

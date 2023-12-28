@@ -22,7 +22,7 @@ import {
 import {
   ContactCreateInput,
   PersonCreateInput,
-} from '../../../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { useCreateContactMutation } from './CreateContact.generated';
 
 interface Props {

@@ -36,6 +36,11 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import {
+  ActivityTypeEnum,
+  ResultEnum,
+  TaskCreateInput,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
@@ -43,11 +48,6 @@ import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import {
-  ActivityTypeEnum,
-  ResultEnum,
-  TaskCreateInput,
-} from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { possibleNextActions } from '../PossibleNextActions';

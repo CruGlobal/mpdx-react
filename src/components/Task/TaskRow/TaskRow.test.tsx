@@ -2,11 +2,11 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ResultEnum } from 'src/graphql/types.generated';
 import {
   GqlMockedProvider,
   gqlMock,
 } from '../../../../__tests__/util/graphqlMocking';
-import { ResultEnum } from '../../../../graphql/types.generated';
 import useTaskModal from '../../../hooks/useTaskModal';
 import theme from '../../../theme';
 import { TaskRow } from './TaskRow';

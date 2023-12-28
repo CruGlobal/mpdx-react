@@ -15,8 +15,8 @@ import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/Ma
 import { MassActionsMergeModal } from 'src/components/Contacts/MassActions/Merge/MassActionsMergeModal';
 import { MassActionsRemoveTagsModal } from 'src/components/Contacts/MassActions/RemoveTags/MassActionsRemoveTagsModal';
 import { HideContactsModal } from 'src/components/Shared/HideContactsModal/HideContactsModal';
+import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { StatusEnum } from '../../../../graphql/types.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { TableViewModeEnum } from '../Header/ListHeader';
 import { MassActionsDropdown } from './MassActionsDropdown';

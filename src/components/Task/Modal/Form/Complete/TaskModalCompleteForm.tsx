@@ -27,17 +27,17 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import {
+  ActivityTypeEnum,
+  ResultEnum,
+  TaskUpdateInput,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import {
-  ActivityTypeEnum,
-  ResultEnum,
-  TaskUpdateInput,
-} from '../../../../../../graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';

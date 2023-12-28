@@ -4,11 +4,11 @@ import ViewList from '@mui/icons-material/ViewList';
 import { Box, Checkbox, Hidden, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import theme from 'src/theme';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import theme from 'src/theme';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { ContactsMassActionsDropdown } from '../MassActions/ContactsMassActionsDropdown';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';

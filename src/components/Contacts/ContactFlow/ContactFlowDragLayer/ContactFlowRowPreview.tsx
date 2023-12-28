@@ -3,7 +3,7 @@ import Star from '@mui/icons-material/Star';
 import StarBorder from '@mui/icons-material/StarBorder';
 import { Avatar, Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { IdValue } from '../../../../../graphql/types.generated';
+import { IdValue } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 
 interface Props {

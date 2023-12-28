@@ -1,0 +1,43 @@
+query CoachingDetailActivity($accountListId: ID!, $dateRange: String!) {
+  accountListAnalytics(accountListId: $accountListId, dateRange: $dateRange) {
+    appointments {
+      completed
+    }
+    contacts {
+      active
+      referrals
+      referralsOnHand
+    }
+    correspondence {
+      precall
+      reminders
+      supportLetters
+      thankYous
+      newsletters
+    }
+    electronic {
+      appointments
+      received
+      sent
+    }
+    email {
+      received
+      sent
+    }
+    facebook {
+      received
+      sent
+    }
+    phone {
+      attempted
+      appointments
+      completed
+      received
+      talkToInPerson
+    }
+    textMessage {
+      received
+      sent
+    }
+  }
+}

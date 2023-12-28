@@ -31,16 +31,22 @@ export const percentageFormat = (value: number, locale: string): string =>
     style: 'percent',
   }).format(Number.isFinite(value) ? value : 0);
 
+// When we upgrade to Node 20 we can utilize this option for currencyFormat:
+//trailingZeroDisplay: 'stripIfInteger',
 export const currencyFormat = (
   value: number,
   currency: string | null | undefined,
   locale: string,
-): string =>
-  new Intl.NumberFormat(locale, {
+): string => {
+  const amount = Number.isNaN(value) ? 0 : value;
+  const decimal = amount % 1 !== 0;
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currency ?? 'USD',
-    maximumFractionDigits: 0,
-  }).format(Number.isFinite(value) ? value : 0);
+    minimumFractionDigits: decimal ? 2 : 0,
+    maximumFractionDigits: decimal ? 2 : 0,
+  }).format(Number.isFinite(amount) ? amount : 0);
+};
 
 export const dayMonthFormat = (
   day: number,

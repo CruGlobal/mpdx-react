@@ -12,7 +12,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SendNewsletterEnum } from '../../../../graphql/types.generated';
+import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';

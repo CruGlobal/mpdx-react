@@ -7,15 +7,12 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { LoadConstantsDocument } from 'src/components/Constants/LoadConstants.generated';
+import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
 import {
   render,
   waitFor,
 } from '../../../../../../__tests__/util/testingLibraryReactMock';
-import {
-  PledgeFrequencyEnum,
-  StatusEnum,
-} from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
 import {
   ContactDonorAccountsFragment,
