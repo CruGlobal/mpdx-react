@@ -3,7 +3,7 @@ import {
   PartnerGivingAnalysisReport,
   PartnerGivingAnalysisReportContact,
   PartnerGivingAnalysisReportPagination,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 
 const partnerGivingAnalysisSchema = object({
   data: array()

@@ -4,8 +4,8 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import TestRouter from '../../../../../../__tests__/util/TestRouter';
-import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
 import theme from '../../../../../theme';
 import { UnusedStatusesColumn } from './UnusedStatusesColumn';
 

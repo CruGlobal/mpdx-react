@@ -19,12 +19,12 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import {
   Contact,
   ContactUpdateInput,
   SendNewsletterEnum,
-} from '../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import Modal from '../../../../../common/Modal/Modal';
 import { useEditMailingInfoMutation } from './EditMailingInfoModal.generated';
 

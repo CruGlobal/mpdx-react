@@ -1,4 +1,6 @@
 import { NextPage } from 'next';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { Box } from '@mui/material';
@@ -12,7 +14,6 @@ import { ErrorBoundary, Provider } from '@rollbar/react';
 import { AnimatePresence } from 'framer-motion';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-import Head from 'next/head';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import Rollbar from 'rollbar';
@@ -32,7 +33,6 @@ import client from '../src/lib/client';
 import i18n from '../src/lib/i18n';
 import theme from '../src/theme';
 import { AdapterLuxon } from './api/utils/AdapterLuxon';
-import type { AppProps } from 'next/app';
 import './helpscout.css';
 import './print.css';
 

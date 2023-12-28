@@ -7,8 +7,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useJsApiLoader } from '@react-google-maps/api';
+import { AddressCreateInput } from 'src/graphql/types.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
-import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
 
 interface MapsApi {
   autocompleteService: google.maps.places.AutocompleteService;
@@ -181,6 +181,7 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
           <TextField
             {...params}
             {...TextFieldProps}
+            multiline
             onChange={(event) => {
               const street = event.target.value;
               onStreetChange(street);

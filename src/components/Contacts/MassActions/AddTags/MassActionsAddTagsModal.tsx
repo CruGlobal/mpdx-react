@@ -19,8 +19,8 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ContactUpdateInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { ContactUpdateInput } from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {
   ContactTagIcon,

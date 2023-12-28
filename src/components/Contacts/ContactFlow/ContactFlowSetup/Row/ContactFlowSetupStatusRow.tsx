@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
-import { ContactFilterStatusEnum } from '../../../../../../graphql/types.generated';
+import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 
 export const StatusRow = styled(Box)(() => ({

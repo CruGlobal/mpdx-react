@@ -4,7 +4,7 @@ schema:
   - ./pages/api/Schema/**/*.graphql
 documents: '**/*.graphql'
 generates:
-  ./graphql/types.generated.ts:
+  ./src/graphql/types.generated.ts:
     plugins:
       - add:
           content: '/* eslint-disable */'
@@ -16,7 +16,7 @@ generates:
   ./:
     preset: near-operation-file
     presetConfig:
-      baseTypesPath: graphql/types.generated.ts
+      baseTypesPath: src/graphql/types.generated.ts
     plugins:
       - add:
           content: '/* eslint-disable */'
@@ -24,12 +24,12 @@ generates:
       - typescript-react-apollo
     config:
       preResolveTypes: false
-  ./graphql/schema.graphql:
+  ./src/graphql/schema.graphql:
     plugins:
       - schema-ast
     config:
       federation: true
-  ./graphql/possibleTypes.generated.ts:
+  ./src/graphql/possibleTypes.generated.ts:
     plugins:
       - fragment-matcher
 hooks:

@@ -1,9 +1,9 @@
+import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import { sortBy } from 'lodash';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
@@ -52,6 +52,9 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
+    context: {
+      doNotBatch: true,
+    },
   });
 
   const filterGroups = useMemo(() => {

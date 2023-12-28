@@ -1,6 +1,6 @@
+import { useRouter } from 'next/router';
 import * as React from 'react';
 import { DialogActions, DialogContent, Typography } from '@mui/material';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ContactFiltersDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';

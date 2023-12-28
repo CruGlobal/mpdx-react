@@ -2,8 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { FourteenMonthReportCurrencyType } from '../../../../../../graphql/types.generated';
 import { FourteenMonthReportHeader } from './Header';
 
 const title = 'test title';

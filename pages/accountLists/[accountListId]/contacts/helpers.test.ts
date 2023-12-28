@@ -3,7 +3,7 @@ import {
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { coordinatesFromContacts, getRedirectPathname } from './helpers';
 
 const accountListId = 'account-list-1';

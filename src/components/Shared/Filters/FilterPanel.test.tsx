@@ -4,9 +4,9 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ContactFilterStatusEnum } from '../../../../graphql/types.generated';
 import { FilterPanel, FilterPanelProps } from './FilterPanel';
 import {
   filterPanelDefaultMock,

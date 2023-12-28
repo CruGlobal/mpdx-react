@@ -1,3 +1,5 @@
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -12,12 +14,10 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { FilterOption } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { FilterOption } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { frequencies } from './InputOptions/Frequencies';
 import { StyledInput } from './StyledInput';

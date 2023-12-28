@@ -28,9 +28,9 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 
 interface Props {

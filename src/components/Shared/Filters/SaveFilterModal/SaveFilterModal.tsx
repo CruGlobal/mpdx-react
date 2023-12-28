@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import {
   CircularProgress,
@@ -9,7 +10,6 @@ import {
   Typography,
 } from '@mui/material';
 import { Field, FieldProps, Form, Formik } from 'formik';
-import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -21,7 +21,7 @@ import {
   ContactFilterSetInput,
   CreateOrUpdateOptionMutationInput,
   TaskFilterSetInput,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
 import Modal from '../../../common/Modal/Modal';
 import { UserOptionFragment } from '../FilterPanel.generated';

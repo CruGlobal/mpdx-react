@@ -40,6 +40,14 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
+import {
+  ActivityTypeEnum,
+  NotificationTimeUnitEnum,
+  NotificationTypeEnum,
+  ResultEnum,
+  TaskCreateInput,
+  TaskUpdateInput,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
@@ -50,14 +58,6 @@ import {
 } from 'src/utils/functions/getLocalizedNotificationStrings';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import {
-  ActivityTypeEnum,
-  NotificationTimeUnitEnum,
-  NotificationTypeEnum,
-  ResultEnum,
-  TaskCreateInput,
-  TaskUpdateInput,
-} from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';

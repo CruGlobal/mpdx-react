@@ -1,7 +1,4 @@
-import {
-  ActivityTypeEnum,
-  ResultEnum,
-} from '../../../../../graphql/types.generated';
+import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
 
 export const possibleResults = (
   activityType: ActivityTypeEnum,

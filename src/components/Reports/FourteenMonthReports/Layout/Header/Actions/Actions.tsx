@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { CSVLink } from 'react-csv';
 import { useTranslation } from 'react-i18next';
-import { FourteenMonthReportCurrencyType } from '../../../../../../../graphql/types.generated';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 
 interface FourteenMonthReportActionsProps {
   csvData: ((string | undefined)[] | (string | number)[])[];

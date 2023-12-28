@@ -1,10 +1,7 @@
 import React, { ReactElement, useState } from 'react';
 import { DialogContent, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import {
-  TaskCreateInput,
-  TaskUpdateInput,
-} from '../../../../graphql/types.generated';
+import { TaskCreateInput, TaskUpdateInput } from 'src/graphql/types.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import Loading from '../../Loading';
 import Modal from '../../common/Modal/Modal';

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   NumericRangeFilter,
   NumericRangeInput,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 
 interface Props {
   filter: NumericRangeFilter;

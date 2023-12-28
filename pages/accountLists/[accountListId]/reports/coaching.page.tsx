@@ -1,5 +1,5 @@
-import React, { ReactElement, useEffect } from 'react';
 import Head from 'next/head';
+import React, { ReactElement, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AccountListTypeEnum,

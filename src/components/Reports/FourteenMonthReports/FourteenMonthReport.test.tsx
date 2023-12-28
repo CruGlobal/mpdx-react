@@ -4,8 +4,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { FourteenMonthReportCurrencyType } from '../../../../graphql/types.generated';
 import { FourteenMonthReport } from './FourteenMonthReport';
 import {
   FourteenMonthReportDocument,

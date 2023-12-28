@@ -24,16 +24,16 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import {
+  LikelyToGiveEnum,
+  SendNewsletterEnum,
+  StatusEnum,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
-import {
-  LikelyToGiveEnum,
-  SendNewsletterEnum,
-  StatusEnum,
-} from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
 

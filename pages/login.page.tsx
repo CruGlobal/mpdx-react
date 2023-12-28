@@ -1,10 +1,10 @@
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import React, { ReactElement, useEffect } from 'react';
 import SubjectIcon from '@mui/icons-material/Subject';
 import { Button } from '@mui/material';
 import i18n from 'i18next';
 import { getSession, signIn } from 'next-auth/react';
-import Head from 'next/head';
 import BaseLayout from '../src/components/Layouts/Basic';
 import Loading from '../src/components/Loading';
 import Welcome from '../src/components/Welcome';

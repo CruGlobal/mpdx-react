@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import {
   Button,
@@ -16,13 +17,12 @@ import {
 import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { numberFormat } from 'src/lib/intlFormat/intlFormat';
-import { StatusEnum } from '../../../../../graphql/types.generated';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';

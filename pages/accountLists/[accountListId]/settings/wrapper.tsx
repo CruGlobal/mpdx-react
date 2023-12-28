@@ -1,7 +1,7 @@
+import Head from 'next/head';
 import React, { useState } from 'react';
 import { Box, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Head from 'next/head';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
   HeaderTypeEnum,

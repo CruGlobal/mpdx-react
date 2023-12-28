@@ -1,9 +1,9 @@
+import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
-import { useRouter } from 'next/router';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { ContactsProvider } from './ContactsContext';
 
 interface Props {

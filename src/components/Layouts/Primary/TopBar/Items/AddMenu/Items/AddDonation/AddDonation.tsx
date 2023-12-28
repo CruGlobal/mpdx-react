@@ -16,7 +16,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { FastField, Field, FieldProps, Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -27,9 +27,9 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { DonationCreateInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { DonationCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
   useAddDonationMutation,
@@ -124,6 +124,10 @@ export const AddDonation = ({
   });
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
+
+  const newDesignationAccounts =
+    data?.designationAccounts &&
+    data?.designationAccounts.flatMap((x) => x.designationAccounts);
 
   const initialDonation: Omit<DonationCreateInput, 'id'> = {
     amount: 0,
@@ -306,7 +310,7 @@ export const AddDonation = ({
                     <FastField name="donationDate">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <MobileDatePicker
+                          <DatePicker
                             renderInput={(params) => (
                               <TextField
                                 id="date-input"
@@ -425,16 +429,14 @@ export const AddDonation = ({
                             autoSelect
                             autoHighlight
                             options={
-                              (data?.designationAccounts &&
-                                data?.designationAccounts[0]?.designationAccounts.map(
-                                  ({ id }) => id,
-                                )) ??
+                              (newDesignationAccounts &&
+                                newDesignationAccounts.map(({ id }) => id)) ??
                               []
                             }
                             getOptionLabel={(accountId): string => {
                               const account =
-                                data?.designationAccounts &&
-                                data?.designationAccounts[0]?.designationAccounts.find(
+                                newDesignationAccounts &&
+                                newDesignationAccounts.find(
                                   ({ id }) => id === accountId,
                                 );
                               return account

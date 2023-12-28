@@ -19,9 +19,9 @@ import {
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { GoogleAccountIntegration } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { GoogleAccountIntegration } from '../../../../../../graphql/types.generated';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import {
   GoogleAccountIntegrationsDocument,

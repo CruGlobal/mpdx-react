@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -15,15 +16,14 @@ import {
 import Skeleton from '@mui/material/Skeleton';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
-import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { numberFormat } from 'src/lib/intlFormat/intlFormat';
 import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
-import { ActivityTypeEnum } from '../../../../../graphql/types.generated';
 import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import AnimatedCard from '../../../AnimatedCard';
 import TaskStatus from '../../../Task/Status';

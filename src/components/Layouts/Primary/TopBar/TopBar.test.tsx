@@ -1,8 +1,8 @@
+import * as nextRouter from 'next/router';
 import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import * as nextRouter from 'next/router';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '../../../../../__tests__/util/TestRouter';
 import theme from '../../../../theme';

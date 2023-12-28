@@ -1,3 +1,4 @@
+import { NextRouter, useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -8,11 +9,10 @@ import React, {
   useState,
 } from 'react';
 import _, { debounce } from 'lodash';
-import { NextRouter, useRouter } from 'next/router';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { ContactFilterSetInput } from '../../../../graphql/types.generated';
 import { useUpdateUserOptionsMutation } from '../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { useGetUserOptionsQuery } from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
@@ -256,6 +256,9 @@ export const ContactsProvider: React.FC<Props> = ({
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
+    context: {
+      doNotBatch: true,
+    },
   });
 
   const toggleFilterPanel = () => {

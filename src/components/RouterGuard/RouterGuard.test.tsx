@@ -1,7 +1,7 @@
+import * as nextRouter from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
-import * as nextRouter from 'next/router';
 import { SnackbarProvider } from 'notistack';
 import theme from '../../theme';
 import { RouterGuard } from './RouterGuard';

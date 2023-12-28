@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -8,7 +9,6 @@ import {
   Typography,
 } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
-import NextLink from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useAccountListId } from 'src/hooks/useAccountListId';

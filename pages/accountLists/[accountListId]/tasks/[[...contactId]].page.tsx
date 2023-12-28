@@ -1,3 +1,5 @@
+import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -5,18 +7,16 @@ import { Box, Button, ButtonGroup, Hidden } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import theme from 'src/theme';
-import { TaskFilterSetInput } from '../../../../graphql/types.generated';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import Loading from '../../../../src/components/Loading';
@@ -161,6 +161,9 @@ const TasksPage: React.FC = () => {
       tasksFilter,
     },
     skip: !accountListId,
+    context: {
+      doNotBatch: true,
+    },
   });
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { EmailAddress } from '../../../../graphql/types.generated';
+import { EmailAddress } from 'src/graphql/types.generated';
 import { CollapsibleList } from './CollapsibleList';
 import {
   ContactInfoText,

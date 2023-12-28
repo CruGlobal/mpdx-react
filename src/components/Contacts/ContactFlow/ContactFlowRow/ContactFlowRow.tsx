@@ -3,7 +3,7 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { IdValue } from '../../../../../graphql/types.generated';
+import { IdValue } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 

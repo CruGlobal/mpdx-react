@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -9,7 +10,6 @@ import {
   Typography,
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';

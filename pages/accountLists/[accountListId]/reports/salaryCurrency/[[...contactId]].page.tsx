@@ -1,8 +1,8 @@
+import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
@@ -12,11 +12,11 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
-import { FourteenMonthReportCurrencyType } from '../../../../../graphql/types.generated';
 import { ContactsPage } from '../../contacts/ContactsPage';
 
 const SalaryCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({

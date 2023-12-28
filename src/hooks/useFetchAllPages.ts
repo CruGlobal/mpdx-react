@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { QueryResult } from '@apollo/client';
-import { PageInfo } from '../../graphql/types.generated';
+import { PageInfo } from 'src/graphql/types.generated';
 
 export interface Variables {
   after?: string;
