@@ -12,7 +12,7 @@ import {
   OrganizationAdminsQuery,
   OrganizationInvitesQuery,
 } from './ManageOrganizationAccess.generated';
-import { ManageOrganizationAccessAccordian } from './ManageOrganizationAccessAccordian';
+import { ManageOrganizationAccessAccordion } from './ManageOrganizationAccessAccordion';
 
 jest.mock('next-auth/react');
 
@@ -83,7 +83,7 @@ const OrganizationInvitesMock = {
   },
 };
 
-describe('ManageOrganizationAccessAccordian', () => {
+describe('ManageOrganizationAccessAccordion', () => {
   const fetch = jest.fn().mockResolvedValue({
     json: () => Promise.resolve({ errors: [] }),
     status: 200,
@@ -92,11 +92,11 @@ describe('ManageOrganizationAccessAccordian', () => {
     window.fetch = fetch;
   });
 
-  it('should render accordian closed', async () => {
+  it('should render accordion closed', async () => {
     const { queryByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ManageOrganizationAccessAccordian
+          <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -127,7 +127,7 @@ describe('ManageOrganizationAccessAccordian', () => {
             },
           }}
         >
-          <ManageOrganizationAccessAccordian
+          <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Manage Organization Access'}
           />
@@ -162,7 +162,7 @@ describe('ManageOrganizationAccessAccordian', () => {
             ...OrganizationInvitesMock,
           }}
         >
-          <ManageOrganizationAccessAccordian
+          <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Manage Organization Access'}
           />
@@ -209,7 +209,7 @@ describe('ManageOrganizationAccessAccordian', () => {
             ...OrganizationInvitesMock,
           }}
         >
-          <ManageOrganizationAccessAccordian
+          <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Manage Organization Access'}
           />
@@ -270,7 +270,7 @@ describe('ManageOrganizationAccessAccordian', () => {
             },
           }}
         >
-          <ManageOrganizationAccessAccordian
+          <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Manage Organization Access'}
           />

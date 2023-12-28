@@ -3,8 +3,8 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { Autocomplete, Box, Skeleton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { ImpersonateUserAccordian } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordian';
-import { ManageOrganizationAccessAccordian } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordian';
+import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordion';
+import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import * as Types from 'src/graphql/types.generated';
 import { suggestArticles } from 'src/lib/helpScout';
@@ -129,12 +129,12 @@ const Organizations = (): ReactElement => {
           </HeaderAndDropdown>
         )}
         <AccordionGroup title={t('External Services')}>
-          <ImpersonateUserAccordian
+          <ImpersonateUserAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
           />
 
-          <ManageOrganizationAccessAccordian
+          <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
           />

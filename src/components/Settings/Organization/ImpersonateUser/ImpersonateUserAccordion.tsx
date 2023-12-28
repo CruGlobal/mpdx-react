@@ -22,18 +22,18 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
-import { AccordianProps } from '../../accordianHelper';
+import { AccordionProps } from '../../accordionHelper';
 
 const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
 }));
 
-export const ImpersonateUserAccordian: React.FC<AccordianProps> = ({
+export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-  const accordianName = t('Impersonate User');
+  const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
   const [userId, setUserID] = useState('');
@@ -103,10 +103,10 @@ export const ImpersonateUserAccordian: React.FC<AccordianProps> = ({
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
-      label={accordianName}
+      label={accordionName}
       value={''}
     >
-      <StyledFormLabel>{accordianName}</StyledFormLabel>
+      <StyledFormLabel>{accordionName}</StyledFormLabel>
       <Typography>
         {t(
           `This will log you in on behalf of the user specified below. You will be able to see what the user sees on {{appName}}.

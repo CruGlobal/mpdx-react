@@ -29,7 +29,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
-import { AccordianProps } from '../../accordianHelper';
+import { AccordionProps } from '../../accordionHelper';
 import {
   OrganizationAdminsDocument,
   OrganizationAdminsQuery,
@@ -56,12 +56,12 @@ const StyledListItem = styled(ListItem)(() => ({
     background: theme.palette.cruGrayLight.main,
   },
 }));
-export const ManageOrganizationAccessAccordian: React.FC<AccordianProps> = ({
+export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-  const accordianName = t('Manage Organization Access');
+  const accordionName = t('Manage Organization Access');
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
   const locale = useLocale();
@@ -240,7 +240,7 @@ export const ManageOrganizationAccessAccordian: React.FC<AccordianProps> = ({
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
-      label={accordianName}
+      label={accordionName}
       value={''}
     >
       <Typography>

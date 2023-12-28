@@ -7,7 +7,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { OrganizationsContextProvider } from 'pages/accountLists/[accountListId]/settings/organizations.page';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import { ImpersonateUserAccordian } from './ImpersonateUserAccordian';
+import { ImpersonateUserAccordion } from './ImpersonateUserAccordion';
 
 jest.mock('next-auth/react');
 
@@ -44,7 +44,7 @@ const Components = ({ children }: PropsWithChildren) => (
   </SnackbarProvider>
 );
 
-describe('ImpersonateUserAccordian', () => {
+describe('ImpersonateUserAccordion', () => {
   const fetch = jest.fn().mockResolvedValue({
     json: () => Promise.resolve({ errors: [] }),
     status: 200,
@@ -53,11 +53,11 @@ describe('ImpersonateUserAccordian', () => {
     window.fetch = fetch;
   });
 
-  it('should render accordian closed', async () => {
+  it('should render accordion closed', async () => {
     const { getAllByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ImpersonateUserAccordian
+          <ImpersonateUserAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={''}
           />
@@ -73,7 +73,7 @@ describe('ImpersonateUserAccordian', () => {
     const { getAllByText, getByTestId } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
-          <ImpersonateUserAccordian
+          <ImpersonateUserAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={'Impersonate User'}
           />
