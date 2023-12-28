@@ -15,16 +15,16 @@ export enum AccountListItemType {
   COACH = 'coach',
   USER = 'user',
 }
+
+type UserOrCoach =
+  | Types.AccountListUsers
+  | Types.OrganizationAccountListCoaches;
+
 interface Props {
   name: string;
-  accountListItems:
-    | Types.Maybe<Types.OrganizationAccountListCoaches>[]
-    | Types.Maybe<Types.AccountListUsers>[];
+  accountListItems: Array<Types.Maybe<UserOrCoach>>;
   type: AccountListItemType;
-  handleDelete: (
-    item: Types.AccountListUsers | Types.OrganizationAccountListCoaches,
-    type: AccountListItemType,
-  ) => Promise<void>;
+  handleDelete: (item: UserOrCoach, type: AccountListItemType) => Promise<void>;
 }
 
 const BorderBottomBox = styled(Box)(() => ({
@@ -50,56 +50,106 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
     <>
       {!accountListItems?.length && null}
 
-      {accountListItems &&
-        accountListItems?.map((item, idx) => {
-          const emails =
-            type === AccountListItemType.USER
-              ? item.userEmailAddresses
-              : item.coachEmailAddresses;
+      {accountListItems?.map((item, idx) => {
+        if (!item || !item.__typename) {
+          return null;
+        }
 
-          return (
-            <BorderBottomBox key={`designationAccounts-coaches-${idx}`}>
-              <Typography component="span">
-                <Box sx={{ fontWeight: 'bold', m: 1 }}>
-                  {type === AccountListItemType.USER &&
-                    `${item?.userFirstName} ${item?.userLastName}`}
-                  {type === AccountListItemType.COACH &&
-                    `${item?.coachFirstName} ${item?.coachLastName}`}
+        const emails =
+          item.__typename === 'AccountListUsers'
+            ? item.userEmailAddresses
+            : item.__typename === 'OrganizationAccountListCoaches'
+            ? item.coachEmailAddresses
+            : [];
+
+        return (
+          <BorderBottomBox key={`designationAccounts-coaches-${idx}`}>
+            <Typography component="span">
+              <Box sx={{ fontWeight: 'bold', m: 1 }}>
+                {item.__typename === 'AccountListUsers' &&
+                  `${item.userFirstName} ${item.userLastName}`}
+                {item.__typename === 'OrganizationAccountListCoaches' &&
+                  `${item.coachFirstName} ${item.coachLastName}`}
+              </Box>
+              <Box
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Box>
+                  {emails &&
+                    emails.map((email, idx) => {
+                      if (!email?.id) return null;
+
+                      return (
+                        <Box
+                          key={`email-${email?.id}-${idx}`}
+                          sx={{ fontWeight: 'regular', m: 1 }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Link href={`mailto:${email?.email}`}>
+                            {email?.email}
+                          </Link>
+                          {email?.primary && (
+                            <ContactAddressPrimaryText data-testid="ContactAddressPrimaryText">
+                              - {t('Primary')}
+                            </ContactAddressPrimaryText>
+                          )}
+                        </Box>
+                      );
+                    })}
                 </Box>
-                <Box
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Box>
-                    {emails &&
-                      emails.map((email, idx) => {
-                        if (!email.id) return null;
-                        return (
-                          <Box
-                            key={`email-${email?.id}-${idx}`}
-                            sx={{ fontWeight: 'regular', m: 1 }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                            }}
-                          >
-                            <Link href={`mailto:${email?.email}`}>
-                              {email?.email}
-                            </Link>
-                            {email?.primary && (
-                              <ContactAddressPrimaryText data-testid="ContactAddressPrimaryText">
-                                - {t('Primary')}
-                              </ContactAddressPrimaryText>
-                            )}
-                          </Box>
-                        );
-                      })}
-                  </Box>
 
-                  {type === AccountListItemType.USER && item?.allowDeletion && (
+                {item.__typename === 'AccountListUsers' && item.allowDeletion && (
+                  <IconButton
+                    aria-label={t('Delete')}
+                    color="error"
+                    onClick={() => setDeleteUserDialogOpen(true)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                )}
+                {item.__typename === 'AccountListUsers' && !item.allowDeletion && (
+                  <Tooltip
+                    title={t(
+                      'User has been granted access to this account list by donation services',
+                    )}
+                    placement={'top'}
+                    arrow
+                    data-testid="InformationButton"
+                  >
+                    <IconButton
+                      aria-label={t('Information')}
+                      color="primary"
+                      size="small"
+                    >
+                      <HelpOutlineIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {item.__typename === 'AccountListUsers' && item.allowDeletion && (
+                  <Confirmation
+                    isOpen={deleteUserDialogOpen}
+                    title={t('Confirm')}
+                    message={t(
+                      'Are you sure you want to remove {{user}} as a user from {{accountList}}?',
+                      {
+                        user: item.userFirstName,
+                        accountList: name,
+                      },
+                    )}
+                    handleClose={() => setDeleteUserDialogOpen(false)}
+                    mutation={() => handleDelete(item, type)}
+                  />
+                )}
+
+                {item.__typename === 'OrganizationAccountListCoaches' && (
+                  <>
                     <IconButton
                       aria-label={t('Delete')}
                       color="error"
@@ -107,71 +157,26 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                     >
                       <DeleteIcon />
                     </IconButton>
-                  )}
-                  {type === AccountListItemType.USER && !item?.allowDeletion && (
-                    <Tooltip
-                      title={t(
-                        'User has been granted access to this account list by donation services',
-                      )}
-                      placement={'top'}
-                      arrow
-                      data-testid="InformationButton"
-                    >
-                      <IconButton
-                        aria-label={t('Information')}
-                        color="primary"
-                        size="small"
-                      >
-                        <HelpOutlineIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {type === AccountListItemType.USER && item?.allowDeletion && (
                     <Confirmation
                       isOpen={deleteUserDialogOpen}
                       title={t('Confirm')}
                       message={t(
-                        'Are you sure you want to remove {{user}} as a user from {{accountList}}?',
+                        'Are you sure you want to remove {{coach}} as a coach from {{accountList}}?',
                         {
-                          user: item?.userFirstName,
+                          coach: item.coachFirstName,
                           accountList: name,
                         },
                       )}
                       handleClose={() => setDeleteUserDialogOpen(false)}
                       mutation={() => handleDelete(item, type)}
                     />
-                  )}
-
-                  {type === AccountListItemType.COACH && (
-                    <>
-                      <IconButton
-                        aria-label={t('Delete')}
-                        color="error"
-                        onClick={() => setDeleteUserDialogOpen(true)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-
-                      <Confirmation
-                        isOpen={deleteUserDialogOpen}
-                        title={t('Confirm')}
-                        message={t(
-                          'Are you sure you want to remove {{coach}} as a coach from {{accountList}}?',
-                          {
-                            coach: item?.coachFirstName,
-                            accountList: name,
-                          },
-                        )}
-                        handleClose={() => setDeleteUserDialogOpen(false)}
-                        mutation={() => handleDelete(item, type)}
-                      />
-                    </>
-                  )}
-                </Box>
-              </Typography>
-            </BorderBottomBox>
-          );
-        })}
+                  </>
+                )}
+              </Box>
+            </Typography>
+          </BorderBottomBox>
+        );
+      })}
     </>
   );
 };

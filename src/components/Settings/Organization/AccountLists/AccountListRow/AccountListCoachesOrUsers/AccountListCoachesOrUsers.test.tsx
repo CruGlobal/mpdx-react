@@ -42,6 +42,7 @@ const Components = ({ children }: PropsWithChildren) => (
 
 const userAccountListItems = [
   {
+    __typename: 'AccountListUsers' as const,
     id: 'e8a19920',
     userFirstName: 'userFirstName1',
     userLastName: 'userLastName1',
@@ -55,6 +56,7 @@ const userAccountListItems = [
     ],
   },
   {
+    __typename: 'AccountListUsers' as const,
     id: '9ef19920',
     userFirstName: 'userFirstName2',
     userLastName: 'userLastName2',
@@ -71,6 +73,7 @@ const userAccountListItems = [
 
 const coachAccountListItems = [
   {
+    __typename: 'OrganizationAccountListCoaches' as const,
     id: 'd10e6360',
     coachFirstName: 'coachFirstName1',
     coachLastName: 'coachLastName1',
@@ -125,7 +128,6 @@ describe('AccountLists', () => {
     );
 
     expect(queryByTestId('DeleteIcon')).not.toBeInTheDocument();
-    expect(getByTestId('InformationButton')).toBeInTheDocument();
     userEvent.hover(getByTestId('InformationButton'));
     await waitFor(() => {
       expect(

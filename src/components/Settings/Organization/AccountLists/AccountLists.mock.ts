@@ -28,6 +28,7 @@ export class AccountListsMocks {
     ],
     accountListUsers: [
       {
+        __typename: 'AccountListUsers',
         id: 'e8a19920',
         userFirstName: 'userFirstName',
         userLastName: 'userLastName',
@@ -43,6 +44,7 @@ export class AccountListsMocks {
     ],
     accountListCoaches: [
       {
+        __typename: 'OrganizationAccountListCoaches',
         id: 'd10e6360',
         coachFirstName: 'coachFirstName',
         coachLastName: 'coachLastName',
