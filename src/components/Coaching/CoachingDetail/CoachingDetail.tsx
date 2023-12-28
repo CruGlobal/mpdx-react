@@ -15,6 +15,7 @@ import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
+import { Activity } from './Activity/Activity';
 import { ActivitySummary } from './ActivitySummary/ActivitySummary';
 import { AppointmentResults } from './AppointmentResults/AppointmentResults';
 import { CollapsibleEmailList } from './CollapsibleEmailList';
@@ -349,6 +350,13 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 accountListId={accountListId}
                 period={period}
                 association={ReportsTagHistoriesAssociationEnum.Tasks}
+              />
+              <Activity
+                accountListId={accountListId}
+                accountListType={accountListType}
+                period={period}
+                currency={accountListData?.currency}
+                primaryAppeal={accountListData?.primaryAppeal ?? undefined}
               />
             </CoachingItemContainer>
           </>
