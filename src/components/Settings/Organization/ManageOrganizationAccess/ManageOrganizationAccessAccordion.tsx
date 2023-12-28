@@ -102,7 +102,10 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
   const admins = adminsData?.organizationAdmins;
   const invites = invitesData?.organizationInvites;
 
-  const handleSentInvite = async (attributes: ImpersonateUserFormType) => {
+  const handleSentInvite = async (
+    attributes: ImpersonateUserFormType,
+    onComplete: () => void,
+  ) => {
     await createOrganizationInvite({
       variables: {
         input: {
@@ -142,6 +145,7 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
             variant: 'success',
           },
         );
+        onComplete();
       },
       onError: () => {
         enqueueSnackbar(
@@ -329,7 +333,9 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
           initialValues={{
             username: '',
           }}
-          onSubmit={handleSentInvite}
+          onSubmit={(attributes, { resetForm }) =>
+            handleSentInvite(attributes, resetForm)
+          }
           validationSchema={impersonateUserSchema}
           isInitialValid={false}
         >
