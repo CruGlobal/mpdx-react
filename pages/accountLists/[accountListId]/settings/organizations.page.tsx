@@ -1,7 +1,9 @@
+import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Autocomplete, Box, Skeleton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordion';
 import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordion';
@@ -140,6 +142,22 @@ const Organizations = (): ReactElement => {
       </SettingsWrapper>
     </OrganizationsContextProvider>
   );
+};
+
+// Redirect back to the dashboard if the user isn't an admin
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (!session?.user.admin) {
+    return {
+      redirect: {
+        destination: `/accountLists/${context.query.accountListId ?? ''}`,
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
 };
 
 export default Organizations;
