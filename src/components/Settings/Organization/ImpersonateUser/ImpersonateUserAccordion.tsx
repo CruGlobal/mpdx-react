@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useEffect, useState } from 'react';
+import { ReactElement, useContext } from 'react';
 import {
   Box,
   DialogActions,
@@ -8,7 +8,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
-import { getSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -48,17 +47,10 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const [userId, setUserId] = useState('');
 
   const { selectedOrganizationId } = useContext(
     OrganizationsContext,
   ) as OrganizationsContextType;
-
-  useEffect(() => {
-    getSession().then((session) => {
-      setUserId(session?.user.userID ?? '');
-    });
-  }, []);
 
   const onSubmit = async (attributes: ImpersonateUserFormType) => {
     try {
@@ -68,7 +60,6 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
         {
           method: 'POST',
           body: JSON.stringify({
-            userId,
             organizationId: selectedOrganizationId,
             user,
             reason,
