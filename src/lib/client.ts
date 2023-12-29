@@ -1,5 +1,6 @@
 import {
   ApolloClient,
+  FieldMergeFunction,
   InMemoryCache,
   NormalizedCacheObject,
   createHttpLink,
@@ -9,6 +10,7 @@ import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { onError } from '@apollo/client/link/error';
 import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
+import { uniqBy } from 'lodash';
 import { signOut } from 'next-auth/react';
 import generatedIntrospection from 'src/graphql/possibleTypes.generated';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
@@ -25,6 +27,9 @@ const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
     : undefined,
 );
 
+const mergePages: FieldMergeFunction = (existing = [], incoming) =>
+  uniqBy([...existing, ...incoming], '__ref');
+
 export const cache = new InMemoryCache({
   possibleTypes: generatedIntrospection.possibleTypes,
   typePolicies: {
@@ -36,10 +41,32 @@ export const cache = new InMemoryCache({
       },
       merge: true,
     },
+    SearchOrganizationsAccountListsResponse: {
+      fields: {
+        accountLists: {
+          merge: mergePages,
+        },
+      },
+    },
+    SearchOrganizationsContactsResponse: {
+      fields: {
+        contacts: {
+          merge: mergePages,
+        },
+      },
+    },
     Query: {
       fields: {
         contacts: paginationFieldPolicy,
         donations: paginationFieldPolicy,
+        // Ignore the input.pageNumber arg so that queries with different page numbers will
+        // be merged together
+        searchOrganizationsAccountLists: {
+          keyArgs: ['input', ['organizationId', 'search']],
+        },
+        searchOrganizationsContacts: {
+          keyArgs: ['input', ['organizationId', 'search']],
+        },
         tasks: paginationFieldPolicy,
         userNotifications: paginationFieldPolicy,
       },
