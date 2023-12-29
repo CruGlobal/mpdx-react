@@ -46,7 +46,7 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
       </Head>
       <Box component="main">
         <SidePanelsLayout
-          isScrollBox={false}
+          isScrollBox
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
