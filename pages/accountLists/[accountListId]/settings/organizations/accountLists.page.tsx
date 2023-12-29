@@ -109,9 +109,7 @@ const AccountListsOrganizations = (): ReactElement => {
                   const org = organizations?.find(
                     (org) => org?.id === organization,
                   );
-                  if (org) {
-                    setSelectedOrganization(org);
-                  }
+                  setSelectedOrganization(org);
                 }}
               />
             </Box>
