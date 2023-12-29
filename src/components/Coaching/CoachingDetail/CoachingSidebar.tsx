@@ -26,7 +26,7 @@ const Container = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   width: '20rem',
-  minHeight: '100vh',
+  height: '100%',
 });
 
 const TitleContainer = styled('div')(({ theme }) => ({

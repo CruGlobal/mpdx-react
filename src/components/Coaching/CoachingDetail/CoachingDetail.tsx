@@ -14,6 +14,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
@@ -45,17 +46,15 @@ interface CoachingDetailProps {
 }
 
 const CoachingDetailContainer = styled(Box)({
-  minHeight: '100%',
+  height: `calc(100vh - ${navBarHeight})`,
   display: 'flex',
 });
 
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
   padding: theme.spacing(1),
   paddingBottom: theme.spacing(6), // prevent the HelpScout beacon from obscuring content at the bottom
-  width: '100vw',
-  [theme.breakpoints.up('md')]: {
-    width: 'calc(100vw - 20rem)',
-  },
+  overflowY: 'scroll',
 }));
 
 const CoachingItemContainer = styled(Box)(({ theme }) => ({
