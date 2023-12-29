@@ -32,7 +32,7 @@ export class AccountListsMocks {
         id: 'e8a19920',
         userFirstName: 'userFirstName',
         userLastName: 'userLastName',
-        allowDeletion: false,
+        allowDeletion: true,
         userEmailAddresses: [
           {
             id: '507548d6',

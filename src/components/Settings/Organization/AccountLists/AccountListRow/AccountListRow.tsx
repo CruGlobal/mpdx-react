@@ -16,7 +16,7 @@ import {
   useAdminDeleteOrganizationUserMutation,
 } from './DeleteAccountListsItems.generated';
 
-interface Props {
+export interface AccountListRowProps {
   accountList: Types.OrganizationsAccountList;
 }
 
@@ -38,7 +38,9 @@ const NoItemsBox = styled(Box)(() => ({
   alignItems: 'center',
 }));
 
-export const AccountListRow: React.FC<Props> = ({ accountList }) => {
+export const AccountListRow: React.FC<AccountListRowProps> = ({
+  accountList,
+}) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();

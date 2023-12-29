@@ -1,12 +1,12 @@
-import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
 import { AccountListsMocks } from '../AccountLists.mock';
-import { AccountListRow } from './AccountListRow';
+import { AccountListRow, AccountListRowProps } from './AccountListRow';
 
 jest.mock('next-auth/react');
 
@@ -30,10 +30,16 @@ jest.mock('notistack', () => ({
 }));
 const accountList = new AccountListsMocks().accountList;
 
-const Components = ({ children }: PropsWithChildren) => (
+const mutationSpy = jest.fn();
+
+const Components: React.FC<AccountListRowProps> = ({ accountList }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <GqlMockedProvider onCall={mutationSpy}>
+        <ThemeProvider theme={theme}>
+          <AccountListRow accountList={accountList} />
+        </ThemeProvider>
+      </GqlMockedProvider>
     </TestRouter>
   </SnackbarProvider>
 );
@@ -41,11 +47,7 @@ const Components = ({ children }: PropsWithChildren) => (
 describe('AccountLists', () => {
   it('should show details', () => {
     const { getByText, queryByText } = render(
-      <Components>
-        <GqlMockedProvider>
-          <AccountListRow accountList={accountList} />
-        </GqlMockedProvider>
-      </Components>,
+      <Components accountList={accountList} />,
     );
     expect(getByText('Name1')).toBeInTheDocument();
 
@@ -62,19 +64,15 @@ describe('AccountLists', () => {
 
   it('should show no users & no coaches', () => {
     const { getByText } = render(
-      <Components>
-        <GqlMockedProvider>
-          <AccountListRow
-            accountList={{
-              ...accountList,
-              accountListUsers: [],
-              accountListCoaches: [],
-              accountListUsersInvites: [],
-              accountListCoachInvites: [],
-            }}
-          />
-        </GqlMockedProvider>
-      </Components>,
+      <Components
+        accountList={{
+          ...accountList,
+          accountListUsers: [],
+          accountListCoaches: [],
+          accountListUsersInvites: [],
+          accountListCoachInvites: [],
+        }}
+      />,
     );
 
     expect(getByText('No users')).toBeInTheDocument();
@@ -83,22 +81,72 @@ describe('AccountLists', () => {
 
   it('should show invites', () => {
     const { getByText, queryByText } = render(
-      <Components>
-        <GqlMockedProvider>
-          <AccountListRow
-            accountList={{
-              ...accountList,
-              accountListUsers: [],
-              accountListCoaches: [],
-            }}
-          />
-        </GqlMockedProvider>
-      </Components>,
+      <Components
+        accountList={{
+          ...accountList,
+          accountListUsers: [],
+          accountListCoaches: [],
+        }}
+      />,
     );
 
     expect(queryByText('No users')).not.toBeInTheDocument();
     expect(queryByText('No coaches')).not.toBeInTheDocument();
     expect(getByText('inviteUser@cru.org')).toBeInTheDocument();
     expect(getByText('inviteCoach@cru.org')).toBeInTheDocument();
+  });
+
+  describe('block', () => {
+    it('should delete users', async () => {
+      const { getAllByRole, getByRole } = render(
+        <Components accountList={accountList} />,
+      );
+
+      userEvent.click(getAllByRole('button', { name: 'Delete' })[0]);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        return expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+          operation: {
+            operationName: 'AdminDeleteOrganizationUser',
+            variables: {
+              input: {
+                accountListId: '1111',
+                userId: 'e8a19920',
+              },
+            },
+          },
+        });
+      });
+      expect(mockEnqueue).toHaveBeenCalledWith('Successfully deleted user', {
+        variant: 'success',
+      });
+    });
+
+    it('should delete coaches', async () => {
+      const { getAllByRole, getByRole } = render(
+        <Components accountList={accountList} />,
+      );
+
+      userEvent.click(getAllByRole('button', { name: 'Delete' })[1]);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        return expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+          operation: {
+            operationName: 'AdminDeleteOrganizationCoach',
+            variables: {
+              input: {
+                accountListId: '1111',
+                coachId: 'd10e6360',
+              },
+            },
+          },
+        });
+      });
+      expect(mockEnqueue).toHaveBeenCalledWith('Successfully deleted coach', {
+        variant: 'success',
+      });
+    });
   });
 });

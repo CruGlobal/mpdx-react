@@ -1,4 +1,3 @@
-import { GetServerSideProps } from 'next';
 import React, { ReactElement, useState } from 'react';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import {
@@ -10,10 +9,10 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { AccountLists } from 'src/components/Settings/Organization/AccountLists/AccountLists';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { enforceAdmin } from 'src/lib/enforceAdmin';
 import {
   SettingsOrganizationFragment,
   useOrganizationsQuery,
@@ -124,20 +123,6 @@ const AccountListsOrganizations = (): ReactElement => {
   );
 };
 
-// Redirect back to the dashboard if the user isn't an admin
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
-  if (!session?.user.admin) {
-    return {
-      redirect: {
-        destination: `/accountLists/${context.query.accountListId ?? ''}`,
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-};
+export const getServerSideProps = enforceAdmin;
 
 export default AccountListsOrganizations;
