@@ -2,6 +2,7 @@ query FinancialAccounts($accountListId: ID!, $designationAccountIds: [ID!]) {
   financialAccounts(
     accountListId: $accountListId
     designationAccountId: $designationAccountIds
+    first: 125
   ) {
     nodes {
       active
