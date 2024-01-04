@@ -65,13 +65,18 @@ export const MassActionsAddToAppealModal: React.FC<
     handleClose();
   };
 
-  const { data: appeals, fetchMore } = useGetAppealsForMassActionQuery({
+  const {
+    data: appeals,
+    error,
+    fetchMore,
+  } = useGetAppealsForMassActionQuery({
     variables: {
       accountListId,
     },
   });
   const { loading: loadingAppeals } = useFetchAllPages({
     fetchMore,
+    error,
     pageInfo: appeals?.appeals.pageInfo,
   });
 

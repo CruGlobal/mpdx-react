@@ -4,10 +4,8 @@ extend type Query {
     dateRange: String
   ): AccountListAnalytics!
 }
+
 type AccountListAnalytics {
-  id: ID!
-  type: String!
-  createdAt: ISO8601DateTime!
   appointments: AppointmentsAccountListAnalytics!
   contacts: ContactsAccountListAnalytics!
   correspondence: CorrespondenceAccountListAnalytics!
@@ -18,8 +16,6 @@ type AccountListAnalytics {
   textMessage: TextMessageAccountListAnalytics!
   startDate: ISO8601DateTime!
   endDate: ISO8601DateTime!
-  updatedAt: ISO8601DateTime!
-  updatedInDbAt: ISO8601DateTime!
 }
 
 type AppointmentsAccountListAnalytics {
@@ -29,14 +25,14 @@ type AppointmentsAccountListAnalytics {
 type ContactsAccountListAnalytics {
   active: Int!
   referrals: Int!
-  referrals_on_hand: Int!
+  referralsOnHand: Int!
 }
 
 type CorrespondenceAccountListAnalytics {
   precall: Int!
   reminders: Int!
-  support_letters: Int!
-  thank_yous: Int!
+  supportLetters: Int!
+  thankYous: Int!
   newsletters: Int!
 }
 
@@ -61,7 +57,7 @@ type PhoneAccountListAnalytics {
   attempted: Int!
   completed: Int!
   received: Int!
-  talktoinperson: Int!
+  talkToInPerson: Int!
 }
 
 type TextMessageAccountListAnalytics {

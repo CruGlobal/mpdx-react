@@ -45,11 +45,12 @@ const ExportEmail = ({
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
 
-  const { data, fetchMore } = useGetEmailNewsletterContactsQuery({
+  const { data, error, fetchMore } = useGetEmailNewsletterContactsQuery({
     variables: { accountListId },
   });
   const { loading } = useFetchAllPages({
     fetchMore,
+    error,
     pageInfo: data?.contacts.pageInfo,
   });
 

@@ -59,6 +59,7 @@ export const cache = new InMemoryCache({
       fields: {
         contacts: paginationFieldPolicy,
         donations: paginationFieldPolicy,
+        financialAccounts: paginationFieldPolicy,
         // Ignore the input.pageNumber arg so that queries with different page numbers will
         // be merged together
         searchOrganizationsAccountLists: {
