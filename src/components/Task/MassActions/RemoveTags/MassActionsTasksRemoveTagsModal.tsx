@@ -70,7 +70,11 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
     useMassActionsUpdateTasksMutation();
   const { update } = useUpdateTasksQueries();
 
-  const { data: tasksForTags, fetchMore } = useGetTasksForAddingTagsQuery({
+  const {
+    data: tasksForTags,
+    error,
+    fetchMore,
+  } = useGetTasksForAddingTagsQuery({
     variables: {
       accountListId,
       taskIds: ids,
@@ -79,6 +83,7 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
   });
   const { loading: loadingTasks } = useFetchAllPages({
     fetchMore,
+    error,
     pageInfo: tasksForTags?.tasks.pageInfo,
   });
 

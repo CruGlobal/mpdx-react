@@ -151,6 +151,12 @@ describe('ResponsibilityCentersReport', () => {
       </ThemeProvider>,
     );
 
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingResponsibilityCenters'),
+      ).not.toBeInTheDocument();
+    });
+
     expect(queryByTestId('Notification')).toBeInTheDocument();
   });
 

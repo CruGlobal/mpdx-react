@@ -59,6 +59,7 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
   const { loading } = useFetchAllPages({
     pageInfo: data?.financialAccounts.pageInfo,
     fetchMore,
+    error,
   });
 
   const financialAccountsGroups = useMemo(() => {

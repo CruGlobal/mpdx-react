@@ -426,12 +426,13 @@ If you want to load all the pages, use the `useFetchAllPages` hook. As long as y
 ```ts
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
-const { data, fetchMore } = useContactNamesQuery({
+const { data, error, fetchMore } = useContactNamesQuery({
   variables: { accountListId },
 });
 const { loading } = useFetchAllPages({
-  pageInfo: data?.contacts.pageInfo,
   fetchMore,
+  error,
+  pageInfo: data?.contacts.pageInfo,
 });
 ```
 
