@@ -8,6 +8,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Maybe } from 'graphql/jsutils/Maybe';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,11 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { Unarray } from '../../../Reports.type';
 import { AccountListItemChart as Chart } from './Chart/Chart';
+
+const StyledCheckbox = styled(Checkbox)(({}) => ({
+  height: '42px',
+  margin: 'auto',
+}));
 
 type EntryHistoriesGroup = Unarray<EntryHistoriesQuery['entryHistories']>;
 type EntryHistory = Unarray<NonNullable<EntryHistoriesGroup>['entryHistories']>;
@@ -130,7 +136,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                     )}
                   </Typography>
                 </Box>
-                <Checkbox
+                <StyledCheckbox
                   edge="end"
                   onChange={(event) =>
                     account.id && onCheckToggle(event, account.id)

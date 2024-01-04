@@ -114,6 +114,9 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
           query: FinancialAccountsDocument,
           variables: {
             accountListId,
+            designationAccountIds: designationAccounts?.length
+              ? designationAccounts
+              : null,
           },
         };
 
