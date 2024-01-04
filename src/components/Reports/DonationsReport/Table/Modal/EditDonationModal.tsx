@@ -78,11 +78,16 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
-  const { data: appeals, fetchMore } = useEditDonationModalGetAppealsQuery({
+  const {
+    data: appeals,
+    error,
+    fetchMore,
+  } = useEditDonationModalGetAppealsQuery({
     variables: { accountListId },
   });
   const { loading: loadingAppeals } = useFetchAllPages({
     fetchMore,
+    error,
     pageInfo: appeals?.appeals.pageInfo,
   });
 

@@ -63,7 +63,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   contactId,
   onContactSelected,
 }) => {
-  const { data, fetchMore } = useContactReferralTabQuery({
+  const { data, error, fetchMore } = useContactReferralTabQuery({
     variables: {
       accountListId: accountListId,
       contactId: contactId,
@@ -71,6 +71,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   });
   useFetchAllPages({
     fetchMore,
+    error,
     pageInfo: data?.contact.contactReferralsByMe.pageInfo,
   });
 

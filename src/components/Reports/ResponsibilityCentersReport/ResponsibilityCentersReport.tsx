@@ -8,6 +8,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { AccountsList as List } from '../AccountsListLayout/List/List';
@@ -47,13 +48,20 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { data, loading, error } = useFinancialAccountsQuery({
-    variables: {
-      accountListId,
-      designationAccountIds: designationAccounts?.length
-        ? designationAccounts
-        : null,
-    },
+  const financialAccountsQueryVariables = {
+    accountListId,
+    designationAccountIds: designationAccounts?.length
+      ? designationAccounts
+      : null,
+  };
+
+  const { data, error, fetchMore } = useFinancialAccountsQuery({
+    variables: financialAccountsQueryVariables,
+  });
+  const { loading } = useFetchAllPages({
+    pageInfo: data?.financialAccounts.pageInfo,
+    fetchMore,
+    error,
   });
 
   const financialAccountsGroups = useMemo(() => {
@@ -106,9 +114,7 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
       update: (cache) => {
         const query = {
           query: FinancialAccountsDocument,
-          variables: {
-            accountListId,
-          },
+          variables: financialAccountsQueryVariables,
         };
 
         const dataFromCache = cache.readQuery<FinancialAccountsQuery>(query);
