@@ -48,13 +48,15 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
+  const financialAccountsQueryVariables = {
+    accountListId,
+    designationAccountIds: designationAccounts?.length
+      ? designationAccounts
+      : null,
+  };
+
   const { data, error, fetchMore } = useFinancialAccountsQuery({
-    variables: {
-      accountListId,
-      designationAccountIds: designationAccounts?.length
-        ? designationAccounts
-        : null,
-    },
+    variables: financialAccountsQueryVariables,
   });
   const { loading } = useFetchAllPages({
     pageInfo: data?.financialAccounts.pageInfo,
@@ -112,12 +114,7 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
       update: (cache) => {
         const query = {
           query: FinancialAccountsDocument,
-          variables: {
-            accountListId,
-            designationAccountIds: designationAccounts?.length
-              ? designationAccounts
-              : null,
-          },
+          variables: financialAccountsQueryVariables,
         };
 
         const dataFromCache = cache.readQuery<FinancialAccountsQuery>(query);
