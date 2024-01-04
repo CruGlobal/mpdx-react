@@ -42,6 +42,7 @@ export const cache = new InMemoryCache({
         donations: paginationFieldPolicy,
         tasks: paginationFieldPolicy,
         userNotifications: paginationFieldPolicy,
+        financialAccounts: paginationFieldPolicy,
       },
     },
   },

@@ -1,8 +1,12 @@
-query FinancialAccounts($accountListId: ID!, $designationAccountIds: [ID!]) {
+query FinancialAccounts(
+  $accountListId: ID!
+  $designationAccountIds: [ID!]
+  $after: String
+) {
   financialAccounts(
     accountListId: $accountListId
     designationAccountId: $designationAccountIds
-    first: 125
+    after: $after
   ) {
     nodes {
       active
@@ -19,6 +23,10 @@ query FinancialAccounts($accountListId: ID!, $designationAccountIds: [ID!]) {
         name
       }
       updatedAt
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }
