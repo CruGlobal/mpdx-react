@@ -203,6 +203,64 @@ describe('TaskModalCompleteForm', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
+  describe('completed date', () => {
+    it('is the start date for appointments', () => {
+      const onClose = jest.fn();
+      const { getByRole } = render(
+        <TestWrapper>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={onClose}
+            task={{
+              ...task,
+              activityType: ActivityTypeEnum.Appointment,
+              startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+            }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(
+        getByRole('textbox', {
+          name: 'Choose date, selected date is Jan 5, 2015',
+        }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('textbox', {
+          name: 'Choose time, selected time is 1:02\u202fAM',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it('is now for other tasks', () => {
+      const onClose = jest.fn();
+      const { getByRole } = render(
+        <TestWrapper mocks={[getDataForTaskModalMock(accountListId)]}>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={onClose}
+            task={{
+              ...task,
+              activityType: ActivityTypeEnum.Call,
+              startAt: DateTime.local(2015, 1, 5, 1, 2, 0).toISO(),
+            }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(
+        getByRole('textbox', {
+          name: 'Choose date, selected date is Jan 1, 2020',
+        }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('textbox', {
+          name: 'Choose time, selected time is 12:00\u202fAM',
+        }),
+      ).toBeInTheDocument();
+    });
+  });
+
   const getOptions = (
     activityType?: ActivityTypeEnum,
   ): { results: ResultEnum[]; nextActions: ActivityTypeEnum[] } => {

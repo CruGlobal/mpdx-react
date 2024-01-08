@@ -74,7 +74,12 @@ const TaskModalCompleteForm = ({
 }: Props): ReactElement => {
   const initialTask: TaskUpdateInput = {
     id: task.id,
-    completedAt: task.completedAt || DateTime.local().toISO(),
+    completedAt:
+      task.completedAt ||
+      (task.activityType === ActivityTypeEnum.Appointment
+        ? task.startAt
+        : null) ||
+      DateTime.local().toISO(),
     result: ResultEnum.Completed,
     tagList: task.tagList,
   };
