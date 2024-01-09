@@ -1,0 +1,31 @@
+query GetDashboard($accountListId: ID!) {
+  user {
+    firstName
+  }
+  accountList(id: $accountListId) {
+    id
+    name
+    monthlyGoal
+    receivedPledges
+    totalPledges
+    currency
+    balance
+  }
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { pledgeReceived: NOT_RECEIVED, status: PARTNER_FINANCIAL }
+  ) {
+    totalCount
+  }
+  reportsDonationHistories(accountListId: $accountListId) {
+    averageIgnoreCurrent
+    periods {
+      startDate
+      convertedTotal
+      totals {
+        currency
+        convertedAmount
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+diff --git a/dist/mock.js b/dist/mock.js
+index c22049ff1640688f3ac5aa404e69765849aeb4de..46b494039c4a147ed6cdd0c80ea657370f2ebcbe 100644
+--- a/dist/mock.js
++++ b/dist/mock.js
+@@ -129,7 +129,7 @@ function assignResolveType(type) {
+         // the default `resolveType` always returns null. We add a fallback
+         // resolution that works with how unions and interface are mocked
+         namedFieldType.resolveType = function (data, context, info) {
+-            return info.schema.getType(data.__typename);
++            return info.schema.getType(data.__typename).name;
+         };
+     }
+ }
+diff --git a/dist/utils/forEachFieldInQuery.js b/dist/utils/forEachFieldInQuery.js
+index 020f765a5b85f4f109de16ddae6466495d8498ca..bc72200f3b6ec427c9d9db322be6d163f46b71af 100644
+--- a/dist/utils/forEachFieldInQuery.js
++++ b/dist/utils/forEachFieldInQuery.js
+@@ -16,7 +16,7 @@ function forEachFieldInQuery(schema, document, fn) {
+             if (graphql_1.isAbstractType(parentType)) {
+                 var possibleTypes = schema.getPossibleTypes(parentType);
+                 possibleTypes.forEach(function (t) {
+-                    var fieldDef = execute_1.getFieldDef(schema, t, fieldName);
++                    var fieldDef = execute_1.getFieldDef(schema, t, node);
+                     if (fieldDef) {
+                         fn(fieldDef, t.name, fieldName);
+                     }

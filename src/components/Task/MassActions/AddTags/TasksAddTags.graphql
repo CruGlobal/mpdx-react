@@ -1,0 +1,39 @@
+mutation TasksAddTags($accountListId: ID!, $attributes: [TaskUpdateInput!]!) {
+  updateTasks(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    tasks {
+      id
+    }
+  }
+}
+
+query GetTasksForAddingTags(
+  $accountListId: ID!
+  $taskIds: [ID!]!
+  $numTaskIds: Int!
+  $after: String
+) {
+  tasks(
+    accountListId: $accountListId
+    tasksFilter: { ids: $taskIds }
+    first: $numTaskIds
+    after: $after
+  ) {
+    nodes {
+      id
+      tagList
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+
+query GetTaskTagList($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    taskTagList
+  }
+}

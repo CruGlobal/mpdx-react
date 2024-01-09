@@ -1,0 +1,27 @@
+query GetTaskForTaskModal($accountListId: ID!, $taskId: ID!) {
+  task(accountListId: $accountListId, id: $taskId) {
+    id
+    activityType
+    subject
+    location
+    startAt
+    completedAt
+    result
+    nextAction
+    tagList
+    contacts(first: 25) {
+      nodes {
+        id
+        name
+      }
+    }
+    user {
+      id
+      firstName
+      lastName
+    }
+    notificationTimeBefore
+    notificationType
+    notificationTimeUnit
+  }
+}

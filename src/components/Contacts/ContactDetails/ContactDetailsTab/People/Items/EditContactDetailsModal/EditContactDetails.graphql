@@ -1,0 +1,51 @@
+mutation UpdateContactDetails(
+  $accountListId: ID!
+  $attributes: ContactUpdateInput!
+) {
+  updateContact(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    contact {
+      id
+      name
+      primaryPerson {
+        id
+        firstName
+        lastName
+      }
+      ...ContactMailing
+    }
+  }
+}
+
+fragment ContactDetails on Contact {
+  id
+  name
+  primaryPerson {
+    ...ContactPerson
+  }
+  people(first: 25) {
+    nodes {
+      ...ContactPerson
+    }
+  }
+  addresses(first: 25) {
+    nodes {
+      city
+      country
+      historic
+      id
+      location
+      metroArea
+      postalCode
+      primaryMailingAddress
+      region
+      source
+      state
+      street
+    }
+  }
+  greeting
+  envelopeGreeting
+  sendNewsletter
+}

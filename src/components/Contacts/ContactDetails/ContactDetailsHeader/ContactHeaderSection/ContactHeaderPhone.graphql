@@ -1,0 +1,9 @@
+fragment ContactHeaderPhone on Contact {
+  id
+  primaryPerson {
+    primaryPhoneNumber {
+      number
+      location
+    }
+  }
+}

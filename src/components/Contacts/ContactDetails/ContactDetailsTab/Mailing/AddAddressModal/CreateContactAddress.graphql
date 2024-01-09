@@ -1,0 +1,24 @@
+mutation CreateContactAddress(
+  $accountListId: ID!
+  $attributes: AddressCreateInput!
+) {
+  createAddress(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    address {
+      id
+      city
+      country
+      historic
+      location
+      metroArea
+      postalCode
+      primaryMailingAddress
+      region
+      source
+      state
+      street
+      createdAt
+    }
+  }
+}

@@ -1,0 +1,18 @@
+mutation MassActionsUpdateTasks(
+  $accountListId: ID!
+  $attributes: [TaskUpdateInput!]!
+) {
+  updateTasks(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    tasks {
+      ...TaskRow
+    }
+  }
+}
+
+mutation MassActionsDeleteTasks($accountListId: ID!, $ids: [String!]!) {
+  deleteTasks(input: { accountListId: $accountListId, ids: $ids }) {
+    ids
+  }
+}

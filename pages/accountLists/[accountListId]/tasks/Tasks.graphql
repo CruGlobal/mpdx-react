@@ -1,0 +1,35 @@
+query Tasks(
+  $accountListId: ID!
+  $tasksFilter: TaskFilterSetInput
+  $after: String
+) {
+  tasks(
+    accountListId: $accountListId
+    tasksFilter: $tasksFilter
+    after: $after
+  ) {
+    nodes {
+      ...TaskRow
+    }
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+  allTasks: tasks(accountListId: $accountListId) {
+    totalCount
+  }
+}
+
+query TaskFilters($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    taskFilterGroups {
+      ...FilterPanelGroup
+    }
+  }
+  userOptions {
+    ...UserOption
+  }
+}

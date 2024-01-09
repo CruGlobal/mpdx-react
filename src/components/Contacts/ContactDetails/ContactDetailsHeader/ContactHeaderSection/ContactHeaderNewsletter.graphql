@@ -1,0 +1,4 @@
+fragment ContactHeaderNewsletter on Contact {
+  id
+  sendNewsletter
+}

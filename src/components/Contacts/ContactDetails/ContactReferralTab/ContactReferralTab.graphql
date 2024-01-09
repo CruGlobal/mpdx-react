@@ -1,0 +1,24 @@
+query ContactReferralTab($accountListId: ID!, $contactId: ID!, $after: String) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    name
+    contactReferralsByMe(first: 25, after: $after) {
+      nodes {
+        ...ContactReferral
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+
+fragment ContactReferral on Referral {
+  id
+  createdAt
+  referredTo {
+    id
+    name
+  }
+}

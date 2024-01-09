@@ -1,0 +1,23 @@
+# dependencies
+.yarn
+.pnp.js
+.pnp.cjs
+.pnp.loader.mjs
+.yarnrc.yml
+
+# testing
+/coverage
+
+# Storybook cache
+/node_modules/.cache
+/storybook-static
+
+# next.js
+/.next
+/public/sw*
+/public/workbox*
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

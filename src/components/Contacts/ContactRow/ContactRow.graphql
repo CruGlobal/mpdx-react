@@ -1,0 +1,25 @@
+fragment ContactRow on Contact {
+  id
+  name
+  primaryAddress {
+    id
+    street
+    city
+    state
+    postalCode
+    country
+    geo
+    source
+    createdAt
+  }
+  status
+  pledgeAmount
+  pledgeFrequency
+  pledgeCurrency
+  pledgeReceived
+  lateAt
+  sendNewsletter
+  starred
+  uncompletedTasksCount
+  ...CelebrationItems
+}

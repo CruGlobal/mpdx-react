@@ -1,0 +1,14 @@
+query DesignationAccounts($accountListId: ID!) {
+  designationAccounts(accountListId: $accountListId) {
+    organizationName
+    designationAccounts {
+      active
+      balanceUpdatedAt
+      convertedBalance
+      currency
+      designationNumber
+      id
+      name
+    }
+  }
+}

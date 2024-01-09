@@ -1,0 +1,33 @@
+query GetContactDuplicates($accountListId: ID!) {
+  # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
+  contactDuplicates(accountListId: $accountListId, first: 50) {
+    nodes {
+      id
+      reason
+      recordOne {
+        ...RecordInfo
+      }
+      recordTwo {
+        ...RecordInfo
+      }
+    }
+  }
+}
+
+fragment BasicAddressInfo on Address {
+  street
+  city
+  state
+  postalCode
+}
+
+fragment RecordInfo on Contact {
+  id
+  name
+  status
+  source
+  createdAt
+  primaryAddress {
+    ...BasicAddressInfo
+  }
+}

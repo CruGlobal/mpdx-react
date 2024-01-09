@@ -1,0 +1,71 @@
+query GetDataForTaskModal($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    taskTagList
+  }
+  accountListUsers(accountListId: $accountListId, first: 25) {
+    nodes {
+      id
+      user {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+  contacts(accountListId: $accountListId, first: 10) {
+    nodes {
+      id
+      name
+    }
+  }
+}
+
+mutation CreateTasks($accountListId: ID!, $attributes: TaskCreateInput!) {
+  createTasks(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    tasks {
+      ...TaskRow
+    }
+  }
+}
+
+mutation UpdateTask($accountListId: ID!, $attributes: TaskUpdateInput!) {
+  updateTask(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    task {
+      ...TaskRow
+    }
+  }
+}
+
+mutation DeleteTask($accountListId: ID!, $id: ID!) {
+  deleteTask(input: { accountListId: $accountListId, id: $id }) {
+    id
+  }
+}
+
+query GetTaskModalContactsFiltered(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+  $first: Int!
+  $after: String
+) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: $contactsFilters
+    first: $first
+    after: $after
+  ) {
+    nodes {
+      id
+      name
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}

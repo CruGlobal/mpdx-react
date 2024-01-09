@@ -1,0 +1,9 @@
+mutation CreateAppeal($accountListId: ID!, $attributes: AppealCreateInput!) {
+  createAppeal(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    appeal {
+      id
+    }
+  }
+}

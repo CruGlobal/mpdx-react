@@ -1,0 +1,22 @@
+fragment ContactOther on Contact {
+  id
+  preferredContactMethod
+  locale
+  timezone
+  churchName
+  website
+  user {
+    id
+    firstName
+    lastName
+  }
+  contactReferralsToMe(first: 10) {
+    nodes {
+      id
+      referredBy {
+        id
+        name
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+query GetContactTags($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    name
+    contactTagList
+  }
+}

@@ -1,0 +1,22 @@
+query ContactDetailsTab($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    name
+    tagList
+    user {
+      firstName
+      lastName
+    }
+    #TODO add Magazine
+    ...ContactPeople
+    ...ContactOther
+    ...ContactMailing
+    ...ContactPartnerAccounts
+  }
+}
+
+mutation DeleteContact($accountListId: ID!, $contactId: ID!) {
+  deleteContact(input: { accountListId: $accountListId, id: $contactId }) {
+    id
+  }
+}

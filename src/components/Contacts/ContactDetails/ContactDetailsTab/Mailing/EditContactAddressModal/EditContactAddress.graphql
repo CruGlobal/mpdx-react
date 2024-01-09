@@ -1,0 +1,37 @@
+query DonationServicesEmail($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    name
+  }
+  user {
+    firstName
+  }
+}
+
+mutation UpdateContactAddress(
+  $accountListId: ID!
+  $attributes: AddressUpdateInput!
+) {
+  updateAddress(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    address {
+      city
+      country
+      historic
+      id
+      location
+      metroArea
+      postalCode
+      primaryMailingAddress
+      region
+      state
+      street
+    }
+  }
+}
+
+mutation DeleteContactAddress($accountListId: ID!, $id: ID!) {
+  deleteAddress(input: { accountListId: $accountListId, id: $id }) {
+    id
+  }
+}

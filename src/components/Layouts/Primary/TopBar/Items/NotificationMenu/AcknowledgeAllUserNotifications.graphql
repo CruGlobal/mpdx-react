@@ -1,0 +1,5 @@
+mutation AcknowledgeAllUserNotifications($accountListId: ID!) {
+  acknowledgeAllUserNotifications(input: { accountListId: $accountListId }) {
+    notificationIds
+  }
+}

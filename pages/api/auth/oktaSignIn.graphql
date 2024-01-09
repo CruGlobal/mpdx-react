@@ -1,0 +1,9 @@
+mutation oktaSignIn($accessToken: String!) {
+  oktaSignIn(input: { accessToken: $accessToken }) {
+    token
+    user {
+      id
+      name: firstName
+    }
+  }
+}

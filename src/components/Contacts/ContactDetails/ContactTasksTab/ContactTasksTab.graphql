@@ -1,0 +1,21 @@
+query ContactTasksTab(
+  $accountListId: ID!
+  $tasksFilter: TaskFilterSetInput
+  $after: String
+) {
+  tasks(
+    accountListId: $accountListId
+    tasksFilter: $tasksFilter
+    first: 25
+    after: $after
+  ) {
+    nodes {
+      ...TaskRow
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}

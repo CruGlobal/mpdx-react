@@ -1,0 +1,65 @@
+query GetDonationsTable(
+  $accountListId: ID!
+  $pageSize: Int!
+  $after: String
+  $startDate: ISO8601Date
+  $endDate: ISO8601Date
+  $designationAccountIds: [ID!]
+) {
+  donations(
+    accountListId: $accountListId
+    donationDate: { max: $endDate, min: $startDate }
+    designationAccountId: $designationAccountIds
+    first: $pageSize
+    after: $after
+  ) {
+    nodes {
+      ...ExpectedDonationData
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}
+
+fragment ExpectedDonationData on Donation {
+  amount {
+    amount
+    convertedAmount
+    convertedCurrency
+    currency
+  }
+  appeal {
+    id
+    name
+  }
+  appealAmount {
+    amount
+  }
+  donationDate
+  donorAccount {
+    contacts(first: 25) {
+      nodes {
+        id
+      }
+    }
+    displayName
+    id
+  }
+  designationAccount {
+    name
+    id
+    accountNumber
+  }
+  id
+  paymentMethod
+}
+
+query GetAccountListCurrency($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    currency
+  }
+}

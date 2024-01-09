@@ -1,0 +1,10 @@
+build
+node_modules
+.next
+.now
+public
+dist
+
+# Storybook cache
+/node_modules/.cache
+/storybook-static

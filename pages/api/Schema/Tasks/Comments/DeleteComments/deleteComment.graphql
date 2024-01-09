@@ -1,0 +1,14 @@
+extend type Mutation {
+  deleteComment(
+    input: CommentDeleteMutationInput!
+  ): CommentDeleteMutationPayload!
+}
+
+input CommentDeleteMutationInput {
+  taskId: ID!
+  commentId: ID!
+}
+
+type CommentDeleteMutationPayload {
+  id: ID!
+}

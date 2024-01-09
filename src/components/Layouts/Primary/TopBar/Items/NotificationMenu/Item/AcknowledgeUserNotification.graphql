@@ -1,0 +1,8 @@
+mutation AcknowledgeUserNotification($notificationId: ID!) {
+  acknowledgeUserNotification(input: { notificationId: $notificationId }) {
+    notification {
+      id
+      read
+    }
+  }
+}

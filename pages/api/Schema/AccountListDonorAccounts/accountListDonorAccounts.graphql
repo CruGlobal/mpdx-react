@@ -1,0 +1,12 @@
+extend type Query {
+  accountListDonorAccounts(
+    accountListId: ID!
+    searchTerm: String!
+  ): [AccountListDonorAccount!]
+}
+
+type AccountListDonorAccount {
+  id: ID!
+  accountNumber: String!
+  displayName: String!
+}

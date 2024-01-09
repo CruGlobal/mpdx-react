@@ -1,0 +1,42 @@
+query Contacts(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+  $after: String
+  $first: Int
+) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: $contactsFilters
+    after: $after
+    first: $first
+  ) {
+    nodes {
+      id
+      avatar
+      ...ContactRow
+    }
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+  allContacts: contacts(accountListId: $accountListId, after: $after) {
+    totalCount
+  }
+}
+
+query ContactFilters($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    contactFilterGroups {
+      ...FilterPanelGroup
+    }
+    partnerGivingAnalysisFilterGroups {
+      ...FilterPanelGroup
+    }
+  }
+  userOptions {
+    ...UserOption
+  }
+}

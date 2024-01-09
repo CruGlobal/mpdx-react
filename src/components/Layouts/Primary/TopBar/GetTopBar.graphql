@@ -1,0 +1,25 @@
+query GetTopBar {
+  accountLists(first: 50) {
+    nodes {
+      id
+      name
+      salaryOrganizationId
+    }
+  }
+  user {
+    id
+    firstName
+    lastName
+    admin
+    developer
+    keyAccounts {
+      id
+      email
+    }
+    administrativeOrganizations(first: 25) {
+      nodes {
+        id
+      }
+    }
+  }
+}

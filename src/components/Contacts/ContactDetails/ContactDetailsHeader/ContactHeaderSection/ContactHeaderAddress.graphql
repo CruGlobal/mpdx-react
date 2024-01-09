@@ -1,0 +1,13 @@
+fragment ContactHeaderAddress on Contact {
+  id
+  envelopeGreeting
+  name
+  primaryAddress {
+    id
+    street
+    city
+    state
+    postalCode
+    country
+  }
+}

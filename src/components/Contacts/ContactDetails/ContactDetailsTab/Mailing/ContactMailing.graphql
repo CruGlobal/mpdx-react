@@ -1,0 +1,27 @@
+fragment ContactMailing on Contact {
+  id
+  name
+  addresses(first: 25) {
+    nodes {
+      city
+      country
+      historic
+      id
+      location
+      metroArea
+      postalCode
+      primaryMailingAddress
+      region
+      source
+      sourceDonorAccount {
+        accountNumber
+      }
+      state
+      street
+      createdAt
+    }
+  }
+  greeting
+  envelopeGreeting
+  sendNewsletter
+}

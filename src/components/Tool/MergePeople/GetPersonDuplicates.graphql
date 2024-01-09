@@ -1,0 +1,36 @@
+query GetPersonDuplicates($accountListId: ID!) {
+  # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
+  personDuplicates(accountListId: $accountListId, first: 50) {
+    nodes {
+      id
+      reason
+      recordOne {
+        ...PersonInfo
+      }
+      recordTwo {
+        ...PersonInfo
+      }
+    }
+  }
+}
+
+fragment BasicEmailInfo on EmailAddress {
+  email
+}
+
+fragment BasicPhoneNumberInfo on PhoneNumber {
+  number
+}
+
+fragment PersonInfo on Person {
+  id
+  firstName
+  lastName
+  createdAt
+  primaryPhoneNumber {
+    ...BasicPhoneNumberInfo
+  }
+  primaryEmailAddress {
+    ...BasicEmailInfo
+  }
+}

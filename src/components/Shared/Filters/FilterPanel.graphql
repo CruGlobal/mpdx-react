@@ -1,0 +1,52 @@
+fragment FilterPanelGroup on FilterGroup {
+  name
+  featured
+  filters {
+    __typename
+    filterKey
+    title
+    ... on DaterangeFilter {
+      options {
+        name
+        rangeEnd
+        rangeStart
+      }
+    }
+    ... on MultiselectFilter {
+      defaultSelection
+      options {
+        name
+        placeholder
+        value
+      }
+    }
+    ... on NumericRangeFilter {
+      min
+      minLabel
+      max
+      maxLabel
+      title
+    }
+    ... on RadioFilter {
+      defaultSelection
+      options {
+        name
+        placeholder
+        value
+      }
+    }
+    ... on TextFilter {
+      options {
+        name
+        placeholder
+        value
+      }
+    }
+  }
+}
+
+fragment UserOption on Option {
+  id
+  key
+  value
+}

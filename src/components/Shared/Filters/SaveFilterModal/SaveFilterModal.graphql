@@ -1,0 +1,7 @@
+mutation SaveFilter($input: CreateOrUpdateOptionMutationInput!) {
+  createOrUpdateUserOption(input: $input) {
+    option {
+      ...UserOption
+    }
+  }
+}

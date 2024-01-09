@@ -1,0 +1,8 @@
+fragment ContactHeaderEmail on Contact {
+  id
+  primaryPerson {
+    primaryEmailAddress {
+      email
+    }
+  }
+}

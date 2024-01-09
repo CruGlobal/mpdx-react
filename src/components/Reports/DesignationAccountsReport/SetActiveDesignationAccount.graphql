@@ -1,0 +1,8 @@
+mutation SetActiveDesignationAccount(
+  $input: SetActiveDesignationAccountInput!
+) {
+  setActiveDesignationAccount(input: $input) {
+    active
+    id
+  }
+}

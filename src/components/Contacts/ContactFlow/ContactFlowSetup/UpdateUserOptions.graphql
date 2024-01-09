@@ -1,0 +1,7 @@
+mutation UpdateUserOptions($key: String!, $value: String!) {
+  createOrUpdateUserOption(input: { key: $key, value: $value }) {
+    option {
+      id
+    }
+  }
+}

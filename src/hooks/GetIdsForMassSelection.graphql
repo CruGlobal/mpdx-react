@@ -1,0 +1,41 @@
+query GetIdsForMassSelection(
+  $accountListId: ID!
+  $first: Int!
+  $contactsFilters: ContactFilterSetInput
+) {
+  contacts(
+    accountListId: $accountListId
+    first: $first
+    contactsFilter: $contactsFilters
+  ) {
+    nodes {
+      id
+    }
+  }
+}
+
+query GetTaskIdsForMassSelection(
+  $accountListId: ID!
+  $first: Int!
+  $tasksFilter: TaskFilterSetInput
+) {
+  tasks(
+    accountListId: $accountListId
+    first: $first
+    tasksFilter: $tasksFilter
+  ) {
+    nodes {
+      id
+    }
+  }
+}
+
+query GetPartnerGivingAnalysisIdsForMassSelection(
+  $input: PartnerGivingAnalysisReportInput!
+) {
+  partnerGivingAnalysisReport(input: $input) {
+    contacts {
+      id
+    }
+  }
+}

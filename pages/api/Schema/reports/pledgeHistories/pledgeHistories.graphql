@@ -1,0 +1,14 @@
+extend type Query {
+  reportPledgeHistories(accountListId: ID!): [ReportsPledgeHistories]
+}
+
+type ReportsPledgeHistories {
+  id: ID!
+  pledged: Float
+  recieved: Float
+  endDate: ISO8601DateTime
+  startDate: ISO8601DateTime
+  createdAt: ISO8601DateTime
+  updatedAt: ISO8601DateTime
+  updatedInDbAt: ISO8601DateTime
+}

@@ -1,0 +1,56 @@
+fragment WeeklyReportCoachingQuestion on CoachingQuestion {
+  id
+  position
+  prompt
+  required
+  responseOptions
+}
+
+query AccountListOrganization($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    salaryOrganizationId
+  }
+}
+
+query CurrentCoachingAnswerSet($accountListId: ID!, $organizationId: ID!) {
+  currentCoachingAnswerSet(
+    accountListId: $accountListId
+    organizationId: $organizationId
+  ) {
+    id
+    answers {
+      id
+      response
+      question {
+        id
+      }
+    }
+    completedAt
+    questions {
+      ...WeeklyReportCoachingQuestion
+    }
+  }
+}
+
+mutation SaveCoachingAnswer(
+  $answerSetId: String!
+  $answerId: String
+  $response: String!
+  $questionId: String!
+) {
+  saveCoachingAnswer(
+    input: {
+      answerSetId: $answerSetId
+      answerId: $answerId
+      response: $response
+      questionId: $questionId
+    }
+  ) {
+    id
+    response
+    question {
+      ...WeeklyReportCoachingQuestion
+    }
+  }
+}

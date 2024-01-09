@@ -1,0 +1,24 @@
+query FinancialAccounts($accountListId: ID!, $designationAccountIds: [ID!]) {
+  financialAccounts(
+    accountListId: $accountListId
+    designationAccountId: $designationAccountIds
+    first: 25
+  ) {
+    nodes {
+      active
+      balance {
+        conversionDate
+        convertedAmount
+        convertedCurrency
+      }
+      code
+      id
+      name
+      organization {
+        id
+        name
+      }
+      updatedAt
+    }
+  }
+}

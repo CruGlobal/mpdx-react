@@ -1,0 +1,23 @@
+query GetEmailNewsletterContacts($accountListId: ID!, $after: String) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { newsletter: EMAIL, status: ACTIVE }
+    first: 100
+    after: $after
+  ) {
+    nodes {
+      id
+      primaryPerson {
+        id
+        primaryEmailAddress {
+          id
+          email
+        }
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}

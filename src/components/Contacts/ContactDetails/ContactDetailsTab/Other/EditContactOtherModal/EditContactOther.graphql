@@ -1,0 +1,49 @@
+query AssigneeOptions($accountListId: ID!) {
+  accountListUsers(accountListId: $accountListId, first: 25) {
+    nodes {
+      user {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+}
+
+query ChurchOptions($accountListId: ID!, $search: String) {
+  accountList(id: $accountListId) {
+    churches(search: $search)
+  }
+}
+
+mutation UpdateContactOther(
+  $accountListId: ID!
+  $attributes: ContactUpdateInput!
+) {
+  updateContact(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    contact {
+      id
+      user {
+        id
+        firstName
+        lastName
+      }
+      churchName
+      locale
+      preferredContactMethod
+      timezone
+      website
+      contactReferralsToMe(first: 10) {
+        nodes {
+          id
+          referredBy {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+}

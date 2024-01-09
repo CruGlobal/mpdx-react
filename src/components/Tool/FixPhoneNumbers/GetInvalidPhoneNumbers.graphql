@@ -1,0 +1,31 @@
+query GetInvalidPhoneNumbers($accountListId: ID!) {
+  # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
+  people(
+    accountListId: $accountListId
+    peopleFilter: { phoneNumberValid: false }
+    first: 50
+  ) {
+    nodes {
+      ...PersonInvalidNumber
+    }
+  }
+}
+
+fragment PersonInvalidNumber on Person {
+  id
+  firstName
+  lastName
+  phoneNumbers(first: 25) {
+    nodes {
+      ...PersonPhoneNumber
+    }
+  }
+}
+
+fragment PersonPhoneNumber on PhoneNumber {
+  id
+  primary
+  number
+  updatedAt
+  source
+}

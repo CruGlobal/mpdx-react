@@ -1,0 +1,13 @@
+mutation CompleteTask($accountListId: ID!, $attributes: TaskUpdateInput!) {
+  updateTask(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    task {
+      id
+      result
+      nextAction
+      tagList
+      completedAt
+    }
+  }
+}

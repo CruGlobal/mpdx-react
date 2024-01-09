@@ -1,0 +1,12 @@
+mutation AddToAppeal(
+  $accountListId: ID!
+  $attributes: AssignContactsToAppealInput!
+) {
+  assignContactsToAppeal(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    appeal {
+      id
+    }
+  }
+}

@@ -1,0 +1,6 @@
+codecov:
+  notify:
+    # Github actions is running 4 test jobs so wait until all those have finished
+    after_n_builds: 4
+
+comment: false

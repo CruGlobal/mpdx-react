@@ -1,0 +1,97 @@
+fragment ContactPeople on Contact {
+  id
+  name
+  greeting
+  envelopeGreeting
+  primaryPerson {
+    ...ContactPerson
+  }
+  people(first: 25) {
+    nodes {
+      ...ContactPerson
+    }
+  }
+}
+
+fragment ContactPerson on Person {
+  id
+  avatar
+  almaMater
+  anniversaryDay
+  anniversaryMonth
+  anniversaryYear
+  birthdayDay
+  birthdayMonth
+  birthdayYear
+  deceased
+  emailAddresses(first: 25) {
+    nodes {
+      id
+      email
+      historic
+      primary
+      location
+      source
+    }
+  }
+  employer
+  facebookAccounts(first: 25) {
+    nodes {
+      id
+      username
+    }
+  }
+  firstName
+  gender
+  lastName
+  legalFirstName
+  linkedinAccounts(first: 25) {
+    nodes {
+      id
+      publicUrl
+    }
+  }
+  maritalStatus
+  occupation
+  optoutEnewsletter
+  phoneNumbers(first: 25) {
+    nodes {
+      id
+      historic
+      number
+      primary
+      location
+      source
+    }
+  }
+  primaryEmailAddress {
+    id
+    email
+    primary
+    location
+    source
+  }
+  primaryPhoneNumber {
+    id
+    number
+    primary
+    location
+    source
+  }
+  suffix
+  title
+  twitterAccounts(first: 25) {
+    nodes {
+      id
+      screenName
+    }
+  }
+  websites {
+    nodes {
+      id
+      url
+    }
+  }
+  # TODO add Mising Below
+  # avatar
+}

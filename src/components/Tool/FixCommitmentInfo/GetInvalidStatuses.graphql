@@ -1,0 +1,16 @@
+query GetInvalidStatuses($accountListId: ID!) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { statusValid: false }
+    first: 100
+  ) {
+    nodes {
+      id
+      name
+      status
+      pledgeAmount
+      pledgeCurrency
+      pledgeFrequency
+    }
+  }
+}

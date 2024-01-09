@@ -1,0 +1,87 @@
+fragment UserContactInfo on UserScopedToAccountList {
+  id
+  firstName
+  lastName
+  emailAddresses {
+    nodes {
+      id
+      email
+      location
+      primary
+    }
+  }
+  phoneNumbers {
+    nodes {
+      id
+      number
+      location
+      primary
+    }
+  }
+}
+
+query LoadCoachingDetail($coachingAccountListId: ID!) {
+  coachingAccountList(id: $coachingAccountListId) {
+    id
+    name
+    designationAccounts {
+      id
+      accountNumber
+    }
+    currency
+    monthlyGoal
+    balance
+    activeMpdStartAt
+    activeMpdFinishAt
+    activeMpdMonthlyGoal
+    weeksOnMpd
+    receivedPledges
+    totalPledges
+    coaches {
+      nodes {
+        ...UserContactInfo
+      }
+    }
+    users {
+      nodes {
+        ...UserContactInfo
+      }
+    }
+  }
+}
+
+query LoadAccountListCoachingDetail($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    name
+    designationAccounts {
+      id
+      accountNumber
+    }
+    currency
+    monthlyGoal
+    balance
+    activeMpdStartAt
+    activeMpdFinishAt
+    activeMpdMonthlyGoal
+    weeksOnMpd
+    receivedPledges
+    totalPledges
+    coaches {
+      nodes {
+        ...UserContactInfo
+      }
+    }
+    users {
+      nodes {
+        ...UserContactInfo
+      }
+    }
+  }
+}
+
+query GetCoachingDonationGraph($coachingAccountListId: ID!) {
+  reportsDonationHistories(accountListId: $coachingAccountListId) {
+    ...DonationGraphHistories
+  }
+}

@@ -1,0 +1,3 @@
+mutation CreateExportedContacts($input: ExportContactsInput!) {
+  exportContacts(input: $input)
+}

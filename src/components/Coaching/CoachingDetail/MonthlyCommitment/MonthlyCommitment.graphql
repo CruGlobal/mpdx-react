@@ -1,0 +1,9 @@
+query GetReportsPledgeHistories($coachingId: ID!) {
+  reportPledgeHistories(accountListId: $coachingId) {
+    id
+    startDate
+    endDate
+    pledged
+    recieved
+  }
+}

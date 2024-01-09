@@ -1,0 +1,29 @@
+mutation ContactsAddTags(
+  $accountListId: ID!
+  $attributes: [ContactUpdateInput!]!
+) {
+  updateContacts(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    contacts {
+      id
+    }
+  }
+}
+
+query GetContactsForAddingTags(
+  $accountListId: ID!
+  $contactIds: [ID!]!
+  $numContactIds: Int!
+) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { ids: $contactIds }
+    first: $numContactIds
+  ) {
+    nodes {
+      id
+      tagList
+    }
+  }
+}
