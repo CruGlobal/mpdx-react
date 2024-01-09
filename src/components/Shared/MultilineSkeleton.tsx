@@ -16,7 +16,11 @@ export const MultilineSkeleton: React.FC<MultilineSkeletonProps> = ({
 }) => (
   <>
     {new Array(lines).fill(undefined).map((_, index) => (
-      <StyledSkeleton key={index} data-testid="Line" {...props} />
+      <StyledSkeleton
+        key={index}
+        data-testid="MultilineSkeletonLine"
+        {...props}
+      />
     ))}
   </>
 );

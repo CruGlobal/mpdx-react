@@ -30,6 +30,7 @@ export const createCache = () =>
         fields: {
           contacts: paginationFieldPolicy,
           donations: paginationFieldPolicy,
+          financialAccounts: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,
         },

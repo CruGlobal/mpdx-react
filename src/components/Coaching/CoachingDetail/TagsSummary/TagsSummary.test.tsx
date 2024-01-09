@@ -36,7 +36,7 @@ describe('TagsSummary', () => {
           </ThemeProvider>,
         );
 
-        expect(getAllByTestId('Line')).toHaveLength(4);
+        expect(getAllByTestId('MultilineSkeletonLine')).toHaveLength(4);
       });
 
       it('renders empty', async () => {
