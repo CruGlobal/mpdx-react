@@ -1,33 +1,34 @@
-import React, { Fragment, useMemo, useState } from 'react';
-// TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import { Box, Button, ButtonGroup, Divider, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import {
+  Box,
+  Divider,
+  Drawer,
+  Hidden,
+  IconButton,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
-import theme from 'src/theme';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { Activity } from './Activity/Activity';
 import { ActivitySummary } from './ActivitySummary/ActivitySummary';
 import { AppointmentResults } from './AppointmentResults/AppointmentResults';
-import { CollapsibleEmailList } from './CollapsibleEmailList';
-import { CollapsiblePhoneList } from './CollapsiblePhoneList';
+import { CoachingSidebar } from './CoachingSidebar';
 import {
   useGetCoachingDonationGraphQuery,
   useLoadAccountListCoachingDetailQuery,
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
-import { SideContainerText } from './StyledComponents';
 import { WeeklyReport } from './WeeklyReport/WeeklyReport';
-import { getLastNewsletter } from './helpers';
 
 export enum CoachingPeriodEnum {
   Weekly = 'Weekly',
@@ -45,30 +46,16 @@ interface CoachingDetailProps {
   accountListType: AccountListTypeEnum;
 }
 
-const CoachingDetailContainer = styled(Box)(({}) => ({
-  width: '100%',
-  minHeight: '100%',
+const CoachingDetailContainer = styled(Box)({
+  height: `calc(100vh - ${navBarHeight})`,
   display: 'flex',
-}));
-
-const CoachingSideContainer = styled(Box)(({ theme }) => ({
-  width: '20rem',
-  minHeight: '100%',
-  padding: theme.spacing(1),
-}));
-
-const CoachingSideTitleContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  margin: theme.spacing(1),
-  alignItems: 'center',
-  alignContent: 'center',
-}));
+});
 
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
   padding: theme.spacing(1),
   paddingBottom: theme.spacing(6), // prevent the HelpScout beacon from obscuring content at the bottom
-  width: 'calc(100vw - 20rem)',
+  overflowY: 'scroll',
 }));
 
 const CoachingItemContainer = styled(Box)(({ theme }) => ({
@@ -82,18 +69,11 @@ const CoachingMainTitleContainer = styled(Box)(({ theme }) => ({
   flexGrow: 1,
   display: 'flex',
   margin: theme.spacing(1),
-  alignItems: 'center',
-  alignContent: 'center',
-}));
-
-const CoachingMonthYearButtonGroup = styled(ButtonGroup)(({ theme }) => ({
-  margin: theme.spacing(2, 0),
-  color: theme.palette.primary.contrastText,
-}));
-
-const SideContainerIcon = styled(AccountCircle)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
-  margin: theme.spacing(0, 1),
+  flexDirection: 'column',
+  [theme.breakpoints.up('md')]: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 }));
 
 export const CoachingDetail: React.FC<CoachingDetailProps> = ({
@@ -101,7 +81,6 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   accountListType,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
 
   const { data: ownData, loading: ownLoading } =
     useLoadAccountListCoachingDetailQuery({
@@ -121,14 +100,6 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     accountListType === AccountListTypeEnum.Own
       ? ownData?.accountList
       : coachingData?.coachingAccountList;
-
-  const staffIds = useMemo(
-    () =>
-      accountListData?.designationAccounts
-        .map((account) => account.accountNumber)
-        .filter((number) => number.length > 0) ?? [],
-    [accountListData],
-  );
 
   const { data: ownDonationGraphData } = useGetDonationGraphQuery({
     variables: {
@@ -156,141 +127,39 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   });
 
   const [period, setPeriod] = useState(CoachingPeriodEnum.Weekly);
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
-  const formatOptionalDate = (isoDate: string | null | undefined): string =>
-    isoDate ? dateFormat(DateTime.fromISO(isoDate), locale) : t('None');
+  const handleCloseDrawer = () => setDrawerVisible(false);
+
+  const sidebarDrawer = useMediaQuery<Theme>((theme) =>
+    theme.breakpoints.down('md'),
+  );
+  useEffect(() => {
+    if (sidebarDrawer) {
+      handleCloseDrawer();
+    }
+  }, [sidebarDrawer]);
+
+  const sidebar = (
+    <CoachingSidebar
+      period={period}
+      setPeriod={setPeriod}
+      showClose={sidebarDrawer}
+      handleClose={handleCloseDrawer}
+      loading={loading}
+      accountListData={accountListData}
+      taskAnalyticsData={taskAnalyticsData}
+    />
+  );
 
   return (
     <CoachingDetailContainer>
-      <CoachingSideContainer bgcolor={theme.palette.progressBarGray.main}>
-        <CoachingSideTitleContainer>
-          {/* TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
-          <EcoOutlined
-            style={{
-              color: theme.palette.primary.contrastText,
-              margin: theme.spacing(1),
-            }}
-          /> */}
-          <SideContainerText variant="h5" display="block">
-            {t('Coaching')}
-          </SideContainerText>
-        </CoachingSideTitleContainer>
-        <Divider style={{ background: theme.palette.primary.contrastText }} />
-        <CoachingMonthYearButtonGroup
-          variant="outlined"
-          color="inherit"
-          fullWidth
-          size="large"
-        >
-          <Button
-            variant={
-              period === CoachingPeriodEnum.Weekly ? 'contained' : 'outlined'
-            }
-            onClick={() => setPeriod(CoachingPeriodEnum.Weekly)}
-          >
-            {t('Weekly')}
-          </Button>
-          <Button
-            variant={
-              period === CoachingPeriodEnum.Monthly ? 'contained' : 'outlined'
-            }
-            onClick={() => setPeriod(CoachingPeriodEnum.Monthly)}
-          >
-            {t('Monthly')}
-          </Button>
-        </CoachingMonthYearButtonGroup>
-        <SideContainerText variant="h5" data-testid="Balance">
-          {t('Balance:')}{' '}
-          {accountListData &&
-            currencyFormat(
-              accountListData.balance,
-              accountListData.currency,
-              locale,
-            )}
-        </SideContainerText>
-        <SideContainerText>{t('Staff IDs:')}</SideContainerText>
-        <SideContainerText data-testid="StaffIds">
-          {staffIds.length ? staffIds.join(', ') : t('None')}
-        </SideContainerText>
-        <SideContainerText data-testid="LastPrayerLetter">
-          {t('Last Prayer Letter:')}{' '}
-          {taskAnalyticsData &&
-            formatOptionalDate(
-              getLastNewsletter(
-                taskAnalyticsData.taskAnalytics
-                  .lastElectronicNewsletterCompletedAt,
-                taskAnalyticsData.taskAnalytics
-                  .lastPhysicalNewsletterCompletedAt,
-              ),
-            )}
-        </SideContainerText>
-        <Divider style={{ background: theme.palette.primary.contrastText }} />
-        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
-          {t('MPD Info')}
-        </SideContainerText>
-        <SideContainerText data-testid="WeeksOnMpd">
-          {t('Weeks on MPD:')} {accountListData?.weeksOnMpd}
-        </SideContainerText>
-        <SideContainerText data-testid="MpdStartDate">
-          {t('Start Date:')}{' '}
-          {accountListData &&
-            formatOptionalDate(accountListData?.activeMpdStartAt)}
-        </SideContainerText>
-        <SideContainerText data-testid="MpdEndDate">
-          {t('End Date:')}{' '}
-          {accountListData &&
-            formatOptionalDate(accountListData?.activeMpdFinishAt)}
-        </SideContainerText>
-        <SideContainerText data-testid="MpdCommitmentGoal">
-          {t('Commitment Goal:')}{' '}
-          {accountListData &&
-            (typeof accountListData.activeMpdMonthlyGoal === 'number'
-              ? currencyFormat(
-                  accountListData.activeMpdMonthlyGoal,
-                  accountListData?.currency,
-                  locale,
-                )
-              : t('None'))}
-        </SideContainerText>
-        <Divider style={{ background: theme.palette.primary.contrastText }} />
-        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
-          {t('Users')}
-        </SideContainerText>
-        {loading ? (
-          <MultilineSkeleton lines={4} />
-        ) : (
-          accountListData?.users.nodes.map((user) => (
-            <Fragment key={user.id}>
-              <SideContainerIcon />
-              <SideContainerText>
-                {user.firstName + ' ' + user.lastName}
-              </SideContainerText>
-              <CollapsibleEmailList emails={user.emailAddresses.nodes} />
-              <CollapsiblePhoneList phones={user.phoneNumbers.nodes} />
-              <Divider style={{ margin: theme.spacing(1) }} />
-            </Fragment>
-          ))
-        )}
-        <Divider style={{ background: theme.palette.primary.contrastText }} />
-        <SideContainerText variant="h5" style={{ margin: theme.spacing(1) }}>
-          {t('Coaches')}
-        </SideContainerText>
-        {loading ? (
-          <MultilineSkeleton lines={4} />
-        ) : (
-          accountListData?.coaches.nodes.map((coach) => (
-            <Fragment key={coach.id}>
-              <SideContainerIcon />
-              <SideContainerText>
-                {coach.firstName + ' ' + coach.lastName}
-              </SideContainerText>
-              <CollapsibleEmailList emails={coach.emailAddresses.nodes} />
-              <CollapsiblePhoneList phones={coach.phoneNumbers.nodes} />
-              <Divider style={{ margin: theme.spacing(1) }} />
-            </Fragment>
-          ))
-        )}
-      </CoachingSideContainer>
+      <Hidden mdUp>
+        <Drawer open={drawerVisible} onClose={handleCloseDrawer}>
+          {sidebar}
+        </Drawer>
+      </Hidden>
+      <Hidden mdDown>{sidebar}</Hidden>
       <CoachingMainContainer>
         {loading ? (
           <MultilineSkeleton lines={4} />
@@ -298,13 +167,15 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           <>
             <CoachingMainTitleContainer>
               <Box style={{ flexGrow: 1 }}>
-                <Typography
-                  variant="h5"
-                  display="block"
-                  style={{
-                    margin: theme.spacing(1),
-                  }}
-                >
+                <Typography variant="h5" m={1}>
+                  <Hidden mdUp>
+                    <IconButton
+                      onClick={() => setDrawerVisible(!drawerVisible)}
+                      aria-label={t('Toggle account details')}
+                    >
+                      <MenuOpenIcon />
+                    </IconButton>
+                  </Hidden>
                   {accountListData?.name}
                 </Typography>
               </Box>
