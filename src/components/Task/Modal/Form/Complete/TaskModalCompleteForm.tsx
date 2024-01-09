@@ -27,11 +27,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import {
-  ActivityTypeEnum,
-  ResultEnum,
-  TaskUpdateInput,
-} from 'src/graphql/types.generated';
+import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
@@ -48,18 +44,14 @@ import { possibleResults } from '../PossibleResults';
 import { useGetDataForTaskModalQuery } from '../TaskModal.generated';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
-const taskSchema: yup.SchemaOf<
-  Pick<
-    TaskUpdateInput,
-    'id' | 'result' | 'nextAction' | 'tagList' | 'completedAt'
-  >
-> = yup.object({
+const taskSchema = yup.object({
   id: yup.string().required(),
   result: yup.mixed<ResultEnum>().required(),
-  nextAction: yup.mixed<ActivityTypeEnum>(),
-  tagList: yup.array().of(yup.string()).default([]),
+  nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
+  tagList: yup.array().of(yup.string().required()).default([]),
   completedAt: yup.string(),
 });
+type Attributes = yup.InferType<typeof taskSchema>;
 
 interface Props {
   accountListId: string;
@@ -72,7 +64,7 @@ const TaskModalCompleteForm = ({
   task,
   onClose,
 }: Props): ReactElement => {
-  const initialTask: TaskUpdateInput = {
+  const initialTask = {
     id: task.id,
     completedAt:
       task.completedAt ||
@@ -95,7 +87,7 @@ const TaskModalCompleteForm = ({
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
-  const onSubmit = async (attributes: TaskUpdateInput): Promise<void> => {
+  const onSubmit = async (attributes: Attributes): Promise<void> => {
     const body = commentBody.trim();
     const mutations = [
       updateTask({
