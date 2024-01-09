@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { QueryResult } from '@apollo/client';
+import { ApolloError, QueryResult } from '@apollo/client';
 import { PageInfo } from 'src/graphql/types.generated';
 
 export interface Variables {
@@ -10,10 +10,12 @@ export interface Variables {
 // Query must accept an optional `after` variable
 export const useFetchAllPages = <TData, TVariables extends Variables>({
   fetchMore,
+  error,
   pageInfo,
 }: {
   fetchMore: QueryResult<TData, TVariables>['fetchMore'];
-  pageInfo?: Pick<PageInfo, 'endCursor' | 'hasNextPage'>;
+  error: ApolloError | undefined;
+  pageInfo: Pick<PageInfo, 'endCursor' | 'hasNextPage'> | undefined;
 }) => {
   useEffect(() => {
     if (pageInfo?.hasNextPage && pageInfo.endCursor) {
@@ -28,6 +30,6 @@ export const useFetchAllPages = <TData, TVariables extends Variables>({
   const loaded = pageInfo?.hasNextPage === false;
 
   return {
-    loading: !loaded,
+    loading: !error && !loaded,
   };
 };

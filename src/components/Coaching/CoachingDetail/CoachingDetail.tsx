@@ -28,6 +28,7 @@ import {
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
+import { WeeklyReport } from './WeeklyReport/WeeklyReport';
 
 export enum CoachingPeriodEnum {
   Weekly = 'Weekly',
@@ -217,6 +218,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 currency={accountListData?.currency}
                 primaryAppeal={accountListData?.primaryAppeal ?? undefined}
               />
+              <WeeklyReport accountListId={accountListId} />
             </CoachingItemContainer>
           </>
         )}
