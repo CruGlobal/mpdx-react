@@ -1,0 +1,15 @@
+query WeeklyReports($accountListId: ID!) {
+  coachingAnswerSets(accountListId: $accountListId, completed: true) {
+    id
+    answers {
+      id
+      response
+      question {
+        id
+        position
+        prompt
+      }
+    }
+    completedAt
+  }
+}

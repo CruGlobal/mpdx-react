@@ -26,6 +26,7 @@ import {
 } from './LoadCoachingDetail.generated';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import { SideContainerText } from './StyledComponents';
+import { WeeklyReport } from './WeeklyReport/WeeklyReport';
 import { getLastNewsletter } from './helpers';
 
 export enum CoachingPeriodEnum {
@@ -346,6 +347,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 currency={accountListData?.currency}
                 primaryAppeal={accountListData?.primaryAppeal ?? undefined}
               />
+              <WeeklyReport accountListId={accountListId} />
             </CoachingItemContainer>
           </>
         )}
