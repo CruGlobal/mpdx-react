@@ -18,13 +18,12 @@ import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum } from '../CoachingDetail';
 import {
-  useLoadAccountListCoachingCommitmentsQuery,
-  useLoadCoachingCommitmentsQuery,
-} from './OutstandingCommitments.generated';
+  useLoadAccountListCoachingNeedsQuery,
+  useLoadCoachingNeedsQuery,
+} from './OutstandingNeeds.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -42,14 +41,13 @@ const AlignedTableCell = styled(TableCell)({
 const LoadMoreButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
-
-interface OutstandingCommitmentsProps {
+interface OutstandingNeedsProps {
   accountListId: string;
   // Whether the account list belongs to the user or someone that the user coaches
   accountListType: AccountListTypeEnum;
 }
 
-export const OutstandingCommitments: React.FC<OutstandingCommitmentsProps> = ({
+export const OutstandingNeeds: React.FC<OutstandingNeedsProps> = ({
   accountListId,
   accountListType,
 }) => {
@@ -60,7 +58,7 @@ export const OutstandingCommitments: React.FC<OutstandingCommitmentsProps> = ({
     data: ownData,
     loading: ownLoading,
     fetchMore: ownFetchMore,
-  } = useLoadAccountListCoachingCommitmentsQuery({
+  } = useLoadAccountListCoachingNeedsQuery({
     variables: { accountListId },
     skip: accountListType !== AccountListTypeEnum.Own,
   });
@@ -69,7 +67,7 @@ export const OutstandingCommitments: React.FC<OutstandingCommitmentsProps> = ({
     data: coachingData,
     loading: coachingLoading,
     fetchMore: coachingFetchMore,
-  } = useLoadCoachingCommitmentsQuery({
+  } = useLoadCoachingNeedsQuery({
     variables: { coachingAccountListId: accountListId },
     skip: accountListType !== AccountListTypeEnum.Coaching,
   });
@@ -125,15 +123,17 @@ export const OutstandingCommitments: React.FC<OutstandingCommitmentsProps> = ({
       <CardHeader
         title={
           <Box display="flex" alignItems="center">
-            <Box flex={1}>{t('Outstanding Recurring Commitments')}</Box>
-            {accountListData?.contacts.pageInfo.hasNextPage && (
+            <Box flex={1}>{t('Outstanding Special Needs')}</Box>
+            {accountListData?.primaryAppeal?.pledges.pageInfo.hasNextPage && (
               <LoadMoreButton
                 role="button"
                 variant="outlined"
                 onClick={() =>
                   fetchMore({
                     variables: {
-                      after: accountListData?.contacts.pageInfo.endCursor,
+                      after:
+                        accountListData?.primaryAppeal?.pledges.pageInfo
+                          .endCursor,
                     },
                   })
                 }
@@ -149,49 +149,40 @@ export const OutstandingCommitments: React.FC<OutstandingCommitmentsProps> = ({
           <MultilineSkeleton lines={8} />
         ) : (
           <TableContainer sx={{ minWidth: 600 }}>
-            <Table size="small" data-testid="OutstandingCommitment">
+            <Table size="small" data-testid="OutstandingNeeds">
               <TableHead>
                 <TableRow>
                   <AlignedTableCell>{t('Name')}</AlignedTableCell>
                   <AlignedTableCell>{t('Amount')}</AlignedTableCell>
-                  <AlignedTableCell>{t('Frequency')}</AlignedTableCell>
                   <AlignedTableCell>{t('Expected Date')}</AlignedTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {accountListData?.contacts.nodes.map((contact) => (
-                  <TableRow role="row" key={contact.id}>
-                    <AlignedTableCell>{contact.name}</AlignedTableCell>
+                {accountListData?.primaryAppeal?.pledges.nodes.map((need) => (
+                  <TableRow role="row" key={need.id}>
+                    <AlignedTableCell>{need.contact.name}</AlignedTableCell>
                     <AlignedTableCell>
-                      {contact.pledgeAmount
+                      {need.amount
                         ? currencyFormat(
-                            contact.pledgeAmount,
-                            contact.pledgeCurrency || 'USD',
+                            need.amount,
+                            need.amountCurrency || 'USD',
                             locale,
-                          )
-                        : t('N/A')}
-                    </AlignedTableCell>
-                    <AlignedTableCell>
-                      {contact.pledgeFrequency
-                        ? getLocalizedPledgeFrequency(
-                            t,
-                            contact.pledgeFrequency,
                           )
                         : t('N/A')}
                     </AlignedTableCell>
                     <AlignedTableCell
                       sx={{
-                        color: checkDueDate(contact.pledgeStartDate)['color'],
+                        color: checkDueDate(need.expectedDate)['color'],
                       }}
                     >
                       {`${
-                        contact.pledgeStartDate
+                        need.expectedDate
                           ? dateFormatShort(
-                              DateTime.fromISO(contact.pledgeStartDate),
+                              DateTime.fromISO(need.expectedDate),
                               locale,
                             )
                           : ''
-                      } ${checkDueDate(contact.pledgeStartDate)['overdue']}`}
+                      } ${checkDueDate(need.expectedDate)['overdue']}`}
                     </AlignedTableCell>
                   </TableRow>
                 ))}
