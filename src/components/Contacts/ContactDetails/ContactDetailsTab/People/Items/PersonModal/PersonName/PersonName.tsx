@@ -1,5 +1,13 @@
 import React, { useRef } from 'react';
-import { Avatar, Box, Grid, TextField, Typography } from '@mui/material';
+import UploadIcon from '@mui/icons-material/Upload';
+import {
+  Avatar,
+  Box,
+  Grid,
+  IconButton,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -12,15 +20,30 @@ import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionCont
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { NewSocial } from '../PersonModal';
 
-const ContactAvatar = styled(Avatar)(() => ({
+const StyledIconButton = styled(IconButton)(() => ({
   position: 'absolute',
   top: '50%',
   left: 4,
   transform: 'translateY(-50%)',
-  cursor: 'pointer',
   zIndex: 1,
   width: '34px',
   height: '34px',
+}));
+const StyledAvatarIcon = styled(Avatar)(() => ({
+  zIndex: 1,
+  position: 'absolute',
+  top: '0',
+  bottom: '0',
+  left: '0',
+  right: '0',
+  height: '100%',
+  width: '100%',
+  opacity: '0',
+  backgroundColor: 'rgb(0,0,0,0.5)',
+  transition: '.3s ease',
+  '&:hover': {
+    opacity: '100',
+  },
 }));
 
 interface PersonNameProps {
@@ -61,11 +84,16 @@ export const PersonName: React.FC<PersonNameProps> = ({
     <>
       {person ? (
         <ModalSectionContainer>
-          <ContactAvatar
-            alt={`${person.firstName} ${person.lastName}`}
-            src={pendingAvatar ?? person.avatar}
-            onClick={() => handleFileClick()}
-          />
+          <StyledIconButton onClick={() => handleFileClick()}>
+            <StyledAvatarIcon>
+              <UploadIcon />
+            </StyledAvatarIcon>
+            <Avatar
+              sx={{ width: '34px', height: '34px' }}
+              alt={`${person.firstName} ${person.lastName}`}
+              src={pendingAvatar ?? person.avatar}
+            />
+          </StyledIconButton>
           <input
             data-testid="PersonNameUpload"
             type="file"

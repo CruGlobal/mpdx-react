@@ -15,19 +15,17 @@ import { Formik } from 'formik';
 import _ from 'lodash';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
-import {
-  ContactDetailContext,
-  ContactDetailsType,
-} from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+import { useUpdateUserMutation } from 'src/components/Settings/preferences/UpdateUser.generated';
 import {
   CancelButton,
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+//import { profile2 } from 'src/components/Settings/preferences/DemoContent';
 import {
   PersonCreateInput,
   PersonUpdateInput,
+  UserUpdateInput,
 } from 'src/graphql/types.generated';
 import { DeleteConfirmation } from '../../../../../../common/Modal/DeleteConfirmation/DeleteConfirmation';
 import Modal from '../../../../../../common/Modal/Modal';
@@ -51,14 +49,12 @@ import {
 import { PersonName } from './PersonName/PersonName';
 import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
 import { PersonShowMore } from './PersonShowMore/PersonShowMore';
+import { formatSubmittedFields, getPersonSchema } from './personModalHelper';
 import { uploadAvatar, validateAvatar } from './uploadAvatar';
 
 export const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
 })(({ destroyed }: { destroyed: boolean }) => ({
-  // '&& > label': {
-  //   textTransform: 'uppercase',
-  // },
   textDecoration: destroyed ? 'line-through' : 'none',
 }));
 
@@ -95,12 +91,15 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
+export type Person = ContactDetailsTabQuery['contact']['people']['nodes'][0];
+
 interface PersonModalProps {
-  person?: ContactDetailsTabQuery['contact']['people']['nodes'][0];
   contactId: string;
   accountListId: string;
   handleClose: () => void;
+  userProfile?: boolean;
   contactData?: ContactPeopleFragment;
+  person?: Person;
 }
 
 export interface NewSocial {
@@ -116,16 +115,13 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   contactId,
   accountListId,
   handleClose,
+  userProfile = false,
   contactData,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const {
-    personEditShowMore,
-    setPersonEditShowMore,
-    removeDialogOpen,
-    handleRemoveDialogOpen,
-  } = React.useContext(ContactDetailContext) as ContactDetailsType;
+  const [personEditShowMore, setPersonEditShowMore] = useState(false);
+  const [removeDialogOpen, handleRemoveDialogOpen] = useState(false);
 
   const client = useApolloClient();
 
@@ -158,86 +154,11 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [updatePerson] = useUpdatePersonMutation();
   const [createPerson] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
+  // TODO
+  const [updateUserProfile] = useUpdateUserMutation();
   const [editMailingInfo] = useEditMailingInfoMutation();
 
-  const personSchema: yup.SchemaOf<
-    Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
-  > = yup.object({
-    firstName: yup.string().required(),
-    lastName: yup.string().nullable(),
-    title: yup.string().nullable(),
-    suffix: yup.string().nullable(),
-    phoneNumbers: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        number: yup.string().required(t('This field is required')),
-        destroy: yup.boolean().default(false),
-        primary: yup.boolean().default(false),
-        historic: yup.boolean().default(false),
-      }),
-    ),
-    emailAddresses: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        email: yup
-          .string()
-          .email(t('Invalid email address'))
-          .required(t('This field is required')),
-        destroy: yup.boolean().default(false),
-        primary: yup.boolean().default(false),
-        historic: yup.boolean().default(false),
-      }),
-    ),
-    facebookAccounts: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        username: yup.string().required(),
-      }),
-    ),
-    linkedinAccounts: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        publicUrl: yup.string().required(),
-      }),
-    ),
-    twitterAccounts: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        screenName: yup.string().required(),
-      }),
-    ),
-    websites: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        url: yup.string().required(),
-      }),
-    ),
-    newSocials: yup.array().of(
-      yup.object({
-        value: yup.string().required(),
-        type: yup.string().required(),
-      }),
-    ),
-    optoutEnewsletter: yup.boolean().default(false),
-    birthdayDay: yup.number().nullable(),
-    birthdayMonth: yup.number().nullable(),
-    birthdayYear: yup.number().nullable(),
-    maritalStatus: yup.string().nullable(),
-    gender: yup.string().nullable(),
-    anniversaryDay: yup.number().nullable(),
-    anniversaryMonth: yup.number().nullable(),
-    anniversaryYear: yup.number().nullable(),
-    almaMater: yup.string().nullable(),
-    employer: yup.string().nullable(),
-    occupation: yup.string().nullable(),
-    legalFirstName: yup.string().nullable(),
-    deceased: yup.boolean().default(false),
-    defaultAccountList: yup.string().nullable(),
-  });
+  const { personSchema, initialPerson } = getPersonSchema(t, contactId, person);
 
   const personPhoneNumberSources = person?.phoneNumbers.nodes.map(
     (phoneNumber) => {
@@ -257,156 +178,14 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     },
   );
 
-  const personPhoneNumbers = person?.phoneNumbers.nodes.map((phoneNumber) => {
-    return {
-      id: phoneNumber.id,
-      primary: phoneNumber.primary,
-      number: phoneNumber.number,
-      historic: phoneNumber.historic,
-      location: phoneNumber.location,
-      destroy: false,
-    };
-  });
-
-  const personEmails = person?.emailAddresses.nodes.map((emailAddress) => {
-    return {
-      id: emailAddress.id,
-      primary: emailAddress.primary,
-      email: emailAddress.email,
-      historic: emailAddress.historic,
-      location: emailAddress.location,
-      destroy: false,
-    };
-  });
-
-  const personFacebookAccounts = person?.facebookAccounts.nodes.map(
-    (account) => ({
-      id: account.id,
-      username: account.username,
-      destroy: false,
-    }),
-  );
-
-  const personTwitterAccounts = person?.twitterAccounts.nodes.map(
-    (account) => ({
-      id: account.id,
-      screenName: account.screenName,
-      destroy: false,
-    }),
-  );
-
-  const personLinkedinAccounts = person?.linkedinAccounts.nodes.map(
-    (account) => ({
-      id: account.id,
-      publicUrl: account.publicUrl,
-      destroy: false,
-    }),
-  );
-
-  const personWebsites = person?.websites.nodes.map((account) => ({
-    id: account.id,
-    url: account.url,
-    destroy: false,
-  }));
-
-  const initialPerson: (PersonCreateInput | PersonUpdateInput) & NewSocial =
-    person
-      ? {
-          id: person.id,
-          firstName: person.firstName,
-          lastName: person.lastName,
-          title: person.title,
-          suffix: person.suffix,
-          phoneNumbers: personPhoneNumbers,
-          emailAddresses: personEmails,
-          optoutEnewsletter: person.optoutEnewsletter,
-          birthdayDay: person.birthdayDay,
-          birthdayMonth: person.birthdayMonth,
-          birthdayYear: person.birthdayYear,
-          maritalStatus: person.maritalStatus,
-          gender: person.gender,
-          anniversaryDay: person.anniversaryDay,
-          anniversaryMonth: person.anniversaryMonth,
-          anniversaryYear: person.anniversaryYear,
-          almaMater: person.almaMater,
-          employer: person.employer,
-          occupation: person.occupation,
-          facebookAccounts: personFacebookAccounts,
-          twitterAccounts: personTwitterAccounts,
-          linkedinAccounts: personLinkedinAccounts,
-          websites: personWebsites,
-          legalFirstName: person.legalFirstName,
-          deceased: person.deceased,
-          newSocials: [],
-        }
-      : {
-          contactId,
-          id: null,
-          firstName: '',
-          lastName: null,
-          title: null,
-          suffix: null,
-          phoneNumbers: [],
-          emailAddresses: [],
-          optoutEnewsletter: false,
-          birthdayDay: null,
-          birthdayMonth: null,
-          birthdayYear: null,
-          maritalStatus: null,
-          gender: 'Male',
-          anniversaryDay: null,
-          anniversaryMonth: null,
-          anniversaryYear: null,
-          almaMater: null,
-          employer: null,
-          occupation: null,
-          facebookAccounts: [],
-          twitterAccounts: [],
-          linkedinAccounts: [],
-          websites: [],
-          legalFirstName: null,
-          deceased: false,
-          newSocials: [],
-        };
-
   const onSubmit = async (
-    fields: (PersonCreateInput | PersonUpdateInput) & NewSocial,
+    fields: (PersonCreateInput | PersonUpdateInput | UserUpdateInput) &
+      NewSocial,
   ): Promise<void> => {
-    const { newSocials, ...existingSocials } = fields;
-    const attributes: PersonCreateInput | PersonUpdateInput = {
-      ...existingSocials,
-      facebookAccounts: fields.facebookAccounts?.concat(
-        newSocials
-          .filter((social) => social.type === 'facebook' && !social.destroy)
-          .map((social) => ({
-            username: social.value,
-          })),
-      ),
-      twitterAccounts: fields.twitterAccounts?.concat(
-        newSocials
-          .filter((social) => social.type === 'twitter' && !social.destroy)
-          .map((social) => ({
-            screenName: social.value,
-          })),
-      ),
-      linkedinAccounts: fields.linkedinAccounts?.concat(
-        newSocials
-          .filter((social) => social.type === 'linkedin' && !social.destroy)
-          .map((social) => ({
-            publicUrl: social.value,
-          })),
-      ),
-      websites: fields.websites?.concat(
-        newSocials
-          .filter((social) => social.type === 'website' && !social.destroy)
-          .map((social) => ({
-            url: social.value,
-          })),
-      ),
-    };
+    const attributes = formatSubmittedFields(fields);
 
     const isUpdate = (
-      attributes: PersonCreateInput | PersonUpdateInput,
+      attributes: PersonCreateInput | PersonUpdateInput | UserUpdateInput,
     ): attributes is PersonUpdateInput => !!person;
 
     if (isUpdate(attributes)) {
@@ -430,158 +209,175 @@ export const PersonModal: React.FC<PersonModalProps> = ({
           return;
         }
       }
+      if (userProfile) {
+        await updateUserProfile({
+          variables: {
+            attributes,
+          },
+        });
 
-      await updatePerson({
-        variables: {
-          accountListId,
-          attributes,
-        },
-      });
+        if (file) {
+          // Update the users avatar
+          client.refetchQueries({ include: ['GetProfileInfo'] });
+        }
 
-      if (file) {
-        // Update the contact's avatar since it is based on the primary person's avatar
-        client.refetchQueries({ include: ['GetContactDetailsHeader'] });
-      }
+        enqueueSnackbar(t('Profile updated successfully'), {
+          variant: 'success',
+        });
+      } else {
+        await updatePerson({
+          variables: {
+            accountListId,
+            attributes,
+          },
+        });
 
-      // If deceased - Update contact's name, greetings & primary contact
-      if (
-        fields.deceased &&
-        !person?.deceased &&
-        contactData &&
-        fields.firstName
-      ) {
-        const { greeting, envelopeGreeting, name } = contactData;
-        if (greeting && envelopeGreeting) {
-          const removeNameFromGreetings = (
-            greeting,
-            startsWithRegex: RegExp | null = null,
-            startsWithReplace: string | null = null,
-          ) => {
-            let newGreeting = greeting;
-            const nameWithAnd = new RegExp(` and ${fields.firstName}`);
-            if (nameWithAnd.test(greeting)) {
-              newGreeting = newGreeting.replace(nameWithAnd, '');
-            } else {
-              newGreeting = newGreeting.replace(fields.firstName, '');
-            }
-            const endsWith = / and $/;
-            const startsWith = startsWithRegex ?? /^ and /;
-            const hasDoubleAnd = / and  and /;
-            newGreeting = newGreeting.replace(endsWith, '');
-            newGreeting = newGreeting.replace(
-              startsWith,
-              startsWithReplace ?? '',
-            );
-            newGreeting = newGreeting.replace(hasDoubleAnd, ' and ');
-            return newGreeting;
-          };
-          // Updating contact's name and greetings
-          const newGreeting = removeNameFromGreetings(greeting);
-          const newEnvelopeGreeting = removeNameFromGreetings(envelopeGreeting);
-          const newName = removeNameFromGreetings(name, /,\s{1,}and /, ', ');
+        if (file) {
+          // Update the contact's avatar since it is based on the primary person's avatar
+          client.refetchQueries({ include: ['GetContactDetailsHeader'] });
+        }
 
-          interface attributes {
-            id: string;
-            greeting: any;
-            envelopeGreeting: any;
-            name: any;
-            primaryPersonId?: string;
-          }
-          const attributes: attributes = {
-            id: contactId,
-            greeting: newGreeting,
-            envelopeGreeting: newEnvelopeGreeting,
-            name: newName,
-          };
-          // Updating contact's primary contact if deceased is current primary contact.
-          const newPrimaryContact =
-            contactData.primaryPerson?.id === person?.id
-              ? contactData.people.nodes.find(
-                  (people) => people.id !== person?.id && !people.deceased,
-                )
-              : undefined;
-          if (
-            contactData.primaryPerson?.id === person?.id &&
-            newPrimaryContact?.id
-          ) {
-            attributes.primaryPersonId = newPrimaryContact?.id;
-          }
-
-          await editMailingInfo({
-            variables: {
-              accountListId,
-              attributes,
-            },
-            update: (cache) => {
-              const query = {
-                query: GetContactDetailsHeaderDocument,
-                variables: { accountListId, contactId },
-              };
-              const dataFromCache =
-                cache.readQuery<GetContactDetailsHeaderQuery>(query);
-              if (dataFromCache) {
-                const data = {
-                  ...dataFromCache,
-                  contact: {
-                    ...dataFromCache.contact,
-                    name: newName,
-                  },
-                };
-                cache.writeQuery({ ...query, data });
+        // If deceased - Update contact's name, greetings & primary contact
+        if (
+          fields.deceased &&
+          !person?.deceased &&
+          contactData &&
+          fields.firstName
+        ) {
+          const { greeting, envelopeGreeting, name } = contactData;
+          if (greeting && envelopeGreeting) {
+            const removeNameFromGreetings = (
+              greeting,
+              startsWithRegex: RegExp | null = null,
+              startsWithReplace: string | null = null,
+            ) => {
+              let newGreeting = greeting;
+              const nameWithAnd = new RegExp(` and ${fields.firstName}`);
+              if (nameWithAnd.test(greeting)) {
+                newGreeting = newGreeting.replace(nameWithAnd, '');
+              } else {
+                newGreeting = newGreeting.replace(fields.firstName, '');
               }
+              const endsWith = / and $/;
+              const startsWith = startsWithRegex ?? /^ and /;
+              const hasDoubleAnd = / and  and /;
+              newGreeting = newGreeting.replace(endsWith, '');
+              newGreeting = newGreeting.replace(
+                startsWith,
+                startsWithReplace ?? '',
+              );
+              newGreeting = newGreeting.replace(hasDoubleAnd, ' and ');
+              return newGreeting;
+            };
+            // Updating contact's name and greetings
+            const newGreeting = removeNameFromGreetings(greeting);
+            const newEnvelopeGreeting =
+              removeNameFromGreetings(envelopeGreeting);
+            const newName = removeNameFromGreetings(name, /,\s{1,}and /, ', ');
 
-              if (attributes.primaryPersonId) {
-                const ContactDetailsTabQuery = {
-                  query: ContactDetailsTabDocument,
-                  variables: {
-                    accountListId,
-                    contactId,
-                  },
+            interface attributes {
+              id: string;
+              greeting: any;
+              envelopeGreeting: any;
+              name: any;
+              primaryPersonId?: string;
+            }
+            const attributes: attributes = {
+              id: contactId,
+              greeting: newGreeting,
+              envelopeGreeting: newEnvelopeGreeting,
+              name: newName,
+            };
+            // Updating contact's primary contact if deceased is current primary contact.
+            const newPrimaryContact =
+              contactData.primaryPerson?.id === person?.id
+                ? contactData.people.nodes.find(
+                    (people) => people.id !== person?.id && !people.deceased,
+                  )
+                : undefined;
+            if (
+              contactData.primaryPerson?.id === person?.id &&
+              newPrimaryContact?.id
+            ) {
+              attributes.primaryPersonId = newPrimaryContact?.id;
+            }
+
+            await editMailingInfo({
+              variables: {
+                accountListId,
+                attributes,
+              },
+              update: (cache) => {
+                const query = {
+                  query: GetContactDetailsHeaderDocument,
+                  variables: { accountListId, contactId },
                 };
-                const ContactDetailsTabDataCache =
-                  cache.readQuery<ContactDetailsTabQuery>(
-                    ContactDetailsTabQuery,
-                  );
-
-                if (ContactDetailsTabDataCache) {
+                const dataFromCache =
+                  cache.readQuery<GetContactDetailsHeaderQuery>(query);
+                if (dataFromCache) {
                   const data = {
-                    ...ContactDetailsTabDataCache,
+                    ...dataFromCache,
                     contact: {
-                      ...ContactDetailsTabDataCache.contact,
-                      primaryPerson: newPrimaryContact,
+                      ...dataFromCache.contact,
+                      name: newName,
                     },
                   };
-                  cache.writeQuery({ ...ContactDetailsTabQuery, data });
+                  cache.writeQuery({ ...query, data });
                 }
-                enqueueSnackbar(
-                  t('Switched primary contact to {{name}}', {
-                    name: newPrimaryContact?.firstName,
-                  }),
-                  {
-                    variant: 'success',
-                  },
-                );
-              }
-            },
-          });
 
-          enqueueSnackbar(
-            t("Updated contact's name and greeting information"),
-            {
-              variant: 'success',
-            },
-          );
+                if (attributes.primaryPersonId) {
+                  const ContactDetailsTabQuery = {
+                    query: ContactDetailsTabDocument,
+                    variables: {
+                      accountListId,
+                      contactId,
+                    },
+                  };
+                  const ContactDetailsTabDataCache =
+                    cache.readQuery<ContactDetailsTabQuery>(
+                      ContactDetailsTabQuery,
+                    );
+
+                  if (ContactDetailsTabDataCache) {
+                    const data = {
+                      ...ContactDetailsTabDataCache,
+                      contact: {
+                        ...ContactDetailsTabDataCache.contact,
+                        primaryPerson: newPrimaryContact,
+                      },
+                    };
+                    cache.writeQuery({ ...ContactDetailsTabQuery, data });
+                  }
+                  enqueueSnackbar(
+                    t('Switched primary contact to {{name}}', {
+                      name: newPrimaryContact?.firstName,
+                    }),
+                    {
+                      variant: 'success',
+                    },
+                  );
+                }
+              },
+            });
+
+            enqueueSnackbar(
+              t("Updated contact's name and greeting information"),
+              {
+                variant: 'success',
+              },
+            );
+          }
         }
-      }
 
-      enqueueSnackbar(t('Person updated successfully'), {
-        variant: 'success',
-      });
+        enqueueSnackbar(t('Person updated successfully'), {
+          variant: 'success',
+        });
+      }
     } else {
       await createPerson({
         variables: {
           accountListId,
-          attributes,
+          attributes: attributes as PersonCreateInput,
         },
         update: (cache, { data: createdContactData }) => {
           const query = {
@@ -642,7 +438,13 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   return (
     <Modal
       isOpen={true}
-      title={person ? t('Edit Person') : t('Create Person')}
+      title={
+        userProfile
+          ? 'Edit Details'
+          : person
+          ? t('Edit Person')
+          : t('Create Person')
+      }
       size="md"
       handleClose={handleClose}
     >
@@ -675,6 +477,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   <PersonEmail
                     formikProps={formikProps}
                     sources={personEmailAddressSources}
+                    showOptOutENewsletter={!userProfile}
                   />
                   {/* Birthday Section */}
                   <PersonBirthday formikProps={formikProps} />
@@ -708,7 +511,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              {person && (
+              {person && !userProfile && (
                 <DeleteButton onClick={() => handleRemoveDialogOpen(true)} />
               )}
               <CancelButton onClick={handleClose} />
