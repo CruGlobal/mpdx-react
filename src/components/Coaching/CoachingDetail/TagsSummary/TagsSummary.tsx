@@ -12,6 +12,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { MultilineSkeleton } from 'src/components/Shared/MultilineSkeleton';
+import { TagChip } from 'src/components/Shared/TagChip/TagChip';
 import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatWithoutYear } from 'src/lib/intlFormat';
@@ -34,13 +35,6 @@ const StyledTable = styled(Table)(({ theme }) => ({
   'th:last-child, td:last-child': {
     borderRight: 'none',
   },
-}));
-
-const TagText = styled('span')(({ theme }) => ({
-  fontWeight: 'bold',
-  backgroundColor: theme.palette.cruGrayLight.main,
-  borderRadius: theme.spacing(1),
-  padding: theme.spacing(0.25, 1),
 }));
 
 interface TagsSummaryProps {
@@ -111,7 +105,7 @@ export const TagsSummary: React.FC<TagsSummaryProps> = ({
                 {periods[0].tags.map((tag) => (
                   <TableRow key={tag.id}>
                     <TableCell>
-                      <TagText>{tag.name}</TagText>
+                      <TagChip label={tag.name} selectType="none" />
                     </TableCell>
                     {periods.map((period) => (
                       <TableCell key={`${period.startDate}..${period.endDate}`}>

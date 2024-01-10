@@ -1,11 +1,9 @@
 import React from 'react';
-import { Chip } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { TagChip } from 'src/components/Shared/TagChip/TagChip';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
-import theme from 'src/theme';
 
 interface FilterTagChipProps {
   name: string;
@@ -17,27 +15,6 @@ interface FilterTagChipProps {
   setSelectedTag: (tagName: string) => void;
   openDeleteModal: (open: boolean) => void;
 }
-
-const TagChip = styled(Chip, {
-  shouldForwardProp: (prop) => prop !== 'selectType',
-})(({ selectType }: { selectType: 'none' | 'include' | 'exclude' }) => ({
-  color: theme.palette.common.white,
-  margin: theme.spacing(0.5),
-  backgroundColor:
-    selectType === 'include'
-      ? theme.palette.mpdxBlue.main
-      : selectType === 'exclude'
-      ? theme.palette.error.main
-      : theme.palette.cruGrayMedium.main,
-  '&:focus': {
-    backgroundColor:
-      selectType === 'include'
-        ? theme.palette.mpdxBlue.main
-        : selectType === 'exclude'
-        ? theme.palette.error.main
-        : theme.palette.cruGrayMedium.main,
-  },
-}));
 
 export const FilterTagChip: React.FC<FilterTagChipProps> = ({
   name,
@@ -94,6 +71,7 @@ export const FilterTagChip: React.FC<FilterTagChipProps> = ({
   return (
     <TagChip
       label={name}
+      sx={{ margin: 0.5 }}
       key={value}
       selectType={getChipSelectType(name)}
       onClick={() => toggleSelect(name)}
