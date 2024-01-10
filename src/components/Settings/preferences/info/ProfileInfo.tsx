@@ -11,6 +11,8 @@ import {
 import { Theme, styled, useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { CollapsibleEmailList } from 'src/components/Coaching/CoachingDetail/CollapsibleEmailList';
+import { CollapsiblePhoneList } from 'src/components/Coaching/CoachingDetail/CollapsiblePhoneList';
 import { ContactDetailsTabQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/ContactDetailsTab.generated';
 import { PersonModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
 import { Facebook } from 'src/components/common/Links/Facebook';
@@ -19,7 +21,6 @@ import { Twitter } from 'src/components/common/Links/Twitter';
 import { Website } from 'src/components/common/Links/Website';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
-import { ProfileInfoData } from './ProfileInfoData';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -49,6 +50,17 @@ const StyledContactEdit = styled(Button)(({ theme }) => ({
     position: 'absolute',
     bottom: 0,
     right: 0,
+  },
+}));
+
+const ContactPersonRowContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+
+  [theme.breakpoints.up('sm')]: {
+    justifyContent: 'flex-start',
   },
 }));
 
@@ -127,18 +139,16 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
             </Box>
           )}
 
-          {user?.primaryEmailAddress && (
-            <ProfileInfoData
-              primaryData={user.primaryEmailAddress}
-              additionalData={user.emailAddresses?.nodes}
-            />
+          {user?.phoneNumbers && (
+            <ContactPersonRowContainer>
+              <CollapsiblePhoneList phones={user.phoneNumbers.nodes} />
+            </ContactPersonRowContainer>
           )}
 
-          {user?.primaryPhoneNumber && (
-            <ProfileInfoData
-              primaryData={user.primaryPhoneNumber}
-              additionalData={user.phoneNumbers?.nodes}
-            />
+          {user?.emailAddresses && (
+            <ContactPersonRowContainer>
+              <CollapsibleEmailList emails={user.emailAddresses.nodes} />
+            </ContactPersonRowContainer>
           )}
 
           <Box>
