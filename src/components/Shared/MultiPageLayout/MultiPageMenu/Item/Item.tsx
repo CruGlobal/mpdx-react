@@ -1,7 +1,9 @@
 import NextLink from 'next/link';
 import React, { useMemo, useState } from 'react';
-import { ArrowForwardIos } from '@mui/icons-material';
-import { Collapse, ListItem, ListItemText } from '@mui/material';
+import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
+import Collapse from '@mui/material/Collapse';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import { useTranslation } from 'react-i18next';
 import HandoffLink from 'src/components/HandoffLink';
 import { useAccountListId } from 'src/hooks/useAccountListId';
