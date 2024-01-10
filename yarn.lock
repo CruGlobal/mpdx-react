@@ -14121,7 +14121,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-tag@npm:^2.10.0, graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.6":
+"graphql-tag@npm:^2.11.0, graphql-tag@npm:^2.12.6":
   version: 2.12.6
   resolution: "graphql-tag@npm:2.12.6"
   dependencies:
@@ -18295,7 +18295,6 @@ __metadata:
     next-auth: ^4.20.1
     next-compose-plugins: ^2.2.1
     next-optimized-images: ^2.6.2
-    next-plugin-graphql: 0.0.2
     next-pwa: ^5.6.0
     node-fetch: ^3.3.1
     node-mocks-http: ^1.11.0
@@ -18516,15 +18515,6 @@ __metadata:
     raw-loader: ^2.0.0
     url-loader: ^1.1.2
   checksum: e9356f8ca0b63152cfa4c02e938ce0beebc28bdfde7cdc9b9a310740c9e1493bdb85184d4b446f5156280a84930ccdbf5fa4469c3e4c9b4b519080aaec9903f1
-  languageName: node
-  linkType: hard
-
-"next-plugin-graphql@npm:0.0.2":
-  version: 0.0.2
-  resolution: "next-plugin-graphql@npm:0.0.2"
-  dependencies:
-    graphql-tag: ^2.10.0
-  checksum: 75f1e752eca129b2cf883e79d68a5ade41afcf56d2e676ce29056cdd3a5a2ceb279a32c4357e9eb36fcc9a2c128cb64afbdc10be270ffdfb058ac6a6052b60f3
   languageName: node
   linkType: hard
 
