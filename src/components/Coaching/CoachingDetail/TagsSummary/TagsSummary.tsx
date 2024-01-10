@@ -96,9 +96,12 @@ export const TagsSummary: React.FC<TagsSummaryProps> = ({
               <TableHead>
                 <TableRow>
                   <TableCell>{t('Tag Name')}</TableCell>
-                  {periods.slice(0, -1).map(({ endDate }) => (
-                    <TableCell key={endDate}>
-                      {dateFormatWithoutYear(DateTime.fromISO(endDate), locale)}
+                  {periods.slice(0, -1).map(({ startDate }) => (
+                    <TableCell key={startDate}>
+                      {dateFormatWithoutYear(
+                        DateTime.fromISO(startDate),
+                        locale,
+                      )}
                     </TableCell>
                   ))}
                   <TableCell>{t('Total')}</TableCell>
