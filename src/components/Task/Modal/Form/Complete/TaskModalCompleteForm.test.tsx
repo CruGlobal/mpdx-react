@@ -12,7 +12,6 @@ import { dispatch } from 'src/lib/analytics';
 import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
-import { getDataForTaskModalMock } from '../TaskModalForm.mock';
 import { CompleteTaskDocument } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 import {
@@ -64,7 +63,6 @@ describe('TaskModalCompleteForm', () => {
     const { getAllByRole } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
@@ -86,7 +84,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByText } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeSimpleTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
@@ -121,7 +118,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByRole, getByText } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
           {
@@ -178,7 +174,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByRole } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeSimpleTaskMutationMock(accountListId, taskId),
           addTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
@@ -220,22 +215,18 @@ describe('TaskModalCompleteForm', () => {
         </TestWrapper>,
       );
 
-      expect(
-        getByRole('textbox', {
-          name: 'Choose date, selected date is Jan 5, 2015',
-        }),
-      ).toBeInTheDocument();
-      expect(
-        getByRole('textbox', {
-          name: 'Choose time, selected time is 1:02\u202fAM',
-        }),
-      ).toBeInTheDocument();
+      expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
+        '1/5/2015',
+      );
+      expect(getByRole('textbox', { name: /^Choose time/ })).toHaveValue(
+        '01:02 AM',
+      );
     });
 
     it('is now for other tasks', () => {
       const onClose = jest.fn();
       const { getByRole } = render(
-        <TestWrapper mocks={[getDataForTaskModalMock(accountListId)]}>
+        <TestWrapper>
           <TaskModalCompleteForm
             accountListId={accountListId}
             onClose={onClose}
@@ -248,16 +239,12 @@ describe('TaskModalCompleteForm', () => {
         </TestWrapper>,
       );
 
-      expect(
-        getByRole('textbox', {
-          name: 'Choose date, selected date is Jan 1, 2020',
-        }),
-      ).toBeInTheDocument();
-      expect(
-        getByRole('textbox', {
-          name: 'Choose time, selected time is 12:00\u202fAM',
-        }),
-      ).toBeInTheDocument();
+      expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
+        '1/1/2020',
+      );
+      expect(getByRole('textbox', { name: /^Choose time/ })).toHaveValue(
+        '12:00 AM',
+      );
     });
   });
 
@@ -265,7 +252,7 @@ describe('TaskModalCompleteForm', () => {
     activityType?: ActivityTypeEnum,
   ): { results: ResultEnum[]; nextActions: ActivityTypeEnum[] } => {
     const { getByRole, queryByRole } = render(
-      <TestWrapper mocks={[getDataForTaskModalMock(accountListId)]}>
+      <TestWrapper>
         <TaskModalCompleteForm
           accountListId={accountListId}
           onClose={jest.fn()}

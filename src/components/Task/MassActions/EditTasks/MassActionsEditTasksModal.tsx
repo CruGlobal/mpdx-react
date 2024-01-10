@@ -2,12 +2,9 @@ import React, { ReactElement } from 'react';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
 import {
-  Autocomplete,
   Checkbox,
-  CircularProgress,
   DialogActions,
   DialogContent,
-  FormControl,
   FormControlLabel,
   Grid,
   InputAdornment,
@@ -21,7 +18,6 @@ import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
-import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
   CancelButton,
   SubmitButton,
@@ -31,8 +27,9 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import Modal from '../../../common/Modal/Modal';
+import { ActivityTypeAutocomplete } from '../../Modal/Form/Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
+import { AssigneeAutocomplete } from '../../Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 
 interface MassActionsEditTasksModalProps {
@@ -117,12 +114,6 @@ export const MassActionsEditTasksModal: React.FC<
     handleClose();
   };
 
-  const { data, loading } = useGetDataForTaskModalQuery({
-    variables: {
-      accountListId,
-    },
-  });
-
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
       <Formik
@@ -153,183 +144,96 @@ export const MassActionsEditTasksModal: React.FC<
               />
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <TextField
-                      label={t('Task Name')}
-                      value={subject}
-                      onChange={handleChange('subject')}
-                      fullWidth
-                      multiline
-                      inputProps={{ 'aria-label': t('Task Name') }}
-                    />
-                  </FormControl>
+                  <TextField
+                    label={t('Task Name')}
+                    value={subject}
+                    onChange={handleChange('subject')}
+                    fullWidth
+                    multiline
+                    inputProps={{ 'aria-label': t('Task Name') }}
+                  />
                 </Grid>
                 <Grid item xs={12} lg={6}>
-                  <FormControl fullWidth>
-                    <Autocomplete
-                      openOnFocus
-                      autoSelect
-                      autoHighlight
-                      value={
-                        activityType === null ||
-                        typeof activityType === 'undefined'
-                          ? ''
-                          : activityType
-                      }
-                      // Sort None to top
-                      options={[
-                        'DONT_CHANGE',
-                        ...Object.values(ActivityTypeEnum).sort((a) =>
-                          a === ActivityTypeEnum.None ? -1 : 1,
-                        ),
-                      ]}
-                      getOptionLabel={(activity) =>
-                        activity === ActivityTypeEnum.None
-                          ? t('None')
-                          : activity === 'DONT_CHANGE'
-                          ? t("Don't change")
-                          : getLocalizedTaskType(
-                              t,
-                              activity as ActivityTypeEnum,
-                            )
-                      }
-                      renderInput={(params): ReactElement => (
-                        <TextField {...params} label={t('Action')} />
-                      )}
-                      onChange={(_, activity): void => {
-                        setFieldValue(
-                          'activityType',
-                          activity === 'DONT_CHANGE' ? '' : activity,
-                        );
-                      }}
-                    />
-                  </FormControl>
+                  <ActivityTypeAutocomplete
+                    options={Object.values(ActivityTypeEnum)}
+                    label={t('Action')}
+                    value={activityType}
+                    onChange={(activityType) =>
+                      setFieldValue('activityType', activityType)
+                    }
+                    // None and null are distinct values: null leaves the action unchanged and None changes the action to None
+                    preserveNone
+                  />
                 </Grid>
                 <Grid item xs={12} lg={6}>
-                  <FormControl fullWidth>
-                    {!loading ? (
-                      <Autocomplete
-                        loading={loading}
-                        autoSelect
-                        autoHighlight
-                        options={
-                          (data?.accountListUsers?.nodes &&
-                            data.accountListUsers.nodes.map(
-                              ({ user }) => user.id,
-                            )) ||
-                          []
-                        }
-                        getOptionLabel={(userId): string => {
-                          const user = data?.accountListUsers?.nodes.find(
-                            ({ user }) => user.id === userId,
-                          )?.user;
-                          return `${user?.firstName} ${user?.lastName}`;
-                        }}
-                        renderInput={(params): ReactElement => (
-                          <TextField
-                            {...params}
-                            label={t('Assignee')}
-                            InputProps={{
-                              ...params.InputProps,
-                              endAdornment: (
-                                <>
-                                  {loading && (
-                                    <CircularProgress
-                                      color="primary"
-                                      size={20}
-                                    />
-                                  )}
-                                  {params.InputProps.endAdornment}
-                                </>
-                              ),
+                  <AssigneeAutocomplete
+                    accountListId={accountListId}
+                    value={userId}
+                    onChange={(userId) => setFieldValue('userId', userId)}
+                  />
+                </Grid>
+                <Grid item xs={12} lg={6}>
+                  <DatePicker
+                    renderInput={(params) => (
+                      <TextField fullWidth {...params} />
+                    )}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <CalendarToday
+                            style={{
+                              color: theme.palette.cruGrayMedium.main,
                             }}
                           />
-                        )}
-                        value={userId}
-                        onChange={(_, userId): void =>
-                          setFieldValue('userId', userId)
-                        }
-                        isOptionEqualToValue={(option, value): boolean =>
-                          option === value
-                        }
-                      />
-                    ) : (
-                      <CircularProgress color="primary" size={20} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    inputFormat={getDateFormatPattern(locale)}
+                    closeOnSelect
+                    label={t('Due Date')}
+                    value={startAt}
+                    onChange={(date): void => setFieldValue('startAt', date)}
+                  />
+                </Grid>
+                <Grid item xs={12} lg={6}>
+                  <TimePicker
+                    renderInput={(params) => (
+                      <TextField fullWidth {...params} />
                     )}
-                  </FormControl>
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Schedule
+                            style={{
+                              color: theme.palette.cruGrayMedium.main,
+                            }}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                    closeOnSelect
+                    label={t('Due Time')}
+                    value={startAt}
+                    onChange={(date): void => setFieldValue('startAt', date)}
+                  />
                 </Grid>
                 <Grid item xs={12} lg={6}>
-                  <FormControl fullWidth>
-                    <DatePicker
-                      renderInput={(params) => (
-                        <TextField fullWidth {...params} />
-                      )}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <CalendarToday
-                              style={{
-                                color: theme.palette.cruGrayMedium.main,
-                              }}
-                            />
-                          </InputAdornment>
-                        ),
-                      }}
-                      inputFormat={getDateFormatPattern(locale)}
-                      closeOnSelect
-                      label={t('Due Date')}
-                      value={startAt}
-                      onChange={(date): void => setFieldValue('startAt', date)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} lg={6}>
-                  <FormControl fullWidth>
-                    <TimePicker
-                      renderInput={(params) => (
-                        <TextField fullWidth {...params} />
-                      )}
-                      closeOnSelect
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Schedule
-                              style={{
-                                color: theme.palette.cruGrayMedium.main,
-                              }}
-                            />
-                          </InputAdornment>
-                        ),
-                      }}
-                      label={t('Due Time')}
-                      value={startAt}
-                      onChange={(date): void => setFieldValue('startAt', date)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} lg={6}>
-                  <FormControl fullWidth>
-                    <FormControlLabel
-                      control={
-                        <Checkbox checked={noDueDate} color="secondary" />
-                      }
-                      label={t('No Due Date')}
-                      name="noDueDate"
-                      onChange={handleChange}
-                    />
-                  </FormControl>
+                  <FormControlLabel
+                    control={<Checkbox checked={noDueDate} color="secondary" />}
+                    label={t('No Due Date')}
+                    name="noDueDate"
+                    onChange={handleChange}
+                  />
                 </Grid>
                 <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <TextField
-                      label={t('Add New Comment')}
-                      value={body}
-                      onChange={handleChange('body')}
-                      fullWidth
-                      multiline
-                      inputProps={{ 'aria-label': t('Add New Comment') }}
-                    />
-                  </FormControl>
+                  <TextField
+                    label={t('Add New Comment')}
+                    value={body}
+                    onChange={handleChange('body')}
+                    fullWidth
+                    multiline
+                    inputProps={{ 'aria-label': t('Add New Comment') }}
+                  />
                 </Grid>
               </Grid>
             </DialogContent>

@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import {
-  CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
@@ -19,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
+import { AssigneeAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import {
   CancelButton,
   SubmitButton,
@@ -116,11 +115,6 @@ export const MassActionsEditFieldsModal: React.FC<
     handleClose();
   };
 
-  const { data, loading } = useGetDataForTaskModalQuery({
-    variables: {
-      accountListId,
-    },
-  });
   const { data: constants, loading: loadingConstants } =
     useLoadConstantsQuery();
 
@@ -394,30 +388,11 @@ export const MassActionsEditFieldsModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <InputLabel id="userId">{t('Assignee')}</InputLabel>
-                    <Select
-                      label={t('Assignee')}
-                      labelId="userId"
+                    <AssigneeAutocomplete
+                      accountListId={accountListId}
                       value={userId}
-                      onChange={(e) => setFieldValue('userId', e.target.value)}
-                      style={{ marginBottom: theme.spacing(2) }}
-                    >
-                      {!loading ? (
-                        [
-                          <MenuItem key="" value={''}>
-                            <em>{t("Don't change")}</em>
-                          </MenuItem>,
-                          data?.accountListUsers?.nodes &&
-                            data.accountListUsers.nodes.map((val) => (
-                              <MenuItem key={val.id} value={val.user.id}>
-                                {`${val.user?.firstName} ${val.user?.lastName}`}
-                              </MenuItem>
-                            )),
-                        ]
-                      ) : (
-                        <CircularProgress size={20} />
-                      )}
-                    </Select>
+                      onChange={(userId) => setFieldValue('userId', userId)}
+                    />
                   </FormControl>
                 </Grid>
               </Grid>

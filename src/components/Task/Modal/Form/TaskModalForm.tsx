@@ -1,7 +1,5 @@
 import React, {
-  ChangeEventHandler,
   ReactElement,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -11,8 +9,6 @@ import CalendarToday from '@mui/icons-material/CalendarToday';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import Schedule from '@mui/icons-material/Schedule';
 import {
-  Autocomplete,
-  Chip,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -29,7 +25,6 @@ import {
 import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import _ from 'lodash';
-import debounce from 'lodash/fp/debounce';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -58,16 +53,20 @@ import {
   getLocalizedNotificationType,
 } from 'src/utils/functions/getLocalizedNotificationStrings';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import theme from '../../../../theme';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
+import { ActivityTypeAutocomplete } from './Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
+import { AssigneeAutocomplete } from './Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
+import { ContactsAutocomplete } from './Inputs/ContactsAutocomplete/ContactsAutocomplete';
+import {
+  TagTypeEnum,
+  TagsAutocomplete,
+} from './Inputs/TagsAutocomplete/TagsAutocomplete';
 import { possibleNextActions } from './PossibleNextActions';
 import { possibleResults } from './PossibleResults';
 import {
   useCreateTasksMutation,
-  useGetDataForTaskModalQuery,
-  useGetTaskModalContactsFilteredQuery,
   useUpdateTaskMutation,
 } from './TaskModal.generated';
 
@@ -155,68 +154,14 @@ const TaskModalForm = ({
 
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
-  const [selectedIds, setSelectedIds] = useState(
-    task?.contacts.nodes.map((contact) => contact.id) ||
-      defaultValues?.contactIds ||
-      [],
-  );
   const { update } = useUpdateTasksQueries();
 
-  const [searchTerm, setSearchTerm] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   }, []);
-
-  const handleSearchTermChange = useCallback<
-    ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
-  >(
-    debounce(500, (event) => {
-      setSearchTerm(event.target.value);
-    }),
-    [],
-  );
-
-  const { data, loading } = useGetDataForTaskModalQuery({
-    variables: {
-      accountListId,
-    },
-  });
-
-  const { data: dataFilteredByName, loading: loadingFilteredByName } =
-    useGetTaskModalContactsFilteredQuery({
-      variables: {
-        accountListId,
-        first: 10,
-        contactsFilters: { wildcardSearch: searchTerm },
-      },
-    });
-
-  const { data: dataFilteredById, loading: loadingFilteredById } =
-    useGetTaskModalContactsFilteredQuery({
-      variables: {
-        accountListId,
-        first: selectedIds.length,
-        contactsFilters: { ids: selectedIds },
-      },
-      skip: selectedIds.length === 0,
-    });
-
-  const mergedContacts =
-    dataFilteredByName && dataFilteredById
-      ? dataFilteredByName?.contacts.nodes
-          .concat(dataFilteredById?.contacts.nodes)
-          .filter(
-            (contact1, index, self) =>
-              self.findIndex((contact2) => contact2.id === contact1.id) ===
-              index,
-          )
-      : dataFilteredById?.contacts.nodes ||
-        dataFilteredByName?.contacts.nodes ||
-        data?.contacts.nodes ||
-        [];
 
   const availableResults = task?.activityType
     ? possibleResults(task.activityType)
@@ -321,40 +266,13 @@ const TaskModalForm = ({
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
-                  <Autocomplete
-                    openOnFocus
-                    autoSelect
-                    autoHighlight
-                    isOptionEqualToValue={(option, value) => option === value}
-                    value={
-                      activityType === null ||
-                      typeof activityType === 'undefined'
-                        ? ''
-                        : activityType
+                  <ActivityTypeAutocomplete
+                    options={Object.values(ActivityTypeEnum)}
+                    label={t('Action')}
+                    value={activityType}
+                    onChange={(activityType) =>
+                      setFieldValue('activityType', activityType)
                     }
-                    // Sort none to top
-                    options={Object.values(ActivityTypeEnum).sort((a) =>
-                      a === ActivityTypeEnum.None ? -1 : 1,
-                    )}
-                    getOptionLabel={(activity) => {
-                      if (activity === ActivityTypeEnum.None) {
-                        return t('None');
-                      } else {
-                        return getLocalizedTaskType(
-                          t,
-                          activity as ActivityTypeEnum,
-                        );
-                      }
-                    }}
-                    renderInput={(params): ReactElement => (
-                      <TextField {...params} label={t('Action')} />
-                    )}
-                    onChange={(_, activity): void => {
-                      setFieldValue(
-                        'activityType',
-                        activity === ActivityTypeEnum.None ? null : activity,
-                      );
-                    }}
                   />
                 </FormControl>
               </Grid>
@@ -371,35 +289,11 @@ const TaskModalForm = ({
                 </Grid>
               )}
               <Grid item>
-                {!loading ? (
-                  <Autocomplete
-                    autoSelect
-                    autoHighlight
-                    options={
-                      data?.accountListUsers?.nodes?.map(
-                        ({ user }) => user.id,
-                      ) ?? []
-                    }
-                    getOptionLabel={(userId): string => {
-                      const user = data?.accountListUsers?.nodes.find(
-                        ({ user }) => user.id === userId,
-                      )?.user;
-                      return `${user?.firstName} ${user?.lastName}`;
-                    }}
-                    renderInput={(params): ReactElement => (
-                      <TextField {...params} label={t('Assignee')} />
-                    )}
-                    value={userId ?? null}
-                    onChange={(_, userId): void =>
-                      setFieldValue('userId', userId)
-                    }
-                    isOptionEqualToValue={(option, value): boolean =>
-                      option === value
-                    }
-                  />
-                ) : (
-                  <CircularProgress color="primary" size={20} />
-                )}
+                <AssigneeAutocomplete
+                  accountListId={accountListId}
+                  value={userId}
+                  onChange={(userId) => setFieldValue('userId', userId)}
+                />
               </Grid>
               {!initialTask.completedAt && (
                 <Grid item>
@@ -494,56 +388,13 @@ const TaskModalForm = ({
                 </Grid>
               )}
               <Grid item>
-                {loadingFilteredById ? (
-                  <CircularProgress color="primary" size={20} />
-                ) : (
-                  <Autocomplete
-                    multiple
-                    autoSelect
-                    autoHighlight
-                    options={
-                      (
-                        mergedContacts &&
-                        [...mergedContacts].sort((a, b) =>
-                          a.name.localeCompare(b.name),
-                        )
-                      )?.map(({ id }) => id) || []
-                    }
-                    getOptionLabel={(contactId) =>
-                      mergedContacts.find(({ id }) => id === contactId)?.name ??
-                      ''
-                    }
-                    loading={
-                      loading || loadingFilteredById || loadingFilteredByName
-                    }
-                    renderInput={(params): ReactElement => (
-                      <TextField
-                        {...params}
-                        onChange={handleSearchTermChange}
-                        label={t('Contacts')}
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {loading && (
-                                <CircularProgress color="primary" size={20} />
-                              )}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
-                        }}
-                      />
-                    )}
-                    value={contactIds ?? []}
-                    onChange={(_, contactIds): void => {
-                      setFieldValue('contactIds', contactIds);
-                      setSelectedIds(contactIds);
-                    }}
-                    isOptionEqualToValue={(option, value): boolean =>
-                      option === value
-                    }
-                  />
-                )}
+                <ContactsAutocomplete
+                  accountListId={accountListId}
+                  value={contactIds}
+                  onChange={(contactIds) =>
+                    setFieldValue('contactIds', contactIds)
+                  }
+                />
               </Grid>
               {initialTask.completedAt && availableResults.length > 0 && (
                 <Grid item>
@@ -566,53 +417,22 @@ const TaskModalForm = ({
               )}
               {initialTask.completedAt && availableNextActions.length > 0 && (
                 <Grid item>
-                  <FormControl fullWidth>
-                    <InputLabel id="nextAction">{t('Next Action')}</InputLabel>
-                    <Select
-                      label={t('Next Action')}
-                      labelId="nextAction"
-                      value={nextAction}
-                      onChange={(e) =>
-                        setFieldValue('nextAction', e.target.value)
-                      }
-                    >
-                      {availableNextActions.map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedTaskType(t, val)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <ActivityTypeAutocomplete
+                    options={availableNextActions}
+                    label={t('Next Action')}
+                    value={nextAction}
+                    onChange={(nextAction) =>
+                      setFieldValue('nextAction', nextAction)
+                    }
+                  />
                 </Grid>
               )}
               <Grid item>
-                <Autocomplete
-                  multiple
-                  autoSelect
-                  autoHighlight
-                  isOptionEqualToValue={(option, value) =>
-                    option.id === value.id
-                  }
-                  freeSolo
-                  renderTags={(value, getTagProps): ReactElement[] =>
-                    value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        color="default"
-                        size="small"
-                        key={index}
-                        label={option}
-                      />
-                    ))
-                  }
-                  renderInput={(params): ReactElement => (
-                    <TextField {...params} label={t('Tags')} />
-                  )}
-                  onChange={(_, tagList): void =>
-                    setFieldValue('tagList', tagList)
-                  }
+                <TagsAutocomplete
+                  accountListId={accountListId}
+                  type={TagTypeEnum.Tag}
                   value={tagList ?? []}
-                  options={data?.accountList?.taskTagList || []}
+                  onChange={(tagList) => setFieldValue('tagList', tagList)}
                 />
               </Grid>
               {!initialTask.completedAt && (

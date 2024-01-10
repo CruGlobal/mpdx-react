@@ -2,8 +2,6 @@ import React, { ReactElement, useState } from 'react';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import Schedule from '@mui/icons-material/Schedule';
 import {
-  Autocomplete,
-  Chip,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -39,9 +37,13 @@ import theme from '../../../../../theme';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
+import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
+import {
+  TagTypeEnum,
+  TagsAutocomplete,
+} from '../Inputs/TagsAutocomplete/TagsAutocomplete';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
-import { useGetDataForTaskModalQuery } from '../TaskModal.generated';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const taskSchema = yup.object({
@@ -81,9 +83,6 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data } = useGetDataForTaskModalQuery({
-    variables: { accountListId },
-  });
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
@@ -241,67 +240,23 @@ const TaskModalCompleteForm = ({
               )}
               {availableNextActions.length > 0 && (
                 <Grid item>
-                  <FormControl fullWidth>
-                    <Autocomplete
-                      openOnFocus
-                      autoHighlight
-                      value={
-                        nextAction === null || typeof nextAction === 'undefined'
-                          ? ''
-                          : nextAction
-                      }
-                      // Sort none to top
-                      options={availableNextActions.sort((a) =>
-                        a === ActivityTypeEnum.None ? -1 : 1,
-                      )}
-                      getOptionLabel={(activity) => {
-                        if (activity === ActivityTypeEnum.None) {
-                          return t('None');
-                        } else {
-                          return getLocalizedTaskType(
-                            t,
-                            activity as ActivityTypeEnum,
-                          );
-                        }
-                      }}
-                      renderInput={(params): ReactElement => (
-                        <TextField {...params} label={t('Next Action')} />
-                      )}
-                      onChange={(_, activity): void => {
-                        setFieldValue(
-                          'nextAction',
-                          activity === ActivityTypeEnum.None ? null : activity,
-                        );
-                      }}
-                    />
-                  </FormControl>
+                  <ActivityTypeAutocomplete
+                    options={availableNextActions}
+                    value={nextAction}
+                    label={t('Next Action')}
+                    onChange={(nextAction) =>
+                      setFieldValue('nextAction', nextAction)
+                    }
+                  />
                 </Grid>
               )}
               {/*Add field to change contact statuses */}
               <Grid item>
-                <Autocomplete
-                  multiple
-                  autoHighlight
-                  freeSolo
-                  renderTags={(value, getTagProps): ReactElement[] =>
-                    value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        color="default"
-                        size="small"
-                        key={index}
-                        label={option}
-                      />
-                    ))
-                  }
-                  renderInput={(params): ReactElement => (
-                    <TextField {...params} label={t('Tags')} />
-                  )}
-                  onChange={(_, tagList): void =>
-                    setFieldValue('tagList', tagList)
-                  }
-                  value={tagList ?? undefined}
-                  options={data?.accountList?.taskTagList || []}
+                <TagsAutocomplete
+                  accountListId={accountListId}
+                  type={TagTypeEnum.Tag}
+                  value={tagList ?? []}
+                  onChange={(tagList) => setFieldValue('tagList', tagList)}
                 />
               </Grid>
 

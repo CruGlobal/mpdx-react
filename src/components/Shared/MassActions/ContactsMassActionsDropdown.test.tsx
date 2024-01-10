@@ -82,7 +82,9 @@ describe('ContactsMassActionsDropdown', () => {
   });
 
   it('opens the more actions menu and clicks the edit fields action', async () => {
-    const { queryByTestId, queryByText } = render(<ContactComponents />);
+    const { getByRole, queryByTestId, queryByText } = render(
+      <ContactComponents />,
+    );
     expect(queryByText('Edit Fields')).not.toBeInTheDocument();
     const actionsButton = queryByText('Actions') as HTMLInputElement;
     userEvent.click(actionsButton);
@@ -91,7 +93,7 @@ describe('ContactsMassActionsDropdown', () => {
     userEvent.click(button);
     const modal = queryByTestId('EditFieldsModal') as HTMLInputElement;
     await waitFor(() => expect(modal).toBeInTheDocument());
-    userEvent.click(queryByTestId('CloseIcon') as HTMLInputElement);
+    userEvent.click(getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(modal).not.toBeInTheDocument());
   });
 
