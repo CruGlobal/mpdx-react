@@ -1,0 +1,7 @@
+extend type Query {
+  getUserInCruOrg(accountListId: ID!): GetUserInCruOrg!
+}
+type GetUserInCruOrg {
+  allowed: Boolean!
+  exportedAt: String
+}

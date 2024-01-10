@@ -8,6 +8,11 @@ query LoadConstants {
       id
       value
     }
+    locales {
+      englishName
+      nativeName
+      shortName
+    }
     likelyToGiveOptions {
       id
       value

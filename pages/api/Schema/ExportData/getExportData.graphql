@@ -1,0 +1,3 @@
+extend type Query {
+  getExportData(accountListId: ID!): String!
+}

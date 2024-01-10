@@ -26,6 +26,7 @@ import {
   DestroyDonorAccount,
   DestroyDonorAccountResponse,
 } from './Schema/Contacts/DonorAccounts/Destroy/datahander';
+import { getExportData } from './Schema/ExportData/dataHandler';
 import { SendToChalkline } from './Schema/Settings/Preferences/Intergrations/Chalkine/sendToChalkline/datahandler';
 import {
   CreateGoogleIntegration,
@@ -70,6 +71,7 @@ import {
   UpdateComment,
   UpdateCommentResponse,
 } from './Schema/Tasks/Comments/UpdateComments/datahandler';
+import { getUserInCruOrg } from './Schema/UserInCruOrg/dataHandler';
 import {
   DonationReponseData,
   DonationReponseIncluded,
@@ -233,6 +235,19 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getTaskAnalytics(data);
+  }
+
+  async getUserInCruOrg(accountListId: string) {
+    const data = await this.get(
+      `account_lists/${accountListId}/exports/allowed`,
+    );
+
+    return getUserInCruOrg(data);
+  }
+
+  async getExportData(accountListId: string) {
+    await this.get(`account_lists/${accountListId}/exports`);
+    return getExportData();
   }
 
   async getAccountListCoaches() {

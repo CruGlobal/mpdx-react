@@ -1,0 +1,35 @@
+query getAccountPreferences($accountListId: ID!) {
+  user {
+    id
+  }
+  accountList(id: $accountListId) {
+    settings {
+      homeCountry
+      monthlyGoal
+      tester
+      currency
+    }
+    activeMpdMonthlyGoal
+    name
+    activeMpdStartAt
+    activeMpdFinishAt
+    salaryOrganizationId
+  }
+  accountLists {
+    nodes {
+      name
+      id
+    }
+  }
+}
+
+query getUserInCruOrg($accountListId: ID!) {
+  getUserInCruOrg(accountListId: $accountListId) {
+    allowed
+    exportedAt
+  }
+}
+
+query getExportData($accountListId: ID!) {
+  getExportData(accountListId: $accountListId)
+}
