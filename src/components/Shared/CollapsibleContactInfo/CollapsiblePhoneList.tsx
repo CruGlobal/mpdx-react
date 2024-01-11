@@ -1,10 +1,7 @@
+import { Link, Typography } from '@mui/material';
 import { PhoneNumber } from 'src/graphql/types.generated';
 import { CollapsibleList } from './CollapsibleList';
-import {
-  ContactInfoText,
-  ContrastLink,
-  SideContainerText,
-} from './StyledComponents';
+import { ContactInfoText } from './StyledComponents';
 
 interface PhoneProps {
   phone: Pick<PhoneNumber, 'number' | 'location'>;
@@ -12,9 +9,9 @@ interface PhoneProps {
 
 const Phone: React.FC<PhoneProps> = ({ phone }) => (
   <ContactInfoText data-testid="PhoneNumber">
-    <ContrastLink href={`mailto:${phone.number}`} underline="hover">
+    <Link href={`mailto:${phone.number}`} underline="hover">
       {phone.number}
-    </ContrastLink>
+    </Link>
     {phone.location ? ` - ${phone.location}` : null}
   </ContactInfoText>
 );
@@ -38,9 +35,9 @@ export const CollapsiblePhoneList: React.FC<CollapsiblePhoneListProps> = ({
       secondaryItems={
         secondaryPhones.length
           ? secondaryPhones.map((phone) => (
-              <SideContainerText key={phone.id}>
+              <Typography key={phone.id}>
                 <Phone phone={phone} />
-              </SideContainerText>
+              </Typography>
             ))
           : null
       }

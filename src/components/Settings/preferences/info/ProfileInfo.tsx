@@ -11,12 +11,12 @@ import {
 import { Theme, styled, useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { CollapsibleEmailList } from 'src/components/Coaching/CoachingDetail/CollapsibleEmailList';
-import { CollapsiblePhoneList } from 'src/components/Coaching/CoachingDetail/CollapsiblePhoneList';
 import {
   Person,
   PersonModal,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
+import { CollapsibleEmailList } from 'src/components/Shared/CollapsibleContactInfo/CollapsibleEmailList';
+import { CollapsiblePhoneList } from 'src/components/Shared/CollapsibleContactInfo/CollapsiblePhoneList';
 import { Facebook } from 'src/components/common/Links/Facebook';
 import { LinkedIn } from 'src/components/common/Links/LinkedIn';
 import { Twitter } from 'src/components/common/Links/Twitter';

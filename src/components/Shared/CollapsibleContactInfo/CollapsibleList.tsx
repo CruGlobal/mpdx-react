@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { SideContainerText } from './StyledComponents';
 
 const ExpandMoreIcon = styled(ExpandMore)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
@@ -27,7 +27,7 @@ export const CollapsibleList: React.FC<CollapsibleListProps> = ({
 
   return (
     <>
-      <SideContainerText display="flex">
+      <Typography display="flex">
         {primaryItem}
         {secondaryItems &&
           (moreVisible ? (
@@ -35,7 +35,7 @@ export const CollapsibleList: React.FC<CollapsibleListProps> = ({
           ) : (
             <ExpandMoreIcon onClick={() => setMoreVisible(true)} />
           ))}
-      </SideContainerText>
+      </Typography>
       {moreVisible && secondaryItems}
     </>
   );

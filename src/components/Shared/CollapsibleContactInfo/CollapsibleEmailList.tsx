@@ -1,10 +1,7 @@
+import { Link, Typography } from '@mui/material';
 import { EmailAddress } from 'src/graphql/types.generated';
 import { CollapsibleList } from './CollapsibleList';
-import {
-  ContactInfoText,
-  ContrastLink,
-  SideContainerText,
-} from './StyledComponents';
+import { ContactInfoText } from './StyledComponents';
 
 interface EmailProps {
   email: Pick<EmailAddress, 'email' | 'location'>;
@@ -12,9 +9,9 @@ interface EmailProps {
 
 const Email: React.FC<EmailProps> = ({ email }) => (
   <ContactInfoText data-testid="EmailAddress">
-    <ContrastLink href={`mailto:${email.email}`} underline="hover">
+    <Link href={`mailto:${email.email}`} underline="hover">
       {email.email}
-    </ContrastLink>
+    </Link>
     {email.location ? ` - ${email.location}` : null}
   </ContactInfoText>
 );
@@ -38,9 +35,9 @@ export const CollapsibleEmailList: React.FC<CollapsibleEmailListProps> = ({
       secondaryItems={
         secondaryEmails.length
           ? secondaryEmails.map((email) => (
-              <SideContainerText key={email.id}>
+              <Typography key={email.id}>
                 <Email email={email} />
-              </SideContainerText>
+              </Typography>
             ))
           : null
       }
