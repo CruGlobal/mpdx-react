@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { Grid, TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
@@ -32,7 +31,6 @@ interface MpdInfoAccordionProps {
 export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   activeMpdMonthlyGoal,
   activeMpdStartAt,
   activeMpdFinishAt,
@@ -145,85 +143,82 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
-                    <FieldWrapper labelText={t('Start Date')}>
-                      <DatePicker<Date, DateTime>
-                        renderInput={(params) => (
-                          <TextField
-                            fullWidth
-                            inputProps={{
-                              'aria-label': t('Start Date'),
-                              'data-testid': 'Start Date',
-                            }}
-                            {...params}
-                          />
-                        )}
-                        onChange={(date) =>
-                          setFieldValue('activeMpdStartAt', date)
-                        }
-                        value={
-                          activeMpdStartAt ? new Date(activeMpdStartAt) : null
-                        }
-                        inputFormat={getDateFormatPattern(locale)}
-                        componentsProps={{
-                          actionBar: {
-                            actions: ['clear', 'accept'],
-                          },
-                        }}
-                      />
-                    </FieldWrapper>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <FieldWrapper labelText={t('End Date')}>
-                      <DatePicker<Date, DateTime>
-                        renderInput={(params) => (
-                          <TextField
-                            fullWidth
-                            inputProps={{
-                              'aria-label': t('End Date'),
-                              'data-testid': 'End Date',
-                            }}
-                            {...params}
-                          />
-                        )}
-                        onChange={(date) =>
-                          setFieldValue('activeMpdFinishAt', date)
-                        }
-                        value={
-                          activeMpdFinishAt ? new Date(activeMpdFinishAt) : null
-                        }
-                        inputFormat={getDateFormatPattern(locale)}
-                        componentsProps={{
-                          actionBar: {
-                            actions: ['clear', 'accept'],
-                          },
-                        }}
-                      />
-                    </FieldWrapper>
-                  </Grid>
+            <>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <FieldWrapper labelText={t('Start Date')}>
+                    <DatePicker<Date, DateTime>
+                      renderInput={(params) => (
+                        <TextField
+                          fullWidth
+                          inputProps={{
+                            'aria-label': t('Start Date'),
+                            'data-testid': 'Start Date',
+                          }}
+                          {...params}
+                        />
+                      )}
+                      onChange={(date) =>
+                        setFieldValue('activeMpdStartAt', date)
+                      }
+                      value={
+                        activeMpdStartAt ? new Date(activeMpdStartAt) : null
+                      }
+                      inputFormat={getDateFormatPattern(locale)}
+                      componentsProps={{
+                        actionBar: {
+                          actions: ['clear', 'accept'],
+                        },
+                      }}
+                    />
+                  </FieldWrapper>
                 </Grid>
-                <FieldWrapper
-                  labelText={t('New Recurring Commitment Goal')}
-                  helperText={t(
-                    'This should be set to the amount of new recurring commitments you expect to raise during the period set above. If you do not know, make your best guess for now. You can change it at any time.',
-                  )}
-                >
-                  <TextField
-                    value={activeMpdMonthlyGoal}
-                    onChange={handleChange('activeMpdMonthlyGoal')}
-                    inputProps={{
-                      'aria-label': label,
-                      type: 'number',
-                      'data-testid': 'input' + label.replace(/\s/g, ''),
-                    }}
-                  />
-                </FieldWrapper>
-              </>
-            )}
+                <Grid item xs={12} md={6}>
+                  <FieldWrapper labelText={t('End Date')}>
+                    <DatePicker<Date, DateTime>
+                      renderInput={(params) => (
+                        <TextField
+                          fullWidth
+                          inputProps={{
+                            'aria-label': t('End Date'),
+                            'data-testid': 'End Date',
+                          }}
+                          {...params}
+                        />
+                      )}
+                      onChange={(date) =>
+                        setFieldValue('activeMpdFinishAt', date)
+                      }
+                      value={
+                        activeMpdFinishAt ? new Date(activeMpdFinishAt) : null
+                      }
+                      inputFormat={getDateFormatPattern(locale)}
+                      componentsProps={{
+                        actionBar: {
+                          actions: ['clear', 'accept'],
+                        },
+                      }}
+                    />
+                  </FieldWrapper>
+                </Grid>
+              </Grid>
+              <FieldWrapper
+                labelText={t('New Recurring Commitment Goal')}
+                helperText={t(
+                  'This should be set to the amount of new recurring commitments you expect to raise during the period set above. If you do not know, make your best guess for now. You can change it at any time.',
+                )}
+              >
+                <TextField
+                  value={activeMpdMonthlyGoal}
+                  onChange={handleChange('activeMpdMonthlyGoal')}
+                  inputProps={{
+                    'aria-label': label,
+                    type: 'number',
+                    'data-testid': 'input' + label.replace(/\s/g, ''),
+                  }}
+                />
+              </FieldWrapper>
+            </>
           </FormWrapper>
         )}
       </Formik>

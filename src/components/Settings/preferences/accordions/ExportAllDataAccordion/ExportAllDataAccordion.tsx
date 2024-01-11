@@ -8,7 +8,6 @@ import {
   FormGroup,
   FormHelperText,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -31,7 +30,6 @@ interface ExportAllDataAccordionProps {
 export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   exportedAt,
   accountListId,
 }) => {
@@ -90,62 +88,59 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
       value={''}
       fullWidth
     >
-      {loading && <Skeleton height="90px" />}
-      {!loading && (
-        <form onSubmit={onSubmit}>
-          <FieldWrapper>
-            {exportedAt && (
-              <Alert severity="info" icon={<DownloadForOffline />}>
-                {t(
-                  `Your last export was on ${dateTimeFormat(
-                    DateTime.fromISO(exportedAt),
-                    locale,
-                  )}`,
-                )}
-              </Alert>
-            )}
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name={'acknowledge'}
-                    data-testid={'input' + label.replace(/\s/g, '')}
-                    onChange={handleChange}
-                    inputProps={{
-                      'aria-label': t(
-                        'I, the user, acknowledge that once I export my data, I have 30 days until my data will be deleted on MPDX servers.',
-                      ),
-                    }}
-                    required
-                  />
-                }
-                label={t(
-                  'I, the user, acknowledge that once I export my data, I have 30 days until my data will be deleted on MPDX servers.',
-                )}
-              />
-              <FormHelperText>
-                {t("Please ensure you've read the above before continuing.")}
-              </FormHelperText>
-            </FormGroup>
-          </FieldWrapper>
-          {confirmation && (
-            <Alert severity="success">
+      <form onSubmit={onSubmit}>
+        <FieldWrapper>
+          {exportedAt && (
+            <Alert severity="info" icon={<DownloadForOffline />}>
               {t(
-                'Once the export is completed, we will send you an email with a link to download your export.',
+                `Your last export was on ${dateTimeFormat(
+                  DateTime.fromISO(exportedAt),
+                  locale,
+                )}`,
               )}
             </Alert>
           )}
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ marginTop: theme.spacing(2) }}
-            type="submit"
-            disabled={!acknowledged || isSubmitting}
-          >
-            {t('Download All Data')}
-          </Button>
-        </form>
-      )}
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name={'acknowledge'}
+                  data-testid={'input' + label.replace(/\s/g, '')}
+                  onChange={handleChange}
+                  inputProps={{
+                    'aria-label': t(
+                      'I, the user, acknowledge that once I export my data, I have 30 days until my data will be deleted on MPDX servers.',
+                    ),
+                  }}
+                  required
+                />
+              }
+              label={t(
+                'I, the user, acknowledge that once I export my data, I have 30 days until my data will be deleted on MPDX servers.',
+              )}
+            />
+            <FormHelperText>
+              {t("Please ensure you've read the above before continuing.")}
+            </FormHelperText>
+          </FormGroup>
+        </FieldWrapper>
+        {confirmation && (
+          <Alert severity="success">
+            {t(
+              'Once the export is completed, we will send you an email with a link to download your export.',
+            )}
+          </Alert>
+        )}
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ marginTop: theme.spacing(2) }}
+          type="submit"
+          disabled={!acknowledged || isSubmitting}
+        >
+          {t('Download All Data')}
+        </Button>
+      </form>
     </AccordionItem>
   );
 };

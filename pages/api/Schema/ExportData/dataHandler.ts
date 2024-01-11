@@ -1,5 +1,3 @@
-import { GetExportData } from 'pages/api/graphql-rest.page.generated';
-
-const getExportData = (): GetExportData => 'Success';
+const getExportData = () => 'Success';
 
 export { getExportData };

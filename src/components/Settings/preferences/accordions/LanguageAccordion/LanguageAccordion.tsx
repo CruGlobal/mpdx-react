@@ -1,6 +1,5 @@
 import React, { ReactElement, useContext } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -139,35 +138,32 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <FieldWrapper
-                labelText={label}
-                helperText={t(
-                  'The language determines your default language for {{appName}}.',
-                  { appName },
+            <FieldWrapper
+              labelText={label}
+              helperText={t(
+                'The language determines your default language for {{appName}}.',
+                { appName },
+              )}
+            >
+              <Autocomplete
+                disabled={isSubmitting}
+                autoHighlight
+                loading={loading}
+                value={locale}
+                onChange={(_, value) => {
+                  setFieldValue('locale', value);
+                  //console.log('onChange', value);
+                }}
+                options={languages.map((language) => language.id) || []}
+                getOptionLabel={(locale): string => formatLanguage(locale)}
+                filterSelectedOptions
+                fullWidth
+                data-testid={'input' + label.replace(/\s/g, '')}
+                renderInput={(params) => (
+                  <TextField {...params} placeholder={label} />
                 )}
-              >
-                <Autocomplete
-                  disabled={isSubmitting}
-                  autoHighlight
-                  loading={loading}
-                  value={locale}
-                  onChange={(_, value) => {
-                    setFieldValue('locale', value);
-                    //console.log('onChange', value);
-                  }}
-                  options={languages.map((language) => language.id) || []}
-                  getOptionLabel={(locale): string => formatLanguage(locale)}
-                  filterSelectedOptions
-                  fullWidth
-                  data-testid={'input' + label.replace(/\s/g, '')}
-                  renderInput={(params) => (
-                    <TextField {...params} placeholder={label} />
-                  )}
-                />
-              </FieldWrapper>
-            )}
+              />
+            </FieldWrapper>
           </FormWrapper>
         )}
       </Formik>

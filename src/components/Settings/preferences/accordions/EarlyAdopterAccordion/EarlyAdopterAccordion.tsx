@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +22,6 @@ interface EarlyAdopterAccordionProps {
 export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   tester,
   accountListId,
 }) => {
@@ -95,32 +93,29 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <FieldWrapper
-                helperText={t(
-                  `By checking this box, you are telling us that you'd like to test new features for bugs before they are rolled out to the full {{appName}} user base. We'll send you an email when new features are available on your account to test, and then ask for you to give us feedback - both if you experience bugs and also about your thoughts about the feature(s) you are testing.`,
-                  { appName },
-                )}
-              >
-                <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        onChange={handleChange('tester')}
-                        checked={tester}
-                        value={tester}
-                        data-testid={'input' + label.replace(/\s/g, '')}
-                        inputProps={{
-                          'aria-label': label,
-                        }}
-                      />
-                    }
-                    label={label}
-                  />
-                </FormGroup>
-              </FieldWrapper>
-            )}
+            <FieldWrapper
+              helperText={t(
+                `By checking this box, you are telling us that you'd like to test new features for bugs before they are rolled out to the full {{appName}} user base. We'll send you an email when new features are available on your account to test, and then ask for you to give us feedback - both if you experience bugs and also about your thoughts about the feature(s) you are testing.`,
+                { appName },
+              )}
+            >
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={handleChange('tester')}
+                      checked={tester}
+                      value={tester}
+                      data-testid={'input' + label.replace(/\s/g, '')}
+                      inputProps={{
+                        'aria-label': label,
+                      }}
+                    />
+                  }
+                  label={label}
+                />
+              </FormGroup>
+            </FieldWrapper>
           </FormWrapper>
         )}
       </Formik>

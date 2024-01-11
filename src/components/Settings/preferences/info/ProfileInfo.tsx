@@ -92,7 +92,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
 
   return (
     <ProfileInfoWrapper component="section">
-      {loading && <Skeleton variant="rectangular" height={30} />}
+      {loading && <Skeleton variant="rectangular" height={188} />}
       {!loading && (
         <>
           <Box marginBottom={isMobile ? theme.spacing(2) : 0}>

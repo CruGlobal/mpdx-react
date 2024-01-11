@@ -1,6 +1,5 @@
 import React, { ReactElement, useContext } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -106,37 +105,34 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <FieldWrapper
-                labelText={label}
-                helperText={t(
-                  'The locale determines how numbers, dates and other information are formatted.',
+            <FieldWrapper
+              labelText={label}
+              helperText={t(
+                'The locale determines how numbers, dates and other information are formatted.',
+              )}
+            >
+              <Autocomplete
+                autoSelect
+                disabled={isSubmitting}
+                autoHighlight
+                loading={loading}
+                value={localeDisplay}
+                onChange={(_, value) => {
+                  setFieldValue('localeDisplay', value);
+                  if (value) setLocale(value);
+                }}
+                options={locales.map((locale) => locale.shortName) || []}
+                getOptionLabel={(localeDisplay): string =>
+                  formatLocale(localeDisplay)
+                }
+                filterSelectedOptions
+                fullWidth
+                data-testid={'input' + label.replace(/\s/g, '')}
+                renderInput={(params) => (
+                  <TextField {...params} placeholder={label} />
                 )}
-              >
-                <Autocomplete
-                  autoSelect
-                  disabled={isSubmitting}
-                  autoHighlight
-                  loading={loading}
-                  value={localeDisplay}
-                  onChange={(_, value) => {
-                    setFieldValue('localeDisplay', value);
-                    if (value) setLocale(value);
-                  }}
-                  options={locales.map((locale) => locale.shortName) || []}
-                  getOptionLabel={(localeDisplay): string =>
-                    formatLocale(localeDisplay)
-                  }
-                  filterSelectedOptions
-                  fullWidth
-                  data-testid={'input' + label.replace(/\s/g, '')}
-                  renderInput={(params) => (
-                    <TextField {...params} placeholder={label} />
-                  )}
-                />
-              </FieldWrapper>
-            )}
+              />
+            </FieldWrapper>
           </FormWrapper>
         )}
       </Formik>

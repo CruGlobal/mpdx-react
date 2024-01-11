@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -103,37 +102,34 @@ export const DefaultAccountAccordion: React.FC<
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <FieldWrapper
-                labelText={label}
-                helperText={t(
-                  'This sets which account you will land in whenever you login to {{appName}}.',
-                  { appName },
+            <FieldWrapper
+              labelText={label}
+              helperText={t(
+                'This sets which account you will land in whenever you login to {{appName}}.',
+                { appName },
+              )}
+            >
+              <Autocomplete
+                disabled={isSubmitting}
+                autoHighlight
+                loading={loading}
+                value={defaultAccountList}
+                onChange={(_, value) => {
+                  setFieldValue('defaultAccountList', value);
+                }}
+                options={accounts.map((account) => account.id) || []}
+                getOptionLabel={(defaultAccountList): string =>
+                  accounts.find(({ id }) => id === defaultAccountList)?.name ??
+                  ''
+                }
+                filterSelectedOptions
+                fullWidth
+                data-testid={'input' + label.replace(/\s/g, '')}
+                renderInput={(params) => (
+                  <TextField {...params} placeholder={label} />
                 )}
-              >
-                <Autocomplete
-                  disabled={isSubmitting}
-                  autoHighlight
-                  loading={loading}
-                  value={defaultAccountList}
-                  onChange={(_, value) => {
-                    setFieldValue('defaultAccountList', value);
-                  }}
-                  options={accounts.map((account) => account.id) || []}
-                  getOptionLabel={(defaultAccountList): string =>
-                    accounts.find(({ id }) => id === defaultAccountList)
-                      ?.name ?? ''
-                  }
-                  filterSelectedOptions
-                  fullWidth
-                  data-testid={'input' + label.replace(/\s/g, '')}
-                  renderInput={(params) => (
-                    <TextField {...params} placeholder={label} />
-                  )}
-                />
-              </FieldWrapper>
-            )}
+              />
+            </FieldWrapper>
           </FormWrapper>
         )}
       </Formik>

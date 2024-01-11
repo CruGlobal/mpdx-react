@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -104,39 +103,35 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <FieldWrapper
-                labelText={label}
-                helperText={t(
-                  'This should be the organization from which you are paid and most likely correspond to the country in which you are living and serving. This will set your currency conversions for multi-currency accounts to the currency of this organization both on the dashboard and the corresponding contribution reports.',
+            <FieldWrapper
+              labelText={label}
+              helperText={t(
+                'This should be the organization from which you are paid and most likely correspond to the country in which you are living and serving. This will set your currency conversions for multi-currency accounts to the currency of this organization both on the dashboard and the corresponding contribution reports.',
+              )}
+            >
+              <Autocomplete
+                disabled={isSubmitting}
+                autoHighlight
+                loading={loading}
+                value={salaryOrganizationId}
+                onChange={(_, value) => {
+                  setFieldValue('salaryOrganizationId', value);
+                }}
+                options={orgs.map((org) => org.organization.id) || []}
+                getOptionLabel={(salaryOrganizationId): string =>
+                  orgs.find(
+                    ({ organization }) =>
+                      String(organization.id) === String(salaryOrganizationId),
+                  )?.organization.name ?? ''
+                }
+                filterSelectedOptions
+                fullWidth
+                data-testid={'input' + label.replace(/\s/g, '')}
+                renderInput={(params) => (
+                  <TextField {...params} placeholder={label} />
                 )}
-              >
-                <Autocomplete
-                  disabled={isSubmitting}
-                  autoHighlight
-                  loading={loading}
-                  value={salaryOrganizationId}
-                  onChange={(_, value) => {
-                    setFieldValue('salaryOrganizationId', value);
-                  }}
-                  options={orgs.map((org) => org.organization.id) || []}
-                  getOptionLabel={(salaryOrganizationId): string =>
-                    orgs.find(
-                      ({ organization }) =>
-                        String(organization.id) ===
-                        String(salaryOrganizationId),
-                    )?.organization.name ?? ''
-                  }
-                  filterSelectedOptions
-                  fullWidth
-                  data-testid={'input' + label.replace(/\s/g, '')}
-                  renderInput={(params) => (
-                    <TextField {...params} placeholder={label} />
-                  )}
-                />
-              </FieldWrapper>
-            )}
+              />
+            </FieldWrapper>
           </FormWrapper>
         )}
       </Formik>

@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -98,36 +97,32 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <FieldWrapper
-                labelText={label}
-                helperText={t(
-                  'This should be the place from which you are living and sending out physical communications. This will be used in exports for mailing address information.',
+            <FieldWrapper
+              labelText={label}
+              helperText={t(
+                'This should be the place from which you are living and sending out physical communications. This will be used in exports for mailing address information.',
+              )}
+            >
+              <Autocomplete
+                disabled={isSubmitting}
+                autoHighlight
+                loading={loading}
+                value={homeCountry}
+                onChange={(_, value) => {
+                  setFieldValue('homeCountry', value);
+                }}
+                options={countries.map((country) => country.code) || []}
+                getOptionLabel={(homeCountry): string =>
+                  countries.find(({ code }) => code === homeCountry)?.name ?? ''
+                }
+                filterSelectedOptions
+                fullWidth
+                data-testid={'input' + label.replace(/\s/g, '')}
+                renderInput={(params) => (
+                  <TextField {...params} placeholder={label} />
                 )}
-              >
-                <Autocomplete
-                  disabled={isSubmitting}
-                  autoHighlight
-                  loading={loading}
-                  value={homeCountry}
-                  onChange={(_, value) => {
-                    setFieldValue('homeCountry', value);
-                  }}
-                  options={countries.map((country) => country.code) || []}
-                  getOptionLabel={(homeCountry): string =>
-                    countries.find(({ code }) => code === homeCountry)?.name ??
-                    ''
-                  }
-                  filterSelectedOptions
-                  fullWidth
-                  data-testid={'input' + label.replace(/\s/g, '')}
-                  renderInput={(params) => (
-                    <TextField {...params} placeholder={label} />
-                  )}
-                />
-              </FieldWrapper>
-            )}
+              />
+            </FieldWrapper>
           </FormWrapper>
         )}
       </Formik>

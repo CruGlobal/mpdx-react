@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +24,6 @@ interface MonthlyGoalAccordionProps {
 export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   monthlyGoal,
   accountListId,
   currency,
@@ -106,29 +104,24 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <FieldWrapper
-                labelText={label}
-                helperText={t(
-                  'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
-                )}
-              >
-                <TextField
-                  value={monthlyGoal}
-                  onChange={handleChange('monthlyGoal')}
-                  inputProps={{
-                    'aria-label': label,
-                    type: 'number',
-                    'data-testid': 'input' + label.replace(/\s/g, ''),
-                  }}
-                  error={!!errors.monthlyGoal}
-                  helperText={
-                    errors.monthlyGoal && t('Monthly Goal is required')
-                  }
-                />
-              </FieldWrapper>
-            )}
+            <FieldWrapper
+              labelText={label}
+              helperText={t(
+                'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
+              )}
+            >
+              <TextField
+                value={monthlyGoal}
+                onChange={handleChange('monthlyGoal')}
+                inputProps={{
+                  'aria-label': label,
+                  type: 'number',
+                  'data-testid': 'input' + label.replace(/\s/g, ''),
+                }}
+                error={!!errors.monthlyGoal}
+                helperText={errors.monthlyGoal && t('Monthly Goal is required')}
+              />
+            </FieldWrapper>
           </FormWrapper>
         )}
       </Formik>

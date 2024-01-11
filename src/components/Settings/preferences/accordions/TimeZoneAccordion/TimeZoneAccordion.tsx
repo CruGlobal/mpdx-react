@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -88,37 +87,33 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <FieldWrapper
-                labelText={label}
-                helperText={t(
-                  'The timezone will be used in setting tasks, appointments, completion dates, etc. Please make sure it matches the one your computer is set to.',
+            <FieldWrapper
+              labelText={label}
+              helperText={t(
+                'The timezone will be used in setting tasks, appointments, completion dates, etc. Please make sure it matches the one your computer is set to.',
+              )}
+            >
+              <Autocomplete
+                disabled={isSubmitting}
+                autoHighlight
+                loading={loading}
+                value={timeZone}
+                onChange={(_, value) => {
+                  setFieldValue('timeZone', value);
+                }}
+                options={timeZones.map((zone) => zone.key) || []}
+                getOptionLabel={(timeZone): string =>
+                  timeZones.find(({ key }) => String(key) === String(timeZone))
+                    ?.value ?? ''
+                }
+                filterSelectedOptions
+                fullWidth
+                data-testid={'input' + label.replace(/\s/g, '')}
+                renderInput={(params) => (
+                  <TextField {...params} placeholder={label} />
                 )}
-              >
-                <Autocomplete
-                  disabled={isSubmitting}
-                  autoHighlight
-                  loading={loading}
-                  value={timeZone}
-                  onChange={(_, value) => {
-                    setFieldValue('timeZone', value);
-                  }}
-                  options={timeZones.map((zone) => zone.key) || []}
-                  getOptionLabel={(timeZone): string =>
-                    timeZones.find(
-                      ({ key }) => String(key) === String(timeZone),
-                    )?.value ?? ''
-                  }
-                  filterSelectedOptions
-                  fullWidth
-                  data-testid={'input' + label.replace(/\s/g, '')}
-                  renderInput={(params) => (
-                    <TextField {...params} placeholder={label} />
-                  )}
-                />
-              </FieldWrapper>
-            )}
+              />
+            </FieldWrapper>
           </FormWrapper>
         )}
       </Formik>

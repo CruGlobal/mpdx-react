@@ -66,58 +66,60 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
   };
 
   return (
-    <AccordionItem
-      onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
-      label={label}
-      value={name}
-      fullWidth
-    >
-      <Formik
-        initialValues={{
-          name: name,
-        }}
-        validationSchema={AccountPreferencesSchema}
-        onSubmit={onSubmit}
-        validateOnMount
-      >
-        {({
-          values: { name },
-          errors,
-          handleSubmit,
-          isSubmitting,
-          isValid,
-          handleChange,
-        }): ReactElement => (
-          <FormWrapper
-            onSubmit={handleSubmit}
-            isValid={isValid}
-            isSubmitting={isSubmitting}
+    <>
+      {loading && <Skeleton height="90px" />}
+      {!loading && (
+        <AccordionItem
+          onAccordionChange={handleAccordionChange}
+          expandedPanel={expandedPanel}
+          label={label}
+          value={name}
+          fullWidth
+        >
+          <Formik
+            initialValues={{
+              name: name,
+            }}
+            validationSchema={AccountPreferencesSchema}
+            onSubmit={onSubmit}
+            validateOnMount
           >
-            {loading && <Skeleton height="90px" />}
-            {!loading && (
-              <FieldWrapper
-                labelText={label}
-                helperText={t(
-                  'You can change the account name in {{appName}} into something that is more identifiable to you. This will not change the account name with your organization.',
-                  { appName },
-                )}
+            {({
+              values: { name },
+              errors,
+              handleSubmit,
+              isSubmitting,
+              isValid,
+              handleChange,
+            }): ReactElement => (
+              <FormWrapper
+                onSubmit={handleSubmit}
+                isValid={isValid}
+                isSubmitting={isSubmitting}
               >
-                <TextField
-                  value={name}
-                  onChange={handleChange('name')}
-                  inputProps={{
-                    'aria-label': label,
-                  }}
-                  data-testid={'input' + label.replace(/\s/g, '')}
-                  error={!!errors.name}
-                  helperText={errors.name && t('Account Name is required')}
-                />
-              </FieldWrapper>
+                <FieldWrapper
+                  labelText={label}
+                  helperText={t(
+                    'You can change the account name in {{appName}} into something that is more identifiable to you. This will not change the account name with your organization.',
+                    { appName },
+                  )}
+                >
+                  <TextField
+                    value={name}
+                    onChange={handleChange('name')}
+                    inputProps={{
+                      'aria-label': label,
+                    }}
+                    data-testid={'input' + label.replace(/\s/g, '')}
+                    error={!!errors.name}
+                    helperText={errors.name && t('Account Name is required')}
+                  />
+                </FieldWrapper>
+              </FormWrapper>
             )}
-          </FormWrapper>
-        )}
-      </Formik>
-    </AccordionItem>
+          </Formik>
+        </AccordionItem>
+      )}
+    </>
   );
 };
