@@ -23,7 +23,6 @@ import { PrimaryOrgAccordion } from 'src/components/Settings/preferences/accordi
 import { TimeZoneAccordion } from 'src/components/Settings/preferences/accordions/TimeZoneAccordion/TimeZoneAccordion';
 import { ProfileInfo } from 'src/components/Settings/preferences/info/ProfileInfo';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
-import { Person } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './wrapper';
@@ -74,11 +73,13 @@ const Preferences: React.FC = () => {
       pageTitle={t('Preferences')}
       pageHeading={t('Preferences')}
     >
-      <ProfileInfo
-        accountListId={accountListId}
-        user={{ ...profileInfoData?.user, __typename: 'Person' } as Person}
-        loading={profileInfoLoading}
-      />
+      {profileInfoData?.user && (
+        <ProfileInfo
+          accountListId={accountListId}
+          user={profileInfoData.user}
+          loading={profileInfoLoading}
+        />
+      )}
       <AccordionGroup title="Personal Preferences">
         {personalPreferencesLoading && <Skeleton height="240px" />}
         {!personalPreferencesLoading && (

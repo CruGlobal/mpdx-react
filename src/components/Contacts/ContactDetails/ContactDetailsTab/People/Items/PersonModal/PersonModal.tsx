@@ -91,13 +91,17 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-export type Person = ContactDetailsTabQuery['contact']['people']['nodes'][0];
+export type Person = Omit<
+  ContactDetailsTabQuery['contact']['people']['nodes'][0],
+  '__typename'
+> & {
+  __typename?: 'Person' | 'User';
+};
 
 interface PersonModalProps {
   contactId: string;
   accountListId: string;
   handleClose: () => void;
-  userProfile?: boolean;
   contactData?: ContactPeopleFragment;
   person?: Person;
 }
@@ -115,9 +119,10 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   contactId,
   accountListId,
   handleClose,
-  userProfile = false,
   contactData,
 }) => {
+  const userProfile = person?.__typename === 'User';
+
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [personEditShowMore, setPersonEditShowMore] = useState(false);

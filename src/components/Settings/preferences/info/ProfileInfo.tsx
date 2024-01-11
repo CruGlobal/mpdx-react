@@ -13,8 +13,10 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { CollapsibleEmailList } from 'src/components/Coaching/CoachingDetail/CollapsibleEmailList';
 import { CollapsiblePhoneList } from 'src/components/Coaching/CoachingDetail/CollapsiblePhoneList';
-import { ContactDetailsTabQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/ContactDetailsTab.generated';
-import { PersonModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
+import {
+  Person,
+  PersonModal,
+} from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
 import { Facebook } from 'src/components/common/Links/Facebook';
 import { LinkedIn } from 'src/components/common/Links/LinkedIn';
 import { Twitter } from 'src/components/common/Links/Twitter';
@@ -65,7 +67,7 @@ const ContactPersonRowContainer = styled(Box)(({ theme }) => ({
 }));
 
 interface ProfileInfoProps {
-  user: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  user: Person;
   accountListId: string;
   loading?: boolean;
 }
@@ -180,7 +182,6 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
             <PersonModal
               accountListId={accountListId}
               handleClose={() => setEditProfileModalOpen(false)}
-              userProfile={true}
               contactId=""
               person={user}
             />

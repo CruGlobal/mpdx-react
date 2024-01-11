@@ -5,8 +5,7 @@ import {
   PersonUpdateInput,
   UserUpdateInput,
 } from 'src/graphql/types.generated';
-import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
-import { NewSocial } from './PersonModal';
+import { NewSocial, Person } from './PersonModal';
 
 interface getPersonSchemaReturnedValues {
   personSchema: yup.SchemaOf<
@@ -18,7 +17,7 @@ interface getPersonSchemaReturnedValues {
 export const getPersonSchema = (
   t: TFunction,
   contactId: string,
-  person?: ContactDetailsTabQuery['contact']['people']['nodes'][0],
+  person?: Person,
 ): getPersonSchemaReturnedValues => {
   const personSchema = yup.object({
     firstName: yup.string().required(),

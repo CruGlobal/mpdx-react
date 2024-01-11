@@ -18,17 +18,21 @@ query GetProfileInfo {
     birthdayYear
     gender
     avatar
+    deceased
+    optoutEnewsletter
     primaryEmailAddress {
       id
       email
       primary
       location
+      source
     }
     primaryPhoneNumber {
       id
       number
       primary
       location
+      source
     }
     phoneNumbers {
       nodes {

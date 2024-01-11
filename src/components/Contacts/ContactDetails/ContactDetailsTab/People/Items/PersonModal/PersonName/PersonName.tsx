@@ -15,10 +15,9 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
-import { ContactDetailsTabQuery } from '../../../../ContactDetailsTab.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
-import { NewSocial } from '../PersonModal';
+import { NewSocial, Person } from '../PersonModal';
 
 const StyledIconButton = styled(IconButton)(() => ({
   position: 'absolute',
@@ -47,7 +46,7 @@ const StyledAvatarIcon = styled(Avatar)(() => ({
 }));
 
 interface PersonNameProps {
-  person?: ContactDetailsTabQuery['contact']['people']['nodes'][0];
+  person?: Person;
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
   pendingAvatar?: string; // the URL to an uploaded avatar that has not been saved yet
   setAvatar: (avatar: File) => void;
