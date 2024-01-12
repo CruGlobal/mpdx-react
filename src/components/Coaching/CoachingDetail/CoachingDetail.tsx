@@ -28,6 +28,8 @@ import {
   useLoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
+import { OutstandingCommitments } from './OutstandingCommitments/OutstandingCommitments';
+import { OutstandingNeeds } from './OutstandingNeeds/OutstandingNeeds';
 import { WeeklyReport } from './WeeklyReport/WeeklyReport';
 
 export enum CoachingPeriodEnum {
@@ -217,6 +219,14 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 period={period}
                 currency={accountListData?.currency}
                 primaryAppeal={accountListData?.primaryAppeal ?? undefined}
+              />
+              <OutstandingCommitments
+                accountListId={accountListId}
+                accountListType={accountListType}
+              />
+              <OutstandingNeeds
+                accountListId={accountListId}
+                accountListType={accountListType}
               />
               <WeeklyReport accountListId={accountListId} />
             </CoachingItemContainer>
