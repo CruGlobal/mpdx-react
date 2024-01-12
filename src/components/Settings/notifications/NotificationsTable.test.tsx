@@ -3,9 +3,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { NotificationTypeTypeEnum } from '../../../../graphql/types.generated';
 import theme from '../../../theme';
 import { NotificationsTable } from './NotificationsTable';
 

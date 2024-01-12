@@ -17,8 +17,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import * as Types from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import * as Types from '../../../../graphql/types.generated';
 import {
   useNotificationTypesQuery,
   useNotificationsPreferencesQuery,
