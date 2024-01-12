@@ -180,6 +180,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
           },
           setFieldValue,
           handleChange,
+          handleBlur,
           handleSubmit,
           isSubmitting,
           errors,
@@ -190,9 +191,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
               <FormFieldsGridContainer>
                 <Grid item xs={12} md={6}>
                   <TextField
+                    name="convertedAmount"
                     value={convertedAmount}
                     label={t('Amount')}
-                    onChange={handleChange('convertedAmount')}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     fullWidth
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
