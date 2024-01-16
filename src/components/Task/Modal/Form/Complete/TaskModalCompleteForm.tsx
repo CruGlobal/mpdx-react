@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo, useState } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import {
   CircularProgress,
   DialogActions,
@@ -47,6 +47,7 @@ const taskSchema = yup.object({
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   tagList: yup.array().of(yup.string().required()).default([]),
   completedAt: nullableDateTime(),
+  comment: yup.string().ensure(),
 });
 type Attributes = yup.InferType<typeof taskSchema>;
 
@@ -73,11 +74,11 @@ const TaskModalCompleteForm = ({
       result: ResultEnum.Completed,
       nextAction: null,
       tagList: task.tagList,
+      comment: '',
     }),
     [task],
   );
   const { t } = useTranslation();
-  const [commentBody, changeCommentBody] = useState('');
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -86,9 +87,9 @@ const TaskModalCompleteForm = ({
   const { update } = useUpdateTasksQueries();
   const onSubmit = async ({
     completedAt,
+    comment,
     ...attributes
   }: Attributes): Promise<void> => {
-    const body = commentBody.trim();
     const mutations = [
       updateTask({
         variables: {
@@ -98,7 +99,8 @@ const TaskModalCompleteForm = ({
         refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
       }),
     ];
-    if (body !== '') {
+    const body = comment.trim();
+    if (body) {
       mutations.push(
         createTaskComment({
           variables: {
@@ -147,8 +149,9 @@ const TaskModalCompleteForm = ({
       enableReinitialize
     >
       {({
-        values: { completedAt, tagList, result, nextAction },
+        values: { completedAt, tagList, result, nextAction, comment },
         setFieldValue,
+        handleChange,
         handleSubmit,
         isSubmitting,
         isValid,
@@ -235,8 +238,8 @@ const TaskModalCompleteForm = ({
               <Grid item>
                 <TextField
                   label={t('Add New Comment')}
-                  value={commentBody}
-                  onChange={(event) => changeCommentBody(event.target.value)}
+                  value={comment}
+                  onChange={handleChange('comment')}
                   fullWidth
                   multiline
                   inputProps={{ 'aria-label': t('Add New Comment') }}
