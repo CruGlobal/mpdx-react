@@ -2,7 +2,6 @@ import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
@@ -18,15 +17,6 @@ const apiToken = 'apiToken';
 const router = {
   query: { accountListId, contactId: [contactId] },
   isReady: true,
-};
-const session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    email: 'Chair Library Bed',
-    image: null,
-    name: 'Dung Tapestry',
-    token: 'superLongJwtString',
-  },
 };
 
 const mockEnqueue = jest.fn();
@@ -66,7 +56,6 @@ const standardGoogleAccount = {
 
 describe('DeleteGoogleAccountModal', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  (getSession as jest.Mock).mockResolvedValue(session);
   let googleAccount = { ...standardGoogleAccount };
 
   beforeEach(() => {

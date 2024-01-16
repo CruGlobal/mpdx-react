@@ -167,6 +167,10 @@ const TasksPage: React.FC = () => {
   });
 
   useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
     const { filters: _, ...oldQuery } = query;
     replace({
       pathname,
@@ -190,7 +194,7 @@ const TasksPage: React.FC = () => {
     } else if (sanitizedFilters.dateRange === 'no_date') {
       setTaskType('NoDueDate');
     }
-  }, [sanitizedFilters]);
+  }, [sanitizedFilters, isReady]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
     variables: { accountListId: accountListId ?? '' },

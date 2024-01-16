@@ -327,9 +327,8 @@ describe('TaskModalLogForm', () => {
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
 
-    //  3 create Task
     await waitFor(() => {
-      const createTaskOperation = mutationSpy.mock.calls[3][0].operation;
+      const createTaskOperation = mutationSpy.mock.lastCall[0].operation;
       expect(createTaskOperation.operationName).toEqual('CreateTasks');
       expect(createTaskOperation.variables.attributes).toMatchObject({
         activityType: 'APPOINTMENT',

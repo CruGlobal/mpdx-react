@@ -22,7 +22,7 @@ import {
 import { setUserInfo } from './setUserInfo';
 
 declare module 'next-auth' {
-  interface Session extends DefaultSession {
+  interface Session {
     user: {
       admin: boolean;
       developer: boolean;
@@ -30,8 +30,9 @@ declare module 'next-auth' {
       userID?: string;
       impersonating?: boolean;
       impersonatorApiToken?: string;
-    };
+    } & DefaultSession['user'];
   }
+
   interface User {
     apiToken?: string;
     userID?: string;

@@ -172,8 +172,8 @@ const App = ({
                   </I18nextProvider>
                 </UserPreferenceProvider>
                 <DataDog />
+                <HelpscoutBeacon />
               </SessionProvider>
-              <HelpscoutBeacon />
               {process.env.ALERT_MESSAGE ? (
                 <AlertBanner
                   text={process.env.ALERT_MESSAGE}

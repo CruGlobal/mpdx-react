@@ -103,9 +103,9 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
   } = useGetUsersOrganizationsAccountsQuery();
   const organizations = data?.userOrganizationAccounts;
 
-  const handleReconnect = async (organizationId) => {
+  const handleReconnect = async (organizationId: string) => {
     enqueueSnackbar(
-      t('Redirecting you to complete authenication to reconnect.'),
+      t('Redirecting you to complete authentication to reconnect.'),
       { variant: 'success' },
     );
     const oAuthUrl = await getOauthUrl(organizationId);

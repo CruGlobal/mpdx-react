@@ -331,7 +331,7 @@ describe('OrganizationAccordion', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Redirecting you to complete authenication to reconnect.',
+          'Redirecting you to complete authentication to reconnect.',
           {
             variant: 'success',
           },
