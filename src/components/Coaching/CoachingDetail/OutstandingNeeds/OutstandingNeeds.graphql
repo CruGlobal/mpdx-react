@@ -1,0 +1,49 @@
+query LoadCoachingNeeds($coachingAccountListId: ID!, $after: String) {
+  coachingAccountList(id: $coachingAccountListId) {
+    id
+    primaryAppeal {
+      id
+      pledges(first: 8, after: $after) {
+        nodes {
+          id
+          amount
+          amountCurrency
+          expectedDate
+          contact {
+            id
+            name
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }
+}
+
+query LoadAccountListCoachingNeeds($accountListId: ID!, $after: String) {
+  accountList(id: $accountListId) {
+    id
+    primaryAppeal {
+      id
+      pledges(first: 8, after: $after) {
+        nodes {
+          id
+          amount
+          amountCurrency
+          expectedDate
+          contact {
+            id
+            name
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }
+}
