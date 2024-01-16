@@ -8,7 +8,9 @@ import { DateTime, Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
+import { useUser } from 'src/hooks/useUser';
 import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalForm from './TaskModalForm';
@@ -268,6 +270,59 @@ describe('TaskModalForm', () => {
       queryByRole('textbox', { name: 'Location' }),
     ).not.toBeInTheDocument();
   }, 25000);
+
+  it('defaults the assignee to the logged in user', async () => {
+    const onClose = jest.fn();
+    const mutationSpy = jest.fn();
+
+    // Wait for the user to load before rendering the modal
+    const TestComponent: React.FC = () => {
+      const user = useUser();
+
+      return user ? (
+        <TaskModalForm
+          accountListId={accountListId}
+          onClose={onClose}
+          task={mockTask}
+        />
+      ) : null;
+    };
+
+    const { getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            AssigneeOptions: AssigneeOptionsQuery;
+            GetUser: GetUserQuery;
+          }>
+            mocks={{
+              AssigneeOptions: {
+                accountListUsers: {
+                  nodes: [
+                    {
+                      user: { id: 'user-1', firstName: 'User', lastName: '1' },
+                    },
+                  ],
+                },
+              },
+              GetUser: {
+                user: {
+                  id: 'user-1',
+                },
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <TestComponent />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+
+    await waitFor(() =>
+      expect(getByRole('combobox', { name: 'Assignee' })).toHaveValue('User 1'),
+    );
+  });
 
   it('renders fields for completed task', async () => {
     const onClose = jest.fn();

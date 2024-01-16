@@ -7,7 +7,9 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { useUser } from 'src/hooks/useUser';
 import { dispatch } from 'src/lib/analytics';
 import { ContactOptionsQuery } from '../Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from '../Inputs/TagsAutocomplete/TagsAutocomplete.generated';
@@ -244,6 +246,56 @@ describe('TaskModalLogForm', () => {
           },
         },
       }),
+    );
+  });
+
+  it('defaults the assignee to the logged in user', async () => {
+    const onClose = jest.fn();
+    const mutationSpy = jest.fn();
+
+    // Wait for the user to load before rendering the modal
+    const TestComponent: React.FC = () => {
+      const user = useUser();
+
+      return user ? (
+        <TaskModalLogForm accountListId={accountListId} onClose={onClose} />
+      ) : null;
+    };
+
+    const { findByRole, getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            AssigneeOptions: AssigneeOptionsQuery;
+            GetUser: GetUserQuery;
+          }>
+            mocks={{
+              AssigneeOptions: {
+                accountListUsers: {
+                  nodes: [
+                    {
+                      user: { id: 'user-1', firstName: 'User', lastName: '1' },
+                    },
+                  ],
+                },
+              },
+              GetUser: {
+                user: {
+                  id: 'user-1',
+                },
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <TestComponent />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+
+    userEvent.click(await findByRole('checkbox', { name: 'Show More' }));
+    await waitFor(() =>
+      expect(getByRole('combobox', { name: 'Assignee' })).toHaveValue('User 1'),
     );
   });
 

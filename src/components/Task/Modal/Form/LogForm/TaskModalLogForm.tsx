@@ -35,6 +35,7 @@ import {
 } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { useUser } from 'src/hooks/useUser';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
@@ -78,13 +79,16 @@ const TaskModalLogForm = ({
   onClose,
   defaultValues,
 }: Props): ReactElement => {
+  const user = useUser();
   const initialTask: Attributes = useMemo(
     () => ({
       activityType: defaultValues?.activityType ?? null,
       subject: defaultValues?.subject ?? '',
       contactIds: defaultValues?.contactIds ?? [],
       completedAt: DateTime.local(),
-      userId: defaultValues?.userId ?? null,
+      // The assignee will not be set if `user` hasn't been loaded yet because we don't want to make
+      // the user wait for it to load
+      userId: defaultValues?.userId ?? user?.id ?? null,
       tagList: defaultValues?.tagList ?? [],
       result: defaultValues?.result ?? ResultEnum.Completed,
       nextAction: defaultValues?.nextAction ?? null,
