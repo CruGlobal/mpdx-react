@@ -59,6 +59,38 @@ describe('TaskModalCompleteForm', () => {
     notificationTimeUnit: NotificationTimeUnitEnum.Hours,
   };
 
+  describe('next action', () => {
+    it('defaults to the current activity type', () => {
+      const { getByRole } = render(
+        <TestWrapper>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={jest.fn()}
+            task={{ ...task, activityType: ActivityTypeEnum.Email }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(getByRole('combobox', { name: 'Next Action' })).toHaveValue(
+        'Email',
+      );
+    });
+
+    it('is blank for activity types without a matching next action', () => {
+      const { getByRole } = render(
+        <TestWrapper>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={jest.fn()}
+            task={{ ...task, activityType: ActivityTypeEnum.Appointment }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(getByRole('combobox', { name: 'Next Action' })).toHaveValue('');
+    });
+  });
+
   it('default', async () => {
     const { getByRole } = render(
       <TestWrapper

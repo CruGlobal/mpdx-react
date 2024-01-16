@@ -299,6 +299,26 @@ describe('TaskModalLogForm', () => {
     );
   });
 
+  it('changes the next action to the current action', () => {
+    const { getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <TaskModalLogForm
+              accountListId={accountListId}
+              onClose={jest.fn()}
+            />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+
+    userEvent.click(getByRole('checkbox', { name: 'Show More' }));
+    userEvent.click(getByRole('combobox', { name: 'Action' }));
+    userEvent.click(getByRole('option', { name: 'Email' }));
+    expect(getByRole('combobox', { name: 'Next Action' })).toHaveValue('Email');
+  });
+
   it('opens the next action modal', async () => {
     const mutationSpy = jest.fn();
     const onClose = jest.fn();

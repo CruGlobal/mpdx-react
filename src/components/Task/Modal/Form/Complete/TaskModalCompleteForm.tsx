@@ -62,9 +62,10 @@ const TaskModalCompleteForm = ({
   task,
   onClose,
 }: Props): ReactElement => {
+  const { activityType } = task;
   const initialCompletedAt =
     task.completedAt ||
-    (task.activityType === ActivityTypeEnum.Appointment ? task.startAt : null);
+    (activityType === ActivityTypeEnum.Appointment ? task.startAt : null);
   const initialTask = useMemo(
     () => ({
       id: task.id,
@@ -72,12 +73,16 @@ const TaskModalCompleteForm = ({
         ? DateTime.fromISO(initialCompletedAt)
         : DateTime.local(),
       result: ResultEnum.Completed,
-      nextAction: null,
+      nextAction:
+        activityType && possibleNextActions(activityType).includes(activityType)
+          ? activityType
+          : null,
       tagList: task.tagList,
       comment: '',
     }),
     [task],
   );
+
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();

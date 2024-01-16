@@ -215,9 +215,16 @@ const TaskModalLogForm = ({
                   options={Object.values(ActivityTypeEnum)}
                   label={t('Action')}
                   value={activityType}
-                  onChange={(activityType) =>
-                    setFieldValue('activityType', activityType)
-                  }
+                  onChange={(activityType) => {
+                    setFieldValue('activityType', activityType);
+                    setFieldValue(
+                      'nextAction',
+                      activityType &&
+                        possibleNextActions(activityType).includes(activityType)
+                        ? activityType
+                        : null,
+                    );
+                  }}
                 />
               </Grid>
               {activityType === ActivityTypeEnum.Appointment && (
