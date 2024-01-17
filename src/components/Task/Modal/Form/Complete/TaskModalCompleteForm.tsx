@@ -122,13 +122,11 @@ const TaskModalCompleteForm = ({
     dispatch('mpdx-task-completed');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     onClose();
-    if (
-      attributes.nextAction &&
-      attributes.nextAction !== ActivityTypeEnum.None
-    ) {
+    if (attributes.nextAction) {
       openTaskModal({
         view: 'add',
         defaultValues: {
+          subject: task.subject,
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: task.contacts.nodes.map((contact) => contact.id),

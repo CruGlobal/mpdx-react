@@ -8,6 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUser } from 'src/hooks/useUser';
 import { dispatch } from 'src/lib/analytics';
@@ -356,11 +357,19 @@ describe('TaskModalLogForm', () => {
     );
     userEvent.click(getByText('Save'));
     expect(await findByText('Field is required')).toBeInTheDocument();
-    userEvent.type(getByLabelText('Subject'), accountListId);
+    userEvent.type(getByLabelText('Subject'), 'Subject');
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
-    expect(openTaskModal).toHaveBeenCalled();
+    expect(openTaskModal).toHaveBeenCalledWith({
+      view: 'add',
+      defaultValues: {
+        subject: 'Subject',
+        activityType: ActivityTypeEnum.Call,
+        contactIds: [],
+        tagList: [],
+      },
+    });
   }, 10000);
 
   it('Select appointment, enter location, enter comment to test API calls', async () => {

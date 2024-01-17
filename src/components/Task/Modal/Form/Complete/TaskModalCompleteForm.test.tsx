@@ -192,6 +192,7 @@ describe('TaskModalCompleteForm', () => {
       expect(openTaskModal).toHaveBeenCalledWith({
         view: 'add',
         defaultValues: {
+          subject: task.subject,
           activityType: ActivityTypeEnum.Appointment,
           contactIds: ['contact-1', 'contact-2'],
           userId: 'user-1',

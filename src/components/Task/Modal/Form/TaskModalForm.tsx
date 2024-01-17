@@ -199,14 +199,11 @@ const TaskModalForm = ({
     update();
     enqueueSnackbar(t('Task(s) saved successfully'), { variant: 'success' });
     onClose();
-    if (
-      attributes.nextAction &&
-      attributes.nextAction !== ActivityTypeEnum.None &&
-      attributes.nextAction !== task?.nextAction
-    ) {
+    if (attributes.nextAction && attributes.nextAction !== task?.nextAction) {
       openTaskModal({
         view: 'add',
         defaultValues: {
+          subject: attributes.subject,
           activityType: attributes.nextAction,
           contactIds: attributes.contactIds,
           userId: task?.user?.id,
