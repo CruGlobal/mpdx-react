@@ -573,6 +573,36 @@ describe('PersonModal', () => {
       );
     });
 
+    it('should handle invalid phone numbers', async () => {
+      const { findByText, getByRole, getAllByRole } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      const input = getAllByRole('textbox', { name: 'Phone Number' })[0];
+      userEvent.clear(input);
+      userEvent.type(input, 'abc');
+      expect(input).toHaveValue('abc');
+      expect(
+        await findByText('This field is not a valid phone number'),
+      ).toBeInTheDocument();
+      expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+
     it('handles marking a phone number as invalid', async () => {
       const mutationSpy = jest.fn();
       const { getByRole, getAllByRole } = render(
