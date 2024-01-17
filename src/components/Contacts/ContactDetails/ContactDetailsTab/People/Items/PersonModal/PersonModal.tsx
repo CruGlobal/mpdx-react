@@ -21,7 +21,6 @@ import {
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-//import { profile2 } from 'src/components/Settings/preferences/DemoContent';
 import {
   PersonCreateInput,
   PersonUpdateInput,
@@ -159,7 +158,6 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const [updatePerson] = useUpdatePersonMutation();
   const [createPerson] = useCreatePersonMutation();
   const [deletePerson, { loading: deleting }] = useDeletePersonMutation();
-  // TODO
   const [updateUserProfile] = useUpdateUserMutation();
   const [editMailingInfo] = useEditMailingInfoMutation();
 

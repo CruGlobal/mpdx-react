@@ -62,7 +62,6 @@ export const DefaultAccountAccordion: React.FC<
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });
@@ -75,10 +74,7 @@ export const DefaultAccountAccordion: React.FC<
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={
-        accounts.find(({ id }) => String(id) === String(defaultAccountList))
-          ?.name ?? ''
-      }
+      value={accounts.find(({ id }) => id === defaultAccountList)?.name ?? ''}
       fullWidth
     >
       <Formik

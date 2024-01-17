@@ -3,6 +3,7 @@ query getAccountPreferences($accountListId: ID!) {
     id
   }
   accountList(id: $accountListId) {
+    id
     settings {
       homeCountry
       monthlyGoal

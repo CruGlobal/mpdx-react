@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext } from 'react';
+import React, { ReactElement } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -9,10 +9,6 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
-import {
-  UserPreferenceContext,
-  UserPreferenceType,
-} from '../../../../User/Preferences/UserPreferenceProvider';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
 interface LocaleAccordionProps {
@@ -34,8 +30,6 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
   const constants = useApiConstants();
   const locales = constants?.locales ?? [];
   const label = t('Locale');
-
-  const { setLocale } = useContext(UserPreferenceContext) as UserPreferenceType;
 
   const PreferencesSchema: yup.SchemaOf<
     Pick<Types.Preference, 'localeDisplay'>
@@ -68,7 +62,6 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });
@@ -119,7 +112,6 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
                 value={localeDisplay}
                 onChange={(_, value) => {
                   setFieldValue('localeDisplay', value);
-                  if (value) setLocale(value);
                 }}
                 options={locales.map((locale) => locale.shortName) || []}
                 getOptionLabel={(localeDisplay): string =>

@@ -57,7 +57,6 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });
@@ -70,7 +69,7 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={tester ? 'Yes' : 'No'}
+      value={tester ? t('Yes') : t('No')}
       fullWidth
     >
       <Formik

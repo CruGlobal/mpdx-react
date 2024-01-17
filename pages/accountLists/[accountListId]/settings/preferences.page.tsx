@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Skeleton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useGetUsersOrganizationsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
+import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import {
   useGetAccountPreferencesQuery,
   useGetUserInCruOrgQuery,
 } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
 import { useGetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
-import { useGetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
 import { AccountNameAccordion } from 'src/components/Settings/preferences/accordions/AccountNameAccordion/AccountNameAccordion';
 import { CurrencyAccordion } from 'src/components/Settings/preferences/accordions/CurrencyAccordion/CurrencyAccordion';
 import { DefaultAccountAccordion } from 'src/components/Settings/preferences/accordions/DefaultAccountAccordion/DefaultAccountAccordion';
@@ -41,9 +40,6 @@ const Preferences: React.FC = () => {
     setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
   };
 
-  const { data: profileInfoData, loading: profileInfoLoading } =
-    useGetProfileInfoQuery();
-
   const { data: personalPreferencesData, loading: personalPreferencesLoading } =
     useGetPersonalPreferencesQuery({
       variables: {
@@ -66,20 +62,14 @@ const Preferences: React.FC = () => {
   const {
     data: userOrganizationAccountsData,
     loading: userOrganizationAccountsLoading,
-  } = useGetUsersOrganizationsQuery();
+  } = useGetUsersOrganizationsAccountsQuery();
 
   return (
     <SettingsWrapper
       pageTitle={t('Preferences')}
       pageHeading={t('Preferences')}
     >
-      {profileInfoData?.user && (
-        <ProfileInfo
-          accountListId={accountListId}
-          user={profileInfoData.user}
-          loading={profileInfoLoading}
-        />
-      )}
+      <ProfileInfo accountListId={accountListId} />
       <AccordionGroup title="Personal Preferences">
         {personalPreferencesLoading && <Skeleton height="240px" />}
         {!personalPreferencesLoading && (
@@ -177,7 +167,7 @@ const Preferences: React.FC = () => {
                   handleAccordionChange={handleAccordionChange}
                   expandedPanel={expandedPanel}
                   loading={userOrganizationAccountsLoading}
-                  organizations={userOrganizationAccountsData || []}
+                  organizations={userOrganizationAccountsData}
                   salaryOrganizationId={
                     accountPreferencesData?.accountList?.salaryOrganizationId ||
                     ''

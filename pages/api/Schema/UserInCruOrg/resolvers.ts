@@ -1,4 +1,4 @@
-import { Resolvers } from '../../graphql-rest.page.generated';
+import { Resolvers } from 'pages/api/graphql-rest.page.generated';
 
 const UserInCruOrgResolvers: Resolvers = {
   Query: {

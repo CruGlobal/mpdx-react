@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeProvider } from '@emotion/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { DeepPartial } from 'ts-essentials';
@@ -9,6 +10,7 @@ import {
   GetTaskAnalyticsQuery,
   GetTaskAnalyticsQueryVariables,
 } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
+import theme from 'src/theme';
 import { AccountListTypeEnum, CoachingPeriodEnum } from './CoachingDetail';
 import { CoachingSidebar } from './CoachingSidebar';
 import {
@@ -70,23 +72,25 @@ const TestComponent: React.FC<TestComponentProps> = ({
         }).accountList;
 
   return (
-    <CoachingSidebar
-      period={CoachingPeriodEnum.Weekly}
-      setPeriod={setPeriodMock}
-      loading={false}
-      showClose={showClose}
-      handleClose={handleCloseMock}
-      accountListData={accountListData}
-      taskAnalyticsData={gqlMock<
-        GetTaskAnalyticsQuery,
-        GetTaskAnalyticsQueryVariables
-      >(GetTaskAnalyticsDocument, {
-        mocks: {
-          taskAnalytics: taskAnalyticsMocks ?? {},
-        },
-        variables: { accountListId },
-      })}
-    />
+    <ThemeProvider theme={theme}>
+      <CoachingSidebar
+        period={CoachingPeriodEnum.Weekly}
+        setPeriod={setPeriodMock}
+        loading={false}
+        showClose={showClose}
+        handleClose={handleCloseMock}
+        accountListData={accountListData}
+        taskAnalyticsData={gqlMock<
+          GetTaskAnalyticsQuery,
+          GetTaskAnalyticsQueryVariables
+        >(GetTaskAnalyticsDocument, {
+          mocks: {
+            taskAnalytics: taskAnalyticsMocks ?? {},
+          },
+          variables: { accountListId },
+        })}
+      />
+    </ThemeProvider>
   );
 };
 

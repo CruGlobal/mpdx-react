@@ -57,7 +57,6 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });

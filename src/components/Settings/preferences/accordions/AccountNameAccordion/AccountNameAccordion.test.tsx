@@ -66,14 +66,14 @@ describe('AccountNameAccordion', () => {
     expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
   });
   it('should render accordion open and textfield should have a value', () => {
-    const { queryByTestId, getByRole } = render(
+    const { getByTestId, getByRole } = render(
       <Components name={"Pedro Perez's Account"} expandedPanel={label} />,
     );
 
     const input = getByRole('textbox');
     const button = getByRole('button', { name: 'Save' });
 
-    expect(queryByTestId(inputTestId)).toBeInTheDocument();
+    expect(getByTestId(inputTestId)).toBeInTheDocument();
     expect(input).toHaveValue("Pedro Perez's Account");
     expect(button).not.toBeDisabled();
   });

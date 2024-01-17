@@ -1,6 +1,11 @@
 import { DateTime } from 'luxon';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { useLocale } from 'src/hooks/useLocale';
+import {
+  dateFormat,
+  dateFormatShort,
+  dayMonthFormat,
+} from 'src/lib/intlFormat/intlFormat';
 import { ContactsQuery } from './Contacts.generated';
 import { Coordinates } from './map/map';
 
@@ -91,3 +96,20 @@ export const coordinatesFromContacts = (
       date: `(${dateFormatShort(DateTime.fromISO(address.createdAt), locale)})`,
     };
   });
+
+export const dateFromParts = (
+  year: number | null | undefined,
+  month: number | null | undefined,
+  day: number | null | undefined,
+): string | null => {
+  const locale = useLocale();
+  if (typeof month !== 'number' || typeof day !== 'number') {
+    return null;
+  }
+
+  if (typeof year === 'number') {
+    return dateFormat(DateTime.local(year, month, day), locale);
+  } else {
+    return dayMonthFormat(day, month, locale);
+  }
+};

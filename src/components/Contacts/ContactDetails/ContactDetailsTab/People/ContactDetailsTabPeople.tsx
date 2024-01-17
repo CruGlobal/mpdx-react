@@ -17,11 +17,9 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { dateFromParts } from 'pages/accountLists/[accountListId]/contacts/helpers';
 import { MergePeopleModal } from 'src/components/Contacts/MassActions/MergePeople/MergePeopleModal';
-import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
 import { RingIcon } from '../../../RingIcon';
 import {
   ContactDetailContext,
@@ -110,23 +108,6 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
-
-  const dateFromParts = (
-    year: number | null | undefined,
-    month: number | null | undefined,
-    day: number | null | undefined,
-  ): string | null => {
-    if (typeof month !== 'number' || typeof day !== 'number') {
-      return null;
-    }
-
-    if (typeof year === 'number') {
-      return dateFormat(DateTime.local(year, month, day), locale);
-    } else {
-      return dayMonthFormat(day, month, locale);
-    }
-  };
 
   const {
     editPersonModalOpen,

@@ -4,7 +4,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { GetUsersOrganizationsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
+import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
@@ -15,7 +15,7 @@ interface PrimaryOrgAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
   loading: boolean;
-  organizations: GetUsersOrganizationsQuery | undefined;
+  organizations: GetUsersOrganizationsAccountsQuery | undefined;
   salaryOrganizationId: string | null;
   accountListId: string;
 }
@@ -61,7 +61,6 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });
@@ -76,8 +75,7 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
       label={label}
       value={
         orgs.find(
-          ({ organization }) =>
-            String(organization.id) === String(salaryOrganizationId),
+          ({ organization }) => organization.id === salaryOrganizationId,
         )?.organization.name ?? ''
       }
       fullWidth
@@ -121,7 +119,7 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
                 getOptionLabel={(salaryOrganizationId): string =>
                   orgs.find(
                     ({ organization }) =>
-                      String(organization.id) === String(salaryOrganizationId),
+                      organization.id === salaryOrganizationId,
                   )?.organization.name ?? ''
                 }
                 filterSelectedOptions

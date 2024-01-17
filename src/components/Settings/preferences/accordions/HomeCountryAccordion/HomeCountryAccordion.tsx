@@ -60,7 +60,6 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });

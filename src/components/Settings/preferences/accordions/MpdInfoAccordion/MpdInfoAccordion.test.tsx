@@ -106,11 +106,9 @@ describe('MpdInfoAccordion', () => {
     expect(queryByTestId(inputTestId)).toBeInTheDocument();
     expect(inputGoal).toHaveValue(20000);
 
-    await waitFor(() => {
-      expect(inputStart).toHaveValue('1/16/2024');
-      expect(inputEnd).toHaveValue('3/16/2024');
-      expect(button).not.toBeDisabled();
-    });
+    expect(inputStart).toHaveValue('1/16/2024');
+    expect(inputEnd).toHaveValue('3/16/2024');
+    expect(button).not.toBeDisabled();
   });
 
   it('should always be valid even when the form is null', async () => {
@@ -126,10 +124,8 @@ describe('MpdInfoAccordion', () => {
     const input = queryByTestId(inputTestId);
     const button = getByRole('button', { name: 'Save' });
 
-    await waitFor(() => {
-      expect(input).toBeValid();
-      expect(button).not.toBeDisabled();
-    });
+    expect(input).toBeValid();
+    expect(button).not.toBeDisabled();
   });
 
   it('Saves the input', async () => {

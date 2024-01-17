@@ -9,20 +9,16 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { Theme, styled, useTheme } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import {
-  Person,
-  PersonModal,
-} from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
+import { dateFromParts } from 'pages/accountLists/[accountListId]/contacts/helpers';
+import { PersonModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
+import { useGetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
 import { CollapsibleEmailList } from 'src/components/Shared/CollapsibleContactInfo/CollapsibleEmailList';
 import { CollapsiblePhoneList } from 'src/components/Shared/CollapsibleContactInfo/CollapsiblePhoneList';
 import { Facebook } from 'src/components/common/Links/Facebook';
 import { LinkedIn } from 'src/components/common/Links/LinkedIn';
 import { Twitter } from 'src/components/common/Links/Twitter';
 import { Website } from 'src/components/common/Links/Website';
-import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -67,18 +63,15 @@ const ContactPersonRowContainer = styled(Box)(({ theme }) => ({
 }));
 
 interface ProfileInfoProps {
-  user: Person;
   accountListId: string;
-  loading?: boolean;
 }
 
-export const ProfileInfo: React.FC<ProfileInfoProps> = ({
-  accountListId,
-  user,
-  loading,
-}) => {
+export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
+  const { data: profileInfoData, loading: profileInfoLoading } =
+    useGetProfileInfoQuery();
   const { t } = useTranslation();
-  const locale = useLocale();
+  const loading = profileInfoLoading;
+  const user = profileInfoData?.user;
   const theme = useTheme<Theme>();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -86,16 +79,23 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
   const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
 
   const birthDate =
-    user.birthdayYear && user.birthdayMonth && user.birthdayDay
-      ? new Date(
-          `${user.birthdayYear}-${user.birthdayMonth - 1}-${user.birthdayDay}`,
+    user?.birthdayYear && user?.birthdayMonth && user?.birthdayDay
+      ? dateFromParts(user.birthdayYear, user.birthdayMonth, user.birthdayDay)
+      : null;
+
+  const anniversary =
+    user?.anniversaryMonth && user?.anniversaryDay
+      ? dateFromParts(
+          user?.anniversaryYear,
+          user?.anniversaryMonth,
+          user?.anniversaryDay,
         )
       : null;
 
   return (
     <ProfileInfoWrapper component="section">
       {loading && <Skeleton variant="rectangular" height={188} />}
-      {!loading && (
+      {!loading && user && (
         <>
           <Box marginBottom={isMobile ? theme.spacing(2) : 0}>
             {/* Avatar */}
@@ -122,12 +122,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
           {user.maritalStatus && (
             <Box>
               {user.maritalStatus}
-              {' : '}
-              {dayMonthFormat(
-                user?.anniversaryDay || 0,
-                user?.anniversaryMonth || 0,
-                locale,
-              )}
+              {anniversary && ' : ' + anniversary}
             </Box>
           )}
 
@@ -136,7 +131,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({
               <Typography component="span">
                 {t('Birthday')}
                 {': '}
-                {dateFormat(DateTime.fromISO(birthDate.toISOString()), locale)}
+                {birthDate}
               </Typography>
             </Box>
           )}

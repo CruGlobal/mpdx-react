@@ -1,5 +1,3 @@
-//import { GetUserInCruOrg } from '../../../../graphql-rest.page.generated';
-
 import { GetUserInCruOrg } from 'pages/api/graphql-rest.page.generated';
 
 const getUserInCruOrg = (data: {

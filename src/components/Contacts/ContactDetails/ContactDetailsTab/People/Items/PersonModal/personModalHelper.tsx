@@ -7,7 +7,7 @@ import {
 } from 'src/graphql/types.generated';
 import { NewSocial, Person } from './PersonModal';
 
-interface getPersonSchemaReturnedValues {
+interface GetPersonSchemaReturnedValues {
   personSchema: yup.SchemaOf<
     Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
   >;
@@ -18,7 +18,7 @@ export const getPersonSchema = (
   t: TFunction,
   contactId: string,
   person?: Person,
-): getPersonSchemaReturnedValues => {
+): GetPersonSchemaReturnedValues => {
   const personSchema = yup.object({
     firstName: yup.string().required(),
     lastName: yup.string().nullable(),

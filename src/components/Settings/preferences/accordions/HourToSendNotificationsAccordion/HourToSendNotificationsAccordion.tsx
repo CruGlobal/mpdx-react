@@ -59,7 +59,6 @@ export const HourToSendNotificationsAccordion: React.FC<
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });
@@ -74,7 +73,7 @@ export const HourToSendNotificationsAccordion: React.FC<
       label={label}
       value={
         hours.find(({ key }) => key === hourToSendNotifications)?.value ||
-        'Immediately'
+        t('Immediately')
       }
       fullWidth
     >
@@ -114,12 +113,12 @@ export const HourToSendNotificationsAccordion: React.FC<
                   const modifiedValue = value === -1 ? null : value;
                   setFieldValue('hourToSendNotifications', modifiedValue);
                 }}
-                options={
-                  hours.map((hour) => (hour.key === null ? -1 : hour.key)) || []
-                }
+                options={hours.map((hour) =>
+                  hour.key === null ? -1 : hour.key,
+                )}
                 getOptionLabel={(hourToSendNotifications): string =>
                   hours.find(({ key }) => key === hourToSendNotifications)
-                    ?.value ?? 'Immediately'
+                    ?.value ?? t('Immediately')
                 }
                 filterSelectedOptions
                 fullWidth

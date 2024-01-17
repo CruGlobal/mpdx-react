@@ -13,6 +13,7 @@ import * as Types from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import {
   currencyFormat,
+  dateFormat,
   getDateFormatPattern,
 } from 'src/lib/intlFormat/intlFormat';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
@@ -43,13 +44,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
   const label = t('MPD Info');
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
+  const numberOrNullTransform = (_, val) => (val === Number(val) ? val : null);
 
   const AccountPreferencesSchema: yup.SchemaOf<
     Pick<
@@ -60,15 +55,15 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
     activeMpdMonthlyGoal: yup
       .number()
       .nullable(true)
-      .transform((_, val) => (val === Number(val) ? val : null)),
+      .transform(numberOrNullTransform),
     activeMpdStartAt: yup
       .string()
       .nullable(true)
-      .transform((_, val) => (val === Number(val) ? val : null)),
+      .transform(numberOrNullTransform),
     activeMpdFinishAt: yup
       .string()
       .nullable(true)
-      .transform((_, val) => (val === Number(val) ? val : null)),
+      .transform(numberOrNullTransform),
   });
 
   const onSubmit = async (
@@ -96,7 +91,6 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });
@@ -111,12 +105,16 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
       label={label}
       value={
         (activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0 && currency && locale
-          ? currencyFormat(activeMpdMonthlyGoal, currency, locale) + '   '
+          ? currencyFormat(activeMpdMonthlyGoal, currency, locale) + ' '
           : activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0
-          ? activeMpdMonthlyGoal + '   '
+          ? activeMpdMonthlyGoal + ' '
           : '') +
-        (activeMpdStartAt ? formatDate(activeMpdStartAt) + ' - ' : '') +
-        (activeMpdFinishAt ? formatDate(activeMpdFinishAt) : '')
+        (activeMpdStartAt
+          ? dateFormat(DateTime.fromISO(activeMpdStartAt), locale) + ' - '
+          : '') +
+        (activeMpdFinishAt
+          ? dateFormat(DateTime.fromISO(activeMpdFinishAt), locale)
+          : '')
       }
       fullWidth
     >

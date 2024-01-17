@@ -142,7 +142,6 @@ describe('LanguageAccordion', () => {
 
     await waitFor(() => {
       expect(input).toHaveValue('German (Deutsch)');
-      // expect(getByText('Sprache')).toBeInTheDocument();
     });
   });
 });
