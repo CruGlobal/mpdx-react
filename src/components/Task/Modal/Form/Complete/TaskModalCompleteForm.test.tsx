@@ -233,7 +233,7 @@ describe('TaskModalCompleteForm', () => {
             task={{
               ...task,
               activityType: ActivityTypeEnum.Call,
-              startAt: DateTime.local(2015, 1, 5, 1, 2, 0).toISO(),
+              startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
             }}
           />
         </TestWrapper>,
