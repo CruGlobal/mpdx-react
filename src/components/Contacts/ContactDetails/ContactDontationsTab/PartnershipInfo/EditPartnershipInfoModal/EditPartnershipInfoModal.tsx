@@ -19,7 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -525,7 +525,7 @@ export const EditPartnershipInfoModal: React.FC<
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <MobileDatePicker
+                <DatePicker
                   renderInput={(params) => (
                     <TextField
                       fullWidth
@@ -619,7 +619,7 @@ export const EditPartnershipInfoModal: React.FC<
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <MobileDatePicker
+                <DatePicker
                   renderInput={(params) => (
                     <TextField
                       fullWidth

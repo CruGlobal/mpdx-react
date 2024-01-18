@@ -13,7 +13,7 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -260,7 +260,7 @@ export const MassActionsEditTasksModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <MobileDatePicker
+                    <DatePicker
                       renderInput={(params) => (
                         <TextField fullWidth {...params} />
                       )}
@@ -285,7 +285,7 @@ export const MassActionsEditTasksModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <MobileTimePicker
+                    <TimePicker
                       renderInput={(params) => (
                         <TextField fullWidth {...params} />
                       )}
