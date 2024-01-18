@@ -16,7 +16,7 @@ interface PrimaryOrgAccordionProps {
   expandedPanel: string;
   loading: boolean;
   organizations: GetUsersOrganizationsAccountsQuery | undefined;
-  salaryOrganizationId: string | null;
+  salaryOrganizationId: string;
   accountListId: string;
 }
 
