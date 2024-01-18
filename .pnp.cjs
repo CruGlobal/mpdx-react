@@ -7759,6 +7759,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@fastify/busboy", [\
+        ["npm:2.1.0", {\
+          "packageLocation": "./.yarn/cache/@fastify-busboy-npm-2.1.0-960844a007-3233abd10f.zip/node_modules/@fastify/busboy/",\
+          "packageDependencies": [\
+            ["@fastify/busboy", "npm:2.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@figspec/components", [\
         ["npm:1.0.1", {\
           "packageLocation": "./.yarn/cache/@figspec-components-npm-1.0.1-119d3d41f4-db33333ad2.zip/node_modules/@figspec/components/",\
@@ -14663,7 +14672,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["form-data-encoder", "npm:1.7.2"],\
             ["formdata-node", "npm:4.3.3"],\
             ["node-fetch", "virtual:e414995db9c779306e687c7a7c66965e66d0cd7270f6b9fc4f00cc9772c5d50b305ab83e142e0e21dbf10968f7437cbdfcb170d05f4bde68707ac7d0082c9cca#npm:2.6.7"],\
-            ["undici", "npm:5.9.1"],\
+            ["undici", "npm:5.28.2"],\
             ["web-streams-polyfill", "npm:3.2.1"]\
           ],\
           "linkType": "HARD"\
@@ -14678,7 +14687,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["form-data-encoder", "npm:1.7.2"],\
             ["formdata-node", "npm:4.3.3"],\
             ["node-fetch", "virtual:e414995db9c779306e687c7a7c66965e66d0cd7270f6b9fc4f00cc9772c5d50b305ab83e142e0e21dbf10968f7437cbdfcb170d05f4bde68707ac7d0082c9cca#npm:2.6.7"],\
-            ["undici", "npm:5.9.1"],\
+            ["undici", "npm:5.28.2"],\
             ["web-streams-polyfill", "npm:3.2.1"]\
           ],\
           "linkType": "HARD"\
@@ -33982,10 +33991,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["undici", [\
-        ["npm:5.9.1", {\
-          "packageLocation": "./.yarn/cache/undici-npm-5.9.1-8d51813ba8-8acabbac8e.zip/node_modules/undici/",\
+        ["npm:5.28.2", {\
+          "packageLocation": "./.yarn/cache/undici-npm-5.28.2-35e326d9a1-f9e9335803.zip/node_modules/undici/",\
           "packageDependencies": [\
-            ["undici", "npm:5.9.1"]\
+            ["undici", "npm:5.28.2"],\
+            ["@fastify/busboy", "npm:2.1.0"]\
           ],\
           "linkType": "HARD"\
         }]\
