@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
-import { useLocale } from 'src/hooks/useLocale';
 import {
   dateFormat,
   dateFormatShort,
@@ -101,8 +100,8 @@ export const dateFromParts = (
   year: number | null | undefined,
   month: number | null | undefined,
   day: number | null | undefined,
+  locale: string,
 ): string | null => {
-  const locale = useLocale();
   if (typeof month !== 'number' || typeof day !== 'number') {
     return null;
   }

@@ -19,6 +19,7 @@ import { Facebook } from 'src/components/common/Links/Facebook';
 import { LinkedIn } from 'src/components/common/Links/LinkedIn';
 import { Twitter } from 'src/components/common/Links/Twitter';
 import { Website } from 'src/components/common/Links/Website';
+import { useLocale } from 'src/hooks/useLocale';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -73,6 +74,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
   const loading = profileInfoLoading;
   const user = profileInfoData?.user;
   const theme = useTheme<Theme>();
+  const locale = useLocale();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
@@ -80,7 +82,12 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
 
   const birthDate =
     user?.birthdayYear && user?.birthdayMonth && user?.birthdayDay
-      ? dateFromParts(user.birthdayYear, user.birthdayMonth, user.birthdayDay)
+      ? dateFromParts(
+          user.birthdayYear,
+          user.birthdayMonth,
+          user.birthdayDay,
+          locale,
+        )
       : null;
 
   const anniversary =
@@ -89,6 +96,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
           user?.anniversaryYear,
           user?.anniversaryMonth,
           user?.anniversaryDay,
+          locale,
         )
       : null;
 

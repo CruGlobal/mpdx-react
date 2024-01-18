@@ -50,7 +50,6 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });

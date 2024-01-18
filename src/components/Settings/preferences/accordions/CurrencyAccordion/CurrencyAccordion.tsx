@@ -61,7 +61,6 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
         handleAccordionChange(label);
       },
       onError: () => {
-        //console.log('error: ', e);
         enqueueSnackbar(t('Saving failed.'), {
           variant: 'error',
         });
