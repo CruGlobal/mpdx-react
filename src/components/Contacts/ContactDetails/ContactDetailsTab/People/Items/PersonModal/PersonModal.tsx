@@ -261,7 +261,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
     return {
       id: phoneNumber.id,
       primary: phoneNumber.primary,
-      number: phoneNumber.number,
+      number: phoneNumber?.number,
       historic: phoneNumber.historic,
       location: phoneNumber.location,
       destroy: false,
