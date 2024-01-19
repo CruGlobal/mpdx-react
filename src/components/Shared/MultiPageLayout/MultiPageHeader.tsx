@@ -69,7 +69,7 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
 
   let titleAccess;
   if (headerType === HeaderTypeEnum.Report) {
-    titleAccess = t('Toggle Filter Panel');
+    titleAccess = t('Toggle Navigation Panel');
   } else if (headerType === HeaderTypeEnum.Settings) {
     titleAccess = t('Toggle Preferences Menu');
   }
