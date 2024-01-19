@@ -21,6 +21,15 @@ const mocks = {
 };
 
 describe('DonorAccountAutocomplete', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
   it('shows the initial donor', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
@@ -84,22 +93,22 @@ describe('DonorAccountAutocomplete', () => {
     );
 
     userEvent.type(getByRole('combobox'), 'D');
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    jest.advanceTimersByTime(300);
     userEvent.type(getByRole('combobox'), 'o');
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    jest.advanceTimersByTime(300);
     userEvent.type(getByRole('combobox'), 'n');
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    expect(mutationSpy).toHaveBeenCalledTimes(1);
+    jest.advanceTimersByTime(1000);
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(1));
     expect(mutationSpy.mock.calls[0][0].operation.variables).toEqual({
       accountListId,
       searchTerm: 'Don',
     });
 
     userEvent.type(getByRole('combobox'), 'o');
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    jest.advanceTimersByTime(300);
     userEvent.type(getByRole('combobox'), 'r');
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    expect(mutationSpy).toHaveBeenCalledTimes(2);
+    jest.advanceTimersByTime(1000);
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(2));
     expect(mutationSpy.mock.calls[1][0].operation.variables).toEqual({
       accountListId,
       searchTerm: 'Donor',
