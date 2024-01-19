@@ -16,7 +16,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -172,7 +172,7 @@ const TaskModalCompleteForm = ({
                 <FormControl fullWidth>
                   <Grid container spacing={2}>
                     <Grid xs={6} item>
-                      <MobileDatePicker
+                      <DatePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
@@ -197,7 +197,7 @@ const TaskModalCompleteForm = ({
                       />
                     </Grid>
                     <Grid xs={6} item>
-                      <MobileTimePicker
+                      <TimePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
