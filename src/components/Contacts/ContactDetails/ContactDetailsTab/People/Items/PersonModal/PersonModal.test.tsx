@@ -604,6 +604,74 @@ describe('PersonModal', () => {
       expect(phoneNumbers[1].historic).toBe(false);
     });
 
+    it('handles deleting a saved null phone number', async () => {
+      const mockPersonWithInvalidPhone = {
+        ...mockPerson,
+        phoneNumbers: {
+          ...mockPerson.phoneNumbers,
+          nodes: [
+            ...mockPerson.phoneNumbers.nodes,
+            {
+              id: 'ID123',
+              number: null,
+              location: 'Mobile',
+              primary: false,
+              historic: false,
+              source: 'MPDX',
+            },
+          ],
+        },
+      };
+      const mutationSpy = jest.fn();
+      const { getByText, getByRole, getAllByLabelText } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPersonWithInvalidPhone}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      await waitFor(() =>
+        expect(
+          getByText('Please enter a valid phone number'),
+        ).toBeInTheDocument(),
+      );
+
+      expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[3]);
+      await waitFor(() =>
+        expect(getByRole('button', { name: 'Save' })).not.toBeDisabled(),
+      );
+      userEvent.click(getByText('Save'));
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Person updated successfully',
+          {
+            variant: 'success',
+          },
+        ),
+      );
+      const { operation } = mutationSpy.mock.calls[0][0];
+      expect(operation.variables.accountListId).toEqual(accountListId);
+      expect(operation.variables.attributes.phoneNumbers[2].destroy).toEqual(
+        true,
+      );
+      expect(operation.variables.attributes.phoneNumbers[2].number).toEqual(
+        ' ',
+      );
+    });
+
     it('handles deleting a phone number', async () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(

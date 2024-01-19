@@ -178,6 +178,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       person.anniversaryDay,
     );
 
+    const hasNullPhoneNumbers = person.phoneNumbers.nodes?.filter(
+      (phone) => phone.number === null,
+    )?.length;
+
     return (
       <ContactPersonContainer
         key={person.id}
@@ -220,9 +224,18 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
                 <Phone color="disabled" />
               </ContactPersonIconContainer>
               <Typography variant="subtitle1">
-                <Link href={`tel:${person.primaryPhoneNumber?.number}`}>
-                  {person.primaryPhoneNumber?.number}
-                </Link>
+                {person.primaryPhoneNumber?.number !== null ? (
+                  <Link href={`tel:${person.primaryPhoneNumber?.number}`}>
+                    {person.primaryPhoneNumber?.number}
+                  </Link>
+                ) : (
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'statusDanger.main' }}
+                  >
+                    {t('Invalid number. Please fix.')}
+                  </Typography>
+                )}
               </Typography>
               {person.primaryPhoneNumber?.location ? (
                 <Typography variant="caption" marginLeft={1}>
@@ -261,6 +274,13 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               </ContactPersonIconContainer>
               <Typography variant="subtitle1">{anniversary}</Typography>
             </ContactPersonRowContainer>
+          )}
+          {!!hasNullPhoneNumbers && (
+            <Typography variant="caption" sx={{ color: 'statusDanger.main' }}>
+              {t(`{{name}} has one or multiple invalid numbers. Please fix.`, {
+                name: person.firstName,
+              })}
+            </Typography>
           )}
         </ContactPersonTextContainer>
         {editPersonModalOpen === person.id ? (

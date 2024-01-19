@@ -48,6 +48,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
     values: { phoneNumbers },
     setFieldValue,
     errors,
+    setFieldError,
   } = formikProps;
 
   const [primaryIndex, setPrimaryIndex] = useState(0);
@@ -69,6 +70,20 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
         (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
       ) ?? 0,
     );
+
+    const hasNullPhoneNumbers =
+      phoneNumbers?.filter((phone) => phone.number === null) || [];
+    hasNullPhoneNumbers.forEach((phoneNumber) => {
+      const index = phoneNumbers?.findIndex(
+        (phone) => phone.id === phoneNumber.id,
+      );
+      if (phoneNumbers) {
+        setFieldError(
+          `phoneNumbers.${index}.number`,
+          t('Please enter a valid phone number'),
+        );
+      }
+    });
   }, []);
 
   return phoneNumbers ? (

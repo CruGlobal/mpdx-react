@@ -187,11 +187,15 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
           disabled={locked}
           handleClick={
             phoneNumber.id
-              ? () =>
+              ? () => {
                   setFieldValue(
                     `phoneNumbers.${index}.destroy`,
                     !phoneNumber.destroy,
-                  )
+                  );
+                  if (phoneNumber.number === null) {
+                    setFieldValue(`phoneNumbers.${index}.number`, ' ');
+                  }
+                }
               : () => {
                   const temp = phoneNumbers;
                   temp?.splice(index, 1);
