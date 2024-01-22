@@ -1,82 +1,86 @@
-query GetProfileInfo {
-  user {
-    lastName
-    firstName
-    legalFirstName
-    title
-    suffix
+fragment UserFragment on User {
+  lastName
+  firstName
+  legalFirstName
+  title
+  suffix
+  id
+  occupation
+  employer
+  anniversaryYear
+  anniversaryDay
+  anniversaryMonth
+  almaMater
+  maritalStatus
+  birthdayDay
+  birthdayMonth
+  birthdayYear
+  gender
+  primaryEmailAddress {
     id
-    occupation
-    employer
-    anniversaryYear
-    anniversaryDay
-    anniversaryMonth
-    almaMater
-    maritalStatus
-    birthdayDay
-    birthdayMonth
-    birthdayYear
-    gender
-    avatar
-    deceased
-    optoutEnewsletter
-    primaryEmailAddress {
-      id
-      email
-      primary
-      location
-      source
-    }
-    primaryPhoneNumber {
+    email
+    primary
+    location
+    source
+  }
+  primaryPhoneNumber {
+    id
+    number
+    primary
+    location
+    source
+  }
+  phoneNumbers {
+    nodes {
       id
       number
       primary
       location
       source
+      historic
     }
-    phoneNumbers {
-      nodes {
-        id
-        number
-        primary
-        location
-        source
-        historic
-      }
+  }
+  emailAddresses {
+    nodes {
+      id
+      email
+      primary
+      location
+      source
+      historic
     }
-    emailAddresses {
-      nodes {
-        id
-        email
-        primary
-        location
-        source
-        historic
-      }
+  }
+  twitterAccounts {
+    nodes {
+      id
+      screenName
     }
-    twitterAccounts {
-      nodes {
-        id
-        screenName
-      }
+  }
+  websites {
+    nodes {
+      url
+      id
     }
-    websites {
-      nodes {
-        url
-        id
-      }
+  }
+  linkedinAccounts {
+    nodes {
+      id
+      publicUrl
     }
-    linkedinAccounts {
-      nodes {
-        id
-        publicUrl
-      }
+  }
+  facebookAccounts {
+    nodes {
+      id
+      username
     }
-    facebookAccounts {
-      nodes {
-        id
-        username
-      }
-    }
+  }
+}
+
+query GetProfileInfo {
+  user {
+    ...UserFragment
+    avatar
+    deceased
+    optoutEnewsletter
   }
 }
