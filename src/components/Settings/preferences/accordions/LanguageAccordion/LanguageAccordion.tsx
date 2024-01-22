@@ -108,7 +108,6 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
                 getOptionLabel={(locale): string => formatLanguage(locale)}
                 filterSelectedOptions
                 fullWidth
-                data-testid={'input' + label.replace(/\s/g, '')}
                 renderInput={(params) => (
                   <TextField {...params} placeholder={label} />
                 )}

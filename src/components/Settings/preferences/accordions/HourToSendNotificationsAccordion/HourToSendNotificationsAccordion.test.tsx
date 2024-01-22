@@ -78,19 +78,18 @@ const Components: React.FC<ComponentsProps> = ({
 );
 
 const label = 'Hour To Send Notifications';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('HourToSendNotificationsAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components hourToSendNotifications={0} expandedPanel="" />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('combobox')).not.toBeInTheDocument();
   });
   it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole, queryByTestId } = render(
+    const { getByText, getByRole } = render(
       <Components hourToSendNotifications={20} expandedPanel={label} />,
     );
 
@@ -99,7 +98,7 @@ describe('HourToSendNotificationsAccordion', () => {
 
     await waitFor(() => {
       expect(getByText('8:00 PM')).toBeInTheDocument();
-      expect(queryByTestId(inputTestId)).toBeInTheDocument();
+      expect(input).toBeInTheDocument();
       expect(input).toHaveValue('8:00 PM');
       expect(button).not.toBeDisabled();
     });

@@ -54,23 +54,22 @@ const Components: React.FC<ComponentsProps> = ({ tester, expandedPanel }) => (
 );
 
 const label = 'Early Adopter';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('EarlyAdopterAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components tester={true} expandedPanel="" />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('combobox')).not.toBeInTheDocument();
   });
   it('should render accordion open', async () => {
-    const { queryByTestId } = render(
+    const { getByRole } = render(
       <Components tester={true} expandedPanel={label} />,
     );
 
-    expect(queryByTestId(inputTestId)).toBeInTheDocument();
+    expect(getByRole('checkbox')).toBeInTheDocument();
   });
 
   it('should always have the save button enabled', async () => {

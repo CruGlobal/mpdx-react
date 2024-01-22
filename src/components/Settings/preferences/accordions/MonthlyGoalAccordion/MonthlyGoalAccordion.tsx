@@ -115,7 +115,6 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
                 inputProps={{
                   'aria-label': label,
                   type: 'number',
-                  'data-testid': 'input' + label.replace(/\s/g, ''),
                 }}
                 error={!!errors.monthlyGoal}
                 helperText={errors.monthlyGoal && t('Monthly Goal is required')}

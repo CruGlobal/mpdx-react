@@ -87,11 +87,10 @@ const Components: React.FC<ComponentsProps> = ({
 );
 
 const label = 'Primary Organization';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('PrimaryOrgAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components
         salaryOrganizationId={'0673b517-4f4d-4c47-965e-0757a198a8a4'}
         expandedPanel=""
@@ -99,10 +98,10 @@ describe('PrimaryOrgAccordion', () => {
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('combobox')).not.toBeInTheDocument();
   });
   it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole, queryByTestId } = render(
+    const { getByText, getByRole } = render(
       <Components
         salaryOrganizationId={'0673b517-4f4d-4c47-965e-0757a198a8a4'}
         expandedPanel={label}
@@ -113,7 +112,7 @@ describe('PrimaryOrgAccordion', () => {
     const button = getByRole('button', { name: 'Save' });
 
     expect(getByText('Cru - New Staff')).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
 
     await waitFor(() => {
       expect(input).toHaveValue('Cru - New Staff');

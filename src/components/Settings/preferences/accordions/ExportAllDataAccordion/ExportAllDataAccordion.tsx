@@ -105,7 +105,6 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
               control={
                 <Checkbox
                   name={'acknowledge'}
-                  data-testid={'input' + label.replace(/\s/g, '')}
                   onChange={handleChange}
                   inputProps={{
                     'aria-label': t(

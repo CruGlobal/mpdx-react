@@ -58,26 +58,25 @@ const Components: React.FC<ComponentsProps> = ({
 );
 
 const label = 'Monthly Goal';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('MonthlyGoalAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components monthlyGoal={100} expandedPanel="" />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('textbox')).not.toBeInTheDocument();
   });
   it('should render accordion open and textfield should have a value', () => {
-    const { queryByTestId, getByRole } = render(
+    const { getByRole } = render(
       <Components monthlyGoal={20000} expandedPanel={label} />,
     );
 
-    const input = queryByTestId(inputTestId);
+    const input = getByRole('spinbutton', { name: label });
     const button = getByRole('button', { name: 'Save' });
 
-    expect(queryByTestId(inputTestId)).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
     expect(input).toHaveValue(20000);
     expect(button).not.toBeDisabled();
   });
@@ -85,11 +84,11 @@ describe('MonthlyGoalAccordion', () => {
   it('should set the save button to disabled when the form is invalid', async () => {
     const value = null; //value is required
 
-    const { getByRole, getByText, queryByTestId } = render(
+    const { getByRole, getByText } = render(
       <Components monthlyGoal={value} expandedPanel={label} />,
     );
 
-    const input = queryByTestId(inputTestId);
+    const input = getByRole('spinbutton', { name: label });
     const button = getByRole('button', { name: 'Save' });
 
     await waitFor(() => {

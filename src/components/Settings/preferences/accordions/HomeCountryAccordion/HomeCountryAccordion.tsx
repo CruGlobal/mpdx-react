@@ -116,7 +116,6 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
                 }
                 filterSelectedOptions
                 fullWidth
-                data-testid={'input' + label.replace(/\s/g, '')}
                 renderInput={(params) => (
                   <TextField {...params} placeholder={label} />
                 )}

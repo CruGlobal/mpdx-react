@@ -1,3 +1,4 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -5,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { UpdateAccountPreferencesDocument } from '../UpdateAccountPreferences.generated';
 import { AccountNameAccordion } from './AccountNameAccordion';
 
 jest.mock('next-auth/react');
@@ -53,27 +55,33 @@ const Components: React.FC<ComponentsProps> = ({ name, expandedPanel }) => (
   </SnackbarProvider>
 );
 
+const errorMock: MockedResponse = {
+  request: {
+    query: UpdateAccountPreferencesDocument,
+  },
+  error: { name: 'error', message: 'Error loading data.  Try again.' },
+};
+
 const label = 'Account Name';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('AccountNameAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components name={"Pedro Perez's Account"} expandedPanel="" />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('textbox')).not.toBeInTheDocument();
   });
   it('should render accordion open and textfield should have a value', () => {
-    const { getByTestId, getByRole } = render(
+    const { getByRole } = render(
       <Components name={"Pedro Perez's Account"} expandedPanel={label} />,
     );
 
     const input = getByRole('textbox');
     const button = getByRole('button', { name: 'Save' });
 
-    expect(getByTestId(inputTestId)).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
     expect(input).toHaveValue("Pedro Perez's Account");
     expect(button).not.toBeDisabled();
   });
@@ -120,6 +128,35 @@ describe('AccountNameAccordion', () => {
           },
         },
       ]);
+    });
+  });
+  it('Should render the error state', async () => {
+    const { getByRole, queryByTestId } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <MockedProvider mocks={[errorMock]}>
+              <AccountNameAccordion
+                handleAccordionChange={handleAccordionChange}
+                expandedPanel={label}
+                loading={false}
+                name={'Test Account'}
+                accountListId={accountListId}
+              />
+            </MockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    const button = getByRole('button', { name: 'Save' });
+
+    userEvent.click(button);
+
+    await waitFor(() => {
+      expect(queryByTestId('LoadingAccountName')).not.toBeInTheDocument();
+      expect(mockEnqueue).toHaveBeenCalledWith('Saving failed.', {
+        variant: 'error',
+      });
     });
   });
 });

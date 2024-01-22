@@ -261,14 +261,20 @@ describe('coordinatesFromContacts', () => {
 describe('dateFromParts', () => {
   const locale = 'en-US';
   it('returns formatted date with year, month and day', () => {
-    const date = dateFromParts(2005, 5, 5, locale);
+    const date = dateFromParts(2005, 5, 6, locale);
 
-    expect(date).toBe('May 5, 2005');
+    expect(date).toBe('May 6, 2005');
   });
 
   it('returns month day format if year is null', () => {
-    const date = dateFromParts(null, 5, 5, locale);
+    const date = dateFromParts(null, 5, 6, locale);
 
-    expect(date).toBe('May 5');
+    expect(date).toBe('May 6');
+  });
+
+  it('returns null if month is null', () => {
+    const date = dateFromParts(null, null, 6, locale);
+
+    expect(date).toBeNull();
   });
 });

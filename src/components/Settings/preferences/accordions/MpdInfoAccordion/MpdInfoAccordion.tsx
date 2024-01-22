@@ -151,7 +151,6 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                           fullWidth
                           inputProps={{
                             'aria-label': t('Start Date'),
-                            'data-testid': 'Start Date',
                           }}
                           {...params}
                         />
@@ -179,7 +178,6 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                           fullWidth
                           inputProps={{
                             'aria-label': t('End Date'),
-                            'data-testid': 'End Date',
                           }}
                           {...params}
                         />
@@ -212,7 +210,6 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                   inputProps={{
                     'aria-label': label,
                     type: 'number',
-                    'data-testid': 'input' + label.replace(/\s/g, ''),
                   }}
                 />
               </FieldWrapper>

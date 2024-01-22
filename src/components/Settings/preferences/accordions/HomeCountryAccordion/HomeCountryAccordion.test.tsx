@@ -57,19 +57,18 @@ const Components: React.FC<ComponentsProps> = ({
 );
 
 const label = 'Home Country';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('HomeCountryAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components homeCountry={'USD'} expandedPanel="" />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('combobox')).not.toBeInTheDocument();
   });
   it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole, queryByTestId } = render(
+    const { getByText, getByRole } = render(
       <Components homeCountry={'DE'} expandedPanel={label} />,
     );
 
@@ -77,7 +76,7 @@ describe('HomeCountryAccordion', () => {
     const button = getByRole('button', { name: 'Save' });
 
     expect(getByText('Germany')).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).toBeInTheDocument();
+    expect(getByRole('combobox')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(input).toHaveValue('Germany');

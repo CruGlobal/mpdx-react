@@ -105,7 +105,6 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
                       onChange={handleChange('tester')}
                       checked={tester}
                       value={tester}
-                      data-testid={'input' + label.replace(/\s/g, '')}
                       inputProps={{
                         'aria-label': label,
                       }}

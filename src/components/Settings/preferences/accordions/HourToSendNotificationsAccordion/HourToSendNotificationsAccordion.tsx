@@ -122,7 +122,6 @@ export const HourToSendNotificationsAccordion: React.FC<
                 }
                 filterSelectedOptions
                 fullWidth
-                data-testid={'input' + label.replace(/\s/g, '')}
                 renderInput={(params) => (
                   <TextField {...params} placeholder={label} />
                 )}

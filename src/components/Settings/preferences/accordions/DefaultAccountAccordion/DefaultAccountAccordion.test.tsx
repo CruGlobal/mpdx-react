@@ -88,22 +88,22 @@ const Components: React.FC<ComponentsProps> = ({
 );
 
 const label = 'Default Account';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('Default Account Accordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components
         defaultAccountList={'cbe2fe56-1525-4aee-8320-1ca7ccf09703'}
         expandedPanel=""
       />,
     );
+    const input = queryByRole('combobox');
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(input).not.toBeInTheDocument();
   });
   it('should render accordion open and the input should have a value', async () => {
-    const { queryByTestId, getByRole } = render(
+    const { getByRole } = render(
       <Components
         defaultAccountList={'cbe2fe56-1525-4aee-8320-1ca7ccf09703'}
         expandedPanel={label}
@@ -113,7 +113,7 @@ describe('Default Account Accordion', () => {
     const input = getByRole('combobox');
     const button = getByRole('button', { name: 'Save' });
 
-    expect(queryByTestId(inputTestId)).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
 
     await waitFor(() => {
       expect(input).toHaveValue('Pedro Pérez');

@@ -66,7 +66,7 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
 
   return (
     <>
-      {loading && <Skeleton height="90px" />}
+      {loading && <Skeleton height="90px" data-testid="LoadingAccountName" />}
       {!loading && (
         <AccordionItem
           onAccordionChange={handleAccordionChange}
@@ -109,9 +109,9 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
                     inputProps={{
                       'aria-label': label,
                     }}
-                    data-testid={'input' + label.replace(/\s/g, '')}
                     error={!!errors.name}
                     helperText={errors.name && t('Account Name is required')}
+                    //name={label}
                   />
                 </FieldWrapper>
               </FormWrapper>

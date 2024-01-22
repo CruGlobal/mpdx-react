@@ -28,99 +28,99 @@ jest.mock('./uploadAvatar');
 const handleClose = jest.fn();
 const accountListId = '123';
 const contactId = '321';
+const personData = {
+  emailAddresses: {
+    nodes: [
+      {
+        email: 'test1234@test.com',
+        primary: true,
+        historic: false,
+        location: 'Work',
+        source: 'MPDX',
+      },
+      {
+        email: 'secondemail@test.com',
+        location: 'Personal',
+        primary: false,
+        historic: false,
+        source: 'MPDX',
+      },
+    ],
+  },
+  phoneNumbers: {
+    nodes: [
+      {
+        number: '777-777-7777',
+        location: 'Mobile',
+        primary: true,
+        historic: false,
+        source: 'MPDX',
+      },
+      {
+        number: '999-999-9999',
+        location: 'Work',
+        primary: false,
+        historic: false,
+        source: 'MPDX',
+      },
+    ],
+  },
+  facebookAccounts: {
+    nodes: [
+      {
+        username: 'test guy',
+      },
+      {
+        username: 'test guy 2',
+      },
+    ],
+  },
+  twitterAccounts: {
+    nodes: [
+      {
+        screenName: '@testguy',
+      },
+      {
+        screenName: '@testguy2',
+      },
+    ],
+  },
+  linkedinAccounts: {
+    nodes: [
+      {
+        publicUrl: 'Test Guy',
+      },
+      {
+        publicUrl: 'Test Guy 2',
+      },
+    ],
+  },
+  websites: {
+    nodes: [
+      {
+        url: 'testguy.com',
+      },
+      {
+        url: 'testguy2.com',
+      },
+    ],
+  },
+  optoutEnewsletter: false,
+  anniversaryDay: 1,
+  anniversaryMonth: 1,
+  anniversaryYear: 1990,
+  birthdayDay: 1,
+  birthdayMonth: 1,
+  birthdayYear: 1990,
+  maritalStatus: 'Engaged',
+  gender: 'Male',
+  deceased: true,
+  avatar: '',
+};
 const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
   mocks: {
     people: {
-      nodes: [
-        {
-          emailAddresses: {
-            nodes: [
-              {
-                email: 'test1234@test.com',
-                primary: true,
-                historic: false,
-                location: 'Work',
-                source: 'MPDX',
-              },
-              {
-                email: 'secondemail@test.com',
-                location: 'Personal',
-                primary: false,
-                historic: false,
-                source: 'MPDX',
-              },
-            ],
-          },
-          phoneNumbers: {
-            nodes: [
-              {
-                number: '777-777-7777',
-                location: 'Mobile',
-                primary: true,
-                historic: false,
-                source: 'MPDX',
-              },
-              {
-                number: '999-999-9999',
-                location: 'Work',
-                primary: false,
-                historic: false,
-                source: 'MPDX',
-              },
-            ],
-          },
-          facebookAccounts: {
-            nodes: [
-              {
-                username: 'test guy',
-              },
-              {
-                username: 'test guy 2',
-              },
-            ],
-          },
-          twitterAccounts: {
-            nodes: [
-              {
-                screenName: '@testguy',
-              },
-              {
-                screenName: '@testguy2',
-              },
-            ],
-          },
-          linkedinAccounts: {
-            nodes: [
-              {
-                publicUrl: 'Test Guy',
-              },
-              {
-                publicUrl: 'Test Guy 2',
-              },
-            ],
-          },
-          websites: {
-            nodes: [
-              {
-                url: 'testguy.com',
-              },
-              {
-                url: 'testguy2.com',
-              },
-            ],
-          },
-          optoutEnewsletter: false,
-          anniversaryDay: 1,
-          anniversaryMonth: 1,
-          anniversaryYear: 1990,
-          birthdayDay: 1,
-          birthdayMonth: 1,
-          birthdayYear: 1990,
-          maritalStatus: 'Engaged',
-          gender: 'Male',
-          deceased: true,
-        },
-      ],
+      nodes: [personData],
     },
   },
 });
@@ -1351,6 +1351,38 @@ describe('PersonModal', () => {
       );
       expect(operation.variables.attributes.title).toEqual(newPersonTitle);
       expect(operation.variables.attributes.suffix).toEqual(newPersonSuffix);
+    });
+  });
+  it('displays a User edit modal differently', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByRole } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <ContactDetailProvider>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={{
+                    ...mockPerson,
+                    __typename: 'User',
+                  }}
+                />
+              </ContactDetailProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    expect(getByText('Edit Details')).toBeInTheDocument();
+    userEvent.click(getByText('Show More'));
+    userEvent.click(getByRole('button', { name: 'Save' }));
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith('Profile updated successfully', {
+        variant: 'success',
+      });
     });
   });
 });

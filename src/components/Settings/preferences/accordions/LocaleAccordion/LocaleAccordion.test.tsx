@@ -81,19 +81,18 @@ const Components: React.FC<ComponentsProps> = ({
 );
 
 const label = 'Locale';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('LocaleAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components localeDisplay={'en-GB'} expandedPanel="" />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('combobox')).not.toBeInTheDocument();
   });
   it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole, queryByTestId } = render(
+    const { getByText, getByRole } = render(
       <Components localeDisplay={'es-419'} expandedPanel={label} />,
     );
 
@@ -104,7 +103,7 @@ describe('LocaleAccordion', () => {
       expect(
         getByText('Latin American Spanish (es-419) (español latinoamericano)'),
       ).toBeInTheDocument();
-      expect(queryByTestId(inputTestId)).toBeInTheDocument();
+      expect(input).toBeInTheDocument();
       expect(input).toHaveValue(
         'Latin American Spanish (es-419) (español latinoamericano)',
       );

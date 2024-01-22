@@ -53,19 +53,18 @@ const Components: React.FC<ComponentsProps> = ({ timeZone, expandedPanel }) => (
 );
 
 const label = 'Time Zone';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('TimeZoneAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components timeZone={'USD'} expandedPanel="" />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('combobox')).not.toBeInTheDocument();
   });
   it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole, queryByTestId } = render(
+    const { getByText, getByRole } = render(
       <Components
         timeZone={'Eastern Time (US & Canada)'}
         expandedPanel={label}
@@ -76,7 +75,7 @@ describe('TimeZoneAccordion', () => {
     const button = getByRole('button', { name: 'Save' });
 
     expect(getByText('Eastern Time (US & Canada)')).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
 
     await waitFor(() => {
       expect(input).toHaveValue('(GMT-05:00) Eastern Time (US & Canada)');

@@ -1,3 +1,4 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -5,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { UpdatePersonalPreferencesDocument } from '../UpdatePersonalPreferences.generated';
 import { LanguageAccordion } from './LanguageAccordion';
 
 jest.mock('next-auth/react');
@@ -52,20 +54,26 @@ const Components: React.FC<ComponentsProps> = ({ locale, expandedPanel }) => (
   </SnackbarProvider>
 );
 
+const errorMock: MockedResponse = {
+  request: {
+    query: UpdatePersonalPreferencesDocument,
+  },
+  error: { name: 'error', message: 'Error loading data.  Try again.' },
+};
+
 const label = 'Language';
-const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('LanguageAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components locale={'de'} expandedPanel="" />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('combobox')).not.toBeInTheDocument();
   });
   it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole, queryByTestId } = render(
+    const { getByText, getByRole } = render(
       <Components locale={'es-419'} expandedPanel={label} />,
     );
 
@@ -75,7 +83,7 @@ describe('LanguageAccordion', () => {
     expect(
       getByText('Latin American Spanish (español latinoamericano)'),
     ).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
 
     await waitFor(() => {
       expect(input).toHaveValue(
@@ -142,6 +150,33 @@ describe('LanguageAccordion', () => {
 
     await waitFor(() => {
       expect(input).toHaveValue('German (Deutsch)');
+    });
+  });
+  it('Should render the error state', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <MockedProvider mocks={[errorMock]}>
+              <LanguageAccordion
+                handleAccordionChange={handleAccordionChange}
+                expandedPanel={label}
+                loading={false}
+                locale={'en-US'}
+              />
+            </MockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    const button = getByRole('button', { name: 'Save' });
+
+    userEvent.click(button);
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith('Saving failed.', {
+        variant: 'error',
+      });
     });
   });
 });

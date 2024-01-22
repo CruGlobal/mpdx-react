@@ -13,6 +13,7 @@ import theme from '../../../../../../theme';
 import {
   getTopBarMock,
   getTopBarMockWithMultipleAccountLists,
+  getTopBarNoAccountListMock,
 } from '../../TopBar.mock';
 import ProfileMenu from './ProfileMenu';
 
@@ -257,4 +258,23 @@ describe('ProfileMenu while Impersonating', () => {
       ),
     );
   });
+});
+it('should use defaultAccountList if accountListId does not exist', async () => {
+  const { getByTestId, queryByTestId, getByRole } = render(
+    <ThemeProvider theme={theme}>
+      <TestWrapper mocks={[getTopBarNoAccountListMock()]}>
+        <TestRouter router={routerNoAccountListId}>
+          <ProfileMenu />
+        </TestRouter>
+      </TestWrapper>
+    </ThemeProvider>,
+  );
+  expect(queryByTestId('accountListName')).not.toBeInTheDocument();
+  userEvent.click(getByTestId('profileMenuButton'));
+  await waitFor(() =>
+    expect(getByRole('menuitem', { name: 'Preferences' })).toHaveAttribute(
+      'href',
+      '/accountLists/12345/settings/preferences',
+    ),
+  );
 });

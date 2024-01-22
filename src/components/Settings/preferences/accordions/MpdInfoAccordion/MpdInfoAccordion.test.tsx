@@ -68,11 +68,11 @@ const Components: React.FC<ComponentsProps> = ({
 );
 
 const label = 'MPD Info';
-const inputTestId = 'input' + label.replace(/\s/g, '');
+//const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('MpdInfoAccordion', () => {
   it('should render accordion closed', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText, queryByRole } = render(
       <Components
         activeMpdStartAt={null}
         activeMpdFinishAt={null}
@@ -82,10 +82,10 @@ describe('MpdInfoAccordion', () => {
     );
 
     expect(getByText(label)).toBeInTheDocument();
-    expect(queryByTestId(inputTestId)).not.toBeInTheDocument();
+    expect(queryByRole('spinbutton')).not.toBeInTheDocument();
   });
   it('should render accordion open and field should have a value', async () => {
-    const { queryByTestId, getByRole } = render(
+    const { getByRole } = render(
       <Components
         activeMpdStartAt={'2024-01-16'}
         activeMpdFinishAt={'2024-03-16'}
@@ -94,7 +94,7 @@ describe('MpdInfoAccordion', () => {
       />,
     );
 
-    const inputGoal = queryByTestId(inputTestId);
+    const inputGoal = getByRole('spinbutton', { name: label });
     const inputStart = getByRole('textbox', {
       name: 'Choose date, selected date is Jan 16, 2024',
     });
@@ -103,7 +103,7 @@ describe('MpdInfoAccordion', () => {
     });
     const button = getByRole('button', { name: 'Save' });
 
-    expect(queryByTestId(inputTestId)).toBeInTheDocument();
+    expect(inputGoal).toBeInTheDocument();
     expect(inputGoal).toHaveValue(20000);
 
     expect(inputStart).toHaveValue('1/16/2024');
@@ -112,7 +112,7 @@ describe('MpdInfoAccordion', () => {
   });
 
   it('should always be valid even when the form is null', async () => {
-    const { getByRole, queryByTestId } = render(
+    const { getByRole } = render(
       <Components
         activeMpdStartAt={null}
         activeMpdFinishAt={null}
@@ -121,7 +121,7 @@ describe('MpdInfoAccordion', () => {
       />,
     );
 
-    const input = queryByTestId(inputTestId);
+    const input = getByRole('spinbutton', { name: label });
     const button = getByRole('button', { name: 'Save' });
 
     expect(input).toBeValid();
