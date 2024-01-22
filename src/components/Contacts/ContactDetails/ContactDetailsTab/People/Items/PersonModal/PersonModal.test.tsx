@@ -668,7 +668,7 @@ describe('PersonModal', () => {
         true,
       );
       expect(operation.variables.attributes.phoneNumbers[2].number).toEqual(
-        ' ',
+        null,
       );
     });
 

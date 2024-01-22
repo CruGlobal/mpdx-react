@@ -1,9 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { DeepPartial } from 'ts-essentials';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import TestRouter from '../../../../../../__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import {
   render,
   waitFor,
@@ -11,8 +10,11 @@ import {
 } from '../../../../../../__tests__/util/testingLibraryReactMock';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
-import { ContactDetailsTabQuery } from '../ContactDetailsTab.generated';
 import { ContactDetailsTabPeople } from './ContactDetailsTabPeople';
+import {
+  ContactPeopleFragment,
+  ContactPeopleFragmentDoc,
+} from './ContactPeople.generated';
 
 const accountListId = '123';
 
@@ -60,8 +62,8 @@ const primaryPerson = {
   ...dates,
 };
 
-const data: DeepPartial<ContactDetailsTabQuery> = {
-  contact: {
+const data = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
+  mocks: {
     id: 'contactId',
     name: 'Person, Test',
     addresses: {
@@ -95,7 +97,8 @@ const data: DeepPartial<ContactDetailsTabQuery> = {
     primaryPerson,
     website: 'testperson.com',
   },
-};
+});
+
 describe('ContactDetailsTabPeople', () => {
   describe('ContactTags', () => {
     it('should render with tags', async () => {
@@ -107,13 +110,12 @@ describe('ContactDetailsTabPeople', () => {
                 <ContactDetailProvider>
                   <ContactDetailsTabPeople
                     accountListId={accountListId}
-                    data={data.contact as any}
+                    data={data}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
             </ThemeProvider>
           </GqlMockedProvider>
-          ,
         </TestRouter>,
       );
       await waitFor(() =>
@@ -136,13 +138,12 @@ describe('ContactDetailsTabPeople', () => {
                 <ContactDetailProvider>
                   <ContactDetailsTabPeople
                     accountListId={accountListId}
-                    data={data.contact as any}
+                    data={data}
                   />
                 </ContactDetailProvider>
               </ContactsPage>
             </ThemeProvider>
           </GqlMockedProvider>
-          ,
         </TestRouter>,
       );
       await waitFor(() => {
@@ -157,17 +158,23 @@ describe('ContactDetailsTabPeople', () => {
     });
 
     describe('Invalid phone numbers', () => {
-      beforeEach(() => {
-        // eslint-disable-next-line
-        // @ts-expect-error
-        data.contact.people.nodes[0].primaryPhoneNumber.number = null;
-        // eslint-disable-next-line
-        // @ts-expect-error
-        data.contact.people.nodes[0].phoneNumbers.nodes[0].number = null;
-        // eslint-disable-next-line
-        // @ts-expect-error
-        data.contact.people.nodes[0].phoneNumbers.nodes[1].number = null;
+      const personMocks = {
+        firstName: 'Test',
+        primaryPhoneNumber: { number: null },
+        phoneNumbers: {
+          nodes: [{ number: null }],
+        },
+        ...dates,
+      };
+      const data = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
+        mocks: {
+          primaryPerson: null,
+          people: {
+            nodes: [personMocks],
+          },
+        },
       });
+
       it('should render phone number invalid errors', async () => {
         const { getByText } = render(
           <TestRouter router={router}>
@@ -177,13 +184,12 @@ describe('ContactDetailsTabPeople', () => {
                   <ContactDetailProvider>
                     <ContactDetailsTabPeople
                       accountListId={accountListId}
-                      data={data.contact as any}
+                      data={data}
                     />
                   </ContactDetailProvider>
                 </ContactsPage>
               </ThemeProvider>
             </GqlMockedProvider>
-            ,
           </TestRouter>,
         );
         await waitFor(() => {

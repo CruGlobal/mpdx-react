@@ -192,9 +192,6 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
                     `phoneNumbers.${index}.destroy`,
                     !phoneNumber.destroy,
                   );
-                  if (phoneNumber.number === null) {
-                    setFieldValue(`phoneNumbers.${index}.number`, ' ');
-                  }
                 }
               : () => {
                   const temp = phoneNumbers;
