@@ -605,12 +605,13 @@ describe('PersonModal', () => {
     });
 
     it('handles deleting a saved null phone number', async () => {
-      const mockPersonWithInvalidPhone = {
-        ...mockPerson,
+      const personMocks = {
+        firstName: 'Test',
+        lastName: 'lastName',
+        primaryPhoneNumber: { number: null },
+        emailAddresses: { nodes: [] },
         phoneNumbers: {
-          ...mockPerson.phoneNumbers,
           nodes: [
-            ...mockPerson.phoneNumbers.nodes,
             {
               id: 'ID123',
               number: null,
@@ -621,7 +622,19 @@ describe('PersonModal', () => {
             },
           ],
         },
+        facebookAccounts: { nodes: [] },
+        twitterAccounts: { nodes: [] },
+        linkedinAccounts: { nodes: [] },
+        websites: { nodes: [] },
       };
+      const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
+        mocks: {
+          people: {
+            nodes: [personMocks],
+          },
+        },
+      });
+      const mockPerson = mock.people.nodes[0];
       const mutationSpy = jest.fn();
       const { getByText, getByRole, getAllByLabelText } = render(
         <SnackbarProvider>
@@ -633,7 +646,7 @@ describe('PersonModal', () => {
                     contactId={contactId}
                     accountListId={accountListId}
                     handleClose={handleClose}
-                    person={mockPersonWithInvalidPhone}
+                    person={mockPerson}
                   />
                 </ContactDetailProvider>
               </GqlMockedProvider>
@@ -649,7 +662,7 @@ describe('PersonModal', () => {
       );
 
       expect(getByRole('button', { name: 'Save' })).toBeDisabled();
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[3]);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[1]);
       await waitFor(() =>
         expect(getByRole('button', { name: 'Save' })).not.toBeDisabled(),
       );
@@ -664,10 +677,10 @@ describe('PersonModal', () => {
       );
       const { operation } = mutationSpy.mock.calls[0][0];
       expect(operation.variables.accountListId).toEqual(accountListId);
-      expect(operation.variables.attributes.phoneNumbers[2].destroy).toEqual(
+      expect(operation.variables.attributes.phoneNumbers[0].destroy).toEqual(
         true,
       );
-      expect(operation.variables.attributes.phoneNumbers[2].number).toEqual(
+      expect(operation.variables.attributes.phoneNumbers[0].number).toEqual(
         null,
       );
     });
