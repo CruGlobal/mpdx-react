@@ -7,8 +7,15 @@ import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generat
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
+import {
+  Panel,
+  PartnerGivingAnalysisReport,
+} from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -31,13 +38,17 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
-  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const [panelOpen, setPanelOpen] = useState<Panel | null>(null);
 
   const router = useRouter();
   const selectedContactId = getQueryParam(router.query, 'contactId');
 
   const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
+    setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
+  };
+
+  const handleFilterListToggle = () => {
+    setPanelOpen(panelOpen === Panel.Filters ? null : Panel.Filters);
   };
 
   const [activeFilters, setActiveFilters] =
@@ -93,26 +104,36 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
         <SidePanelsLayout
           isScrollBox={true}
           leftPanel={
-            isNavListOpen && filtersLoading ? (
-              <Loading loading />
-            ) : (
-              <FilterPanel
-                filters={filterGroups}
-                defaultExpandedFilterGroups={new Set(['Report Filters'])}
-                savedFilters={[]}
-                selectedFilters={activeFilters}
-                onClose={() => setNavListOpen(false)}
-                onSelectedFiltersChanged={setActiveFilters}
+            panelOpen === Panel.Navigation ? (
+              <MultiPageMenu
+                isOpen
+                selectedId="donations"
+                onClose={() => setPanelOpen(null)}
+                navType={NavTypeEnum.Reports}
               />
-            )
+            ) : panelOpen === Panel.Filters ? (
+              filtersLoading ? (
+                <Loading loading />
+              ) : (
+                <FilterPanel
+                  filters={filterGroups}
+                  defaultExpandedFilterGroups={new Set(['Report Filters'])}
+                  savedFilters={[]}
+                  selectedFilters={activeFilters}
+                  onClose={() => setPanelOpen(null)}
+                  onSelectedFiltersChanged={setActiveFilters}
+                />
+              )
+            ) : undefined
           }
-          leftOpen={isNavListOpen}
+          leftOpen={panelOpen !== null}
           leftWidth="290px"
           mainContent={
             <PartnerGivingAnalysisReport
               accountListId={accountListId}
               activeFilters={activeFilters}
-              isNavListOpen={isNavListOpen}
+              panelOpen={panelOpen}
+              onFilterListToggle={handleFilterListToggle}
               onNavListToggle={handleNavListToggle}
               onSelectContact={handleSelectContact}
               title={t('Partner Giving Analysis')}
