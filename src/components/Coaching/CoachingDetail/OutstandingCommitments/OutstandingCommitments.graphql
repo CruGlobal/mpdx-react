@@ -1,0 +1,39 @@
+query LoadCoachingCommitments($coachingAccountListId: ID!, $after: String) {
+  coachingAccountList(id: $coachingAccountListId) {
+    id
+    contacts(first: 8, after: $after, filter: { pledge: "outstanding" }) {
+      nodes {
+        id
+        name
+        pledgeAmount
+        pledgeCurrency
+        pledgeStartDate
+        pledgeFrequency
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+
+query LoadAccountListCoachingCommitments($accountListId: ID!, $after: String) {
+  accountList(id: $accountListId) {
+    id
+    contacts(first: 8, after: $after, filter: { pledge: "outstanding" }) {
+      nodes {
+        id
+        name
+        pledgeAmount
+        pledgeCurrency
+        pledgeStartDate
+        pledgeFrequency
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}

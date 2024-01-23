@@ -20,12 +20,18 @@ import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisR
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import type { Order } from '../Reports.type';
 
+export enum Panel {
+  Navigation = 'Navigation',
+  Filters = 'Filters',
+}
+
 interface Props {
   accountListId: string;
-  isNavListOpen: boolean;
+  panelOpen: Panel | null;
+  onNavListToggle: () => void;
+  onFilterListToggle: () => void;
   activeFilters?: ReportContactFilterSetInput;
   contactDetailsOpen: boolean;
-  onNavListToggle: () => void;
   onSelectContact: (contactId: string) => void;
   title: string;
   contactFilters?: ReportContactFilterSetInput;
@@ -35,10 +41,11 @@ export type Contact = PartnerGivingAnalysisReportContact;
 
 export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   accountListId,
-  isNavListOpen,
+  panelOpen,
+  onNavListToggle,
+  onFilterListToggle,
   activeFilters,
   contactDetailsOpen,
-  onNavListToggle,
   onSelectContact,
   title,
   contactFilters: filters,
@@ -134,7 +141,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   return (
     <Box>
       <MultiPageHeader
-        isNavListOpen={isNavListOpen}
+        isNavListOpen={panelOpen === Panel.Navigation}
         onNavListToggle={onNavListToggle}
         title={title}
         headerType={HeaderTypeEnum.Report}
@@ -142,8 +149,8 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       <ListHeader
         page="report"
         activeFilters={isActiveFilters}
-        filterPanelOpen={isNavListOpen}
-        toggleFilterPanel={onNavListToggle}
+        filterPanelOpen={panelOpen === Panel.Filters}
+        toggleFilterPanel={onFilterListToggle}
         contactDetailsOpen={contactDetailsOpen}
         onCheckAllItems={toggleSelectAll}
         showShowingCount={false}

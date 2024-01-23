@@ -39,6 +39,7 @@ describe('CreateMultipleContacts', () => {
               <CreateMultipleContacts
                 accountListId={accountListId}
                 handleClose={handleClose}
+                rows={3}
               />
             </GqlMockedProvider>
           </TestRouter>
@@ -62,6 +63,7 @@ describe('CreateMultipleContacts', () => {
               <CreateMultipleContacts
                 accountListId={accountListId}
                 handleClose={handleClose}
+                rows={3}
               />
             </GqlMockedProvider>
           </TestRouter>
@@ -115,6 +117,7 @@ describe('CreateMultipleContacts', () => {
                 <CreateMultipleContacts
                   accountListId={accountListId}
                   handleClose={handleClose}
+                  rows={3}
                 />
               </GqlMockedProvider>
             </TestRouter>
@@ -175,7 +178,7 @@ describe('CreateMultipleContacts', () => {
           primaryAddressId: 'address-1',
         },
       });
-    }, 80000);
+    }, 20000);
 
     it('creates one referral', async () => {
       const { getByRole, getAllByRole } = render(
@@ -197,6 +200,7 @@ describe('CreateMultipleContacts', () => {
                 <CreateMultipleContacts
                   accountListId={accountListId}
                   handleClose={handleClose}
+                  rows={3}
                   referredById={'referrer-1'}
                 />
               </GqlMockedProvider>
@@ -231,6 +235,7 @@ describe('CreateMultipleContacts', () => {
                 <CreateMultipleContacts
                   accountListId={accountListId}
                   handleClose={handleClose}
+                  rows={3}
                 />
               </GqlMockedProvider>
             </TestRouter>
@@ -290,12 +295,12 @@ describe('CreateMultipleContacts', () => {
       expect(operation4.variables.attributes.firstName).toEqual(first2);
       expect(operation4.variables.attributes.lastName).toEqual(last2);
 
-      // Contact 1 Person 1 - Awaiting on Contact 1 Person 1 to resolve.
+      // Contact 1 Person 2 - Awaiting on Contact 1 Person 1 to resolve.
       const { operation: operation3 } = mutationSpy.mock.calls[5][0];
       expect(operation3.variables.accountListId).toEqual(accountListId);
       expect(operation3.variables.attributes.firstName).toEqual(spouse);
       expect(operation3.variables.attributes.lastName).toEqual(last);
-    }, 60000);
+    });
 
     it('creates multiple contacts - part 2', async () => {
       const { getByText, getAllByRole } = render(
@@ -306,6 +311,7 @@ describe('CreateMultipleContacts', () => {
                 <CreateMultipleContacts
                   accountListId={accountListId}
                   handleClose={handleClose}
+                  rows={3}
                 />
               </GqlMockedProvider>
             </TestRouter>
@@ -331,7 +337,7 @@ describe('CreateMultipleContacts', () => {
       // Contact 2
       const { operation: operation1 } = mutationSpy.mock.calls[1][0];
       expect(operation1.variables.accountListId).toEqual(accountListId);
-      expect(operation1.variables.attributes.name).toEqual(`${first3}`);
+      expect(operation1.variables.attributes.name).toEqual(first3);
 
       // Contact 2  Person 1
       const { operation: operation2 } = mutationSpy.mock.calls[3][0];
@@ -350,7 +356,7 @@ describe('CreateMultipleContacts', () => {
       expect(operation3.variables.accountListId).toEqual(accountListId);
       expect(operation3.variables.attributes.firstName).toEqual(spouse2);
       expect(operation3.variables.attributes.lastName).toEqual('');
-    }, 80000);
+    });
 
     it('handles chosen address predictions', async () => {
       jest.useFakeTimers();
@@ -362,6 +368,7 @@ describe('CreateMultipleContacts', () => {
               <CreateMultipleContacts
                 accountListId={accountListId}
                 handleClose={handleClose}
+                rows={3}
               />
             </GqlMockedProvider>
           </ThemeProvider>

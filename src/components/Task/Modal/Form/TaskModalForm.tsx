@@ -25,7 +25,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';
@@ -394,7 +394,7 @@ const TaskModalForm = ({
                   <FormControl fullWidth>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
-                        <MobileDatePicker
+                        <DatePicker
                           InputProps={{
                             endAdornment: (
                               <InputAdornment position="end">
@@ -419,7 +419,7 @@ const TaskModalForm = ({
                         />
                       </Grid>
                       <Grid xs={6} item>
-                        <MobileTimePicker
+                        <TimePicker
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
@@ -451,7 +451,7 @@ const TaskModalForm = ({
                   <FormControl fullWidth>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
-                        <MobileDatePicker
+                        <DatePicker
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
@@ -465,7 +465,7 @@ const TaskModalForm = ({
                         />
                       </Grid>
                       <Grid xs={6} item>
-                        <MobileTimePicker
+                        <TimePicker
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}

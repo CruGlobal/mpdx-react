@@ -38,7 +38,7 @@ export const DonorAccountAutocomplete: React.FC<
   const handleDonorAccountSearch = useDebouncedCallback(
     (searchTerm: string) =>
       searchForDonorAccounts({ variables: { accountListId, searchTerm } }),
-    1000,
+    500,
   );
 
   // For the auto complete to be able to display the initially selected donor, it has to have an

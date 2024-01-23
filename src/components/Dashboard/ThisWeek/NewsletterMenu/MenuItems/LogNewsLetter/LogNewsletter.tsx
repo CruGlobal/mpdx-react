@@ -18,7 +18,7 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -219,7 +219,7 @@ const LogNewsletter = ({
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                      <MobileDatePicker
+                      <DatePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
@@ -242,7 +242,7 @@ const LogNewsletter = ({
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <MobileTimePicker
+                      <TimePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
