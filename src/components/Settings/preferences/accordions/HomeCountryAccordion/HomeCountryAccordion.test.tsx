@@ -1,3 +1,4 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -5,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { UpdatePersonalPreferencesDocument } from '../UpdatePersonalPreferences.generated';
 import { HomeCountryAccordion } from './HomeCountryAccordion';
 
 jest.mock('next-auth/react');
@@ -58,6 +60,13 @@ const Components: React.FC<ComponentsProps> = ({
 
 const label = 'Home Country';
 
+const errorMock: MockedResponse = {
+  request: {
+    query: UpdatePersonalPreferencesDocument,
+  },
+  error: { name: 'error', message: 'Error loading data.  Try again.' },
+};
+
 describe('HomeCountryAccordion', () => {
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
@@ -99,11 +108,14 @@ describe('HomeCountryAccordion', () => {
   });
 
   it('Saves the input', async () => {
-    const { getByRole } = render(
+    const { getByRole, getByText } = render(
       <Components homeCountry={'US'} expandedPanel={label} />,
     );
     const button = getByRole('button', { name: 'Save' });
+    const input = getByRole('combobox');
 
+    userEvent.click(input);
+    userEvent.click(getByText('Albania'));
     userEvent.click(button);
 
     await waitFor(() => {
@@ -117,7 +129,7 @@ describe('HomeCountryAccordion', () => {
                 attributes: {
                   id: accountListId,
                   settings: {
-                    homeCountry: 'US',
+                    homeCountry: 'AL',
                   },
                 },
               },
@@ -125,6 +137,34 @@ describe('HomeCountryAccordion', () => {
           },
         },
       ]);
+    });
+  });
+  it('Should render the error state', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <MockedProvider mocks={[errorMock]}>
+              <HomeCountryAccordion
+                handleAccordionChange={handleAccordionChange}
+                expandedPanel={label}
+                loading={false}
+                homeCountry={'USA'}
+                accountListId={accountListId}
+              />
+            </MockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+    const button = getByRole('button', { name: 'Save' });
+
+    userEvent.click(button);
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith('Saving failed.', {
+        variant: 'error',
+      });
     });
   });
 });

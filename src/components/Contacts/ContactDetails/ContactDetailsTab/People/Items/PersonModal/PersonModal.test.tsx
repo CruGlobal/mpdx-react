@@ -421,9 +421,7 @@ describe('PersonModal', () => {
     });
 
     it('should notify the user about upload errors', async () => {
-      (uploadAvatar as jest.Mock).mockRejectedValue(
-        new Error('Upload failure'),
-      );
+      (uploadAvatar as jest.Mock).mockRejectedValue('error');
 
       const { getByRole, getByTestId } = render(
         <SnackbarProvider>
@@ -450,11 +448,14 @@ describe('PersonModal', () => {
       userEvent.upload(getByTestId('PersonNameUpload'), file);
       userEvent.click(getByRole('button', { name: 'Save' }));
 
-      await waitFor(() =>
-        expect(mockEnqueue).toHaveBeenCalledWith('Upload failure', {
-          variant: 'error',
-        }),
-      );
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Avatar could not be uploaded',
+          {
+            variant: 'error',
+          },
+        );
+      });
     });
 
     it('should handle editing person name section', async () => {

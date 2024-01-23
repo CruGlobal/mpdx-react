@@ -135,11 +135,17 @@ describe('PrimaryOrgAccordion', () => {
   });
 
   it('Saves the input', async () => {
-    const { getByRole } = render(
-      <Components salaryOrganizationId={'123'} expandedPanel={label} />,
+    const { getByRole, getByText } = render(
+      <Components
+        salaryOrganizationId={'7ab3ec4b-7108-40bf-a998-ce813d10c821'}
+        expandedPanel={label}
+      />,
     );
     const button = getByRole('button', { name: 'Save' });
+    const input = getByRole('combobox');
 
+    userEvent.click(input);
+    userEvent.click(getByText('Cru - New Staff'));
     userEvent.click(button);
 
     await waitFor(() => {
@@ -152,7 +158,7 @@ describe('PrimaryOrgAccordion', () => {
                 id: accountListId,
                 attributes: {
                   id: accountListId,
-                  salaryOrganizationId: '123',
+                  salaryOrganizationId: '0673b517-4f4d-4c47-965e-0757a198a8a4',
                 },
               },
             },
