@@ -286,6 +286,8 @@ const TasksPage: React.FC = () => {
   );
   //#endregion
 
+  const contactDetailsWidth = 'max(50%, 530px)';
+
   //#region JSX
   return (
     <>
@@ -368,11 +370,14 @@ const TasksPage: React.FC = () => {
                     ))}
                   </TaskCurrentHistoryButtonGroup>
                   <InfiniteList
-                    data-foo="bar"
                     loading={loading}
                     data={data?.tasks.nodes}
                     style={{
                       height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
+                      width: contactDetailsOpen
+                        ? `calc(100% - ${contactDetailsWidth})`
+                        : undefined,
+                      overflowX: 'hidden',
                     }}
                     itemContent={(index, task) => (
                       <Box key={index} flexDirection="row" width="100%">
@@ -451,7 +456,7 @@ const TasksPage: React.FC = () => {
               ) : undefined
             }
             rightOpen={contactDetailsOpen}
-            rightWidth="60%"
+            rightWidth={contactDetailsWidth}
             headerHeight={headerHeight}
           />
         </WhiteBackground>
