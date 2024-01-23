@@ -758,7 +758,7 @@ const TaskModalForm = ({
             </SubmitButton>
             <DeleteConfirmation
               accountListId={accountListId}
-              deleteType="task"
+              deleteType={t('task')}
               open={removeDialogOpen}
               onClickDecline={handleRemoveDialog}
               onClose={onClose}
