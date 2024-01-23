@@ -123,8 +123,8 @@ describe('ContactDetailsTabPeople', () => {
       );
       const avatar = getByTestId('ContactPersonAvatar') as HTMLElement;
       const img = within(avatar).getByRole('img') as HTMLInputElement;
-      expect(img.src).toEqual('https://cru.org/assets/avatar.jpg');
-      expect(img.alt).toEqual('Test Person');
+      expect(img).toHaveAttribute('src', 'https://cru.org/assets/avatar.jpg');
+      expect(img).toHaveAttribute('alt', 'Test Person');
     });
   });
 

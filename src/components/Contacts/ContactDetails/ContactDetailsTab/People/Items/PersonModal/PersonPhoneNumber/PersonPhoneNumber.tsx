@@ -65,21 +65,18 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
 
   ///todo make primary index a state
   useEffect(() => {
+    if (!phoneNumbers) {
+      return;
+    }
     setPrimaryIndex(
       phoneNumbers?.findIndex(
         (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
       ) ?? 0,
     );
-
-    const hasNullPhoneNumbers =
-      phoneNumbers?.filter((phone) => phone.number === null) || [];
-    hasNullPhoneNumbers.forEach((phoneNumber) => {
-      const index = phoneNumbers?.findIndex(
-        (phone) => phone.id === phoneNumber.id,
-      );
-      if (phoneNumbers) {
+    phoneNumbers.forEach((phoneNumber, idx) => {
+      if (phoneNumber.number === null) {
         setFieldError(
-          `phoneNumbers.${index}.number`,
+          `phoneNumbers.${idx}.number`,
           t('Please enter a valid phone number'),
         );
       }
