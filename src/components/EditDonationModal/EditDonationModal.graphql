@@ -61,7 +61,7 @@ mutation UpdateDonation(
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
     donation {
-      id
+      ...EditDonationModalDonation
     }
   }
 }
