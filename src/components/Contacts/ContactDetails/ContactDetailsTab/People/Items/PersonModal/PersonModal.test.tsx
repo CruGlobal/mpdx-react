@@ -573,6 +573,118 @@ describe('PersonModal', () => {
       );
     });
 
+    it('should show no phone numbers', async () => {
+      const personMocks = {
+        firstName: 'Test',
+        lastName: 'lastName',
+        primaryPhoneNumber: null,
+        emailAddresses: { nodes: [] },
+        phoneNumbers: {
+          nodes: [],
+        },
+        facebookAccounts: { nodes: [] },
+        twitterAccounts: { nodes: [] },
+        linkedinAccounts: { nodes: [] },
+        websites: { nodes: [] },
+      };
+      const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
+        mocks: {
+          people: {
+            nodes: [personMocks],
+          },
+        },
+      });
+      const mockPerson = mock.people.nodes[0];
+
+      const { queryByText, queryByRole } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      expect(queryByText('Phone Numbers')).not.toBeInTheDocument();
+      expect(
+        queryByRole('textbox', { name: 'Phone Number' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should default the first phone number as primary', async () => {
+      const personMocks = {
+        firstName: 'Test',
+        lastName: 'lastName',
+        primaryPhoneNumber: {
+          id: '111',
+          number: '111-111-1111',
+        },
+        emailAddresses: { nodes: [] },
+        phoneNumbers: {
+          nodes: [
+            {
+              id: '222',
+              number: '222-222-2222',
+            },
+            {
+              id: '333',
+              number: '333-333-3333',
+            },
+          ],
+        },
+        facebookAccounts: { nodes: [] },
+        twitterAccounts: { nodes: [] },
+        linkedinAccounts: { nodes: [] },
+        websites: { nodes: [] },
+      };
+      const mock = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
+        mocks: {
+          people: {
+            nodes: [personMocks],
+          },
+        },
+      });
+      const mockPerson = mock.people.nodes[0];
+
+      const { getByText, getAllByRole } = render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+
+      expect(getByText('Phone Numbers')).toBeInTheDocument();
+      expect(
+        getAllByRole('textbox', { name: 'Phone Number' })[0],
+      ).toBeInTheDocument();
+      expect(getAllByRole('checkbox', { name: 'Primary' })[0]).toBeChecked();
+      expect(
+        getAllByRole('checkbox', { name: 'Primary' })[1],
+      ).not.toBeChecked();
+    });
+
     it('should handle invalid phone numbers', async () => {
       const { findByText, getByRole, getAllByRole } = render(
         <SnackbarProvider>
