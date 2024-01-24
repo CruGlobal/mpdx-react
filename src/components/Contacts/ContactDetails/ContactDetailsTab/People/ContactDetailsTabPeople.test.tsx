@@ -1,5 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
@@ -15,6 +19,19 @@ import {
   ContactPeopleFragment,
   ContactPeopleFragmentDoc,
 } from './ContactPeople.generated';
+
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 const accountListId = '123';
 
@@ -36,7 +53,7 @@ const primaryPerson = {
   id: 'person-1',
   firstName: 'Test',
   lastName: 'Person',
-  primaryPhoneNumber: { number: '555-555-5555' },
+  primaryPhoneNumber: { number: '555-555-5555', location: 'Mobile' },
   primaryEmailAddress: {
     email: 'testperson@fake.com',
   },
@@ -128,9 +145,40 @@ describe('ContactDetailsTabPeople', () => {
     });
   });
 
+  it('should open up the person modal', async () => {
+    const { getAllByLabelText, getByText } = render(
+      <TestRouter router={router}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <GqlMockedProvider>
+            <ThemeProvider theme={theme}>
+              <SnackbarProvider>
+                <ContactsPage>
+                  <ContactDetailProvider>
+                    <ContactDetailsTabPeople
+                      accountListId={accountListId}
+                      data={data}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPage>
+              </SnackbarProvider>
+            </ThemeProvider>
+          </GqlMockedProvider>
+        </LocalizationProvider>
+      </TestRouter>,
+    );
+    await waitFor(() =>
+      expect(getAllByLabelText('Edit Icon')[0]).toBeInTheDocument(),
+    );
+    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+
+    await waitFor(() => {
+      expect(getByText('Edit Person')).toBeInTheDocument();
+    });
+  });
+
   describe('People', () => {
     it('should render the valid phone number with no errors showing', async () => {
-      const { getByText, queryByText } = render(
+      const { getByText, queryByText, getByTestId } = render(
         <TestRouter router={router}>
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
@@ -147,7 +195,9 @@ describe('ContactDetailsTabPeople', () => {
         </TestRouter>,
       );
       await waitFor(() => {
+        expect(getByTestId('primaryPhoneNumber')).toBeInTheDocument();
         expect(getByText('555-555-5555')).toBeInTheDocument();
+        expect(getByText('Mobile')).toBeInTheDocument();
         expect(
           queryByText('Test has one or multiple invalid numbers. Please fix.'),
         ).not.toBeInTheDocument();
@@ -157,10 +207,50 @@ describe('ContactDetailsTabPeople', () => {
       });
     });
 
+    describe('No primary phone number', () => {
+      const personMocks = {
+        firstName: 'Test',
+        primaryPhoneNumber: null,
+        phoneNumbers: {
+          nodes: [],
+        },
+        ...dates,
+      };
+      const data = gqlMock<ContactPeopleFragment>(ContactPeopleFragmentDoc, {
+        mocks: {
+          primaryPerson: null,
+          people: {
+            nodes: [personMocks],
+          },
+        },
+      });
+
+      it('should not render primary phone number', async () => {
+        const { queryByTestId } = render(
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <ThemeProvider theme={theme}>
+                <ContactsPage>
+                  <ContactDetailProvider>
+                    <ContactDetailsTabPeople
+                      accountListId={accountListId}
+                      data={data}
+                    />
+                  </ContactDetailProvider>
+                </ContactsPage>
+              </ThemeProvider>
+            </GqlMockedProvider>
+          </TestRouter>,
+        );
+
+        expect(queryByTestId('primaryPhoneNumber')).not.toBeInTheDocument();
+      });
+    });
+
     describe('Invalid phone numbers', () => {
       const personMocks = {
         firstName: 'Test',
-        primaryPhoneNumber: { number: null },
+        primaryPhoneNumber: { number: null, location: null },
         phoneNumbers: {
           nodes: [{ number: null }],
         },
@@ -176,7 +266,7 @@ describe('ContactDetailsTabPeople', () => {
       });
 
       it('should render phone number invalid errors', async () => {
-        const { getByText } = render(
+        const { getByText, queryByText } = render(
           <TestRouter router={router}>
             <GqlMockedProvider>
               <ThemeProvider theme={theme}>
@@ -197,6 +287,7 @@ describe('ContactDetailsTabPeople', () => {
             getByText('Test has one or multiple invalid numbers. Please fix.'),
           ).toBeInTheDocument();
           expect(getByText('Invalid number. Please fix.')).toBeInTheDocument();
+          expect(queryByText('Mobile')).not.toBeInTheDocument();
         });
       });
     });

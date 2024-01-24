@@ -178,9 +178,9 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       person.anniversaryDay,
     );
 
-    const hasNullPhoneNumbers = person.phoneNumbers.nodes?.filter(
+    const hasNullPhoneNumbers = person.phoneNumbers.nodes?.some(
       (phone) => phone.number === null,
-    )?.length;
+    );
 
     return (
       <ContactPersonContainer
@@ -219,7 +219,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
           </ContactPersonRowContainer>
           {/* Phone Number */}
           {person.primaryPhoneNumber !== null ? (
-            <ContactPersonRowContainer>
+            <ContactPersonRowContainer data-testid="primaryPhoneNumber">
               <ContactPersonIconContainer>
                 <Phone color="disabled" />
               </ContactPersonIconContainer>
@@ -275,7 +275,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               <Typography variant="subtitle1">{anniversary}</Typography>
             </ContactPersonRowContainer>
           )}
-          {!!hasNullPhoneNumbers && (
+          {hasNullPhoneNumbers && (
             <Typography variant="caption" sx={{ color: 'statusDanger.main' }}>
               {t(`{{name}} has one or multiple invalid numbers. Please fix.`, {
                 name: person.firstName,
