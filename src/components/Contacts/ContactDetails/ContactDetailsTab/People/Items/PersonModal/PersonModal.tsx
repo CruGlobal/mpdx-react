@@ -173,7 +173,15 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         number: yup.string().when('destroy', {
           is: true,
           then: yup.string().nullable(),
-          otherwise: yup.string().required(t('This field is required')),
+          otherwise: yup
+            .string()
+            .required(t('This field is required'))
+            .nullable()
+            .test(
+              'is-phone-number',
+              t('This field is not a valid phone number'),
+              (val) => typeof val === 'string' && /\d/.test(val),
+            ),
         }),
         destroy: yup.boolean().default(false),
         primary: yup.boolean().default(false),
