@@ -24,7 +24,7 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { AnimatePresence, motion } from 'framer-motion';
 import { debounce } from 'lodash/fp';
@@ -416,7 +416,7 @@ const TaskModalLogForm = ({
                 <FormControl fullWidth>
                   <Grid container spacing={2}>
                     <Grid xs={6} item>
-                      <MobileDatePicker
+                      <DatePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
@@ -441,7 +441,7 @@ const TaskModalLogForm = ({
                       />
                     </Grid>
                     <Grid xs={6} item>
-                      <MobileTimePicker
+                      <TimePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}

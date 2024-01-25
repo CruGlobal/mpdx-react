@@ -13,35 +13,12 @@ env:
   SITE_URL: 'http://next-stage.mpdx.org'
 
 jobs:
-  split-tests:
-    runs-on: ubuntu-latest
-    outputs:
-      test-chunks: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
-      test-chunk-ids: ${{ steps['set-test-chunk-ids'].outputs['test-chunk-ids'] }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: 📦 Install Dependencies
-        run: yarn install --immutable --immutable-cache
-      - id: set-test-chunks
-        name: Set Chunks
-        run: echo "test-chunks=$(yarn test --silent --listTests --json | jq -cM '[_nwise(length / 4 | ceil)]')" >> $GITHUB_OUTPUT
-      - id: set-test-chunk-ids
-        name: Set Chunk IDs
-        run: echo "test-chunk-ids=$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')" >> $GITHUB_OUTPUT
-        env:
-          CHUNKS: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
-
   test:
     runs-on: ubuntu-latest
     name: test (chunk ${{ matrix.chunk }})
-    needs:
-      - split-tests
     strategy:
       matrix:
-        chunk: ${{ fromJson(needs.split-tests.outputs['test-chunk-ids']) }}
+        chunk: [1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8, 8/8]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -54,9 +31,7 @@ jobs:
           yarn gql
           yarn gql:server
       - name: 🧪 Test (chunk ${{ matrix.chunk }})
-        run: echo $CHUNKS | jq '.[${{ matrix.chunk }}] | .[] | @text' | xargs yarn test:coverage --ci
-        env:
-          CHUNKS: ${{ needs.split-tests.outputs['test-chunks'] }}
+        run: yarn test:coverage --ci --shard ${{ matrix.chunk }}
       - name: Codecov
         uses: codecov/codecov-action@v3
         with:

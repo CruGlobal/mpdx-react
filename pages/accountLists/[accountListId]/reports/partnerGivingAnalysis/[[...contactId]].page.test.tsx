@@ -91,6 +91,20 @@ describe('partnerGivingAnalysis page', () => {
     expect(getByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
 
+  it('renders navigation panel', () => {
+    const { getByRole } = render(<TestingComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Toggle Navigation Panel' }));
+    expect(getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
+  });
+
+  it('renders filters panel', async () => {
+    const { getByRole, findByRole } = render(<TestingComponent />);
+
+    userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
+    expect(await findByRole('heading', { name: 'Filter' })).toBeInTheDocument();
+  });
+
   it('toggles filter panel', async () => {
     const { findByTestId, getByRole, getByTestId } = render(
       <TestingComponent />,
