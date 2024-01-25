@@ -239,7 +239,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               </Typography>
               {person.primaryPhoneNumber?.location ? (
                 <Typography variant="caption" marginLeft={1}>
-                  {t(person.primaryPhoneNumber.location)}
+                  {person.primaryPhoneNumber.location}
                 </Typography>
               ) : null}
             </ContactPersonRowContainer>

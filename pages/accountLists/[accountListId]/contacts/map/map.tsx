@@ -205,7 +205,7 @@ export const ContactsMap: React.FC = ({}) => {
                 display="inline"
                 style={{ marginRight: theme.spacing(0.5) }}
               >
-                {sourceToStr(selected.source ?? '')}
+                {sourceToStr(t, selected.source ?? '')}
               </Typography>
               <Typography display="inline">{selected.date}</Typography>
               <ContactLink

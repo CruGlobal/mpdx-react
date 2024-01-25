@@ -737,7 +737,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         )}
       </Formik>
       <DeleteConfirmation
-        deleteType="person"
+        deleteType={t('person')}
         open={removeDialogOpen}
         deleting={deleting}
         onClickConfirm={deletePersonFromContact}

@@ -68,7 +68,9 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
   return (
     <Dialog
       open={open}
-      aria-labelledby={t(`Remove ${deleteType} confirmation`)}
+      aria-labelledby={t('Remove {{deleteType}} confirmation', {
+        deleteType,
+      })}
       fullWidth
       maxWidth="sm"
     >
@@ -90,7 +92,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
         </CancelButton>
         <SubmitButton
           type="button"
-          onClick={deleteType === 'task' ? onDeleteTask : onClickConfirm}
+          onClick={taskId ? onDeleteTask : onClickConfirm}
         >
           {t('Yes')}
         </SubmitButton>
