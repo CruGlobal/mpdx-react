@@ -65,14 +65,15 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
 
   ///todo make primary index a state
   useEffect(() => {
-    if (!phoneNumbers) {
+    if (!phoneNumbers?.length) {
       return;
     }
-    setPrimaryIndex(
-      phoneNumbers?.findIndex(
-        (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
-      ) ?? 0,
+    const primaryPhoneIndex = phoneNumbers?.findIndex(
+      (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
     );
+    if (primaryPhoneIndex >= 0) {
+      setPrimaryIndex(primaryPhoneIndex);
+    }
     phoneNumbers.forEach((phoneNumber, idx) => {
       if (phoneNumber.number === null) {
         setFieldError(

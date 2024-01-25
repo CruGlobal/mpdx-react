@@ -635,10 +635,12 @@ describe('PersonModal', () => {
             {
               id: '222',
               number: '222-222-2222',
+              primary: false,
             },
             {
               id: '333',
               number: '333-333-3333',
+              primary: false,
             },
           ],
         },
