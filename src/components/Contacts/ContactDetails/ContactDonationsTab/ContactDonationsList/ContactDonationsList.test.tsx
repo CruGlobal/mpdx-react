@@ -40,6 +40,9 @@ const TestComponent: React.FC = () => (
                       amount: 10,
                       convertedAmount: 9.9,
                     },
+                    appeal: {
+                      name: 'EOY Ask',
+                    },
                   })),
                   pageInfo: {
                     hasNextPage: true,
@@ -71,6 +74,9 @@ describe('ContactDonationsList', () => {
     const donationRow = rows[1];
     expect(donationRow.children[1]).toHaveTextContent('$10');
     expect(donationRow.children[2]).toHaveTextContent('€9.90');
+    expect(
+      within(donationRow).getByRole('cell', { name: 'EOY Ask' }),
+    ).toBeInTheDocument();
   });
 
   it('loads more donations', async () => {

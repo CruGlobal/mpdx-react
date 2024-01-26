@@ -70,6 +70,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                 <TableCell>{t('Amount')}</TableCell>
                 <TableCell>{t('Converted Amount')}</TableCell>
                 <TableCell>{t('Method')}</TableCell>
+                <TableCell>{t('Appeal')}</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -97,6 +98,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                     )}
                   </TableCell>
                   <TableCell>{donation.paymentMethod}</TableCell>
+                  <TableCell>{donation.appeal?.name}</TableCell>
                   <TableCell>
                     <IconButton
                       color="primary"
