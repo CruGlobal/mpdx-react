@@ -11,6 +11,7 @@ import {
   waitFor,
   within,
 } from '__tests__/util/testingLibraryReactMock';
+import { GetAccountListCurrencyQuery } from 'src/components/Reports/DonationsReport/GetDonationsTable.generated';
 import theme from 'src/theme';
 import { ContactDonationsList } from './ContactDonationsList';
 import { ContactDonationsListQuery } from './ContactDonationsList.generated';
@@ -23,11 +24,20 @@ const router = {
   isReady: true,
 };
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  foreignCurrencies?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  foreignCurrencies = true,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <GqlMockedProvider<{ ContactDonationsList: ContactDonationsListQuery }>
+        <GqlMockedProvider<{
+          ContactDonationsList: ContactDonationsListQuery;
+          GetAccountListCurrency: GetAccountListCurrencyQuery;
+        }>
           mocks={{
             ContactDonationsList: {
               contact: {
@@ -35,8 +45,8 @@ const TestComponent: React.FC = () => (
                 donations: {
                   nodes: [...Array(5)].map(() => ({
                     amount: {
-                      currency: 'USD',
-                      convertedCurrency: 'EUR',
+                      currency: foreignCurrencies ? 'EUR' : 'USD',
+                      convertedCurrency: 'USD',
                       amount: 10,
                       convertedAmount: 9.9,
                     },
@@ -48,6 +58,11 @@ const TestComponent: React.FC = () => (
                     hasNextPage: true,
                   },
                 },
+              },
+            },
+            GetAccountListCurrency: {
+              accountList: {
+                currency: 'USD',
               },
             },
           }}
@@ -66,17 +81,36 @@ const TestComponent: React.FC = () => (
 
 describe('ContactDonationsList', () => {
   it('renders donations', async () => {
-    const { findAllByRole } = render(<TestComponent />);
+    const { findAllByRole, getByRole } = render(<TestComponent />);
+
+    const rows = await findAllByRole('row');
+    expect(rows).toHaveLength(6);
+    expect(
+      getByRole('columnheader', { name: 'Converted Amount' }),
+    ).toBeInTheDocument();
+
+    const donationRow = rows[1];
+    expect(donationRow.children[1]).toHaveTextContent('€10');
+    expect(donationRow.children[2]).toHaveTextContent('$9.90');
+    expect(
+      within(donationRow).getByRole('cell', { name: 'EOY Ask' }),
+    ).toBeInTheDocument();
+  });
+
+  it('hides converted currency column when it is redundant', async () => {
+    const { queryByRole, findAllByRole } = render(
+      <TestComponent foreignCurrencies={false} />,
+    );
 
     const rows = await findAllByRole('row');
     expect(rows).toHaveLength(6);
 
-    const donationRow = rows[1];
-    expect(donationRow.children[1]).toHaveTextContent('$10');
-    expect(donationRow.children[2]).toHaveTextContent('€9.90');
     expect(
-      within(donationRow).getByRole('cell', { name: 'EOY Ask' }),
-    ).toBeInTheDocument();
+      queryByRole('columnheader', { name: 'Converted Amount' }),
+    ).not.toBeInTheDocument();
+
+    const donationRow = rows[1];
+    expect(donationRow.children).toHaveLength(5);
   });
 
   it('loads more donations', async () => {
