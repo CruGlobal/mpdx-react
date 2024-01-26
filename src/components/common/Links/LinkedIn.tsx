@@ -4,19 +4,14 @@ import { IconButton } from '@mui/material';
 import * as Types from 'src/graphql/types.generated';
 
 interface Props {
-  account: Pick<Types.LinkedinAccount, 'id' | 'publicUrl'>;
+  publicUrl: Types.LinkedinAccount['publicUrl'];
 }
 
-export const LinkedIn: React.FC<Props> = ({ account }) => {
-  if (!account?.publicUrl) return null;
+export const LinkedIn: React.FC<Props> = ({ publicUrl }) => {
+  if (!publicUrl) return null;
 
   return (
-    <IconButton
-      target="_blank"
-      href={account.publicUrl}
-      key={account.id}
-      rel="noreferrer"
-    >
+    <IconButton target="_blank" href={publicUrl} rel="noreferrer">
       <Icon color="primary" />
     </IconButton>
   );

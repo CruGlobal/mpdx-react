@@ -83,7 +83,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
     <>
       {person ? (
         <ModalSectionContainer>
-          <StyledIconButton onClick={() => handleFileClick()}>
+          <StyledIconButton onClick={handleFileClick}>
             <StyledAvatarIcon>
               <UploadIcon />
             </StyledAvatarIcon>

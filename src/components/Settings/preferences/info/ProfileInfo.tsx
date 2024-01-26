@@ -8,9 +8,8 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import { Theme, styled, useTheme } from '@mui/material/styles';
+import { Theme, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { dateFromParts } from 'pages/accountLists/[accountListId]/contacts/helpers';
 import { PersonModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal';
 import { useGetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
 import { CollapsibleEmailList } from 'src/components/Shared/CollapsibleContactInfo/CollapsibleEmailList';
@@ -20,6 +19,7 @@ import { LinkedIn } from 'src/components/common/Links/LinkedIn';
 import { Twitter } from 'src/components/common/Links/Twitter';
 import { Website } from 'src/components/common/Links/Website';
 import { useLocale } from 'src/hooks/useLocale';
+import { dateFromParts } from 'src/lib/intlFormat/intlFormat';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -68,12 +68,9 @@ interface ProfileInfoProps {
 }
 
 export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
-  const { data: profileInfoData, loading: profileInfoLoading } =
-    useGetProfileInfoQuery();
+  const { data: profileInfoData, loading } = useGetProfileInfoQuery();
   const { t } = useTranslation();
-  const loading = profileInfoLoading;
   const user = profileInfoData?.user;
-  const theme = useTheme<Theme>();
   const locale = useLocale();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -100,12 +97,18 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
         )
       : null;
 
+  const occupationAndEmployer =
+    (user?.occupation || user?.employer) &&
+    user?.occupation +
+      (user?.occupation && user?.employer ? ' - ' : '') +
+      user?.employer;
+
   return (
     <ProfileInfoWrapper component="section">
       {loading && <Skeleton variant="rectangular" height={188} />}
       {!loading && user && (
         <>
-          <Box marginBottom={isMobile ? theme.spacing(2) : 0}>
+          <Box sx={{ marginBottom: isMobile ? 2 : 0 }}>
             {/* Avatar */}
             <StyledAvatar
               src={user.avatar}
@@ -118,12 +121,8 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
             </Typography>
 
             {/* Work */}
-            {(user?.occupation || user?.employer) && (
-              <Typography component="h4">
-                {`${user?.occupation} ${
-                  user?.occupation && user?.employer ? '-' : ''
-                } ${user?.employer}`}
-              </Typography>
+            {occupationAndEmployer && (
+              <Typography component="h4">{occupationAndEmployer}</Typography>
             )}
           </Box>
 
@@ -137,9 +136,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
           {birthDate && (
             <Box>
               <Typography component="span">
-                {t('Birthday')}
-                {': '}
-                {birthDate}
+                {`${t('Birthday')}: ${birthDate}`}
               </Typography>
             </Box>
           )}
@@ -158,16 +155,16 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
 
           <Box>
             {user.facebookAccounts?.nodes?.map((account) => (
-              <Facebook account={account} key={account.id} />
+              <Facebook username={account.username} key={account.id} />
             ))}
             {user.twitterAccounts?.nodes?.map((account) => (
-              <Twitter account={account} key={account.id} />
+              <Twitter screenName={account.screenName} key={account.id} />
             ))}
             {user.linkedinAccounts?.nodes?.map((account) => (
-              <LinkedIn account={account} key={account.id} />
+              <LinkedIn publicUrl={account.publicUrl} key={account.id} />
             ))}
             {user.websites?.nodes?.map((account) => (
-              <Website account={account} key={account.id} />
+              <Website url={account.url} key={account.id} />
             ))}
           </Box>
 
@@ -185,7 +182,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
             <PersonModal
               accountListId={accountListId}
               handleClose={() => setEditProfileModalOpen(false)}
-              contactId=""
+              contactId="" //contactId is a required prop
               person={user}
             />
           ) : null}

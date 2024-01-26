@@ -96,8 +96,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
         render={({ push }) => (
           <>
             {emailAddresses?.map((emailAddress, index) => (
-              <>
-                <span key={index} />
+              <span key={index}>
                 <PersonEmailItem
                   emailAddress={emailAddress}
                   index={index}
@@ -108,7 +107,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
                   handleChangePrimary={handleChangePrimary}
                   sources={sources}
                 />
-              </>
+              </span>
             ))}
             <ModalSectionContainer>
               <Grid container alignItems="center">

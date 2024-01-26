@@ -4,18 +4,13 @@ import { IconButton } from '@mui/material';
 import * as Types from 'src/graphql/types.generated';
 
 interface Props {
-  account: Pick<Types.Website, 'id' | 'url'>;
+  url: Types.Website['url'];
 }
 
-export const Website: React.FC<Props> = ({ account }) => {
-  if (!account?.url) return null;
+export const Website: React.FC<Props> = ({ url }) => {
+  if (!url) return null;
   return (
-    <IconButton
-      target="_blank"
-      href={account?.url}
-      key={account.id}
-      rel="noreferrer"
-    >
+    <IconButton target="_blank" href={url} rel="noreferrer">
       <Icon color="primary" />
     </IconButton>
   );

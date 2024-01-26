@@ -4,19 +4,16 @@ import { IconButton } from '@mui/material';
 import * as Types from 'src/graphql/types.generated';
 
 interface Props {
-  account: Pick<Types.FacebookAccount, 'id' | 'username'>;
+  username: Types.FacebookAccount['username'];
 }
 
-export const Facebook: React.FC<Props> = ({ account }) => {
-  if (!account) return null;
+export const Facebook: React.FC<Props> = ({ username }) => {
+  if (!username) return null;
 
-  const url = useMemo(
-    () => `https://www.facebook.com/${account.username}`,
-    [account],
-  );
+  const url = useMemo(() => `https://www.facebook.com/${username}`, [username]);
 
   return (
-    <IconButton target="_blank" href={url} key={account.id} rel="noreferrer">
+    <IconButton target="_blank" href={url} rel="noreferrer">
       <FacebookIcon color="primary" />
     </IconButton>
   );
