@@ -83,12 +83,6 @@ const suggestions = {
   get HS_SETTINGS_PREFERENCES_SUGGESTIONS() {
     return process.env.HS_SETTINGS_PREFERENCES_SUGGESTIONS;
   },
-  get HS_SETTINGS_ACCOUNTS_SUGGESTIONS() {
-    return process.env.HS_SETTINGS_ACCOUNTS_SUGGESTIONS;
-  },
-  get HS_SETTINGS_COACHES_SUGGESTIONS() {
-    return process.env.HS_SETTINGS_COACHES_SUGGESTIONS;
-  },
 };
 
 export const articles = {

@@ -20,7 +20,6 @@ const mpdxColors = {
   green: '#00CA99',
   blue: '#05699B',
   yellow: '#FFF5CD',
-  red: '#F44336',
   gray: '#DCDCDC',
 };
 
@@ -39,7 +38,6 @@ declare module '@mui/material/styles/createPalette' {
     mpdxGreen: Palette['primary'];
     mpdxBlue: Palette['primary'];
     mpdxYellow: Palette['primary'];
-    mpdxRed: Palette['primary'];
     mpdxGray: Palette['primary'];
     progressBarYellow: Palette['primary'];
     progressBarOrange: Palette['primary'];
@@ -56,7 +54,6 @@ declare module '@mui/material/styles/createPalette' {
     mpdxGreen: PaletteOptions['primary'];
     mpdxBlue: PaletteOptions['primary'];
     mpdxYellow: PaletteOptions['primary'];
-    mpdxRed: PaletteOptions['primary'];
     mpdxGray: PaletteOptions['primary'];
     progressBarYellow: PaletteOptions['primary'];
     progressBarOrange: PaletteOptions['primary'];
@@ -104,10 +101,6 @@ const theme = createTheme({
     },
     mpdxYellow: {
       main: mpdxColors.yellow,
-      dark: '#8a6d3b',
-    },
-    mpdxRed: {
-      main: mpdxColors.red,
     },
     mpdxGray: {
       main: mpdxColors.gray,

@@ -70,8 +70,6 @@ describe('HelpScout', () => {
         HS_TASKS_SUGGESTIONS: makeSuggestions('tasks'),
         HS_SETTINGS_SERVICES_SUGGESTIONS: makeSuggestions('services'),
         HS_SETTINGS_PREFERENCES_SUGGESTIONS: makeSuggestions('preferences'),
-        HS_SETTINGS_ACCOUNTS_SUGGESTIONS: makeSuggestions('accounts'),
-        HS_SETTINGS_COACHES_SUGGESTIONS: makeSuggestions('coaches'),
       });
 
       suggestArticles('HS_COACHING_SUGGESTIONS');
@@ -117,18 +115,6 @@ describe('HelpScout', () => {
       expect(beacon).toHaveBeenLastCalledWith('suggest', [
         'preferences-1',
         'preferences-2',
-      ]);
-
-      suggestArticles('HS_SETTINGS_ACCOUNTS_SUGGESTIONS');
-      expect(beacon).toHaveBeenLastCalledWith('suggest', [
-        'accounts-1',
-        'accounts-2',
-      ]);
-
-      suggestArticles('HS_SETTINGS_COACHES_SUGGESTIONS');
-      expect(beacon).toHaveBeenLastCalledWith('suggest', [
-        'coaches-1',
-        'coaches-2',
       ]);
     });
 
