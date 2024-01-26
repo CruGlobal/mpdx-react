@@ -26,42 +26,43 @@ import {
   DestroyDonorAccount,
   DestroyDonorAccountResponse,
 } from './Schema/Contacts/DonorAccounts/Destroy/datahander';
-import { getExportData } from './Schema/ExportData/dataHandler';
-import { SendToChalkline } from './Schema/Settings/Preferences/Intergrations/Chalkine/sendToChalkline/datahandler';
+import { SendToChalkline } from './Schema/Settings/Integrations/Chalkine/sendToChalkline/datahandler';
 import {
   CreateGoogleIntegration,
   CreateGoogleIntegrationResponse,
-} from './Schema/Settings/Preferences/Intergrations/Google/createGoogleIntegration/datahandler';
-import { DeleteGoogleAccount } from './Schema/Settings/Preferences/Intergrations/Google/deleteGoogleAccount/datahandler';
+} from './Schema/Settings/Integrations/Google/createGoogleIntegration/datahandler';
+import { DeleteGoogleAccount } from './Schema/Settings/Integrations/Google/deleteGoogleAccount/datahandler';
 import {
   GoogleAccountIntegrations,
   GoogleAccountIntegrationsResponse,
-} from './Schema/Settings/Preferences/Intergrations/Google/googleAccountIntegrations/datahandler';
+} from './Schema/Settings/Integrations/Google/googleAccountIntegrations/datahandler';
 import {
   GoogleAccounts,
   GoogleAccountsResponse,
-} from './Schema/Settings/Preferences/Intergrations/Google/googleAccounts/datahandler';
-import { SyncGoogleIntegration } from './Schema/Settings/Preferences/Intergrations/Google/syncGoogleIntegration/datahandler';
+} from './Schema/Settings/Integrations/Google/googleAccounts/datahandler';
+import { SyncGoogleIntegration } from './Schema/Settings/Integrations/Google/syncGoogleIntegration/datahandler';
 import {
   UpdateGoogleIntegration,
   UpdateGoogleIntegrationResponse,
-} from './Schema/Settings/Preferences/Intergrations/Google/updateGoogleIntegration/datahandler';
-import { DeleteMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/datahandler';
+} from './Schema/Settings/Integrations/Google/updateGoogleIntegration/datahandler';
+import { DeleteMailchimpAccount } from './Schema/Settings/Integrations/Mailchimp/deleteMailchimpAccount/datahandler';
 import {
   MailchimpAccount,
   MailchimpAccountResponse,
-} from './Schema/Settings/Preferences/Intergrations/Mailchimp/mailchimpAccount/datahandler';
-import { SyncMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/syncMailchimpAccount/datahandler';
+} from './Schema/Settings/Integrations/Mailchimp/mailchimpAccount/datahandler';
+import { SyncMailchimpAccount } from './Schema/Settings/Integrations/Mailchimp/syncMailchimpAccount/datahandler';
 import {
   UpdateMailchimpAccount,
   UpdateMailchimpAccountResponse,
-} from './Schema/Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/datahandler';
-import { DeletePrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/datahandler';
+} from './Schema/Settings/Integrations/Mailchimp/updateMailchimpAccount/datahandler';
+import { DeletePrayerlettersAccount } from './Schema/Settings/Integrations/Prayerletters/deletePrayerlettersAccount/datahandler';
 import {
   PrayerlettersAccount,
   PrayerlettersAccountResponse,
-} from './Schema/Settings/Preferences/Intergrations/Prayerletters/prayerlettersAccount/datahandler';
-import { SyncPrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/datahandler';
+} from './Schema/Settings/Integrations/Prayerletters/prayerlettersAccount/datahandler';
+import { SyncPrayerlettersAccount } from './Schema/Settings/Integrations/Prayerletters/syncPrayerlettersAccount/datahandler';
+import { canUserExportData } from './Schema/Settings/Preferences/CanUserExportData/dataHandler';
+import { exportData } from './Schema/Settings/Preferences/ExportData/dataHandler';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
   DeleteComment,
@@ -71,7 +72,6 @@ import {
   UpdateComment,
   UpdateCommentResponse,
 } from './Schema/Tasks/Comments/UpdateComments/datahandler';
-import { getUserInCruOrg } from './Schema/UserInCruOrg/dataHandler';
 import {
   DonationReponseData,
   DonationReponseIncluded,
@@ -235,19 +235,6 @@ class MpdxRestApi extends RESTDataSource {
     );
 
     return getTaskAnalytics(data);
-  }
-
-  async getUserInCruOrg(accountListId: string) {
-    const data = await this.get(
-      `account_lists/${accountListId}/exports/allowed`,
-    );
-
-    return getUserInCruOrg(data);
-  }
-
-  async getExportData(accountListId: string) {
-    await this.get(`account_lists/${accountListId}/exports`);
-    return getExportData();
   }
 
   async getAccountListCoaches() {
@@ -1064,6 +1051,21 @@ class MpdxRestApi extends RESTDataSource {
       },
     });
     return SendToChalkline();
+  }
+
+  //To determine whether or not to show the export all data accordion on the Preferences page
+  async canUserExportData(accountListId: string) {
+    const data = await this.get(
+      `account_lists/${accountListId}/exports/allowed`,
+    );
+
+    return canUserExportData(data);
+  }
+
+  //Send a request to begin exporting data
+  async exportData(accountListId: string) {
+    await this.get(`account_lists/${accountListId}/exports`);
+    return exportData();
   }
 }
 

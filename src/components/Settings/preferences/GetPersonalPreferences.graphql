@@ -1,4 +1,4 @@
-query getPersonalPreferences($accountListId: ID!) {
+query GetPersonalPreferences($accountListId: ID!) {
   user {
     id
     defaultAccountList

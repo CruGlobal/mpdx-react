@@ -1,18 +1,7 @@
 mutation UpdateAccountPreferences($input: AccountListUpdateMutationInput!) {
   updateAccountList(input: $input) {
     accountList {
-      id
-      name
-      settings {
-        currency
-        homeCountry
-        monthlyGoal
-        tester
-      }
-      activeMpdMonthlyGoal
-      activeMpdFinishAt
-      activeMpdStartAt
-      salaryOrganizationId
+      ...accountList
     }
   }
 }

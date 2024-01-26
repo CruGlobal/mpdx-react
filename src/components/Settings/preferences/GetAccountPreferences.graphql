@@ -1,20 +1,24 @@
-query getAccountPreferences($accountListId: ID!) {
+fragment accountList on AccountList {
+  id
+  name
+  activeMpdMonthlyGoal
+  activeMpdFinishAt
+  activeMpdStartAt
+  salaryOrganizationId
+  settings {
+    currency
+    homeCountry
+    monthlyGoal
+    tester
+  }
+}
+
+query GetAccountPreferences($accountListId: ID!) {
   user {
     id
   }
   accountList(id: $accountListId) {
-    id
-    settings {
-      homeCountry
-      monthlyGoal
-      tester
-      currency
-    }
-    activeMpdMonthlyGoal
-    name
-    activeMpdStartAt
-    activeMpdFinishAt
-    salaryOrganizationId
+    ...accountList
   }
   accountLists {
     nodes {
@@ -24,13 +28,13 @@ query getAccountPreferences($accountListId: ID!) {
   }
 }
 
-query getUserInCruOrg($accountListId: ID!) {
-  getUserInCruOrg(accountListId: $accountListId) {
+query CanUserExportData($accountListId: ID!) {
+  canUserExportData(accountListId: $accountListId) {
     allowed
     exportedAt
   }
 }
 
-query getExportData($accountListId: ID!) {
-  getExportData(accountListId: $accountListId)
+mutation ExportData($input: ExportDataInput!) {
+  exportData(input: $input)
 }

@@ -13,11 +13,10 @@ import DestroyDonorAccountTypeDefs from './Contacts/DonorAccounts/Destroy/destro
 import { DestroyDonorAccountResolvers } from './Contacts/DonorAccounts/Destroy/resolvers';
 import ExportContactsTypeDefs from './ExportContacts/exportContacts.graphql';
 import { ExportContactsResolvers } from './ExportContacts/resolvers';
-import ExportDataTypeDefs from './ExportData/getExportData.graphql';
-import { ExportDataResolvers } from './ExportData/resolvers';
 import MergeContactsTypeDefs from './MergeContacts/mergeContacts.graphql';
 import { MergeContactsResolvers } from './MergeContacts/resolvers';
 import { integrationSchema } from './SubgraphSchema/Integrations';
+import { preferencesSchema } from './SubgraphSchema/Preferences';
 import DeleteTagsTypeDefs from './Tags/Delete/deleteTags.graphql';
 import { DeleteTagsResolvers } from './Tags/Delete/resolvers';
 import { TaskAnalyticsResolvers } from './TaskAnalytics/resolvers';
@@ -26,8 +25,6 @@ import DeleteCommentTypeDefs from './Tasks/Comments/DeleteComments/deleteComment
 import { DeleteCommentResolvers } from './Tasks/Comments/DeleteComments/resolvers';
 import { UpdateCommentResolvers } from './Tasks/Comments/UpdateComments/resolvers';
 import UpdateCommentTypeDefs from './Tasks/Comments/UpdateComments/updateComments.graphql';
-import UserInCruOrgTypeDefs from './UserInCruOrg/getUserInCruOrg.graphql';
-import { UserInCruOrgResolvers } from './UserInCruOrg/resolvers';
 import DesginationDisplayNamesTypeDefs from './donations/getDesignationDisplayNames.graphql';
 import { DesginationDisplayNamesResolvers } from './donations/resolvers';
 import AppointmentResultsTypeDefs from './reports/appointmentResults/appointmentResults.graphql';
@@ -126,15 +123,8 @@ const schema = buildSubgraphSchema([
     typeDefs: DeleteTagsTypeDefs,
     resolvers: DeleteTagsResolvers,
   },
-  {
-    typeDefs: UserInCruOrgTypeDefs,
-    resolvers: UserInCruOrgResolvers,
-  },
-  {
-    typeDefs: ExportDataTypeDefs,
-    resolvers: ExportDataResolvers,
-  },
   ...integrationSchema,
+  ...preferencesSchema,
 ]);
 
 export default schema;
