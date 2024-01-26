@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@mui/material';
+import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
@@ -18,12 +18,10 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
   isSubmitting,
   formAttrs = {},
   children,
-  buttonText = 'Save',
+  buttonText,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-
-  // TODO - Add Formik to this.
 
   return (
     <form {...formAttrs} onSubmit={onSubmit}>
@@ -35,7 +33,7 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
         type="submit"
         disabled={!isValid || isSubmitting}
       >
-        {t(buttonText)}
+        {buttonText || t('Save')}
       </Button>
     </form>
   );
