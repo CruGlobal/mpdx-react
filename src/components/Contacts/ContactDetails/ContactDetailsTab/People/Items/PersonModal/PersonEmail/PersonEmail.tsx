@@ -12,13 +12,9 @@ import {
 import { styled } from '@mui/material/styles';
 import { FieldArray, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
-import {
-  PersonCreateInput,
-  PersonUpdateInput,
-} from 'src/graphql/types.generated';
+import { PersonUpdateInput } from 'src/graphql/types.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
-import { NewSocial } from '../PersonModal';
 import { PersonEmailItem } from './PersonEmailItem';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
@@ -41,7 +37,12 @@ const OptOutENewsletterLabel = styled(FormControlLabel)(() => ({
 
 interface PersonEmailProps {
   showOptOutENewsletter?: boolean;
-  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  formikProps: Pick<
+    FormikProps<
+      Pick<PersonUpdateInput, 'emailAddresses' | 'optoutEnewsletter'>
+    >,
+    'values' | 'setFieldValue' | 'errors'
+  >;
   sources:
     | {
         id: string;
