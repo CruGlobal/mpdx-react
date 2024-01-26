@@ -4,15 +4,13 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-const ExpandMoreIcon = styled(ExpandMore)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
+const ExpandMoreIcon = styled(ExpandMore)({
   cursor: 'pointer',
-}));
+});
 
-const ExpandLessIcon = styled(ExpandLess)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
+const ExpandLessIcon = styled(ExpandLess)({
   cursor: 'pointer',
-}));
+});
 
 interface CollapsibleListProps {
   primaryItem: React.ReactNode;
