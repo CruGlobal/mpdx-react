@@ -46,7 +46,6 @@ const Components: React.FC<ComponentsProps> = ({
           <MonthlyGoalAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             monthlyGoal={monthlyGoal}
             currency={'USD'}
             accountListId={accountListId}
@@ -60,6 +59,9 @@ const Components: React.FC<ComponentsProps> = ({
 const label = 'Monthly Goal';
 
 describe('MonthlyGoalAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components monthlyGoal={100} expandedPanel="" />,
@@ -98,12 +100,16 @@ describe('MonthlyGoalAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
+  it('Changes and saves the input', async () => {
     const { getByRole } = render(
       <Components monthlyGoal={1000} expandedPanel={label} />,
     );
+    const input = getByRole('spinbutton', { name: label });
     const button = getByRole('button', { name: 'Save' });
 
+    userEvent.clear(input);
+    userEvent.click(input);
+    userEvent.type(input, '500');
     userEvent.click(button);
 
     await waitFor(() => {
@@ -116,7 +122,7 @@ describe('MonthlyGoalAccordion', () => {
                 id: accountListId,
                 attributes: {
                   settings: {
-                    monthlyGoal: 1000,
+                    monthlyGoal: 500,
                   },
                 },
               },

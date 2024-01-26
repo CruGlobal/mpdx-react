@@ -1,13 +1,12 @@
 import React, { ReactElement } from 'react';
 import { TextField } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
@@ -15,7 +14,6 @@ import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences
 interface AccountNameAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   accountListId: string;
   name: string;
 }
@@ -23,7 +21,6 @@ interface AccountNameAccordionProps {
 export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   name,
   accountListId,
 }) => {
@@ -65,60 +62,57 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
   };
 
   return (
-    <>
-      {loading && <Skeleton height="90px" data-testid="LoadingAccountName" />}
-      {!loading && (
-        <AccordionItem
-          onAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
-          label={label}
-          value={name}
-          fullWidth
-        >
-          <Formik
-            initialValues={{
-              name: name,
-            }}
-            validationSchema={AccountPreferencesSchema}
-            onSubmit={onSubmit}
-            validateOnMount
+    <AccordionItem
+      onAccordionChange={handleAccordionChange}
+      expandedPanel={expandedPanel}
+      label={label}
+      value={name}
+      fullWidth
+    >
+      <Formik
+        initialValues={{
+          name: name,
+        }}
+        validationSchema={AccountPreferencesSchema}
+        onSubmit={onSubmit}
+        validateOnMount
+      >
+        {({
+          values: { name },
+          errors,
+          handleSubmit,
+          isSubmitting,
+          isValid,
+          handleChange,
+        }): ReactElement => (
+          <FormWrapper
+            onSubmit={handleSubmit}
+            isValid={isValid}
+            isSubmitting={isSubmitting}
           >
-            {({
-              values: { name },
-              errors,
-              handleSubmit,
-              isSubmitting,
-              isValid,
-              handleChange,
-            }): ReactElement => (
-              <FormWrapper
-                onSubmit={handleSubmit}
-                isValid={isValid}
-                isSubmitting={isSubmitting}
-              >
-                <FieldWrapper
-                  labelText={label}
-                  helperText={t(
-                    'You can change the account name in {{appName}} into something that is more identifiable to you. This will not change the account name with your organization.',
-                    { appName },
-                  )}
-                >
-                  <TextField
-                    value={name}
-                    onChange={handleChange('name')}
-                    inputProps={{
-                      'aria-label': label,
-                    }}
-                    error={!!errors.name}
-                    helperText={errors.name && t('Account Name is required')}
-                    //name={label}
-                  />
-                </FieldWrapper>
-              </FormWrapper>
-            )}
-          </Formik>
-        </AccordionItem>
-      )}
-    </>
+            <FieldWrapper
+              labelText={label}
+              helperText={t(
+                'You can change the account name in {{appName}} into something that is more identifiable to you. This will not change the account name with your organization.',
+                { appName },
+              )}
+            >
+              <TextField
+                value={name}
+                onChange={handleChange}
+                inputProps={{
+                  'aria-label': label,
+                }}
+                error={!!errors.name}
+                helperText={errors.name && t('Account Name is required')}
+                name={'name'}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
+              />
+            </FieldWrapper>
+          </FormWrapper>
+        )}
+      </Formik>
+    </AccordionItem>
   );
 };

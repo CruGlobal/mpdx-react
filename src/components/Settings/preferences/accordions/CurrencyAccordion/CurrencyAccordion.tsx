@@ -7,14 +7,13 @@ import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 interface CurrencyAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   currency: string;
   accountListId: string;
 }
@@ -22,7 +21,6 @@ interface CurrencyAccordionProps {
 export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   currency,
   accountListId,
 }) => {
@@ -74,7 +72,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
       expandedPanel={expandedPanel}
       label={label}
       value={currency}
-      fullWidth={true}
+      fullWidth
     >
       <Formik
         initialValues={{
@@ -105,10 +103,9 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
               <Autocomplete
                 disabled={isSubmitting}
                 autoHighlight
-                loading={loading}
                 value={currency}
-                onChange={(_, value) => {
-                  setFieldValue('currency', value);
+                onChange={(_, id) => {
+                  setFieldValue('currency', id);
                 }}
                 options={currencies.map((cur) => cur.id) || []}
                 getOptionLabel={(currency): string =>
@@ -117,7 +114,8 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
                 filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} placeholder={label} />
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  <TextField {...params} placeholder={label} autoFocus />
                 )}
               />
             </FieldWrapper>

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
@@ -15,7 +15,6 @@ import { useUpdateUserDefaultAccountMutation } from './UpdateDefaultAccount.gene
 interface DefaultAccountAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   data: GetPersonalPreferencesQuery | undefined;
   accountListId: string;
   defaultAccountList: string;
@@ -23,13 +22,7 @@ interface DefaultAccountAccordionProps {
 
 export const DefaultAccountAccordion: React.FC<
   DefaultAccountAccordionProps
-> = ({
-  handleAccordionChange,
-  expandedPanel,
-  loading,
-  data,
-  defaultAccountList,
-}) => {
+> = ({ handleAccordionChange, expandedPanel, data, defaultAccountList }) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
@@ -37,6 +30,11 @@ export const DefaultAccountAccordion: React.FC<
 
   const label = t('Default Account');
   const accounts = data?.accountLists?.nodes || [];
+
+  const selectedAccount = useMemo(
+    () => accounts.find(({ id }) => id === defaultAccountList)?.name ?? '',
+    [accounts, defaultAccountList],
+  );
 
   const PreferencesSchema: yup.SchemaOf<
     Pick<Types.User, 'defaultAccountList'>
@@ -74,7 +72,7 @@ export const DefaultAccountAccordion: React.FC<
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={accounts.find(({ id }) => id === defaultAccountList)?.name ?? ''}
+      value={selectedAccount}
       fullWidth
     >
       <Formik
@@ -108,7 +106,6 @@ export const DefaultAccountAccordion: React.FC<
               <Autocomplete
                 disabled={isSubmitting}
                 autoHighlight
-                loading={loading}
                 value={defaultAccountList}
                 onChange={(_, value) => {
                   setFieldValue('defaultAccountList', value);
@@ -121,7 +118,8 @@ export const DefaultAccountAccordion: React.FC<
                 filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} placeholder={label} />
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  <TextField {...params} placeholder={label} autoFocus />
                 )}
               />
             </FieldWrapper>

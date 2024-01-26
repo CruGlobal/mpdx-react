@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
@@ -14,7 +14,6 @@ import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences
 interface EarlyAdopterAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   tester: boolean;
   accountListId: string;
 }
@@ -102,7 +101,8 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
                 <FormControlLabel
                   control={
                     <Checkbox
-                      onChange={handleChange('tester')}
+                      onChange={handleChange}
+                      name="tester"
                       checked={tester}
                       value={tester}
                       inputProps={{

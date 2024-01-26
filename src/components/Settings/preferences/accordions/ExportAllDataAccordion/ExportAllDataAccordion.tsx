@@ -14,14 +14,15 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
-import { useGetExportDataLazyQuery } from '../../GetAccountPreferences.generated';
+import { dateTimeFormat } from 'src/lib/intlFormat/intlFormat';
+import { useExportDataMutation } from '../../GetAccountPreferences.generated';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
 
 interface ExportAllDataAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   exportedAt?: string;
   accountListId: string;
   data?: GetPersonalPreferencesQuery | undefined;
@@ -35,6 +36,7 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
   const [acknowledged, setAcknowledged] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmation, setConfirmation] = useState(false);
@@ -42,38 +44,30 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
   const theme = useTheme();
   const locale = useLocale();
 
-  const [exportData] = useGetExportDataLazyQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-    },
-  });
-
-  const dateTimeFormat = (date: DateTime | null, locale: string): string => {
-    if (date === null) {
-      return '';
-    }
-    return new Intl.DateTimeFormat(locale, {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      timeZoneName: 'short',
-      hour12: true,
-    }).format(date.toJSDate());
-  };
+  const [exportData] = useExportDataMutation();
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
     setIsSubmitting(true);
-    const response = await exportData();
-    if (response.data?.getExportData === 'Success') {
-      enqueueSnackbar(t('Export has started.'), {
-        variant: 'success',
-      });
-      setConfirmation(true);
-    }
+    await exportData({
+      variables: {
+        input: {
+          accountListId: accountListId,
+        },
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Export has started.'), {
+          variant: 'success',
+        });
+        setConfirmation(true);
+      },
+      onError: () => {
+        enqueueSnackbar(t('And error occured.'), {
+          variant: 'error',
+        });
+      },
+    });
   };
 
   const handleChange = () => {
@@ -108,14 +102,16 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
                   onChange={handleChange}
                   inputProps={{
                     'aria-label': t(
-                      'I, the user, acknowledge that once I export my data, I have 30 days until my data will be deleted on MPDX servers.',
+                      `I, the user, acknowledge that once I export my data, I have 30 days until my data will be deleted on {{appName}} servers.`,
+                      { appName },
                     ),
                   }}
                   required
                 />
               }
               label={t(
-                'I, the user, acknowledge that once I export my data, I have 30 days until my data will be deleted on MPDX servers.',
+                `I, the user, acknowledge that once I export my data, I have 30 days until my data will be deleted on {{appName}} servers.`,
+                { appName },
               )}
             />
             <FormHelperText>

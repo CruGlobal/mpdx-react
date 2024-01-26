@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
@@ -15,18 +15,12 @@ import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferenc
 interface HourToSendNotificationsAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   hourToSendNotifications: number | null;
 }
 
 export const HourToSendNotificationsAccordion: React.FC<
   HourToSendNotificationsAccordionProps
-> = ({
-  handleAccordionChange,
-  expandedPanel,
-  loading,
-  hourToSendNotifications,
-}) => {
+> = ({ handleAccordionChange, expandedPanel, hourToSendNotifications }) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
@@ -34,6 +28,13 @@ export const HourToSendNotificationsAccordion: React.FC<
   const constants = useApiConstants();
   const hours = constants?.times ?? [];
   const label = t('Hour To Send Notifications');
+
+  const selectedHour = useMemo(
+    () =>
+      hours.find(({ key }) => key === hourToSendNotifications)?.value ||
+      t('Immediately'),
+    [hours, hourToSendNotifications],
+  );
 
   const PreferencesSchema: yup.SchemaOf<
     Pick<Types.Preference, 'hourToSendNotifications'>
@@ -71,10 +72,7 @@ export const HourToSendNotificationsAccordion: React.FC<
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={
-        hours.find(({ key }) => key === hourToSendNotifications)?.value ||
-        t('Immediately')
-      }
+      value={selectedHour}
       fullWidth
     >
       <Formik
@@ -107,7 +105,6 @@ export const HourToSendNotificationsAccordion: React.FC<
               <Autocomplete
                 disabled={isSubmitting}
                 autoHighlight
-                loading={loading}
                 value={hourToSendNotifications || -1}
                 onChange={(_, value) => {
                   const modifiedValue = value === -1 ? null : value;
@@ -123,7 +120,8 @@ export const HourToSendNotificationsAccordion: React.FC<
                 filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} placeholder={label} />
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  <TextField {...params} placeholder={label} autoFocus />
                 )}
               />
             </FieldWrapper>

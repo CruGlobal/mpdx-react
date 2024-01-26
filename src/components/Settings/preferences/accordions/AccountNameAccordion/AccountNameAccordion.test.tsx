@@ -45,7 +45,6 @@ const Components: React.FC<ComponentsProps> = ({ name, expandedPanel }) => (
           <AccountNameAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             name={name}
             accountListId={accountListId}
           />
@@ -65,6 +64,9 @@ const errorMock: MockedResponse = {
 const label = 'Account Name';
 
 describe('AccountNameAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components name={"Pedro Perez's Account"} expandedPanel="" />,
@@ -72,18 +74,6 @@ describe('AccountNameAccordion', () => {
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('textbox')).not.toBeInTheDocument();
-  });
-  it('should render accordion open and textfield should have a value', () => {
-    const { getByRole } = render(
-      <Components name={"Pedro Perez's Account"} expandedPanel={label} />,
-    );
-
-    const input = getByRole('textbox');
-    const button = getByRole('button', { name: 'Save' });
-
-    expect(input).toBeInTheDocument();
-    expect(input).toHaveValue("Pedro Perez's Account");
-    expect(button).not.toBeDisabled();
   });
 
   it('should set the save button to disabled when the form is invalid', async () => {
@@ -103,12 +93,18 @@ describe('AccountNameAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
+  it('Changes and saves the input', async () => {
     const { getByRole } = render(
-      <Components name={'Test Account'} expandedPanel={label} />,
+      <Components name={"Pedro Perez's Account"} expandedPanel={label} />,
     );
+    const input = getByRole('textbox');
     const button = getByRole('button', { name: 'Save' });
 
+    expect(input).toHaveValue("Pedro Perez's Account");
+    expect(button).not.toBeDisabled();
+
+    userEvent.clear(input);
+    userEvent.type(input, 'Test Account');
     userEvent.click(button);
 
     await waitFor(() => {
@@ -130,6 +126,7 @@ describe('AccountNameAccordion', () => {
       ]);
     });
   });
+
   it('Should render the error state', async () => {
     const { getByRole, queryByTestId } = render(
       <SnackbarProvider>
@@ -139,7 +136,6 @@ describe('AccountNameAccordion', () => {
               <AccountNameAccordion
                 handleAccordionChange={handleAccordionChange}
                 expandedPanel={label}
-                loading={false}
                 name={'Test Account'}
                 accountListId={accountListId}
               />

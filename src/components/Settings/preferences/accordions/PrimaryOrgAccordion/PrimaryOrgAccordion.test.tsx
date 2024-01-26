@@ -75,7 +75,6 @@ const Components: React.FC<ComponentsProps> = ({
           <PrimaryOrgAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             salaryOrganizationId={salaryOrganizationId}
             organizations={mockData}
             accountListId={accountListId}
@@ -89,6 +88,9 @@ const Components: React.FC<ComponentsProps> = ({
 const label = 'Primary Organization';
 
 describe('PrimaryOrgAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components
@@ -99,25 +101,6 @@ describe('PrimaryOrgAccordion', () => {
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('combobox')).not.toBeInTheDocument();
-  });
-  it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole } = render(
-      <Components
-        salaryOrganizationId={'0673b517-4f4d-4c47-965e-0757a198a8a4'}
-        expandedPanel={label}
-      />,
-    );
-
-    const input = getByRole('combobox');
-    const button = getByRole('button', { name: 'Save' });
-
-    expect(getByText('Cru - New Staff')).toBeInTheDocument();
-    expect(input).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(input).toHaveValue('Cru - New Staff');
-      expect(button).not.toBeDisabled();
-    });
   });
 
   it('should set the save button to disabled when the form is invalid', async () => {
@@ -134,7 +117,7 @@ describe('PrimaryOrgAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
+  it('Changes and saves the input', async () => {
     const { getByRole, getByText } = render(
       <Components
         salaryOrganizationId={'7ab3ec4b-7108-40bf-a998-ce813d10c821'}
@@ -143,6 +126,10 @@ describe('PrimaryOrgAccordion', () => {
     );
     const button = getByRole('button', { name: 'Save' });
     const input = getByRole('combobox');
+
+    expect(getByText('Cru - United States of America')).toBeInTheDocument();
+    expect(input).toHaveValue('Cru - United States of America');
+    expect(button).not.toBeDisabled();
 
     userEvent.click(input);
     userEvent.click(getByText('Cru - New Staff'));

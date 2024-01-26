@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -7,21 +7,19 @@ import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
 interface LocaleAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   localeDisplay: string;
 }
 
 export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   localeDisplay,
 }) => {
   const { t } = useTranslation();
@@ -38,11 +36,18 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
   });
 
   const formatLocale = (locale) => {
-    const thisLocale = locales.find(
-      ({ shortName }) => String(shortName) === String(locale),
-    );
-    return `${thisLocale?.englishName} (${thisLocale?.nativeName})` ?? '';
+    const thisLocale = locales
+      ? locales.find(({ shortName }) => String(shortName) === String(locale))
+      : null;
+    return thisLocale
+      ? `${thisLocale?.englishName} (${thisLocale?.nativeName})`
+      : '';
   };
+
+  const selectedLocale = useMemo(
+    () => formatLocale(localeDisplay),
+    [localeDisplay, locales],
+  );
 
   const onSubmit = async (
     attributes: Pick<Types.Preference, 'localeDisplay'>,
@@ -74,7 +79,7 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={formatLocale(localeDisplay)}
+      value={selectedLocale || ''}
       fullWidth
     >
       <Formik
@@ -105,10 +110,8 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
               )}
             >
               <Autocomplete
-                autoSelect
                 disabled={isSubmitting}
                 autoHighlight
-                loading={loading}
                 value={localeDisplay}
                 onChange={(_, value) => {
                   setFieldValue('localeDisplay', value);
@@ -120,7 +123,8 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
                 filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} placeholder={label} />
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  <TextField {...params} placeholder={label} autoFocus />
                 )}
               />
             </FieldWrapper>

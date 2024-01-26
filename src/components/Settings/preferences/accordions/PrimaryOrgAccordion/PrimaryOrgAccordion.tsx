@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -7,14 +7,13 @@ import * as yup from 'yup';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 interface PrimaryOrgAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   organizations: GetUsersOrganizationsAccountsQuery | undefined;
   salaryOrganizationId: string;
   accountListId: string;
@@ -23,7 +22,6 @@ interface PrimaryOrgAccordionProps {
 export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   organizations,
   salaryOrganizationId,
   accountListId,
@@ -34,6 +32,12 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
 
   const label = t('Primary Organization');
   const orgs = organizations?.userOrganizationAccounts || [];
+  const selectedOrgName = useMemo(() => {
+    return (
+      orgs.find(({ organization }) => organization.id === salaryOrganizationId)
+        ?.organization.name ?? ''
+    );
+  }, [orgs, salaryOrganizationId]);
 
   const PreferencesSchema: yup.SchemaOf<
     Pick<Types.AccountList, 'salaryOrganizationId'>
@@ -50,7 +54,7 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
           id: accountListId,
           attributes: {
             id: accountListId,
-            salaryOrganizationId: attributes.salaryOrganizationId || null,
+            salaryOrganizationId: attributes.salaryOrganizationId,
           },
         },
       },
@@ -73,11 +77,7 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={
-        orgs.find(
-          ({ organization }) => organization.id === salaryOrganizationId,
-        )?.organization.name ?? ''
-      }
+      value={selectedOrgName}
       fullWidth
     >
       <Formik
@@ -110,7 +110,6 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
               <Autocomplete
                 disabled={isSubmitting}
                 autoHighlight
-                loading={loading}
                 value={salaryOrganizationId}
                 onChange={(_, value) => {
                   setFieldValue('salaryOrganizationId', value);
@@ -125,7 +124,8 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
                 filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} placeholder={label} />
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  <TextField {...params} placeholder={label} autoFocus />
                 )}
               />
             </FieldWrapper>

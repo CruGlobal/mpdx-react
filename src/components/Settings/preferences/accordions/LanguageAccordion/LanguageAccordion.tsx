@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -6,23 +6,21 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { formatLanguage, languages } from 'src/lib/data/languages';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
-import { formatLanguage, languages } from './languages';
 
 interface LanguageAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   locale: string;
 }
 
 export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   locale,
 }) => {
   const { t } = useTranslation();
@@ -31,6 +29,11 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
   const [updatePersonalPreferences] = useUpdatePersonalPreferencesMutation();
 
   const label = t('Language');
+
+  const selectedLanguage = useMemo(
+    () => languages.find(({ id }) => id === locale)?.value || '',
+    [languages, locale],
+  );
 
   const PreferencesSchema: yup.SchemaOf<Pick<Types.Preference, 'locale'>> =
     yup.object({
@@ -50,7 +53,6 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -65,7 +67,7 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={languages.find(({ id }) => id === locale)?.value || ''}
+      value={selectedLanguage}
       fullWidth
     >
       <Formik
@@ -99,7 +101,6 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
               <Autocomplete
                 disabled={isSubmitting}
                 autoHighlight
-                loading={loading}
                 value={locale}
                 onChange={(_, value) => {
                   setFieldValue('locale', value);
@@ -109,7 +110,8 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
                 filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} placeholder={label} />
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  <TextField {...params} placeholder={label} autoFocus />
                 )}
               />
             </FieldWrapper>

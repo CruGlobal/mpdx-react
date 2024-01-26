@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 import { timeZones } from './TimeZones';
@@ -14,14 +14,12 @@ import { timeZones } from './TimeZones';
 interface TimeZoneAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   timeZone: string;
 }
 
 export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   timeZone,
 }) => {
   const { t } = useTranslation();
@@ -95,7 +93,6 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
               <Autocomplete
                 disabled={isSubmitting}
                 autoHighlight
-                loading={loading}
                 value={timeZone}
                 onChange={(_, value) => {
                   setFieldValue('timeZone', value);
@@ -108,7 +105,8 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
                 filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} placeholder={label} />
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  <TextField {...params} placeholder={label} autoFocus />
                 )}
               />
             </FieldWrapper>

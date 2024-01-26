@@ -53,8 +53,8 @@ const Components: React.FC<ComponentsProps> = ({
                     value: '12:00 AM',
                   },
                   {
-                    key: 20,
-                    value: '8:00 PM',
+                    key: 5,
+                    value: '5:00 AM',
                   },
                   {
                     key: null,
@@ -68,7 +68,6 @@ const Components: React.FC<ComponentsProps> = ({
           <HourToSendNotificationsAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             hourToSendNotifications={hourToSendNotifications}
           />
         </GqlMockedProvider>
@@ -80,6 +79,9 @@ const Components: React.FC<ComponentsProps> = ({
 const label = 'Hour To Send Notifications';
 
 describe('HourToSendNotificationsAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components hourToSendNotifications={0} expandedPanel="" />,
@@ -87,21 +89,6 @@ describe('HourToSendNotificationsAccordion', () => {
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('combobox')).not.toBeInTheDocument();
-  });
-  it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole } = render(
-      <Components hourToSendNotifications={20} expandedPanel={label} />,
-    );
-
-    const input = getByRole('combobox');
-    const button = getByRole('button', { name: 'Save' });
-
-    await waitFor(() => {
-      expect(getByText('8:00 PM')).toBeInTheDocument();
-      expect(input).toBeInTheDocument();
-      expect(input).toHaveValue('8:00 PM');
-      expect(button).not.toBeDisabled();
-    });
   });
 
   it('should always have the save button enabled. null will set to Immediately', async () => {
@@ -117,12 +104,16 @@ describe('HourToSendNotificationsAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
-    const { getByRole } = render(
+  it('changes and saves the input', async () => {
+    const { getByRole, getByText } = render(
       <Components hourToSendNotifications={null} expandedPanel={label} />,
     );
+    const input = getByRole('combobox');
     const button = getByRole('button', { name: 'Save' });
 
+    userEvent.click(input);
+    userEvent.type(input, '5');
+    await waitFor(() => userEvent.click(getByText('5:00 AM')));
     userEvent.click(button);
 
     await waitFor(() => {
@@ -133,7 +124,7 @@ describe('HourToSendNotificationsAccordion', () => {
             variables: {
               input: {
                 attributes: {
-                  hourToSendNotifications: null,
+                  hourToSendNotifications: 5,
                 },
               },
             },

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -15,7 +15,6 @@ import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences
 interface MonthlyGoalAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   monthlyGoal: number | null;
   accountListId: string;
   currency: string;
@@ -39,6 +38,14 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   > = yup.object({
     monthlyGoal: yup.number().required(),
   });
+
+  const monthlyGoalString = useMemo(() => {
+    return monthlyGoal && locale && currency
+      ? currencyFormat(monthlyGoal, currency, locale)
+      : monthlyGoal
+      ? String(monthlyGoal)
+      : '';
+  }, [monthlyGoal, locale, currency]);
 
   const onSubmit = async (
     attributes: Pick<Types.AccountListSettingsInput, 'monthlyGoal'>,
@@ -72,13 +79,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={
-        monthlyGoal && locale && currency
-          ? currencyFormat(monthlyGoal, currency, locale)
-          : monthlyGoal
-          ? String(monthlyGoal)
-          : ''
-      }
+      value={monthlyGoalString}
       fullWidth
     >
       <Formik
@@ -111,13 +112,16 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
             >
               <TextField
                 value={monthlyGoal}
-                onChange={handleChange('monthlyGoal')}
+                onChange={handleChange}
                 inputProps={{
                   'aria-label': label,
                   type: 'number',
                 }}
+                name="monthlyGoal"
                 error={!!errors.monthlyGoal}
                 helperText={errors.monthlyGoal && t('Monthly Goal is required')}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
               />
             </FieldWrapper>
           </FormWrapper>

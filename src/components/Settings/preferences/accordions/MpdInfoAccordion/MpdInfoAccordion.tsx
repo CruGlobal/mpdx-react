@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Grid, TextField } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import {
@@ -21,7 +21,6 @@ import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences
 interface MpdInfoAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   activeMpdMonthlyGoal: number | null;
   activeMpdStartAt: string | null;
   activeMpdFinishAt: string | null;
@@ -54,16 +53,10 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
   > = yup.object({
     activeMpdMonthlyGoal: yup
       .number()
-      .nullable(true)
+      .nullable()
       .transform(numberOrNullTransform),
-    activeMpdStartAt: yup
-      .string()
-      .nullable(true)
-      .transform(numberOrNullTransform),
-    activeMpdFinishAt: yup
-      .string()
-      .nullable(true)
-      .transform(numberOrNullTransform),
+    activeMpdStartAt: yup.string().nullable().transform(numberOrNullTransform),
+    activeMpdFinishAt: yup.string().nullable().transform(numberOrNullTransform),
   });
 
   const onSubmit = async (
@@ -98,24 +91,34 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
     });
   };
 
+  const goalDateString = useMemo(() => {
+    return (
+      (activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0 && currency && locale
+        ? currencyFormat(activeMpdMonthlyGoal, currency, locale) + ' '
+        : activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0
+        ? activeMpdMonthlyGoal + ' '
+        : '') +
+      (activeMpdStartAt
+        ? dateFormat(DateTime.fromISO(activeMpdStartAt), locale) + ' - '
+        : '') +
+      (activeMpdFinishAt
+        ? dateFormat(DateTime.fromISO(activeMpdFinishAt), locale)
+        : '')
+    );
+  }, [
+    activeMpdMonthlyGoal,
+    activeMpdStartAt,
+    activeMpdFinishAt,
+    locale,
+    currency,
+  ]);
+
   return (
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={
-        (activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0 && currency && locale
-          ? currencyFormat(activeMpdMonthlyGoal, currency, locale) + ' '
-          : activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0
-          ? activeMpdMonthlyGoal + ' '
-          : '') +
-        (activeMpdStartAt
-          ? dateFormat(DateTime.fromISO(activeMpdStartAt), locale) + ' - '
-          : '') +
-        (activeMpdFinishAt
-          ? dateFormat(DateTime.fromISO(activeMpdFinishAt), locale)
-          : '')
-      }
+      value={goalDateString}
       fullWidth
     >
       <Formik
@@ -152,6 +155,8 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                           inputProps={{
                             'aria-label': t('Start Date'),
                           }}
+                          // eslint-disable-next-line jsx-a11y/no-autofocus
+                          autoFocus
                           {...params}
                         />
                       )}
@@ -167,6 +172,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                           actions: ['clear', 'accept'],
                         },
                       }}
+                      label={t('Start Date')}
                     />
                   </FieldWrapper>
                 </Grid>
@@ -179,6 +185,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                           inputProps={{
                             'aria-label': t('End Date'),
                           }}
+                          name="activeMpdFinishAt"
                           {...params}
                         />
                       )}
@@ -194,6 +201,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                           actions: ['clear', 'accept'],
                         },
                       }}
+                      label={t('End Date')}
                     />
                   </FieldWrapper>
                 </Grid>

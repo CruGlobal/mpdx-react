@@ -1,10 +1,12 @@
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { Skeleton } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import {
+  useCanUserExportDataQuery,
   useGetAccountPreferencesQuery,
-  useGetUserInCruOrgQuery,
 } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
 import { useGetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
 import { AccountNameAccordion } from 'src/components/Settings/preferences/accordions/AccountNameAccordion/AccountNameAccordion';
@@ -26,10 +28,18 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './wrapper';
 
+const AccordionLoading = styled(Skeleton)(() => ({
+  width: '710px',
+  height: '48px',
+}));
+
 const Preferences: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
-  const [expandedPanel, setExpandedPanel] = useState('');
+  const { query } = useRouter();
+  const [expandedPanel, setExpandedPanel] = useState(
+    (query?.selectedTab as string) || '',
+  );
 
   useEffect(() => {
     suggestArticles('HS_SETTINGS_PREFERENCES_SUGGESTIONS');
@@ -53,16 +63,14 @@ const Preferences: React.FC = () => {
         accountListId: accountListId ?? '',
       },
     });
-  const { data: getUserInCruOrgData } = useGetUserInCruOrgQuery({
+  const { data: canUserExportData } = useCanUserExportDataQuery({
     variables: {
       accountListId: accountListId ?? '',
     },
   });
 
-  const {
-    data: userOrganizationAccountsData,
-    loading: userOrganizationAccountsLoading,
-  } = useGetUsersOrganizationsAccountsQuery();
+  const { data: userOrganizationAccountsData } =
+    useGetUsersOrganizationsAccountsQuery();
 
   return (
     <SettingsWrapper
@@ -71,19 +79,25 @@ const Preferences: React.FC = () => {
     >
       <ProfileInfo accountListId={accountListId} />
       <AccordionGroup title="Personal Preferences">
-        {personalPreferencesLoading && <Skeleton height="240px" />}
+        {personalPreferencesLoading && (
+          <>
+            <AccordionLoading />
+            <AccordionLoading />
+            <AccordionLoading />
+            <AccordionLoading />
+            <AccordionLoading />
+          </>
+        )}
         {!personalPreferencesLoading && (
           <>
             <LanguageAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={personalPreferencesLoading}
               locale={personalPreferencesData?.user?.preferences?.locale || ''}
             />
             <LocaleAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={personalPreferencesLoading}
               localeDisplay={
                 personalPreferencesData?.user?.preferences?.localeDisplay || ''
               }
@@ -91,7 +105,6 @@ const Preferences: React.FC = () => {
             <DefaultAccountAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={personalPreferencesLoading}
               data={personalPreferencesData}
               accountListId={accountListId}
               defaultAccountList={
@@ -101,7 +114,6 @@ const Preferences: React.FC = () => {
             <TimeZoneAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={personalPreferencesLoading}
               timeZone={
                 personalPreferencesData?.user?.preferences?.timeZone || ''
               }
@@ -109,7 +121,6 @@ const Preferences: React.FC = () => {
             <HourToSendNotificationsAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={personalPreferencesLoading}
               hourToSendNotifications={
                 personalPreferencesData?.user?.preferences
                   ?.hourToSendNotifications || null
@@ -119,20 +130,26 @@ const Preferences: React.FC = () => {
         )}
       </AccordionGroup>
       <AccordionGroup title="Account Preferences">
-        {accountPreferencesLoading && <Skeleton height="336px" />}
+        {accountPreferencesLoading && (
+          <>
+            <AccordionLoading />
+            <AccordionLoading />
+            <AccordionLoading />
+            <AccordionLoading />
+            <AccordionLoading />
+          </>
+        )}
         {!accountPreferencesLoading && (
           <>
             <AccountNameAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={accountPreferencesLoading}
               name={accountPreferencesData?.accountList?.name || ''}
               accountListId={accountListId}
             />
             <MonthlyGoalAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={accountPreferencesLoading}
               monthlyGoal={
                 accountPreferencesData?.accountList?.settings?.monthlyGoal ||
                 null
@@ -145,7 +162,6 @@ const Preferences: React.FC = () => {
             <HomeCountryAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={accountPreferencesLoading}
               homeCountry={
                 accountPreferencesData?.accountList?.settings?.homeCountry || ''
               }
@@ -154,7 +170,6 @@ const Preferences: React.FC = () => {
             <CurrencyAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={accountPreferencesLoading}
               currency={
                 accountPreferencesData?.accountList?.settings?.currency || ''
               }
@@ -166,7 +181,6 @@ const Preferences: React.FC = () => {
                 <PrimaryOrgAccordion
                   handleAccordionChange={handleAccordionChange}
                   expandedPanel={expandedPanel}
-                  loading={userOrganizationAccountsLoading}
                   organizations={userOrganizationAccountsData}
                   salaryOrganizationId={
                     accountPreferencesData?.accountList?.salaryOrganizationId ||
@@ -178,7 +192,6 @@ const Preferences: React.FC = () => {
             <EarlyAdopterAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={accountPreferencesLoading}
               tester={
                 accountPreferencesData?.accountList?.settings?.tester || false
               }
@@ -187,7 +200,6 @@ const Preferences: React.FC = () => {
             <MpdInfoAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={accountPreferencesLoading}
               activeMpdStartAt={
                 accountPreferencesData?.accountList?.activeMpdStartAt || ''
               }
@@ -203,13 +215,12 @@ const Preferences: React.FC = () => {
               }
               accountListId={accountListId}
             />
-            {getUserInCruOrgData?.getUserInCruOrg.allowed && (
+            {canUserExportData?.canUserExportData.allowed && (
               <ExportAllDataAccordion
                 handleAccordionChange={handleAccordionChange}
                 expandedPanel={expandedPanel}
-                loading={accountPreferencesLoading}
                 exportedAt={
-                  getUserInCruOrgData?.getUserInCruOrg.exportedAt || undefined
+                  canUserExportData?.canUserExportData.exportedAt || undefined
                 }
                 accountListId={accountListId}
                 data={personalPreferencesData}

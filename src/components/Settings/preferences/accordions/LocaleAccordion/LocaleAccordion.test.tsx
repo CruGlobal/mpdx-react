@@ -71,7 +71,6 @@ const Components: React.FC<ComponentsProps> = ({
           <LocaleAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             localeDisplay={localeDisplay}
           />
         </GqlMockedProvider>
@@ -83,6 +82,9 @@ const Components: React.FC<ComponentsProps> = ({
 const label = 'Locale';
 
 describe('LocaleAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components localeDisplay={'en-GB'} expandedPanel="" />,
@@ -90,25 +92,6 @@ describe('LocaleAccordion', () => {
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('combobox')).not.toBeInTheDocument();
-  });
-  it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole } = render(
-      <Components localeDisplay={'es-419'} expandedPanel={label} />,
-    );
-
-    const input = getByRole('combobox');
-    const button = getByRole('button', { name: 'Save' });
-
-    await waitFor(() => {
-      expect(
-        getByText('Latin American Spanish (es-419) (español latinoamericano)'),
-      ).toBeInTheDocument();
-      expect(input).toBeInTheDocument();
-      expect(input).toHaveValue(
-        'Latin American Spanish (es-419) (español latinoamericano)',
-      );
-      expect(button).not.toBeDisabled();
-    });
   });
 
   it('should set the save button to disabled when the form is invalid', async () => {
@@ -125,12 +108,21 @@ describe('LocaleAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
-    const { getByRole } = render(
-      <Components localeDisplay={'en'} expandedPanel={label} />,
+  it('Changes and saves the input', async () => {
+    const { getByRole, getByText } = render(
+      <Components localeDisplay={'es-419'} expandedPanel={label} />,
     );
+    const input = getByRole('combobox');
     const button = getByRole('button', { name: 'Save' });
 
+    await waitFor(() => {
+      expect(
+        getByText('Latin American Spanish (es-419) (español latinoamericano)'),
+      ).toBeInTheDocument();
+    });
+
+    userEvent.type(input, 'Filipino');
+    userEvent.click(getByText('Filipino (fil) (Filipino)'));
     userEvent.click(button);
 
     await waitFor(() => {
@@ -141,33 +133,13 @@ describe('LocaleAccordion', () => {
             variables: {
               input: {
                 attributes: {
-                  localeDisplay: 'en',
+                  localeDisplay: 'fil',
                 },
               },
             },
           },
         },
       ]);
-    });
-  });
-  it('should change the locale', async () => {
-    const { getByText, getByRole } = render(
-      <Components localeDisplay={'en-GB'} expandedPanel={label} />,
-    );
-
-    const input = getByRole('combobox');
-    const button = getByRole('button', { name: 'Save' });
-
-    await waitFor(() => {
-      expect(input).toHaveValue('UK English (en-GB) (UK English)');
-    });
-    userEvent.click(input);
-    userEvent.type(input, 'Filipino');
-    userEvent.click(getByText('Filipino (fil) (Filipino)'));
-    userEvent.click(button);
-
-    await waitFor(() => {
-      expect(input).toHaveValue('Filipino (fil) (Filipino)');
     });
   });
 });

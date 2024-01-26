@@ -3,6 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -53,7 +54,6 @@ const Components: React.FC<ComponentsProps> = ({
             <MpdInfoAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
-              loading={false}
               activeMpdMonthlyGoal={activeMpdMonthlyGoal}
               activeMpdFinishAt={activeMpdFinishAt}
               activeMpdStartAt={activeMpdStartAt}
@@ -71,6 +71,9 @@ const label = 'MPD Info';
 //const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('MpdInfoAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components
@@ -85,22 +88,18 @@ describe('MpdInfoAccordion', () => {
     expect(queryByRole('spinbutton')).not.toBeInTheDocument();
   });
   it('should render accordion open and field should have a value', async () => {
-    const { getByRole } = render(
+    const { getByRole, getByLabelText } = render(
       <Components
-        activeMpdStartAt={'2024-01-16'}
-        activeMpdFinishAt={'2024-03-16'}
+        activeMpdStartAt={DateTime.local(2024, 1, 16).toISO()}
+        activeMpdFinishAt={DateTime.local(2024, 3, 16).toISO()}
         activeMpdMonthlyGoal={20000}
         expandedPanel={label}
       />,
     );
 
     const inputGoal = getByRole('spinbutton', { name: label });
-    const inputStart = getByRole('textbox', {
-      name: 'Choose date, selected date is Jan 16, 2024',
-    });
-    const inputEnd = getByRole('textbox', {
-      name: 'Choose date, selected date is Mar 16, 2024',
-    });
+    const inputStart = getByLabelText('Start Date');
+    const inputEnd = getByLabelText('End Date');
     const button = getByRole('button', { name: 'Save' });
 
     expect(inputGoal).toBeInTheDocument();
@@ -129,15 +128,30 @@ describe('MpdInfoAccordion', () => {
   });
 
   it('Saves the input', async () => {
-    const { getByRole } = render(
+    const { getByRole, getByText, getByLabelText } = render(
       <Components
-        activeMpdStartAt={null}
-        activeMpdFinishAt={null}
+        activeMpdStartAt={'2011-02-22'}
+        activeMpdFinishAt={'2011-12-01'}
         activeMpdMonthlyGoal={1000}
         expandedPanel={label}
       />,
     );
+    const inputStart = getByLabelText('Start Date');
+    const inputEnd = getByLabelText('End Date');
+    const goalInput = getByRole('spinbutton', { name: label });
     const button = getByRole('button', { name: 'Save' });
+
+    userEvent.clear(goalInput);
+    userEvent.click(goalInput);
+    userEvent.type(goalInput, '3333');
+
+    userEvent.click(inputStart);
+    userEvent.click(getByText('15'));
+    const dateOkayButton = await waitFor(() => getByText('OK'));
+    userEvent.click(dateOkayButton);
+
+    userEvent.click(inputEnd);
+    await waitFor(() => userEvent.click(getByText('Clear')));
 
     userEvent.click(button);
 
@@ -150,15 +164,18 @@ describe('MpdInfoAccordion', () => {
               input: {
                 id: accountListId,
                 attributes: {
+                  // activeMpdStartAt: '2011-02-15T16:00:00.000-08:00',
                   activeMpdFinishAt: null,
-                  activeMpdMonthlyGoal: 1000,
-                  activeMpdStartAt: null,
+                  activeMpdMonthlyGoal: 3333,
                 },
               },
             },
           },
         },
       ]);
+      expect(
+        mutationSpy.mock.lastCall[0].operation.variables.input.attributes.activeMpdStartAt.toISODate(),
+      ).toBe('2011-02-15');
     });
   });
 });

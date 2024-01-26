@@ -45,7 +45,6 @@ const Components: React.FC<ComponentsProps> = ({ locale, expandedPanel }) => (
           <LanguageAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             locale={locale}
           />
         </GqlMockedProvider>
@@ -64,6 +63,9 @@ const errorMock: MockedResponse = {
 const label = 'Language';
 
 describe('LanguageAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components locale={'de'} expandedPanel="" />,
@@ -71,26 +73,6 @@ describe('LanguageAccordion', () => {
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('combobox')).not.toBeInTheDocument();
-  });
-  it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole } = render(
-      <Components locale={'es-419'} expandedPanel={label} />,
-    );
-
-    const input = getByRole('combobox');
-    const button = getByRole('button', { name: 'Save' });
-
-    expect(
-      getByText('Latin American Spanish (español latinoamericano)'),
-    ).toBeInTheDocument();
-    expect(input).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(input).toHaveValue(
-        'Latin American Spanish (español latinoamericano)',
-      );
-      expect(button).not.toBeDisabled();
-    });
   });
 
   it('should set the save button to disabled when the form is invalid', async () => {
@@ -107,32 +89,7 @@ describe('LanguageAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
-    const { getByRole } = render(
-      <Components locale={'en-US'} expandedPanel={label} />,
-    );
-    const button = getByRole('button', { name: 'Save' });
-
-    userEvent.click(button);
-
-    await waitFor(() => {
-      expect(mutationSpy.mock.lastCall).toMatchObject([
-        {
-          operation: {
-            operationName: 'UpdatePersonalPreferences',
-            variables: {
-              input: {
-                attributes: {
-                  locale: 'en-US',
-                },
-              },
-            },
-          },
-        },
-      ]);
-    });
-  });
-  it('should change the language', async () => {
+  it('should change and save the language', async () => {
     const { getByText, getByRole } = render(
       <Components locale={'en'} expandedPanel={label} />,
     );
@@ -143,13 +100,26 @@ describe('LanguageAccordion', () => {
     await waitFor(() => {
       expect(input).toHaveValue('US English');
     });
-    userEvent.click(input);
+
     userEvent.type(input, 'German');
     userEvent.click(getByText('German (Deutsch)'));
     userEvent.click(button);
 
     await waitFor(() => {
-      expect(input).toHaveValue('German (Deutsch)');
+      expect(mutationSpy.mock.lastCall).toMatchObject([
+        {
+          operation: {
+            operationName: 'UpdatePersonalPreferences',
+            variables: {
+              input: {
+                attributes: {
+                  locale: 'de',
+                },
+              },
+            },
+          },
+        },
+      ]);
     });
   });
   it('Should render the error state', async () => {
@@ -161,7 +131,6 @@ describe('LanguageAccordion', () => {
               <LanguageAccordion
                 handleAccordionChange={handleAccordionChange}
                 expandedPanel={label}
-                loading={false}
                 locale={'en-US'}
               />
             </MockedProvider>

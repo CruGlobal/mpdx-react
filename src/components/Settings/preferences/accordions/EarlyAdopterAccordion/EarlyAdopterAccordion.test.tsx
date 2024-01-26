@@ -43,7 +43,6 @@ const Components: React.FC<ComponentsProps> = ({ tester, expandedPanel }) => (
           <EarlyAdopterAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             tester={tester}
             accountListId={accountListId}
           />
@@ -56,6 +55,9 @@ const Components: React.FC<ComponentsProps> = ({ tester, expandedPanel }) => (
 const label = 'Early Adopter';
 
 describe('EarlyAdopterAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components tester={true} expandedPanel="" />,
@@ -90,12 +92,12 @@ describe('EarlyAdopterAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
+  it('Changes and saves the input', async () => {
     const { getByRole } = render(
       <Components tester={false} expandedPanel={label} />,
     );
     const button = getByRole('button', { name: 'Save' });
-
+    userEvent.click(getByRole('checkbox'));
     userEvent.click(button);
 
     await waitFor(() => {
@@ -109,7 +111,7 @@ describe('EarlyAdopterAccordion', () => {
                 attributes: {
                   id: accountListId,
                   settings: {
-                    tester: false,
+                    tester: true,
                   },
                 },
               },

@@ -48,7 +48,6 @@ const Components: React.FC<ComponentsProps> = ({
           <HomeCountryAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             homeCountry={homeCountry}
             accountListId={accountListId}
           />
@@ -68,6 +67,9 @@ const errorMock: MockedResponse = {
 };
 
 describe('HomeCountryAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components homeCountry={'USD'} expandedPanel="" />,
@@ -75,22 +77,6 @@ describe('HomeCountryAccordion', () => {
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('combobox')).not.toBeInTheDocument();
-  });
-  it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole } = render(
-      <Components homeCountry={'DE'} expandedPanel={label} />,
-    );
-
-    const input = getByRole('combobox');
-    const button = getByRole('button', { name: 'Save' });
-
-    expect(getByText('Germany')).toBeInTheDocument();
-    expect(getByRole('combobox')).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(input).toHaveValue('Germany');
-      expect(button).not.toBeDisabled();
-    });
   });
 
   it('should set the save button to disabled when the form is invalid', async () => {
@@ -107,12 +93,15 @@ describe('HomeCountryAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
+  it('Changes and saves the input', async () => {
     const { getByRole, getByText } = render(
       <Components homeCountry={'US'} expandedPanel={label} />,
     );
     const button = getByRole('button', { name: 'Save' });
     const input = getByRole('combobox');
+
+    expect(getByText('United States')).toBeInTheDocument();
+    await waitFor(() => expect(input).toHaveValue('United States'));
 
     userEvent.click(input);
     userEvent.click(getByText('Albania'));
@@ -148,7 +137,6 @@ describe('HomeCountryAccordion', () => {
               <HomeCountryAccordion
                 handleAccordionChange={handleAccordionChange}
                 expandedPanel={label}
-                loading={false}
                 homeCountry={'USA'}
                 accountListId={accountListId}
               />

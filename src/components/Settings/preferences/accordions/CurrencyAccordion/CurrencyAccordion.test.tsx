@@ -56,6 +56,10 @@ const Components: React.FC<ComponentsProps> = ({ currency, expandedPanel }) => (
                     value: 'USD ($)',
                   },
                   {
+                    id: 'EUR',
+                    value: 'EUR (€)',
+                  },
+                  {
                     id: 'CHE',
                     value: 'CHE (CHE)',
                   },
@@ -67,7 +71,6 @@ const Components: React.FC<ComponentsProps> = ({ currency, expandedPanel }) => (
           <CurrencyAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             currency={currency}
             accountListId={accountListId}
           />
@@ -87,6 +90,9 @@ const errorMock: MockedResponse = {
 const label = 'Default Currency';
 
 describe('CurrencyAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components currency={'USD'} expandedPanel="" />,
@@ -94,22 +100,6 @@ describe('CurrencyAccordion', () => {
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('combobox', { name: label })).not.toBeInTheDocument();
-  });
-  it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole } = render(
-      <Components currency={'USD'} expandedPanel={label} />,
-    );
-
-    const input = getByRole('combobox');
-    const button = getByRole('button', { name: 'Save' });
-
-    expect(getByText('USD')).toBeInTheDocument();
-    expect(input).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(input).toHaveValue('USD ($)');
-      expect(button).not.toBeDisabled();
-    });
   });
 
   it('should set the save button to disabled when the form is invalid', async () => {
@@ -126,12 +116,20 @@ describe('CurrencyAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
-    const { getByRole } = render(
-      <Components currency={'USD ($)'} expandedPanel={label} />,
+  it('Changes and saves the input', async () => {
+    const { getByRole, getByText } = render(
+      <Components currency={'USD'} expandedPanel={label} />,
     );
+    const input = getByRole('combobox');
     const button = getByRole('button', { name: 'Save' });
 
+    await waitFor(() => input.blur());
+    expect(getByText('USD')).toBeInTheDocument();
+    await waitFor(() => expect(input).toHaveValue('USD ($)'));
+    expect(button).not.toBeDisabled();
+
+    userEvent.type(input, 'EUR');
+    userEvent.click(getByText('EUR (€)'));
     userEvent.click(button);
 
     await waitFor(() => {
@@ -145,7 +143,7 @@ describe('CurrencyAccordion', () => {
                 attributes: {
                   id: accountListId,
                   settings: {
-                    currency: 'USD ($)',
+                    currency: 'EUR',
                   },
                 },
               },
@@ -155,6 +153,7 @@ describe('CurrencyAccordion', () => {
       ]);
     });
   });
+
   it('Should render the error state', async () => {
     const { getByRole } = render(
       <SnackbarProvider>
@@ -164,7 +163,6 @@ describe('CurrencyAccordion', () => {
               <CurrencyAccordion
                 handleAccordionChange={handleAccordionChange}
                 expandedPanel={label}
-                loading={false}
                 currency={'USD'}
                 accountListId={accountListId}
               />

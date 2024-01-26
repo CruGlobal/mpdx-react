@@ -1,10 +1,12 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { ExportDataMutation } from '../../GetAccountPreferences.generated';
 import { ExportAllDataAccordion } from './ExportAllDataAccordion';
 
 jest.mock('next-auth/react');
@@ -28,25 +30,36 @@ jest.mock('notistack', () => ({
 }));
 
 const handleAccordionChange = jest.fn();
+const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   expandedPanel: string;
+  exportedAt?: string;
 }
 
-const Components: React.FC<ComponentsProps> = ({ expandedPanel }) => (
+const Components: React.FC<ComponentsProps> = ({
+  expandedPanel,
+  exportedAt,
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider
+        <GqlMockedProvider<{
+          ExportData: ExportDataMutation;
+        }>
           mocks={{
-            GetExportData: {},
+            ExportData: {
+              exportData: 'Success',
+            },
           }}
+          onCall={mutationSpy}
         >
           <ExportAllDataAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
-            exportedAt={'2024-01-05T18:34:12-08:00'}
+            exportedAt={
+              exportedAt || DateTime.local(2024, 1, 16, 18, 34, 12).toISO()
+            }
             accountListId={accountListId}
           />
         </GqlMockedProvider>
@@ -73,24 +86,63 @@ describe('Export All Data Accordion', () => {
 
     expect(getByText(descriptionText)).toBeInTheDocument();
     expect(
-      queryByText('Your last export was on Jan 6, 2024, 2:34 AM UTC'),
+      queryByText('Your last export was on Jan 16, 2024, 6:34 PM UTC'),
     ).toBeInTheDocument();
   });
 
   it('should default the submit button to disabled unless the box is checked', async () => {
-    const { getByRole } = render(<Components expandedPanel={label} />);
-    const input = getByRole('checkbox');
+    const { getByRole, queryByRole } = render(
+      <Components expandedPanel={label} exportedAt={''} />,
+    );
     const button = getByRole('button', { name: 'Download All Data' });
+
+    expect(queryByRole('Alert')).not.toBeInTheDocument(); //Last exported date Alert not in the document
 
     await waitFor(() => {
       expect(button).toBeDisabled();
     });
+
+    await waitFor(() => {
+      expect(mutationSpy).not.toHaveBeenCalled();
+    });
+  });
+  it('should enable the submit button and call the mutation', async () => {
+    const { getByRole, getByText } = render(
+      <Components expandedPanel={label} exportedAt={''} />,
+    );
+    const input = getByRole('checkbox');
+    const button = getByRole('button', { name: 'Download All Data' });
 
     userEvent.click(input);
 
     await waitFor(() => {
       expect(input).toBeChecked();
       expect(button).not.toBeDisabled();
+    });
+
+    userEvent.click(button);
+
+    await waitFor(() => {
+      expect(mutationSpy.mock.lastCall).toMatchObject([
+        {
+          operation: {
+            operationName: 'ExportData',
+            variables: {
+              input: {
+                accountListId: accountListId,
+              },
+            },
+          },
+        },
+      ]);
+      expect(mockEnqueue).toHaveBeenCalledWith('Export has started.', {
+        variant: 'success',
+      });
+      expect(
+        getByText(
+          'Once the export is completed, we will send you an email with a link to download your export.',
+        ),
+      ).toBeInTheDocument();
     });
   });
 });

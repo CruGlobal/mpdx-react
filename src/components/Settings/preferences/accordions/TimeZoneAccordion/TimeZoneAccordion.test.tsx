@@ -29,6 +29,7 @@ jest.mock('notistack', () => ({
 
 const handleAccordionChange = jest.fn();
 const mutationSpy = jest.fn();
+const label = 'Time Zone';
 
 interface ComponentsProps {
   timeZone: string;
@@ -43,7 +44,6 @@ const Components: React.FC<ComponentsProps> = ({ timeZone, expandedPanel }) => (
           <TimeZoneAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            loading={false}
             timeZone={timeZone}
           />
         </GqlMockedProvider>
@@ -52,9 +52,10 @@ const Components: React.FC<ComponentsProps> = ({ timeZone, expandedPanel }) => (
   </SnackbarProvider>
 );
 
-const label = 'Time Zone';
-
 describe('TimeZoneAccordion', () => {
+  afterEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components timeZone={'USD'} expandedPanel="" />,
@@ -62,25 +63,6 @@ describe('TimeZoneAccordion', () => {
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('combobox')).not.toBeInTheDocument();
-  });
-  it('should render accordion open and the input should have a value', async () => {
-    const { getByText, getByRole } = render(
-      <Components
-        timeZone={'Eastern Time (US & Canada)'}
-        expandedPanel={label}
-      />,
-    );
-
-    const input = getByRole('combobox');
-    const button = getByRole('button', { name: 'Save' });
-
-    expect(getByText('Eastern Time (US & Canada)')).toBeInTheDocument();
-    expect(input).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(input).toHaveValue('(GMT-05:00) Eastern Time (US & Canada)');
-      expect(button).not.toBeDisabled();
-    });
   });
 
   it('should set the save button to disabled when the form is invalid', async () => {
@@ -97,12 +79,24 @@ describe('TimeZoneAccordion', () => {
     });
   });
 
-  it('Saves the input', async () => {
-    const { getByRole } = render(
-      <Components timeZone={'Hawaii'} expandedPanel={label} />,
+  it('changes and saves the input', async () => {
+    const { getByRole, getByText } = render(
+      <Components
+        timeZone={'Eastern Time (US & Canada)'}
+        expandedPanel={label}
+      />,
     );
+    const input = getByRole('combobox');
     const button = getByRole('button', { name: 'Save' });
 
+    expect(getByText('Eastern Time (US & Canada)')).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
+
+    expect(input).toHaveValue('(GMT-05:00) Eastern Time (US & Canada)');
+    expect(button).not.toBeDisabled();
+
+    userEvent.click(input);
+    userEvent.click(getByText('(GMT-10:00) Hawaii'));
     userEvent.click(button);
 
     await waitFor(() => {

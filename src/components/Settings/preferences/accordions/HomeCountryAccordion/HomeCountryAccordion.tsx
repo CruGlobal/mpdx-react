@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -6,15 +6,14 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/Fields/FormWrapper';
+import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
+import { countries } from 'src/lib/data/Countries';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
-import { countries } from './Countries';
 
 interface HomeCountryAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  loading: boolean;
   homeCountry: string;
   accountListId: string;
 }
@@ -22,7 +21,6 @@ interface HomeCountryAccordionProps {
 export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  loading,
   homeCountry,
   accountListId,
 }) => {
@@ -31,6 +29,11 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
   const [updateAccountPreferencesMutation] =
     useUpdateAccountPreferencesMutation();
   const label = t('Home Country');
+
+  const selectedCountry = useMemo(
+    () => countries.find(({ code }) => code === homeCountry)?.name ?? '',
+    [countries, homeCountry],
+  );
 
   const PreferencesSchema: yup.SchemaOf<
     Pick<Types.AccountListSettingsInput, 'homeCountry'>
@@ -72,7 +75,7 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={countries.find(({ code }) => code === homeCountry)?.name ?? ''}
+      value={selectedCountry}
       fullWidth
     >
       <Formik
@@ -105,7 +108,6 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
               <Autocomplete
                 disabled={isSubmitting}
                 autoHighlight
-                loading={loading}
                 value={homeCountry}
                 onChange={(_, value) => {
                   setFieldValue('homeCountry', value);
@@ -117,7 +119,8 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
                 filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
-                  <TextField {...params} placeholder={label} />
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  <TextField {...params} placeholder={label} autoFocus />
                 )}
               />
             </FieldWrapper>
