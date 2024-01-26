@@ -167,6 +167,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       (phone) => phone.number === null,
     );
 
+    const hasNullPhoneNumbers = person.phoneNumbers.nodes?.some(
+      (phone) => phone.number === null,
+    );
+
     return (
       <ContactPersonContainer
         key={person.id}
