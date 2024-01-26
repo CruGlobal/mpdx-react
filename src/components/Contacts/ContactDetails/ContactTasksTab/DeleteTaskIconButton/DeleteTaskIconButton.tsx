@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DialogActions, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import { DeletedItemIcon } from '../../../../common/DeleteItemIcon/DeleteItemIcon';
 import { DeleteConfirmation } from '../../../../common/Modal/DeleteConfirmation/DeleteConfirmation';
 
@@ -23,18 +24,20 @@ export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
   taskId,
   onDeleteConfirm,
 }) => {
-  const [removeDialogOpen, handleRemoveDialog] = useState(false);
+  const { t } = useTranslation();
+
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
   return (
     <>
-      <DeleteButton onClick={() => handleRemoveDialog(true)}>
+      <DeleteButton onClick={() => setRemoveDialogOpen(true)}>
         <DeletedItemIcon />
       </DeleteButton>
       <DeleteConfirmation
-        deleteType="task"
+        deleteType={t('task')}
         open={removeDialogOpen}
         onClickConfirm={onDeleteConfirm} // onDeleteTask
-        onClickDecline={handleRemoveDialog}
+        onClickDecline={setRemoveDialogOpen}
         accountListId={accountListId}
         taskId={taskId}
       />
