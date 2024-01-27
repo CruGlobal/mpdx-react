@@ -54,11 +54,13 @@ const StyledContactEdit = styled(Button)(({ theme }) => ({
 
 const ContactPersonRowContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
-  flexWrap: 'wrap',
   justifyContent: 'center',
 
   [theme.breakpoints.up('sm')]: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
 }));
