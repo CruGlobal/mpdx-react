@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { FocusEventHandler, ReactElement } from 'react';
 import {
   Autocomplete,
   BaseTextFieldProps,
@@ -12,6 +12,7 @@ import { useGetDonorAccountsLazyQuery } from './DonorAccountAutocomplete.generat
 export interface DonorAccountAutocompleteProps {
   accountListId: string;
   onChange: (donorAccountId: string | null) => void;
+  onBlur?: FocusEventHandler<HTMLDivElement>;
   value: string;
   preloadedDonors?: Array<{ id: string; name: string }>;
   autocompleteId?: string;
@@ -25,6 +26,7 @@ export const DonorAccountAutocomplete: React.FC<
 > = ({
   accountListId,
   onChange,
+  onBlur,
   value,
   preloadedDonors = [],
   autocompleteId,
@@ -82,7 +84,7 @@ export const DonorAccountAutocomplete: React.FC<
       )}
       value={value}
       onChange={(_, donorAccountId) => onChange(donorAccountId)}
-      isOptionEqualToValue={(option, value): boolean => option === value}
+      onBlur={onBlur}
     />
   );
 };

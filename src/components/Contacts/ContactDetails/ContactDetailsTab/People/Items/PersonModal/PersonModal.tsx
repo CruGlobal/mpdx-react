@@ -661,6 +661,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
       <Formik
         initialValues={initialPerson}
         validationSchema={personSchema}
+        validateOnMount
         onSubmit={onSubmit}
       >
         {(formikProps): ReactElement => (
