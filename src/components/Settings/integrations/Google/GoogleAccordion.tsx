@@ -12,10 +12,10 @@ import {
 import HandoffLink from 'src/components/HandoffLink';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
+import { GoogleAccountAttributes } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
-import { GoogleAccountAttributes } from '../../../../../graphql/types.generated';
 import {
   StyledList,
   StyledListItem,

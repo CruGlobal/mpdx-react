@@ -16,7 +16,7 @@ import {
   PersonCreateInput,
   PersonPhoneNumberInput,
   PersonUpdateInput,
-} from '../../../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import {
@@ -187,11 +187,12 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
           disabled={locked}
           handleClick={
             phoneNumber.id
-              ? () =>
+              ? () => {
                   setFieldValue(
                     `phoneNumbers.${index}.destroy`,
                     !phoneNumber.destroy,
-                  )
+                  );
+                }
               : () => {
                   const temp = phoneNumbers;
                   temp?.splice(index, 1);

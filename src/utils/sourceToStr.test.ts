@@ -1,22 +1,24 @@
 import { sourceToStr } from './sourceToStr';
 
 describe('SourceToStr', () => {
+  const t = (label: string) => label;
+
   it('should convert Siebel', () => {
-    expect(sourceToStr('Siebel')).toBe('US Donation Services');
+    expect(sourceToStr(t, 'Siebel')).toBe('US Donation Services');
   });
   it('should convert DataServer', () => {
-    expect(sourceToStr('DataServer')).toBe('DonorHub');
+    expect(sourceToStr(t, 'DataServer')).toBe('DonorHub');
   });
   it('should not convert MPDX', () => {
-    expect(sourceToStr('MPDX')).toBe('MPDX');
+    expect(sourceToStr(t, 'MPDX')).toBe('MPDX');
   });
   it('should convert TntImport', () => {
-    expect(sourceToStr('TntImport')).toBe('Tnt Import');
+    expect(sourceToStr(t, 'TntImport')).toBe('Tnt Import');
   });
   it('should convert GoogleImport', () => {
-    expect(sourceToStr('GoogleImport')).toBe('Google Import');
+    expect(sourceToStr(t, 'GoogleImport')).toBe('Google Import');
   });
   it('should convert default case', () => {
-    expect(sourceToStr('test')).toBe('MPDX');
+    expect(sourceToStr(t, 'test')).toBe('MPDX');
   });
 });

@@ -17,13 +17,10 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ContactUpdateInput, Task } from 'src/graphql/types.generated';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import theme from 'src/theme';
-import {
-  ContactUpdateInput,
-  Task,
-} from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import {
   useGetTaskTagListQuery,
@@ -73,7 +70,11 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
     useMassActionsUpdateTasksMutation();
   const { update } = useUpdateTasksQueries();
 
-  const { data: tasksForTags, fetchMore } = useGetTasksForAddingTagsQuery({
+  const {
+    data: tasksForTags,
+    error,
+    fetchMore,
+  } = useGetTasksForAddingTagsQuery({
     variables: {
       accountListId,
       taskIds: ids,
@@ -82,6 +83,7 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
   });
   const { loading: loadingTasks } = useFetchAllPages({
     fetchMore,
+    error,
     pageInfo: tasksForTags?.tasks.pageInfo,
   });
 

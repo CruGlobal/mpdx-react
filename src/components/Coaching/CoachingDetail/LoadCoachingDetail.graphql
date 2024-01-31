@@ -29,14 +29,12 @@ query LoadCoachingDetail($coachingAccountListId: ID!) {
       accountNumber
     }
     primaryAppeal {
-      active
-      amount
-      amountCurrency
       id
       name
+      amount
       pledgesAmountNotReceivedNotProcessed
       pledgesAmountProcessed
-      pledgesAmountTotal
+      pledgesAmountReceivedNotProcessed
     }
     currency
     monthlyGoal
@@ -69,14 +67,12 @@ query LoadAccountListCoachingDetail($accountListId: ID!) {
       accountNumber
     }
     primaryAppeal {
-      active
-      amount
-      amountCurrency
       id
       name
+      amount
       pledgesAmountNotReceivedNotProcessed
       pledgesAmountProcessed
-      pledgesAmountTotal
+      pledgesAmountReceivedNotProcessed
     }
     currency
     monthlyGoal

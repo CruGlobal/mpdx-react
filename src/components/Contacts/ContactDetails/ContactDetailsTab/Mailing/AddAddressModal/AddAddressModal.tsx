@@ -21,12 +21,16 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
+import { AddressCreateInput } from 'src/graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
+import {
+  AddressLocationEnum,
+  getLocalizedAddressLocation,
+} from '../AddressLocation';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
 import { useUpdateCache } from '../useUpdateCache';
@@ -54,16 +58,6 @@ interface EditContactAddressModalProps {
   accountListId: string;
   contactId: string;
   handleClose: () => void;
-}
-
-enum AddressLocationEnum {
-  Home = 'Home',
-  Business = 'Business',
-  Mailing = 'Mailing',
-  Seasonal = 'Seasonal',
-  Other = 'Other',
-  Temporary = 'Temporary',
-  RepAddress = 'Rep Address',
 }
 
 export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
@@ -151,6 +145,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           primaryMailingAddress: true,
         }}
         validationSchema={createAddressSchema}
+        validateOnMount
         onSubmit={onSubmit}
       >
         {({
@@ -216,9 +211,9 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                             <MenuItem
                               key={value}
                               value={value}
-                              aria-label={t(value)}
+                              aria-label={getLocalizedAddressLocation(t, value)}
                             >
-                              {t(value)}
+                              {getLocalizedAddressLocation(t, value)}
                             </MenuItem>
                           ))}
                         </Select>

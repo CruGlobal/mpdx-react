@@ -8,8 +8,8 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
+import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { ContactFilterStatusEnum } from '../../../../../graphql/types.generated';
 import {
   ContactFlowOption,
   colorMap,

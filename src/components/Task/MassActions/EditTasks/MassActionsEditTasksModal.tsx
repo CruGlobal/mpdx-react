@@ -13,7 +13,7 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -26,15 +26,12 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ActivityTypeEnum, TaskUpdateInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import {
-  ActivityTypeEnum,
-  TaskUpdateInput,
-} from '../../../../../graphql/types.generated';
 import Modal from '../../../common/Modal/Modal';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 
@@ -263,7 +260,7 @@ export const MassActionsEditTasksModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <MobileDatePicker
+                    <DatePicker
                       renderInput={(params) => (
                         <TextField fullWidth {...params} />
                       )}
@@ -288,7 +285,7 @@ export const MassActionsEditTasksModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <MobileTimePicker
+                    <TimePicker
                       renderInput={(params) => (
                         <TextField fullWidth {...params} />
                       )}

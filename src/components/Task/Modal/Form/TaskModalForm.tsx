@@ -3,6 +3,7 @@ import React, {
   ReactElement,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -25,7 +26,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import _ from 'lodash';
 import debounce from 'lodash/fp/debounce';
@@ -40,6 +41,14 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
+import {
+  ActivityTypeEnum,
+  NotificationTimeUnitEnum,
+  NotificationTypeEnum,
+  ResultEnum,
+  TaskCreateInput,
+  TaskUpdateInput,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
@@ -50,14 +59,6 @@ import {
 } from 'src/utils/functions/getLocalizedNotificationStrings';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import {
-  ActivityTypeEnum,
-  NotificationTimeUnitEnum,
-  NotificationTypeEnum,
-  ResultEnum,
-  TaskCreateInput,
-  TaskUpdateInput,
-} from '../../../../../graphql/types.generated';
 import theme from '../../../../theme';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
@@ -106,41 +107,45 @@ const TaskModalForm = ({
   defaultValues,
   view,
 }: Props): ReactElement => {
-  const initialTask: Attributes = task
-    ? {
-        id: task.id,
-        activityType: task.activityType ?? null,
-        location: task.location ?? '',
-        subject: task.subject ?? '',
-        startAt: task.startAt ?? null,
-        completedAt: task.completedAt ?? null,
-        result: task.result ?? null,
-        nextAction: task.nextAction ?? null,
-        tagList: task.tagList ?? [],
-        contactIds: task.contacts.nodes.map(({ id }) => id),
-        userId: task.user?.id ?? null,
-        notificationTimeBefore: task.notificationTimeBefore,
-        notificationType: task.notificationType,
-        notificationTimeUnit: task.notificationTimeUnit,
-        comment: '',
-      }
-    : {
-        id: null,
-        activityType: defaultValues?.activityType ?? null,
-        location: '',
-        subject: defaultValues?.subject ?? '',
-        startAt: DateTime.local().toISO(),
-        completedAt: null,
-        result: defaultValues?.result ?? null,
-        nextAction: defaultValues?.nextAction ?? null,
-        tagList: defaultValues?.tagList ?? [],
-        contactIds: defaultValues?.contactIds ?? [],
-        userId: defaultValues?.userId ?? null,
-        notificationTimeBefore: null,
-        notificationType: null,
-        notificationTimeUnit: null,
-        comment: '',
-      };
+  const initialTask: Attributes = useMemo(
+    () =>
+      task
+        ? {
+            id: task.id,
+            activityType: task.activityType ?? null,
+            location: task.location ?? '',
+            subject: task.subject ?? '',
+            startAt: task.startAt ?? null,
+            completedAt: task.completedAt ?? null,
+            result: task.result ?? null,
+            nextAction: task.nextAction ?? null,
+            tagList: task.tagList ?? [],
+            contactIds: task.contacts.nodes.map(({ id }) => id),
+            userId: task.user?.id ?? null,
+            notificationTimeBefore: task.notificationTimeBefore,
+            notificationType: task.notificationType,
+            notificationTimeUnit: task.notificationTimeUnit,
+            comment: '',
+          }
+        : {
+            id: null,
+            activityType: defaultValues?.activityType ?? null,
+            location: '',
+            subject: defaultValues?.subject ?? '',
+            startAt: DateTime.local().toISO(),
+            completedAt: null,
+            result: defaultValues?.result ?? null,
+            nextAction: defaultValues?.nextAction ?? null,
+            tagList: defaultValues?.tagList ?? [],
+            contactIds: defaultValues?.contactIds ?? [],
+            userId: defaultValues?.userId ?? null,
+            notificationTimeBefore: null,
+            notificationType: null,
+            notificationTimeUnit: null,
+            comment: '',
+          },
+    [],
+  );
 
   const { t } = useTranslation();
   const locale = useLocale();
@@ -158,9 +163,11 @@ const TaskModalForm = ({
   const { update } = useUpdateTasksQueries();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (inputRef.current) (inputRef.current as HTMLInputElement).focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, []);
 
   const handleSearchTermChange = useCallback<
@@ -262,6 +269,8 @@ const TaskModalForm = ({
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={onSubmit}
+      validateOnMount
+      enableReinitialize
     >
       {({
         values: {
@@ -282,6 +291,7 @@ const TaskModalForm = ({
         },
         setFieldValue,
         handleChange,
+        handleBlur,
         handleSubmit,
         isSubmitting,
         isValid,
@@ -293,9 +303,11 @@ const TaskModalForm = ({
             <FormFieldsGridContainer>
               <Grid item>
                 <TextField
+                  name="subject"
                   label={t('Task Name')}
                   value={subject}
-                  onChange={handleChange('subject')}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   fullWidth
                   multiline
                   inputProps={{ 'aria-label': t('Subject') }}
@@ -394,7 +406,7 @@ const TaskModalForm = ({
                   <FormControl fullWidth>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
-                        <MobileDatePicker
+                        <DatePicker
                           InputProps={{
                             endAdornment: (
                               <InputAdornment position="end">
@@ -419,7 +431,7 @@ const TaskModalForm = ({
                         />
                       </Grid>
                       <Grid xs={6} item>
-                        <MobileTimePicker
+                        <TimePicker
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
@@ -451,7 +463,7 @@ const TaskModalForm = ({
                   <FormControl fullWidth>
                     <Grid container spacing={2}>
                       <Grid xs={6} item>
-                        <MobileDatePicker
+                        <DatePicker
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
@@ -465,7 +477,7 @@ const TaskModalForm = ({
                         />
                       </Grid>
                       <Grid xs={6} item>
-                        <MobileTimePicker
+                        <TimePicker
                           renderInput={(params) => (
                             <TextField fullWidth {...params} />
                           )}
@@ -758,7 +770,7 @@ const TaskModalForm = ({
             </SubmitButton>
             <DeleteConfirmation
               accountListId={accountListId}
-              deleteType="task"
+              deleteType={t('task')}
               open={removeDialogOpen}
               onClickDecline={handleRemoveDialog}
               onClose={onClose}

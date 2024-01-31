@@ -3,14 +3,15 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
   createHttpLink,
+  split,
 } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { onError } from '@apollo/client/link/error';
 import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import fetch from 'isomorphic-fetch';
 import { signOut } from 'next-auth/react';
+import generatedIntrospection from 'src/graphql/possibleTypes.generated';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
-import generatedIntrospection from '../../graphql/possibleTypes.generated';
 import snackNotifications from '../components/Snackbar/Snackbar';
 import { dispatch } from './analytics';
 import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
@@ -27,7 +28,30 @@ const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
 export const cache = new InMemoryCache({
   possibleTypes: generatedIntrospection.possibleTypes,
   typePolicies: {
-    AccountList: { merge: true },
+    Appeal: {
+      fields: {
+        pledges: paginationFieldPolicy,
+      },
+      merge: true,
+    },
+    CoachingAppeal: {
+      fields: {
+        pledges: paginationFieldPolicy,
+      },
+      merge: true,
+    },
+    AccountList: {
+      fields: {
+        contacts: paginationFieldPolicy,
+      },
+      merge: true,
+    },
+    CoachingAccountList: {
+      fields: {
+        contacts: paginationFieldPolicy,
+      },
+      merge: true,
+    },
     User: { merge: true },
     Contact: {
       fields: {
@@ -39,6 +63,7 @@ export const cache = new InMemoryCache({
       fields: {
         contacts: paginationFieldPolicy,
         donations: paginationFieldPolicy,
+        financialAccounts: paginationFieldPolicy,
         tasks: paginationFieldPolicy,
         userNotifications: paginationFieldPolicy,
       },
@@ -46,13 +71,25 @@ export const cache = new InMemoryCache({
   },
 });
 
-const httpLink = new BatchHttpLink({
+const batchHttpLink = new BatchHttpLink({
   uri: `${process.env.SITE_URL}/api/graphql`,
   batchMax: 25,
   batchDebounce: true,
   batchInterval: 20,
   fetch,
 });
+
+// link to use if not batching
+const httpLink = createHttpLink({
+  uri: `${process.env.SITE_URL}/api/graphql`,
+  fetch,
+});
+
+const batchLink = split(
+  (operation) => operation.getContext().doNotBatch === true,
+  httpLink,
+  batchHttpLink,
+);
 
 const clientErrorLink = onError(({ graphQLErrors, networkError }) => {
   // Don't show sign out and display errors on the login page because the user won't be logged in
@@ -104,7 +141,7 @@ if (process.browser && process.env.NODE_ENV === 'production') {
 }
 
 const client = new ApolloClient({
-  link: clientErrorLink.concat(httpLink),
+  link: clientErrorLink.concat(batchLink),
   cache,
   assumeImmutableResults: true,
   defaultOptions: {

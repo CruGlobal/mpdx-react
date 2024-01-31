@@ -18,7 +18,7 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -28,9 +28,9 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { ActivityTypeEnum } from '../../../../../../../graphql/types.generated';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 
 interface Props {
@@ -92,6 +92,8 @@ const taskSchema = yup.object({
   subject: yup.string().required(),
 });
 
+type Attributes = yup.InferType<typeof taskSchema>;
+
 const LogNewsletter = ({
   accountListId,
   handleClose,
@@ -103,13 +105,13 @@ const LogNewsletter = ({
 
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
 
-  const initialTask: yup.InferType<typeof taskSchema> = {
+  const initialTask = {
     activityType: ActivityTypeEnum.NewsletterPhysical,
     completedAt: null,
     subject: '',
   };
 
-  const onSubmit = async (attributes: yup.InferType<typeof taskSchema>) => {
+  const onSubmit = async (attributes: Attributes) => {
     const body = commentBody.trim();
 
     // Create two tasks when the activity type is both
@@ -147,12 +149,14 @@ const LogNewsletter = ({
     <Formik
       initialValues={initialTask}
       validationSchema={taskSchema}
+      validateOnMount
       onSubmit={onSubmit}
     >
       {({
         values: { activityType, subject, completedAt },
         setFieldValue,
         handleChange,
+        handleBlur,
         handleSubmit,
         isSubmitting,
         isValid,
@@ -172,8 +176,10 @@ const LogNewsletter = ({
                 <LogFormControl>
                   <LogFormLabel required>{t('Subject')}</LogFormLabel>
                   <LogTextField
+                    name="subject"
                     value={subject}
-                    onChange={handleChange('subject')}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     fullWidth
                     multiline
                     inputProps={{ 'aria-label': t('Subject') }}
@@ -219,7 +225,7 @@ const LogNewsletter = ({
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
-                      <MobileDatePicker
+                      <DatePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
@@ -242,7 +248,7 @@ const LogNewsletter = ({
                       />
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <MobileTimePicker
+                      <TimePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}

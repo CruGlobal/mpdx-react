@@ -132,10 +132,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["micro-cors", "npm:0.1.1"],\
             ["mui-datatables", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.2.2"],\
             ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.3.1"],\
-            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1"],\
+            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.5"],\
             ["next-compose-plugins", "npm:2.2.1"],\
             ["next-optimized-images", "npm:2.6.2"],\
-            ["next-plugin-graphql", "npm:0.0.2"],\
             ["next-pwa", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.6.0"],\
             ["node-fetch", "npm:3.3.1"],\
             ["node-mocks-http", "npm:1.11.0"],\
@@ -7760,6 +7759,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@fastify/busboy", [\
+        ["npm:2.1.0", {\
+          "packageLocation": "./.yarn/cache/@fastify-busboy-npm-2.1.0-960844a007-3233abd10f.zip/node_modules/@fastify/busboy/",\
+          "packageDependencies": [\
+            ["@fastify/busboy", "npm:2.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@figspec/components", [\
         ["npm:1.0.1", {\
           "packageLocation": "./.yarn/cache/@figspec-components-npm-1.0.1-119d3d41f4-db33333ad2.zip/node_modules/@figspec/components/",\
@@ -14664,7 +14672,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["form-data-encoder", "npm:1.7.2"],\
             ["formdata-node", "npm:4.3.3"],\
             ["node-fetch", "virtual:e414995db9c779306e687c7a7c66965e66d0cd7270f6b9fc4f00cc9772c5d50b305ab83e142e0e21dbf10968f7437cbdfcb170d05f4bde68707ac7d0082c9cca#npm:2.6.7"],\
-            ["undici", "npm:5.9.1"],\
+            ["undici", "npm:5.28.2"],\
             ["web-streams-polyfill", "npm:3.2.1"]\
           ],\
           "linkType": "HARD"\
@@ -14679,7 +14687,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["form-data-encoder", "npm:1.7.2"],\
             ["formdata-node", "npm:4.3.3"],\
             ["node-fetch", "virtual:e414995db9c779306e687c7a7c66965e66d0cd7270f6b9fc4f00cc9772c5d50b305ab83e142e0e21dbf10968f7437cbdfcb170d05f4bde68707ac7d0082c9cca#npm:2.6.7"],\
-            ["undici", "npm:5.9.1"],\
+            ["undici", "npm:5.28.2"],\
             ["web-streams-polyfill", "npm:3.2.1"]\
           ],\
           "linkType": "HARD"\
@@ -15307,7 +15315,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["async-retry", "npm:1.3.3"],\
             ["fast-json-stable-stringify", "npm:2.1.0"],\
             ["graphql", null],\
-            ["graphql-tag", "virtual:5ff95f58ca19a6fc4bf1880a939d9c7c0d2159a5533a7e22a66151e87432b0743f6d21e8796da636ce12de57926bf58d3ab8a1bc9d957d14bc483a10c07e653d#npm:2.12.6"],\
+            ["graphql-tag", "virtual:47767f696ec587612fe645cf41f3221a1eb86bdb7ed327c13f86bbbb6a0cfa45fdc8260a4cf4e460540464e28a44fc49b63b62221474729fe9ed0636293b54ba#npm:2.12.6"],\
             ["loglevel", "npm:1.8.0"],\
             ["lru-cache", "npm:6.0.0"],\
             ["node-abort-controller", "npm:3.0.1"],\
@@ -16990,10 +16998,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["browserify-sign", [\
-        ["npm:4.2.1", {\
-          "packageLocation": "./.yarn/cache/browserify-sign-npm-4.2.1-9a8530ca87-0221f190e3.zip/node_modules/browserify-sign/",\
+        ["npm:4.2.2", {\
+          "packageLocation": "./.yarn/cache/browserify-sign-npm-4.2.2-92f50c6d35-b622730c0f.zip/node_modules/browserify-sign/",\
           "packageDependencies": [\
-            ["browserify-sign", "npm:4.2.1"],\
+            ["browserify-sign", "npm:4.2.2"],\
             ["bn.js", "npm:5.2.1"],\
             ["browserify-rsa", "npm:4.1.0"],\
             ["create-hash", "npm:1.2.0"],\
@@ -17001,7 +17009,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["elliptic", "npm:6.5.4"],\
             ["inherits", "npm:2.0.4"],\
             ["parse-asn1", "npm:5.1.6"],\
-            ["readable-stream", "npm:3.6.0"],\
+            ["readable-stream", "npm:3.6.2"],\
             ["safe-buffer", "npm:5.2.1"]\
           ],\
           "linkType": "HARD"\
@@ -18600,7 +18608,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["crypto-browserify", "npm:3.12.0"],\
             ["browserify-cipher", "npm:1.0.1"],\
-            ["browserify-sign", "npm:4.2.1"],\
+            ["browserify-sign", "npm:4.2.2"],\
             ["create-ecdh", "npm:4.0.4"],\
             ["create-hash", "npm:1.2.0"],\
             ["create-hmac", "npm:1.1.7"],\
@@ -22335,10 +22343,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:5ff95f58ca19a6fc4bf1880a939d9c7c0d2159a5533a7e22a66151e87432b0743f6d21e8796da636ce12de57926bf58d3ab8a1bc9d957d14bc483a10c07e653d#npm:2.12.6", {\
-          "packageLocation": "./.yarn/__virtual__/graphql-tag-virtual-723c34be0b/0/cache/graphql-tag-npm-2.12.6-99a5a7f6de-b15162a3d6.zip/node_modules/graphql-tag/",\
+        ["virtual:47767f696ec587612fe645cf41f3221a1eb86bdb7ed327c13f86bbbb6a0cfa45fdc8260a4cf4e460540464e28a44fc49b63b62221474729fe9ed0636293b54ba#npm:2.12.6", {\
+          "packageLocation": "./.yarn/__virtual__/graphql-tag-virtual-5a3372472e/0/cache/graphql-tag-npm-2.12.6-99a5a7f6de-b15162a3d6.zip/node_modules/graphql-tag/",\
           "packageDependencies": [\
-            ["graphql-tag", "virtual:5ff95f58ca19a6fc4bf1880a939d9c7c0d2159a5533a7e22a66151e87432b0743f6d21e8796da636ce12de57926bf58d3ab8a1bc9d957d14bc483a10c07e653d#npm:2.12.6"],\
+            ["graphql-tag", "virtual:47767f696ec587612fe645cf41f3221a1eb86bdb7ed327c13f86bbbb6a0cfa45fdc8260a4cf4e460540464e28a44fc49b63b62221474729fe9ed0636293b54ba#npm:2.12.6"],\
             ["@types/graphql", null],\
             ["graphql", null],\
             ["tslib", "npm:2.4.0"]\
@@ -27143,10 +27151,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["micro-cors", "npm:0.1.1"],\
             ["mui-datatables", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.2.2"],\
             ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.3.1"],\
-            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1"],\
+            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.5"],\
             ["next-compose-plugins", "npm:2.2.1"],\
             ["next-optimized-images", "npm:2.6.2"],\
-            ["next-plugin-graphql", "npm:0.0.2"],\
             ["next-pwa", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.6.0"],\
             ["node-fetch", "npm:3.3.1"],\
             ["node-mocks-http", "npm:1.11.0"],\
@@ -27424,17 +27431,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["next-auth", [\
-        ["npm:4.20.1", {\
-          "packageLocation": "./.yarn/cache/next-auth-npm-4.20.1-33c67c6b5f-f341453371.zip/node_modules/next-auth/",\
+        ["npm:4.24.5", {\
+          "packageLocation": "./.yarn/cache/next-auth-npm-4.24.5-8428e11927-7cc4938512.zip/node_modules/next-auth/",\
           "packageDependencies": [\
-            ["next-auth", "npm:4.20.1"]\
+            ["next-auth", "npm:4.24.5"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1", {\
-          "packageLocation": "./.yarn/__virtual__/next-auth-virtual-b08069c45e/0/cache/next-auth-npm-4.20.1-33c67c6b5f-f341453371.zip/node_modules/next-auth/",\
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.5", {\
+          "packageLocation": "./.yarn/__virtual__/next-auth-virtual-b8c6a36db9/0/cache/next-auth-npm-4.24.5-8428e11927-7cc4938512.zip/node_modules/next-auth/",\
           "packageDependencies": [\
-            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.20.1"],\
+            ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.5"],\
             ["@babel/runtime", "npm:7.21.0"],\
             ["@panva/hkdf", "npm:1.0.4"],\
             ["@types/next", null],\
@@ -27448,7 +27455,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["oauth", "npm:0.9.15"],\
             ["openid-client", "npm:5.4.0"],\
             ["preact", "npm:10.10.5"],\
-            ["preact-render-to-string", "virtual:b08069c45e4cb0d847df80ea3fa3eb28728f9c476cbe669750a5bf787c210d8369bce7a78a71796c28d81ac15a272e442e4490704122a52d20e971bfc7e8544a#npm:5.2.2"],\
+            ["preact-render-to-string", "virtual:b8c6a36db99493d40c9ffef4e43448f2abdcd5f68e0bb05cda7e22dbef022832afeedf5d978c327b1d006898d46a7081c78defe893ad0b24212c1965b9beeddb#npm:5.2.2"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["uuid", "npm:8.3.2"]\
@@ -27487,16 +27494,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["img-loader", "virtual:2fe1ece027ff30f369c3de5509f3950f9c30afeb8f723ccea6047c930693bb4a30be2d19ba55fff56ed53904b395062f08e626c5a8ad4c5229c621d61994ab36#npm:3.0.2"],\
             ["raw-loader", "virtual:2fe1ece027ff30f369c3de5509f3950f9c30afeb8f723ccea6047c930693bb4a30be2d19ba55fff56ed53904b395062f08e626c5a8ad4c5229c621d61994ab36#npm:2.0.0"],\
             ["url-loader", "virtual:2fe1ece027ff30f369c3de5509f3950f9c30afeb8f723ccea6047c930693bb4a30be2d19ba55fff56ed53904b395062f08e626c5a8ad4c5229c621d61994ab36#npm:1.1.2"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["next-plugin-graphql", [\
-        ["npm:0.0.2", {\
-          "packageLocation": "./.yarn/cache/next-plugin-graphql-npm-0.0.2-5ff95f58ca-75f1e752ec.zip/node_modules/next-plugin-graphql/",\
-          "packageDependencies": [\
-            ["next-plugin-graphql", "npm:0.0.2"],\
-            ["graphql-tag", "virtual:5ff95f58ca19a6fc4bf1880a939d9c7c0d2159a5533a7e22a66151e87432b0743f6d21e8796da636ce12de57926bf58d3ab8a1bc9d957d14bc483a10c07e653d#npm:2.12.6"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -29095,10 +29092,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:b08069c45e4cb0d847df80ea3fa3eb28728f9c476cbe669750a5bf787c210d8369bce7a78a71796c28d81ac15a272e442e4490704122a52d20e971bfc7e8544a#npm:5.2.2", {\
-          "packageLocation": "./.yarn/__virtual__/preact-render-to-string-virtual-7f96371826/0/cache/preact-render-to-string-npm-5.2.2-b8f2c0c74e-2068b8ce48.zip/node_modules/preact-render-to-string/",\
+        ["virtual:b8c6a36db99493d40c9ffef4e43448f2abdcd5f68e0bb05cda7e22dbef022832afeedf5d978c327b1d006898d46a7081c78defe893ad0b24212c1965b9beeddb#npm:5.2.2", {\
+          "packageLocation": "./.yarn/__virtual__/preact-render-to-string-virtual-f87a90df8d/0/cache/preact-render-to-string-npm-5.2.2-b8f2c0c74e-2068b8ce48.zip/node_modules/preact-render-to-string/",\
           "packageDependencies": [\
-            ["preact-render-to-string", "virtual:b08069c45e4cb0d847df80ea3fa3eb28728f9c476cbe669750a5bf787c210d8369bce7a78a71796c28d81ac15a272e442e4490704122a52d20e971bfc7e8544a#npm:5.2.2"],\
+            ["preact-render-to-string", "virtual:b8c6a36db99493d40c9ffef4e43448f2abdcd5f68e0bb05cda7e22dbef022832afeedf5d978c327b1d006898d46a7081c78defe893ad0b24212c1965b9beeddb#npm:5.2.2"],\
             ["@types/preact", null],\
             ["preact", "npm:10.10.5"],\
             ["pretty-format", "npm:3.8.0"]\
@@ -30458,6 +30455,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/readable-stream-npm-3.6.0-23a4a5eb56-d4ea81502d.zip/node_modules/readable-stream/",\
           "packageDependencies": [\
             ["readable-stream", "npm:3.6.0"],\
+            ["inherits", "npm:2.0.4"],\
+            ["string_decoder", "npm:1.3.0"],\
+            ["util-deprecate", "npm:1.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:3.6.2", {\
+          "packageLocation": "./.yarn/cache/readable-stream-npm-3.6.2-d2a6069158-bdcbe6c22e.zip/node_modules/readable-stream/",\
+          "packageDependencies": [\
+            ["readable-stream", "npm:3.6.2"],\
             ["inherits", "npm:2.0.4"],\
             ["string_decoder", "npm:1.3.0"],\
             ["util-deprecate", "npm:1.0.2"]\
@@ -33984,10 +33991,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["undici", [\
-        ["npm:5.9.1", {\
-          "packageLocation": "./.yarn/cache/undici-npm-5.9.1-8d51813ba8-8acabbac8e.zip/node_modules/undici/",\
+        ["npm:5.28.2", {\
+          "packageLocation": "./.yarn/cache/undici-npm-5.28.2-35e326d9a1-f9e9335803.zip/node_modules/undici/",\
           "packageDependencies": [\
-            ["undici", "npm:5.9.1"]\
+            ["undici", "npm:5.28.2"],\
+            ["@fastify/busboy", "npm:2.1.0"]\
           ],\
           "linkType": "HARD"\
         }]\

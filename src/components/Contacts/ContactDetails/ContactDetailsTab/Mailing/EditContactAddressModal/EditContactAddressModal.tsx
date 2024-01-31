@@ -25,12 +25,16 @@ import {
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { AddressUpdateInput } from '../../../../../../../graphql/types.generated';
+import { AddressUpdateInput } from 'src/graphql/types.generated';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
+import {
+  AddressLocationEnum,
+  getLocalizedAddressLocation,
+} from '../AddressLocation';
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
@@ -65,16 +69,6 @@ interface EditContactAddressModalProps {
   address: ContactMailingFragment['addresses']['nodes'][0];
   contactId: string;
   handleClose: () => void;
-}
-
-enum AddressLocationEnum {
-  Home = 'Home',
-  Business = 'Business',
-  Mailing = 'Mailing',
-  Seasonal = 'Seasonal',
-  Other = 'Other',
-  Temporary = 'Temporary',
-  RepAddress = 'Rep Address',
 }
 
 export const EditContactAddressModal: React.FC<
@@ -286,9 +280,9 @@ export const EditContactAddressModal: React.FC<
                             <MenuItem
                               key={value}
                               value={value}
-                              aria-label={t(value)}
+                              aria-label={getLocalizedAddressLocation(t, value)}
                             >
-                              {t(value)}
+                              {getLocalizedAddressLocation(t, value)}
                             </MenuItem>
                           ))}
                         </Select>

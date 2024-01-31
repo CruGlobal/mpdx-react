@@ -29,7 +29,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { PersonCreateInput } from '../../../../../../../../../graphql/types.generated';
+import { PersonCreateInput } from 'src/graphql/types.generated';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 
@@ -62,6 +62,7 @@ interface Props {
   accountListId: string;
   handleClose: () => void;
   referredById?: string;
+  rows?: number;
 }
 
 interface ContactRow {
@@ -114,11 +115,12 @@ export const CreateMultipleContacts = ({
   accountListId,
   handleClose,
   referredById,
+  rows = 10,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const initialContacts: ContactTable = {
-    contacts: new Array(10).fill(defaultContact),
+    contacts: new Array(rows).fill(defaultContact),
   };
 
   const [createContact] = useCreateContactMutation();

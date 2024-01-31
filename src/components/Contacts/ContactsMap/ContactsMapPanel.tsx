@@ -19,9 +19,9 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
-import { StatusEnum } from '../../../../graphql/types.generated';
 
 interface ContactMapsPanelProps {
   data: Coordinates[] | undefined;
@@ -301,7 +301,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                                 <Box>
                                   <CruFocus>{t('Source:')}</CruFocus>
                                   <CruFocus>
-                                    {sourceToStr(contact?.source ?? '')}
+                                    {sourceToStr(t, contact?.source ?? '')}
                                   </CruFocus>
                                   <Typography display="inline">
                                     {contact?.date}

@@ -22,7 +22,7 @@ import {
 import {
   ContactCreateInput,
   PersonCreateInput,
-} from '../../../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { useCreateContactMutation } from './CreateContact.generated';
 
 interface Props {
@@ -144,11 +144,13 @@ const CreateContact = ({
     <Formik
       initialValues={initialContact}
       validationSchema={contactSchema}
+      validateOnMount
       onSubmit={onSubmit}
     >
       {({
         values: { name },
         handleChange,
+        handleBlur,
         handleSubmit,
         isSubmitting,
         isValid,
@@ -162,8 +164,10 @@ const CreateContact = ({
                 <LogFormControl>
                   <LogFormLabel required>{t('Name')}</LogFormLabel>
                   <LogTextField
+                    name="name"
                     value={name}
-                    onChange={handleChange('name')}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     fullWidth
                     multiline
                     placeholder={t('Last Name, First Name and Spouse Name')}

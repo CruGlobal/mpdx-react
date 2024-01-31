@@ -20,8 +20,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { ContactUpdateInput } from '../../../../../../../../graphql/types.generated';
-import Modal from '../../../../../../common/Modal/Modal';
+import Modal from 'src/components/common/Modal/Modal';
 import {
   ContactDetailsFragment,
   useUpdateContactDetailsMutation,
@@ -52,6 +51,13 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
+const contactSchema = yup.object({
+  name: yup.string().required(),
+  primaryPersonId: yup.string().required(),
+});
+
+type Attributes = yup.InferType<typeof contactSchema>;
+
 interface EditContactDetailsModalProps {
   contact: ContactDetailsFragment;
   accountListId: string;
@@ -72,20 +78,13 @@ export const EditContactDetailsModal: React.FC<
   const [updateContact, { loading: updating }] =
     useUpdateContactDetailsMutation();
 
-  const contactSchema: yup.SchemaOf<Pick<ContactUpdateInput, 'name' | 'id'>> =
-    yup.object({
-      name: yup.string().required(),
-      id: yup.string().required(),
-      primaryPersonId: yup.string().required(),
-    });
-
-  const onSubmit = async (attributes: ContactUpdateInput) => {
+  const onSubmit = async (attributes: Attributes) => {
     await updateContact({
       variables: {
         accountListId,
         attributes: {
+          id: contact.id,
           name: attributes.name,
-          id: attributes.id,
           primaryPersonId: attributes.primaryPersonId,
         },
       },
@@ -105,7 +104,6 @@ export const EditContactDetailsModal: React.FC<
       <Formik
         initialValues={{
           name: contact.name,
-          id: contact.id,
           primaryPersonId: contact?.primaryPerson?.id ?? '',
         }}
         validationSchema={contactSchema}
@@ -114,6 +112,7 @@ export const EditContactDetailsModal: React.FC<
         {({
           values: { name, primaryPersonId },
           handleChange,
+          handleBlur,
           handleSubmit,
           setFieldValue,
           isSubmitting,
@@ -126,9 +125,11 @@ export const EditContactDetailsModal: React.FC<
               <ContactEditContainer>
                 <ContactInputWrapper>
                   <TextField
+                    name="name"
                     label={t('Contact')}
                     value={name}
-                    onChange={handleChange('name')}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     inputProps={{ 'aria-label': t('Contact') }}
                     error={!!errors.name && touched.name}
                     helperText={
@@ -155,14 +156,12 @@ export const EditContactDetailsModal: React.FC<
                       }
                       fullWidth={true}
                     >
-                      {contact.people.nodes.map((person) => {
-                        return (
-                          <MenuItem
-                            key={person.id}
-                            value={person.id}
-                          >{`${person.firstName} ${person.lastName}`}</MenuItem>
-                        );
-                      })}
+                      {contact.people.nodes.map((person) => (
+                        <MenuItem
+                          key={person.id}
+                          value={person.id}
+                        >{`${person.firstName} ${person.lastName}`}</MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </ContactInputWrapper>

@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { TaskCommentCreateInput } from '../../../../../../graphql/types.generated';
+import { TaskCommentCreateInput } from 'src/graphql/types.generated';
 import { useUser } from '../../../../User/useUser';
 import {
   GetCommentsForTaskModalCommentListDocument,
@@ -101,6 +101,7 @@ const TaskModalCommentsListForm = ({
         <Formik
           initialValues={{ body: '' }}
           validationSchema={commentSchema}
+          validateOnMount
           onSubmit={onSubmit}
         >
           {({

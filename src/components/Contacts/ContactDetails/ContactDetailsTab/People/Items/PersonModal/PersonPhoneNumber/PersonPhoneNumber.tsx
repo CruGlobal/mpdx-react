@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import {
   PersonCreateInput,
   PersonUpdateInput,
-} from '../../../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { NewSocial } from '../PersonModal';
@@ -48,6 +48,7 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
     values: { phoneNumbers },
     setFieldValue,
     errors,
+    setFieldError,
   } = formikProps;
 
   const [primaryIndex, setPrimaryIndex] = useState(0);
@@ -64,11 +65,23 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
 
   ///todo make primary index a state
   useEffect(() => {
-    setPrimaryIndex(
-      phoneNumbers?.findIndex(
-        (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
-      ) ?? 0,
+    if (!phoneNumbers?.length) {
+      return;
+    }
+    const primaryPhoneIndex = phoneNumbers?.findIndex(
+      (phoneNumber) => phoneNumber.id === primaryPhoneNumber?.id,
     );
+    if (primaryPhoneIndex >= 0) {
+      setPrimaryIndex(primaryPhoneIndex);
+    }
+    phoneNumbers.forEach((phoneNumber, idx) => {
+      if (phoneNumber.number === null) {
+        setFieldError(
+          `phoneNumbers.${idx}.number`,
+          t('Please enter a valid phone number'),
+        );
+      }
+    });
   }, []);
 
   return phoneNumbers ? (

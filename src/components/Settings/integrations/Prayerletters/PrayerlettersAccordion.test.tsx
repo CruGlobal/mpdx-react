@@ -5,9 +5,9 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
+import * as Types from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import * as Types from '../../../../../graphql/types.generated';
 import { PrayerlettersAccordion } from './PrayerlettersAccordion';
 import { PrayerlettersAccountQuery } from './PrayerlettersAccount.generated';
 

@@ -1,16 +1,16 @@
 import React from 'react';
 import CakeIcon from '@mui/icons-material/Cake';
 import TextField from '@mui/material/TextField';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { FormikProps } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import {
   PersonCreateInput,
   PersonUpdateInput,
-} from '../../../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { NewSocial } from '../PersonModal';
@@ -39,7 +39,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
   return (
     <ModalSectionContainer>
       <ModalSectionIcon icon={<CakeIcon />} />
-      <MobileDatePicker<Date, DateTime>
+      <DatePicker<Date, DateTime>
         renderInput={(params) => (
           <TextField
             fullWidth

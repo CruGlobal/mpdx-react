@@ -14,8 +14,8 @@ import {
 import Skeleton from '@mui/material/Skeleton';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { NotificationTypeTypeEnum } from '../../../../../../../../graphql/types.generated';
 import { useAccountListId } from '../../../../../../../hooks/useAccountListId';
 import {
   currencyFormat,

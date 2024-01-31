@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { AddressCreateInput } from '../../../../../../../graphql/types.generated';
+import { AddressCreateInput } from 'src/graphql/types.generated';
 
 export const createAddressSchema: yup.SchemaOf<Omit<AddressCreateInput, 'id'>> =
   yup.object({

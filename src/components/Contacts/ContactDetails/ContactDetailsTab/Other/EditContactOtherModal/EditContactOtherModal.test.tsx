@@ -6,11 +6,11 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import { GetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
+import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
 import {
   GqlMockedProvider,
   gqlMock,
 } from '../../../../../../../__tests__/util/graphqlMocking';
-import { PreferredContactMethodEnum } from '../../../../../../../graphql/types.generated';
 import theme from '../../../../../../theme';
 import { ContactDetailProvider } from '../../../ContactDetailContext';
 import {

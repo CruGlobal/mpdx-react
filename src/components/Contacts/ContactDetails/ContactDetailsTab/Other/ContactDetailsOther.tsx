@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { PreferredContactMethodEnum } from '../../../../../../graphql/types.generated';
+import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
 import { ContactDetailEditIcon } from '../ContactDetailsTab';
 import { ContactOtherFragment } from './ContactOther.generated';
 

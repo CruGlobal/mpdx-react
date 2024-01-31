@@ -6,7 +6,7 @@ import {
   NotificationTypeEnum,
   ResultEnum,
   TaskUpdateInput,
-} from '../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import {
   CreateTaskCommentDocument,
   CreateTaskCommentMutation,

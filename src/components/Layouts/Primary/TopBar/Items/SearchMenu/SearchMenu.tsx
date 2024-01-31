@@ -22,7 +22,8 @@ import { useTranslation } from 'react-i18next';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
-} from '../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
@@ -134,7 +135,7 @@ const SearchMenu = (): ReactElement => {
     {
       name: t('Reports - Donations'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/PartnerGivingAnalysis`,
+      link: `/accountLists/${accountListId}/reports/partnerGivingAnalysis`,
     },
     {
       name: t('Reports - Monthly Report (Partner Currency)'),
@@ -320,7 +321,8 @@ const SearchMenu = (): ReactElement => {
                     <Box display="flex" flexDirection="column">
                       <Typography>{option.name}</Typography>
                       <Typography variant="subtitle2">
-                        {option.status && t(option.status)}
+                        {option.status &&
+                          contactPartnershipStatus[option.status]}
                       </Typography>
                     </Box>
                   </ClickableBox>
@@ -345,7 +347,9 @@ const SearchMenu = (): ReactElement => {
                   });
                 }
                 options.push({
-                  name: t(`Create a new contact for "${params.inputValue}"`),
+                  name: t('Create a new contact for "{{ name }}"', {
+                    name: params.inputValue,
+                  }),
                   icon: <AddIcon />,
                   link: 'createContact',
                 });

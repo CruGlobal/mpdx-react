@@ -1,5 +1,5 @@
 import { array, boolean, mixed, object, string } from 'yup';
-import { AddressWithPrimary } from '../../../../graphql/types.generated';
+import { AddressWithPrimary } from 'src/graphql/types.generated';
 
 const getAddressesResponseSchema = object({
   data: object({

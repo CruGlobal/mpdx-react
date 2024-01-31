@@ -1,16 +1,21 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
-import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
+import {
+  Panel,
+  PartnerGivingAnalysisReport,
+} from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
+import {
+  MultiPageMenu,
+  NavTypeEnum,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -18,10 +23,6 @@ import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
 import { ContactsPage } from '../../contacts/ContactsPage';
-
-const PartnerGivingAnalysisReportPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
 
 // The order here is also the sort order and the display order
 const reportFilters = [
@@ -37,13 +38,17 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
-  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
+  const [panelOpen, setPanelOpen] = useState<Panel | null>(null);
 
   const router = useRouter();
   const selectedContactId = getQueryParam(router.query, 'contactId');
 
   const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
+    setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
+  };
+
+  const handleFilterListToggle = () => {
+    setPanelOpen(panelOpen === Panel.Filters ? null : Panel.Filters);
   };
 
   const [activeFilters, setActiveFilters] =
@@ -52,6 +57,9 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
+    context: {
+      doNotBatch: true,
+    },
   });
 
   const filterGroups = useMemo(() => {
@@ -93,11 +101,18 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
         </title>
       </Head>
       {accountListId ? (
-        <PartnerGivingAnalysisReportPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={true}
-            leftPanel={
-              isNavListOpen && filtersLoading ? (
+        <SidePanelsLayout
+          isScrollBox={true}
+          leftPanel={
+            panelOpen === Panel.Navigation ? (
+              <MultiPageMenu
+                isOpen
+                selectedId="donations"
+                onClose={() => setPanelOpen(null)}
+                navType={NavTypeEnum.Reports}
+              />
+            ) : panelOpen === Panel.Filters ? (
+              filtersLoading ? (
                 <Loading loading />
               ) : (
                 <FilterPanel
@@ -105,36 +120,37 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
                   defaultExpandedFilterGroups={new Set(['Report Filters'])}
                   savedFilters={[]}
                   selectedFilters={activeFilters}
-                  onClose={() => setNavListOpen(false)}
+                  onClose={() => setPanelOpen(null)}
                   onSelectedFiltersChanged={setActiveFilters}
                 />
               )
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            mainContent={
-              <PartnerGivingAnalysisReport
-                accountListId={accountListId}
-                activeFilters={activeFilters}
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                onSelectContact={handleSelectContact}
-                title={t('Partner Giving Analysis')}
-                contactFilters={debouncedFilters}
-                contactDetailsOpen={!!selectedContactId}
-              />
-            }
-            rightPanel={
-              selectedContactId ? (
-                <ContactsPage>
-                  <ContactsRightPanel onClose={() => handleSelectContact('')} />
-                </ContactsPage>
-              ) : undefined
-            }
-            rightOpen={typeof selectedContactId !== 'undefined'}
-            rightWidth="60%"
-          />
-        </PartnerGivingAnalysisReportPageWrapper>
+            ) : undefined
+          }
+          leftOpen={panelOpen !== null}
+          leftWidth="290px"
+          mainContent={
+            <PartnerGivingAnalysisReport
+              accountListId={accountListId}
+              activeFilters={activeFilters}
+              panelOpen={panelOpen}
+              onFilterListToggle={handleFilterListToggle}
+              onNavListToggle={handleNavListToggle}
+              onSelectContact={handleSelectContact}
+              title={t('Partner Giving Analysis')}
+              contactFilters={debouncedFilters}
+              contactDetailsOpen={!!selectedContactId}
+            />
+          }
+          rightPanel={
+            selectedContactId ? (
+              <ContactsPage>
+                <ContactsRightPanel onClose={() => handleSelectContact('')} />
+              </ContactsPage>
+            ) : undefined
+          }
+          rightOpen={typeof selectedContactId !== 'undefined'}
+          rightWidth="60%"
+        />
       ) : (
         <Loading loading />
       )}

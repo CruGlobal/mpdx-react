@@ -25,7 +25,7 @@ import { OrganizationImportDataSyncModal } from './Modals/OrganizationImportData
 import { getOauthUrl } from './OrganizationService';
 import {
   useDeleteOrganizationAccountMutation,
-  useGetUsersOrganizationsQuery,
+  useGetUsersOrganizationsAccountsQuery,
   useSyncOrganizationAccountMutation,
 } from './Organizations.generated';
 
@@ -100,7 +100,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
     data,
     loading,
     refetch: refetchOrganizations,
-  } = useGetUsersOrganizationsQuery();
+  } = useGetUsersOrganizationsAccountsQuery();
   const organizations = data?.userOrganizationAccounts;
 
   const handleReconnect = async (organizationId) => {

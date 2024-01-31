@@ -1,15 +1,12 @@
 import React from 'react';
 import { ListItem, ListItemText } from '@mui/material';
 import TextField from '@mui/material/TextField';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { DateRangeInput, DaterangeFilter } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import {
-  DateRangeInput,
-  DaterangeFilter,
-} from '../../../../graphql/types.generated';
 
 interface Props {
   filter: DaterangeFilter;
@@ -42,7 +39,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
         />
       </ListItem>
       <ListItem>
-        <MobileDatePicker
+        <DatePicker
           renderInput={(params) => (
             <TextField
               placeholder={t('Start Date')}
@@ -63,7 +60,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
           }
           inputFormat={getDateFormatPattern(locale)}
         />
-        <MobileDatePicker
+        <DatePicker
           renderInput={(params) => (
             <TextField
               placeholder={t('End Date')}

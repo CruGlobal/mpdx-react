@@ -29,7 +29,6 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { DonationCreateInput } from '../../../../../../../../../graphql/types.generated';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
   useAddDonationMutation,
@@ -41,46 +40,47 @@ interface AddDonationProps {
   handleClose: () => void;
 }
 
-const donationSchema: yup.SchemaOf<Omit<DonationCreateInput, 'id'>> =
-  yup.object({
-    amount: yup
-      .number()
-      .typeError('Amount must be a valid number')
-      .required()
-      .test(
-        'Is amount in valid currency format?',
-        'Amount must be in valid currency format',
-        (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
-      )
-      .test(
-        'Is positive?',
-        'Must use a positive number for amount',
-        (value) => parseFloat(value as unknown as string) > 0,
-      ),
-    appealAmount: yup
-      .number()
-      .typeError('Appeal amount must be a valid number')
-      .nullable()
-      .test(
-        'Is appeal amount in valid currency format?',
-        'Appeal amount must be in valid currency format',
-        (amount) =>
-          !amount || /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
-      )
-      .test(
-        'Is positive?',
-        'Must use a positive number for appeal amount',
-        (value) => !value || parseFloat(value as unknown as string) > 0,
-      ),
-    appealId: yup.string().nullable(),
-    currency: yup.string().required(),
-    designationAccountId: yup.string().required(),
-    donationDate: yup.string().required(),
-    donorAccountId: yup.string().required(),
-    memo: yup.string().nullable(),
-    motivation: yup.string().nullable(),
-    paymentMethod: yup.string().nullable(),
-  });
+const donationSchema = yup.object({
+  amount: yup
+    .number()
+    .typeError('Amount must be a valid number')
+    .required()
+    .test(
+      'Is amount in valid currency format?',
+      'Amount must be in valid currency format',
+      (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
+    )
+    .test(
+      'Is positive?',
+      'Must use a positive number for amount',
+      (value) => parseFloat(value as unknown as string) > 0,
+    ),
+  appealAmount: yup
+    .number()
+    .typeError('Appeal amount must be a valid number')
+    .nullable()
+    .test(
+      'Is appeal amount in valid currency format?',
+      'Appeal amount must be in valid currency format',
+      (amount) =>
+        !amount || /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
+    )
+    .test(
+      'Is positive?',
+      'Must use a positive number for appeal amount',
+      (value) => !value || parseFloat(value as unknown as string) > 0,
+    ),
+  appealId: yup.string().nullable(),
+  currency: yup.string().required(),
+  designationAccountId: yup.string().required(),
+  donationDate: yup.string().required(),
+  donorAccountId: yup.string().required(),
+  memo: yup.string().nullable(),
+  motivation: yup.string().nullable(),
+  paymentMethod: yup.string().nullable(),
+});
+
+type Attributes = yup.InferType<typeof donationSchema>;
 
 const LogFormLabel = styled(FormLabel)(({ theme }) => ({
   margin: theme.spacing(1, 0),
@@ -129,7 +129,7 @@ export const AddDonation = ({
     data?.designationAccounts &&
     data?.designationAccounts.flatMap((x) => x.designationAccounts);
 
-  const initialDonation: Omit<DonationCreateInput, 'id'> = {
+  const initialDonation = {
     amount: 0,
     appealAmount: null,
     appealId: null,
@@ -142,7 +142,7 @@ export const AddDonation = ({
     paymentMethod: null,
   };
 
-  const onSubmit = async (attributes: Omit<DonationCreateInput, 'id'>) => {
+  const onSubmit = async (attributes: Attributes) => {
     const amount = (attributes.amount as unknown as string).replace(
       /[^\d.-]/g,
       '',
@@ -187,6 +187,7 @@ export const AddDonation = ({
     >
       {({
         values: { appealId },
+        handleBlur,
         setFieldValue,
         isSubmitting,
         isValid,
@@ -393,6 +394,7 @@ export const AddDonation = ({
                             onChange={(donorAccountId) =>
                               setFieldValue('donorAccountId', donorAccountId)
                             }
+                            onBlur={handleBlur('donorAccountId')}
                             value={field.value}
                             autocompleteId="partner-account-input"
                             labelId="partner-account-label"

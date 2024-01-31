@@ -12,16 +12,16 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { FormikProps } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import {
   PersonCreateInput,
   PersonUpdateInput,
-} from '../../../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { RingIcon } from '../../../../../../RingIcon';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
@@ -128,7 +128,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       {/* Anniversary Section */}
       <ModalSectionContainer>
         <ModalSectionIcon icon={<RingIcon />} />
-        <MobileDatePicker<Date, DateTime>
+        <DatePicker<Date, DateTime>
           renderInput={(params) => (
             <TextField
               fullWidth

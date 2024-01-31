@@ -7,25 +7,31 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useDebouncedValue } from 'src/hooks/useDebounce';
-import { useMassSelection } from 'src/hooks/useMassSelection';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   PartnerGivingAnalysisReportContact,
   ReportContactFilterSetInput,
   SortDirection,
-} from '../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { useMassSelection } from 'src/hooks/useMassSelection';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import type { Order } from '../Reports.type';
 
+export enum Panel {
+  Navigation = 'Navigation',
+  Filters = 'Filters',
+}
+
 interface Props {
   accountListId: string;
-  isNavListOpen: boolean;
+  panelOpen: Panel | null;
+  onNavListToggle: () => void;
+  onFilterListToggle: () => void;
   activeFilters?: ReportContactFilterSetInput;
   contactDetailsOpen: boolean;
-  onNavListToggle: () => void;
   onSelectContact: (contactId: string) => void;
   title: string;
   contactFilters?: ReportContactFilterSetInput;
@@ -35,10 +41,11 @@ export type Contact = PartnerGivingAnalysisReportContact;
 
 export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   accountListId,
-  isNavListOpen,
+  panelOpen,
+  onNavListToggle,
+  onFilterListToggle,
   activeFilters,
   contactDetailsOpen,
-  onNavListToggle,
   onSelectContact,
   title,
   contactFilters: filters,
@@ -134,7 +141,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   return (
     <Box>
       <MultiPageHeader
-        isNavListOpen={isNavListOpen}
+        isNavListOpen={panelOpen === Panel.Navigation}
         onNavListToggle={onNavListToggle}
         title={title}
         headerType={HeaderTypeEnum.Report}
@@ -142,8 +149,8 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       <ListHeader
         page="report"
         activeFilters={isActiveFilters}
-        filterPanelOpen={isNavListOpen}
-        toggleFilterPanel={onNavListToggle}
+        filterPanelOpen={panelOpen === Panel.Filters}
+        toggleFilterPanel={onFilterListToggle}
         contactDetailsOpen={contactDetailsOpen}
         onCheckAllItems={toggleSelectAll}
         showShowingCount={false}

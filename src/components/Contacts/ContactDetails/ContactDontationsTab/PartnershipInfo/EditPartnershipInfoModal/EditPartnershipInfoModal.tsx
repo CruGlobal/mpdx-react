@@ -19,7 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -29,12 +29,6 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useLocale } from 'src/hooks/useLocale';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
-import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import {
   ContactReferralToMeInput,
   ContactUpdateInput,
@@ -42,7 +36,13 @@ import {
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
-} from '../../../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import Modal from '../../../../../common/Modal/Modal';
@@ -525,7 +525,7 @@ export const EditPartnershipInfoModal: React.FC<
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <MobileDatePicker
+                <DatePicker
                   renderInput={(params) => (
                     <TextField
                       fullWidth
@@ -619,7 +619,7 @@ export const EditPartnershipInfoModal: React.FC<
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <MobileDatePicker
+                <DatePicker
                   renderInput={(params) => (
                     <TextField
                       fullWidth

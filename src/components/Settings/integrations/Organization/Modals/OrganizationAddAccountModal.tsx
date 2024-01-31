@@ -20,11 +20,11 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
+import { Organization } from 'src/graphql/types.generated';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { articles, showArticle } from 'src/lib/helpScout';
 import theme from 'src/theme';
-import { Organization } from '../../../../../../graphql/types.generated';
 import {
   OrganizationTypesEnum,
   getOrganizationType,
@@ -186,6 +186,7 @@ export const OrganizationAddAccountModal: React.FC<
           password: '',
         }}
         validationSchema={OrganizationSchema}
+        validateOnMount
         onSubmit={onSubmit}
       >
         {({
@@ -282,7 +283,7 @@ export const OrganizationAddAccountModal: React.FC<
                         {t('click here to log out of {{appName}}', { appName })}
                       </Link>
                       {t(
-                        ' so you can log back in with your offical key account.',
+                        ' so you can log back in with your official key account.',
                       )}
                     </li>
                   </ol>

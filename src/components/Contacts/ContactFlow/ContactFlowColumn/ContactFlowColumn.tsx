@@ -15,7 +15,7 @@ import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   IdValue,
-} from '../../../../../graphql/types.generated';
+} from 'src/graphql/types.generated';
 import { useContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../../theme';
 import { useLoadConstantsQuery } from '../../../Constants/LoadConstants.generated';

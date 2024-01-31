@@ -8,7 +8,7 @@ query getOrganizations {
   }
 }
 
-query GetUsersOrganizations {
+query GetUsersOrganizationsAccounts {
   userOrganizationAccounts {
     organization {
       apiClass
