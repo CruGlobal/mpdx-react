@@ -2,12 +2,12 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { getToken } from 'next-auth/jwt';
+import ssrClient from 'pages/api/utils/ssrClient';
 import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { suggestArticles } from 'src/lib/helpScout';
 import Dashboard from '../../src/components/Dashboard';
 import useGetAppSettings from '../../src/hooks/useGetAppSettings';
 import useTaskModal from '../../src/hooks/useTaskModal';
-import { ssrClient } from '../../src/lib/client';
 import {
   GetDashboardDocument,
   GetDashboardQuery,

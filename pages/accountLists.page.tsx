@@ -3,10 +3,10 @@ import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import { getToken } from 'next-auth/jwt';
 import { useTranslation } from 'react-i18next';
+import ssrClient from 'pages/api/utils/ssrClient';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import AccountLists from '../src/components/AccountLists';
 import BaseLayout from '../src/components/Layouts/Primary';
-import { ssrClient } from '../src/lib/client';
 import {
   GetAccountListsDocument,
   GetAccountListsQuery,

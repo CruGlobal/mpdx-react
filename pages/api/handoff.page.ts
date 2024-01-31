@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { ssrClient } from 'src/lib/client';
+import ssrClient from 'pages/api/utils/ssrClient';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,

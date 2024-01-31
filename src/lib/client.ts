@@ -1,7 +1,6 @@
 import {
   ApolloClient,
   InMemoryCache,
-  NormalizedCacheObject,
   createHttpLink,
   split,
 } from '@apollo/client';
@@ -110,29 +109,6 @@ const clientErrorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const serverErrorLink = onError(({ graphQLErrors, networkError }) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const Rollbar = require('rollbar');
-  const rollbarServerAccessToken = process.env.ROLLBAR_SERVER_ACCESS_TOKEN;
-  const rollbar = new Rollbar({
-    accessToken: rollbarServerAccessToken,
-    environment: 'react_development_server',
-    captureUncaught: true,
-    captureUnhandledRejections: true,
-    enabled: !!rollbarServerAccessToken,
-  });
-
-  if (graphQLErrors && rollbarServerAccessToken) {
-    graphQLErrors.map(({ message, extensions }) => {
-      rollbar.error(message, extensions);
-    });
-  }
-
-  if (networkError && rollbarServerAccessToken) {
-    rollbar.error(networkError);
-  }
-});
-
 if (process.browser && process.env.NODE_ENV === 'production') {
   persistCache({
     cache,
@@ -151,27 +127,5 @@ const client = new ApolloClient({
     },
   },
 });
-
-export const ssrClient = (
-  apiToken?: string,
-): ApolloClient<NormalizedCacheObject> => {
-  const httpLink = createHttpLink({
-    uri: process.env.API_URL,
-    fetch,
-    headers: {
-      Authorization: apiToken ? `Bearer ${apiToken}` : null,
-      Accept: 'application/json',
-    },
-  });
-
-  return new ApolloClient({
-    link: serverErrorLink.concat(httpLink),
-    ssrMode: true,
-    assumeImmutableResults: true,
-    cache: new InMemoryCache({
-      possibleTypes: generatedIntrospection.possibleTypes,
-    }),
-  });
-};
 
 export default client;

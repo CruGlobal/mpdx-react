@@ -1,10 +1,10 @@
 import { getToken } from 'next-auth/jwt';
 import { createMocks } from 'node-mocks-http';
-import { ssrClient } from 'src/lib/client';
+import ssrClient from 'pages/api/utils/ssrClient';
 import handoff from '../../../pages/api/handoff.page';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
-jest.mock('src/lib/client', () => ({ ssrClient: jest.fn() }));
+jest.mock('pages/api/utils/ssrClient', () => jest.fn());
 
 describe('/api/handoff', () => {
   const OLD_ENV = process.env;
