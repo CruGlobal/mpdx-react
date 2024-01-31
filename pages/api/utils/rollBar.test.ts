@@ -17,16 +17,20 @@ describe('RollBar', () => {
   });
 
   it('should set enviroment to development', () => {
-    process.env.NODE_ENV = 'development';
+    (process.env as any).NODE_ENV = 'development';
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const rollbar = require('./rollBar').default;
     expect(rollbar.options.environment).toEqual('react_development_server');
   });
 
   it('should set enviroment to production', () => {
-    process.env.NODE_ENV = 'production';
+    (process.env as any).NODE_ENV = 'production';
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const rollbar = require('./rollBar').default;
     expect(rollbar.options.environment).toEqual('react_production_server');
   });
 });
+
+// Added so Lint thinks it's a module
+// eslint-disable-next-line jest/no-export
+export {};
