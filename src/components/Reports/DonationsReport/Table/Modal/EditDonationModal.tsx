@@ -2,11 +2,8 @@ import React, { ReactElement, useState } from 'react';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import {
   CircularProgress,
-  Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
-  DialogTitle,
   FormControl,
   Grid,
   InputAdornment,
@@ -15,7 +12,7 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +31,7 @@ import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
+import { DeleteConfirmation } from '../../../../common/Modal/DeleteConfirmation/DeleteConfirmation';
 import { Donation } from '../DonationsReportTable';
 import {
   useDeleteDonationMutation,
@@ -180,6 +178,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
           },
           setFieldValue,
           handleChange,
+          handleBlur,
           handleSubmit,
           isSubmitting,
           errors,
@@ -190,9 +189,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
               <FormFieldsGridContainer>
                 <Grid item xs={12} md={6}>
                   <TextField
+                    name="convertedAmount"
                     value={convertedAmount}
                     label={t('Amount')}
-                    onChange={handleChange('convertedAmount')}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     fullWidth
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
@@ -250,7 +251,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
-                    <MobileDatePicker
+                    <DatePicker
                       renderInput={(params) => (
                         <TextField fullWidth {...params} />
                       )}
@@ -395,28 +396,13 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 )}
                 {t('Save')}
               </SubmitButton>
-
-              <Dialog
+              <DeleteConfirmation
+                deleteType={t('donation')}
                 open={removeDialogOpen}
-                aria-labelledby={t('Remove task confirmation')}
-                fullWidth
-                maxWidth="sm"
-              >
-                <DialogTitle>{t('Confirm')}</DialogTitle>
-                <DialogContent dividers>
-                  <DialogContentText>
-                    {t('Are you sure you wish to delete this donation?')}
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <CancelButton onClick={() => setRemoveDialogOpen(false)}>
-                    {t('No')}
-                  </CancelButton>
-                  <SubmitButton type="button" onClick={handleDelete}>
-                    {t('Yes')}
-                  </SubmitButton>
-                </DialogActions>
-              </Dialog>
+                onClickConfirm={handleDelete}
+                onClickDecline={() => setRemoveDialogOpen(false)}
+                aria-labelledby={t('Remove donation confirmation')}
+              />
             </DialogActions>
           </form>
         )}

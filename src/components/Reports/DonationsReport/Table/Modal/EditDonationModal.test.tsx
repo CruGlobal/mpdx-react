@@ -266,16 +266,16 @@ describe('DonationsReportTable', () => {
     );
     await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
     expect(
-      queryByText('Are you sure you wish to delete this donation?'),
+      queryByText('Are you sure you wish to delete the selected donation?'),
     ).not.toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Delete' }));
     expect(
-      getByText('Are you sure you wish to delete this donation?'),
+      getByText('Are you sure you wish to delete the selected donation?'),
     ).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'No' }));
     await waitFor(() =>
       expect(
-        queryByText('Are you sure you wish to delete this donation?'),
+        queryByText('Are you sure you wish to delete the selected donation?'),
       ).not.toBeInTheDocument(),
     );
   });
@@ -302,11 +302,11 @@ describe('DonationsReportTable', () => {
       );
     await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
     expect(
-      queryByText('Are you sure you wish to delete this donation?'),
+      queryByText('Are you sure you wish to delete the selected donation?'),
     ).not.toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Delete' }));
     expect(
-      getByText('Are you sure you wish to delete this donation?'),
+      getByText('Are you sure you wish to delete the selected donation?'),
     ).toBeInTheDocument();
     expect(queryByTestId('loading-circle')).not.toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Yes' }));

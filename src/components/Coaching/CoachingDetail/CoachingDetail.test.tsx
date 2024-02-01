@@ -11,7 +11,18 @@ import {
   beforeTestResizeObserver,
 } from 'src/utils/tests/windowResizeObserver';
 import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
-import { LoadCoachingDetailQuery } from './LoadCoachingDetail.generated';
+import {
+  LoadAccountListCoachingDetailQuery,
+  LoadCoachingDetailQuery,
+} from './LoadCoachingDetail.generated';
+import {
+  LoadAccountListCoachingCommitmentsQuery,
+  LoadCoachingCommitmentsQuery,
+} from './OutstandingCommitments/OutstandingCommitments.generated';
+import {
+  LoadAccountListCoachingNeedsQuery,
+  LoadCoachingNeedsQuery,
+} from './OutstandingNeeds/OutstandingNeeds.generated';
 
 jest.mock('./AppointmentResults/AppointmentResults');
 
@@ -34,7 +45,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider<{ LoadCoachingDetail: LoadCoachingDetailQuery }>
+      <GqlMockedProvider<{
+        LoadCoachingDetail: LoadCoachingDetailQuery;
+        LoadAccountListCoachingDetail: LoadAccountListCoachingDetailQuery;
+        LoadCoachingCommitments: LoadCoachingCommitmentsQuery;
+        LoadAccountListCoachingCommitments: LoadAccountListCoachingCommitmentsQuery;
+        LoadCoachingNeeds: LoadCoachingNeedsQuery;
+        LoadAccountListCoachingNeeds: LoadAccountListCoachingNeedsQuery;
+      }>
         mocks={{
           LoadCoachingDetail: {
             coachingAccountList: {
@@ -48,6 +66,38 @@ const TestComponent: React.FC<TestComponentProps> = ({
               name: 'John Doe',
               currency: 'USD',
               monthlyGoal,
+            },
+          },
+          LoadCoachingCommitments: {
+            coachingAccountList: {
+              contacts: {
+                nodes: [{ pledgeCurrency: 'USD' }],
+              },
+            },
+          },
+          LoadAccountListCoachingCommitments: {
+            accountList: {
+              contacts: {
+                nodes: [{ pledgeCurrency: 'USD' }],
+              },
+            },
+          },
+          LoadCoachingNeeds: {
+            coachingAccountList: {
+              primaryAppeal: {
+                pledges: {
+                  nodes: [{ amountCurrency: 'USD' }],
+                },
+              },
+            },
+          },
+          LoadAccountListCoachingNeeds: {
+            accountList: {
+              primaryAppeal: {
+                pledges: {
+                  nodes: [{ amountCurrency: 'USD' }],
+                },
+              },
             },
           },
         }}

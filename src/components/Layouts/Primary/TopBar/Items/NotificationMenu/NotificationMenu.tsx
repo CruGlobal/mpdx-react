@@ -248,6 +248,7 @@ const NotificationMenu = ({
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
+        disableRestoreFocus={true}
         classes={{ paper: classes.menuPaper, list: classes.menuList }}
       >
         <NotificationContent

@@ -3,6 +3,7 @@ import React, {
   ReactElement,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -24,7 +25,7 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
-import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { AnimatePresence, motion } from 'framer-motion';
 import { debounce } from 'lodash/fp';
@@ -126,18 +127,21 @@ const TaskModalLogForm = ({
   onClose,
   defaultValues,
 }: Props): ReactElement => {
-  const initialTask: Attributes = {
-    activityType: defaultValues?.activityType ?? null,
-    subject: defaultValues?.subject ?? '',
-    contactIds: defaultValues?.contactIds ?? [],
-    completedAt: DateTime.local().toISO(),
-    userId: defaultValues?.userId ?? null,
-    tagList: defaultValues?.tagList ?? [],
-    result: defaultValues?.result ?? ResultEnum.Completed,
-    nextAction: defaultValues?.nextAction ?? null,
-    location: '',
-    comment: '',
-  };
+  const initialTask: Attributes = useMemo(
+    () => ({
+      activityType: defaultValues?.activityType ?? null,
+      subject: defaultValues?.subject ?? '',
+      contactIds: defaultValues?.contactIds ?? [],
+      completedAt: DateTime.local().toISO(),
+      userId: defaultValues?.userId ?? null,
+      tagList: defaultValues?.tagList ?? [],
+      result: defaultValues?.result ?? ResultEnum.Completed,
+      nextAction: defaultValues?.nextAction ?? null,
+      location: '',
+      comment: '',
+    }),
+    [],
+  );
 
   const { t } = useTranslation();
   const locale = useLocale();
@@ -152,10 +156,13 @@ const TaskModalLogForm = ({
   });
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const { update } = useUpdateTasksQueries();
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (inputRef.current) (inputRef.current as HTMLInputElement).focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, []);
+
   const handleSearchTermChange = useCallback<
     ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
   >(
@@ -242,6 +249,8 @@ const TaskModalLogForm = ({
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={onSubmit}
+      validateOnMount
+      enableReinitialize
     >
       {({
         values: {
@@ -258,6 +267,7 @@ const TaskModalLogForm = ({
         },
         setFieldValue,
         handleChange,
+        handleBlur,
         handleSubmit,
         isSubmitting,
         isValid,
@@ -269,9 +279,11 @@ const TaskModalLogForm = ({
             <FormFieldsGridContainer>
               <Grid item>
                 <TextField
+                  name="subject"
                   label={t('Task Name')}
                   value={subject}
-                  onChange={handleChange('subject')}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   fullWidth
                   multiline
                   inputProps={{ 'aria-label': t('Subject') }}
@@ -416,7 +428,7 @@ const TaskModalLogForm = ({
                 <FormControl fullWidth>
                   <Grid container spacing={2}>
                     <Grid xs={6} item>
-                      <MobileDatePicker
+                      <DatePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
@@ -441,7 +453,7 @@ const TaskModalLogForm = ({
                       />
                     </Grid>
                     <Grid xs={6} item>
-                      <MobileTimePicker
+                      <TimePicker
                         renderInput={(params) => (
                           <TextField fullWidth {...params} />
                         )}
