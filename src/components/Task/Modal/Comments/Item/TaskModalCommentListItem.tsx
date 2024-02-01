@@ -5,25 +5,52 @@ import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
+  TaskRowFragment,
+  TaskRowFragmentDoc,
+} from 'src/components/Task/TaskRow/TaskRow.generated';
+import {
   CancelButton,
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { CommentUpdateMutationInput } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import theme from '../../../../../theme';
-import { commentSchema } from '../Form/TaskModalCommentsListForm';
+import { CommentSchemaAttributes, commentSchema } from '../Form/commentSchema';
 import {
   GetCommentsForTaskModalCommentListDocument,
   GetCommentsForTaskModalCommentListQuery,
+  GetCommentsForTaskModalCommentListQueryVariables,
+  TaskModalCommentFragment,
+  TaskModalCommentFragmentDoc,
 } from '../TaskListComments.generated';
 import { useDeleteCommentMutation } from './DeleteTaskComment.generated';
 import { useUpdateCommentMutation } from './UpdateTaskComment.generated';
 
+interface DetailsProps {
+  comment: TaskModalCommentFragment;
+}
+
+const Details: React.FC<DetailsProps> = ({ comment }) => {
+  const locale = useLocale();
+
+  return (
+    <Box>
+      <CommentInfoText display="inline">
+        {comment.person?.firstName} {comment.person?.lastName}
+      </CommentInfoText>{' '}
+      <Tooltip placement="bottom" title={comment.createdAt} arrow>
+        <CommentInfoText display="inline">
+          {dateFormat(DateTime.fromISO(comment.createdAt), locale)}
+        </CommentInfoText>
+      </Tooltip>
+    </Box>
+  );
+};
+
 interface Props {
-  comment?: GetCommentsForTaskModalCommentListQuery['task']['comments']['nodes'][0];
+  comment: TaskModalCommentFragment;
   taskId: string;
 }
 
@@ -37,43 +64,97 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
   taskId,
 }: Props) => {
   const { t } = useTranslation();
-  const locale = useLocale();
-  const accountListId = useAccountListId();
+  const accountListId = useAccountListId() ?? '';
   const [deleteComment] = useDeleteCommentMutation();
   const [updateComment] = useUpdateCommentMutation();
-  const [body, setBody] = useState(comment?.body);
   const [editing, setEditing] = useState<boolean>(false);
 
   const deleteTaskComment = async (): Promise<void> => {
+    const commentId = comment.id;
     await deleteComment({
       variables: {
-        taskId: taskId ?? '',
-        commentId: comment?.id || '',
+        taskId,
+        commentId,
       },
-      refetchQueries: [
-        {
-          query: GetCommentsForTaskModalCommentListDocument,
-          variables: { accountListId, taskId },
+      optimisticResponse: {
+        deleteComment: {
+          id: commentId,
         },
-      ],
+      },
+      update: (cache, { data }) => {
+        if (!data) {
+          return null;
+        }
+
+        cache.updateQuery<
+          GetCommentsForTaskModalCommentListQuery,
+          GetCommentsForTaskModalCommentListQueryVariables
+        >(
+          {
+            query: GetCommentsForTaskModalCommentListDocument,
+            variables: {
+              accountListId,
+              taskId,
+            },
+          },
+          (taskComments) =>
+            taskComments && {
+              task: {
+                ...taskComments.task,
+                comments: {
+                  ...taskComments.task.comments,
+                  nodes: [
+                    ...taskComments.task.comments.nodes.filter(
+                      (comment) => comment.id !== data.deleteComment?.id,
+                    ),
+                  ],
+                },
+              },
+            },
+        );
+
+        cache.updateFragment<TaskRowFragment>(
+          {
+            id: `Task:${taskId}`,
+            fragment: TaskRowFragmentDoc,
+          },
+          (taskRow) =>
+            taskRow && {
+              ...taskRow,
+              comments: {
+                ...taskRow.comments,
+                totalCount: taskRow.comments.totalCount - 1,
+              },
+            },
+        );
+      },
     });
   };
 
-  const onSubmit = async (
-    values: Pick<CommentUpdateMutationInput, 'body'>,
-  ): Promise<void> => {
+  const onSubmit = async (values: CommentSchemaAttributes): Promise<void> => {
     await updateComment({
       variables: {
-        taskId: taskId ?? '',
-        commentId: comment?.id || '',
+        taskId,
+        commentId: comment.id,
         body: values.body,
       },
-      refetchQueries: [
-        {
-          query: GetCommentsForTaskModalCommentListDocument,
-          variables: { accountListId, taskId },
-        },
-      ],
+      update: (cache, { data }) => {
+        if (!data) {
+          return null;
+        }
+
+        cache.updateFragment<TaskModalCommentFragment>(
+          {
+            id: `Comment:${comment.id}`,
+            fragment: TaskModalCommentFragmentDoc,
+          },
+          (comment) =>
+            comment && {
+              ...comment,
+              body: values.body,
+            },
+        );
+      },
     });
     toggleEditing();
   };
@@ -82,31 +163,10 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
     setEditing((prevState) => !prevState);
   };
 
-  const cancelEdit = (): void => {
-    toggleEditing();
-    setBody(comment?.body);
-  };
-
-  const Details: React.FC = () => {
-    return (
-      <Box>
-        <CommentInfoText display="inline">
-          {comment?.person?.firstName} {comment?.person?.lastName}{' '}
-        </CommentInfoText>
-        <Tooltip placement="bottom" title={comment?.createdAt || ''} arrow>
-          <CommentInfoText display="inline">
-            {comment?.createdAt &&
-              dateFormat(DateTime.fromISO(comment.createdAt), locale)}
-          </CommentInfoText>
-        </Tooltip>
-      </Box>
-    );
-  };
-
   return editing ? (
     <Box>
       <Formik
-        initialValues={{ body: body || '' }}
+        initialValues={{ body: comment.body }}
         validationSchema={commentSchema}
         onSubmit={onSubmit}
       >
@@ -114,6 +174,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
           values: { body },
           handleChange,
           handleSubmit,
+          resetForm,
           isSubmitting,
           isValid,
         }): ReactElement => (
@@ -140,9 +201,15 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
               justifyContent="space-between"
               mb={2}
             >
-              <Details />
+              <Details comment={comment} />
               <Box>
-                <CancelButton size="small" onClick={cancelEdit} />
+                <CancelButton
+                  size="small"
+                  onClick={() => {
+                    toggleEditing();
+                    resetForm();
+                  }}
+                />
                 <SubmitButton size="small" disabled={!isValid || isSubmitting}>
                   {t('Save')}
                 </SubmitButton>
@@ -155,20 +222,14 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
   ) : (
     <>
       <Box borderBottom={`1px solid ${theme.palette.cruGrayLight.main}`}>
-        <Typography>{body}</Typography>
+        <Typography>{comment.body}</Typography>
       </Box>
       <Box width="100%" display="flex" justifyContent="space-between" mb={2}>
-        <Details />
+        <Details comment={comment} />
         <Box>
-          {editing ? (
-            <SubmitButton size="small" type="button">
-              {t('Save')}
-            </SubmitButton>
-          ) : (
-            <SubmitButton size="small" type="button" onClick={toggleEditing}>
-              {t('Edit')}
-            </SubmitButton>
-          )}
+          <SubmitButton size="small" type="button" onClick={toggleEditing}>
+            {t('Edit')}
+          </SubmitButton>
           <DeleteButton size="small" onClick={deleteTaskComment} />
         </Box>
       </Box>
