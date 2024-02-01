@@ -30,6 +30,7 @@ const customJestConfig = {
     '{src,pages}/**/*.{js,jsx,ts,tsx}',
     '!pages/api/**',
     '!**/*.generated.ts',
+    '!**/*.mock.*',
     '!**/*.stories.*',
     '!**/*.test.*',
   ],
