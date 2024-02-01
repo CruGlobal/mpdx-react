@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, ReactElement } from 'react';
+import { addTypenameToDocument } from '@apollo/client/utilities';
 import { mergeSchemas } from '@graphql-tools/schema';
 import {
   DocumentNode,
@@ -113,7 +114,7 @@ const ergonomockFragment = <TData,>(
   `;
   const res = ergonomock(
     generateSchemaWithFragmentsAsQueries(),
-    wrappedQuery,
+    addTypenameToDocument(wrappedQuery),
     options &&
       ({
         ...options,
@@ -136,7 +137,7 @@ const ergonomockQuery = <TData,>(
   query: DocumentNode,
   options?: ErgonomockOptions,
 ): TData => {
-  const res = ergonomock(schema, query, {
+  const res = ergonomock(schema, addTypenameToDocument(query), {
     ...options,
     seed,
   }) as ExecutionResult;
