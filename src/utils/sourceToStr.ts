@@ -1,23 +1,18 @@
-type sources =
-  | 'US Donation Services'
-  | 'DonorHub'
-  | 'MPDX'
-  | 'Tnt Import'
-  | 'Google Import';
+import { TFunction } from 'react-i18next';
 
-export const sourceToStr = (source: string): sources => {
+export const sourceToStr = (t: TFunction, source: string): string => {
   switch (source) {
     case 'Siebel':
-      return 'US Donation Services';
+      return t('US Donation Services');
     case 'DataServer':
-      return 'DonorHub';
+      return t('DonorHub');
     case 'MPDX':
-      return 'MPDX';
+      return t('MPDX');
     case 'TntImport':
-      return 'Tnt Import';
+      return t('Tnt Import');
     case 'GoogleImport':
-      return 'Google Import';
+      return t('Google Import');
     default:
-      return 'MPDX';
+      return t('MPDX');
   }
 };

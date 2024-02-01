@@ -178,6 +178,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       person.anniversaryDay,
     );
 
+    const hasNullPhoneNumbers = person.phoneNumbers.nodes?.some(
+      (phone) => phone.number === null,
+    );
+
     return (
       <ContactPersonContainer
         key={person.id}
@@ -215,18 +219,27 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
           </ContactPersonRowContainer>
           {/* Phone Number */}
           {person.primaryPhoneNumber !== null ? (
-            <ContactPersonRowContainer>
+            <ContactPersonRowContainer data-testid="primaryPhoneNumber">
               <ContactPersonIconContainer>
                 <Phone color="disabled" />
               </ContactPersonIconContainer>
               <Typography variant="subtitle1">
-                <Link href={`tel:${person.primaryPhoneNumber?.number}`}>
-                  {person.primaryPhoneNumber?.number}
-                </Link>
+                {person.primaryPhoneNumber?.number !== null ? (
+                  <Link href={`tel:${person.primaryPhoneNumber?.number}`}>
+                    {person.primaryPhoneNumber?.number}
+                  </Link>
+                ) : (
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'statusDanger.main' }}
+                  >
+                    {t('Invalid number. Please fix.')}
+                  </Typography>
+                )}
               </Typography>
               {person.primaryPhoneNumber?.location ? (
                 <Typography variant="caption" marginLeft={1}>
-                  {t(person.primaryPhoneNumber.location)}
+                  {person.primaryPhoneNumber.location}
                 </Typography>
               ) : null}
             </ContactPersonRowContainer>
@@ -261,6 +274,13 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               </ContactPersonIconContainer>
               <Typography variant="subtitle1">{anniversary}</Typography>
             </ContactPersonRowContainer>
+          )}
+          {hasNullPhoneNumbers && (
+            <Typography variant="caption" sx={{ color: 'statusDanger.main' }}>
+              {t(`{{name}} has one or multiple invalid numbers. Please fix.`, {
+                name: person.firstName,
+              })}
+            </Typography>
           )}
         </ContactPersonTextContainer>
         {editPersonModalOpen === person.id ? (

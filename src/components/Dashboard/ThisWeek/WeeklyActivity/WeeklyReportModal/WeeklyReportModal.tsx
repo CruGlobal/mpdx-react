@@ -153,6 +153,11 @@ export const WeeklyReportModal = ({
         {questions.map((question, index) => {
           const answerId = getAnswer(question.id)?.id ?? null;
           const currentQuestion = initialValues[index];
+
+          const schema = yup.object().shape({
+            [question.id]: yup.string().required(t('Required')),
+          });
+
           return (
             <React.Fragment key={question.id}>
               {activeStep === index + 1 && (
@@ -161,10 +166,8 @@ export const WeeklyReportModal = ({
                     initialValues={{
                       [currentQuestion[0]]: currentQuestion[1],
                     }}
-                    validationSchema={yup.object().shape({
-                      [question.id]: yup.string().required(t('Required')),
-                    })}
-                    onSubmit={(values: Record<string, string>) => {
+                    validationSchema={schema}
+                    onSubmit={(values: yup.InferType<typeof schema>) => {
                       saveAnswer(answerId, question, values[question.id]);
                       handleWeeklyReportNext();
                     }}
@@ -174,6 +177,7 @@ export const WeeklyReportModal = ({
                       handleSubmit,
                       isValid,
                       handleChange,
+                      handleBlur,
                       touched,
                       values,
                     }) => (
@@ -230,6 +234,7 @@ export const WeeklyReportModal = ({
                               label={question.prompt}
                               name={question.id}
                               onChange={handleChange}
+                              onBlur={handleBlur}
                               rows={3}
                               value={values[question.id]}
                               variant="outlined"

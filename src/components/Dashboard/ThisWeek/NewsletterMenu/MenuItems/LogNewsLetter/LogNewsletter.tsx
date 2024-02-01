@@ -92,6 +92,8 @@ const taskSchema = yup.object({
   subject: yup.string().required(),
 });
 
+type Attributes = yup.InferType<typeof taskSchema>;
+
 const LogNewsletter = ({
   accountListId,
   handleClose,
@@ -103,13 +105,13 @@ const LogNewsletter = ({
 
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
 
-  const initialTask: yup.InferType<typeof taskSchema> = {
+  const initialTask = {
     activityType: ActivityTypeEnum.NewsletterPhysical,
     completedAt: null,
     subject: '',
   };
 
-  const onSubmit = async (attributes: yup.InferType<typeof taskSchema>) => {
+  const onSubmit = async (attributes: Attributes) => {
     const body = commentBody.trim();
 
     // Create two tasks when the activity type is both
@@ -147,12 +149,14 @@ const LogNewsletter = ({
     <Formik
       initialValues={initialTask}
       validationSchema={taskSchema}
+      validateOnMount
       onSubmit={onSubmit}
     >
       {({
         values: { activityType, subject, completedAt },
         setFieldValue,
         handleChange,
+        handleBlur,
         handleSubmit,
         isSubmitting,
         isValid,
@@ -172,8 +176,10 @@ const LogNewsletter = ({
                 <LogFormControl>
                   <LogFormLabel required>{t('Subject')}</LogFormLabel>
                   <LogTextField
+                    name="subject"
                     value={subject}
-                    onChange={handleChange('subject')}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     fullWidth
                     multiline
                     inputProps={{ 'aria-label': t('Subject') }}
