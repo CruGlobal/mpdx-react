@@ -301,7 +301,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
                                 <Box>
                                   <CruFocus>{t('Source:')}</CruFocus>
                                   <CruFocus>
-                                    {sourceToStr(contact?.source ?? '')}
+                                    {sourceToStr(t, contact?.source ?? '')}
                                   </CruFocus>
                                   <Typography display="inline">
                                     {contact?.date}

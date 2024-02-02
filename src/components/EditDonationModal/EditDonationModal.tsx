@@ -15,7 +15,7 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -77,11 +77,16 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
-  const { data: appeals, fetchMore } = useEditDonationModalGetAppealsQuery({
+  const {
+    data: appeals,
+    error,
+    fetchMore,
+  } = useEditDonationModalGetAppealsQuery({
     variables: { accountListId },
   });
   const { loading: loadingAppeals } = useFetchAllPages({
     fetchMore,
+    error,
     pageInfo: appeals?.appeals.pageInfo,
   });
 
@@ -184,7 +189,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     name="convertedAmount"
                     value={convertedAmount}
                     label={t('Amount')}
-                    onChange={handleChange('convertedAmount')}
+                    onChange={handleChange}
                     onBlur={handleBlur}
                     fullWidth
                     inputProps={{ 'aria-label': t('Amount') }}
@@ -241,7 +246,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
-                    <MobileDatePicker
+                    <DatePicker
                       renderInput={(params) => (
                         <TextField fullWidth {...params} />
                       )}

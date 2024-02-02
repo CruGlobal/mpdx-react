@@ -36,7 +36,7 @@ describe('TagsSummary', () => {
           </ThemeProvider>,
         );
 
-        expect(getAllByTestId('Line')).toHaveLength(4);
+        expect(getAllByTestId('MultilineSkeletonLine')).toHaveLength(4);
       });
 
       it('renders empty', async () => {
@@ -78,7 +78,7 @@ describe('TagsSummary', () => {
                   reportsTagHistories: {
                     periods: [
                       {
-                        endDate: '2013-01-31',
+                        startDate: '2013-01-01',
                         tags: [
                           {
                             id: 'tag-1',
@@ -93,7 +93,7 @@ describe('TagsSummary', () => {
                         ],
                       },
                       {
-                        endDate: '2013-02-28',
+                        startDate: '2013-02-01',
                         tags: [
                           {
                             id: 'tag-1',
@@ -108,7 +108,7 @@ describe('TagsSummary', () => {
                         ],
                       },
                       {
-                        endDate: '2013-01-31',
+                        startDate: '2013-01-01',
                         tags: [
                           {
                             id: 'tag-1',
@@ -145,8 +145,8 @@ describe('TagsSummary', () => {
         expect(rows).toHaveLength(3);
 
         expect(rows[0].children[0]).toHaveTextContent('Tag Name');
-        expect(rows[0].children[1]).toHaveTextContent('Jan 31');
-        expect(rows[0].children[2]).toHaveTextContent('Feb 28');
+        expect(rows[0].children[1]).toHaveTextContent('Jan 1');
+        expect(rows[0].children[2]).toHaveTextContent('Feb 1');
         expect(rows[0].children[3]).toHaveTextContent('Total');
 
         expect(rows[1].children[0]).toHaveTextContent('Tag 1');

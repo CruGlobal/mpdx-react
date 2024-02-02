@@ -157,12 +157,13 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
     }),
     [accountListId, startDate, endDate, designationAccounts],
   );
-  const { data, loading, fetchMore } = useGetDonationsTableQuery({
+  const { data, error, loading, fetchMore } = useGetDonationsTableQuery({
     variables,
   });
   // Load the rest of the pages asynchronously so that we can calculate the total donations
   useFetchAllPages({
     fetchMore,
+    error,
     pageInfo: data?.donations.pageInfo,
   });
 

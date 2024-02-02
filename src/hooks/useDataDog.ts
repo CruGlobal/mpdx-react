@@ -7,7 +7,7 @@ declare global {
 export const isDataDogConfigured = (): boolean => {
   if (typeof window === 'undefined') return false;
   return !!(
-    process.env.DATADOG_CONFIGURED &&
+    process.env.DATADOG_CONFIGURED === 'true' &&
     (window?.DD_RUM ?? {}).hasOwnProperty('getUser')
   );
 };

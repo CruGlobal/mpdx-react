@@ -26,7 +26,7 @@ describe('MultiPageHeader', () => {
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText('CA111')).toBeInTheDocument();
     userEvent.click(
-      getByRole('button', { hidden: true, name: 'Toggle Filter Panel' }),
+      getByRole('button', { hidden: true, name: 'Toggle Navigation Panel' }),
     );
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });

@@ -101,6 +101,7 @@ const TaskModalCommentsListForm = ({
         <Formik
           initialValues={{ body: '' }}
           validationSchema={commentSchema}
+          validateOnMount
           onSubmit={onSubmit}
         >
           {({

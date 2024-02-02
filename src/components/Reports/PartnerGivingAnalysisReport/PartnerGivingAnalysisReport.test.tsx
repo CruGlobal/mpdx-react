@@ -11,12 +11,15 @@ import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisRepo
 const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
+const onFilterListToggle = jest.fn();
 const onSelectContact = jest.fn();
 const activeFilters = {};
 const defaultProps = {
   accountListId,
   title,
+  panelOpen: null,
   onNavListToggle,
+  onFilterListToggle,
   onSelectContact,
   contactDetailsOpen: false,
   activeFilters,
@@ -220,7 +223,7 @@ describe('PartnerGivingAnalysisReport', () => {
     const { queryByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider>
-          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -240,7 +243,7 @@ describe('PartnerGivingAnalysisReport', () => {
         }>
           mocks={mocks}
         >
-          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -256,33 +259,6 @@ describe('PartnerGivingAnalysisReport', () => {
       11,
     );
     expect(getByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
-  });
-
-  it('nav list closed', async () => {
-    const { getByTestId, queryByTestId, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-        >
-          <PartnerGivingAnalysisReport
-            {...defaultProps}
-            isNavListOpen={false}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    expect(queryByText(title)).toBeInTheDocument();
-    expect(getByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
-    expect(queryByTestId('MultiPageMenu')).toBeNull();
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
@@ -304,7 +280,7 @@ describe('PartnerGivingAnalysisReport', () => {
         }>
           mocks={mocksWithZeroContacts}
         >
-          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -329,10 +305,7 @@ describe('PartnerGivingAnalysisReport', () => {
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <PartnerGivingAnalysisReport
-            {...defaultProps}
-            isNavListOpen={false}
-          />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -395,7 +368,7 @@ describe('PartnerGivingAnalysisReport', () => {
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -433,7 +406,7 @@ describe('PartnerGivingAnalysisReport', () => {
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -474,7 +447,7 @@ describe('PartnerGivingAnalysisReport', () => {
         }>
           mocks={mocks}
         >
-          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -539,7 +512,7 @@ describe('PartnerGivingAnalysisReport', () => {
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -564,7 +537,7 @@ describe('PartnerGivingAnalysisReport', () => {
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <PartnerGivingAnalysisReport {...defaultProps} isNavListOpen={true} />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
@@ -584,25 +557,37 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(getByText('CA$86.47')).toBeInTheDocument();
   });
 
-  it('renders nav list icon and onclick triggers onNavListToggle', async () => {
-    const { getByTestId } = render(
+  it('renders nav list icon and onClick triggers onNavListToggle', async () => {
+    const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
           GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
         }>
           mocks={mocks}
         >
-          <PartnerGivingAnalysisReport
-            {...defaultProps}
-            onNavListToggle={onNavListToggle}
-            isNavListOpen={true}
-          />
+          <PartnerGivingAnalysisReport {...defaultProps} />
         </GqlMockedProvider>
       </ThemeProvider>,
     );
 
-    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('ReportsFilterIcon'));
-    await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
+    userEvent.click(getByRole('button', { name: 'Toggle Navigation Panel' }));
+    expect(onNavListToggle).toHaveBeenCalled();
+  });
+
+  it('renders filter list icon and onClick triggers onFilterListToggle', async () => {
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
+          mocks={mocks}
+        >
+          <PartnerGivingAnalysisReport {...defaultProps} />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
+    expect(onFilterListToggle).toHaveBeenCalled();
   });
 });
