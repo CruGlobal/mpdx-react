@@ -16,7 +16,7 @@ import {
 } from './ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
-import { ContactDonationsTab } from './ContactDontationsTab/ContactDonationsTab';
+import { ContactDonationsTab } from './ContactDonationsTab/ContactDonationsTab';
 import { ContactNotesTab } from './ContactNotesTab/ContactNotesTab';
 import { ContactReferralTab } from './ContactReferralTab/ContactReferralTab';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
