@@ -53,6 +53,10 @@ fragment ContactDonation on Donation {
   amount {
     ...DonationMoney
   }
+  appeal {
+    id
+    name
+  }
 }
 
 fragment DonationMoney on Money {

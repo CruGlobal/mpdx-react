@@ -15,6 +15,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { EditDonationModal } from 'src/components/EditDonationModal/EditDonationModal';
 import { EditDonationModalDonationFragment } from 'src/components/EditDonationModal/EditDonationModal.generated';
+import { useGetAccountListCurrencyQuery } from 'src/components/Reports/DonationsReport/GetDonationsTable.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import {
   currencyFormat,
@@ -50,6 +51,19 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
   const [editingDonation, setEditingDonation] =
     useState<EditDonationModalDonationFragment | null>(null);
 
+  const { data: accountListData } = useGetAccountListCurrencyQuery({
+    variables: {
+      accountListId,
+    },
+  });
+
+  const hasForeignCurrencies =
+    accountListData &&
+    data?.contact.donations.nodes.some(
+      (donation) =>
+        donation.amount.currency !== accountListData.accountList.currency,
+    );
+
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -68,8 +82,11 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
               <TableRow>
                 <TableCell>{t('Date')}</TableCell>
                 <TableCell>{t('Amount')}</TableCell>
-                <TableCell>{t('Converted Amount')}</TableCell>
+                {hasForeignCurrencies && (
+                  <TableCell>{t('Converted Amount')}</TableCell>
+                )}
                 <TableCell>{t('Method')}</TableCell>
+                <TableCell>{t('Appeal')}</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -89,14 +106,17 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                       locale,
                     )}
                   </TableCell>
-                  <TableCell>
-                    {currencyFormat(
-                      donation.amount.convertedAmount,
-                      donation.amount.convertedCurrency,
-                      locale,
-                    )}
-                  </TableCell>
+                  {hasForeignCurrencies && (
+                    <TableCell>
+                      {currencyFormat(
+                        donation.amount.convertedAmount,
+                        donation.amount.convertedCurrency,
+                        locale,
+                      )}
+                    </TableCell>
+                  )}
                   <TableCell>{donation.paymentMethod}</TableCell>
+                  <TableCell>{donation.appeal?.name}</TableCell>
                   <TableCell>
                     <IconButton
                       color="primary"
