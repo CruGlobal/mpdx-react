@@ -2,11 +2,8 @@ import React, { ReactElement, useState } from 'react';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import {
   CircularProgress,
-  Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
-  DialogTitle,
   FormControl,
   Grid,
   InputAdornment,
@@ -35,6 +32,7 @@ import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
+import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
   EditDonationModalDonationFragment,
   useDeleteDonationMutation,
@@ -396,28 +394,13 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 )}
                 {t('Save')}
               </SubmitButton>
-
-              <Dialog
+              <DeleteConfirmation
+                deleteType={t('donation')}
                 open={removeDialogOpen}
-                aria-labelledby={t('Remove task confirmation')}
-                fullWidth
-                maxWidth="sm"
-              >
-                <DialogTitle>{t('Confirm')}</DialogTitle>
-                <DialogContent dividers>
-                  <DialogContentText>
-                    {t('Are you sure you wish to delete this donation?')}
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <CancelButton onClick={() => setRemoveDialogOpen(false)}>
-                    {t('No')}
-                  </CancelButton>
-                  <SubmitButton type="button" onClick={handleDelete}>
-                    {t('Yes')}
-                  </SubmitButton>
-                </DialogActions>
-              </Dialog>
+                onClickConfirm={handleDelete}
+                onClickDecline={() => setRemoveDialogOpen(false)}
+                aria-labelledby={t('Remove donation confirmation')}
+              />
             </DialogActions>
           </form>
         )}
