@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
+import EditIcon from '@mui/icons-material/Edit';
 import {
-  Box,
   Button,
+  IconButton,
   Table,
+  TableBody,
   TableCell,
   TableHead,
   TableRow,
@@ -11,6 +13,8 @@ import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { EditDonationModal } from 'src/components/EditDonationModal/EditDonationModal';
+import { EditDonationModalDonationFragment } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import {
   currencyFormat,
@@ -43,13 +47,15 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
       contactId: contactId,
     },
   });
+  const [editingDonation, setEditingDonation] =
+    useState<EditDonationModalDonationFragment | null>(null);
 
   const { t } = useTranslation();
   const locale = useLocale();
 
   return (
-    <Box>
-      {loading ? (
+    <>
+      {loading && !data ? (
         <>
           <DonationLoadingPlaceHolder />
           <DonationLoadingPlaceHolder />
@@ -64,35 +70,46 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                 <TableCell>{t('Amount')}</TableCell>
                 <TableCell>{t('Converted Amount')}</TableCell>
                 <TableCell>{t('Method')}</TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableHead>
-            {data?.contact.donations.nodes
-              ? data?.contact.donations.nodes.map((donation) => (
-                  <TableRow key={donation.id}>
-                    <TableCell>
-                      {dateFormat(
-                        DateTime.fromISO(donation.donationDate),
-                        locale,
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {currencyFormat(
-                        donation.amount.amount,
-                        donation.amount.currency,
-                        locale,
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {currencyFormat(
-                        donation.amount.convertedAmount,
-                        donation.amount.convertedCurrency,
-                        locale,
-                      )}
-                    </TableCell>
-                    <TableCell>{donation.paymentMethod}</TableCell>
-                  </TableRow>
-                ))
-              : null}
+            <TableBody>
+              {data?.contact.donations.nodes.map((donation) => (
+                <TableRow key={donation.id}>
+                  <TableCell>
+                    {dateFormat(
+                      DateTime.fromISO(donation.donationDate),
+                      locale,
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {currencyFormat(
+                      donation.amount.amount,
+                      donation.amount.currency,
+                      locale,
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {currencyFormat(
+                      donation.amount.convertedAmount,
+                      donation.amount.convertedCurrency,
+                      locale,
+                    )}
+                  </TableCell>
+                  <TableCell>{donation.paymentMethod}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => {
+                        setEditingDonation(donation);
+                      }}
+                    >
+                      <EditIcon data-testid={`edit-${donation.id}`} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
           {!loading && data?.contact.donations.pageInfo.hasNextPage ? (
             <LoadMoreButton
@@ -103,28 +120,6 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                   variables: {
                     after: data.contact.donations.pageInfo.endCursor,
                   },
-                  updateQuery: (prev, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) {
-                      return prev;
-                    }
-                    return {
-                      ...prev,
-                      ...fetchMoreResult,
-                      contact: {
-                        ...prev.contact,
-                        ...fetchMoreResult.contact,
-                        donations: {
-                          ...prev.contact.donations,
-                          ...fetchMoreResult.contact.donations,
-                          pageInfo: fetchMoreResult.contact.donations.pageInfo,
-                          nodes: [
-                            ...prev.contact.donations.nodes,
-                            ...fetchMoreResult.contact.donations.nodes,
-                          ],
-                        },
-                      },
-                    };
-                  },
                 });
               }}
             >
@@ -133,6 +128,13 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
           ) : null}
         </>
       )}
-    </Box>
+      {editingDonation && (
+        <EditDonationModal
+          open
+          donation={editingDonation}
+          handleClose={() => setEditingDonation(null)}
+        />
+      )}
+    </>
   );
 };
