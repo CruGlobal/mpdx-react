@@ -41,6 +41,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     <SearchInput
       size="small"
       variant="outlined"
+      type="search"
       onChange={(e) => handleOnChange(e.target.value)}
       placeholder={placeholder ?? t('Search')}
       value={currentSearchTerm}
