@@ -24,6 +24,7 @@ import {
   ContactUpdateInput,
   SendNewsletterEnum,
 } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import Modal from '../../../../../common/Modal/Modal';
 import { useEditMailingInfoMutation } from './EditMailingInfoModal.generated';
@@ -60,8 +61,11 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
   handleClose,
 }): ReactElement<EditMailingInfoModalProps> => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const [editMailingInfo, { loading: updating }] = useEditMailingInfoMutation();
+  // Add additional language locales here, for multiline TextField support
+  const multilineLocales = ['de'];
 
   const mailingInfoSchema: yup.SchemaOf<
     Pick<
@@ -135,6 +139,7 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
                 <ContactInputWrapper>
                   <TextField
                     label={t('Envelope Name Line')}
+                    multiline={multilineLocales.includes(locale)}
                     value={envelopeGreeting}
                     onChange={handleChange('envelopeGreeting')}
                     inputProps={{ 'aria-label': t('Envelope Name Line') }}
