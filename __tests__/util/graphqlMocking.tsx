@@ -17,28 +17,35 @@ import {
   ergonomock,
 } from 'graphql-ergonomock';
 import { DefaultMockResolvers } from 'graphql-ergonomock/dist/mock';
+import random from 'graphql-ergonomock/dist/utils/random';
 import { gql } from 'graphql-tag';
-import seedrandom from 'seedrandom';
 import { DeepPartial } from 'ts-essentials';
 import schema from 'src/graphql/schema.graphql';
 import { createCache } from 'src/lib/apollo/cache';
 
 const seed = 'seed';
-const rng = seedrandom(seed);
 
 const resolvers: DefaultMockResolvers = {
   ISO8601DateTime: () =>
     // Time in 2022
     new Date(
-      1641016800000 /* Jan 1, 2022 */ + Math.floor(rng() * 365 * 86400) * 1000,
+      1641016800000 /* Jan 1, 2022 */ + random.integer(365 * 86400 * 1000),
     ).toISOString(),
   ISO8601Date: () =>
     // Date in 2022
     new Date(
-      1641016800000 /* Jan 1, 2022 */ + Math.floor(rng() * 365) * 86400 * 1000,
+      1641016800000 /* Jan 1, 2022 */ + random.integer(365 * 86400 * 1000),
     )
       .toISOString()
       .slice(0, 10),
+  String: (_root, _args, _context, info) => {
+    if (info.fieldName.toLowerCase().endsWith('currency')) {
+      // Return a random valid currency
+      const currencies = ['USD', 'CAD', 'EUR'];
+      return currencies[random.integer(currencies.length)];
+    }
+    return random.words();
+  },
 };
 
 export const GqlMockedProvider = <TData,>({
