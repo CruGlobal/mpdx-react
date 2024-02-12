@@ -14,7 +14,7 @@ import {
   GetDashboardQueryVariables,
 } from './GetDashboard.generated';
 
-interface Props {
+export interface AccountListIdPageProps {
   data: GetDashboardQuery;
   accountListId: string;
   modal: string;
@@ -24,7 +24,7 @@ const AccountListIdPage = ({
   data,
   accountListId,
   modal,
-}: Props): ReactElement => {
+}: AccountListIdPageProps): ReactElement => {
   const { appName } = useGetAppSettings();
   const { openTaskModal } = useTaskModal();
   const [selectedMenuItem, setSelectedMenuItem] = useState(-1);

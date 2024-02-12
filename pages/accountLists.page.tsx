@@ -13,11 +13,11 @@ import {
   GetAccountListsQueryVariables,
 } from './GetAccountLists.generated';
 
-interface Props {
+export type AccountListsPageProps = {
   data?: GetAccountListsQuery;
-}
+};
 
-const AccountListsPage = ({ data }: Props): ReactElement => {
+const AccountListsPage = ({ data }: AccountListsPageProps): ReactElement => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
 
@@ -37,7 +37,7 @@ AccountListsPage.layout = BaseLayout;
 
 export const getServerSideProps: GetServerSideProps = async ({
   req,
-}): Promise<GetServerSidePropsResult<Props>> => {
+}): Promise<GetServerSidePropsResult<AccountListsPageProps>> => {
   const jwtToken = (await getToken({
     req,
     secret: process.env.JWT_SECRET as string,
