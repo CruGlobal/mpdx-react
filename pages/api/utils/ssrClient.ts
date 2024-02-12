@@ -21,7 +21,9 @@ const serverErrorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const ssrClient = (apiToken?: string): ApolloClient<NormalizedCacheObject> => {
+const makeSsrClient = (
+  apiToken?: string,
+): ApolloClient<NormalizedCacheObject> => {
   const httpLink = createHttpLink({
     uri: process.env.API_URL,
     fetch,
@@ -41,4 +43,4 @@ const ssrClient = (apiToken?: string): ApolloClient<NormalizedCacheObject> => {
   });
 };
 
-export default ssrClient;
+export default makeSsrClient;

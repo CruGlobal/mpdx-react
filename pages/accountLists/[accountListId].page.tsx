@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { getToken } from 'next-auth/jwt';
-import ssrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'pages/api/utils/ssrClient';
 import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { suggestArticles } from 'src/lib/helpScout';
 import Dashboard from '../../src/components/Dashboard';
@@ -92,8 +92,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   try {
-    const client = await ssrClient(jwtToken?.apiToken);
-    const response = await client.query<
+    const ssrClient = await makeSsrClient(jwtToken?.apiToken);
+    const response = await ssrClient.query<
       GetDashboardQuery,
       GetDashboardQueryVariables
     >({

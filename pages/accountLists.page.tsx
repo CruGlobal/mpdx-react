@@ -3,7 +3,7 @@ import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import { getToken } from 'next-auth/jwt';
 import { useTranslation } from 'react-i18next';
-import ssrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'pages/api/utils/ssrClient';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import AccountLists from '../src/components/AccountLists';
 import BaseLayout from '../src/components/Layouts/Primary';
@@ -53,8 +53,8 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     };
   }
-  const client = await ssrClient(apiToken);
-  const response = await client.query<
+  const ssrClient = await makeSsrClient(apiToken);
+  const response = await ssrClient.query<
     GetAccountListsQuery,
     GetAccountListsQueryVariables
   >({

@@ -1,6 +1,6 @@
 import { getToken } from 'next-auth/jwt';
 import { createMocks } from 'node-mocks-http';
-import ssrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'pages/api/utils/ssrClient';
 import handoff from '../../../pages/api/handoff.page';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
@@ -30,7 +30,7 @@ describe('/api/handoff', () => {
         apiToken: 'accessToken',
         userID: 'sessionUserID',
       });
-      (ssrClient as jest.Mock).mockReturnValue({
+      (makeSsrClient as jest.Mock).mockReturnValue({
         query: jest.fn().mockReturnValue({
           data: { user: { defaultAccountList } },
         }),
@@ -103,7 +103,7 @@ describe('/api/handoff', () => {
       });
 
       it('returns redirect but gets first accountList id', async () => {
-        (ssrClient as jest.Mock).mockReturnValue({
+        (makeSsrClient as jest.Mock).mockReturnValue({
           query: jest.fn().mockReturnValue({
             data: {
               user: { defaultAccountList: '' },
