@@ -7,7 +7,6 @@ import {
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { onError } from '@apollo/client/link/error';
 import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
-import fetch from 'isomorphic-fetch';
 import { signOut } from 'next-auth/react';
 import generatedIntrospection from 'src/graphql/possibleTypes.generated';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
