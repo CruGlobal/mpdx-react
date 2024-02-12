@@ -21,8 +21,10 @@ import {
 import { useDeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
 
 const newPartnerAccountSchema = yup.object({
-  accountNumber: yup.string(),
+  accountNumber: yup.string().required(),
 });
+
+type Attributes = yup.InferType<typeof newPartnerAccountSchema>;
 
 const ContactPartnerAccountsContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1, 1, 1, 5),
@@ -76,7 +78,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
     enqueueSnackbar('Partner account deleted!', { variant: 'success' });
   };
 
-  const onAddPartnerAccount = async (fields) => {
+  const onAddPartnerAccount = async (fields: Attributes) => {
     await updateContact({
       variables: {
         accountListId,
@@ -108,17 +110,19 @@ export const ContactDetailsPartnerAccounts: React.FC<
     <ContactPartnerAccountsContainer>
       <ActionButton onClick={() => setShowForm(!showForm)}>
         <Add />
-        Add Partner Account
+        {t('Add Partner Account')}
       </ActionButton>
       {showForm && (
         <Formik
           initialValues={{ accountNumber: '' }}
           validationSchema={newPartnerAccountSchema}
+          validateOnMount
           onSubmit={onAddPartnerAccount}
         >
           {({
             values: { accountNumber },
             handleChange,
+            handleBlur,
             handleSubmit,
             isSubmitting,
             isValid,
@@ -127,9 +131,11 @@ export const ContactDetailsPartnerAccounts: React.FC<
           }): ReactElement => (
             <form onSubmit={handleSubmit} noValidate>
               <TextField
+                name="accountNumber"
                 label={t('Account Number')}
                 value={accountNumber}
-                onChange={handleChange('accountNumber')}
+                onChange={handleChange}
+                onBlur={handleBlur}
                 inputProps={{ 'aria-label': t('Account Number') }}
                 error={!!errors.accountNumber && touched.accountNumber}
                 helperText={

@@ -62,6 +62,8 @@ export const PersonName: React.FC<PersonNameProps> = ({
   const {
     values: { firstName, lastName, title, suffix },
     handleChange,
+    handleBlur,
+    touched,
     errors,
   } = formikProps;
 
@@ -114,12 +116,18 @@ export const PersonName: React.FC<PersonNameProps> = ({
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <TextField
+              name="firstName"
               label={t('First Name')}
               value={firstName}
-              onChange={handleChange('firstName')}
+              onChange={handleChange}
+              onBlur={handleBlur}
               inputProps={{ 'aria-label': t('First Name') }}
-              error={!!errors.firstName}
-              helperText={errors.firstName && t('First Name is required')}
+              error={touched.firstName && !!errors.firstName}
+              helperText={
+                touched.firstName &&
+                errors.firstName &&
+                t('First Name is required')
+              }
               fullWidth
               required
             />
@@ -130,8 +138,6 @@ export const PersonName: React.FC<PersonNameProps> = ({
               value={lastName}
               onChange={handleChange('lastName')}
               inputProps={{ 'aria-label': t('Last Name') }}
-              error={!!errors.lastName}
-              helperText={errors.lastName && t('Last Name is required')}
               fullWidth
               required
             />

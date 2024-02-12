@@ -16,6 +16,7 @@ import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
+import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { Activity } from './Activity/Activity';
@@ -30,6 +31,7 @@ import {
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import { OutstandingCommitments } from './OutstandingCommitments/OutstandingCommitments';
 import { OutstandingNeeds } from './OutstandingNeeds/OutstandingNeeds';
+import { TagsSummary } from './TagsSummary/TagsSummary';
 import { WeeklyReport } from './WeeklyReport/WeeklyReport';
 
 export enum CoachingPeriodEnum {
@@ -213,6 +215,16 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 period={period}
               />
               <ActivitySummary accountListId={accountListId} period={period} />
+              <TagsSummary
+                accountListId={accountListId}
+                period={period}
+                association={ReportsTagHistoriesAssociationEnum.Contacts}
+              />
+              <TagsSummary
+                accountListId={accountListId}
+                period={period}
+                association={ReportsTagHistoriesAssociationEnum.Tasks}
+              />
               <Activity
                 accountListId={accountListId}
                 accountListType={accountListType}

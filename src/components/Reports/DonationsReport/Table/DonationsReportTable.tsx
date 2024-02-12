@@ -18,25 +18,22 @@ import {
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridSortModel,
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { EditDonationModal } from 'src/components/EditDonationModal/EditDonationModal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
 import {
-  ExpectedDonationDataFragment,
+  DonationTableRowFragment,
   GetDonationsTableQueryVariables,
   useGetAccountListCurrencyQuery,
   useGetDonationsTableQuery,
 } from '../GetDonationsTable.generated';
-import { EditDonationModal } from './Modal/EditDonationModal';
+
+type RenderCell = GridColDef<DonationRow>['renderCell'];
 
 interface DonationReportTableProps {
   accountListId: string;
@@ -89,21 +86,35 @@ const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
   alignSelf: 'center',
 }));
 
-export interface Donation {
+interface DonationRow {
+  id: string;
   date: DateTime;
   contactId: string | null;
-  partnerId: string;
-  partner: string;
+  donorAccountName: string;
   currency: string;
   foreignCurrency: string;
   convertedAmount: number;
   foreignAmount: number;
-  designationAccount: { id: string; name: string };
-  method: string | null;
-  id: string;
-  appeal: ExpectedDonationDataFragment['appeal'];
-  appealAmount: number | null;
+  designationAccount: string;
+  paymentMethod: string | null;
+  appealName: string | null;
+  rawDonation: DonationTableRowFragment;
 }
+
+const createDonationRow = (data: DonationTableRowFragment): DonationRow => ({
+  id: data.id,
+  date: DateTime.fromISO(data.donationDate),
+  contactId: data.donorAccount.contacts.nodes[0]?.id ?? null,
+  donorAccountName: data.donorAccount.displayName,
+  convertedAmount: data.amount.convertedAmount,
+  currency: data.amount.convertedCurrency,
+  foreignAmount: data.amount.amount,
+  foreignCurrency: data.amount.currency,
+  designationAccount: data.designationAccount.name,
+  paymentMethod: data.paymentMethod ?? null,
+  appealName: data.appeal?.name ?? null,
+  rawDonation: data,
+});
 
 export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
   accountListId,
@@ -114,7 +125,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
+  const [selectedDonation, setSelectedDonation] = useState<DonationRow | null>(
     null,
   );
 
@@ -165,82 +176,44 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
 
   const accountCurrency = accountListData?.accountList.currency || 'USD';
 
-  const createData = (data: ExpectedDonationDataFragment): Donation => {
-    return {
-      date: DateTime.fromISO(data.donationDate),
-      contactId: data.donorAccount.contacts.nodes[0]?.id ?? null,
-      partnerId: data.donorAccount.id,
-      partner: data.donorAccount.displayName,
-      currency: data.amount.convertedCurrency,
-      foreignCurrency: data.amount.currency,
-      convertedAmount: data.amount.convertedAmount,
-      foreignAmount: data.amount.amount,
-      designationAccount: {
-        id: data.designationAccount.id,
-        name: data.designationAccount.name,
-      },
-      method: data.paymentMethod || null,
-      id: data.id,
-      appeal: data.appeal,
-      appealAmount: (data.appeal && data.appealAmount?.amount) ?? null,
-    };
-  };
+  const donations = useMemo(() => nodes.map(createDonationRow), [nodes]);
 
-  const donations = useMemo(() => nodes.map(createData), [nodes]);
+  const date: RenderCell = ({ row }) => (
+    <Typography>{dateFormatShort(row.date, locale)}</Typography>
+  );
 
-  const date = (params: GridCellParams) => {
-    const donation = params.row as Donation;
+  const link: RenderCell = ({ row }) => (
+    <Typography sx={{ cursor: 'pointer' }}>
+      <Link
+        underline="hover"
+        onClick={() => row.contactId && onSelectContact(row.contactId)}
+      >
+        {row.donorAccountName}
+      </Link>
+    </Typography>
+  );
 
-    return dateFormatShort(donation.date, locale);
-  };
+  const amount: RenderCell = ({ row }) => (
+    <Typography>
+      {currencyFormat(row.convertedAmount, row.currency, locale)}
+    </Typography>
+  );
 
-  const link = (params: GridCellParams) => {
-    const donation = params.row as Donation;
+  const foreignAmount: RenderCell = ({ row }) => (
+    <Typography>
+      {currencyFormat(row.foreignAmount, row.foreignCurrency, locale)}
+    </Typography>
+  );
 
-    return (
-      <Typography sx={{ cursor: 'pointer' }}>
-        <Link
-          underline="hover"
-          onClick={() =>
-            donation.contactId && onSelectContact(donation.contactId)
-          }
-        >
-          {donation.partner}
-        </Link>
-      </Typography>
-    );
-  };
+  const designation: RenderCell = ({ row }) => (
+    <Typography>{row.designationAccount}</Typography>
+  );
 
-  const amount = (params: GridCellParams) => {
-    const donation = params.row as Donation;
+  const method: RenderCell = ({ row: donation }) => (
+    <Typography>{donation.paymentMethod}</Typography>
+  );
 
-    return (
-      <Typography>
-        {currencyFormat(donation.convertedAmount, donation.currency, locale)}
-      </Typography>
-    );
-  };
-
-  const foreignAmount = (params: GridCellParams) => {
-    const donation = params.row as Donation;
-    return (
-      <Typography>
-        {currencyFormat(
-          donation.foreignAmount,
-          donation.foreignCurrency,
-          locale,
-        )}
-      </Typography>
-    );
-  };
-
-  const designation = (params: GridCellParams) => {
-    const donation = params.row as Donation;
-    return <Typography>{donation.designationAccount?.name}</Typography>;
-  };
-
-  const button = (params: GridCellParams) => {
-    const donation = params.row as Donation;
+  const button: RenderCell = ({ row: donation }) => {
     return (
       <Box
         width={'100%'}
@@ -248,9 +221,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
         alignItems="center"
         justifyContent="space-between"
       >
-        <Typography data-testid="appeal-name">
-          {donation.appeal?.name}
-        </Typography>
+        <Typography data-testid="appeal-name">{donation.appealName}</Typography>
         <IconButton
           color="primary"
           onClick={() => {
@@ -298,6 +269,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
       field: 'method',
       headerName: t('Method'),
       width: 100,
+      renderCell: method,
     },
     {
       field: 'appeal',
@@ -492,7 +464,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
       {selectedDonation && (
         <EditDonationModal
           open
-          donation={selectedDonation}
+          donation={selectedDonation.rawDonation}
           handleClose={() => handleClose()}
         />
       )}

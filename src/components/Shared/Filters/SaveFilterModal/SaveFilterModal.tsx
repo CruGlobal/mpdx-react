@@ -19,13 +19,22 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import {
   ContactFilterSetInput,
-  CreateOrUpdateOptionMutationInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
 import Modal from '../../../common/Modal/Modal';
 import { UserOptionFragment } from '../FilterPanel.generated';
 import { useSaveFilterMutation } from './SaveFilterModal.generated';
+
+const savedFilterSchema = yup.object({
+  key: yup
+    .string()
+    .matches(/^[a-zA-Z0-9 ]*$/, 'Invalid character in filter name')
+    .required('Please enter a valid filter name'),
+  value: yup.string().required(),
+});
+
+type Attributes = yup.InferType<typeof savedFilterSchema>;
 
 interface SaveFilterModalProps {
   isOpen: boolean;
@@ -53,15 +62,6 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
   //#endregion
 
   //#region Saving Filter Logic
-  const savedFilterSchema: yup.SchemaOf<
-    Omit<CreateOrUpdateOptionMutationInput, 'clientMutationId'>
-  > = yup.object({
-    key: yup
-      .string()
-      .matches(/^[a-zA-Z0-9 ]*$/, 'Invalid character in filter name')
-      .required('Please enter a valid filter name'),
-    value: yup.string().required(),
-  });
 
   const filterPrefix = route.includes('contacts')
     ? 'graphql_saved_contacts_filter_'
@@ -127,7 +127,7 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
     );
   };
 
-  const onSubmit = async (attributes: CreateOrUpdateOptionMutationInput) => {
+  const onSubmit = async (attributes: Attributes) => {
     const formatedFilterName = attributes.key.replaceAll(' ', '_');
     const key = `${filterPrefix}${formatedFilterName}`;
     if (currentSavedFiltersNames.includes(formatedFilterName)) {
@@ -147,6 +147,7 @@ export const SaveFilterModal: React.FC<SaveFilterModalProps> = ({
           value: JSON.stringify({ ...currentFilters, accountListId }),
         }}
         validationSchema={savedFilterSchema}
+        validateOnMount
         onSubmit={onSubmit}
       >
         {({ isValid, isSubmitting }) => (

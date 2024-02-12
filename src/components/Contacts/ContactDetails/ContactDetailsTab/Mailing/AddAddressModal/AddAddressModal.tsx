@@ -145,6 +145,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           primaryMailingAddress: true,
         }}
         validationSchema={createAddressSchema}
+        validateOnMount
         onSubmit={onSubmit}
       >
         {({

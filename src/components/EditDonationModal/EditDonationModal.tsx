@@ -2,11 +2,8 @@ import React, { ReactElement, useState } from 'react';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import {
   CircularProgress,
-  Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
-  DialogTitle,
   FormControl,
   Grid,
   InputAdornment,
@@ -17,6 +14,7 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -34,31 +32,30 @@ import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
-import { Donation } from '../DonationsReportTable';
+import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
+  EditDonationModalDonationFragment,
   useDeleteDonationMutation,
   useEditDonationModalGetAppealsQuery,
   useGetDesignationAccountsQuery,
   useUpdateDonationMutation,
-} from './EditDonation.generated';
+} from './EditDonationModal.generated';
 
 interface EditDonationModalProps {
   open: boolean;
-  donation: Donation;
+  donation: EditDonationModalDonationFragment;
   handleClose: () => void;
 }
 
 const donationSchema = yup.object({
-  convertedAmount: yup.string().required(),
-  currency: yup.string().nullable(),
-  date: yup.string().nullable(),
-  motivation: yup.string().nullable(),
-  giftId: yup.string().nullable(),
-  partnerId: yup.string().nullable(),
-  designationAccountId: yup.string().nullable(),
-  appeal: yup.string().nullable(),
-  appealAmount: yup.string().nullable(),
-  memo: yup.string().nullable(),
+  convertedAmount: yup.number().required(),
+  currency: yup.string().required(),
+  date: yup.string().required(),
+  donorAccountId: yup.string().required(),
+  designationAccountId: yup.string().required(),
+  appealId: yup.string().optional(),
+  appealAmount: yup.number(),
+  memo: yup.string().optional(),
 });
 
 const LoadingSpinner: React.FC = () => (
@@ -107,16 +104,15 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
       variables: {
         accountListId,
         attributes: {
-          appealId: fields.appeal ?? null,
-          appealAmount: parseFloat(fields.appealAmount) || 0,
-          motivation: fields.motivation,
-          memo: fields.memo,
           id: donation.id,
+          appealId: fields.appealId,
+          appealAmount: parseFloat(fields.appealAmount),
           amount: parseFloat(fields.convertedAmount),
           currency: fields.currency,
-          donationDate: fields.date,
           designationAccountId: fields.designationAccountId,
-          donorAccountId: fields.partnerId,
+          donationDate: fields.date,
+          donorAccountId: fields.donorAccountId,
+          memo: fields.memo,
         },
       },
       refetchQueries: ['GetDonationsTable'],
@@ -151,16 +147,14 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
     <Modal title={t('Edit Donation')} isOpen={open} handleClose={handleClose}>
       <Formik
         initialValues={{
-          convertedAmount: donation.convertedAmount,
-          currency: donation.currency,
-          date: donation.date,
-          motivation: '',
-          giftId: '',
-          partnerId: donation.partnerId,
+          convertedAmount: donation.amount.amount,
+          currency: donation.amount.currency,
+          date: DateTime.fromISO(donation.donationDate),
+          appealId: donation.appeal?.id ?? '',
+          appealAmount: donation.appealAmount?.amount,
           designationAccountId: donation.designationAccount.id,
-          appeal: donation.appeal?.id ?? '',
-          appealAmount: donation.appealAmount ?? '',
-          memo: '',
+          donorAccountId: donation.donorAccount.id,
+          memo: donation.memo ?? '',
         }}
         validationSchema={donationSchema}
         onSubmit={onSubmit}
@@ -170,18 +164,18 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
             convertedAmount,
             currency,
             date,
-            motivation,
-            giftId,
-            partnerId,
+            donorAccountId,
             designationAccountId,
-            appeal,
+            appealId,
             appealAmount,
             memo,
           },
           setFieldValue,
           handleChange,
+          handleBlur,
           handleSubmit,
           isSubmitting,
+          isValid,
           errors,
           touched,
         }): ReactElement => (
@@ -190,9 +184,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
               <FormFieldsGridContainer>
                 <Grid item xs={12} md={6}>
                   <TextField
+                    name="convertedAmount"
                     value={convertedAmount}
                     label={t('Amount')}
-                    onChange={handleChange('convertedAmount')}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     fullWidth
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
@@ -205,47 +201,45 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth required>
                     <InputLabel id="currency-select-label">
                       {t('Currency')}
                     </InputLabel>
-                    {pledgeCurrencies && (
-                      <Select
-                        label={t('Currency')}
-                        labelId="currency-select-label"
-                        value={currency ?? ''}
-                        onChange={(e) =>
-                          setFieldValue('currency', e.target.value)
-                        }
-                        MenuProps={{
-                          anchorOrigin: {
-                            vertical: 'bottom',
-                            horizontal: 'left',
+                    <Select
+                      label={t('Currency')}
+                      labelId="currency-select-label"
+                      value={currency ?? ''}
+                      onChange={(e) =>
+                        setFieldValue('currency', e.target.value)
+                      }
+                      MenuProps={{
+                        anchorOrigin: {
+                          vertical: 'bottom',
+                          horizontal: 'left',
+                        },
+                        transformOrigin: {
+                          vertical: 'top',
+                          horizontal: 'left',
+                        },
+                        PaperProps: {
+                          style: {
+                            maxHeight: '300px',
+                            overflow: 'auto',
                           },
-                          transformOrigin: {
-                            vertical: 'top',
-                            horizontal: 'left',
-                          },
-                          PaperProps: {
-                            style: {
-                              maxHeight: '300px',
-                              overflow: 'auto',
-                            },
-                          },
-                        }}
-                      >
-                        <MenuItem value={''} disabled></MenuItem>
-                        {pledgeCurrencies?.map(
-                          ({ value, id }) =>
-                            value &&
-                            id && (
-                              <MenuItem key={id} value={id}>
-                                {t(value)}
-                              </MenuItem>
-                            ),
-                        )}
-                      </Select>
-                    )}
+                        },
+                      }}
+                    >
+                      <MenuItem value={''} disabled></MenuItem>
+                      {pledgeCurrencies?.map(
+                        ({ value, id }) =>
+                          value &&
+                          id && (
+                            <MenuItem key={id} value={id}>
+                              {t(value)}
+                            </MenuItem>
+                          ),
+                      )}
+                    </Select>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -264,50 +258,54 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                             />
                           </InputAdornment>
                         ),
+                        required: true,
                       }}
                       inputFormat={getDateFormatPattern(locale)}
                       closeOnSelect
                       label={t('Date')}
                       value={date}
-                      onChange={(date): void => setFieldValue('date', date)}
+                      onChange={(date) => setFieldValue('date', date)}
                     />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <TextField
-                    value={motivation}
+                    value={donation.motivation}
                     label={t('Motivation')}
-                    onChange={handleChange('motivation')}
                     fullWidth
-                    inputProps={{ 'aria-label': t('motivation') }}
+                    inputProps={{ 'aria-label': t('Motivation') }}
                     disabled
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    value={giftId}
-                    label={t('Gift ID')}
-                    onChange={handleChange('giftId')}
-                    fullWidth
-                    inputProps={{ 'aria-label': t('giftId') }}
-                    disabled
-                  />
-                </Grid>
+                {donation.remoteId && (
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      value={donation.remoteId}
+                      label={t('Gift ID')}
+                      fullWidth
+                      inputProps={{ 'aria-label': t('Gift ID') }}
+                      disabled
+                    />
+                  </Grid>
+                )}
                 <Grid item xs={12} md={6}>
                   <DonorAccountAutocomplete
                     accountListId={accountListId}
-                    value={partnerId}
+                    value={donorAccountId}
                     preloadedDonors={[
-                      { id: donation.partnerId, name: donation.partner },
+                      {
+                        id: donation.donorAccount.id,
+                        name: donation.donorAccount.displayName,
+                      },
                     ]}
                     onChange={(donorAccountId) =>
-                      setFieldValue('partnerId', donorAccountId)
+                      setFieldValue('donorAccountId', donorAccountId)
                     }
                     label={t('Partner Account')}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth required>
                     <InputLabel id="designationAccountId">
                       {t('Designation Account')}
                     </InputLabel>
@@ -337,15 +335,17 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
-                    <InputLabel id="appeal">{t('Appeal')}</InputLabel>
+                    <InputLabel id="appealId">{t('Appeal')}</InputLabel>
                     <Select
-                      labelId="appeal"
+                      labelId="appealId"
                       label={t('Appeal')}
-                      value={appeal}
-                      onChange={(e) => setFieldValue('appeal', e.target.value)}
+                      value={appealId}
+                      onChange={(e) =>
+                        setFieldValue('appealId', e.target.value)
+                      }
                       endAdornment={loadingAppeals && <LoadingSpinner />}
                     >
-                      {appeal !== '' && (
+                      {appealId !== '' && (
                         <MenuItem key={null} value="">
                           <em>{t('None')}</em>
                         </MenuItem>
@@ -358,14 +358,13 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     </Select>
                   </FormControl>
                 </Grid>
-                {appeal && (
+                {appealId && (
                   <Grid item xs={12} md={6}>
                     <TextField
                       value={appealAmount}
                       label={t('Appeal Amount')}
                       onChange={handleChange('appealAmount')}
                       fullWidth
-                      disabled={!appeal}
                     />
                   </Grid>
                 )}
@@ -382,7 +381,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
             <DialogActions>
               <DeleteButton onClick={() => setRemoveDialogOpen(true)} />
               <CancelButton disabled={isSubmitting} onClick={handleClose} />
-              <SubmitButton disabled={isSubmitting}>
+              <SubmitButton disabled={isSubmitting || !isValid}>
                 {(updatingDonation || deletingDonation) && (
                   <>
                     <CircularProgress
@@ -395,28 +394,13 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 )}
                 {t('Save')}
               </SubmitButton>
-
-              <Dialog
+              <DeleteConfirmation
+                deleteType={t('donation')}
                 open={removeDialogOpen}
-                aria-labelledby={t('Remove task confirmation')}
-                fullWidth
-                maxWidth="sm"
-              >
-                <DialogTitle>{t('Confirm')}</DialogTitle>
-                <DialogContent dividers>
-                  <DialogContentText>
-                    {t('Are you sure you wish to delete this donation?')}
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <CancelButton onClick={() => setRemoveDialogOpen(false)}>
-                    {t('No')}
-                  </CancelButton>
-                  <SubmitButton type="button" onClick={handleDelete}>
-                    {t('Yes')}
-                  </SubmitButton>
-                </DialogActions>
-              </Dialog>
+                onClickConfirm={handleDelete}
+                onClickDecline={() => setRemoveDialogOpen(false)}
+                aria-labelledby={t('Remove donation confirmation')}
+              />
             </DialogActions>
           </form>
         )}

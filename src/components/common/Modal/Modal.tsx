@@ -48,9 +48,15 @@ const Modal = ({
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
   return (
-    <Dialog open={isOpen} fullWidth={fullWidth} maxWidth={size}>
+    <Dialog
+      open={isOpen}
+      fullWidth={fullWidth}
+      maxWidth={size}
+      disableRestoreFocus={true}
+      onClose={handleClose}
+    >
       <ModalTitle>{title}</ModalTitle>
-      <CloseButton onClick={() => handleClose()} aria-label={t('Close')}>
+      <CloseButton onClick={handleClose} aria-label={t('Close')}>
         <CloseIcon />
       </CloseButton>
       {children}
