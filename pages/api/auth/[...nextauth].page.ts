@@ -3,7 +3,7 @@ import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
 import { Provider } from 'next-auth/providers';
 import OktaProvider from 'next-auth/providers/okta';
 import rollbar, { isRollBarEnabled } from 'pages/api/utils/rollBar';
-import client from '../../../src/lib/client';
+import makeSsrClient from '../utils/ssrClient';
 import {
   ApiOauthSignInDocument,
   ApiOauthSignInMutation,
@@ -154,8 +154,10 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           if (cookies) res.setHeader('Set-Cookie', cookies);
         };
 
+        const ssrClient = await makeSsrClient();
+
         if (account?.provider === 'apioauth') {
-          const { data } = await client.mutate<
+          const { data } = await ssrClient.mutate<
             ApiOauthSignInMutation,
             ApiOauthSignInMutationVariables
           >({
@@ -175,7 +177,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           throw new Error('ApiOauthSignIn mutation failed to return a token');
         }
 
-        const { data } = await client.mutate<
+        const { data } = await ssrClient.mutate<
           OktaSignInMutation,
           OktaSignInMutationVariables
         >({
