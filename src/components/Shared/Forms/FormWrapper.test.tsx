@@ -1,14 +1,17 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { FormWrapper } from './FormWrapper';
+
+const mockOnSubmit = jest.fn();
 
 describe('FormWrapper', () => {
   it('Should render children and default save button', () => {
     const { getByText, getByRole } = render(
       <ThemeProvider theme={theme}>
         <FormWrapper
-          onSubmit={() => true}
+          onSubmit={mockOnSubmit}
           isValid={true}
           isSubmitting={false}
           buttonText={''}
@@ -21,11 +24,11 @@ describe('FormWrapper', () => {
     expect(getByText('Children')).toBeInTheDocument();
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
   });
-  it('Should render custom button text', () => {
+  it('Should render custom button text', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <FormWrapper
-          onSubmit={() => true}
+          onSubmit={mockOnSubmit}
           isValid={true}
           isSubmitting={false}
           buttonText={'Confirm'}
@@ -34,7 +37,10 @@ describe('FormWrapper', () => {
         </FormWrapper>
       </ThemeProvider>,
     );
+    const button = getByRole('button', { name: 'Confirm' });
 
-    expect(getByRole('button', { name: 'Confirm' })).toBeInTheDocument();
+    expect(button).toBeInTheDocument();
+    userEvent.click(button);
+    expect(mockOnSubmit).toHaveBeenCalled();
   });
 });

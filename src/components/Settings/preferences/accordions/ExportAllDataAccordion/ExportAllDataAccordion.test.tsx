@@ -57,9 +57,7 @@ const Components: React.FC<ComponentsProps> = ({
           <ExportAllDataAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
-            exportedAt={
-              exportedAt || DateTime.local(2024, 1, 16, 18, 34, 12).toISO()
-            }
+            exportedAt={exportedAt || ''}
             accountListId={accountListId}
           />
         </GqlMockedProvider>
@@ -80,23 +78,24 @@ describe('Export All Data Accordion', () => {
     expect(queryByText(descriptionText)).not.toBeInTheDocument();
   });
   it('should render accordion open and show the last exported date', async () => {
-    const { getByText, queryByText } = render(
-      <Components expandedPanel={label} />,
+    const { getByText, queryByRole } = render(
+      <Components
+        expandedPanel={label}
+        exportedAt={DateTime.local(2024, 1, 16, 18, 34, 12).toISO()}
+      />,
     );
 
     expect(getByText(descriptionText)).toBeInTheDocument();
-    expect(
-      queryByText('Your last export was on Jan 16, 2024, 6:34 PM UTC'),
-    ).toBeInTheDocument();
+    expect(queryByRole('alert')).toBeInTheDocument();
   });
 
   it('should default the submit button to disabled unless the box is checked', async () => {
     const { getByRole, queryByRole } = render(
-      <Components expandedPanel={label} exportedAt={''} />,
+      <Components expandedPanel={label} />,
     );
     const button = getByRole('button', { name: 'Download All Data' });
 
-    expect(queryByRole('Alert')).not.toBeInTheDocument(); //Last exported date Alert not in the document
+    expect(queryByRole('alert')).not.toBeInTheDocument(); //Last exported date Alert not in the document
 
     await waitFor(() => {
       expect(button).toBeDisabled();
@@ -107,8 +106,8 @@ describe('Export All Data Accordion', () => {
     });
   });
   it('should enable the submit button and call the mutation', async () => {
-    const { getByRole, getByText } = render(
-      <Components expandedPanel={label} exportedAt={''} />,
+    const { getByRole, queryByRole, getByText } = render(
+      <Components expandedPanel={label} />,
     );
     const input = getByRole('checkbox');
     const button = getByRole('button', { name: 'Download All Data' });
@@ -116,6 +115,7 @@ describe('Export All Data Accordion', () => {
     userEvent.click(input);
 
     await waitFor(() => {
+      expect(queryByRole('alert')).not.toBeInTheDocument(); //Last exported date Alert not in the document
       expect(input).toBeChecked();
       expect(button).not.toBeDisabled();
     });

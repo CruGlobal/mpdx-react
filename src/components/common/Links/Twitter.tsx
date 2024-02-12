@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import Icon from '@mui/icons-material/Twitter';
 import { IconButton } from '@mui/material';
 import * as Types from 'src/graphql/types.generated';
@@ -10,13 +10,12 @@ interface Props {
 export const Twitter: React.FC<Props> = ({ screenName }) => {
   if (!screenName) return null;
 
-  const url = useMemo(
-    () => `http://www.twitter.com/${screenName}`,
-    [screenName],
-  );
-
   return (
-    <IconButton target="_blank" href={url} rel="noreferrer">
+    <IconButton
+      target="_blank"
+      href={`https://www.twitter.com/${screenName}`}
+      rel="noreferrer"
+    >
       <Icon color="primary" />
     </IconButton>
   );

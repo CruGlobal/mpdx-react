@@ -26,80 +26,85 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const mocks = {
-  GetAccountPreferences: {
-    user: {
-      id: '1',
-    },
-    accountList: {
-      id: '1',
-      name: 'test',
-      activeMpdMonthlyGoal: null,
-      activeMpdFinishAt: null,
-      activeMpdStartAt: null,
-      salaryOrganizationId: null,
-      settings: {
-        currency: 'USD',
-        homeCountry: 'USA',
-        monthlyGoal: 100,
-        tester: true,
-      },
-    },
-    accountLists: {
-      nodes: [
-        {
-          name: 'test',
-          id: '1',
-        },
-        {
-          name: 'test',
-          id: '1',
-        },
-      ],
-    },
-  },
-  GetPersonalPreferences: {
-    user: {
-      preferences: {
-        timeZone: '',
-        localeDisplay: 'en',
-        locale: 'en',
-        hourToSendNotifications: 8,
-      },
-    },
-  },
-  GetProfileInfo: {
-    user: {
-      anniversaryYear: 2020,
-      anniversaryDay: 1,
-      anniversaryMonth: 1,
-      birthdayDay: 1,
-      birthdayMonth: 1,
-      birthdayYear: 1900,
-    },
-  },
-  GetUsersOrganizationsAccounts: {
-    userOrganizationAccounts: [
-      {
-        organization: {},
-      },
-      {
-        organization: {},
-      },
-    ],
-  },
-  CanUserExportData: {
-    canUserExportData: {
-      allowed: false,
-      exportedAt: null,
-    },
-  },
-};
-
-const MocksProviders = (props: { children: JSX.Element }) => (
+const MocksProviders = (props: {
+  children: JSX.Element;
+  canUserExportData: boolean;
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider mocks={mocks}>{props.children}</GqlMockedProvider>
+      <GqlMockedProvider
+        mocks={{
+          GetAccountPreferences: {
+            user: {
+              id: '1',
+            },
+            accountList: {
+              id: '1',
+              name: 'test',
+              activeMpdMonthlyGoal: null,
+              activeMpdFinishAt: null,
+              activeMpdStartAt: null,
+              salaryOrganizationId: null,
+              settings: {
+                currency: 'USD',
+                homeCountry: 'USA',
+                monthlyGoal: 100,
+                tester: true,
+              },
+            },
+            accountLists: {
+              nodes: [
+                {
+                  name: 'test',
+                  id: '1',
+                },
+                {
+                  name: 'test',
+                  id: '1',
+                },
+              ],
+            },
+          },
+          GetPersonalPreferences: {
+            user: {
+              preferences: {
+                timeZone: '',
+                localeDisplay: 'en',
+                locale: 'en',
+                hourToSendNotifications: 8,
+              },
+            },
+          },
+          GetProfileInfo: {
+            user: {
+              anniversaryYear: 2020,
+              anniversaryDay: 1,
+              anniversaryMonth: 1,
+              birthdayDay: 1,
+              birthdayMonth: 1,
+              birthdayYear: 1900,
+            },
+          },
+          GetUsersOrganizationsAccounts: {
+            userOrganizationAccounts: [
+              {
+                organization: {},
+              },
+              {
+                organization: {},
+              },
+            ],
+          },
+          CanUserExportData: {
+            canUserExportData: {
+              allowed: props.canUserExportData,
+              exportedAt: null,
+            },
+          },
+        }}
+      >
+        {props.children}
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -107,19 +112,33 @@ const MocksProviders = (props: { children: JSX.Element }) => (
 describe('Preferences page', () => {
   it('should not render Export All Data accordion', async () => {
     const { findByText, queryByText } = render(
-      <MocksProviders>
+      <MocksProviders canUserExportData={false}>
         <Preferences />
       </MocksProviders>,
     );
     //canUserExportData.allowed is false
     expect(await findByText('Preferences')).toBeInTheDocument();
     expect(await findByText('Account Preferences')).toBeInTheDocument();
-    expect(await queryByText('Export All Data')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(queryByText('Export All Data')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should render Export All Data accordion if allowed is true', async () => {
+    const { findByText } = render(
+      <MocksProviders canUserExportData={true}>
+        <Preferences />
+      </MocksProviders>,
+    );
+    //canUserExportData.allowed is true
+    expect(await findByText('Preferences')).toBeInTheDocument();
+    expect(await findByText('Account Preferences')).toBeInTheDocument();
+    expect(await findByText('Export All Data')).toBeInTheDocument();
   });
 
   it('should render Primary Organization accordion when there are multiple orgs', async () => {
     const { findByText, queryByText } = render(
-      <MocksProviders>
+      <MocksProviders canUserExportData={false}>
         <Preferences />
       </MocksProviders>,
     );
