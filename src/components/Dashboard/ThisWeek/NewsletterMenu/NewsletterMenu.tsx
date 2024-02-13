@@ -109,6 +109,8 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
     return (
       <Dialog
         open={newsletterMenuDialogOpen}
+        onClose={handleDialogClose}
+        disableRestoreFocus={true}
         aria-labelledby={t('Newsletter Dialog')}
         fullWidth
         maxWidth="sm"
@@ -146,6 +148,7 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
+        disableRestoreFocus={true}
         anchorEl={anchorEl}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}

@@ -105,6 +105,7 @@ export const ContactsMassActionsDropdown: React.FC<
               <Menu
                 open={open}
                 onClose={handleClose}
+                disableRestoreFocus={true}
                 anchorEl={anchorEl}
                 anchorOrigin={{
                   vertical: 'bottom',

@@ -4,7 +4,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
-} from 'src/utils/tests/windowResizeObserver';
+} from '__tests__/util/windowResizeObserver';
 import DonationHistories from '.';
 
 const setTime = jest.fn();

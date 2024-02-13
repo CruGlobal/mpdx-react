@@ -5,7 +5,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
-} from 'src/utils/tests/windowResizeObserver';
+} from '__tests__/util/windowResizeObserver';
 import { MonthlyCommitment } from './MonthlyCommitment';
 import {
   GetReportsPledgeHistoriesQuery,
