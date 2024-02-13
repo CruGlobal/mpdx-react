@@ -84,7 +84,7 @@ const Organizations = (): ReactElement => {
             <Skeleton height={'58px'} width={'250px'} />
           </HeaderAndDropdown>
         )}
-        {organizations?.length && selectedOrganization ? (
+        {organizations?.length && selectedOrganization && (
           <HeaderAndDropdown>
             <Box>
               <h2>
@@ -126,7 +126,7 @@ const Organizations = (): ReactElement => {
               />
             </Box>
           </HeaderAndDropdown>
-        ) : null}
+        )}
         <AccordionGroup title={t('External Services')}>
           <ImpersonateUserAccordion
             handleAccordionChange={handleAccordionChange}
