@@ -1,73 +1,14 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  split,
-} from '@apollo/client';
+import { ApolloClient, createHttpLink, split } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { onError } from '@apollo/client/link/error';
 import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import { signOut } from 'next-auth/react';
-import generatedIntrospection from 'src/graphql/possibleTypes.generated';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import snackNotifications from '../components/Snackbar/Snackbar';
 import { dispatch } from './analytics';
-import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
+import { createCache } from './apolloCache';
 
-const ignoredkeyArgsForPagination = ['before', 'after'];
-const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
-  args
-    ? Object.keys(args).filter(
-        (arg) => !ignoredkeyArgsForPagination.includes(arg),
-      )
-    : undefined,
-);
-
-export const cache = new InMemoryCache({
-  possibleTypes: generatedIntrospection.possibleTypes,
-  typePolicies: {
-    Appeal: {
-      fields: {
-        pledges: paginationFieldPolicy,
-      },
-      merge: true,
-    },
-    CoachingAppeal: {
-      fields: {
-        pledges: paginationFieldPolicy,
-      },
-      merge: true,
-    },
-    AccountList: {
-      fields: {
-        contacts: paginationFieldPolicy,
-      },
-      merge: true,
-    },
-    CoachingAccountList: {
-      fields: {
-        contacts: paginationFieldPolicy,
-      },
-      merge: true,
-    },
-    User: { merge: true },
-    Contact: {
-      fields: {
-        contactReferralsByMe: paginationFieldPolicy,
-      },
-      merge: true,
-    },
-    Query: {
-      fields: {
-        contacts: paginationFieldPolicy,
-        donations: paginationFieldPolicy,
-        financialAccounts: paginationFieldPolicy,
-        tasks: paginationFieldPolicy,
-        userNotifications: paginationFieldPolicy,
-      },
-    },
-  },
-});
+const cache = createCache();
 
 const batchHttpLink = new BatchHttpLink({
   uri: `${process.env.SITE_URL}/api/graphql`,
