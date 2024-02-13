@@ -96,8 +96,7 @@ export const impersonate = async (
       }),
     });
 
-    const fetchRes: FetchTokenForOrganizationType =
-      (await fetchToken.json()) as FetchTokenForOrganizationType;
+    const fetchRes: FetchTokenForOrganizationType = await fetchToken.json();
 
     const impersonate = fetchRes?.data?.attributes?.json_web_token;
 
