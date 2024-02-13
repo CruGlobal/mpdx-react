@@ -27,7 +27,7 @@ const HeaderAndDropdown = styled(Box)(() => ({
   alignItems: 'center',
 }));
 
-const Organizations = (): ReactElement => {
+const OrganizationsContacts = (): ReactElement => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const matches = useMediaQuery('(max-width:600px)');
@@ -58,7 +58,7 @@ const Organizations = (): ReactElement => {
       >
         {!organizations?.length && !selectedOrganization && (
           <HeaderAndDropdown>
-            <Skeleton height={'58px'} width={'250px'} />
+            <Skeleton height={'58px'} width={'250px'} data-testid="skeleton" />
             <Skeleton height={'58px'} width={'250px'} />
           </HeaderAndDropdown>
         )}
@@ -126,4 +126,4 @@ const Organizations = (): ReactElement => {
 
 export const getServerSideProps = enforceAdmin;
 
-export default Organizations;
+export default OrganizationsContacts;

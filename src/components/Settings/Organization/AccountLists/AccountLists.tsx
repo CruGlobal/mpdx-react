@@ -67,7 +67,12 @@ export const AccountLists: React.FC = () => {
       style={{ position: 'relative', marginTop: '20px', overflowX: 'auto' }}
       ref={accountListsRef}
     >
-      {loading && <LoadingSpinner firstLoad={!pagination?.page} />}
+      {loading && (
+        <LoadingSpinner
+          firstLoad={!pagination?.page}
+          data-testid="LoadingSpinner"
+        />
+      )}
       <InfiniteList
         loading={loading}
         data={accountLists ?? []}
