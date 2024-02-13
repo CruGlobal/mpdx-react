@@ -29,10 +29,10 @@ import { RouterGuard } from '../src/components/RouterGuard/RouterGuard';
 import { SnackbarUtilsConfigurator } from '../src/components/Snackbar/Snackbar';
 import TaskModalProvider from '../src/components/Task/Modal/TaskModalProvider';
 import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSettingsProvider';
+import { AdapterLuxon } from '../src/lib/AdapterLuxon';
 import client from '../src/lib/client';
 import i18n from '../src/lib/i18n';
 import theme from '../src/theme';
-import { AdapterLuxon } from './api/utils/AdapterLuxon';
 import './helpscout.css';
 import './print.css';
 

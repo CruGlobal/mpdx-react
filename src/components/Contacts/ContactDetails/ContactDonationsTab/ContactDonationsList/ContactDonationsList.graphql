@@ -6,7 +6,16 @@ query ContactDonationsList(
   contact(accountListId: $accountListId, id: $contactId) {
     id
     donations(first: 13, after: $after) {
-      ...DonationsContact
+      nodes {
+        ...ContactDonation
+        ...EditDonationModalDonation
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
     }
   }
 }

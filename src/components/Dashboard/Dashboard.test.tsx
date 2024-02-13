@@ -4,13 +4,13 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import matchMediaMock from '../../../__tests__/util/matchMediaMock';
-import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
-import useTaskModal from '../../hooks/useTaskModal';
-import theme from '../../theme';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
-} from '../../utils/tests/windowResizeObserver';
+} from '../../../__tests__/util/windowResizeObserver';
+import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
+import useTaskModal from '../../hooks/useTaskModal';
+import theme from '../../theme';
 import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
 

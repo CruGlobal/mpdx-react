@@ -68,6 +68,8 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
   return (
     <Dialog
       open={open}
+      onClose={() => onClickDecline(false)}
+      disableRestoreFocus={true}
       aria-labelledby={t('Remove {{deleteType}} confirmation', {
         deleteType,
       })}

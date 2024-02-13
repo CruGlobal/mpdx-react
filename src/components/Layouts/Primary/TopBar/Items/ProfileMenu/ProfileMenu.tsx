@@ -187,6 +187,7 @@ const ProfileMenu = (): ReactElement => {
         anchorEl={profileMenuAnchorEl}
         open={profileMenuOpen}
         onClose={handleProfileMenuClose}
+        disableRestoreFocus={true}
       >
         {data && (
           <MenuItemAccount>

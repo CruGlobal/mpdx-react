@@ -278,7 +278,13 @@ const SearchMenu = (): ReactElement => {
         <SearchIcon />
       </SearchButton>
 
-      <SearchDialog fullWidth maxWidth="lg" open={isOpen} onClose={handleClose}>
+      <SearchDialog
+        fullWidth
+        maxWidth="lg"
+        open={isOpen}
+        onClose={handleClose}
+        disableRestoreFocus={true}
+      >
         <Box display="flex" justifyContent="center" alignItems="center">
           <Autocomplete
             fullWidth

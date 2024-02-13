@@ -16,7 +16,7 @@ import {
   ContactLateStatusEnum,
   ContactLateStatusLabel,
 } from '../../../ContactPartnershipStatus/ContactLateStatusLabel/ContactLateStatusLabel';
-import { EditPartnershipInfoModal } from '../../ContactDontationsTab/PartnershipInfo/EditPartnershipInfoModal/EditPartnershipInfoModal';
+import { EditPartnershipInfoModal } from '../../ContactDonationsTab/PartnershipInfo/EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
