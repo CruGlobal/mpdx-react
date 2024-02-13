@@ -1,11 +1,12 @@
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { Link } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import HandoffLink from 'src/components/HandoffLink';
 import { useUser } from 'src/hooks/useUser';
 import { Confirmation } from '../../common/Modal/Confirmation/Confirmation';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
@@ -30,7 +31,10 @@ const CoachingNameText = styled(Typography)(({ theme }) => ({
   display: 'flex',
 }));
 
-export const CoachingRow: React.FC<Props> = ({ coachingAccount }) => {
+export const CoachingRow: React.FC<Props> = ({
+  coachingAccount,
+  accountListId,
+}) => {
   const user = useUser();
   const {
     id,
@@ -62,36 +66,42 @@ export const CoachingRow: React.FC<Props> = ({ coachingAccount }) => {
 
   return (
     <>
-      <HandoffLink path={`/coaches/${id}`}>
-        <CoachingRowWrapper role="listitem">
-          <CoachingNameText variant="h6" color="primary">
-            <Box flex={1}>{name}</Box>
-            <Button
-              onClick={(event) => {
-                event.preventDefault();
-                setConfirmingDelete(true);
-              }}
-              aria-label={t('Remove Access')}
-            >
-              <VisibilityOff />
-            </Button>
-          </CoachingNameText>
-          <AppealProgress
-            currency={currency}
-            goal={calculatedMonthlyGoal}
-            received={receivedPledges}
-            pledged={totalPledges}
-            isPrimary={false}
-          />
-          <AppealProgress
-            currency={appealCurrencyCode}
-            goal={primaryAppeal?.amount ?? 0}
-            received={primaryAppeal?.pledgesAmountProcessed}
-            pledged={primaryAppeal?.pledgesAmountTotal}
-            isPrimary={true}
-          />
-        </CoachingRowWrapper>
-      </HandoffLink>
+      <CoachingRowWrapper role="listitem">
+        <CoachingNameText variant="h6" color="primary">
+          <NextLink
+            href={{
+              pathname: '/accountLists/[accountListId]/coaching/[coachingId]',
+              query: { accountListId: accountListId, coachingId: id },
+            }}
+            passHref
+          >
+            <Link flex={1}>{name}</Link>
+          </NextLink>
+          <Button
+            onClick={(event) => {
+              event.preventDefault();
+              setConfirmingDelete(true);
+            }}
+            aria-label={t('Remove Access')}
+          >
+            <VisibilityOff />
+          </Button>
+        </CoachingNameText>
+        <AppealProgress
+          currency={currency}
+          goal={calculatedMonthlyGoal}
+          received={receivedPledges}
+          pledged={totalPledges}
+          isPrimary={false}
+        />
+        <AppealProgress
+          currency={appealCurrencyCode}
+          goal={primaryAppeal?.amount ?? 0}
+          received={primaryAppeal?.pledgesAmountProcessed}
+          pledged={primaryAppeal?.pledgesAmountTotal}
+          isPrimary={true}
+        />
+      </CoachingRowWrapper>
       <Confirmation
         isOpen={confirmingDelete}
         title={t('Confirm Remove Access')}
