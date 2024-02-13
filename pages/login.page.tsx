@@ -5,6 +5,7 @@ import SubjectIcon from '@mui/icons-material/Subject';
 import { Button } from '@mui/material';
 import i18n from 'i18next';
 import { getSession, signIn } from 'next-auth/react';
+import { extractCookie } from 'src/lib/extractCookie';
 import BaseLayout from '../src/components/Layouts/Basic';
 import Loading from '../src/components/Loading';
 import Welcome from '../src/components/Welcome';
@@ -82,21 +83,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         });
   const signInAuthProviderId = authProvider?.toLowerCase()?.replace(/_/g, '');
 
-  const redirectCookie = context.req.headers?.cookie
-    ?.split('mpdx-handoff.redirect-url=')[1]
-    ?.split(';')[0];
-  const ImpersonateCookie = !!context.req.headers?.cookie
-    ?.split('mpdx-handoff.impersonate=')[1]
-    ?.split(';')[0];
+  const redirectCookie = extractCookie(
+    context.req.headers?.cookie,
+    'mpdx-handoff.redirect-url',
+  );
+  const impersonateCookie = !!extractCookie(
+    context.req.headers?.cookie,
+    'mpdx-handoff.impersonate',
+  );
   const immediateSignIn = !!redirectCookie;
 
-  if (immediateSignIn && !ImpersonateCookie) {
+  if (immediateSignIn && !impersonateCookie) {
     context.res.setHeader(
       'Set-Cookie',
       `mpdx-handoff.redirect-url=; HttpOnly; path=/; Max-Age=0`,
     );
   }
-  if (context.res && session && !ImpersonateCookie) {
+  if (context.res && session && !impersonateCookie) {
     return {
       redirect: {
         destination: redirectCookie ?? '/accountLists',
