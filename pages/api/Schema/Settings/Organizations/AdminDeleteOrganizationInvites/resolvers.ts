@@ -1,4 +1,4 @@
-import { Resolvers } from '../../../../../graphql-rest.page.generated';
+import { Resolvers } from '../../../../graphql-rest.page.generated';
 
 const AdminDeleteOrganizationInvitesResolvers: Resolvers = {
   Mutation: {
