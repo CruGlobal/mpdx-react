@@ -26,6 +26,34 @@ import {
   DestroyDonorAccount,
   DestroyDonorAccountResponse,
 } from './Schema/Contacts/DonorAccounts/Destroy/datahander';
+import { AdminDeleteOrganizationCoach } from './Schema/Settings/Organizations/AdminDeleteOrganizationCoach/datahandler';
+import { AdminDeleteOrganizationInvite } from './Schema/Settings/Organizations/AdminDeleteOrganizationInvites/datahandler';
+import { AdminDeleteOrganizationUser } from './Schema/Settings/Organizations/AdminDeleteOrganizationUser/datahandler';
+import { CreateOrganizationInvite } from './Schema/Settings/Organizations/CreateOrganizationInvite/datahandler';
+import { DestroyOrganizationAdmin } from './Schema/Settings/Organizations/DeleteOrganizationAdmin/datahandler';
+import { DeleteOrganizationContact } from './Schema/Settings/Organizations/DeleteOrganizationContact/datahandler';
+import { DestroyOrganizationInvite } from './Schema/Settings/Organizations/DeleteOrganizationInvite/datahandler';
+import {
+  OrganizationAdmins,
+  OrganizationAdminsResponse,
+} from './Schema/Settings/Organizations/OrganizationAdmins/datahandler';
+import { OrganizationInvites } from './Schema/Settings/Organizations/OrganizationInvites/datahandler';
+import {
+  Organizations,
+  OrganizationsResponse,
+} from './Schema/Settings/Organizations/Organizations/datahandler';
+import {
+  SearchOrganizationsAccountLists,
+  SearchOrganizationsAccountListsResponse,
+} from './Schema/Settings/Organizations/SearchOrganizationsAccountLists/datahandler';
+import {
+  SearchOrganizationsContacts,
+  SearchOrganizationsContactsResponse,
+} from './Schema/Settings/Organizations/SearchOrganizationsContacts/datahandler';
+import {
+  OrganizationInvite,
+  OrganizationInvitesResponse,
+} from './Schema/Settings/Organizations/helper';
 import { SendToChalkline } from './Schema/Settings/Preferences/Intergrations/Chalkine/sendToChalkline/datahandler';
 import {
   CreateGoogleIntegration,
@@ -61,34 +89,6 @@ import {
   PrayerlettersAccountResponse,
 } from './Schema/Settings/Preferences/Intergrations/Prayerletters/prayerlettersAccount/datahandler';
 import { SyncPrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/syncPrayerlettersAccount/datahandler';
-import { AdminDeleteOrganizationCoach } from './Schema/Settings/Preferences/Organizations/AdminDeleteOrganizationCoach/datahandler';
-import { AdminDeleteOrganizationInvite } from './Schema/Settings/Preferences/Organizations/AdminDeleteOrganizationInvites/datahandler';
-import { AdminDeleteOrganizationUser } from './Schema/Settings/Preferences/Organizations/AdminDeleteOrganizationUser/datahandler';
-import { CreateOrganizationInvite } from './Schema/Settings/Preferences/Organizations/CreateOrganizationInvite/datahandler';
-import { DestroyOrganizationAdmin } from './Schema/Settings/Preferences/Organizations/DeleteOrganizationAdmin/datahandler';
-import { DeleteOrganizationContact } from './Schema/Settings/Preferences/Organizations/DeleteOrganizationContact/datahandler';
-import { DestroyOrganizationInvite } from './Schema/Settings/Preferences/Organizations/DeleteOrganizationInvite/datahandler';
-import {
-  OrganizationAdmins,
-  OrganizationAdminsResponse,
-} from './Schema/Settings/Preferences/Organizations/OrganizationAdmins/datahandler';
-import { OrganizationInvites } from './Schema/Settings/Preferences/Organizations/OrganizationInvites/datahandler';
-import {
-  Organizations,
-  OrganizationsResponse,
-} from './Schema/Settings/Preferences/Organizations/Organizations/datahandler';
-import {
-  SearchOrganizationsAccountLists,
-  SearchOrganizationsAccountListsResponse,
-} from './Schema/Settings/Preferences/Organizations/SearchOrganizationsAccountLists/datahandler';
-import {
-  SearchOrganizationsContacts,
-  SearchOrganizationsContactsResponse,
-} from './Schema/Settings/Preferences/Organizations/SearchOrganizationsContacts/datahandler';
-import {
-  OrganizationInvite,
-  OrganizationInvitesResponse,
-} from './Schema/Settings/Preferences/Organizations/helper';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
   DeleteComment,

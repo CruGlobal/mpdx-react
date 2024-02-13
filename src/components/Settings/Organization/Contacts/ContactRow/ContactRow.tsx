@@ -200,7 +200,7 @@ export const ContactRow: React.FC<Props> = ({
               primary={
                 <Typography component="span" variant="h6" noWrap>
                   <Box component="span" display="flex" alignItems="center">
-                    {accountList.name}
+                    {accountList?.name}
                   </Box>
                 </Typography>
               }
