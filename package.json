@@ -26,8 +26,6 @@
     "prettier:write": "prettier . --write",
     "gql": "graphql-codegen --config codegen.yml",
     "gql:w": "yarn gql --watch",
-    "gql:server": "graphql-codegen --config codegen-server.yml",
-    "gql:server:w": "yarn gql:server --watch",
     "postinstall": "husky install",
     "onesky:upload": "cross-env babel-node ./onesky/upload.js",
     "onesky:download": "cross-env babel-node ./onesky/download.js"

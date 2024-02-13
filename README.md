@@ -38,13 +38,7 @@ Once you have these variables you can install the dependencies.
 yarn
 ```
 
-Next, generate types for REST -> GraphQL:
-
-```bash
-yarn gql:server
-```
-
-Then, run create GraphQL generated files:
+Next, run the GraphQL codegen:
 
 ```bash
 yarn gql
@@ -338,7 +332,7 @@ To add a new GraphQL query that interacts with the REST API, you will need to fo
 
 1. Find an existing query folder in `pages/api/Schema` (`CoachingAnswerSets` is a good starting point), make a copy of it, and rename it to the name of the query you are adding.
 2. In the folder you just created, rename the `.graphql` file to the name of the query you are adding. Adjust the `extend type Query {}` section that `.graphql` file to contain the query or queries that you are adding, including their arguments and return types. Define the types of the return types of your query in the rest of the file.
-3. Run `yarn gql:server` to generate TypeScript definitions for the new queries. You will need to run this after every time you modify a `.graphql` file in `pages/api/Schema`. If you want it to rerun automatically when it detects changes, run `yarn gql:server:w`.
+3. Run `yarn gql` to generate TypeScript definitions for the new queries. You will need to run this after every time you modify a `.graphql` file in `pages/api/Schema`. If you want it to rerun automatically when it detects changes, run `yarn gql:w`.
 4. In `pages/api/graphql-rest.page.ts` add a method to the `MpdxRestApi` class that makes a request to the REST API.
 5. In the `dataHandler.ts` file for your query, rename the exported method to be appropriate for your query and modify it so that it takes the response from the REST API and returns data in the format returned by the GraphQL query. Make sure that the types match what you defined in the `.graphql` file. Also, make sure that the method you added to `graphql-rest.page.ts` imports and calls your datahandler.
 6. In the `resolvers.ts` file for your query, make sure that the `Query` property on the exported resolvers contains one property for each query you are adding (and the same for the `Mutation` property if you are adding mutations). The second argument of each of those query resolver functions will be an object containing the inputs to your query. Make sure they match the inputs you defined in your `.graphql`. Also make sure that the resolver functions call the `dataSources.mpdxRestApi` method that you defined in `graphq-rest.page.ts`.
