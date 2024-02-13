@@ -24,27 +24,28 @@ const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
 }));
 
+type ImpersonateUserFormType = {
+  user: string;
+  reason: string;
+};
+
+const ImpersonateUserSchema: yup.SchemaOf<ImpersonateUserFormType> = yup.object(
+  {
+    user: yup.string().email().required(),
+    reason: yup.string().required(),
+  },
+);
+
 export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-  const AccordionName = t('Impersonate User');
+  const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
 
   const userId = useUser()?.id;
-
-  type ImpersonateUserFormType = {
-    user: string;
-    reason: string;
-  };
-
-  const ImpersonateUserSchema: yup.SchemaOf<ImpersonateUserFormType> =
-    yup.object({
-      user: yup.string().email().required(),
-      reason: yup.string().required(),
-    });
 
   const onSubmit = async (attributes: ImpersonateUserFormType) => {
     try {
@@ -62,13 +63,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
       );
       const setupImpersonateJson = await setupImpersonate.json();
 
-      if (setupImpersonate.status !== 200) {
-        setupImpersonateJson.errors.forEach((error) => {
-          enqueueSnackbar(error.detail, {
-            variant: 'error',
-          });
-        });
-      } else {
+      if (setupImpersonate.status === 200) {
         enqueueSnackbar(
           t('Redirecting you to home screen to impersonate user...'),
           {
@@ -76,6 +71,12 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
           },
         );
         window.location.href = `${process.env.SITE_URL}/login`;
+      } else {
+        setupImpersonateJson.errors.forEach((error) => {
+          enqueueSnackbar(error.detail, {
+            variant: 'error',
+          });
+        });
       }
     } catch (err) {
       enqueueSnackbar(getErrorMessage(err), {
@@ -88,10 +89,10 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
-      label={AccordionName}
+      label={accordionName}
       value={''}
     >
-      <StyledFormLabel>{AccordionName}</StyledFormLabel>
+      <StyledFormLabel>{accordionName}</StyledFormLabel>
       <Typography>
         {t(
           `This will log you in on behalf of the user specified below. You will be able to see what the user sees on {{appName}}.
@@ -125,7 +126,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
                 <TextField
                   required
                   id="user"
-                  label={t('User Name, ID or Key/Relay Email')}
+                  label={t('The Key / Relay Email')}
                   type="email"
                   value={user}
                   disabled={isSubmitting}
@@ -133,9 +134,6 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
                   autoFocus={true}
                   name="user"
                   onChange={handleChange}
-                  inputProps={{
-                    'data-testid': 'impersonateUsername',
-                  }}
                 />
                 {errors.user && (
                   <FormHelperText error={true}>{errors.user}</FormHelperText>
@@ -147,15 +145,12 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
                 <TextField
                   required
                   id="reason"
-                  label={t('Reason / Helpscout Ticket Link')}
+                  label={t('Reason / HelpScout Ticket Link')}
                   type="reason"
                   value={reason}
                   disabled={isSubmitting}
                   name="reason"
                   onChange={handleChange}
-                  inputProps={{
-                    'data-testid': 'impersonateReason',
-                  }}
                 />
               </FieldWrapper>
             </StyledBox>

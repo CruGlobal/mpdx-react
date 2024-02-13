@@ -22,32 +22,35 @@ const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
 }));
 
+type ImpersonateUserFormType = {
+  user: string;
+  account: string;
+  reason?: string;
+};
+
+const ImpersonateUserSchema: yup.SchemaOf<ImpersonateUserFormType> = yup.object(
+  {
+    user: yup.string().email().required(),
+    account: yup.string().required(),
+    reason: yup.string(),
+  },
+);
+
 export const ResetAccountAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
   const { t } = useTranslation();
-  const AccordionName = t('Reset Account');
+  const accordionName = t('Reset Account');
   const { enqueueSnackbar } = useSnackbar();
   const [resetAccountList] = useResetAccountListMutation();
 
-  type ImpersonateUserFormType = {
-    user: string;
-    account: string;
-    reason?: string;
-  };
-
-  const ImpersonateUserSchema: yup.SchemaOf<ImpersonateUserFormType> =
-    yup.object({
-      user: yup.string().email().required(),
-      account: yup.string().required(),
-      reason: yup.string(),
-    });
-
-  const onSubmit = async (attributes: ImpersonateUserFormType, resetForm) => {
+  const onSubmit = async (
+    attributes: ImpersonateUserFormType,
+    resetForm: () => void,
+  ) => {
     const { user, account, reason } = attributes;
 
-    // Need to build
     await resetAccountList({
       variables: {
         input: {
@@ -74,10 +77,10 @@ export const ResetAccountAccordion: React.FC<AccordionProps> = ({
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
-      label={AccordionName}
+      label={accordionName}
       value={''}
     >
-      <StyledFormLabel>{AccordionName}</StyledFormLabel>
+      <StyledFormLabel>{accordionName}</StyledFormLabel>
       <Typography>
         {t(`This will reset a particular Account by deleting all of its data and reimporting from its Organization(s). Specify
           the Account by typing the User's email address, the reason for the reset, and the exact name of the Account. All
@@ -117,9 +120,6 @@ export const ResetAccountAccordion: React.FC<AccordionProps> = ({
                   // eslint-disable-next-line jsx-a11y/no-autofocus
                   autoFocus={true}
                   onChange={handleChange('user')}
-                  inputProps={{
-                    'data-testid': 'resetUserName',
-                  }}
                 />
                 {errors.user && (
                   <FormHelperText error={true}>{errors.user}</FormHelperText>
@@ -131,14 +131,11 @@ export const ResetAccountAccordion: React.FC<AccordionProps> = ({
                 <TextField
                   required
                   id="reason"
-                  label={t('Reason / Helpscout Ticket Link')}
+                  label={t('Reason / HelpScout Ticket Link')}
                   type="text"
                   value={reason}
                   disabled={isSubmitting}
                   onChange={handleChange('reason')}
-                  inputProps={{
-                    'data-testid': 'resetReason',
-                  }}
                 />
               </FieldWrapper>
             </StyledBox>
@@ -165,7 +162,7 @@ export const ResetAccountAccordion: React.FC<AccordionProps> = ({
                 disabled={!isValid || isSubmitting}
                 variant="contained"
               >
-                {t('Impersonate User')}
+                {t('Reset Account')}
               </SubmitButton>
             </DialogActions>
           </form>

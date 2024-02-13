@@ -5,7 +5,6 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
-import { GetUserIdQuery } from './GetUserId.generated';
 import { ImpersonateUserAccordion } from './ImpersonateUserAccordion';
 
 jest.mock('next-auth/react');
@@ -29,13 +28,13 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const GetUserId = {
-  GetUserId: {
-    user: {
+jest.mock('src/hooks/useUser', () => ({
+  useUser: () => {
+    return {
       id: '134456',
-    },
+    };
   },
-};
+}));
 
 const handleAccordionChange = jest.fn();
 
@@ -48,12 +47,7 @@ const Components = ({ mutationSpy, expandedPanel }: ComponentsProps) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{ GetUserId: GetUserIdQuery }>
-          mocks={{
-            ...GetUserId,
-          }}
-          onCall={mutationSpy}
-        >
+        <GqlMockedProvider onCall={mutationSpy}>
           <ImpersonateUserAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
@@ -85,20 +79,28 @@ describe('ImpersonateUserAccordion', () => {
 
       const mutationSpy = jest.fn();
 
-      const { getByTestId } = render(
+      const { getAllByRole, getByRole } = render(
         <Components
           mutationSpy={mutationSpy}
           expandedPanel={'Impersonate User'}
         />,
       );
 
-      userEvent.type(getByTestId('impersonateUsername'), 'test@test.org');
-      userEvent.type(getByTestId('impersonateReason'), 'Helpscout Ticket');
+      const button = getAllByRole('button', { name: 'Impersonate User' })[1];
+      const userNameInput = getByRole('textbox', {
+        name: /the key \/ relay email/i,
+      });
+      const reasonInput = getByRole('textbox', {
+        name: /reason \/ helpscout ticket link/i,
+      });
+
+      userEvent.type(userNameInput, 'test@test.org');
+      userEvent.type(reasonInput, 'Helpscout Ticket');
 
       await waitFor(() => {
-        expect(getByTestId('action-button')).not.toBeDisabled();
+        expect(button).not.toBeDisabled();
       });
-      userEvent.click(getByTestId('action-button'));
+      userEvent.click(button);
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith('Error1', {
@@ -118,20 +120,28 @@ describe('ImpersonateUserAccordion', () => {
 
       const mutationSpy = jest.fn();
 
-      const { getByTestId } = render(
+      const { getAllByRole, getByRole } = render(
         <Components
           mutationSpy={mutationSpy}
           expandedPanel={'Impersonate User'}
         />,
       );
 
-      userEvent.type(getByTestId('impersonateUsername'), 'test@test.org');
-      userEvent.type(getByTestId('impersonateReason'), 'Helpscout Ticket');
+      const button = getAllByRole('button', { name: 'Impersonate User' })[1];
+      const userNameInput = getByRole('textbox', {
+        name: /the key \/ relay email/i,
+      });
+      const reasonInput = getByRole('textbox', {
+        name: /reason \/ helpscout ticket link/i,
+      });
+
+      userEvent.type(userNameInput, 'test@test.org');
+      userEvent.type(reasonInput, 'Helpscout Ticket');
 
       await waitFor(() => {
-        expect(getByTestId('action-button')).not.toBeDisabled();
+        expect(button).not.toBeDisabled();
       });
-      userEvent.click(getByTestId('action-button'));
+      userEvent.click(button);
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith('Unknown Error', {
@@ -149,19 +159,28 @@ describe('ImpersonateUserAccordion', () => {
 
       const mutationSpy = jest.fn();
 
-      const { getByText, getByTestId } = render(
+      const { getByText, getAllByRole, getByRole } = render(
         <Components
           mutationSpy={mutationSpy}
           expandedPanel={'Impersonate User'}
         />,
       );
 
-      userEvent.type(getByTestId('impersonateUsername'), 'testtestorg');
-      userEvent.type(getByTestId('impersonateReason'), 'Helpscout Ticket');
+      const userNameInput = getByRole('textbox', {
+        name: /the key \/ relay email/i,
+      });
+      const reasonInput = getByRole('textbox', {
+        name: /reason \/ helpscout ticket link/i,
+      });
+
+      userEvent.type(userNameInput, 'testtestorg');
+      userEvent.type(reasonInput, 'Helpscout Ticket');
 
       await waitFor(() => {
         expect(getByText('user must be a valid email')).toBeVisible();
-        expect(getByTestId('action-button')).toBeDisabled();
+        expect(
+          getAllByRole('button', { name: 'Impersonate User' })[1],
+        ).toBeDisabled();
       });
     });
   });
@@ -183,7 +202,7 @@ describe('ImpersonateUserAccordion', () => {
     it('should impersonate user', async () => {
       const mutationSpy = jest.fn();
 
-      const { getAllByText, getByTestId } = render(
+      const { getAllByText, getAllByRole, getByRole } = render(
         <Components
           mutationSpy={mutationSpy}
           expandedPanel={'Impersonate User'}
@@ -191,15 +210,23 @@ describe('ImpersonateUserAccordion', () => {
       );
       expect(getAllByText('Impersonate User').length).toEqual(3);
 
-      expect(getByTestId('action-button')).toBeDisabled();
+      const button = getAllByRole('button', { name: 'Impersonate User' })[1];
+      const userNameInput = getByRole('textbox', {
+        name: /the key \/ relay email/i,
+      });
+      const reasonInput = getByRole('textbox', {
+        name: /reason \/ helpscout ticket link/i,
+      });
 
-      userEvent.type(getByTestId('impersonateUsername'), 'test@test.org');
-      userEvent.type(getByTestId('impersonateReason'), 'Helpscout Ticket');
+      expect(button).toBeDisabled();
+
+      userEvent.type(userNameInput, 'test@test.org');
+      userEvent.type(reasonInput, 'Helpscout Ticket');
 
       await waitFor(() => {
-        expect(getByTestId('action-button')).not.toBeDisabled();
+        expect(button).not.toBeDisabled();
       });
-      userEvent.click(getByTestId('action-button'));
+      userEvent.click(button);
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
