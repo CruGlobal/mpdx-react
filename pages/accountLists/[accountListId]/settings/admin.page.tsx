@@ -11,7 +11,7 @@ const Admin = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
   const [expandedPanel, setExpandedPanel] = useState(
-    (query?.selectedTab as string) || '',
+    typeof query.selectedTab === 'string' ? query.selectedTab : '',
   );
 
   useEffect(() => {
