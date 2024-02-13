@@ -4,16 +4,17 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import theme from '../../../../../theme';
-import { Donation } from '../DonationsReportTable';
-import { UpdateDonationMutation } from './EditDonation.generated';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
 import { EditDonationModal } from './EditDonationModal';
+import {
+  EditDonationModalDonationFragment,
+  EditDonationModalDonationFragmentDoc,
+  UpdateDonationMutation,
+} from './EditDonationModal.generated';
 
-const time = DateTime.fromISO('2021-03-25');
 const router = {
   query: { accountListId: 'aaa' },
   isReady: true,
@@ -37,29 +38,33 @@ const mocks = {
   },
 };
 
-const donation: Donation = {
-  appeal: null,
-  appealAmount: null,
-  contactId: 'contact1',
-  convertedAmount: 100.0,
-  currency: 'CAD',
-  date: time,
-  designationAccount: { id: 'designation-1', name: 'Designation (0000)' },
-  foreignAmount: 100.0,
-  foreignCurrency: 'CAD',
-  id: 'abc',
-  method: 'BRANK_TRANS',
-  partner: 'partner',
-  partnerId: '123',
-};
-const donationWithAppeal: Donation = {
-  ...donation,
-  appeal: {
-    id: 'appeal-1',
-    name: 'End of Year Ask',
+const donation = gqlMock<EditDonationModalDonationFragment>(
+  EditDonationModalDonationFragmentDoc,
+  {
+    mocks: {
+      amount: {
+        amount: 100,
+        currency: 'USD',
+      },
+      donationDate: '2021-03-25',
+    },
   },
-  appealAmount: 50,
-};
+);
+
+const donationWithAppeal = gqlMock<EditDonationModalDonationFragment>(
+  EditDonationModalDonationFragmentDoc,
+  {
+    mocks: {
+      ...donation,
+      appeal: {
+        id: 'appeal-1',
+      },
+      appealAmount: {
+        amount: 50,
+      },
+    },
+  },
+);
 
 const mockEnqueue = jest.fn();
 
@@ -74,7 +79,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-describe('DonationsReportTable', () => {
+describe('EditDonationModal', () => {
   it('renders with data', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
@@ -266,16 +271,16 @@ describe('DonationsReportTable', () => {
     );
     await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
     expect(
-      queryByText('Are you sure you wish to delete this donation?'),
+      queryByText('Are you sure you wish to delete the selected donation?'),
     ).not.toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Delete' }));
     expect(
-      getByText('Are you sure you wish to delete this donation?'),
+      getByText('Are you sure you wish to delete the selected donation?'),
     ).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'No' }));
     await waitFor(() =>
       expect(
-        queryByText('Are you sure you wish to delete this donation?'),
+        queryByText('Are you sure you wish to delete the selected donation?'),
       ).not.toBeInTheDocument(),
     );
   });
@@ -302,11 +307,11 @@ describe('DonationsReportTable', () => {
       );
     await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
     expect(
-      queryByText('Are you sure you wish to delete this donation?'),
+      queryByText('Are you sure you wish to delete the selected donation?'),
     ).not.toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Delete' }));
     expect(
-      getByText('Are you sure you wish to delete this donation?'),
+      getByText('Are you sure you wish to delete the selected donation?'),
     ).toBeInTheDocument();
     expect(queryByTestId('loading-circle')).not.toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Yes' }));

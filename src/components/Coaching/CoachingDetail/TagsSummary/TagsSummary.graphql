@@ -1,0 +1,21 @@
+query TagsSummary(
+  $accountListId: ID!
+  $range: String!
+  $association: ReportsTagHistoriesAssociationEnum!
+) {
+  reportsTagHistories(
+    accountListId: $accountListId
+    range: $range
+    association: $association
+  ) {
+    periods {
+      startDate
+      endDate
+      tags {
+        id
+        count
+        name
+      }
+    }
+  }
+}

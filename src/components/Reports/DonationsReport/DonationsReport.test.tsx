@@ -7,10 +7,10 @@ import TestRouter from '__tests__/util/TestRouter';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
-} from 'src/utils/tests/windowResizeObserver';
+} from '__tests__/util/windowResizeObserver';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
-import { GetDonationsGraphQuery } from '../../Contacts/ContactDetails/ContactDontationsTab/DonationsGraph/DonationsGraph.generated';
+import { GetDonationsGraphQuery } from '../../Contacts/ContactDetails/ContactDonationsTab/DonationsGraph/DonationsGraph.generated';
 import { DonationsReport } from './DonationsReport';
 import { GetDonationsTableQuery } from './GetDonationsTable.generated';
 

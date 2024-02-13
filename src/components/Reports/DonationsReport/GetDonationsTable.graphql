@@ -14,7 +14,8 @@ query GetDonationsTable(
     after: $after
   ) {
     nodes {
-      ...ExpectedDonationData
+      ...EditDonationModalDonation
+      ...DonationTableRow
     }
     pageInfo {
       endCursor
@@ -24,7 +25,8 @@ query GetDonationsTable(
   }
 }
 
-fragment ExpectedDonationData on Donation {
+fragment DonationTableRow on Donation {
+  id
   amount {
     amount
     convertedAmount
@@ -35,25 +37,20 @@ fragment ExpectedDonationData on Donation {
     id
     name
   }
-  appealAmount {
-    amount
-  }
   donationDate
   donorAccount {
+    id
     contacts(first: 25) {
       nodes {
         id
       }
     }
     displayName
-    id
   }
   designationAccount {
-    name
     id
-    accountNumber
+    name
   }
-  id
   paymentMethod
 }
 

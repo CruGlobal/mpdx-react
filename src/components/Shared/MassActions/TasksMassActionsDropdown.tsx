@@ -112,6 +112,7 @@ export const TasksMassActionsDropdown: React.FC<
             <Menu
               open={open}
               onClose={handleClose}
+              disableRestoreFocus={true}
               anchorEl={anchorEl}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
               transformOrigin={{ vertical: 'top', horizontal: 'center' }}
