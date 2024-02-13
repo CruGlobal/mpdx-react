@@ -196,14 +196,21 @@ export const ContactRow: React.FC<Props> = ({
 
         <Grid item xs={2} md={6}>
           <SpaceBetweenBox>
-            <Box>
-              {accountList?.accountListUsers?.map(
+            <ListItemText
+              primary={
+                <Typography component="span" variant="h6" noWrap>
+                  <Box component="span" display="flex" alignItems="center">
+                    {accountList.name}
+                  </Box>
+                </Typography>
+              }
+              secondary={accountList?.accountListUsers?.map(
                 (person, idx) =>
                   person && (
                     <PersonData person={person} key={`person-${idx}`} />
                   ),
               )}
-            </Box>
+            />
 
             <Box>
               <Button

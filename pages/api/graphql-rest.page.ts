@@ -1183,7 +1183,7 @@ class MpdxRestApi extends RESTDataSource {
       '&fields[addresses]=primary_mailing_address,street,city,state,postal_code';
 
     const data: SearchOrganizationsContactsResponse = await this.get(
-      `organizations/contacts?data[type]=organizationId&${fields}&${filters}&include=${include}&page=${pageNumber}`,
+      `organizations/contacts?data[type]=contacts&${fields}&${filters}&include=${include}&page=${pageNumber}`,
     );
     return SearchOrganizationsContacts(data);
   }
