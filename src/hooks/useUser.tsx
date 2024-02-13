@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
-import { GetUserQuery, useGetUserQuery } from './GetUser.generated';
+import {
+  GetUserQuery,
+  useGetUserQuery,
+} from '../components/User/GetUser.generated';
 
 // Use this call to grab user data
 export const useUser = (): GetUserQuery['user'] | undefined => {

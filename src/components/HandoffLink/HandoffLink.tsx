@@ -1,6 +1,6 @@
 import { Children, ReactElement, ReactNode, cloneElement } from 'react';
 import { useAccountListId } from '../../hooks/useAccountListId';
-import { useUser } from '../User/useUser';
+import { useUser } from '../../hooks/useUser';
 
 interface Props {
   path: string;

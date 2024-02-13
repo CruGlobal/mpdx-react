@@ -1,5 +1,0 @@
-query GetUserID {
-  user {
-    id
-  }
-}

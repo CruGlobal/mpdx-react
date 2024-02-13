@@ -16,9 +16,9 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useUser } from 'src/hooks/useUser';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import { AccordionProps } from '../../accordionHelper';
-import { useGetUserIdQuery } from './GetUserId.generated';
 
 const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
@@ -33,8 +33,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
 
-  const { data } = useGetUserIdQuery();
-  const userId = data?.user.id;
+  const userId = useUser()?.id;
 
   type ImpersonateUserFormType = {
     user: string;
