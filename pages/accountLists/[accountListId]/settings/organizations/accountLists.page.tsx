@@ -57,7 +57,7 @@ const AccountListsOrganizations = (): ReactElement => {
       >
         {!organizations?.length && !selectedOrganization && (
           <HeaderAndDropdown>
-            <Skeleton height={'58px'} width={'250px'} />
+            <Skeleton height={'58px'} width={'250px'} data-testid="skeleton" />
             <Skeleton height={'58px'} width={'250px'} />
           </HeaderAndDropdown>
         )}
