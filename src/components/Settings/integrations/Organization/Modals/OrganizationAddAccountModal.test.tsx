@@ -120,7 +120,7 @@ describe('OrganizationAddAccountModal', () => {
 
   it('should select offline Organization and add it', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByRole } = render(
+    const { getByText, getByRole, findByRole } = render(
       <Components>
         <GqlMockedProvider<{
           GetOrganizations: GetOrganizationsQuery;
@@ -142,11 +142,7 @@ describe('OrganizationAddAccountModal', () => {
     );
 
     userEvent.click(getByRole('combobox'));
-    await waitFor(() =>
-      expect(
-        getByRole('option', { name: 'organizationName' }),
-      ).toBeInTheDocument(),
-    );
+    userEvent.click(await findByRole('option', { name: 'organizationName' }));
 
     await waitFor(() => {
       expect(getByText('Add Account')).not.toBeDisabled();

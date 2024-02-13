@@ -33,7 +33,30 @@ const mergePages: FieldMergeFunction = (existing = [], incoming) =>
 export const cache = new InMemoryCache({
   possibleTypes: generatedIntrospection.possibleTypes,
   typePolicies: {
-    AccountList: { merge: true },
+    Appeal: {
+      fields: {
+        pledges: paginationFieldPolicy,
+      },
+      merge: true,
+    },
+    CoachingAppeal: {
+      fields: {
+        pledges: paginationFieldPolicy,
+      },
+      merge: true,
+    },
+    AccountList: {
+      fields: {
+        contacts: paginationFieldPolicy,
+      },
+      merge: true,
+    },
+    CoachingAccountList: {
+      fields: {
+        contacts: paginationFieldPolicy,
+      },
+      merge: true,
+    },
     User: { merge: true },
     Contact: {
       fields: {

@@ -15,7 +15,7 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -180,6 +180,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
           },
           setFieldValue,
           handleChange,
+          handleBlur,
           handleSubmit,
           isSubmitting,
           errors,
@@ -190,9 +191,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
               <FormFieldsGridContainer>
                 <Grid item xs={12} md={6}>
                   <TextField
+                    name="convertedAmount"
                     value={convertedAmount}
                     label={t('Amount')}
-                    onChange={handleChange('convertedAmount')}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     fullWidth
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
@@ -250,7 +253,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
-                    <MobileDatePicker
+                    <DatePicker
                       renderInput={(params) => (
                         <TextField fullWidth {...params} />
                       )}
