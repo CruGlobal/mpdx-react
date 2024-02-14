@@ -1,0 +1,23 @@
+query NotificationsPreferences($accountListId: ID!) {
+  notificationPreferences(accountListId: $accountListId) {
+    nodes {
+      id
+      app
+      email
+      notificationType {
+        id
+        descriptionTemplate
+        type
+      }
+      task
+    }
+  }
+}
+
+query NotificationTypes {
+  notificationTypes {
+    id
+    type
+    descriptionTemplate
+  }
+}

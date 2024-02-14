@@ -426,12 +426,13 @@ If you want to load all the pages, use the `useFetchAllPages` hook. As long as y
 ```ts
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
-const { data } = useContactNamesQuery({
+const { data, error, fetchMore } = useContactNamesQuery({
   variables: { accountListId },
 });
 const { loading } = useFetchAllPages({
-  pageInfo: data?.contacts.pageInfo,
   fetchMore,
+  error,
+  pageInfo: data?.contacts.pageInfo,
 });
 ```
 
@@ -531,6 +532,7 @@ In our test, we can pass a `mocks` prop to `GqlMockedProvider` to tell it which 
 
 ```tsx
 import { render } from '@testing-library/react';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 
 describe('PartnersComponent', () => {
   it('shows the contact name', async () => {
@@ -573,12 +575,13 @@ query ContactDetails($accountListId: ID!, $contactId: ID!) {
 ```
 
 ```tsx
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 
 const mutationSpy = jest.fn();
 
 describe('ContactComponent', () => {
-  it('shows the contact name', () => {
+  it('shows the contact name', async () => {
     render(
       <GqlMockedProvider onCall={mutationSpy}>
         <ContactComponent
@@ -588,17 +591,20 @@ describe('ContactComponent', () => {
       </GqlMockedProvider>,
     );
 
-    // calls[0] is the first call, and calls[0][0] is the first argument of the first call
-    expect(mutationSpy.calls[0][0]).toMatchObject({
-      operation: {
-        // Matches the name of the query operation defined in the component's .graphql file
-        operationName: 'ContactDetails',
-        variables: {
-          accountListId: 'account-list-1',
-          contactId: 'contact-1',
+    // The operation spy is called asynchronously so we have to wait for it to be called
+    await waitFor(() =>
+      // lastCall is an array of the arguments from the most recent call
+      expect(mutationSpy.mock.lastCall[0]).toMatchObject({
+        operation: {
+          // Matches the name of the query operation defined in the component's .graphql file
+          operationName: 'ContactDetails',
+          variables: {
+            accountListId: 'account-list-1',
+            contactId: 'contact-1',
+          },
         },
-      },
-    });
+      }),
+    );
   });
 });
 ```
@@ -614,7 +620,8 @@ mutation DeletePartner($accountListId: ID!, $contactId: ID!) {
 ```
 
 ```tsx
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 
 const mutationSpy = jest.fn();
 
@@ -631,17 +638,20 @@ describe('ContactComponent', () => {
 
     userEvent.click(await findByText('Delete'));
 
-    // The first operation was the query to load the contact, so we test the second operation
-    expect(mutationSpy.calls[1][0]).toMatchObject({
-      operation: {
-        // Matches the name of the mutation operation defined in the component's .graphql file
-        operationName: 'DeletePartner',
-        variables: {
-          accountListId: 'account-list-1',
-          contactId: 'contact-1',
+    // The operation spy is called asynchronously so we have to wait for it to be called
+    await waitFor(() =>
+      // lastCall is an array of the arguments from the most recent call
+      expect(mutationSpy.mock.lastCall[0]).toMatchObject({
+        operation: {
+          // Matches the name of the mutation operation defined in the component's .graphql file
+          operationName: 'DeletePartner',
+          variables: {
+            accountListId: 'account-list-1',
+            contactId: 'contact-1',
+          },
         },
-      },
-    });
+      }),
+    );
   });
 });
 ```

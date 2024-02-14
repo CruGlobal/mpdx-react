@@ -145,7 +145,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                       primary: phoneNumber.primary,
                       updatedAt: phoneNumber.updatedAt,
                       source: phoneNumber.source,
-                      number: phoneNumber.number,
+                      number: phoneNumber.number || '',
                     }),
                   ),
                   toDelete: [],

@@ -1,0 +1,73 @@
+fragment EditDonationModalDonation on Donation {
+  id
+  amount {
+    amount
+    currency
+  }
+  appeal {
+    id
+  }
+  appealAmount {
+    amount
+  }
+  donationDate
+  donorAccount {
+    id
+    contacts(first: 25) {
+      nodes {
+        id
+      }
+    }
+    displayName
+  }
+  designationAccount {
+    id
+    name
+  }
+  memo
+  motivation
+  paymentMethod
+  remoteId
+}
+
+query GetDesignationAccounts($accountListId: ID!) {
+  designationAccounts(accountListId: $accountListId) {
+    designationAccounts {
+      id
+      name
+      active
+    }
+  }
+}
+
+query EditDonationModalGetAppeals($accountListId: ID!, $after: String) {
+  appeals(accountListId: $accountListId, first: 50, after: $after) {
+    nodes {
+      id
+      name
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+
+mutation UpdateDonation(
+  $accountListId: ID!
+  $attributes: DonationUpdateInput!
+) {
+  updateDonation(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    donation {
+      ...EditDonationModalDonation
+    }
+  }
+}
+
+mutation DeleteDonation($accountListId: ID!, $id: ID!) {
+  deleteDonation(input: { accountListId: $accountListId, id: $id }) {
+    id
+  }
+}

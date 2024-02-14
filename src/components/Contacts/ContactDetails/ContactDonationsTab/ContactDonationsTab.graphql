@@ -1,0 +1,73 @@
+query GetContactDonations($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    ...ContactDonorAccounts
+    name
+    lastDonation {
+      ...ContactDonation
+    }
+  }
+}
+
+fragment ContactDonorAccounts on Contact {
+  id
+  name
+  nextAsk
+  pledgeReceived
+  pledgeStartDate
+  pledgeAmount
+  pledgeCurrency
+  pledgeFrequency
+  totalDonations
+  noAppeals
+  sendNewsletter
+  status
+  source
+  likelyToGive
+  lastDonation {
+    ...ContactDonation
+  }
+  contactReferralsToMe(first: 10) {
+    nodes {
+      id
+      referredBy {
+        id
+        name
+      }
+    }
+  }
+  contactDonorAccounts(first: 25) {
+    nodes {
+      id
+      donorAccount {
+        ...ContactDonorAccount
+      }
+    }
+  }
+}
+
+fragment ContactDonation on Donation {
+  id
+  donationDate
+  paymentMethod
+  amount {
+    ...DonationMoney
+  }
+  appeal {
+    id
+    name
+  }
+}
+
+fragment DonationMoney on Money {
+  amount
+  convertedAmount
+  currency
+  convertedCurrency
+}
+
+fragment ContactDonorAccount on DonorAccount {
+  id
+  displayName
+  accountNumber
+}

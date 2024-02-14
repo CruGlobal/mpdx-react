@@ -1,8 +1,10 @@
+import { ThemeProvider } from '@mui/system';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
 import {
   FilterPanelTagsSection,
   FilterPanelTagsSectionProps,
@@ -18,18 +20,20 @@ const onSelectedFiltersChanged = jest.fn();
 const ComponentWithMocks: React.FC<
   Partial<FilterPanelTagsSectionProps> | undefined
 > = (props) => (
-  <TestRouter router={router}>
-    <SnackbarProvider>
-      <GqlMockedProvider>
-        <FilterPanelTagsSection
-          filterOptions={[{ name: 'Tag 1', value: 'tag-1' }]}
-          selectedFilters={{}}
-          onSelectedFiltersChanged={onSelectedFiltersChanged}
-          {...props}
-        />
-      </GqlMockedProvider>
-    </SnackbarProvider>
-  </TestRouter>
+  <ThemeProvider theme={theme}>
+    <TestRouter router={router}>
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <FilterPanelTagsSection
+            filterOptions={[{ name: 'Tag 1', value: 'tag-1' }]}
+            selectedFilters={{}}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+            {...props}
+          />
+        </GqlMockedProvider>
+      </SnackbarProvider>
+    </TestRouter>
+  </ThemeProvider>
 );
 
 describe('FilterPanelTagsSection', () => {

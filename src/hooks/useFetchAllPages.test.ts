@@ -1,3 +1,4 @@
+import { ApolloError } from '@apollo/client';
 import { renderHook } from '@testing-library/react-hooks';
 import { useFetchAllPages } from './useFetchAllPages';
 
@@ -6,7 +7,11 @@ describe('useFetchAllPages', () => {
 
   it('only loads when page info is available', () => {
     const { result } = renderHook(() =>
-      useFetchAllPages({ pageInfo: undefined, fetchMore }),
+      useFetchAllPages({
+        fetchMore,
+        error: undefined,
+        pageInfo: undefined,
+      }),
     );
 
     expect(fetchMore).not.toHaveBeenCalled();
@@ -21,11 +26,12 @@ describe('useFetchAllPages', () => {
 
     const { result, rerender } = renderHook(() =>
       useFetchAllPages({
-        pageInfo: {
-          hasNextPage: page <= 3,
-          endCursor: page > 3 ? undefined : `A${page}`,
-        },
         fetchMore,
+        error: undefined,
+        pageInfo: {
+          endCursor: page > 3 ? undefined : `A${page}`,
+          hasNextPage: page <= 3,
+        },
       }),
     );
 
@@ -43,6 +49,18 @@ describe('useFetchAllPages', () => {
     expect(fetchMore).toHaveBeenCalledWith({ variables: { after: 'A1' } });
     expect(fetchMore).toHaveBeenCalledWith({ variables: { after: 'A2' } });
     expect(fetchMore).toHaveBeenCalledWith({ variables: { after: 'A3' } });
+    expect(result.current.loading).toBe(false);
+  });
+
+  it('sets loading to false when there is an error', () => {
+    const { result } = renderHook(() =>
+      useFetchAllPages({
+        fetchMore,
+        error: new ApolloError({}),
+        pageInfo: undefined,
+      }),
+    );
+
     expect(result.current.loading).toBe(false);
   });
 });

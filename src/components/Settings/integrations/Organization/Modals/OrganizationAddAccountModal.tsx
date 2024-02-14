@@ -186,6 +186,7 @@ export const OrganizationAddAccountModal: React.FC<
           password: '',
         }}
         validationSchema={OrganizationSchema}
+        validateOnMount
         onSubmit={onSubmit}
       >
         {({
@@ -282,7 +283,7 @@ export const OrganizationAddAccountModal: React.FC<
                         {t('click here to log out of {{appName}}', { appName })}
                       </Link>
                       {t(
-                        ' so you can log back in with your offical key account.',
+                        ' so you can log back in with your official key account.',
                       )}
                     </li>
                   </ol>

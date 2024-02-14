@@ -25,11 +25,12 @@ const Appeals: React.FC<Props> = ({ accountListId }: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const [changePrimaryAppeal, { loading: updating }] =
     useChangePrimaryAppealMutation();
-  const { data, fetchMore } = useGetAppealsQuery({
+  const { data, error, fetchMore } = useGetAppealsQuery({
     variables: { accountListId },
   });
   const { loading } = useFetchAllPages({
     fetchMore,
+    error,
     pageInfo: data?.regularAppeals.pageInfo,
   });
 

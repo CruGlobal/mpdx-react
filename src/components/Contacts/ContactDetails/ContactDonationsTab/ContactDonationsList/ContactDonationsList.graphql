@@ -1,0 +1,21 @@
+query ContactDonationsList(
+  $accountListId: ID!
+  $contactId: ID!
+  $after: String
+) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    donations(first: 13, after: $after) {
+      nodes {
+        ...ContactDonation
+        ...EditDonationModalDonation
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+    }
+  }
+}
