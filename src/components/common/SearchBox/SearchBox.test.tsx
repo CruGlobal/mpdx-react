@@ -29,7 +29,7 @@ it('triggers onChange', async () => {
   const inputText = 'name';
   const placeholderText = 'placeholder';
 
-  const { getByRole } = render(
+  const { getByRole, getByTestId } = render(
     <ThemeProvider theme={theme}>
       <SearchBox
         showContactSearchIcon={false}
@@ -41,6 +41,7 @@ it('triggers onChange', async () => {
   );
 
   const textbox = getByRole('textbox');
+  // const searchInputCloseButton = getByTestId('SearchInputCloseButton');
 
   expect(textbox).toHaveValue('');
 
@@ -49,4 +50,8 @@ it('triggers onChange', async () => {
   await new Promise((resolve) => setTimeout(resolve, 300));
 
   expect(onChange).toHaveBeenCalledWith(inputText);
+
+  userEvent.click(getByTestId('SearchInputCloseButton'));
+
+  expect(textbox).toHaveValue('');
 });

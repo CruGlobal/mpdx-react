@@ -39,28 +39,21 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
 }) => {
   const { t } = useTranslation();
   const [currentSearchTerm, setSearchTerm] = useState(searchTerm ?? '');
-  const [isClearSearchVisible, setIsClearSearchVisible] = useState(false);
 
   const handleOnChange = (searchTerm: string) => {
     setSearchTerm(searchTerm);
     onChange(searchTerm);
-
-    if (searchTerm) {
-      setIsClearSearchVisible(true);
-    } else {
-      setIsClearSearchVisible(false);
-    }
   };
 
   const handleClearSearch = () => {
     setSearchTerm('');
-    setIsClearSearchVisible(false);
   };
 
   return (
     <SearchInput
       size="small"
       variant="outlined"
+      sx={{ width: { sm: '27ch', md: '31ch' } }}
       onChange={(e) => handleOnChange(e.target.value)}
       placeholder={placeholder ?? t('Search')}
       value={currentSearchTerm}
@@ -76,12 +69,12 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
         ),
         endAdornment: (
           <InputAdornment position="end">
-            {isClearSearchVisible && (
-              <IconButton onClick={handleClearSearch}>
-                <CloseButtonIcon
-                  titleAccess={t('Close')}
-                  data-testid="SearchInputClose"
-                />
+            {currentSearchTerm && (
+              <IconButton
+                onClick={handleClearSearch}
+                data-testid="SearchInputCloseButton"
+              >
+                <CloseButtonIcon titleAccess={t('Close')} />
               </IconButton>
             )}
           </InputAdornment>
