@@ -7,6 +7,8 @@ import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/Accordion
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './wrapper';
 
+export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
+
 const Admin = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
@@ -15,7 +17,7 @@ const Admin = (): ReactElement => {
   );
 
   useEffect(() => {
-    suggestArticles('HS_SETTINGS_SERVICES_SUGGESTIONS');
+    suggestArticles(suggestedArticles);
   }, []);
 
   const handleAccordionChange = (panel: string) => {
