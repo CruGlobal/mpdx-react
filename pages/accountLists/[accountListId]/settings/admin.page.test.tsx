@@ -69,14 +69,14 @@ describe('Admin', () => {
     );
   });
 
-  it('should keep Impersonate User accordion close', async () => {
+  it('should keep impersonate user accordion close', async () => {
     const { getAllByText } = render(<Components />);
     await waitFor(() =>
-      expect(getAllByText('Impersonate User').length).toEqual(1),
+      expect(getAllByText('Impersonate User')).toHaveLength(1),
     );
   });
 
-  it('should open Impersonate User accordion', async () => {
+  it('should open impersonate user accordion', async () => {
     (useRouter as jest.Mock).mockReturnValue({
       query: {
         selectedTab: 'Impersonate User',
