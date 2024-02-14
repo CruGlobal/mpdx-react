@@ -126,7 +126,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
                 <TextField
                   required
                   id="user"
-                  label={t('The Key / Relay Email')}
+                  label={t('Okta User Name / Email')}
                   type="email"
                   value={user}
                   disabled={isSubmitting}

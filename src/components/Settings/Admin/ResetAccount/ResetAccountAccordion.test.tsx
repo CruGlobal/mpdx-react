@@ -70,7 +70,7 @@ describe('ResetAccountAccordion', () => {
 
     const button = getAllByRole('button', { name: 'Reset Account' })[1];
     const userNameInput = getByRole('textbox', {
-      name: /the key \/ relay email/i,
+      name: /Okta User Name \/ Email/i,
     });
     const reasonInput = getByRole('textbox', {
       name: /reason \/ helpscout ticket link/i,
@@ -121,7 +121,7 @@ describe('ResetAccountAccordion', () => {
       </Components>,
     );
     const userNameInput = getByRole('textbox', {
-      name: /the key \/ relay email/i,
+      name: /Okta User Name \/ Email/i,
     });
     const reasonInput = getByRole('textbox', {
       name: /reason \/ helpscout ticket link/i,
