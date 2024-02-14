@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ManageCoachesAccessAccordion } from 'src/components/Settings/Coaches/ManageCoachesAccess/ManageCoachesAccessAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { suggestArticles } from 'src/lib/helpScout';
-import { SettingsWrapper } from './Wrapper';
+import { SettingsWrapper } from './wrapper';
 
 const ManageAccounts = (): ReactElement => {
   const { t } = useTranslation();

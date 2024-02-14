@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { NotificationsTable } from 'src/components/Settings/notifications/NotificationsTable';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { SettingsWrapper } from './Wrapper';
+import { SettingsWrapper } from './wrapper';
 
 const Notifications: React.FC = () => {
   const { t } = useTranslation();
