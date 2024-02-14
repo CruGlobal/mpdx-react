@@ -11,17 +11,17 @@ import Loading from '../src/components/Loading';
 import Welcome from '../src/components/Welcome';
 import useGetAppSettings from '../src/hooks/useGetAppSettings';
 
-interface IndexPageProps {
+export interface LoginProps {
   signInButtonText: string;
   signInAuthProviderId: string;
   immediateSignIn: boolean;
 }
 
-const IndexPage = ({
+const Login = ({
   signInButtonText,
   signInAuthProviderId,
   immediateSignIn,
-}: IndexPageProps): ReactElement => {
+}: LoginProps): ReactElement => {
   const { appName } = useGetAppSettings();
 
   useEffect(() => {
@@ -69,7 +69,7 @@ const IndexPage = ({
   );
 };
 
-IndexPage.layout = BaseLayout;
+Login.layout = BaseLayout;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
@@ -117,4 +117,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default IndexPage;
+export default Login;
