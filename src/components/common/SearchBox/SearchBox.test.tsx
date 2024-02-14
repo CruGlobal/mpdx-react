@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from '../../../theme';
 import { SearchBox } from './SearchBox';
@@ -41,17 +41,11 @@ it('triggers onChange', async () => {
   );
 
   const textbox = getByRole('textbox');
-  // const searchInputCloseButton = getByTestId('SearchInputCloseButton');
-
   expect(textbox).toHaveValue('');
-
   userEvent.type(textbox, inputText);
-
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  expect(onChange).toHaveBeenCalledWith(inputText);
+  await waitFor(() => expect(onChange).toHaveBeenCalledWith(inputText));
 
   userEvent.click(getByTestId('SearchInputCloseButton'));
-
   expect(textbox).toHaveValue('');
+  await waitFor(() => expect(onChange).toHaveBeenCalledWith(''));
 });

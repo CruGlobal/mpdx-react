@@ -45,10 +45,6 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     onChange(searchTerm);
   };
 
-  const handleClearSearch = () => {
-    setSearchTerm('');
-  };
-
   return (
     <SearchInput
       size="small"
@@ -71,7 +67,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
           <InputAdornment position="end">
             {currentSearchTerm && (
               <IconButton
-                onClick={handleClearSearch}
+                onClick={() => handleOnChange('')}
                 data-testid="SearchInputCloseButton"
               >
                 <CloseButtonIcon titleAccess={t('Close')} />
