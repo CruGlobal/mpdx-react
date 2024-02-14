@@ -99,8 +99,7 @@ describe('Login - API_OAUTH', () => {
   });
 
   it('calls signin on button click', async () => {
-    context.req.headers.cookie =
-      'cookieOne=valueOne;mpdx-handoff.redirect-url=http://URL.org;';
+    context.req.headers.cookie = '';
     const { props } = (await getServerSideProps(
       context,
     )) as getServerSidePropsReturn;
@@ -108,7 +107,7 @@ describe('Login - API_OAUTH', () => {
     const { queryByTestId, getByRole } = render(<Components props={props} />);
 
     await waitFor(() =>
-      expect(queryByTestId('immediateSignInSpinner')).not.toBeInTheDocument(),
+      expect(queryByTestId('Loading')).not.toBeInTheDocument(),
     );
 
     const loginButton = getByRole('button', {
@@ -118,9 +117,8 @@ describe('Login - API_OAUTH', () => {
     userEvent.click(loginButton);
 
     await waitFor(() => {
-      expect(signIn).toHaveBeenCalledTimes(2);
-      const latestCall = (signIn as jest.Mock).mock.calls.slice(-1);
-      expect(latestCall[0][0]).toEqual('apioauth');
+      expect(signIn).toHaveBeenCalledTimes(1);
+      expect(signIn).toHaveBeenCalledWith('apioauth');
     });
   });
 });

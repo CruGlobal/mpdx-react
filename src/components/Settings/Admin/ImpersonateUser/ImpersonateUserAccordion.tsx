@@ -70,7 +70,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
             variant: 'success',
           },
         );
-        window.location.href = `${process.env.SITE_URL}/login`;
+        window.location.href = `/login`;
       } else {
         setupImpersonateJson.errors.forEach((error) => {
           enqueueSnackbar(error.detail, {

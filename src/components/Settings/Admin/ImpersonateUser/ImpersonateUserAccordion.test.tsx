@@ -166,6 +166,7 @@ describe('ImpersonateUserAccordion', () => {
         />,
       );
 
+      const button = getAllByRole('button', { name: 'Impersonate User' })[1];
       const userNameInput = getByRole('textbox', {
         name: /the key \/ relay email/i,
       });
@@ -178,9 +179,7 @@ describe('ImpersonateUserAccordion', () => {
 
       await waitFor(() => {
         expect(getByText('user must be a valid email')).toBeVisible();
-        expect(
-          getAllByRole('button', { name: 'Impersonate User' })[1],
-        ).toBeDisabled();
+        expect(button).toBeDisabled();
       });
     });
   });

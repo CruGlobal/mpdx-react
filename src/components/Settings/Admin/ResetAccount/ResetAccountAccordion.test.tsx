@@ -56,7 +56,7 @@ describe('ResetAccountAccordion', () => {
   it('should reset Account', async () => {
     const mutationSpy = jest.fn();
 
-    const { getAllByText, getByTestId, getAllByRole, getByRole } = render(
+    const { getAllByText, getAllByRole, getByRole } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <ResetAccountAccordion
@@ -75,12 +75,15 @@ describe('ResetAccountAccordion', () => {
     const reasonInput = getByRole('textbox', {
       name: /reason \/ helpscout ticket link/i,
     });
+    const resetAccountInput = getByRole('textbox', {
+      name: /Account Name/i,
+    });
 
     expect(button).toBeDisabled();
 
     userEvent.type(userNameInput, 'test@test.org');
     userEvent.type(reasonInput, 'Helpscout Ticket');
-    userEvent.type(getByTestId('resetAccountName'), 'Test Account');
+    userEvent.type(resetAccountInput, 'Test Account');
 
     await waitFor(() => {
       expect(button).not.toBeDisabled();
@@ -107,7 +110,7 @@ describe('ResetAccountAccordion', () => {
   it('should reset fields after form completed', async () => {
     const mutationSpy = jest.fn();
 
-    const { getByTestId, getAllByRole, getByRole } = render(
+    const { getAllByRole, getByRole } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <ResetAccountAccordion
@@ -123,15 +126,18 @@ describe('ResetAccountAccordion', () => {
     const reasonInput = getByRole('textbox', {
       name: /reason \/ helpscout ticket link/i,
     });
+    const resetAccountInput = getByRole('textbox', {
+      name: /Account Name/i,
+    });
 
     userEvent.type(userNameInput, 'test@test.org');
     userEvent.type(reasonInput, 'Helpscout Ticket');
-    userEvent.type(getByTestId('resetAccountName'), 'Test Account');
+    userEvent.type(resetAccountInput, 'Test Account');
     userEvent.click(getAllByRole('button', { name: 'Reset Account' })[1]);
 
     expect(userNameInput).toHaveValue('test@test.org');
     expect(reasonInput).toHaveValue('Helpscout Ticket');
-    expect(getByTestId('resetAccountName')).toHaveValue('Test Account');
+    expect(resetAccountInput).toHaveValue('Test Account');
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith('Successfully reset account', {
         variant: 'success',
@@ -140,6 +146,6 @@ describe('ResetAccountAccordion', () => {
 
     expect(userNameInput).toHaveValue('');
     expect(reasonInput).toHaveValue('');
-    expect(getByTestId('resetAccountName')).toHaveValue('');
+    expect(resetAccountInput).toHaveValue('');
   });
 });

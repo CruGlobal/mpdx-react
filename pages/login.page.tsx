@@ -5,11 +5,11 @@ import SubjectIcon from '@mui/icons-material/Subject';
 import { Button } from '@mui/material';
 import i18n from 'i18next';
 import { getSession, signIn } from 'next-auth/react';
+import BaseLayout from 'src/components/Layouts/Basic';
+import Loading from 'src/components/Loading';
+import Welcome from 'src/components/Welcome';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { extractCookie } from 'src/lib/extractCookie';
-import BaseLayout from '../src/components/Layouts/Basic';
-import Loading from '../src/components/Loading';
-import Welcome from '../src/components/Welcome';
-import useGetAppSettings from '../src/hooks/useGetAppSettings';
 
 export interface LoginProps {
   signInButtonText: string;
@@ -33,6 +33,7 @@ const Login = ({
       <Head>
         <title>{appName} | Home</title>
       </Head>
+      immediateSignIn = {immediateSignIn ? 'TRUE' : 'FALSE'}
       {immediateSignIn && <Loading loading={true} />}
       <Welcome
         title={

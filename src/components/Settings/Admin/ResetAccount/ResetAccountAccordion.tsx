@@ -150,9 +150,6 @@ export const ResetAccountAccordion: React.FC<AccordionProps> = ({
                   value={account}
                   disabled={isSubmitting}
                   onChange={handleChange('account')}
-                  inputProps={{
-                    'data-testid': 'resetAccountName',
-                  }}
                 />
               </FieldWrapper>
             </StyledBox>

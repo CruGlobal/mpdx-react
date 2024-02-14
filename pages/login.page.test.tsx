@@ -56,7 +56,6 @@ describe('Login - OKTA', () => {
 
   beforeEach(() => {
     setHeaderMock.mockClear();
-    jest.resetModules();
   });
 
   describe('Active session', () => {
@@ -138,8 +137,7 @@ describe('Login - OKTA', () => {
     });
 
     it('calls signin() on button click', async () => {
-      context.req.headers.cookie =
-        'cookieOne=valueOne;mpdx-handoff.redirect-url=http://URL.org;';
+      context.req.headers.cookie = '';
       const { props } = (await getServerSideProps(
         context,
       )) as getServerSidePropsReturn;
@@ -147,7 +145,7 @@ describe('Login - OKTA', () => {
       const { queryByTestId, getByRole } = render(<Components props={props} />);
 
       await waitFor(() =>
-        expect(queryByTestId('immediateSignInSpinner')).not.toBeInTheDocument(),
+        expect(queryByTestId('Loading')).not.toBeInTheDocument(),
       );
 
       const loginButton = getByRole('button', {
@@ -157,9 +155,8 @@ describe('Login - OKTA', () => {
       userEvent.click(loginButton);
 
       await waitFor(() => {
-        expect(signIn).toHaveBeenCalledTimes(2);
-        const latestCall = (signIn as jest.Mock).mock.calls.slice(-1);
-        expect(latestCall[0][0]).toEqual('okta');
+        expect(signIn).toHaveBeenCalledTimes(1);
+        expect(signIn).toHaveBeenCalledWith('okta');
       });
     });
 

@@ -1,7 +1,7 @@
 import Script from 'next/script';
 import { useEffect } from 'react';
+import { useUser } from 'src/hooks/useUser';
 import { callBeacon, identifyUser, initBeacon } from 'src/lib/helpScout';
-import { useUser } from '../../hooks/useUser';
 
 const HelpscoutBeacon: React.FC = () => {
   const user = useUser();
