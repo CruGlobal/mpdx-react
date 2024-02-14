@@ -37,21 +37,22 @@ export const ManageAccountAccessAccordion: React.FC<AccordionProps> = ({
     accountListUsers?.accountListUsers.nodes.map(({ user }) => user) ?? [];
 
   const handleRemoveUser = async (user: SharedAccountUserFragment) => {
-    const accountListId = accountListUsers?.accountListUsers.nodes.find(
+    const accountListUser = accountListUsers?.accountListUsers.nodes.find(
       (accountListUser) => accountListUser.user.id === user.id,
-    )?.id;
-    if (!accountListId) {
+    );
+    if (!accountListUser?.user?.id) {
       return;
     }
 
     await deleteAccountListUser({
       variables: {
         input: {
-          id: accountListId,
+          accountListId,
+          userId: accountListUser.user.id,
         },
       },
       update: (cache) => {
-        cache.evict({ id: `AccountListUser:${accountListId}` });
+        cache.evict({ id: `AccountListUser:${accountListUser.id}` });
         cache.gc();
       },
       onCompleted: () => {
