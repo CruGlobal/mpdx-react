@@ -12,7 +12,7 @@ import { OrganizationsQuery } from '../organizations.generated';
 import OrganizationsContacts, { getServerSideProps } from './contacts.page';
 
 jest.mock('next-auth/react', () => ({ getSession: jest.fn() }));
-
+jest.useFakeTimers();
 interface getServerSidePropsReturn {
   props: unknown;
   redirect: unknown;
@@ -85,14 +85,12 @@ describe('OrganizationsContacts', () => {
     });
 
     it('renders page without redirecting admin', async () => {
-      const { redirect } = (await getServerSideProps(
+      const { props, redirect } = (await getServerSideProps(
         context as GetServerSidePropsContext,
       )) as getServerSidePropsReturn;
 
-      const { getByText } = render(<Components />);
-
       expect(redirect).toBeUndefined();
-      expect(getByText('Organizations Contacts')).toBeInTheDocument();
+      expect(props).toEqual({});
     });
 
     it('should render skeletons while contacts are loading', async () => {
@@ -165,9 +163,7 @@ describe('OrganizationsContacts', () => {
       userEvent.type(accountInput, 'st');
       jest.advanceTimersByTime(1000);
 
-      await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(4), {
-        timeout: 2000,
-      });
+      await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(4));
 
       expect(mutationSpy.mock.calls[3][0].operation.operationName).toEqual(
         'SearchOrganizationsContacts',

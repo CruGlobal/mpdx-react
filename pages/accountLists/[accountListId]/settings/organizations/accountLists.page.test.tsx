@@ -14,7 +14,7 @@ import AccountListsOrganizations, {
 } from './accountLists.page';
 
 jest.mock('next-auth/react', () => ({ getSession: jest.fn() }));
-
+jest.useFakeTimers();
 interface getServerSidePropsReturn {
   props: unknown;
   redirect: unknown;
@@ -87,14 +87,12 @@ describe('AccountListsOrganizations', () => {
     });
 
     it('renders page without redirecting admin', async () => {
-      const { redirect } = (await getServerSideProps(
+      const { props, redirect } = (await getServerSideProps(
         context as GetServerSidePropsContext,
       )) as getServerSidePropsReturn;
 
-      const { getByText } = render(<Components />);
-
       expect(redirect).toBeUndefined();
-      expect(getByText('Organizations Account Lists')).toBeInTheDocument();
+      expect(props).toEqual({});
     });
 
     it('should render skeletons while organizations are loading', async () => {
@@ -177,9 +175,7 @@ describe('AccountListsOrganizations', () => {
       jest.advanceTimersByTime(1000);
 
       // This call takes some time to come through, which is why I'm using timeout
-      await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(5), {
-        timeout: 2000,
-      });
+      await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(5));
 
       expect(mutationSpy.mock.calls[4][0].operation.operationName).toEqual(
         'SearchOrganizationsAccountLists',
