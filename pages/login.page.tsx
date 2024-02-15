@@ -33,7 +33,6 @@ const Login = ({
       <Head>
         <title>{appName} | Home</title>
       </Head>
-      immediateSignIn = {immediateSignIn ? 'TRUE' : 'FALSE'}
       {immediateSignIn && <Loading loading={true} />}
       <Welcome
         title={
