@@ -47,5 +47,5 @@ it('triggers onChange', async () => {
 
   userEvent.click(getByTestId('SearchInputCloseButton'));
   expect(textbox).toHaveValue('');
-  await waitFor(() => expect(onChange).toHaveBeenCalledWith(''));
+  expect(onChange).toHaveBeenCalledWith('');
 });
