@@ -51,6 +51,17 @@ const SpaceBetweenBox = styled(Box)(() => ({
   justifyContent: 'space-between',
 }));
 
+const ListItemButton = styled(ButtonBase, {
+  shouldForwardProp: (prop) => prop !== 'useTopMargin',
+})<{ useTopMargin?: boolean }>(({ theme, useTopMargin }) => ({
+  flex: '1 1 auto',
+  textAlign: 'left',
+  marginTop: useTopMargin ? '16px' : '0',
+  padding: theme.spacing(0, 0.5, 0, 2),
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(0, 0.5),
+  },
+}));
 const PersonData: React.FC<PersonDataProps> = ({ person }) => {
   const email =
     person?.emailAddresses &&
@@ -136,16 +147,6 @@ export const ContactRow: React.FC<Props> = ({
     });
   };
 
-  const ListItemButton = styled(ButtonBase)(({ theme }) => ({
-    flex: '1 1 auto',
-    textAlign: 'left',
-    marginTop: useTopMargin ? '16px' : '0',
-    padding: theme.spacing(0, 0.5, 0, 2),
-    [theme.breakpoints.up('sm')]: {
-      padding: theme.spacing(0, 0.5),
-    },
-  }));
-
   const { name, people, addresses, accountList, allowDeletion } = contact;
 
   const primaryAddress = useMemo(
@@ -157,7 +158,7 @@ export const ContactRow: React.FC<Props> = ({
   );
 
   return (
-    <ListItemButton data-testid="rowButton">
+    <ListItemButton data-testid="rowButton" useTopMargin={useTopMargin}>
       <Grid container alignItems="center">
         <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
           <ListItemText
