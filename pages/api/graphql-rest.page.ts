@@ -26,13 +26,7 @@ import {
   DestroyDonorAccount,
   DestroyDonorAccountResponse,
 } from './Schema/Contacts/DonorAccounts/Destroy/datahander';
-import { AdminDeleteOrganizationCoach } from './Schema/Settings/Organizations/AdminDeleteOrganizationCoach/datahandler';
-import { AdminDeleteOrganizationInvite } from './Schema/Settings/Organizations/AdminDeleteOrganizationInvites/datahandler';
-import { AdminDeleteOrganizationUser } from './Schema/Settings/Organizations/AdminDeleteOrganizationUser/datahandler';
 import { CreateOrganizationInvite } from './Schema/Settings/Organizations/CreateOrganizationInvite/datahandler';
-import { DestroyOrganizationAdmin } from './Schema/Settings/Organizations/DeleteOrganizationAdmin/datahandler';
-import { DeleteOrganizationContact } from './Schema/Settings/Organizations/DeleteOrganizationContact/datahandler';
-import { DestroyOrganizationInvite } from './Schema/Settings/Organizations/DeleteOrganizationInvite/datahandler';
 import {
   OrganizationAdmins,
   OrganizationAdminsResponse,
@@ -59,7 +53,6 @@ import {
   CreateGoogleIntegration,
   CreateGoogleIntegrationResponse,
 } from './Schema/Settings/Preferences/Intergrations/Google/createGoogleIntegration/datahandler';
-import { DeleteGoogleAccount } from './Schema/Settings/Preferences/Intergrations/Google/deleteGoogleAccount/datahandler';
 import {
   GoogleAccountIntegrations,
   GoogleAccountIntegrationsResponse,
@@ -73,7 +66,6 @@ import {
   UpdateGoogleIntegration,
   UpdateGoogleIntegrationResponse,
 } from './Schema/Settings/Preferences/Intergrations/Google/updateGoogleIntegration/datahandler';
-import { DeleteMailchimpAccount } from './Schema/Settings/Preferences/Intergrations/Mailchimp/deleteMailchimpAccount/datahandler';
 import {
   MailchimpAccount,
   MailchimpAccountResponse,
@@ -83,7 +75,6 @@ import {
   UpdateMailchimpAccount,
   UpdateMailchimpAccountResponse,
 } from './Schema/Settings/Preferences/Intergrations/Mailchimp/updateMailchimpAccount/datahandler';
-import { DeletePrayerlettersAccount } from './Schema/Settings/Preferences/Intergrations/Prayerletters/deletePrayerlettersAccount/datahandler';
 import {
   PrayerlettersAccount,
   PrayerlettersAccountResponse,
@@ -138,9 +129,13 @@ import {
   ReportContactFilterSetInput,
 } from './graphql-rest.page.generated';
 
-function camelToSnake(str: string): string {
+const camelToSnake = (str: string): string => {
   return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-}
+};
+
+const DeleteDataHandler = () => ({
+  success: true,
+});
 
 class MpdxRestApi extends RESTDataSource {
   constructor() {
@@ -985,7 +980,7 @@ class MpdxRestApi extends RESTDataSource {
         }),
       },
     );
-    return DeleteGoogleAccount();
+    return DeleteDataHandler();
   }
 
   // Mailchimp Integration
@@ -1036,7 +1031,7 @@ class MpdxRestApi extends RESTDataSource {
 
   async deleteMailchimpAccount(accountListId) {
     await this.delete(`account_lists/${accountListId}/mail_chimp_account`);
-    return DeleteMailchimpAccount();
+    return DeleteDataHandler();
   }
 
   // Prayerletters Integration
@@ -1063,7 +1058,7 @@ class MpdxRestApi extends RESTDataSource {
 
   async deletePrayerlettersAccount(accountListId) {
     await this.delete(`account_lists/${accountListId}/prayer_letters_account`);
-    return DeletePrayerlettersAccount();
+    return DeleteDataHandler();
   }
 
   // Chalkline Integration
@@ -1120,7 +1115,7 @@ class MpdxRestApi extends RESTDataSource {
         }),
       },
     );
-    return DestroyOrganizationInvite();
+    return DeleteDataHandler();
   }
 
   async destroyOrganizationAdmin(organizationId: string, adminId: string) {
@@ -1135,7 +1130,7 @@ class MpdxRestApi extends RESTDataSource {
         }),
       },
     );
-    return DestroyOrganizationAdmin();
+    return DeleteDataHandler();
   }
 
   async createOrganizationInvite(
@@ -1200,7 +1195,7 @@ class MpdxRestApi extends RESTDataSource {
         }),
       },
     );
-    return DeleteOrganizationContact();
+    return DeleteDataHandler();
   }
 
   // Organization AccountLists
@@ -1249,7 +1244,7 @@ class MpdxRestApi extends RESTDataSource {
         }),
       },
     );
-    return AdminDeleteOrganizationUser();
+    return DeleteDataHandler();
   }
 
   async adminDeleteOrganizationCoach(accountListId: string, coachId: string) {
@@ -1264,7 +1259,7 @@ class MpdxRestApi extends RESTDataSource {
         }),
       },
     );
-    return AdminDeleteOrganizationCoach();
+    return DeleteDataHandler();
   }
 
   async adminDeleteOrganizationInvite(accountListId: string, inviteId: string) {
@@ -1279,7 +1274,7 @@ class MpdxRestApi extends RESTDataSource {
         }),
       },
     );
-    return AdminDeleteOrganizationInvite();
+    return DeleteDataHandler();
   }
 }
 

@@ -46,19 +46,19 @@ export const Organizations = (
   }));
 
   const {
-    page,
-    per_page: perPage,
-    total_count: totalCount,
-    total_pages: totalPages,
+    page = 0,
+    per_page = 0,
+    total_count = 0,
+    total_pages = 0,
   } = data.meta.pagination;
 
   return {
     organizations,
     pagination: {
       page,
-      perPage,
-      totalCount,
-      totalPages,
+      perPage: per_page,
+      totalCount: total_count,
+      totalPages: total_pages,
     },
   };
 };
