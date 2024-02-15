@@ -71,21 +71,23 @@ describe('Admin', () => {
 
   it('should keep impersonate user accordion close', async () => {
     const { getAllByText } = render(<Components />);
-    await waitFor(() =>
-      expect(getAllByText('Impersonate User')).toHaveLength(1),
-    );
+    await waitFor(() => {
+      expect(getAllByText('Impersonate User')).toHaveLength(3);
+      expect(getAllByText('Reset Account').length).toEqual(1);
+    });
   });
 
   it('should open impersonate user accordion', async () => {
     (useRouter as jest.Mock).mockReturnValue({
       query: {
-        selectedTab: 'Impersonate User',
+        selectedTab: 'Reset Account',
       },
       isReady: true,
     });
     const { getAllByText } = render(<Components />);
-    await waitFor(() =>
-      expect(getAllByText('Impersonate User').length).toEqual(3),
-    );
+    await waitFor(() => {
+      expect(getAllByText('Impersonate User').length).toEqual(1);
+      expect(getAllByText('Reset Account').length).toEqual(3);
+    });
   });
 });
