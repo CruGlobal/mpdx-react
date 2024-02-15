@@ -28,14 +28,6 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('src/hooks/useUser', () => ({
-  useUser: () => {
-    return {
-      id: '134456',
-    };
-  },
-}));
-
 const handleAccordionChange = jest.fn();
 
 interface ComponentsProps {
