@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { mdiHome } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   OrganizationsContext,
@@ -9,24 +9,9 @@ import {
 } from 'pages/accountLists/[accountListId]/settings/organizations/OrganizationsContext';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { NullStateBox } from 'src/components/Shared/Filters/NullState/NullStateBox';
+import { LoadingSpinner } from '../LoadingSpinner';
 import { useSearchOrganizationsContactsQuery } from './Contact.generated';
 import { ContactRow } from './ContactRow/ContactRow';
-
-const LoadingSpinner: React.FC<{ firstLoad: boolean }> = ({ firstLoad }) => (
-  <CircularProgress
-    color="primary"
-    size={35}
-    sx={{
-      marginRight: 3,
-      position: 'absolute',
-      top: firstLoad ? '50%' : 'inherit',
-      bottom: firstLoad ? 'inherit' : '300px',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      zIndex: '300',
-    }}
-  />
-);
 
 export const Contacts: React.FC = () => {
   const { t } = useTranslation();
