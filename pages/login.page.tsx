@@ -5,22 +5,23 @@ import SubjectIcon from '@mui/icons-material/Subject';
 import { Button } from '@mui/material';
 import i18n from 'i18next';
 import { getSession, signIn } from 'next-auth/react';
-import BaseLayout from '../src/components/Layouts/Basic';
-import Loading from '../src/components/Loading';
-import Welcome from '../src/components/Welcome';
-import useGetAppSettings from '../src/hooks/useGetAppSettings';
+import BaseLayout from 'src/components/Layouts/Basic';
+import Loading from 'src/components/Loading';
+import Welcome from 'src/components/Welcome';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { extractCookie } from 'src/lib/extractCookie';
 
-interface IndexPageProps {
+export interface LoginProps {
   signInButtonText: string;
   signInAuthProviderId: string;
   immediateSignIn: boolean;
 }
 
-const IndexPage = ({
+const Login = ({
   signInButtonText,
   signInAuthProviderId,
   immediateSignIn,
-}: IndexPageProps): ReactElement => {
+}: LoginProps): ReactElement => {
   const { appName } = useGetAppSettings();
 
   useEffect(() => {
@@ -68,7 +69,7 @@ const IndexPage = ({
   );
 };
 
-IndexPage.layout = BaseLayout;
+Login.layout = BaseLayout;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
@@ -82,12 +83,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         });
   const signInAuthProviderId = authProvider?.toLowerCase()?.replace(/_/g, '');
 
-  const redirectCookie = context.req.headers?.cookie
-    ?.split('mpdx-handoff.redirect-url=')[1]
-    ?.split(';')[0];
-  const impersonateCookie = !!context.req.headers?.cookie
-    ?.split('mpdx-handoff.impersonate=')[1]
-    ?.split(';')[0];
+  const redirectCookie = extractCookie(
+    context.req.headers?.cookie,
+    'mpdx-handoff.redirect-url',
+  );
+  const impersonateCookie = !!extractCookie(
+    context.req.headers?.cookie,
+    'mpdx-handoff.impersonate',
+  );
   const immediateSignIn = !!redirectCookie;
 
   if (immediateSignIn && !impersonateCookie) {
@@ -114,4 +117,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default IndexPage;
+export default Login;

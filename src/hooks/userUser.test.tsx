@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { getSession } from 'next-auth/react';
-import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { useUser } from './useUser';
 
 jest.mock('next-auth/react');

@@ -1,3 +1,4 @@
+import { extractCookie } from 'src/lib/extractCookie';
 import { expireCookieDefaultInfo } from '../utils/cookies';
 
 interface User {
@@ -16,12 +17,12 @@ export const setUserInfo = (
   userId: string,
   reqCookies: string | undefined,
 ): SetUserInfoReturn => {
-  const getCookie = (name: string): string | undefined =>
-    reqCookies?.split(`${name}=`)[1]?.split(';')[0];
-
-  const impersonateJWT = getCookie('mpdx-handoff.impersonate');
-  const impersonateUserId = getCookie('mpdx-handoff.accountConflictUserId');
-  const token = getCookie('mpdx-handoff.token');
+  const impersonateJWT = extractCookie(reqCookies, 'mpdx-handoff.impersonate');
+  const impersonateUserId = extractCookie(
+    reqCookies,
+    'mpdx-handoff.accountConflictUserId',
+  );
+  const token = extractCookie(reqCookies, 'mpdx-handoff.token');
 
   const user: User = {};
 

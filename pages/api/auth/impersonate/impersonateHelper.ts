@@ -1,6 +1,7 @@
 import { NextApiRequest } from 'next';
 import { getToken } from 'next-auth/jwt';
 import fetch from 'node-fetch';
+import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import { cookieDefaultInfo } from '../../utils/cookies';
 
 export enum ImpersonationTypeEnum {
@@ -18,6 +19,19 @@ type impersonateResponse = {
   errors: Errors[];
   invalidRequest: boolean;
   cookies: string[];
+};
+
+type FetchTokenForOrganizationType = {
+  data: {
+    type: string;
+    attributes: {
+      created_at: string;
+      json_web_token: string;
+      updated_at: string;
+      updated_in_db_at: string;
+    };
+  };
+  errors: Errors[];
 };
 
 export const impersonate = async (
@@ -82,19 +96,6 @@ export const impersonate = async (
       }),
     });
 
-    type FetchTokenForOrganizationType = {
-      data: {
-        type: string;
-        attributes: {
-          created_at: string;
-          json_web_token: string;
-          updated_at: string;
-          updated_in_db_at: string;
-        };
-      };
-      errors: Errors[];
-    };
-
     const fetchRes = (await fetchToken.json()) as FetchTokenForOrganizationType;
 
     const impersonate = fetchRes?.data?.attributes?.json_web_token;
@@ -124,12 +125,10 @@ export const impersonate = async (
       cookies,
     };
   } catch (e) {
-    let message;
-    if (e instanceof Error) message = e.message;
-    else message = String(e);
+    const message = getErrorMessage(e);
     errors.push({
       status: status.toString(),
-      title: 'Something went wrong',
+      title: 'Error occurred while setting up impersonation',
       detail: message,
     });
 
