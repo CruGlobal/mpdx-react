@@ -11,7 +11,7 @@ import { OrganizationAccordion } from 'src/components/Settings/integrations/Orga
 import { PrayerlettersAccordion } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { suggestArticles } from 'src/lib/helpScout';
-import { SettingsWrapper } from '../wrapper';
+import { SettingsWrapper } from '../Wrapper';
 import { IntegrationsContextProvider } from './IntegrationsContext';
 
 interface Props {

@@ -5,7 +5,7 @@ import { ImpersonateUserAccordion } from 'src/components/Settings/Admin/Imperson
 import { ResetAccountAccordion } from 'src/components/Settings/Admin/ResetAccount/ResetAccountAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { suggestArticles } from 'src/lib/helpScout';
-import { SettingsWrapper } from './wrapper';
+import { SettingsWrapper } from './Wrapper';
 
 export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
 
