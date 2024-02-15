@@ -13,7 +13,9 @@ const Admin = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
   const [expandedPanel, setExpandedPanel] = useState(
-    typeof query.selectedTab === 'string' ? query.selectedTab : '',
+    typeof query.selectedTab === 'string'
+      ? query.selectedTab
+      : 'Impersonate User',
   );
 
   useEffect(() => {
