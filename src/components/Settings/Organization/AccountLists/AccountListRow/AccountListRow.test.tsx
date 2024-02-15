@@ -96,7 +96,7 @@ describe('AccountLists', () => {
     expect(getByText('inviteCoach@cru.org')).toBeInTheDocument();
   });
 
-  describe('block', () => {
+  describe('Handling Deletions', () => {
     it('should delete users', async () => {
       const { getAllByRole, getByRole } = render(
         <Components accountList={accountList} />,
