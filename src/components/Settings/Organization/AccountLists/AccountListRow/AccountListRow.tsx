@@ -3,7 +3,11 @@ import { Box, Grid, ListItemText, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import * as Types from 'src/graphql/types.generated';
+import {
+  AccountListUsers,
+  OrganizationAccountListCoaches,
+  OrganizationsAccountList,
+} from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import {
@@ -17,7 +21,7 @@ import {
 } from './DeleteAccountListsItems.generated';
 
 export interface AccountListRowProps {
-  accountList: Types.OrganizationsAccountList;
+  accountList: OrganizationsAccountList;
 }
 
 const BorderBottomBox = styled(Box)(() => ({
@@ -59,7 +63,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
   } = accountList;
 
   const handleDelete = async (
-    item: Types.AccountListUsers | Types.OrganizationAccountListCoaches,
+    item: AccountListUsers | OrganizationAccountListCoaches,
     type: AccountListItemType,
   ) => {
     if (!item?.id) {
