@@ -91,7 +91,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
         filter={query}
         onSelectContact={onSelectContact}
         visibleColumnsStorageKey="donations-report-table"
-        emptyTable={
+        emptyPlaceholder={
           <EmptyDonationsTable
             title={t('No donations received in {{month}} {{year}}', {
               month: time.monthLong,

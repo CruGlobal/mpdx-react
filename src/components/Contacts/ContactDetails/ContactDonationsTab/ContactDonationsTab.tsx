@@ -134,7 +134,7 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
             <DonationTable
               accountListId={accountListId}
               filter={{ donorAccountIds }}
-              emptyTable={
+              emptyPlaceholder={
                 <EmptyDonationsTable
                   title={t('No donations received for {{name}}', {
                     name: data?.contact.name,

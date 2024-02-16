@@ -8,7 +8,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { DonationTable } from './DonationTable';
+import { DonationTable, DonationTableProps } from './DonationTable';
 import {
   AccountListCurrencyQuery,
   DonationTableQuery,
@@ -26,12 +26,14 @@ interface TestComponentProps {
   isEmpty?: boolean;
   hasForeignCurrency?: boolean;
   hasMultiplePages?: boolean;
+  tableProps?: Partial<DonationTableProps>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   isEmpty = false,
   hasForeignCurrency = false,
   hasMultiplePages = false,
+  tableProps,
 }) => (
   <SnackbarProvider>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -108,7 +110,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 designationAccountIds: ['designation-1'],
               }}
               visibleColumnsStorageKey=""
-              emptyTable={<span>Empty Table</span>}
+              emptyPlaceholder={<span>Empty Table</span>}
+              {...tableProps}
             />
           </GqlMockedProvider>
         </TestRouter>
@@ -161,14 +164,25 @@ describe('DonationTable', () => {
   it('is clickable', async () => {
     const { findByText } = render(<TestComponent />);
 
+    const link = await findByText('Donor 1');
+    expect(link).toHaveClass('MuiLink-root');
+    userEvent.click(link);
+    expect(onSelectContact).toHaveBeenCalledWith('contact-1');
+  });
+
+  it('is not clickable', async () => {
+    const { findByText } = render(<TestComponent />);
+
     userEvent.click(await findByText('Donor 1'));
     expect(onSelectContact).toHaveBeenCalledWith('contact-1');
   });
 
-  it('is not clickable when contact is missing', async () => {
-    const { findByText } = render(<TestComponent />);
+  it('is not a link when onSelectContact is not provided', async () => {
+    const { findByText } = render(
+      <TestComponent tableProps={{ onSelectContact: undefined }} />,
+    );
 
-    userEvent.click(await findByText('Donor 2'));
+    expect(await findByText('Donor 1')).not.toHaveClass('MuiLink-root');
     expect(onSelectContact).not.toHaveBeenCalled();
   });
 

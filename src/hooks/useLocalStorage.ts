@@ -10,11 +10,6 @@ export const useLocalStorage = <T>(
 ): [T, Dispatch<SetStateAction<T>>] => {
   const deserializer = useCallback<(value: string) => T>(
     (value) => {
-      // Support 'undefined' as a value
-      if (value === 'undefined') {
-        return undefined as unknown as T;
-      }
-
       let parsed: unknown;
       try {
         parsed = JSON.parse(value);

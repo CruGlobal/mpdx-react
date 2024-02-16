@@ -38,12 +38,12 @@ import {
 
 type RenderCell = GridColDef<DonationRow>['renderCell'];
 
-interface DonationTableProps {
+export interface DonationTableProps {
   accountListId: string;
   filter: Partial<DonationTableQueryVariables>;
   onSelectContact?: (contactId: string) => void;
   visibleColumnsStorageKey: string;
-  emptyTable?: React.ReactElement;
+  emptyPlaceholder: React.ReactElement;
 }
 
 const StyledGrid = styled(DataGrid)(({ theme }) => ({
@@ -125,7 +125,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   filter,
   onSelectContact,
   visibleColumnsStorageKey,
-  emptyTable = null,
+  emptyPlaceholder,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -380,7 +380,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
           <LoadingIndicator color="primary" size={50} />
         </LoadingBox>
       ) : (
-        emptyTable
+        emptyPlaceholder
       )}
       {editingDonation && (
         <DynamicEditDonationModal
