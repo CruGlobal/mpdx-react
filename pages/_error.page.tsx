@@ -2,7 +2,7 @@ import { NextPage, NextPageContext } from 'next';
 import NextErrorComponent from 'next/error';
 import rollbar, { isRollBarEnabled } from 'pages/api/utils/rollBar';
 
-interface ErrorPageProps {
+export interface ErrorPageProps {
   statusCode: number;
 }
 
