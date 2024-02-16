@@ -174,7 +174,6 @@ describe('AccountListsOrganizations', () => {
       userEvent.type(accountInput, 'st');
       jest.advanceTimersByTime(1000);
 
-      // This call takes some time to come through, which is why I'm using timeout
       await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(5));
 
       expect(mutationSpy.mock.calls[4][0].operation.operationName).toEqual(
