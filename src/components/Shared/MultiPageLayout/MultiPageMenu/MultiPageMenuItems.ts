@@ -87,7 +87,7 @@ export const settingsNavItems: NavItems[] = [
     ],
   },
   {
-    id: 'adminConsole',
+    id: 'admin',
     title: 'Admin Console',
     grantedAccess: ['admin', 'developer'],
   },

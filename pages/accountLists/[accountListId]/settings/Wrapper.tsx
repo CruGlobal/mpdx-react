@@ -21,12 +21,14 @@ const PageContentWrapper = styled(Container)(({ theme }) => ({
 interface SettingsWrapperProps {
   pageTitle: string;
   pageHeading: string;
+  selectedMenuId: string;
   children?: React.ReactNode;
 }
 
 export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
   pageTitle,
   pageHeading,
+  selectedMenuId,
   children,
 }) => {
   const { appName } = useGetAppSettings();
@@ -48,7 +50,7 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId="responsibilityCenters"
+              selectedId={selectedMenuId}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Settings}
             />
