@@ -44,12 +44,7 @@ describe('ContactRow', () => {
     const { getByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ContactRow
-            contact={contact}
-            selectedOrganizationId={'selectedOrganizationId'}
-            contactSearch={'contactSearch'}
-            useTopMargin={true}
-          />
+          <ContactRow contact={contact} useTopMargin={true} />
         </GqlMockedProvider>
       </Components>,
     );
@@ -70,12 +65,7 @@ describe('ContactRow', () => {
     const { getByText, queryByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ContactRow
-            contact={contact}
-            selectedOrganizationId={'selectedOrganizationId'}
-            contactSearch={'contactSearch'}
-            useTopMargin={true}
-          />
+          <ContactRow contact={contact} useTopMargin={true} />
         </GqlMockedProvider>
       </Components>,
     );
@@ -87,12 +77,7 @@ describe('ContactRow', () => {
     const { getByText, queryByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ContactRow
-            contact={contact}
-            selectedOrganizationId={'selectedOrganizationId'}
-            contactSearch={'contactSearch'}
-            useTopMargin={true}
-          />
+          <ContactRow contact={contact} useTopMargin={true} />
         </GqlMockedProvider>
       </Components>,
     );
@@ -109,8 +94,6 @@ describe('ContactRow', () => {
               ...contact,
               allowDeletion: false,
             }}
-            selectedOrganizationId={'selectedOrganizationId'}
-            contactSearch={'contactSearch'}
             useTopMargin={true}
           />
         </GqlMockedProvider>
@@ -125,12 +108,7 @@ describe('ContactRow', () => {
     const { getByText } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
-          <ContactRow
-            contact={contact}
-            selectedOrganizationId={'selectedOrganizationId'}
-            contactSearch={'contactSearch'}
-            useTopMargin={true}
-          />
+          <ContactRow contact={contact} useTopMargin={true} />
         </GqlMockedProvider>
       </Components>,
     );
@@ -170,8 +148,6 @@ describe('ContactRow', () => {
               ...contact,
               allowDeletion: false,
             }}
-            selectedOrganizationId={'selectedOrganizationId'}
-            contactSearch={'contactSearch'}
             useTopMargin={true}
           />
         </GqlMockedProvider>

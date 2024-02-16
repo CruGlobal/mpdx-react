@@ -65,8 +65,6 @@ export const Contacts: React.FC = () => {
               key={`contact-${contact?.id}`}
               contact={contact}
               useTopMargin={index === 0}
-              selectedOrganizationId={selectedOrganizationId}
-              contactSearch={search}
             />
           ) : null;
         }}

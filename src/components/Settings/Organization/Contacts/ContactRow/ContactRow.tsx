@@ -14,12 +14,12 @@ import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import * as Types from 'src/graphql/types.generated';
 import {
-  SearchOrganizationsContactsDocument,
-  SearchOrganizationsContactsQuery,
-  useDeleteOrganizationContactMutation,
-} from '../Contact.generated';
+  ContactPeople,
+  ContactPeopleAccountListsUsers,
+  OrganizationsContact,
+} from 'src/graphql/types.generated';
+import { useDeleteOrganizationContactMutation } from '../Contact.generated';
 
 const DeleteOutline = styled(DeleteOutlined)(({ theme }) => ({
   width: '24px',
@@ -29,13 +29,11 @@ const DeleteOutline = styled(DeleteOutlined)(({ theme }) => ({
 }));
 
 interface Props {
-  contact: Types.OrganizationsContact;
-  selectedOrganizationId: string;
-  contactSearch: string;
+  contact: OrganizationsContact;
   useTopMargin?: boolean;
 }
 interface PersonDataProps {
-  person: Types.ContactPeople | Types.ContactPeopleAccountListsUsers;
+  person: ContactPeople | ContactPeopleAccountListsUsers;
 }
 
 const StyledBox = styled(Box)(() => ({
@@ -88,12 +86,7 @@ const PersonData: React.FC<PersonDataProps> = ({ person }) => {
   );
 };
 
-export const ContactRow: React.FC<Props> = ({
-  contact,
-  selectedOrganizationId,
-  contactSearch,
-  useTopMargin,
-}) => {
+export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const { t } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteOrganizationContact] = useDeleteOrganizationContactMutation();
@@ -107,32 +100,8 @@ export const ContactRow: React.FC<Props> = ({
         },
       },
       update: (cache) => {
-        const query = {
-          query: SearchOrganizationsContactsDocument,
-          variables: {
-            input: {
-              organizationId: selectedOrganizationId,
-              search: contactSearch,
-            },
-          },
-        };
-        const dataFromCache =
-          cache.readQuery<SearchOrganizationsContactsQuery>(query);
-
-        if (dataFromCache) {
-          const removedAccountFromCache =
-            dataFromCache?.searchOrganizationsContacts.contacts.filter(
-              (orgContact) => orgContact?.id !== contact.id,
-            );
-          const data = {
-            ...dataFromCache,
-            searchOrganizationsContacts: {
-              ...dataFromCache?.searchOrganizationsContacts,
-              contacts: removedAccountFromCache,
-            },
-          };
-          cache.writeQuery({ ...query, data });
-        }
+        cache.evict({ id: `OrganizationsContact:${contact.id}` });
+        cache.gc();
       },
       onCompleted: () => {
         enqueueSnackbar(t('Contact successfully deleted'), {
