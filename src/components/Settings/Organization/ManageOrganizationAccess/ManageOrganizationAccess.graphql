@@ -1,0 +1,41 @@
+query OrganizationAdmins($input: OrganizationAdminsInput!) {
+  organizationAdmins(input: $input) {
+    id
+    firstName
+    lastName
+  }
+}
+
+query OrganizationInvites($input: OrganizationInvitesInput!) {
+  organizationInvites(input: $input) {
+    id
+    acceptedAt
+    createdAt
+    code
+    inviteUserAs
+    recipientEmail
+  }
+}
+
+mutation DestroyOrganizationAdmin($input: DeleteOrganizationAdminInput!) {
+  destroyOrganizationAdmin(input: $input) {
+    success
+  }
+}
+
+mutation DestroyOrganizationInvite($input: DeleteOrganizationInviteInput!) {
+  destroyOrganizationInvite(input: $input) {
+    success
+  }
+}
+
+mutation CreateOrganizationInvite($input: CreateOrganizationInviteInput!) {
+  createOrganizationInvite(input: $input) {
+    id
+    recipientEmail
+    inviteUserAs
+    acceptedAt
+    code
+    createdAt
+  }
+}

@@ -48,18 +48,18 @@ export const impersonate = async (
       throw new Error('Method Not Found');
     }
 
-    const { organizationId = '', user, reason, userId } = JSON.parse(req.body);
+    const { organizationId = '', user, reason } = JSON.parse(req.body);
 
     const jwt = await getToken({
       req,
       secret: process.env.JWT_SECRET,
     });
-
-    const apiToken = (jwt as { apiToken: string } | null)?.apiToken;
-    if (!apiToken) {
+    if (!jwt) {
       status = 401;
       throw new Error('Unauthorized');
     }
+
+    const { apiToken, userID } = jwt as { apiToken: string; userID: string };
 
     if (typeof user !== 'string') {
       status = 400;
@@ -113,7 +113,7 @@ export const impersonate = async (
     }
 
     const cookies = [
-      `mpdx-handoff.accountConflictUserId=${userId}; ${cookieDefaultInfo}`,
+      `mpdx-handoff.accountConflictUserId=${userID}; ${cookieDefaultInfo}`,
       `mpdx-handoff.impersonate=${impersonate}; ${cookieDefaultInfo}`,
       `mpdx-handoff.redirect-url=/; ${cookieDefaultInfo}`,
       `mpdx-handoff.token=${apiToken}; ${cookieDefaultInfo}`,

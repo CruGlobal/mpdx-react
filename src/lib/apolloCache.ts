@@ -1,4 +1,5 @@
-import { InMemoryCache } from '@apollo/client';
+import { FieldMergeFunction, InMemoryCache } from '@apollo/client';
+import { uniqBy } from 'lodash';
 import generatedIntrospection from 'src/graphql/possibleTypes.generated';
 import { relayStylePaginationWithNodes } from './relayStylePaginationWithNodes';
 
@@ -10,6 +11,8 @@ const paginationFieldPolicy = relayStylePaginationWithNodes((args) =>
       )
     : undefined,
 );
+const mergePages: FieldMergeFunction = (existing = [], incoming) =>
+  uniqBy([...existing, ...incoming], '__ref');
 
 export const createCache = () =>
   new InMemoryCache({
@@ -47,6 +50,20 @@ export const createCache = () =>
         },
         merge: true,
       },
+      SearchOrganizationsAccountListsResponse: {
+        fields: {
+          accountLists: {
+            merge: mergePages,
+          },
+        },
+      },
+      SearchOrganizationsContactsResponse: {
+        fields: {
+          contacts: {
+            merge: mergePages,
+          },
+        },
+      },
       // Disable cache normalization for tags because a tag like { id: 'abc', count: 3 } in one period should not be
       // merged with a tag like { id: 'def', count 2 } in another period
       Tag: { keyFields: false },
@@ -57,6 +74,14 @@ export const createCache = () =>
           financialAccounts: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,
+          // Ignore the input.pageNumber arg so that queries with different page numbers will
+          // be merged together
+          searchOrganizationsAccountLists: {
+            keyArgs: ['input', ['organizationId', 'search']],
+          },
+          searchOrganizationsContacts: {
+            keyArgs: ['input', ['organizationId', 'search']],
+          },
         },
       },
     },

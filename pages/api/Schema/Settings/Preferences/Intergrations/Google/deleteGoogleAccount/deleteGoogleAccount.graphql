@@ -1,13 +1,11 @@
 extend type Mutation {
-  deleteGoogleAccount(
-    input: DeleteGoogleAccountInput!
-  ): GoogleAccountDeletionResponse!
+  deleteGoogleAccount(input: DeleteGoogleAccountInput!): DeletionResponse!
 }
 
 input DeleteGoogleAccountInput {
   accountId: ID!
 }
 
-type GoogleAccountDeletionResponse {
+type DeletionResponse {
   success: Boolean!
 }

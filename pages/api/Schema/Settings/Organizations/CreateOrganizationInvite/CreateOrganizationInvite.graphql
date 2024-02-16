@@ -1,0 +1,8 @@
+extend type Mutation {
+  createOrganizationInvite(input: CreateOrganizationInviteInput!): Invite!
+}
+
+input CreateOrganizationInviteInput {
+  organizationId: ID!
+  recipientEmail: ID!
+}

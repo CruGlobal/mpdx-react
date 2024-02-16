@@ -21,9 +21,9 @@ import {
   StyledListItem,
   StyledServicesButton,
 } from '../integrationsHelper';
+import { useGoogleAccountsQuery } from './GoogleAccounts.generated';
 import { DeleteGoogleAccountModal } from './Modals/DeleteGoogleAccountModal';
 import { EditGoogleAccountModal } from './Modals/EditGoogleAccountModal';
-import { useGoogleAccountsQuery } from './googleAccounts.generated';
 
 interface GoogleAccordionProps {
   handleAccordionChange: (panel: string) => void;
