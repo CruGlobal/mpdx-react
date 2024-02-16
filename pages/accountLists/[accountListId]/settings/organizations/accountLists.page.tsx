@@ -13,11 +13,11 @@ import { useTranslation } from 'react-i18next';
 import { AccountLists } from 'src/components/Settings/Organization/AccountLists/AccountLists';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { enforceAdmin } from 'src/lib/enforceAdmin';
+import { SettingsWrapper } from '../Wrapper';
 import {
   SettingsOrganizationFragment,
   useOrganizationsQuery,
 } from '../organizations.generated';
-import { SettingsWrapper } from '../wrapper';
 import { OrganizationsContextProvider } from './OrganizationsContext';
 
 const HeaderAndDropdown = styled(Box)(() => ({

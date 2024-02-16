@@ -8,11 +8,11 @@ import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organ
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { enforceAdmin } from 'src/lib/enforceAdmin';
 import { suggestArticles } from 'src/lib/helpScout';
+import { SettingsWrapper } from './Wrapper';
 import {
   SettingsOrganizationFragment,
   useOrganizationsQuery,
 } from './organizations.generated';
-import { SettingsWrapper } from './wrapper';
 
 export type OrganizationsContextType = {
   selectedOrganizationId: string;
