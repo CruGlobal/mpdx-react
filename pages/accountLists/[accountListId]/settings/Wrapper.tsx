@@ -15,7 +15,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const PageContentWrapper = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(3),
+  paddingBottom: theme.spacing(10),
 }));
 
 interface SettingsWrapperProps {
@@ -46,7 +46,7 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
       </Head>
       <Box component="main">
         <SidePanelsLayout
-          isScrollBox={false}
+          isScrollBox
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}

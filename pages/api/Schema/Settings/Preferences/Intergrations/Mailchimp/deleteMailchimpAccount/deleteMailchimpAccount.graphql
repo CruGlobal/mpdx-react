@@ -1,5 +1,5 @@
 extend type Mutation {
-  deleteMailchimpAccount(input: DeleteMailchimpAccountInput!): String!
+  deleteMailchimpAccount(input: DeleteMailchimpAccountInput!): DeletionResponse!
 }
 
 input DeleteMailchimpAccountInput {

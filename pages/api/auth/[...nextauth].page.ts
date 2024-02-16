@@ -3,6 +3,11 @@ import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
 import { Provider } from 'next-auth/providers';
 import OktaProvider from 'next-auth/providers/okta';
 import rollbar, { isRollBarEnabled } from 'pages/api/utils/rollBar';
+import {
+  GetUserAccessDocument,
+  GetUserAccessQuery,
+  GetUserAccessQueryVariables,
+} from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems.generated';
 import makeSsrClient from '../utils/ssrClient';
 import {
   ApiOauthSignInDocument,
@@ -19,6 +24,8 @@ import { setUserInfo } from './setUserInfo';
 declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
+      admin: boolean;
+      developer: boolean;
       apiToken?: string;
       userID?: string;
       impersonating?: boolean;
@@ -195,25 +202,37 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         }
         throw new Error('oktaSignIn mutation failed to return a token');
       },
-      jwt: ({ token, user }) => {
+      jwt: async ({ token, user }) => {
         if (user) {
+          const ssrClient = makeSsrClient(user.apiToken);
+          const { data } = await ssrClient.query<
+            GetUserAccessQuery,
+            GetUserAccessQueryVariables
+          >({
+            query: GetUserAccessDocument,
+          });
+
           return {
             ...token,
-            apiToken: user?.apiToken,
-            userID: user?.userID,
-            impersonating: user?.impersonating,
-            impersonatorApiToken: user?.impersonatorApiToken,
+            admin: data.user.admin,
+            developer: data.user.developer,
+            apiToken: user.apiToken,
+            userID: user.userID,
+            impersonating: user.impersonating,
+            impersonatorApiToken: user.impersonatorApiToken,
           };
         } else {
           return token;
         }
       },
       session: ({ session, token }) => {
-        const { userID, impersonating } = token;
+        const { admin, developer, userID, impersonating } = token;
         return {
           ...session,
           user: {
             ...session.user,
+            admin: admin as boolean,
+            developer: developer as boolean,
             userID: userID as string,
             impersonating: impersonating as boolean,
           },

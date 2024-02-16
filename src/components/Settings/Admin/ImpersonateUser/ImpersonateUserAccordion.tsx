@@ -16,7 +16,6 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { useUser } from 'src/hooks/useUser';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import { AccordionProps } from '../../accordionHelper';
 
@@ -45,8 +44,6 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
 
-  const userId = useUser()?.id;
-
   const onSubmit = async (attributes: ImpersonateUserFormType) => {
     try {
       const { user, reason } = attributes;
@@ -55,7 +52,6 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
         {
           method: 'POST',
           body: JSON.stringify({
-            userId,
             user,
             reason,
           }),

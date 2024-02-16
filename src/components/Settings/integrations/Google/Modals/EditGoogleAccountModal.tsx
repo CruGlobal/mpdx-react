@@ -21,7 +21,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
-import { useSyncGoogleAccountMutation } from '../googleAccounts.generated';
+import { useSyncGoogleAccountMutation } from '../GoogleAccounts.generated';
 import { EditGoogleIntegrationForm } from './EditGoogleIntegrationForm';
 import {
   GoogleAccountIntegrationsDocument,
@@ -241,9 +241,9 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
         {tabSelected === tabsEnum.setup && (
           <Typography>
             {t(
-              `If the link between {{appName}} and your Google account breaks, 
-              click the button below to re-establish the connection. 
-              (You should only need to do this if you receive an email 
+              `If the link between {{appName}} and your Google account breaks,
+              click the button below to re-establish the connection.
+              (You should only need to do this if you receive an email
               from {{appName}})`,
               { appName },
             )}

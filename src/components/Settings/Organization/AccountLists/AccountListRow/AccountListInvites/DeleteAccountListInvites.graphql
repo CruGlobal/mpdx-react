@@ -1,0 +1,7 @@
+mutation AdminDeleteOrganizationInvite(
+  $input: AdminDeleteOrganizationInviteInput!
+) {
+  adminDeleteOrganizationInvite(input: $input) {
+    success
+  }
+}

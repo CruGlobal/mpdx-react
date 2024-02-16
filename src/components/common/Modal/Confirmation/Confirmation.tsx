@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import {
+  Box,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -20,7 +21,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 export interface ConfirmationProps {
   isOpen: boolean;
   title: string;
-  message: string;
+  message: ReactNode;
   mutation: () => Promise<unknown>;
   handleClose: () => void;
 }
@@ -54,9 +55,11 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
     <Modal isOpen={isOpen} title={title} handleClose={handleClose}>
       <DialogContent dividers>
         {mutating ? (
-          <LoadingIndicator color="primary" size={50} />
+          <Box style={{ textAlign: 'center' }}>
+            <LoadingIndicator color="primary" size={50} />
+          </Box>
         ) : (
-          <DialogContentText>{message}</DialogContentText>
+          <DialogContentText component="div">{message}</DialogContentText>
         )}
       </DialogContent>
       <DialogActions>

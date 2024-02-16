@@ -1,0 +1,15 @@
+fragment SettingsOrganization on Organizations {
+  id
+  name
+}
+
+query Organizations {
+  getOrganizations {
+    organizations {
+      ...SettingsOrganization
+    }
+  }
+  user {
+    id
+  }
+}

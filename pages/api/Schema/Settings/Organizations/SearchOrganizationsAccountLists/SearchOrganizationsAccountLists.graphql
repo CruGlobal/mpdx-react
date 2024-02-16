@@ -1,0 +1,71 @@
+extend type Query {
+  searchOrganizationsAccountLists(
+    input: SearchOrganizationsAccountListsInput!
+  ): SearchOrganizationsAccountListsResponse!
+}
+
+input SearchOrganizationsAccountListsInput {
+  organizationId: ID!
+  search: String!
+  pageNumber: Int
+}
+
+type SearchOrganizationsAccountListsResponse {
+  accountLists: [OrganizationsAccountList]!
+  pagination: Pagination!
+}
+
+type OrganizationsAccountList {
+  id: ID!
+  name: String!
+  designationAccounts: [AccountListDesignationAccounts]
+  accountListUsers: [AccountListUsers]
+  accountListUsersInvites: [AccountListInvites]
+  accountListCoaches: [OrganizationAccountListCoaches]
+  accountListCoachInvites: [AccountListInvites]
+}
+
+type AccountListDesignationAccounts {
+  id: ID
+  displayName: String
+  organization: AccountListOrganization
+}
+
+type AccountListUsers {
+  id: ID
+  userFirstName: String
+  userLastName: String
+  allowDeletion: Boolean
+  userEmailAddresses: [AccountListEmailAddresses]
+}
+
+type AccountListInvites {
+  id: ID
+  inviteUserAs: String
+  recipientEmail: String
+  invitedByUser: AccountListInvitedByUser
+}
+
+type OrganizationAccountListCoaches {
+  id: ID
+  coachFirstName: String
+  coachLastName: String
+  coachEmailAddresses: [AccountListEmailAddresses]
+}
+
+type AccountListInvitedByUser {
+  id: ID
+  firstName: String
+  lastName: String
+}
+
+type AccountListOrganization {
+  id: ID
+  name: String
+}
+
+type AccountListEmailAddresses {
+  id: ID
+  email: String
+  primary: Boolean
+}
