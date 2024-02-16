@@ -199,7 +199,7 @@ describe('intlFormat', () => {
       expect(date).toBeNull();
     });
   });
-
+  //this test often fails locally. It passes on github.
   describe('dateTimeFormat', () => {
     const locale = 'en-US';
     it('returns formatted date with year, month, day, time and timezone', () => {

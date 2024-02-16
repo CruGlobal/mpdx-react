@@ -124,12 +124,12 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
       <Formik
         initialValues={{
           activeMpdMonthlyGoal: activeMpdMonthlyGoal,
-          activeMpdStartAt: new Date(
-            activeMpdStartAt + 'T00:00:00',
-          ).toISOString(),
-          activeMpdFinishAt: new Date(
-            activeMpdFinishAt + 'T00:00:00',
-          ).toISOString(),
+          activeMpdStartAt: activeMpdStartAt
+            ? new Date(activeMpdStartAt + 'T00:00:00').toISOString()
+            : null,
+          activeMpdFinishAt: activeMpdFinishAt
+            ? new Date(activeMpdFinishAt + 'T00:00:00').toISOString()
+            : null,
         }}
         validationSchema={AccountPreferencesSchema}
         onSubmit={onSubmit}

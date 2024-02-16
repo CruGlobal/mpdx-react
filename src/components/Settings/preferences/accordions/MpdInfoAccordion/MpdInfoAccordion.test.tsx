@@ -3,7 +3,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -90,8 +89,8 @@ describe('MpdInfoAccordion', () => {
   it('should render accordion open and field should have a value', async () => {
     const { getByRole, getByLabelText } = render(
       <Components
-        activeMpdStartAt={DateTime.local(2024, 1, 16).toISO()}
-        activeMpdFinishAt={DateTime.local(2024, 3, 16).toISO()}
+        activeMpdStartAt={'2024-01-16'}
+        activeMpdFinishAt={'2024-03-16'}
         activeMpdMonthlyGoal={20000}
         expandedPanel={label}
       />,
