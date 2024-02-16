@@ -43,8 +43,12 @@ const HeaderAndDropdown = styled(Box)(() => ({
 
 const Organizations = (): ReactElement => {
   const { t } = useTranslation();
-  const router = useRouter();
-  const [expandedPanel, setExpandedPanel] = useState('');
+  const { query } = useRouter();
+  const [expandedPanel, setExpandedPanel] = useState(
+    typeof query.selectedTab === 'string'
+      ? query.selectedTab
+      : 'Impersonate User',
+  );
 
   const [selectedOrganization, setSelectedOrganization] = useState<
     SettingsOrganizationFragment | null | undefined
@@ -59,9 +63,6 @@ const Organizations = (): ReactElement => {
 
   useEffect(() => {
     suggestArticles('HS_SETTINGS_SERVICES_SUGGESTIONS');
-    if (router.query?.selectedTab) {
-      setExpandedPanel(router.query.selectedTab as string);
-    } else setExpandedPanel('Impersonate User');
   }, []);
 
   const handleAccordionChange = (panel: string) => {
