@@ -1,14 +1,10 @@
 extend type Mutation {
   destroyOrganizationInvite(
     input: DeleteOrganizationInviteInput!
-  ): DeleteOrganizationInviteResponse!
+  ): DeletionResponse!
 }
 
 input DeleteOrganizationInviteInput {
   organizationId: ID!
   inviteId: ID!
-}
-
-type DeleteOrganizationInviteResponse {
-  success: Boolean!
 }

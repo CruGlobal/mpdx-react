@@ -1,13 +1,9 @@
 extend type Mutation {
   deleteOrganizationContact(
     input: DeleteOrganizationContactInput!
-  ): DeleteOrganizationContactResponse!
+  ): DeletionResponse!
 }
 
 input DeleteOrganizationContactInput {
   contactId: ID!
-}
-
-type DeleteOrganizationContactResponse {
-  success: Boolean!
 }

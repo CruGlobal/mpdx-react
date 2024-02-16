@@ -1,14 +1,10 @@
 extend type Mutation {
   destroyOrganizationAdmin(
     input: DeleteOrganizationAdminInput!
-  ): DeleteOrganizationAdminResponse!
+  ): DeletionResponse!
 }
 
 input DeleteOrganizationAdminInput {
   organizationId: ID!
   adminId: ID!
-}
-
-type DeleteOrganizationAdminResponse {
-  success: Boolean!
 }
