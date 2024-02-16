@@ -5,11 +5,12 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Box, Skeleton, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next/';
+import { DonationTable } from 'src/components/DonationTable/DonationTable';
+import { EmptyDonationsTable } from 'src/components/common/EmptyDonationsTable/EmptyDonationsTable';
 import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../ContactDetailContext';
-import { ContactDonationsList } from './ContactDonationsList/ContactDonationsList';
 import {
   GetContactDonationsQueryVariables,
   useGetContactDonationsQuery,
@@ -71,6 +72,10 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
       contactId: contactId,
     },
   });
+  const donorAccountIds =
+    data?.contact.contactDonorAccounts.nodes.map(
+      (donor) => donor.donorAccount.id,
+    ) ?? [];
 
   const { t } = useTranslation();
 
@@ -95,11 +100,7 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
         ) : (
           <DonationsGraph
             accountListId={accountListId}
-            donorAccountIds={
-              data?.contact.contactDonorAccounts.nodes.map((donor) => {
-                return donor.donorAccount.id;
-              }) ?? []
-            }
+            donorAccountIds={donorAccountIds}
             convertedCurrency={
               data?.contact.lastDonation?.amount.convertedCurrency ?? ''
             }
@@ -130,9 +131,17 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
               <ContactDonationsLoadingPlaceHolder />
             </>
           ) : (
-            <ContactDonationsList
+            <DonationTable
               accountListId={accountListId}
-              contactId={contactId}
+              filter={{ donorAccountIds }}
+              emptyTable={
+                <EmptyDonationsTable
+                  title={t('No donations received for {{name}}', {
+                    name: data?.contact.name,
+                  })}
+                />
+              }
+              visibleColumnsStorageKey="contact-donations"
             />
           )}
         </TabPanel>
