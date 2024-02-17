@@ -26,7 +26,7 @@ import { ProfileInfo } from 'src/components/Settings/preferences/info/ProfileInf
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { suggestArticles } from 'src/lib/helpScout';
-import { SettingsWrapper } from './wrapper';
+import { SettingsWrapper } from './Wrapper';
 
 const AccordionLoading = styled(Skeleton)(() => ({
   width: '710px',
@@ -76,6 +76,7 @@ const Preferences: React.FC = () => {
     <SettingsWrapper
       pageTitle={t('Preferences')}
       pageHeading={t('Preferences')}
+      selectedMenuId={'preferences'}
     >
       <ProfileInfo accountListId={accountListId} />
       <AccordionGroup title="Personal Preferences">
