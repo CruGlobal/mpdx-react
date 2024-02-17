@@ -1,0 +1,10 @@
+extend type Mutation {
+  adminDeleteOrganizationInvite(
+    input: AdminDeleteOrganizationInviteInput!
+  ): DeletionResponse!
+}
+
+input AdminDeleteOrganizationInviteInput {
+  accountListId: ID!
+  inviteId: ID!
+}

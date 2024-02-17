@@ -15,18 +15,20 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const PageContentWrapper = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(3),
+  paddingBottom: theme.spacing(10),
 }));
 
 interface SettingsWrapperProps {
   pageTitle: string;
   pageHeading: string;
+  selectedMenuId: string;
   children?: React.ReactNode;
 }
 
 export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
   pageTitle,
   pageHeading,
+  selectedMenuId,
   children,
 }) => {
   const { appName } = useGetAppSettings();
@@ -44,11 +46,11 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
       </Head>
       <Box component="main">
         <SidePanelsLayout
-          isScrollBox={false}
+          isScrollBox
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId="responsibilityCenters"
+              selectedId={selectedMenuId}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Settings}
             />

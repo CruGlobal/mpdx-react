@@ -1,0 +1,57 @@
+mutation DeleteOrganizationContact($input: DeleteOrganizationContactInput!) {
+  deleteOrganizationContact(input: $input) {
+    success
+  }
+}
+
+query SearchOrganizationsContacts($input: SearchOrganizationsContactsInput!) {
+  searchOrganizationsContacts(input: $input) {
+    contacts {
+      allowDeletion
+      id
+      name
+      squareAvatar
+      people {
+        firstName
+        lastName
+        deceased
+        emailAddresses {
+          email
+          primary
+          historic
+        }
+        phoneNumbers {
+          number
+          primary
+          historic
+        }
+      }
+      accountList {
+        name
+        accountListUsers {
+          id
+          firstName
+          lastName
+          emailAddresses {
+            email
+            primary
+            historic
+          }
+        }
+      }
+      addresses {
+        primaryMailingAddress
+        street
+        city
+        state
+        postalCode
+      }
+    }
+    pagination {
+      page
+      perPage
+      totalCount
+      totalPages
+    }
+  }
+}

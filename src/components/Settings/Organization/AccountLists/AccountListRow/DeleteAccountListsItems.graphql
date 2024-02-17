@@ -1,0 +1,15 @@
+mutation AdminDeleteOrganizationUser(
+  $input: AdminDeleteOrganizationUserInput!
+) {
+  adminDeleteOrganizationUser(input: $input) {
+    success
+  }
+}
+
+mutation AdminDeleteOrganizationCoach(
+  $input: AdminDeleteOrganizationCoachInput!
+) {
+  adminDeleteOrganizationCoach(input: $input) {
+    success
+  }
+}

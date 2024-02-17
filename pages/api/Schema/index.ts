@@ -16,6 +16,7 @@ import { ExportContactsResolvers } from './ExportContacts/resolvers';
 import MergeContactsTypeDefs from './MergeContacts/mergeContacts.graphql';
 import { MergeContactsResolvers } from './MergeContacts/resolvers';
 import { integrationSchema } from './SubgraphSchema/Integrations';
+import { organizationSchema } from './SubgraphSchema/Organizations';
 import { preferencesSchema } from './SubgraphSchema/Preferences';
 import DeleteTagsTypeDefs from './Tags/Delete/deleteTags.graphql';
 import { DeleteTagsResolvers } from './Tags/Delete/resolvers';
@@ -124,6 +125,7 @@ const schema = buildSubgraphSchema([
     resolvers: DeleteTagsResolvers,
   },
   ...integrationSchema,
+  ...organizationSchema,
   ...preferencesSchema,
 ]);
 

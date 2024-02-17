@@ -1,0 +1,8 @@
+mutation ResetAccountList($input: AccountListResetMutationInput!) {
+  resetAccountList(input: $input) {
+    accountList {
+      id
+      name
+    }
+  }
+}
