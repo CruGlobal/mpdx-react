@@ -2,13 +2,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
 import { Provider } from 'next-auth/providers';
 import OktaProvider from 'next-auth/providers/okta';
-import Rollbar from 'rollbar';
+import rollbar, { isRollBarEnabled } from 'pages/api/utils/rollBar';
 import {
   GetUserAccessDocument,
   GetUserAccessQuery,
   GetUserAccessQueryVariables,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems.generated';
-import client, { ssrClient } from '../../../src/lib/client';
+import makeSsrClient from '../utils/ssrClient';
 import {
   ApiOauthSignInDocument,
   ApiOauthSignInMutation,
@@ -20,13 +20,6 @@ import {
   OktaSignInMutationVariables,
 } from './oktaSignIn.generated';
 import { setUserInfo } from './setUserInfo';
-
-const rollbar = new Rollbar({
-  accessToken: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
-  environment: `react_${process.env.NODE_ENV}_server`,
-  captureUncaught: true,
-  captureUnhandledRejections: true,
-});
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -168,8 +161,10 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           if (cookies) res.setHeader('Set-Cookie', cookies);
         };
 
+        const ssrClient = await makeSsrClient();
+
         if (account?.provider === 'apioauth') {
-          const { data } = await client.mutate<
+          const { data } = await ssrClient.mutate<
             ApiOauthSignInMutation,
             ApiOauthSignInMutationVariables
           >({
@@ -189,7 +184,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           throw new Error('ApiOauthSignIn mutation failed to return a token');
         }
 
-        const { data } = await client.mutate<
+        const { data } = await ssrClient.mutate<
           OktaSignInMutation,
           OktaSignInMutationVariables
         >({
@@ -209,8 +204,8 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
       },
       jwt: async ({ token, user }) => {
         if (user) {
-          const client = ssrClient(user.apiToken);
-          const { data } = await client.query<
+          const ssrClient = makeSsrClient(user.apiToken);
+          const { data } = await ssrClient.query<
             GetUserAccessQuery,
             GetUserAccessQueryVariables
           >({
@@ -263,7 +258,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             ? metadata?.error
             : code;
         const customData = { code, ...metadata };
-        if (process.env.NODE_ENV === 'production') {
+        if (isRollBarEnabled) {
           rollbar.error(errorMsg, customData);
         } else {
           // eslint-disable-next-line no-console
