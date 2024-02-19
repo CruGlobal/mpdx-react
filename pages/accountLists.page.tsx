@@ -4,8 +4,8 @@ import React, { ReactElement } from 'react';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import makeSsrClient from 'pages/api/utils/ssrClient';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import AccountLists from '../src/components/AccountLists';
 import BaseLayout from '../src/components/Layouts/Primary';
 import {

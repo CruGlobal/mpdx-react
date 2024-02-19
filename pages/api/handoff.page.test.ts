@@ -1,9 +1,9 @@
 import { getToken } from 'next-auth/jwt';
-import makeSsrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import { returnRedirectUrl } from './handoff.page';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
-jest.mock('pages/api/utils/ssrClient', () => jest.fn());
+jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
 const rewriteDomain = 'rewrite-domain.org';
 const queryPath = 'pathName';

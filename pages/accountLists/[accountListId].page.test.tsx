@@ -5,7 +5,7 @@ import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import makeSsrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import AccountListIdPage, {
@@ -13,7 +13,7 @@ import AccountListIdPage, {
   getServerSideProps,
 } from './[accountListId].page';
 
-jest.mock('pages/api/utils/ssrClient', () => jest.fn());
+jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
 interface getServerSidePropsReturn {
   props: AccountListIdPageProps;

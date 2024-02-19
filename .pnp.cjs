@@ -34,8 +34,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["@apollo/client", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.1"],\
-            ["@apollo/federation", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.37.1"],\
-            ["@apollo/gateway", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
             ["@apollo/subgraph", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
             ["@babel/core", "npm:7.20.5"],\
             ["@babel/node", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.19.1"],\
@@ -219,10 +217,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:7ffdd8aea80fa69eeeb73dbf67511065e03aefa27386982f7ba3be1277ed6aaaf8a75da713002a09fb091e5a7f6dc57181aaa064b056bd4b5fff1065a8394643#npm:1.0.2", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-cache-control-types-virtual-3ea5a25f0e/0/cache/@apollo-cache-control-types-npm-1.0.2-bcc1d8bf57-1e00c57b45.zip/node_modules/@apollo/cache-control-types/",\
+        ["virtual:2818cc1776b2119c566a828579b40e4623e119b99a39b204dfbe4af7f16d7128aa1acea1f31059df0c7ea03d75a2fd264c877da90bdc32dd5c4f934a5236e8c5#npm:1.0.2", {\
+          "packageLocation": "./.yarn/__virtual__/@apollo-cache-control-types-virtual-dd38f237a5/0/cache/@apollo-cache-control-types-npm-1.0.2-bcc1d8bf57-1e00c57b45.zip/node_modules/@apollo/cache-control-types/",\
           "packageDependencies": [\
-            ["@apollo/cache-control-types", "virtual:7ffdd8aea80fa69eeeb73dbf67511065e03aefa27386982f7ba3be1277ed6aaaf8a75da713002a09fb091e5a7f6dc57181aaa064b056bd4b5fff1065a8394643#npm:1.0.2"],\
+            ["@apollo/cache-control-types", "virtual:2818cc1776b2119c566a828579b40e4623e119b99a39b204dfbe4af7f16d7128aa1acea1f31059df0c7ea03d75a2fd264c877da90bdc32dd5c4f934a5236e8c5#npm:1.0.2"],\
             ["@types/graphql", null],\
             ["graphql", "npm:16.6.0"]\
           ],\
@@ -332,55 +330,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["@apollo/composition", [\
-        ["npm:2.1.3", {\
-          "packageLocation": "./.yarn/cache/@apollo-composition-npm-2.1.3-0725c7a7c7-c63f443540.zip/node_modules/@apollo/composition/",\
-          "packageDependencies": [\
-            ["@apollo/composition", "npm:2.1.3"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
-        ["virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-composition-virtual-87eb883173/0/cache/@apollo-composition-npm-2.1.3-0725c7a7c7-c63f443540.zip/node_modules/@apollo/composition/",\
-          "packageDependencies": [\
-            ["@apollo/composition", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
-            ["@apollo/federation-internals", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
-            ["@apollo/query-graphs", "virtual:87eb883173c7925e0c179734f4cfd73c94527f49ca8cf6458b8ad50bf2579af6472d407c1cf65aaab3f01f8232fdc2ece34ac11c67cdf2e7669aaa5d634f6308#npm:2.1.3"],\
-            ["@types/graphql", null],\
-            ["graphql", "npm:16.6.0"]\
-          ],\
-          "packagePeers": [\
-            "@types/graphql",\
-            "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@apollo/federation", [\
-        ["npm:0.37.1", {\
-          "packageLocation": "./.yarn/cache/@apollo-federation-npm-0.37.1-5dd90aed43-762a5bfc1f.zip/node_modules/@apollo/federation/",\
-          "packageDependencies": [\
-            ["@apollo/federation", "npm:0.37.1"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
-        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.37.1", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-federation-virtual-98e6cb1a3e/0/cache/@apollo-federation-npm-0.37.1-5dd90aed43-762a5bfc1f.zip/node_modules/@apollo/federation/",\
-          "packageDependencies": [\
-            ["@apollo/federation", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.37.1"],\
-            ["@apollo/subgraph", "virtual:98e6cb1a3e5e64ff1f5ebc046b628dccd84a0bf110641bb91c7c2593b8c7c3512158f12b57188914fc9259724b3104421f52c1c8261aaeedcb00635c6782c632#npm:0.5.1"],\
-            ["@types/graphql", null],\
-            ["apollo-server-types", "virtual:98e6cb1a3e5e64ff1f5ebc046b628dccd84a0bf110641bb91c7c2593b8c7c3512158f12b57188914fc9259724b3104421f52c1c8261aaeedcb00635c6782c632#npm:3.6.2"],\
-            ["graphql", "npm:16.6.0"],\
-            ["lodash.xorby", "npm:4.7.0"]\
-          ],\
-          "packagePeers": [\
-            "@types/graphql",\
-            "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["@apollo/federation-internals", [\
         ["npm:2.1.3", {\
           "packageLocation": "./.yarn/cache/@apollo-federation-internals-npm-2.1.3-334e4b0620-a80a9f1e1b.zip/node_modules/@apollo/federation-internals/",\
@@ -389,54 +338,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-federation-internals-virtual-497be7471e/0/cache/@apollo-federation-internals-npm-2.1.3-334e4b0620-a80a9f1e1b.zip/node_modules/@apollo/federation-internals/",\
+        ["virtual:2818cc1776b2119c566a828579b40e4623e119b99a39b204dfbe4af7f16d7128aa1acea1f31059df0c7ea03d75a2fd264c877da90bdc32dd5c4f934a5236e8c5#npm:2.1.3", {\
+          "packageLocation": "./.yarn/__virtual__/@apollo-federation-internals-virtual-37e0746162/0/cache/@apollo-federation-internals-npm-2.1.3-334e4b0620-a80a9f1e1b.zip/node_modules/@apollo/federation-internals/",\
           "packageDependencies": [\
-            ["@apollo/federation-internals", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
+            ["@apollo/federation-internals", "virtual:2818cc1776b2119c566a828579b40e4623e119b99a39b204dfbe4af7f16d7128aa1acea1f31059df0c7ea03d75a2fd264c877da90bdc32dd5c4f934a5236e8c5#npm:2.1.3"],\
             ["@types/graphql", null],\
             ["chalk", "npm:4.1.2"],\
             ["graphql", "npm:16.6.0"],\
             ["js-levenshtein", "npm:1.1.6"]\
-          ],\
-          "packagePeers": [\
-            "@types/graphql",\
-            "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@apollo/gateway", [\
-        ["npm:2.1.3", {\
-          "packageLocation": "./.yarn/cache/@apollo-gateway-npm-2.1.3-4633715d64-ea55f8336a.zip/node_modules/@apollo/gateway/",\
-          "packageDependencies": [\
-            ["@apollo/gateway", "npm:2.1.3"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
-        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-gateway-virtual-93a81f95d9/0/cache/@apollo-gateway-npm-2.1.3-4633715d64-ea55f8336a.zip/node_modules/@apollo/gateway/",\
-          "packageDependencies": [\
-            ["@apollo/gateway", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
-            ["@apollo/composition", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
-            ["@apollo/federation-internals", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
-            ["@apollo/query-planner", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
-            ["@apollo/server-gateway-interface", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:1.0.3"],\
-            ["@apollo/utils.createhash", "npm:1.1.0"],\
-            ["@apollo/utils.fetcher", "npm:1.1.0"],\
-            ["@apollo/utils.isnodelike", "npm:1.1.0"],\
-            ["@apollo/utils.logger", "npm:1.0.0"],\
-            ["@josephg/resolvable", "npm:1.0.1"],\
-            ["@opentelemetry/api", "npm:1.2.0"],\
-            ["@types/graphql", null],\
-            ["@types/node-fetch", "npm:2.6.2"],\
-            ["apollo-reporting-protobuf", "npm:3.3.2"],\
-            ["async-retry", "npm:1.3.3"],\
-            ["graphql", "npm:16.6.0"],\
-            ["loglevel", "npm:1.8.0"],\
-            ["lru-cache", "npm:7.14.0"],\
-            ["make-fetch-happen", "npm:10.2.1"],\
-            ["node-abort-controller", "npm:3.0.1"],\
-            ["node-fetch", "virtual:e414995db9c779306e687c7a7c66965e66d0cd7270f6b9fc4f00cc9772c5d50b305ab83e142e0e21dbf10968f7437cbdfcb170d05f4bde68707ac7d0082c9cca#npm:2.6.7"]\
           ],\
           "packagePeers": [\
             "@types/graphql",\
@@ -487,92 +396,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["@apollo/query-graphs", [\
-        ["npm:2.1.3", {\
-          "packageLocation": "./.yarn/cache/@apollo-query-graphs-npm-2.1.3-440b090f30-919029ce34.zip/node_modules/@apollo/query-graphs/",\
-          "packageDependencies": [\
-            ["@apollo/query-graphs", "npm:2.1.3"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
-        ["virtual:87eb883173c7925e0c179734f4cfd73c94527f49ca8cf6458b8ad50bf2579af6472d407c1cf65aaab3f01f8232fdc2ece34ac11c67cdf2e7669aaa5d634f6308#npm:2.1.3", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-query-graphs-virtual-21c7794d7a/0/cache/@apollo-query-graphs-npm-2.1.3-440b090f30-919029ce34.zip/node_modules/@apollo/query-graphs/",\
-          "packageDependencies": [\
-            ["@apollo/query-graphs", "virtual:87eb883173c7925e0c179734f4cfd73c94527f49ca8cf6458b8ad50bf2579af6472d407c1cf65aaab3f01f8232fdc2ece34ac11c67cdf2e7669aaa5d634f6308#npm:2.1.3"],\
-            ["@apollo/federation-internals", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
-            ["@types/graphql", null],\
-            ["deep-equal", "npm:2.0.5"],\
-            ["graphql", "npm:16.6.0"],\
-            ["ts-graphviz", "npm:0.16.0"]\
-          ],\
-          "packagePeers": [\
-            "@types/graphql",\
-            "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@apollo/query-planner", [\
-        ["npm:2.1.3", {\
-          "packageLocation": "./.yarn/cache/@apollo-query-planner-npm-2.1.3-fe95fb0049-e24fc504f9.zip/node_modules/@apollo/query-planner/",\
-          "packageDependencies": [\
-            ["@apollo/query-planner", "npm:2.1.3"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
-        ["virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-query-planner-virtual-dcbc1813b5/0/cache/@apollo-query-planner-npm-2.1.3-fe95fb0049-e24fc504f9.zip/node_modules/@apollo/query-planner/",\
-          "packageDependencies": [\
-            ["@apollo/query-planner", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
-            ["@apollo/federation-internals", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
-            ["@apollo/query-graphs", "virtual:87eb883173c7925e0c179734f4cfd73c94527f49ca8cf6458b8ad50bf2579af6472d407c1cf65aaab3f01f8232fdc2ece34ac11c67cdf2e7669aaa5d634f6308#npm:2.1.3"],\
-            ["@types/graphql", null],\
-            ["chalk", "npm:4.1.2"],\
-            ["deep-equal", "npm:2.0.5"],\
-            ["graphql", "npm:16.6.0"],\
-            ["pretty-format", "npm:28.1.3"]\
-          ],\
-          "packagePeers": [\
-            "@types/graphql",\
-            "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@apollo/server-gateway-interface", [\
-        ["npm:1.0.3", {\
-          "packageLocation": "./.yarn/cache/@apollo-server-gateway-interface-npm-1.0.3-9efe0c0ada-f6bb31e703.zip/node_modules/@apollo/server-gateway-interface/",\
-          "packageDependencies": [\
-            ["@apollo/server-gateway-interface", "npm:1.0.3"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
-        ["virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:1.0.3", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-server-gateway-interface-virtual-68be8b9db4/0/cache/@apollo-server-gateway-interface-npm-1.0.3-9efe0c0ada-f6bb31e703.zip/node_modules/@apollo/server-gateway-interface/",\
-          "packageDependencies": [\
-            ["@apollo/server-gateway-interface", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:1.0.3"],\
-            ["@apollo/usage-reporting-protobuf", "npm:4.0.0-alpha.1"],\
-            ["@apollo/utils.fetcher", "npm:1.1.0"],\
-            ["@apollo/utils.keyvaluecache", "npm:1.0.1"],\
-            ["@apollo/utils.logger", "npm:1.0.0"],\
-            ["@types/graphql", null],\
-            ["graphql", "npm:16.6.0"]\
-          ],\
-          "packagePeers": [\
-            "@types/graphql",\
-            "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["@apollo/subgraph", [\
-        ["npm:0.5.1", {\
-          "packageLocation": "./.yarn/cache/@apollo-subgraph-npm-0.5.1-bf352e6e66-e72d5abb54.zip/node_modules/@apollo/subgraph/",\
-          "packageDependencies": [\
-            ["@apollo/subgraph", "npm:0.5.1"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
         ["npm:2.1.3", {\
           "packageLocation": "./.yarn/cache/@apollo-subgraph-npm-2.1.3-1dbebfcc85-d0a48e125e.zip/node_modules/@apollo/subgraph/",\
           "packageDependencies": [\
@@ -580,53 +404,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:98e6cb1a3e5e64ff1f5ebc046b628dccd84a0bf110641bb91c7c2593b8c7c3512158f12b57188914fc9259724b3104421f52c1c8261aaeedcb00635c6782c632#npm:0.5.1", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-subgraph-virtual-7ffdd8aea8/0/cache/@apollo-subgraph-npm-0.5.1-bf352e6e66-e72d5abb54.zip/node_modules/@apollo/subgraph/",\
-          "packageDependencies": [\
-            ["@apollo/subgraph", "virtual:98e6cb1a3e5e64ff1f5ebc046b628dccd84a0bf110641bb91c7c2593b8c7c3512158f12b57188914fc9259724b3104421f52c1c8261aaeedcb00635c6782c632#npm:0.5.1"],\
-            ["@apollo/cache-control-types", "virtual:7ffdd8aea80fa69eeeb73dbf67511065e03aefa27386982f7ba3be1277ed6aaaf8a75da713002a09fb091e5a7f6dc57181aaa064b056bd4b5fff1065a8394643#npm:1.0.2"],\
-            ["@types/graphql", null],\
-            ["graphql", "npm:16.6.0"]\
-          ],\
-          "packagePeers": [\
-            "@types/graphql",\
-            "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3", {\
           "packageLocation": "./.yarn/__virtual__/@apollo-subgraph-virtual-2818cc1776/0/cache/@apollo-subgraph-npm-2.1.3-1dbebfcc85-d0a48e125e.zip/node_modules/@apollo/subgraph/",\
           "packageDependencies": [\
             ["@apollo/subgraph", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
-            ["@apollo/cache-control-types", "virtual:7ffdd8aea80fa69eeeb73dbf67511065e03aefa27386982f7ba3be1277ed6aaaf8a75da713002a09fb091e5a7f6dc57181aaa064b056bd4b5fff1065a8394643#npm:1.0.2"],\
-            ["@apollo/federation-internals", "virtual:93a81f95d91c70e51ae5b40ea223ee7e06e4cc74d71a18fb27e1f11aca6f1fedcc77ac39ea18d773419382504b3cdefb19ab3b6bff754bf572738e9c22c7602a#npm:2.1.3"],\
+            ["@apollo/cache-control-types", "virtual:2818cc1776b2119c566a828579b40e4623e119b99a39b204dfbe4af7f16d7128aa1acea1f31059df0c7ea03d75a2fd264c877da90bdc32dd5c4f934a5236e8c5#npm:1.0.2"],\
+            ["@apollo/federation-internals", "virtual:2818cc1776b2119c566a828579b40e4623e119b99a39b204dfbe4af7f16d7128aa1acea1f31059df0c7ea03d75a2fd264c877da90bdc32dd5c4f934a5236e8c5#npm:2.1.3"],\
             ["@types/graphql", null],\
             ["graphql", "npm:16.6.0"]\
           ],\
           "packagePeers": [\
             "@types/graphql",\
             "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@apollo/usage-reporting-protobuf", [\
-        ["npm:4.0.0-alpha.1", {\
-          "packageLocation": "./.yarn/cache/@apollo-usage-reporting-protobuf-npm-4.0.0-alpha.1-da825f9f0a-a6a3ce0ab8.zip/node_modules/@apollo/usage-reporting-protobuf/",\
-          "packageDependencies": [\
-            ["@apollo/usage-reporting-protobuf", "npm:4.0.0-alpha.1"],\
-            ["@apollo/protobufjs", "npm:1.2.4"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@apollo/utils.createhash", [\
-        ["npm:1.1.0", {\
-          "packageLocation": "./.yarn/cache/@apollo-utils.createhash-npm-1.1.0-90a8271bd0-46790cb7af.zip/node_modules/@apollo/utils.createhash/",\
-          "packageDependencies": [\
-            ["@apollo/utils.createhash", "npm:1.1.0"],\
-            ["@apollo/utils.isnodelike", "npm:1.1.0"],\
-            ["sha.js", "npm:2.4.11"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -649,24 +438,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packagePeers": [\
             "@types/graphql",\
             "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@apollo/utils.fetcher", [\
-        ["npm:1.1.0", {\
-          "packageLocation": "./.yarn/cache/@apollo-utils.fetcher-npm-1.1.0-62150fc9e6-304f564b60.zip/node_modules/@apollo/utils.fetcher/",\
-          "packageDependencies": [\
-            ["@apollo/utils.fetcher", "npm:1.1.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@apollo/utils.isnodelike", [\
-        ["npm:1.1.0", {\
-          "packageLocation": "./.yarn/cache/@apollo-utils.isnodelike-npm-1.1.0-12129dd4a7-66d620b9db.zip/node_modules/@apollo/utils.isnodelike/",\
-          "packageDependencies": [\
-            ["@apollo/utils.isnodelike", "npm:1.1.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -11069,15 +10840,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["@opentelemetry/api", [\
-        ["npm:1.2.0", {\
-          "packageLocation": "./.yarn/cache/@opentelemetry-api-npm-1.2.0-93f3960910-764efa81bf.zip/node_modules/@opentelemetry/api/",\
-          "packageDependencies": [\
-            ["@opentelemetry/api", "npm:1.2.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["@panva/hkdf", [\
         ["npm:1.0.4", {\
           "packageLocation": "./.yarn/cache/@panva-hkdf-npm-1.0.4-f5e148cb52-d93b511eba.zip/node_modules/@panva/hkdf/",\
@@ -15603,13 +15365,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["apollo-server-types", [\
-        ["npm:3.6.2", {\
-          "packageLocation": "./.yarn/cache/apollo-server-types-npm-3.6.2-04ffce252b-410d7c0e6c.zip/node_modules/apollo-server-types/",\
-          "packageDependencies": [\
-            ["apollo-server-types", "npm:3.6.2"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
         ["npm:3.7.1", {\
           "packageLocation": "./.yarn/cache/apollo-server-types-npm-3.7.1-5dc25396c4-fe9a0847d0.zip/node_modules/apollo-server-types/",\
           "packageDependencies": [\
@@ -15627,23 +15382,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["apollo-reporting-protobuf", "npm:3.3.3"],\
             ["apollo-server-env", "npm:4.2.1"],\
             ["graphql", null]\
-          ],\
-          "packagePeers": [\
-            "@types/graphql",\
-            "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["virtual:98e6cb1a3e5e64ff1f5ebc046b628dccd84a0bf110641bb91c7c2593b8c7c3512158f12b57188914fc9259724b3104421f52c1c8261aaeedcb00635c6782c632#npm:3.6.2", {\
-          "packageLocation": "./.yarn/__virtual__/apollo-server-types-virtual-10ddda8eb5/0/cache/apollo-server-types-npm-3.6.2-04ffce252b-410d7c0e6c.zip/node_modules/apollo-server-types/",\
-          "packageDependencies": [\
-            ["apollo-server-types", "virtual:98e6cb1a3e5e64ff1f5ebc046b628dccd84a0bf110641bb91c7c2593b8c7c3512158f12b57188914fc9259724b3104421f52c1c8261aaeedcb00635c6782c632#npm:3.6.2"],\
-            ["@apollo/utils.keyvaluecache", "npm:1.0.1"],\
-            ["@apollo/utils.logger", "npm:1.0.0"],\
-            ["@types/graphql", null],\
-            ["apollo-reporting-protobuf", "npm:3.3.2"],\
-            ["apollo-server-env", "npm:4.2.1"],\
-            ["graphql", "npm:16.6.0"]\
           ],\
           "packagePeers": [\
             "@types/graphql",\
@@ -16137,15 +15875,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["picocolors", "npm:0.2.1"],\
             ["postcss", "npm:7.0.39"],\
             ["postcss-value-parser", "npm:4.2.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["available-typed-arrays", [\
-        ["npm:1.0.5", {\
-          "packageLocation": "./.yarn/cache/available-typed-arrays-npm-1.0.5-88f321e4d3-20eb47b3ce.zip/node_modules/available-typed-arrays/",\
-          "packageDependencies": [\
-            ["available-typed-arrays", "npm:1.0.5"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -19309,30 +19038,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["deep-equal", [\
-        ["npm:2.0.5", {\
-          "packageLocation": "./.yarn/cache/deep-equal-npm-2.0.5-746423a919-2bb7332bad.zip/node_modules/deep-equal/",\
-          "packageDependencies": [\
-            ["deep-equal", "npm:2.0.5"],\
-            ["call-bind", "npm:1.0.2"],\
-            ["es-get-iterator", "npm:1.1.2"],\
-            ["get-intrinsic", "npm:1.1.2"],\
-            ["is-arguments", "npm:1.1.1"],\
-            ["is-date-object", "npm:1.0.5"],\
-            ["is-regex", "npm:1.1.4"],\
-            ["isarray", "npm:2.0.5"],\
-            ["object-is", "npm:1.1.5"],\
-            ["object-keys", "npm:1.1.1"],\
-            ["object.assign", "npm:4.1.4"],\
-            ["regexp.prototype.flags", "npm:1.4.3"],\
-            ["side-channel", "npm:1.0.4"],\
-            ["which-boxed-primitive", "npm:1.0.2"],\
-            ["which-collection", "npm:1.0.1"],\
-            ["which-typed-array", "npm:1.1.8"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["deep-extend", [\
         ["npm:0.6.0", {\
           "packageLocation": "./.yarn/cache/deep-extend-npm-0.6.0-e182924219-7be7e5a8d4.zip/node_modules/deep-extend/",\
@@ -21519,16 +21224,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["flush-write-stream", "npm:1.1.1"],\
             ["inherits", "npm:2.0.4"],\
             ["readable-stream", "npm:2.3.7"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["for-each", [\
-        ["npm:0.3.3", {\
-          "packageLocation": "./.yarn/cache/for-each-npm-0.3.3-0010ca8cdd-6c48ff2bc6.zip/node_modules/for-each/",\
-          "packageDependencies": [\
-            ["for-each", "npm:0.3.3"],\
-            ["is-callable", "npm:1.2.4"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -24345,20 +24040,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["is-typed-array", [\
-        ["npm:1.1.9", {\
-          "packageLocation": "./.yarn/cache/is-typed-array-npm-1.1.9-c7c4ca7eec-11910f1e58.zip/node_modules/is-typed-array/",\
-          "packageDependencies": [\
-            ["is-typed-array", "npm:1.1.9"],\
-            ["available-typed-arrays", "npm:1.0.5"],\
-            ["call-bind", "npm:1.0.2"],\
-            ["es-abstract", "npm:1.20.1"],\
-            ["for-each", "npm:0.3.3"],\
-            ["has-tostringtag", "npm:1.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["is-typedarray", [\
         ["npm:1.0.0", {\
           "packageLocation": "./.yarn/cache/is-typedarray-npm-1.0.0-bbd99de5b6-3508c6cd0a.zip/node_modules/is-typedarray/",\
@@ -24415,32 +24096,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["is-weakmap", [\
-        ["npm:2.0.1", {\
-          "packageLocation": "./.yarn/cache/is-weakmap-npm-2.0.1-88ca3d1dc4-1222bb7e90.zip/node_modules/is-weakmap/",\
-          "packageDependencies": [\
-            ["is-weakmap", "npm:2.0.1"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["is-weakref", [\
         ["npm:1.0.2", {\
           "packageLocation": "./.yarn/cache/is-weakref-npm-1.0.2-ff80e8c314-95bd9a57cd.zip/node_modules/is-weakref/",\
           "packageDependencies": [\
             ["is-weakref", "npm:1.0.2"],\
             ["call-bind", "npm:1.0.2"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["is-weakset", [\
-        ["npm:2.0.2", {\
-          "packageLocation": "./.yarn/cache/is-weakset-npm-2.0.2-b3cbc6c9cd-5d8698d1fa.zip/node_modules/is-weakset/",\
-          "packageDependencies": [\
-            ["is-weakset", "npm:2.0.2"],\
-            ["call-bind", "npm:1.0.2"],\
-            ["get-intrinsic", "npm:1.1.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -26375,15 +26036,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["lodash.xorby", [\
-        ["npm:4.7.0", {\
-          "packageLocation": "./.yarn/cache/lodash.xorby-npm-4.7.0-843e1c377e-397a97d5b6.zip/node_modules/lodash.xorby/",\
-          "packageDependencies": [\
-            ["lodash.xorby", "npm:4.7.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["log-symbols", [\
         ["npm:4.1.0", {\
           "packageLocation": "./.yarn/cache/log-symbols-npm-4.1.0-0a13492d8b-fce1497b31.zip/node_modules/log-symbols/",\
@@ -27245,8 +26897,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["mpdx-react", "workspace:."],\
             ["@apollo/client", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.1"],\
-            ["@apollo/federation", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.37.1"],\
-            ["@apollo/gateway", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
             ["@apollo/subgraph", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
             ["@babel/core", "npm:7.20.5"],\
             ["@babel/node", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.19.1"],\
@@ -28150,17 +27800,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/object-inspect-npm-1.12.2-f125a822c0-a534fc1b85.zip/node_modules/object-inspect/",\
           "packageDependencies": [\
             ["object-inspect", "npm:1.12.2"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["object-is", [\
-        ["npm:1.1.5", {\
-          "packageLocation": "./.yarn/cache/object-is-npm-1.1.5-48a862602b-989b18c4cb.zip/node_modules/object-is/",\
-          "packageDependencies": [\
-            ["object-is", "npm:1.1.5"],\
-            ["call-bind", "npm:1.0.2"],\
-            ["define-properties", "npm:1.1.4"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -33717,15 +33356,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["ts-graphviz", [\
-        ["npm:0.16.0", {\
-          "packageLocation": "./.yarn/cache/ts-graphviz-npm-0.16.0-7bafa896ab-608f4bb240.zip/node_modules/ts-graphviz/",\
-          "packageDependencies": [\
-            ["ts-graphviz", "npm:0.16.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["ts-invariant", [\
         ["npm:0.10.3", {\
           "packageLocation": "./.yarn/cache/ts-invariant-npm-0.10.3-4657a5b439-bb07d56fe4.zip/node_modules/ts-invariant/",\
@@ -35486,39 +35116,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["which-collection", [\
-        ["npm:1.0.1", {\
-          "packageLocation": "./.yarn/cache/which-collection-npm-1.0.1-cd2c054585-c815bbd163.zip/node_modules/which-collection/",\
-          "packageDependencies": [\
-            ["which-collection", "npm:1.0.1"],\
-            ["is-map", "npm:2.0.2"],\
-            ["is-set", "npm:2.0.2"],\
-            ["is-weakmap", "npm:2.0.1"],\
-            ["is-weakset", "npm:2.0.2"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["which-module", [\
         ["npm:2.0.0", {\
           "packageLocation": "./.yarn/cache/which-module-npm-2.0.0-daf3daa08d-809f7fd3df.zip/node_modules/which-module/",\
           "packageDependencies": [\
             ["which-module", "npm:2.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["which-typed-array", [\
-        ["npm:1.1.8", {\
-          "packageLocation": "./.yarn/cache/which-typed-array-npm-1.1.8-49776a7691-bedf4d30a7.zip/node_modules/which-typed-array/",\
-          "packageDependencies": [\
-            ["which-typed-array", "npm:1.1.8"],\
-            ["available-typed-arrays", "npm:1.0.5"],\
-            ["call-bind", "npm:1.0.2"],\
-            ["es-abstract", "npm:1.20.1"],\
-            ["for-each", "npm:0.3.3"],\
-            ["has-tostringtag", "npm:1.0.0"],\
-            ["is-typed-array", "npm:1.1.9"]\
           ],\
           "linkType": "HARD"\
         }]\

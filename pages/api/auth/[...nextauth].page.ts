@@ -8,7 +8,7 @@ import {
   GetUserAccessQuery,
   GetUserAccessQueryVariables,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems.generated';
-import makeSsrClient from '../utils/ssrClient';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
   ApiOauthSignInDocument,
   ApiOauthSignInMutation,
@@ -193,11 +193,11 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           if (data?.apiOauthSignIn?.token && data?.apiOauthSignIn?.user) {
             await handleSettingUserInfo(
               data.apiOauthSignIn.token,
-              data?.apiOauthSignIn?.user?.id,
+              data.apiOauthSignIn.user.id,
             );
             return true;
           }
-          throw new Error('ApiOauthSignIn mutation failed to return a token');
+          throw new Error('apiOauthSignIn mutation failed to return a token');
         }
 
         const { data } = await ssrClient.mutate<
@@ -219,6 +219,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         throw new Error('oktaSignIn mutation failed to return a token');
       },
       jwt: async ({ token, user }) => {
+        // Despite the type being User | AdapterUser, user is undefined during the "update" trigger
         if (user?.apiToken) {
           const ssrClient = makeSsrClient(user.apiToken);
           const { data } = await ssrClient.query<

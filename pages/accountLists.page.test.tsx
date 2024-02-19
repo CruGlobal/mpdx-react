@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
-import makeSsrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import AccountListsPage, {
@@ -11,7 +11,7 @@ import AccountListsPage, {
   getServerSideProps,
 } from './accountLists.page';
 
-jest.mock('pages/api/utils/ssrClient', () => jest.fn());
+jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
 interface getServerSidePropsReturn {
   props: AccountListsPageProps;
