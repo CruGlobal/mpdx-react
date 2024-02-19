@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import FilterList from '@mui/icons-material/FilterList';
+import LibraryAddCheckIcon from '@mui/icons-material/LibraryAddCheck';
 import ViewList from '@mui/icons-material/ViewList';
 import { Box, Checkbox, Hidden, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -139,6 +140,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 headerCheckboxState === ListHeaderCheckBoxState.partial
               }
               onChange={onCheckAllItems}
+              disabled={!totalItems}
+              indeterminateIcon={<LibraryAddCheckIcon />}
             />
           </Hidden>
         )}
