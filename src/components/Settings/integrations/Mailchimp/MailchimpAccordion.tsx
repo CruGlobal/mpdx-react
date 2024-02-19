@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useMemo, useState } from 'react';
+import { ReactElement, useMemo, useState } from 'react';
 import {
   Alert,
   Box,
@@ -16,13 +16,10 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
+import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import {
-  IntegrationsContext,
-  IntegrationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
@@ -66,9 +63,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const { apiToken } = useContext(
-    IntegrationsContext,
-  ) as IntegrationsContextType;
+  const apiToken = useSession().data?.user.apiToken;
   const accountListId = useAccountListId();
   const [updateMailchimpAccount] = useUpdateMailchimpAccountMutation();
   const [syncMailchimpAccount] = useSyncMailchimpAccountMutation();

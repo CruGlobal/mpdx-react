@@ -1,11 +1,8 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Box, Button, Skeleton, Typography } from '@mui/material';
+import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import {
-  IntegrationsContext,
-  IntegrationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -27,9 +24,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   showDeleteModal;
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const { apiToken } = useContext(
-    IntegrationsContext,
-  ) as IntegrationsContextType;
+  const apiToken = useSession().data?.user.apiToken;
   const accountListId = useAccountListId();
   const accordionName = t('prayerletters.com');
   const [syncPrayerlettersAccount] = useSyncPrayerlettersAccountMutation();

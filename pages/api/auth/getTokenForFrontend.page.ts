@@ -10,10 +10,10 @@ const getTokenForFrontend = async (
   res: NextApiResponse,
 ): Promise<void> => {
   try {
-    const jwtToken = (await getToken({
+    const jwtToken = await getToken({
       req,
       secret: process.env.JWT_SECRET as string,
-    })) as { apiToken: string; userID: string } | null;
+    });
 
     if (!jwtToken?.apiToken) {
       throw new Error('Unable to fetch token.');

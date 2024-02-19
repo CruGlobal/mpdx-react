@@ -59,7 +59,7 @@ describe('AccountListsOrganizations', () => {
 
   describe('No admin access', () => {
     it('should redirect to dashboard', async () => {
-      (getSession as jest.Mock).mockReturnValue({
+      (getSession as jest.Mock).mockResolvedValue({
         user: {
           admin: false,
         },
@@ -78,12 +78,13 @@ describe('AccountListsOrganizations', () => {
   });
 
   describe('Has admin access', () => {
+    const session = {
+      user: {
+        admin: true,
+      },
+    };
     beforeEach(() => {
-      (getSession as jest.Mock).mockReturnValue({
-        user: {
-          admin: true,
-        },
-      });
+      (getSession as jest.Mock).mockResolvedValue(session);
     });
 
     it('renders page without redirecting admin', async () => {
@@ -92,7 +93,7 @@ describe('AccountListsOrganizations', () => {
       )) as getServerSidePropsReturn;
 
       expect(redirect).toBeUndefined();
-      expect(props).toEqual({});
+      expect(props).toEqual({ session });
     });
 
     it('should render skeletons while organizations are loading', async () => {

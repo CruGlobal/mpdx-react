@@ -1,14 +1,11 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Alert, Box, Card, IconButton, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
+import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import {
-  IntegrationsContext,
-  IntegrationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import HandoffLink from 'src/components/HandoffLink';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
@@ -83,9 +80,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
   const googleAccounts = data?.googleAccounts;
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
-  const { apiToken } = useContext(
-    IntegrationsContext,
-  ) as IntegrationsContextType;
+  const apiToken = useSession().data?.user.apiToken;
 
   const oAuth = `${
     process.env.OAUTH_URL

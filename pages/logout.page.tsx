@@ -8,6 +8,7 @@ import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { loadSession } from './api/utils/pagePropsHelpers';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
@@ -49,14 +50,13 @@ const LogoutPage = ({}): ReactElement => {
     </>
   );
 };
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   context.res.setHeader(
     'Set-Cookie',
     `mpdx-handoff.logged-in=; path=/; Max-Age=0; domain=${process.env.REWRITE_DOMAIN}`,
   );
-  return {
-    props: {},
-  };
+  return loadSession(context);
 };
 
 export default LogoutPage;

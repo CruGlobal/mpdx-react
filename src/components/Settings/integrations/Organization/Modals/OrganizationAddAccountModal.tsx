@@ -29,11 +29,11 @@ import {
   OrganizationTypesEnum,
   getOrganizationType,
 } from '../OrganizationAccordion';
-import { getOauthUrl } from '../OrganizationService';
 import {
   useCreateOrganizationAccountMutation,
   useGetOrganizationsQuery,
 } from '../Organizations.generated';
+import { useOauthUrl } from '../useOauthUrl';
 
 interface OrganizationAddAccountModalProps {
   handleClose: () => void;
@@ -81,6 +81,7 @@ export const OrganizationAddAccountModal: React.FC<
     useState<OrganizationTypesEnum>();
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
   const { data: organizations, loading } = useGetOrganizationsQuery();
+  const { getOauthUrl } = useOauthUrl();
 
   const onSubmit = async (attributes: Partial<OrganizationFormikSchema>) => {
     if (!attributes?.selectedOrganization) return;
@@ -92,7 +93,7 @@ export const OrganizationAddAccountModal: React.FC<
         t('Redirecting you to complete authentication to connect.'),
         { variant: 'success' },
       );
-      window.location.href = await getOauthUrl(id);
+      window.location.href = getOauthUrl(id);
       return;
     }
 

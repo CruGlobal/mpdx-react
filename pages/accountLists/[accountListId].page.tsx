@@ -1,7 +1,8 @@
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
-import { getToken } from 'next-auth/jwt';
+import { Session } from 'next-auth';
+import { getSession } from 'next-auth/react';
 import makeSsrClient from 'pages/api/utils/ssrClient';
 import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { suggestArticles } from 'src/lib/helpScout';
@@ -16,13 +17,12 @@ import {
 
 export interface AccountListIdPageProps {
   data: GetDashboardQuery;
-  accountListId: string;
   modal: string;
+  session: Session | null;
 }
 
 const AccountListIdPage = ({
   data,
-  accountListId,
   modal,
 }: AccountListIdPageProps): ReactElement => {
   const { appName } = useGetAppSettings();
@@ -65,24 +65,18 @@ const AccountListIdPage = ({
           {appName} | {data.accountList.name}
         </title>
       </Head>
-      <Dashboard data={data} accountListId={accountListId} />
+      <Dashboard data={data} accountListId={data.accountList.id} />
 
       {modal && renderDialog(selectedMenuItem, dialogOpen, setDialogOpen)}
     </>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({
-  query,
-  req,
-}) => {
-  const jwtToken = (await getToken({
-    req,
-    secret: process.env.JWT_SECRET as string,
-  })) as { apiToken: string } | null;
-
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  const apiToken = session?.user.apiToken;
   // If no token from session, redirect to login page
-  if (!jwtToken?.apiToken) {
+  if (!apiToken) {
     return {
       redirect: {
         destination: '/login',
@@ -92,18 +86,19 @@ export const getServerSideProps: GetServerSideProps = async ({
   }
 
   try {
-    const ssrClient = await makeSsrClient(jwtToken?.apiToken);
-    const response = await ssrClient.query<
+    const { query } = context;
+    if (typeof query.accountListId !== 'string') {
+      throw new Error('Invalid accountListId');
+    }
+
+    const ssrClient = makeSsrClient(apiToken);
+    const { data } = await ssrClient.query<
       GetDashboardQuery,
       GetDashboardQueryVariables
     >({
       query: GetDashboardDocument,
       variables: {
-        accountListId: query?.accountListId
-          ? Array.isArray(query.accountListId)
-            ? query.accountListId[0]
-            : query.accountListId
-          : '',
+        accountListId: query.accountListId,
         // TODO: implement these variables in query
         // endOfDay: DateTime.local().endOf('day').toISO(),
         // today: DateTime.local().endOf('day').toISODate(),
@@ -114,13 +109,11 @@ export const getServerSideProps: GetServerSideProps = async ({
       },
     });
 
-    if (!response) throw new Error('Undefined response');
-
     return {
       props: {
-        data: response?.data,
-        accountListId: query?.accountListId?.toString(),
+        data,
         modal: query?.modal?.toString() ?? '',
+        session,
       },
     };
   } catch {

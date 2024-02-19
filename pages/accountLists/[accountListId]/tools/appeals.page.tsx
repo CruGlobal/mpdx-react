@@ -4,6 +4,7 @@ import { Box, Divider, Grid, Theme, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import Loading from '../../../../src/components/Loading';
 import AddAppealForm from '../../../../src/components/Tool/Appeal/AddAppealForm';
@@ -106,5 +107,7 @@ const AppealsPage: React.FC = () => {
     </>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default AppealsPage;

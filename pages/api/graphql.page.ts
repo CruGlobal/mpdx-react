@@ -54,10 +54,10 @@ const apolloServer = new ApolloServer({
   gateway,
   introspection: true,
   context: async ({ req }: { req: NextApiRequest }) => {
-    const jwtToken = (await getToken({
+    const jwtToken = await getToken({
       req,
       secret: process.env.JWT_SECRET as string,
-    })) as { apiToken: string } | null;
+    });
 
     return { apiToken: jwtToken?.apiToken };
   },

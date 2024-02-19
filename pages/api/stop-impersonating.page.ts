@@ -12,10 +12,10 @@ const mpdxWebHandoff = async (
 ): Promise<void> => {
   const redirectUrl = `${process.env.SITE_URL}/`;
   try {
-    const jwtToken = (await getToken({
+    const jwtToken = await getToken({
       req,
       secret: process.env.JWT_SECRET as string,
-    })) as { impersonatorApiToken: string } | null;
+    });
     res.setHeader('Set-Cookie', [
       ...clearNextAuthSessionCookies,
       `mpdx-handoff.redirect-url=${redirectUrl}; ${cookieDefaultInfo}`,

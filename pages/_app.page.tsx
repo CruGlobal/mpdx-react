@@ -58,12 +58,14 @@ const LocalizationProvider = (
   return RawLocalizationProvider({ ...props, adapterLocale: locale });
 };
 
+const nonAuthenticatedPages = new Set(['/login', '/404', '/500']);
+
 const App = ({
   Component,
   pageProps,
   router,
 }: AppProps<{
-  session: Session;
+  session?: Session;
 }>): ReactElement => {
   const { t } = useTranslation();
   const Layout = (Component as PageWithLayout).layout || PrimaryLayout;
@@ -84,6 +86,12 @@ const App = ({
     enabled: !!process.env.ROLLBAR_ACCESS_TOKEN,
   };
   const emotionCache = createEmotionCache({ key: 'css' });
+
+  if (!session && !nonAuthenticatedPages.has(router.pathname)) {
+    throw new Error(
+      'A session was not provided via page props. Make sure that getServerSideProps for this page returns the session in its props.',
+    );
+  }
 
   return (
     <>

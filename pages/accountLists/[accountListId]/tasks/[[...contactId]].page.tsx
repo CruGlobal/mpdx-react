@@ -8,6 +8,7 @@ import { styled } from '@mui/material/styles';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
@@ -470,5 +471,7 @@ const TasksPage: React.FC = () => {
   );
   //#endregion
 };
+
+export const getServerSideProps = loadSession;
 
 export default TasksPage;

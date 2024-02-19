@@ -22,12 +22,12 @@ import { StyledServicesButton } from '../integrationsHelper';
 import { OrganizationAddAccountModal } from './Modals/OrganizationAddAccountModal';
 import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
 import { OrganizationImportDataSyncModal } from './Modals/OrganizationImportDataSyncModal';
-import { getOauthUrl } from './OrganizationService';
 import {
   useDeleteOrganizationAccountMutation,
   useGetUsersOrganizationsAccountsQuery,
   useSyncOrganizationAccountMutation,
 } from './Organizations.generated';
+import { useOauthUrl } from './useOauthUrl';
 
 interface OrganizationAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -95,6 +95,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
     useState(false);
   const [deleteOrganizationAccount] = useDeleteOrganizationAccountMutation();
   const [syncOrganizationAccount] = useSyncOrganizationAccountMutation();
+  const { getOauthUrl } = useOauthUrl();
 
   const {
     data,
@@ -108,8 +109,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
       t('Redirecting you to complete authentication to reconnect.'),
       { variant: 'success' },
     );
-    const oAuthUrl = await getOauthUrl(organizationId);
-    window.location.href = oAuthUrl;
+    window.location.href = getOauthUrl(organizationId);
   };
 
   const handleSync = async (accountId: string) => {

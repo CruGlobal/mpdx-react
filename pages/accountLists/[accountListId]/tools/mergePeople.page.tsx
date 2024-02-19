@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import Loading from '../../../../src/components/Loading';
 import MergePeople from '../../../../src/components/Tool/MergePeople/MergePeople';
@@ -26,5 +27,7 @@ const MergePeoplePage: React.FC = () => {
     </>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default MergePeoplePage;

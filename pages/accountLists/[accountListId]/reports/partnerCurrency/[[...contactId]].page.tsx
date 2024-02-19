@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
@@ -97,5 +98,7 @@ const PartnerCurrencyReportPage: React.FC = () => {
     </>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default PartnerCurrencyReportPage;

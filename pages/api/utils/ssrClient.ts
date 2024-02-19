@@ -22,7 +22,7 @@ const serverErrorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const makeSsrClient = (
-  apiToken?: string,
+  apiToken: string | null,
 ): ApolloClient<NormalizedCacheObject> => {
   const httpLink = createHttpLink({
     uri: process.env.API_URL,

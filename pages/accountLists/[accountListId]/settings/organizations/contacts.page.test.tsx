@@ -57,7 +57,7 @@ describe('OrganizationsContacts', () => {
 
   describe('No admin access', () => {
     it('should redirect to dashboard', async () => {
-      (getSession as jest.Mock).mockReturnValue({
+      (getSession as jest.Mock).mockResolvedValue({
         user: {
           admin: false,
         },
@@ -76,12 +76,14 @@ describe('OrganizationsContacts', () => {
   });
 
   describe('Has admin access', () => {
+    const session = {
+      user: {
+        admin: true,
+      },
+    };
+
     beforeEach(() => {
-      (getSession as jest.Mock).mockReturnValue({
-        user: {
-          admin: true,
-        },
-      });
+      (getSession as jest.Mock).mockResolvedValue(session);
     });
 
     it('renders page without redirecting admin', async () => {
@@ -90,7 +92,7 @@ describe('OrganizationsContacts', () => {
       )) as getServerSidePropsReturn;
 
       expect(redirect).toBeUndefined();
-      expect(props).toEqual({});
+      expect(props).toEqual({ session });
     });
 
     it('should render skeletons while contacts are loading', async () => {

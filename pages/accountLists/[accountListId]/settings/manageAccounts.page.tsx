@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ManageAccountAccessAccordion } from 'src/components/Settings/Accounts/ManageAccountAccess/ManageAccountAccessAccordion';
 import { MergeAccountsAccordion } from 'src/components/Settings/Accounts/MergeAccounts/MergeAccountsAccordion';
 import { MergeSpouseAccountsAccordion } from 'src/components/Settings/Accounts/MergeSpouseAccounts/MergeSpouseAccountsAccordion';
@@ -53,5 +54,7 @@ const ManageAccounts = (): ReactElement => {
     </SettingsWrapper>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default ManageAccounts;
