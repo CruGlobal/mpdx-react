@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import { Provider } from 'next-auth/providers';
 import OktaProvider from 'next-auth/providers/okta';
 import rollbar, { isRollBarEnabled } from 'pages/api/utils/rollBar';
@@ -24,13 +24,15 @@ import { setUserInfo } from './setUserInfo';
 declare module 'next-auth' {
   interface Session {
     user: {
+      name: string;
+      email: string;
       admin: boolean;
       developer: boolean;
       apiToken: string;
-      userID?: string;
+      userID: string;
       impersonating?: boolean;
       impersonatorApiToken?: string;
-    } & DefaultSession['user'];
+    };
   }
 
   interface User {

@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
-import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -26,6 +25,7 @@ import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionBu
 import * as Types from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import {
   StyledList,
   StyledListItem,
@@ -63,7 +63,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const apiToken = useSession().data?.user.apiToken;
+  const { apiToken } = useRequiredSession();
   const accountListId = useAccountListId();
   const [updateMailchimpAccount] = useUpdateMailchimpAccountMutation();
   const [syncMailchimpAccount] = useSyncMailchimpAccountMutation();

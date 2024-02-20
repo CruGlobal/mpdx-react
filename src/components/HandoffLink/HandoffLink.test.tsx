@@ -47,7 +47,7 @@ describe('HandoffLink', () => {
     expect(open).toHaveBeenCalledWith(
       `${
         process.env.SITE_URL || window.location.origin
-      }/api/handoff?accountListId=accountListId&userId=&path=%2Fcontacts`,
+      }/api/handoff?accountListId=accountListId&userId=user-1&path=%2Fcontacts`,
       '_blank',
     );
   });

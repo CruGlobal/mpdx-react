@@ -32,8 +32,8 @@ import { SnackbarUtilsConfigurator } from 'src/components/Snackbar/Snackbar';
 import TaskModalProvider from 'src/components/Task/Modal/TaskModalProvider';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
-import { useApiToken } from 'src/hooks/useApiToken';
 import { useLocale } from 'src/hooks/useLocale';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import makeClient from 'src/lib/apollo/client';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -64,7 +64,7 @@ const LocalizationProvider = (
 const GraphQLProviders: React.FC<{
   children: React.ReactNode;
 }> = ({ children = null }) => {
-  const apiToken = useApiToken();
+  const { apiToken } = useRequiredSession();
   const client = useMemo(() => makeClient(apiToken), [apiToken]);
 
   return (
@@ -72,8 +72,6 @@ const GraphQLProviders: React.FC<{
       <UserPreferenceProvider>
         <TaskModalProvider>{children}</TaskModalProvider>
       </UserPreferenceProvider>
-      <DataDog />
-      <HelpscoutBeacon />
     </RawApolloProvider>
   );
 };
@@ -172,6 +170,7 @@ const App = ({
         <ErrorBoundary>
           <AppSettingsProvider>
             <SessionProvider session={session}>
+              <HelpscoutBeacon />
               <I18nextProvider i18n={i18n}>
                 <StyledEngineProvider injectFirst>
                   <CacheProvider value={emotionCache}>
@@ -210,6 +209,7 @@ const App = ({
                   </CacheProvider>
                 </StyledEngineProvider>
               </I18nextProvider>
+              <DataDog />
             </SessionProvider>
             {process.env.ALERT_MESSAGE ? (
               <AlertBanner

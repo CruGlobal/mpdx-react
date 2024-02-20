@@ -1,10 +1,10 @@
 import Script from 'next/script';
 import { useEffect } from 'react';
-import { useUser } from 'src/hooks/useUser';
+import { useSession } from 'next-auth/react';
 import { callBeacon, identifyUser, initBeacon } from 'src/lib/helpScout';
 
 const HelpscoutBeacon: React.FC = () => {
-  const user = useUser();
+  const { data: session } = useSession();
 
   useEffect(() => {
     initBeacon();
@@ -14,13 +14,10 @@ const HelpscoutBeacon: React.FC = () => {
     };
   }, []);
 
+  const user = session?.user;
   useEffect(() => {
     if (user) {
-      identifyUser(
-        user.id,
-        user.keyAccounts[0]?.email ?? '',
-        [user.firstName, user.lastName].filter((name) => name).join(' '),
-      );
+      identifyUser(user.userID, user.email, user.name);
     }
   }, [user]);
 

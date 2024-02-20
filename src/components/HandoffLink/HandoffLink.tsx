@@ -1,5 +1,5 @@
 import { Children, ReactElement, ReactNode, cloneElement } from 'react';
-import { useUser } from 'src/hooks/useUser';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useAccountListId } from '../../hooks/useAccountListId';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const HandoffLink = ({ path, auth, children }: Props): ReactElement => {
-  const user = useUser();
+  const session = useRequiredSession();
   const accountListId = useAccountListId();
 
   const url = new URL(
@@ -20,7 +20,7 @@ const HandoffLink = ({ path, auth, children }: Props): ReactElement => {
     url.searchParams.append('auth', 'true');
   } else {
     url.searchParams.append('accountListId', accountListId ?? '');
-    url.searchParams.append('userId', user?.id ?? '');
+    url.searchParams.append('userId', session.userID);
   }
   url.searchParams.append('path', path);
 

@@ -2,12 +2,13 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useSession } from 'next-auth/react';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import theme from 'src/theme';
 import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
-import { GetUserAccessQuery } from './MultiPageMenuItems.generated';
 
 const accountListId = 'account-list-1';
 const selected = 'salaryCurrency';
@@ -145,23 +146,20 @@ describe('MultiPageMenu', () => {
   });
 
   it('shows the developer tools', async () => {
+    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+      data: {
+        ...session,
+        user: { ...session.user, admin: false, developer: true },
+      },
+      status: 'authenticated',
+      update: () => Promise.resolve(null),
+    });
+
     const mutationSpy = jest.fn();
     const { queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<{
-            GetUserAccess: GetUserAccessQuery;
-          }>
-            mocks={{
-              GetUserAccess: {
-                user: {
-                  admin: false,
-                  developer: true,
-                },
-              },
-            }}
-            onCall={mutationSpy}
-          >
+          <GqlMockedProvider onCall={mutationSpy}>
             <MultiPageMenu
               selectedId={selected}
               isOpen={true}
@@ -189,23 +187,20 @@ describe('MultiPageMenu', () => {
   });
 
   it('shows the admin tools', async () => {
+    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+      data: {
+        ...session,
+        user: { ...session.user, admin: true, developer: false },
+      },
+      status: 'authenticated',
+      update: () => Promise.resolve(null),
+    });
+
     const mutationSpy = jest.fn();
     const { queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<{
-            GetUserAccess: GetUserAccessQuery;
-          }>
-            mocks={{
-              GetUserAccess: {
-                user: {
-                  admin: true,
-                  developer: false,
-                },
-              },
-            }}
-            onCall={mutationSpy}
-          >
+          <GqlMockedProvider onCall={mutationSpy}>
             <MultiPageMenu
               selectedId={selected}
               isOpen={true}

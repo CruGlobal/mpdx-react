@@ -18,10 +18,11 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
 import HandoffLink from '../../../../../HandoffLink';
@@ -112,7 +113,7 @@ const ImpersonatingMenuButton = styled(Button)(({ theme }) => ({
 const ProfileMenu = (): ReactElement => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { data: session } = useSession();
+  const session = useRequiredSession();
   const client = useApolloClient();
   const { enqueueSnackbar } = useSnackbar();
   const { contactId: _, ...queryWithoutContactId } = router.query;
@@ -156,7 +157,7 @@ const ProfileMenu = (): ReactElement => {
       }/api/stop-impersonating`,
     );
     url.searchParams.append('accountListId', accountListId ?? '');
-    url.searchParams.append('userId', data?.user?.id ?? '');
+    url.searchParams.append('userId', session.userID);
     url.searchParams.append('path', '/logout');
     window.location.href = url.href;
   };
@@ -164,14 +165,14 @@ const ProfileMenu = (): ReactElement => {
   return (
     <>
       <ProfileName
-        impersonating={!!session?.user?.impersonating}
+        impersonating={!!session.impersonating}
         onProfileMenuOpen={handleProfileMenuOpen}
         showSubAccount={hasSelectedAccount}
       >
         {data && (
           <Box display="block" textAlign="left">
             <AccountName>
-              {session?.user?.impersonating ? `Impersonating ` : ``}
+              {session.impersonating ? `Impersonating ` : ``}
               {[data.user.firstName, data.user.lastName]
                 .filter(Boolean)
                 .join(' ')}
@@ -183,7 +184,7 @@ const ProfileMenu = (): ReactElement => {
                 data-testid="accountListName"
               >
                 {
-                  data?.accountLists.nodes.find(
+                  data.accountLists.nodes.find(
                     (accountList) => accountList.id === accountListId,
                   )?.name
                 }
@@ -309,7 +310,7 @@ const ProfileMenu = (): ReactElement => {
           </HandoffLink>
         )}
         <MenuItem>
-          {session?.user?.impersonating && (
+          {session.impersonating && (
             <ImpersonatingMenuButton
               variant="outlined"
               color="inherit"
@@ -318,7 +319,7 @@ const ProfileMenu = (): ReactElement => {
               {t('Stop Impersonating')}
             </ImpersonatingMenuButton>
           )}
-          {!session?.user?.impersonating && (
+          {!session.impersonating && (
             <MenuButton
               variant="outlined"
               color="inherit"

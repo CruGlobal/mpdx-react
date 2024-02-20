@@ -4,7 +4,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Alert, Box, Card, IconButton, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
-import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import HandoffLink from 'src/components/HandoffLink';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
@@ -12,6 +11,7 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { GoogleAccountAttributes } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import theme from 'src/theme';
 import {
   StyledList,
@@ -80,7 +80,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
   const googleAccounts = data?.googleAccounts;
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
-  const apiToken = useSession().data?.user.apiToken;
+  const { apiToken } = useRequiredSession();
 
   const oAuth = `${
     process.env.OAUTH_URL

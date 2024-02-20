@@ -1,9 +1,9 @@
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useApiToken } from 'src/hooks/useApiToken';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 
 export const useOauthUrl = () => {
   const route = 'preferences/integrations?selectedTab=organization';
-  const apiToken = useApiToken();
+  const { apiToken } = useRequiredSession();
   const redirectUrl = encodeURIComponent(`${window.location.origin}/${route}`);
   const accountListId = useAccountListId();
 
