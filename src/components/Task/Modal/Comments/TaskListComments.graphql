@@ -1,7 +1,7 @@
 fragment TaskModalComment on Comment {
   id
   body
-  createdAt
+  updatedAt
   me
   person {
     id

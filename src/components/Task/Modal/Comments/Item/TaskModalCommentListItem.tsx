@@ -40,9 +40,9 @@ const Details: React.FC<DetailsProps> = ({ comment }) => {
       <CommentInfoText display="inline">
         {comment.person?.firstName} {comment.person?.lastName}
       </CommentInfoText>{' '}
-      <Tooltip placement="bottom" title={comment.createdAt} arrow>
+      <Tooltip placement="bottom" title={comment.updatedAt} arrow>
         <CommentInfoText display="inline">
-          {dateFormat(DateTime.fromISO(comment.createdAt), locale)}
+          {dateFormat(DateTime.fromISO(comment.updatedAt), locale)}
         </CommentInfoText>
       </Tooltip>
     </Box>
@@ -152,6 +152,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
             comment && {
               ...comment,
               body: values.body,
+              updatedAt: DateTime.now().toISO(),
             },
         );
       },

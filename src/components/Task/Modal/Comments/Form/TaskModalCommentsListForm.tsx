@@ -49,7 +49,7 @@ export const TaskModalCommentsListForm = ({
             __typename: 'Comment',
             id,
             body,
-            createdAt: DateTime.local().toISO(),
+            updatedAt: DateTime.local().toISO(),
             me: true,
             person: user
               ? {
