@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import {
   Autocomplete,
   Box,
@@ -77,6 +78,7 @@ export const OrganizationAddAccountModal: React.FC<
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
+  const client = useApolloClient();
   const [organizationType, setOrganizationType] =
     useState<OrganizationTypesEnum>();
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
@@ -282,6 +284,7 @@ export const OrganizationAddAccountModal: React.FC<
                         onClick={() => {
                           signOut({ callbackUrl: 'signOut' }).then(() => {
                             clearDataDogUser();
+                            client.clearStore();
                           });
                         }}
                       >

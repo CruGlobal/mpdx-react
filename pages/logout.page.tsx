@@ -1,6 +1,7 @@
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect } from 'react';
+import { useApolloClient } from '@apollo/client';
 import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -25,10 +26,12 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
 const LogoutPage = ({}): ReactElement => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
+  const client = useApolloClient();
 
   useEffect(() => {
     signOut({ callbackUrl: 'signOut' }).then(() => {
       clearDataDogUser();
+      client.clearStore();
     });
   }, []);
 

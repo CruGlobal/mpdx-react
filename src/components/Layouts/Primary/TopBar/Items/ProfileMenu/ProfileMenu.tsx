@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
@@ -112,6 +113,7 @@ const ProfileMenu = (): ReactElement => {
   const { t } = useTranslation();
   const router = useRouter();
   const { data: session } = useSession();
+  const client = useApolloClient();
   const { enqueueSnackbar } = useSnackbar();
   const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
@@ -323,6 +325,7 @@ const ProfileMenu = (): ReactElement => {
               onClick={() => {
                 signOut({ callbackUrl: 'signOut' }).then(() => {
                   clearDataDogUser();
+                  client.clearStore();
                 });
               }}
             >

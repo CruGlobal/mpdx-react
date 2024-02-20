@@ -16,28 +16,31 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
   });
 }
 
-const clientErrorLink = onError(({ graphQLErrors, networkError }) => {
-  // Don't show sign out and display errors on the login page because the user won't be logged in
-  if (graphQLErrors && window.location.pathname !== '/login') {
-    graphQLErrors.map(({ message, extensions }) => {
-      if (extensions?.code === 'AUTHENTICATION_ERROR') {
-        signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
-          clearDataDogUser();
-        });
-      }
-      snackNotifications.error(message);
-    });
-  }
+const makeClient = (apiToken: string) => {
+  const client = new ApolloClient({
+    link: from([
+      makeAuthLink(apiToken),
+      onError(({ graphQLErrors, networkError }) => {
+        // Don't show sign out and display errors on the login page because the user won't be logged in
+        if (graphQLErrors && window.location.pathname !== '/login') {
+          graphQLErrors.forEach(({ message, extensions }) => {
+            if (extensions?.code === 'AUTHENTICATION_ERROR') {
+              signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
+                clearDataDogUser();
+                client.clearStore();
+              });
+            }
+            snackNotifications.error(message);
+          });
+        }
 
-  if (networkError) {
-    dispatch('mpdx-api-error');
-    snackNotifications.error(networkError.message);
-  }
-});
-
-const makeClient = (apiToken: string) =>
-  new ApolloClient({
-    link: from([makeAuthLink(apiToken), clientErrorLink, batchLink]),
+        if (networkError) {
+          dispatch('mpdx-api-error');
+          snackNotifications.error(networkError.message);
+        }
+      }),
+      batchLink,
+    ]),
     cache,
     assumeImmutableResults: true,
     defaultOptions: {
@@ -47,5 +50,7 @@ const makeClient = (apiToken: string) =>
       },
     },
   });
+  return client;
+};
 
 export default makeClient;
