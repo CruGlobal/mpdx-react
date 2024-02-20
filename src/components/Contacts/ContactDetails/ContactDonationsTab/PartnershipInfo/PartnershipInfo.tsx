@@ -41,10 +41,9 @@ const IconContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0),
 }));
 
-const PartnershipInfoContainer = styled(Box)(({ theme }) => ({
+const PartnershipInfoContainer = styled(Box)({
   width: '100%',
-  margin: theme.spacing(1),
-}));
+});
 
 const PartnershipTitle = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(1),
