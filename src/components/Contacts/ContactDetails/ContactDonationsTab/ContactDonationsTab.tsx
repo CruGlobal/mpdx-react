@@ -129,26 +129,18 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
           </DonationsTabList>
         </DonationsTabContainer>
         <StyledTabPanel value={DonationTabKey.Donations}>
-          {loading ? (
-            <>
-              <ContactDonationsLoadingPlaceHolder />
-              <ContactDonationsLoadingPlaceHolder />
-              <ContactDonationsLoadingPlaceHolder />
-            </>
-          ) : (
-            <DonationTable
-              accountListId={accountListId}
-              filter={{ donorAccountIds }}
-              emptyPlaceholder={
-                <EmptyDonationsTable
-                  title={t('No donations received for {{name}}', {
-                    name: data?.contact.name,
-                  })}
-                />
-              }
-              visibleColumnsStorageKey="contact-donations"
-            />
-          )}
+          <DonationTable
+            accountListId={accountListId}
+            filter={{ donorAccountIds }}
+            emptyPlaceholder={
+              <EmptyDonationsTable
+                title={t('No donations received for {{name}}', {
+                  name: data?.contact.name,
+                })}
+              />
+            }
+            visibleColumnsStorageKey="contact-donations"
+          />
         </StyledTabPanel>
         <StyledTabPanel value={DonationTabKey.PartnershipInfo}>
           {loading ? (
