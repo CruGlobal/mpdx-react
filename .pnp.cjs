@@ -12353,7 +12353,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fs-extra", "npm:9.1.0"],\
             ["global", "npm:4.4.0"],\
             ["globby", "npm:11.1.0"],\
-            ["ip", "npm:2.0.0"],\
+            ["ip", "npm:2.0.1"],\
             ["lodash", "npm:4.17.21"],\
             ["node-fetch", "virtual:e414995db9c779306e687c7a7c66965e66d0cd7270f6b9fc4f00cc9772c5d50b305ab83e142e0e21dbf10968f7437cbdfcb170d05f4bde68707ac7d0082c9cca#npm:2.6.7"],\
             ["open", "npm:8.4.0"],\
@@ -23500,10 +23500,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["ip", [\
-        ["npm:2.0.0", {\
-          "packageLocation": "./.yarn/cache/ip-npm-2.0.0-204facb3cc-cfcfac6b87.zip/node_modules/ip/",\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/cache/ip-npm-2.0.1-ee48691f03-d765c9fd21.zip/node_modules/ip/",\
           "packageDependencies": [\
-            ["ip", "npm:2.0.0"]\
+            ["ip", "npm:2.0.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -31938,7 +31938,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/socks-npm-2.7.0-cc1cb019db-0b5d94e2b3.zip/node_modules/socks/",\
           "packageDependencies": [\
             ["socks", "npm:2.7.0"],\
-            ["ip", "npm:2.0.0"],\
+            ["ip", "npm:2.0.1"],\
             ["smart-buffer", "npm:4.2.0"]\
           ],\
           "linkType": "HARD"\
