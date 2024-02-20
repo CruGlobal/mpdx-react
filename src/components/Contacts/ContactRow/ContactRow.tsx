@@ -24,7 +24,7 @@ import { ContactRowFragment } from './ContactRow.generated';
 interface Props {
   contact: ContactRowFragment;
   useTopMargin?: boolean;
-  contacts: any;
+  contacts?: any;
 }
 
 export const ContactRow: React.FC<Props> = ({

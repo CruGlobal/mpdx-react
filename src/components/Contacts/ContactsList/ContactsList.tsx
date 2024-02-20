@@ -51,8 +51,8 @@ export const ContactsList: React.FC = () => {
       style={{ height: `calc(100vh - ${navBarHeight} - ${headerHeight})` }}
       itemContent={(index, contact) => (
         <ContactRow
-          contacts={data?.contacts?.nodes}
           key={contact.id}
+          contacts={data?.contacts?.nodes}
           contact={contact}
           useTopMargin={index === 0}
         />
