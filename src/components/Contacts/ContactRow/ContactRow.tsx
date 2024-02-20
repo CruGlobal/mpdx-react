@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   ButtonBase,
@@ -24,15 +24,21 @@ import { ContactRowFragment } from './ContactRow.generated';
 interface Props {
   contact: ContactRowFragment;
   useTopMargin?: boolean;
+  contacts: any;
 }
 
-export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+export const ContactRow: React.FC<Props> = ({
+  contact,
+  useTopMargin,
+  contacts,
+}) => {
   const {
     accountListId,
     isRowChecked: isChecked,
     contactDetailsOpen,
     setContactFocus: onContactSelected,
     toggleSelectionById: onContactCheckToggle,
+    selectedIds,
   } = React.useContext(ContactsContext) as ContactsType;
 
   const ListItemButton = styled(ButtonBase)(({ theme }) => ({
@@ -74,6 +80,16 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     uncompletedTasksCount,
   } = contact;
 
+  useEffect(() => {
+    const contactIds = contacts.map((contact) => contact.id);
+    const selectedIdsNotInView = selectedIds.filter(
+      (selected) => !contactIds.includes(selected),
+    );
+    selectedIdsNotInView.forEach((selectedIdNotInView) =>
+      onContactCheckToggle(selectedIdNotInView),
+    );
+  }, [contact]);
+
   return (
     <ListItemButton focusRipple onClick={onClick} data-testid="rowButton">
       <Hidden xsDown>
@@ -82,7 +98,9 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             checked={isChecked(contact.id)}
             color="secondary"
             onClick={(event) => event.stopPropagation()}
-            onChange={() => onContactCheckToggle(contact.id)}
+            onChange={() => {
+              onContactCheckToggle(contact.id);
+            }}
             value={isChecked}
           />
         </ListItemIcon>
