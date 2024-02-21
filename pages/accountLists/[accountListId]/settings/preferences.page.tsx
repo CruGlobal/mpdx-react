@@ -29,7 +29,7 @@ import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 
 const AccordionLoading = styled(Skeleton)(() => ({
-  width: '710px',
+  width: '100%',
   height: '48px',
 }));
 
@@ -38,7 +38,7 @@ const Preferences: React.FC = () => {
   const accountListId = useAccountListId() || '';
   const { query } = useRouter();
   const [expandedPanel, setExpandedPanel] = useState(
-    (query?.selectedTab as string) || '',
+    typeof query.selectedTab === 'string' ? query.selectedTab : '',
   );
 
   useEffect(() => {

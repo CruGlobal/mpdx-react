@@ -29,6 +29,7 @@ jest.mock('notistack', () => ({
 const MocksProviders = (props: {
   children: JSX.Element;
   canUserExportData: boolean;
+  singleOrg?: boolean;
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
@@ -86,14 +87,20 @@ const MocksProviders = (props: {
             },
           },
           GetUsersOrganizationsAccounts: {
-            userOrganizationAccounts: [
-              {
-                organization: {},
-              },
-              {
-                organization: {},
-              },
-            ],
+            userOrganizationAccounts: props.singleOrg
+              ? [
+                  {
+                    organization: {},
+                  },
+                ]
+              : [
+                  {
+                    organization: {},
+                  },
+                  {
+                    organization: {},
+                  },
+                ],
           },
           CanUserExportData: {
             canUserExportData: {
@@ -146,6 +153,17 @@ describe('Preferences page', () => {
     expect(await findByText('Account Preferences')).toBeInTheDocument();
     await waitFor(() =>
       expect(queryByText('Primary Organization')).toBeInTheDocument(),
+    );
+  });
+
+  it('should not render Primary Organization accordion when there is only 1 org', async () => {
+    const { queryByText } = render(
+      <MocksProviders canUserExportData={false} singleOrg={true}>
+        <Preferences />
+      </MocksProviders>,
+    );
+    await waitFor(() =>
+      expect(queryByText('Primary Organization')).not.toBeInTheDocument(),
     );
   });
 });

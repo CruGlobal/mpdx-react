@@ -1,7 +1,7 @@
 export const languages = [
   {
     id: 'en',
-    value: 'US English',
+    value: 'American English',
   },
   {
     id: 'fr',

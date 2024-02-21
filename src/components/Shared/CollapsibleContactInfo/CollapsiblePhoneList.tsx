@@ -9,7 +9,7 @@ interface PhoneProps {
 
 const Phone: React.FC<PhoneProps> = ({ phone }) => (
   <ContactInfoText data-testid="PhoneNumber">
-    <Link href={`mailto:${phone.number}`} underline="hover">
+    <Link href={`tel:${phone.number}`} underline="hover">
       {phone.number}
     </Link>
     {phone.location ? ` - ${phone.location}` : null}
@@ -17,7 +17,7 @@ const Phone: React.FC<PhoneProps> = ({ phone }) => (
 );
 
 interface CollapsiblePhoneListProps {
-  phones: Array<Pick<PhoneNumber, 'id' | 'primary' | 'number' | 'location'>>;
+  phones: Array<Partial<PhoneNumber>>;
 }
 
 export const CollapsiblePhoneList: React.FC<CollapsiblePhoneListProps> = ({
@@ -27,7 +27,9 @@ export const CollapsiblePhoneList: React.FC<CollapsiblePhoneListProps> = ({
   if (!primaryPhone) {
     return null;
   }
-  const secondaryPhones = phones.filter((phone) => phone !== primaryPhone);
+  const secondaryPhones = phones.filter(
+    (phone) => phone !== primaryPhone && !phone?.historic,
+  );
 
   return (
     <CollapsibleList

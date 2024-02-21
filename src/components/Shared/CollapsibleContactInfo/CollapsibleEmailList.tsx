@@ -4,7 +4,7 @@ import { CollapsibleList } from './CollapsibleList';
 import { ContactInfoText } from './StyledComponents';
 
 interface EmailProps {
-  email: Pick<EmailAddress, 'email' | 'location'>;
+  email: Partial<EmailAddress>;
 }
 
 const Email: React.FC<EmailProps> = ({ email }) => (
@@ -17,7 +17,7 @@ const Email: React.FC<EmailProps> = ({ email }) => (
 );
 
 interface CollapsibleEmailListProps {
-  emails: Array<Pick<EmailAddress, 'id' | 'primary' | 'email' | 'location'>>;
+  emails: Array<Partial<EmailAddress>>;
 }
 
 export const CollapsibleEmailList: React.FC<CollapsibleEmailListProps> = ({
@@ -27,7 +27,9 @@ export const CollapsibleEmailList: React.FC<CollapsibleEmailListProps> = ({
   if (!primaryEmail) {
     return null;
   }
-  const secondaryEmails = emails.filter((email) => email !== primaryEmail);
+  const secondaryEmails = emails.filter(
+    (email) => email !== primaryEmail && !email.historic,
+  );
 
   return (
     <CollapsibleList

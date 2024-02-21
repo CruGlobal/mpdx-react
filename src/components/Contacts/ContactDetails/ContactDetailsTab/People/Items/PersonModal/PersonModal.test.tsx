@@ -421,7 +421,9 @@ describe('PersonModal', () => {
     });
 
     it('should notify the user about upload errors', async () => {
-      (uploadAvatar as jest.Mock).mockRejectedValue('error');
+      (uploadAvatar as jest.Mock).mockRejectedValue(
+        new Error('Avatar could not be uploaded'),
+      );
 
       const { getByRole, getByTestId } = render(
         <SnackbarProvider>
@@ -807,7 +809,7 @@ describe('PersonModal', () => {
       );
 
       expect(getByRole('button', { name: 'Save' })).toBeDisabled();
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[1]);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[0]);
       await waitFor(() =>
         expect(getByRole('button', { name: 'Save' })).not.toBeDisabled(),
       );
@@ -851,7 +853,7 @@ describe('PersonModal', () => {
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[2]);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[1]);
       userEvent.click(getByText('Save'));
       await waitFor(() =>
         expect(mockEnqueue).toHaveBeenCalledWith(
@@ -890,11 +892,11 @@ describe('PersonModal', () => {
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
-      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(5);
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(4);
       userEvent.click(getByLabelText('Add Phone Number'));
-      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(6);
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[3]);
       expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(5);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[2]);
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(4);
     });
 
     it('should handle editing person email section', async () => {
@@ -1010,7 +1012,7 @@ describe('PersonModal', () => {
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[4]);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[3]);
       userEvent.click(getByText('Save'));
       await waitFor(() =>
         expect(mockEnqueue).toHaveBeenCalledWith(
@@ -1049,11 +1051,11 @@ describe('PersonModal', () => {
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
-      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(5);
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(4);
       userEvent.click(getByLabelText('Add Email Address'));
-      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(6);
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[5]);
       expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(5);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[4]);
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(4);
     });
 
     it('should handle editing show more section', async () => {
@@ -1305,10 +1307,10 @@ describe('PersonModal', () => {
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
       userEvent.click(getByText('Show More'));
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[6]);
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[8]);
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[10]);
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[12]);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[5]);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[7]);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[9]);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[11]);
 
       userEvent.click(getByText('Save'));
       await waitFor(() =>
@@ -1355,11 +1357,11 @@ describe('PersonModal', () => {
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
       userEvent.click(getByText('Show More'));
-      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(13);
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(12);
       userEvent.click(getByLabelText('Add Social'));
-      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(14);
-      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[13]);
       expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(13);
+      userEvent.click(getAllByLabelText('Modal Section Delete Icon')[12]);
+      expect(getAllByLabelText('Modal Section Delete Icon')).toHaveLength(12);
     });
 
     it('should handle deleting a person', async () => {

@@ -18,8 +18,12 @@ export const accordionShared = {
   },
 };
 
-const StyledAccordion = styled(Accordion)(() => ({
+const StyledAccordion = styled(Accordion)(({ theme }) => ({
   overflow: 'hidden',
+  border: `1px solid ${theme.palette.divider}`,
+  '&:not(:last-child)': {
+    borderBottom: 0,
+  },
   ...accordionShared,
 }));
 

@@ -20,6 +20,7 @@ import { Twitter } from 'src/components/common/Links/Twitter';
 import { Website } from 'src/components/common/Links/Website';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFromParts } from 'src/lib/intlFormat/intlFormat';
+import theme from 'src/theme';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
@@ -107,7 +108,21 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
 
   return (
     <ProfileInfoWrapper component="section">
-      {loading && <Skeleton variant="rectangular" height={188} />}
+      {loading && (
+        <>
+          <Skeleton
+            variant="circular"
+            height={theme.spacing(12)}
+            width={theme.spacing(12)}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+            }}
+          />
+          <Skeleton variant="rectangular" height={188} />
+        </>
+      )}
       {!loading && user && (
         <>
           <Box sx={{ marginBottom: isMobile ? 2 : 0 }}>
@@ -128,6 +143,18 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
             )}
           </Box>
 
+          {user?.phoneNumbers && (
+            <ContactPersonRowContainer>
+              <CollapsiblePhoneList phones={user.phoneNumbers.nodes} />
+            </ContactPersonRowContainer>
+          )}
+
+          {user?.emailAddresses && (
+            <ContactPersonRowContainer>
+              <CollapsibleEmailList emails={user.emailAddresses.nodes} />
+            </ContactPersonRowContainer>
+          )}
+
           {user.maritalStatus && (
             <Box>
               {user.maritalStatus}
@@ -141,18 +168,6 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
                 {`${t('Birthday')}: ${birthDate}`}
               </Typography>
             </Box>
-          )}
-
-          {user?.phoneNumbers && (
-            <ContactPersonRowContainer>
-              <CollapsiblePhoneList phones={user.phoneNumbers.nodes} />
-            </ContactPersonRowContainer>
-          )}
-
-          {user?.emailAddresses && (
-            <ContactPersonRowContainer>
-              <CollapsibleEmailList emails={user.emailAddresses.nodes} />
-            </ContactPersonRowContainer>
           )}
 
           <Box>

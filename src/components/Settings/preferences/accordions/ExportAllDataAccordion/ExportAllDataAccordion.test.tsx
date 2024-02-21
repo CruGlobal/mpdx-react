@@ -71,6 +71,9 @@ const descriptionText =
   "Please ensure you've read the above before continuing.";
 
 describe('Export All Data Accordion', () => {
+  beforeEach(() => {
+    mutationSpy.mockClear();
+  });
   it('should render accordion closed', () => {
     const { getByText, queryByText } = render(<Components expandedPanel="" />);
 
@@ -90,10 +93,12 @@ describe('Export All Data Accordion', () => {
   });
 
   it('should default the submit button to disabled unless the box is checked', async () => {
-    const { getByRole, queryByRole } = render(
+    const { getAllByRole, queryByRole } = render(
       <Components expandedPanel={label} />,
     );
-    const button = getByRole('button', { name: 'Download All Data' });
+    const button = getAllByRole('button', {
+      name: 'Export All Data',
+    })[1];
 
     expect(queryByRole('alert')).not.toBeInTheDocument(); //Last exported date Alert not in the document
 
@@ -106,11 +111,11 @@ describe('Export All Data Accordion', () => {
     });
   });
   it('should enable the submit button and call the mutation', async () => {
-    const { getByRole, queryByRole, getByText } = render(
+    const { getByRole, getAllByRole, queryByRole, getByText } = render(
       <Components expandedPanel={label} />,
     );
     const input = getByRole('checkbox');
-    const button = getByRole('button', { name: 'Download All Data' });
+    const button = getAllByRole('button', { name: 'Export All Data' })[1];
 
     userEvent.click(input);
 

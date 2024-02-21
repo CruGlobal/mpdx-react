@@ -38,7 +38,7 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
   const PreferencesSchema: yup.SchemaOf<
     Pick<Types.AccountListSettingsInput, 'homeCountry'>
   > = yup.object({
-    homeCountry: yup.string().required(),
+    homeCountry: yup.string(),
   });
 
   const onSubmit = async (

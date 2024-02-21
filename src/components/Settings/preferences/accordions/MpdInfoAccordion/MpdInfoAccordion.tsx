@@ -92,19 +92,19 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
   };
 
   const goalDateString = useMemo(() => {
-    return (
-      (activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0 && currency && locale
-        ? currencyFormat(activeMpdMonthlyGoal, currency, locale) + ' '
+    const mpdMonthlyGoal =
+      activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0 && currency && locale
+        ? ' (' + currencyFormat(activeMpdMonthlyGoal, currency, locale) + ')'
         : activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0
-        ? activeMpdMonthlyGoal + ' '
-        : '') +
-      (activeMpdStartAt
-        ? dateFormat(DateTime.fromISO(activeMpdStartAt), locale) + ' - '
-        : '') +
-      (activeMpdFinishAt
-        ? dateFormat(DateTime.fromISO(activeMpdFinishAt), locale)
-        : '')
-    );
+        ? ' (' + activeMpdMonthlyGoal + ')'
+        : '';
+    const mpdStartDate = activeMpdStartAt
+      ? dateFormat(DateTime.fromISO(activeMpdStartAt), locale) + ' - '
+      : '';
+    const mpdFinishDate = activeMpdFinishAt
+      ? dateFormat(DateTime.fromISO(activeMpdFinishAt), locale)
+      : '';
+    return mpdStartDate + mpdFinishDate + mpdMonthlyGoal;
   }, [
     activeMpdMonthlyGoal,
     activeMpdStartAt,

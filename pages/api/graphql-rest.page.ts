@@ -81,7 +81,6 @@ import {
   OrganizationInvitesResponse,
 } from './Schema/Settings/Organizations/helper';
 import { canUserExportData } from './Schema/Settings/Preferences/CanUserExportData/dataHandler';
-import { exportData } from './Schema/Settings/Preferences/ExportData/dataHandler';
 import { getTaskAnalytics } from './Schema/TaskAnalytics/dataHandler';
 import {
   DeleteComment,
@@ -1090,7 +1089,7 @@ class MpdxRestApi extends RESTDataSource {
   //Send a request to begin exporting data
   async exportData(accountListId: string) {
     await this.get(`account_lists/${accountListId}/exports`);
-    return exportData();
+    return 'Success';
   }
 
   // =========================================

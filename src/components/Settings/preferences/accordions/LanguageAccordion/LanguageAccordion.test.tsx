@@ -98,7 +98,7 @@ describe('LanguageAccordion', () => {
     const button = getByRole('button', { name: 'Save' });
 
     await waitFor(() => {
-      expect(input).toHaveValue('US English');
+      expect(input).toHaveValue('American English');
     });
 
     userEvent.type(input, 'German');

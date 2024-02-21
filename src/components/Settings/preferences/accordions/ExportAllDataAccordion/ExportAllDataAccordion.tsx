@@ -6,7 +6,7 @@ import {
   Checkbox,
   FormControlLabel,
   FormGroup,
-  FormHelperText,
+  Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
@@ -114,9 +114,9 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
                 { appName },
               )}
             />
-            <FormHelperText>
+            <Typography sx={{ fontStyle: 'italic' }}>
               {t("Please ensure you've read the above before continuing.")}
-            </FormHelperText>
+            </Typography>
           </FormGroup>
         </FieldWrapper>
         {confirmation && (
@@ -133,7 +133,7 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
           type="submit"
           disabled={!acknowledged || isSubmitting}
         >
-          {t('Download All Data')}
+          {t('Export All Data')}
         </Button>
       </form>
     </AccordionItem>

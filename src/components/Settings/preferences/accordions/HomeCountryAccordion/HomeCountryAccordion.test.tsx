@@ -79,8 +79,8 @@ describe('HomeCountryAccordion', () => {
     expect(queryByRole('combobox')).not.toBeInTheDocument();
   });
 
-  it('should set the save button to disabled when the form is invalid', async () => {
-    const value = ''; //value is required
+  it('allows saving a blank value (None)', async () => {
+    const value = ''; //value is not required
 
     const { getByRole } = render(
       <Components homeCountry={value} expandedPanel={label} />,
@@ -89,7 +89,7 @@ describe('HomeCountryAccordion', () => {
     const button = getByRole('button', { name: 'Save' });
 
     await waitFor(() => {
-      expect(button).toBeDisabled();
+      expect(button).not.toBeDisabled();
     });
   });
 

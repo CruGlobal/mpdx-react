@@ -497,7 +497,10 @@ export const PersonModal: React.FC<PersonModalProps> = ({
                   )}
                   {/* Start Show More Content */}
                   {personEditShowMore ? (
-                    <PersonShowMore formikProps={formikProps} />
+                    <PersonShowMore
+                      showDeceased={!userProfile}
+                      formikProps={formikProps}
+                    />
                   ) : null}
                   {/* End Show More Content */}
 

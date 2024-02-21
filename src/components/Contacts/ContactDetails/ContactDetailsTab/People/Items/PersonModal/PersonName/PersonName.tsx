@@ -16,7 +16,6 @@ import {
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
-import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { NewSocial, Person } from '../PersonModal';
 
 const StyledIconButton = styled(IconButton)(() => ({
@@ -109,7 +108,6 @@ export const PersonName: React.FC<PersonNameProps> = ({
               fontWeight="bold"
             >{`${person.firstName} ${person.lastName}`}</Box>
           </Typography>
-          <ModalSectionDeleteIcon />
         </ModalSectionContainer>
       ) : null}
       <ModalSectionContainer>
