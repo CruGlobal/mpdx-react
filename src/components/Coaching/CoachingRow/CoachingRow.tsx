@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import HandoffLink from 'src/components/HandoffLink';
+import { useUser } from 'src/hooks/useUser';
 import { Confirmation } from '../../common/Modal/Confirmation/Confirmation';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { CoachedPersonFragment } from '../LoadCoachingList.generated';
@@ -30,6 +31,7 @@ const CoachingNameText = styled(Typography)(({ theme }) => ({
 }));
 
 export const CoachingRow: React.FC<Props> = ({ coachingAccount }) => {
+  const user = useUser();
   const {
     id,
     monthlyGoal,
@@ -48,7 +50,10 @@ export const CoachingRow: React.FC<Props> = ({ coachingAccount }) => {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const [deleteCoachingAccountList] = useDeleteCoachingAccountListMutation({
-    variables: { id },
+    variables: {
+      accountListId: id,
+      coachId: user?.id ?? '',
+    },
     update: (cache) => {
       cache.evict({ id: cache.identify(coachingAccount) });
       cache.gc();
