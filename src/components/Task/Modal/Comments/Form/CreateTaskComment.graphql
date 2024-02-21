@@ -11,15 +11,7 @@ mutation CreateTaskComment(
     }
   ) {
     comment {
-      id
-      body
-      createdAt
-      me
-      person {
-        id
-        firstName
-        lastName
-      }
+      ...TaskModalComment
     }
   }
 }

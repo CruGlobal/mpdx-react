@@ -133,7 +133,7 @@ export const addTaskMutationMock = (
       comment: {
         id: 'comment-1',
         body: 'Comment',
-        createdAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+        updatedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
         me: true,
         person: {
           id: 'person-1',
