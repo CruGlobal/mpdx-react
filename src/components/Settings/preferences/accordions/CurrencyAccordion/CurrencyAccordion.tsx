@@ -111,7 +111,6 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
                 getOptionLabel={(currency): string =>
                   currencies.find(({ id }) => id === currency)?.value ?? ''
                 }
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   // eslint-disable-next-line jsx-a11y/no-autofocus

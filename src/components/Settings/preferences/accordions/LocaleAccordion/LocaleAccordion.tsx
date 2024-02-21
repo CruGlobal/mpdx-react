@@ -120,7 +120,6 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
                 getOptionLabel={(localeDisplay): string =>
                   formatLocale(localeDisplay)
                 }
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   // eslint-disable-next-line jsx-a11y/no-autofocus

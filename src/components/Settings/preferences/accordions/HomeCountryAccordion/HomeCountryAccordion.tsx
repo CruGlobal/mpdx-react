@@ -116,7 +116,6 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
                 getOptionLabel={(homeCountry): string =>
                   countries.find(({ code }) => code === homeCountry)?.name ?? ''
                 }
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   // eslint-disable-next-line jsx-a11y/no-autofocus

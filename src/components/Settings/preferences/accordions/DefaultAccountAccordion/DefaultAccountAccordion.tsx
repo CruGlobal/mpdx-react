@@ -115,7 +115,6 @@ export const DefaultAccountAccordion: React.FC<
                   accounts.find(({ id }) => id === defaultAccountList)?.name ??
                   ''
                 }
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   // eslint-disable-next-line jsx-a11y/no-autofocus

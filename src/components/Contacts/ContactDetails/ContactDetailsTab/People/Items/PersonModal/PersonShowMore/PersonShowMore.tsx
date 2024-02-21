@@ -164,7 +164,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               label={t('Anniversary')}
               componentsProps={{
                 actionBar: {
-                  actions: ['clear'],
+                  actions: ['cancel', 'clear'],
                 },
               }}
             />

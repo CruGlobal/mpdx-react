@@ -102,7 +102,6 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
                   timeZones.find(({ key }) => String(key) === String(timeZone))
                     ?.value ?? ''
                 }
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   // eslint-disable-next-line jsx-a11y/no-autofocus

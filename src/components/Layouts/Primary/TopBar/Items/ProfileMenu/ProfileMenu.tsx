@@ -252,13 +252,11 @@ const ProfileMenu = (): ReactElement => {
           </AccountListSelectorDetails>
         </Accordion>
         <Divider />
-        <MenuItem
-          onClick={handleProfileMenuClose}
-          component="a"
-          href={`/accountLists/${accountListIdFallback}/settings/preferences`}
-        >
-          <ListItemText primary={t('Preferences')} />
-        </MenuItem>
+        <HandoffLink path="/preferences/personal">
+          <MenuItem onClick={handleProfileMenuClose} component="a">
+            <ListItemText primary={t('Preferences')} />
+          </MenuItem>
+        </HandoffLink>
         <HandoffLink path="/preferences/notifications">
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Notifications')} />

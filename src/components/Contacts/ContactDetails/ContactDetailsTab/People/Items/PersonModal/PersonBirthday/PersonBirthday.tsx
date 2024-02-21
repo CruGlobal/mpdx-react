@@ -58,7 +58,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
         label={t('Birthday')}
         componentsProps={{
           actionBar: {
-            actions: ['clear'],
+            actions: ['cancel', 'clear'],
           },
         }}
       />

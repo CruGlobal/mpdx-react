@@ -107,7 +107,6 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
                 }}
                 options={languages.map((language) => language.id) || []}
                 getOptionLabel={(locale): string => formatLanguage(locale)}
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   // eslint-disable-next-line jsx-a11y/no-autofocus

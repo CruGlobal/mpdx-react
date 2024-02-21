@@ -121,7 +121,6 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
                       organization.id === salaryOrganizationId,
                   )?.organization.name ?? ''
                 }
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   // eslint-disable-next-line jsx-a11y/no-autofocus

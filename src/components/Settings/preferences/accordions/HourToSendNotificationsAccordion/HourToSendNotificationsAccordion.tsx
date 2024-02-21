@@ -117,7 +117,6 @@ export const HourToSendNotificationsAccordion: React.FC<
                   hours.find(({ key }) => key === hourToSendNotifications)
                     ?.value ?? t('Immediately')
                 }
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   // eslint-disable-next-line jsx-a11y/no-autofocus

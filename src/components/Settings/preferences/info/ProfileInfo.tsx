@@ -103,8 +103,8 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
 
   const occupationAndEmployer =
     user?.occupation && user?.employer
-      ? user?.occupation + ' - ' + user?.employer
-      : (user?.occupation || '') + (user?.employer || '');
+      ? `${user?.occupation} - ${user?.employer}`
+      : `${user?.occupation || ''} ${user?.employer || ''}`;
 
   return (
     <ProfileInfoWrapper component="section">
