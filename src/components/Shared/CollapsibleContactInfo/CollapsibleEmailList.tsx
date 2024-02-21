@@ -12,7 +12,7 @@ const Email: React.FC<EmailProps> = ({ email }) => (
     <Link href={`mailto:${email.email}`} underline="hover">
       {email.email}
     </Link>
-    {email.location ? ` - ${email.location}` : null}
+    <span>{email.location ? ` - ${email.location}` : null}</span>
   </ContactInfoText>
 );
 

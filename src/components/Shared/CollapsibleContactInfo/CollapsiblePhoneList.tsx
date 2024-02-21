@@ -12,7 +12,7 @@ const Phone: React.FC<PhoneProps> = ({ phone }) => (
     <Link href={`tel:${phone.number}`} underline="hover">
       {phone.number}
     </Link>
-    {phone.location ? ` - ${phone.location}` : null}
+    <span>{phone.location ? ` - ${phone.location}` : null}</span>
   </ContactInfoText>
 );
 

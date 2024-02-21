@@ -24,6 +24,7 @@ import theme from 'src/theme';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({
   textAlign: 'center',
+  minHeight: '75px',
   [theme.breakpoints.up('sm')]: {
     position: 'relative',
     textAlign: 'left',
@@ -101,10 +102,9 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
       : null;
 
   const occupationAndEmployer =
-    (user?.occupation || user?.employer) &&
-    user?.occupation +
-      (user?.occupation && user?.employer ? ' - ' : '') +
-      user?.employer;
+    user?.occupation && user?.employer
+      ? user?.occupation + ' - ' + user?.employer
+      : (user?.occupation || '') + (user?.employer || '');
 
   return (
     <ProfileInfoWrapper component="section">
@@ -158,7 +158,7 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ accountListId }) => {
           {user.maritalStatus && (
             <Box>
               {user.maritalStatus}
-              {anniversary && ' : ' + anniversary}
+              {anniversary && ': ' + anniversary}
             </Box>
           )}
 

@@ -1156,8 +1156,6 @@ describe('PersonModal', () => {
       userEvent.click(getByText('Show More'));
       userEvent.click(getByLabelText('Anniversary'));
       userEvent.click(getByText('30'));
-      const AnniversaryOkayButton = await waitFor(() => getByText('OK'));
-      userEvent.click(AnniversaryOkayButton);
       userEvent.click(getByText('Show Less'));
       userEvent.click(getByText('Save'));
       await waitFor(() =>
@@ -1197,8 +1195,6 @@ describe('PersonModal', () => {
       userEvent.click(getByText('Show More'));
       userEvent.click(getByLabelText('Birthday'));
       userEvent.click(getByText('30'));
-      const birthdayOkayButton = await waitFor(() => getByText('OK'));
-      userEvent.click(birthdayOkayButton);
 
       userEvent.click(getByText('Save'));
       await waitFor(() =>
