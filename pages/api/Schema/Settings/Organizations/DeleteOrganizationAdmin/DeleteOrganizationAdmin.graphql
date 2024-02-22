@@ -1,0 +1,10 @@
+extend type Mutation {
+  destroyOrganizationAdmin(
+    input: DeleteOrganizationAdminInput!
+  ): DeletionResponse!
+}
+
+input DeleteOrganizationAdminInput {
+  organizationId: ID!
+  adminId: ID!
+}

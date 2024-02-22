@@ -1,10 +1,10 @@
 import { getToken } from 'next-auth/jwt';
 import { createMocks } from 'node-mocks-http';
-import { ssrClient } from 'src/lib/client';
+import makeSsrClient from 'pages/api/utils/ssrClient';
 import stopImpersonating from '../../../pages/api/stop-impersonating.page';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
-jest.mock('src/lib/client', () => ({ ssrClient: jest.fn() }));
+jest.mock('pages/api/utils/ssrClient', () => jest.fn());
 // User one
 const userOneImpersonate = 'userOne.impersonate.token';
 
@@ -36,7 +36,7 @@ describe('/api/stop-impersonating', () => {
       apiToken: 'accessToken',
       userID: 'sessionUserID',
     });
-    (ssrClient as jest.Mock).mockReturnValue({
+    (makeSsrClient as jest.Mock).mockReturnValue({
       query: jest.fn().mockReturnValue({
         data: { user: { defaultAccountList } },
       }),
@@ -48,7 +48,7 @@ describe('/api/stop-impersonating', () => {
   });
 
   it('Returns user to home when error', async () => {
-    (ssrClient as jest.Mock).mockReturnValue({
+    (makeSsrClient as jest.Mock).mockReturnValue({
       query: jest.fn().mockRejectedValueOnce(new Error('An Error Happened')),
     });
 
@@ -137,7 +137,7 @@ describe('/api/stop-impersonating', () => {
   });
 
   it('Redirects user to legacy site but gets first accountList id', async () => {
-    (ssrClient as jest.Mock).mockReturnValue({
+    (makeSsrClient as jest.Mock).mockReturnValue({
       query: jest.fn().mockReturnValue({
         data: {
           user: { defaultAccountList: '' },

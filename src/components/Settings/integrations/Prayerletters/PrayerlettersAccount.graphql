@@ -9,5 +9,7 @@ mutation SyncPrayerlettersAccount($input: SyncPrayerlettersAccountInput!) {
 }
 
 mutation DeletePrayerlettersAccount($input: DeletePrayerlettersAccountInput!) {
-  deletePrayerlettersAccount(input: $input)
+  deletePrayerlettersAccount(input: $input) {
+    success
+  }
 }

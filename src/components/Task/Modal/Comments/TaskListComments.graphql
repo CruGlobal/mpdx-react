@@ -1,17 +1,21 @@
+fragment TaskModalComment on Comment {
+  id
+  body
+  updatedAt
+  me
+  person {
+    id
+    firstName
+    lastName
+  }
+}
+
 query GetCommentsForTaskModalCommentList($accountListId: ID!, $taskId: ID!) {
   task(accountListId: $accountListId, id: $taskId) {
     id
     comments(first: 25) {
       nodes {
-        id
-        body
-        createdAt
-        me
-        person {
-          id
-          firstName
-          lastName
-        }
+        ...TaskModalComment
       }
     }
   }

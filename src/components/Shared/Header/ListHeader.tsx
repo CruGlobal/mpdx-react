@@ -139,6 +139,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 headerCheckboxState === ListHeaderCheckBoxState.partial
               }
               onChange={onCheckAllItems}
+              disabled={!totalItems}
             />
           </Hidden>
         )}

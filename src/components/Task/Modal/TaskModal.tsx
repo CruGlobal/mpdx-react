@@ -5,14 +5,11 @@ import { TaskCreateInput, TaskUpdateInput } from 'src/graphql/types.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import Loading from '../../Loading';
 import Modal from '../../common/Modal/Modal';
-import TaskModalCommentsList from './Comments/TaskModalCommentsList';
+import { TaskModalCommentsList } from './Comments/TaskModalCommentsList';
 import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
 import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
 import TaskModalForm from './Form/TaskModalForm';
-import {
-  GetTaskForTaskModalQuery,
-  useGetTaskForTaskModalQuery,
-} from './TaskModalTask.generated';
+import { useGetTaskForTaskModalQuery } from './TaskModalTask.generated';
 
 export interface TaskModalProps {
   taskId?: string;
@@ -41,6 +38,7 @@ const TaskModal = ({
     variables: {
       accountListId: accountListId ?? '',
       taskId: taskId ?? '',
+      includeComments: view === 'comments',
     },
     skip: !taskId,
     onCompleted: () => setOpen(true),
@@ -51,7 +49,7 @@ const TaskModal = ({
     onClose && onClose();
   };
 
-  const task: GetTaskForTaskModalQuery['task'] | null = data?.task ?? null;
+  const task = data?.task;
 
   const renderTitle = (): string => {
     switch (view) {
@@ -85,6 +83,7 @@ const TaskModal = ({
           <TaskModalCommentsList
             accountListId={accountListId || ''}
             taskId={task?.id || ''}
+            commentCount={task?.comments?.totalCount}
             onClose={onModalClose}
           />
         );

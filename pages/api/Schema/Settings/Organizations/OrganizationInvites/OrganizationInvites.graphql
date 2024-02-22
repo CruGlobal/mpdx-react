@@ -1,0 +1,16 @@
+extend type Query {
+  organizationInvites(input: OrganizationInvitesInput!): [Invite]!
+}
+
+input OrganizationInvitesInput {
+  organizationId: ID!
+}
+
+type Invite {
+  id: ID!
+  acceptedAt: String
+  createdAt: String!
+  code: String!
+  inviteUserAs: String
+  recipientEmail: String
+}

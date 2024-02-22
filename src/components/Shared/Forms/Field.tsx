@@ -1,10 +1,4 @@
-import {
-  FormHelperText,
-  FormLabel,
-  OutlinedInput,
-  Select,
-  Theme,
-} from '@mui/material';
+import { FormHelperText, FormLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const StyledFormLabel = styled(FormLabel)(({ theme }) => ({
@@ -24,15 +18,6 @@ export const StyledFormHelperText = styled(FormHelperText)(({ theme }) => ({
     marginTop: theme.spacing(1),
   },
 }));
-
-const sharedFieldStyles = ({ theme }: { theme: Theme }) => ({
-  '&:not(:first-child)': {
-    marginTop: theme.spacing(1),
-  },
-});
-
-export const StyledOutlinedInput = styled(OutlinedInput)(sharedFieldStyles);
-export const StyledSelect = styled(Select)(sharedFieldStyles);
 
 export enum HelperPositionEnum {
   Top = 'top',

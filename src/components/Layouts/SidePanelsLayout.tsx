@@ -2,7 +2,6 @@ import { FC, ReactElement } from 'react';
 import { Box, Theme, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { CSSProperties } from '@mui/styles';
-import { navBarHeight } from './Primary/Primary';
 
 interface ToolbarMixin extends CSSProperties {
   minHeight: number;
@@ -126,7 +125,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           <LeftPanelWrapper
             width={leftWidth}
             flexBasis={leftWidth}
-            headerHeight={navBarHeight}
+            headerHeight="0px"
             isScrollable={isScrollBox}
             style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}
             data-testid="SidePanelsLayoutLeftPanel"

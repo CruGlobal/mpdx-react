@@ -1,5 +1,7 @@
 extend type Mutation {
-  deletePrayerlettersAccount(input: DeletePrayerlettersAccountInput!): String!
+  deletePrayerlettersAccount(
+    input: DeletePrayerlettersAccountInput!
+  ): DeletionResponse!
 }
 
 input DeletePrayerlettersAccountInput {

@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom/extend-expect';
 import { Settings } from 'luxon';
+import { toHaveGraphqlOperation } from '../extensions/toHaveGraphqlOperation';
 import matchMediaMock from './matchMediaMock';
+
+expect.extend({
+  toHaveGraphqlOperation,
+});
 
 process.env.APP_NAME = 'MPDX';
 
