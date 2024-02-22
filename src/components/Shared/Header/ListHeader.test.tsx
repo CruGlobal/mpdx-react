@@ -232,6 +232,7 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          totalItems={50}
           starredFilter={{}}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -250,6 +251,26 @@ describe('ListHeader', () => {
     expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
+  it('has disabled checkbox', async () => {
+    const { getByRole } = render(
+      <MocksProviders>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          totalItems={0}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          {...mockedProps}
+        />
+      </MocksProviders>,
+    );
+
+    const checkbox = getByRole('checkbox');
+    expect(checkbox).toHaveProperty('disabled', true);
+  });
+
   it('checkbox is checked', async () => {
     const { getByRole } = render(
       <MocksProviders>
@@ -258,6 +279,7 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          totalItems={50}
           starredFilter={{}}
           filterPanelOpen={false}
           contactDetailsOpen={false}
