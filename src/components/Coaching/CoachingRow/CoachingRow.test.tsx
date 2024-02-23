@@ -11,6 +11,12 @@ import {
 } from '../LoadCoachingList.generated';
 import { CoachingRow } from './CoachingRow';
 
+jest.mock('src/hooks/useUser.tsx', () => ({
+  useUser: jest.fn().mockReturnValue({
+    id: 'user-1',
+  }),
+}));
+
 const accountListId = 'account-list-1';
 
 const router = {
@@ -61,11 +67,9 @@ describe('CoachingRow', () => {
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
-        operationName: 'DeleteCoachingAccountList',
-        variables: {
-          id: 'coaching-account',
-        },
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteCoachingAccountList', {
+        accountListId: 'coaching-account',
+        coachId: 'user-1',
       });
     });
   });
