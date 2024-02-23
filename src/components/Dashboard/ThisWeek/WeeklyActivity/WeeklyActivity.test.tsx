@@ -11,10 +11,12 @@ import {
 } from './WeeklyActivity.mock';
 import WeeklyActivity from '.';
 
+const accountListId = 'abc';
+
 jest.mock('next/router', () => ({
   useRouter: () => {
     return {
-      query: { accountListId: 'abc' },
+      query: { accountListId },
       isReady: true,
     };
   },
@@ -28,7 +30,7 @@ describe('WeeklyActivity', () => {
           mocks={GetWeeklyActivityQueryLoadingMocks()}
           addTypename={false}
         >
-          <WeeklyActivity accountListId="abc" />
+          <WeeklyActivity accountListId={accountListId} />
         </MockedProvider>
       </SnackbarProvider>,
     );
@@ -66,7 +68,7 @@ describe('WeeklyActivity', () => {
           mocks={GetWeeklyActivityQueryDefaultMocks()}
           addTypename={false}
         >
-          <WeeklyActivity accountListId="abc" />
+          <WeeklyActivity accountListId={accountListId} />
         </MockedProvider>
       </SnackbarProvider>,
     );
@@ -126,7 +128,7 @@ describe('WeeklyActivity', () => {
       getByRole('link', { hidden: true, name: 'View Activity Detail' }),
     ).toHaveAttribute(
       'href',
-      `https://${process.env.REWRITE_DOMAIN}/reports/coaching`,
+      `/accountLists/${accountListId}/reports/coaching`,
     );
   });
 
@@ -138,7 +140,7 @@ describe('WeeklyActivity', () => {
             mocks={GetWeeklyActivityQueryDefaultMocks()}
             addTypename={false}
           >
-            <WeeklyActivity accountListId="abc" />
+            <WeeklyActivity accountListId={accountListId} />
           </MockedProvider>
         </ThemeProvider>
       </SnackbarProvider>,
