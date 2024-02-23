@@ -563,7 +563,7 @@ describe('PartnersComponent', () => {
 
 **Important note**: the structure of the `mocks` object must _exactly_ match the structure of the query operation definition in the GraphQL file. If you miss a level of nesting or misspell a field, those mocks won't be used.
 
-Another common pattern in tests is checking that a GraphQL operation is called with the expected inputs. To do this, we use the `onCall` prop. `GqlMockedProvider` calls it every time a component loads a query or executes a mutation. We can pass it a Jest mocked function to `onCall` to check these calls.
+Another common pattern in tests is checking that a GraphQL operation is called with the expected inputs. To do this, we use the `onCall` prop. `GqlMockedProvider` calls it every time a component loads a query or executes a mutation. We can pass it a Jest mocked function to `onCall` to check these calls. Then we use a custom expect matcher `toHaveGraphqlOperation` to verify that the expected GraphQL operations were received.
 
 ```gql
 query ContactDetails($accountListId: ID!, $contactId: ID!) {
@@ -593,16 +593,12 @@ describe('ContactComponent', () => {
 
     // The operation spy is called asynchronously so we have to wait for it to be called
     await waitFor(() =>
-      // lastCall is an array of the arguments from the most recent call
-      expect(mutationSpy.mock.lastCall[0]).toMatchObject({
-        operation: {
-          // Matches the name of the query operation defined in the component's .graphql file
-          operationName: 'ContactDetails',
-          variables: {
-            accountListId: 'account-list-1',
-            contactId: 'contact-1',
-          },
-        },
+      // First parameter matches the name of the query operation defined in the component's .graphql file
+      // Second parameter is optional and matches the variables provided to the operation
+      // Any variables that the test doesn't care about can be omitted
+      expect(mutationSpy).toHaveGraphqlOperation('ContactDetails', {
+        accountListId: 'account-list-1',
+        contactId: 'contact-1',
       }),
     );
   });
@@ -640,16 +636,12 @@ describe('ContactComponent', () => {
 
     // The operation spy is called asynchronously so we have to wait for it to be called
     await waitFor(() =>
-      // lastCall is an array of the arguments from the most recent call
-      expect(mutationSpy.mock.lastCall[0]).toMatchObject({
-        operation: {
-          // Matches the name of the mutation operation defined in the component's .graphql file
-          operationName: 'DeletePartner',
-          variables: {
-            accountListId: 'account-list-1',
-            contactId: 'contact-1',
-          },
-        },
+      // First parameter matches the name of the query operation defined in the component's .graphql file
+      // Second parameter is optional and matches the variables provided to the operation
+      // Any variables that the test doesn't care about can be omitted
+      expect(mutationSpy).toHaveGraphqlOperation('DeletePartner', {
+        accountListId: 'account-list-1',
+        contactId: 'contact-1',
       }),
     );
   });
