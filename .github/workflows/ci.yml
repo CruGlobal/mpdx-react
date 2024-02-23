@@ -27,9 +27,14 @@ jobs:
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
       - name: 📈 Run GraphQL Codegen
-        run: |
-          yarn gql
-          yarn gql:server
+        uses: nick-fields/retry@v3
+        with:
+          command: |
+            yarn gql
+            yarn gql:server
+          timeout_minutes: 1
+          retry_wait_seconds: 60
+          max_attempts: 5
       - name: 🧪 Test (chunk ${{ matrix.chunk }})
         run: yarn test:coverage --ci --shard ${{ matrix.chunk }}
       - name: Codecov
@@ -48,9 +53,14 @@ jobs:
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
       - name: 📈 Run GraphQL Codegen
-        run: |
-          yarn gql
-          yarn gql:server
+        uses: nick-fields/retry@v3
+        with:
+          command: |
+            yarn gql
+            yarn gql:server
+          timeout_minutes: 1
+          retry_wait_seconds: 60
+          max_attempts: 5
       - name: 💨 ESLint
         run: yarn lint:ci
 
@@ -64,9 +74,14 @@ jobs:
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
       - name: 📈 Run GraphQL Codegen
-        run: |
-          yarn gql
-          yarn gql:server
+        uses: nick-fields/retry@v3
+        with:
+          command: |
+            yarn gql
+            yarn gql:server
+          timeout_minutes: 1
+          retry_wait_seconds: 60
+          max_attempts: 5
       - name: ✅ TypeScript lint
         run: yarn lint:ts
 
