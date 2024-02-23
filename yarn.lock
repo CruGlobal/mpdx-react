@@ -2825,13 +2825,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/core@npm:^2.16.0":
-  version: 2.16.0
-  resolution: "@date-io/core@npm:2.16.0"
-  checksum: 336d0dd90fd0848116472cfb0e694e85860b2916952304201bb4d3a23d453d44589d346494584faba0fc05751cc38f1880889ce48cd982377aac2bfb20469b8a
-  languageName: node
-  linkType: hard
-
 "@date-io/date-fns@npm:^2.15.0":
   version: 2.15.0
   resolution: "@date-io/date-fns@npm:2.15.0"
@@ -2871,20 +2864,6 @@ __metadata:
     luxon:
       optional: true
   checksum: 727ae1341040459fdf9ec4b818f46f926dba4f2b7258ae1f0c5da3b040e520322d451a5c5db6c1e6c150173e2a2ea384b56fc2d158352804c2b4e984324fceaf
-  languageName: node
-  linkType: hard
-
-"@date-io/luxon@npm:^2.16.0":
-  version: 2.16.0
-  resolution: "@date-io/luxon@npm:2.16.0"
-  dependencies:
-    "@date-io/core": ^2.16.0
-  peerDependencies:
-    luxon: ^1.21.3 || ^2.x
-  peerDependenciesMeta:
-    luxon:
-      optional: true
-  checksum: 2027cfe9c31324a7ea08d7563d128d7851c66c4602f49d4dabde6cd83b820ad2eeee70683c51dcca87d44b100c63549343bb89600bc38247af099def9a290cb2
   languageName: node
   linkType: hard
 
@@ -18230,7 +18209,6 @@ __metadata:
     "@babel/core": ^7.20.5
     "@babel/node": ^7.19.1
     "@brainly/onesky-utils": 1.4.2
-    "@date-io/luxon": ^2.16.0
     "@emotion/react": ^11.10.4
     "@emotion/styled": ^11.10.4
     "@graphql-codegen/add": ^3.2.1
