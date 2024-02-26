@@ -29,9 +29,7 @@ jobs:
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v3
         with:
-          command: |
-            yarn gql
-            yarn gql:server
+          command: yarn gql && yarn gql:server
           timeout_minutes: 1
           retry_wait_seconds: 60
           max_attempts: 5
@@ -55,9 +53,7 @@ jobs:
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v3
         with:
-          command: |
-            yarn gql
-            yarn gql:server
+          command: yarn gql && yarn gql:server
           timeout_minutes: 1
           retry_wait_seconds: 60
           max_attempts: 5
@@ -76,9 +72,7 @@ jobs:
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v3
         with:
-          command: |
-            yarn gql
-            yarn gql:server
+          command: yarn gql && yarn gql:server
           timeout_minutes: 1
           retry_wait_seconds: 60
           max_attempts: 5
