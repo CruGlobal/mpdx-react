@@ -48,20 +48,24 @@ const Components: React.FC<ComponentsProps> = ({ currency, expandedPanel }) => (
               constant: {
                 pledgeCurrencies: [
                   {
-                    id: 'CAD',
-                    value: 'CAD ($)',
+                    code: 'CAD',
+                    codeSymbolString: 'CAD ($)',
+                    name: 'Canadian Dollar',
                   },
                   {
-                    id: 'USD',
-                    value: 'USD ($)',
+                    code: 'USD',
+                    codeSymbolString: 'USD ($)',
+                    name: 'US Dollar',
                   },
                   {
-                    id: 'EUR',
-                    value: 'EUR (€)',
+                    code: 'EUR',
+                    codeSymbolString: 'EUR (€)',
+                    name: 'Euro',
                   },
                   {
-                    id: 'CHE',
-                    value: 'CHE (CHE)',
+                    code: 'CHE',
+                    codeSymbolString: 'CHE (CHE)',
+                    name: 'WIR Euro',
                   },
                 ],
               },
@@ -125,11 +129,11 @@ describe('CurrencyAccordion', () => {
 
     await waitFor(() => input.blur());
     expect(getByText('USD')).toBeInTheDocument();
-    await waitFor(() => expect(input).toHaveValue('USD ($)'));
+    await waitFor(() => expect(input).toHaveValue('US Dollar - USD ($)'));
     expect(button).not.toBeDisabled();
 
     userEvent.type(input, 'EUR');
-    userEvent.click(getByText('EUR (€)'));
+    userEvent.click(getByText('Euro - EUR (€)'));
     userEvent.click(button);
 
     await waitFor(() => {

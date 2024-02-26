@@ -107,10 +107,17 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
                 onChange={(_, id) => {
                   setFieldValue('currency', id);
                 }}
-                options={currencies.map((cur) => cur.id) || []}
-                getOptionLabel={(currency): string =>
-                  currencies.find(({ id }) => id === currency)?.value ?? ''
-                }
+                options={currencies.map((cur) => cur.code) || []}
+                getOptionLabel={(currency): string => {
+                  const selectedCurrency = currencies.find(
+                    ({ code }) => code === currency,
+                  );
+                  return (
+                    selectedCurrency?.name +
+                    ' - ' +
+                    selectedCurrency?.codeSymbolString
+                  );
+                }}
                 fullWidth
                 renderInput={(params) => (
                   // eslint-disable-next-line jsx-a11y/no-autofocus
