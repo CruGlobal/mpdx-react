@@ -1,10 +1,10 @@
 export const languages = [
   {
-    id: 'en',
+    id: 'en-us',
     value: 'American English',
   },
   {
-    id: 'fr',
+    id: 'fr-fr',
     value: 'French (français)',
   },
   {

@@ -91,7 +91,7 @@ describe('LanguageAccordion', () => {
 
   it('should change and save the language', async () => {
     const { getByText, getByRole } = render(
-      <Components locale={'en'} expandedPanel={label} />,
+      <Components locale={'en-us'} expandedPanel={label} />,
     );
 
     const input = getByRole('combobox');
