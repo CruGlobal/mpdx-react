@@ -50,6 +50,9 @@ const EmailSelect = styled(Select, {
 })(({ destroyed }: { destroyed: boolean }) => ({
   textDecoration: destroyed ? 'line-through' : 'none',
 }));
+export const VerticalyCenteredGrid = styled(Grid)(() => ({
+  margin: 'auto',
+}));
 
 export const PersonEmailItem: React.FC<Props> = ({
   emailAddress,
@@ -146,7 +149,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             </EmailSelect>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={6} md={2}>
+        <VerticalyCenteredGrid item xs={12} sm={6} md={2}>
           <PrimaryControlLabel
             label={t('Primary')}
             control={
@@ -159,8 +162,8 @@ export const PersonEmailItem: React.FC<Props> = ({
             }
             destroyed={emailAddress.destroy ?? false}
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2}>
+        </VerticalyCenteredGrid>
+        <VerticalyCenteredGrid item xs={12} sm={6} md={2}>
           <PrimaryControlLabel
             label={t('Invalid')}
             control={
@@ -177,7 +180,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             }
             destroyed={emailAddress.destroy ?? false}
           />
-        </Grid>
+        </VerticalyCenteredGrid>
         <ModalSectionDeleteIcon
           disabled={locked}
           handleClick={

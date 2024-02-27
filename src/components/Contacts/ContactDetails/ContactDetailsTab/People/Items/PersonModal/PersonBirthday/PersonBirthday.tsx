@@ -38,7 +38,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
 
   return (
     <ModalSectionContainer>
-      <ModalSectionIcon icon={<CakeIcon />} />
+      <ModalSectionIcon transform="translateY(-100%)" icon={<CakeIcon />} />
       <DatePicker<Date, DateTime>
         renderInput={(params) => (
           <TextField
