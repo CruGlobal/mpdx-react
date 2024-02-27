@@ -25,7 +25,6 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { getPledgeCurrencies } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
 import {
   CancelButton,
   SubmitButton,
@@ -39,6 +38,7 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
@@ -446,8 +446,7 @@ export const EditPartnershipInfoModal: React.FC<
                       }}
                     >
                       <MenuItem value={''} disabled></MenuItem>
-                      {pledgeCurrencies &&
-                        getPledgeCurrencies(pledgeCurrencies)}
+                      {getPledgeCurrencyOptions(pledgeCurrencies)}
                     </Select>
                   )}
                 </FormControl>

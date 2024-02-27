@@ -19,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { getPledgeCurrencies } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
 import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
   CancelButton,
@@ -31,6 +30,7 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
@@ -349,8 +349,7 @@ export const MassActionsEditFieldsModal: React.FC<
                         <em>{t("Don't change")}</em>
                       </MenuItem>
                       {!loadingConstants &&
-                        constants?.constant?.pledgeCurrencies &&
-                        getPledgeCurrencies(
+                        getPledgeCurrencyOptions(
                           constants?.constant?.pledgeCurrencies,
                         )}
                     </Select>

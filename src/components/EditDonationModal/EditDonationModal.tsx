@@ -30,9 +30,9 @@ import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
+import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
-import { getPledgeCurrencies } from '../Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
 import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
   EditDonationModalDonationFragment,
@@ -231,8 +231,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       }}
                     >
                       <MenuItem value={''} disabled></MenuItem>
-                      {pledgeCurrencies &&
-                        getPledgeCurrencies(pledgeCurrencies)}
+                      {getPledgeCurrencyOptions(pledgeCurrencies)}
                     </Select>
                   </FormControl>
                 </Grid>

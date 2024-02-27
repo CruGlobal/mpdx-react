@@ -27,8 +27,8 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { Currency } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
@@ -97,19 +97,6 @@ const FormTextField = styled(TextField)(({ theme }) => ({
     backgroundColor: theme.palette.cruGrayLight.main,
   },
 }));
-
-export const getPledgeCurrencies = (pledgeCurrencies: Currency[]) => {
-  return pledgeCurrencies?.map(
-    ({ code, codeSymbolString, name }) =>
-      name &&
-      code &&
-      codeSymbolString && (
-        <MenuItem key={code} value={code}>
-          {name + ' - ' + codeSymbolString}
-        </MenuItem>
-      ),
-  );
-};
 
 export const AddDonation = ({
   accountListId,
@@ -294,7 +281,7 @@ export const AddDonation = ({
                               }}
                             >
                               <MenuItem value={''} disabled></MenuItem>
-                              {getPledgeCurrencies(pledgeCurrencies)}
+                              {getPledgeCurrencyOptions(pledgeCurrencies)}
                             </Select>
                           </Box>
                         )}
