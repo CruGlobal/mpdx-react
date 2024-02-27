@@ -25,6 +25,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { getPledgeCurrencies } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
 import {
   CancelButton,
   SubmitButton,
@@ -445,16 +446,8 @@ export const EditPartnershipInfoModal: React.FC<
                       }}
                     >
                       <MenuItem value={''} disabled></MenuItem>
-                      {pledgeCurrencies?.map(
-                        ({ code, codeSymbolString, name }) =>
-                          name &&
-                          code &&
-                          codeSymbolString && (
-                            <MenuItem key={code} value={code}>
-                              {name + ' - ' + codeSymbolString}
-                            </MenuItem>
-                          ),
-                      )}
+                      {pledgeCurrencies &&
+                        getPledgeCurrencies(pledgeCurrencies)}
                     </Select>
                   )}
                 </FormControl>

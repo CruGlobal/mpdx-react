@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { getPledgeCurrencies } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
 import { useGetDataForTaskModalQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
 import {
   CancelButton,
@@ -348,15 +349,9 @@ export const MassActionsEditFieldsModal: React.FC<
                         <em>{t("Don't change")}</em>
                       </MenuItem>
                       {!loadingConstants &&
-                        constants?.constant?.pledgeCurrencies?.map(
-                          ({ code, codeSymbolString, name }) =>
-                            name &&
-                            code &&
-                            codeSymbolString && (
-                              <MenuItem key={code} value={code}>
-                                {name + ' - ' + codeSymbolString}
-                              </MenuItem>
-                            ),
+                        constants?.constant?.pledgeCurrencies &&
+                        getPledgeCurrencies(
+                          constants?.constant?.pledgeCurrencies,
                         )}
                     </Select>
                   </FormControl>

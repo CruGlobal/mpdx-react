@@ -32,6 +32,7 @@ import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
+import { getPledgeCurrencies } from '../Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
 import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
   EditDonationModalDonationFragment,
@@ -230,16 +231,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       }}
                     >
                       <MenuItem value={''} disabled></MenuItem>
-                      {pledgeCurrencies?.map(
-                        ({ code, codeSymbolString, name }) =>
-                          name &&
-                          code &&
-                          codeSymbolString && (
-                            <MenuItem key={code} value={code}>
-                              {name + ' - ' + codeSymbolString}
-                            </MenuItem>
-                          ),
-                      )}
+                      {pledgeCurrencies &&
+                        getPledgeCurrencies(pledgeCurrencies)}
                     </Select>
                   </FormControl>
                 </Grid>

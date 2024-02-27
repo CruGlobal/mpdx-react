@@ -10,6 +10,9 @@ describe('LoadConstants', () => {
 
     await waitForNextUpdate();
 
-    expect(result.current).toBeTruthy();
+    expect(result.current?.activities).toBeTruthy();
+    expect(result.current?.languages).toBeTruthy();
+    expect(result.current?.likelyToGiveOptions).toBeTruthy();
+    expect(result.current?.locations).toBeTruthy();
   });
 });
