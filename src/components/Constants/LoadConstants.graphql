@@ -20,8 +20,10 @@ query LoadConstants {
     #   value
     # }
     pledgeCurrencies {
-      id
-      value
+      codeSymbolString
+      name
+      code
+      symbol
     }
     pledgeFrequencies {
       id

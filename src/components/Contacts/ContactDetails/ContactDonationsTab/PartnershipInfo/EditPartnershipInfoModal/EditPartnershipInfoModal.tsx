@@ -446,11 +446,12 @@ export const EditPartnershipInfoModal: React.FC<
                     >
                       <MenuItem value={''} disabled></MenuItem>
                       {pledgeCurrencies?.map(
-                        ({ value, id }) =>
-                          value &&
-                          id && (
-                            <MenuItem key={id} value={id}>
-                              {t(value)}
+                        ({ code, codeSymbolString, name }) =>
+                          name &&
+                          code &&
+                          codeSymbolString && (
+                            <MenuItem key={code} value={code}>
+                              {name + ' - ' + codeSymbolString}
                             </MenuItem>
                           ),
                       )}

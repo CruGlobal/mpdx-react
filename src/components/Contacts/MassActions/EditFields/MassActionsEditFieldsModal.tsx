@@ -348,15 +348,16 @@ export const MassActionsEditFieldsModal: React.FC<
                         <em>{t("Don't change")}</em>
                       </MenuItem>
                       {!loadingConstants &&
-                        constants?.constant?.pledgeCurrencies?.map((val) => (
-                          <MenuItem key={val.id} value={val.id || ''}>
-                            {
-                              t(
-                                val.value || '',
-                              ) /* manually added to translation file */
-                            }
-                          </MenuItem>
-                        ))}
+                        constants?.constant?.pledgeCurrencies?.map(
+                          ({ code, codeSymbolString, name }) =>
+                            name &&
+                            code &&
+                            codeSymbolString && (
+                              <MenuItem key={code} value={code}>
+                                {name + ' - ' + codeSymbolString}
+                              </MenuItem>
+                            ),
+                        )}
                     </Select>
                   </FormControl>
                 </Grid>
