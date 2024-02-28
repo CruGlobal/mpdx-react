@@ -25,10 +25,6 @@ const StickyHeader = styled(Box, {
   position: 'sticky',
   top: 0,
   height: 96,
-  color:
-    headerType === HeaderTypeEnum.Settings ? theme.palette.common.white : '',
-  backgroundColor:
-    headerType === HeaderTypeEnum.Settings ? theme.palette.primary.main : '',
   paddingTop: headerType === HeaderTypeEnum.Settings ? theme.spacing(3) : '',
   paddingBottom: headerType === HeaderTypeEnum.Settings ? theme.spacing(3) : '',
 }));
@@ -55,7 +51,7 @@ const NavFilterIcon = styled(FilterList)(() => ({
 const NavMenuIcon = styled(MenuIcon)(() => ({
   width: 24,
   height: 24,
-  color: theme.palette.common.white,
+  color: theme.palette.primary.dark,
 }));
 
 export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
