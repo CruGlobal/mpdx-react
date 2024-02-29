@@ -10,10 +10,11 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { MultilineSkeleton } from 'src/components/Shared/MultilineSkeleton';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import theme from '../../../../theme';
-import TaskModalCommentsListForm from './Form/TaskModalCommentsListForm';
+import { TaskModalCommentsListForm } from './Form/TaskModalCommentsListForm';
 import TaskModalCommentsListItem from './Item/TaskModalCommentListItem';
 import { useGetCommentsForTaskModalCommentListQuery } from './TaskListComments.generated';
 
@@ -52,6 +53,7 @@ export interface TaskModalCommentsListProps {
   taskId: string;
   accountListId: string;
   onClose: () => void;
+  commentCount?: number;
 }
 
 export enum TaskModalTabsEnum {
@@ -60,10 +62,11 @@ export enum TaskModalTabsEnum {
   comments = '3',
 }
 
-const TaskModalCommentsList = ({
+export const TaskModalCommentsList = ({
   taskId,
   accountListId,
   onClose,
+  commentCount,
 }: TaskModalCommentsListProps): ReactElement => {
   const { t } = useTranslation();
 
@@ -76,18 +79,17 @@ const TaskModalCommentsList = ({
 
   const nodes = data?.task.comments.nodes;
 
-  const [showNewCommentInput, setShowNewCommentInput] =
-    useState<boolean>(false);
+  const [showNewCommentInput, setShowNewCommentInput] = useState(false);
 
   return (
     <>
       <DialogContent dividers>
         {loading ? (
           <Box data-testid="TaskModalCommentListLoading">
-            <TaskModalCommentsListItem taskId={taskId} />
-            <TaskModalCommentsListItem taskId={taskId} />
-            <TaskModalCommentsListItem taskId={taskId} />
-            <TaskModalCommentsListItem taskId={taskId} />
+            <MultilineSkeleton
+              lines={commentCount ?? 3}
+              sx={{ m: 0, mb: 2, height: '4em' }}
+            />
           </Box>
         ) : (
           <>
@@ -104,24 +106,18 @@ const TaskModalCommentsList = ({
                       style={{ height: 120, marginBottom: 0 }}
                     />
                   </ImageWrap>
-                  <Typography>{t('No Comments to show.')}</Typography>
+                  <Typography>{t('No comments to show')}</Typography>
                 </CardContentEmpty>
               </Card>
             )}
-            {nodes?.reduce<JSX.Element[]>((result, comment) => {
-              return [
-                ...result,
-                <Box
-                  data-testid={`TaskModalCommentsListItem-${comment.id}`}
-                  key={comment.id}
-                >
-                  <TaskModalCommentsListItem
-                    taskId={taskId}
-                    comment={comment}
-                  />
-                </Box>,
-              ];
-            }, [])}
+            {nodes?.map((comment) => (
+              <Box
+                data-testid={`TaskModalCommentsListItem-${comment.id}`}
+                key={comment.id}
+              >
+                <TaskModalCommentsListItem taskId={taskId} comment={comment} />
+              </Box>
+            ))}
             {showNewCommentInput && (
               <TaskModalCommentsListForm
                 accountListId={accountListId}
@@ -148,5 +144,3 @@ const TaskModalCommentsList = ({
     </>
   );
 };
-
-export default TaskModalCommentsList;

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { ssrClient } from 'src/lib/client';
+import makeSsrClient from 'pages/api/utils/ssrClient';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
@@ -21,8 +21,8 @@ export const returnRedirectUrl = async (req: NextApiRequest) => {
     const path = req.query.path ?? '';
 
     if (jwtToken && req.query.auth !== 'true') {
-      const client = await ssrClient(jwtToken.apiToken);
-      const response = await client.query<
+      const ssrClient = await makeSsrClient(jwtToken.apiToken);
+      const response = await ssrClient.query<
         GetDefaultAccountQuery,
         GetDefaultAccountQueryVariables
       >({

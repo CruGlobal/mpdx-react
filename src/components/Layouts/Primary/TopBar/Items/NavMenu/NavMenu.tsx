@@ -25,7 +25,6 @@ import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
 import { ToolsList } from '../../../../../Tool/Home/ToolList';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
-import { ReportLink } from './ReportLink';
 
 const useStyles = makeStyles()(() => ({
   navListItem: {
@@ -251,10 +250,9 @@ const NavMenu: React.FC = () => {
                 <ClickAwayListener onClickAway={handleReportsMenuClose}>
                   <MenuList autoFocusItem={reportsMenuOpen} id="menu-list-grow">
                     {reportNavItems.map(({ id, title }) => (
-                      <ReportLink
+                      <NextLink
                         key={id}
-                        id={id}
-                        accountListId={accountListId}
+                        href={`/accountLists/${accountListId}/reports/${id}`}
                       >
                         <MenuItem
                           onClick={handleReportsMenuClose}
@@ -265,7 +263,7 @@ const NavMenu: React.FC = () => {
                         >
                           <ListItemText primary={t(title)} />
                         </MenuItem>
-                      </ReportLink>
+                      </NextLink>
                     ))}
                   </MenuList>
                 </ClickAwayListener>

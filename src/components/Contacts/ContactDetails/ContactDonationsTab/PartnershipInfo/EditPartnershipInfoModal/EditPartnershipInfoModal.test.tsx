@@ -373,16 +373,19 @@ describe('EditPartnershipInfoModal', () => {
                   constant: {
                     pledgeCurrencies: [
                       {
-                        id: 'CAD',
-                        value: 'CAD ($)',
+                        code: 'CAD',
+                        codeSymbolString: 'CAD ($)',
+                        name: 'Canadian Dollar',
                       },
                       {
-                        id: 'CDF',
-                        value: 'CDF (CDF)',
+                        code: 'CDF',
+                        codeSymbolString: 'CDF (CDF)',
+                        name: 'Congolese Franc',
                       },
                       {
-                        id: 'CHE',
-                        value: 'CHE (CHE)',
+                        code: 'CHE',
+                        codeSymbolString: 'CHE (CHE)',
+                        name: 'WIR Euro',
                       },
                     ],
                   },
@@ -402,7 +405,7 @@ describe('EditPartnershipInfoModal', () => {
     const currencyInput = getByLabelText('Currency');
 
     userEvent.click(currencyInput);
-    userEvent.click(getByText('CDF (CDF)'));
+    userEvent.click(getByText('Congolese Franc - CDF (CDF)'));
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(

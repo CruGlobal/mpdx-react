@@ -1,4 +1,8 @@
-query GetTaskForTaskModal($accountListId: ID!, $taskId: ID!) {
+query GetTaskForTaskModal(
+  $accountListId: ID!
+  $taskId: ID!
+  $includeComments: Boolean!
+) {
   task(accountListId: $accountListId, id: $taskId) {
     id
     activityType
@@ -14,6 +18,9 @@ query GetTaskForTaskModal($accountListId: ID!, $taskId: ID!) {
         id
         name
       }
+    }
+    comments @include(if: $includeComments) {
+      totalCount
     }
     user {
       id

@@ -19,6 +19,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "__tests__/jest.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "app.d.ts",

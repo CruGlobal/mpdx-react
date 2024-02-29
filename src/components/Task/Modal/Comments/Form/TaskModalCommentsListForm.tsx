@@ -2,24 +2,23 @@ import React, { Dispatch, ReactElement, SetStateAction } from 'react';
 import { Box, TextField } from '@mui/material';
 import { Formik, FormikHelpers } from 'formik';
 import { motion } from 'framer-motion';
-import reject from 'lodash/fp/reject';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
-import * as yup from 'yup';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
+import {
+  TaskRowFragment,
+  TaskRowFragmentDoc,
+} from 'src/components/Task/TaskRow/TaskRow.generated';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { TaskCommentCreateInput } from 'src/graphql/types.generated';
 import { useUser } from 'src/hooks/useUser';
 import {
   GetCommentsForTaskModalCommentListDocument,
   GetCommentsForTaskModalCommentListQuery,
+  GetCommentsForTaskModalCommentListQueryVariables,
 } from '../TaskListComments.generated';
-
-export const commentSchema: yup.SchemaOf<Omit<TaskCommentCreateInput, 'id'>> =
-  yup.object({
-    body: yup.string().trim().required(),
-  });
+import { CommentSchemaAttributes, commentSchema } from './commentSchema';
 
 interface Props {
   accountListId: string;
@@ -27,7 +26,7 @@ interface Props {
   handleFormClose: Dispatch<SetStateAction<boolean>>;
 }
 
-const TaskModalCommentsListForm = ({
+export const TaskModalCommentsListForm = ({
   accountListId,
   taskId,
   handleFormClose,
@@ -36,7 +35,7 @@ const TaskModalCommentsListForm = ({
   const [createTaskComment] = useCreateTaskCommentMutation();
   const user = useUser();
   const onSubmit = async (
-    values: TaskCommentCreateInput,
+    values: CommentSchemaAttributes,
     { resetForm }: FormikHelpers<TaskCommentCreateInput>,
   ): Promise<void> => {
     const id = uuidv4();
@@ -47,46 +46,64 @@ const TaskModalCommentsListForm = ({
       optimisticResponse: {
         createTaskComment: {
           comment: {
+            __typename: 'Comment',
             id,
             body,
-            createdAt: DateTime.local().toISO(),
+            updatedAt: DateTime.local().toISO(),
             me: true,
-            person: {
-              id: user?.id || '',
-              firstName: user?.firstName,
-              lastName: user?.lastName,
-            },
+            person: user
+              ? {
+                  id: user.id,
+                  firstName: user.firstName,
+                  lastName: user.lastName,
+                }
+              : null,
           },
         },
       },
-      update: (cache, { data: updatedData }) => {
-        const comment = updatedData?.createTaskComment?.comment;
+      update: (cache, { data }) => {
+        const comment = data?.createTaskComment?.comment;
+        if (!comment) {
+          return;
+        }
 
-        const query = {
-          query: GetCommentsForTaskModalCommentListDocument,
-          variables: {
-            accountListId,
-            taskId,
-          },
-        };
-        const dataFromCache =
-          cache.readQuery<GetCommentsForTaskModalCommentListQuery>(query);
-        const data = {
-          task: {
-            ...dataFromCache?.task,
-            comments: {
-              ...dataFromCache?.task.comments,
-              nodes: [
-                ...reject(
-                  ({ id: commentId }) => id === commentId,
-                  dataFromCache?.task.comments.nodes,
-                ),
-                { ...comment },
-              ],
+        cache.updateQuery<
+          GetCommentsForTaskModalCommentListQuery,
+          GetCommentsForTaskModalCommentListQueryVariables
+        >(
+          {
+            query: GetCommentsForTaskModalCommentListDocument,
+            variables: {
+              accountListId,
+              taskId,
             },
           },
-        };
-        cache.writeQuery({ ...query, data });
+          (taskComments) =>
+            taskComments && {
+              task: {
+                ...taskComments.task,
+                comments: {
+                  ...taskComments.task.comments,
+                  nodes: [...taskComments.task.comments.nodes, comment],
+                },
+              },
+            },
+        );
+
+        cache.updateFragment<TaskRowFragment>(
+          {
+            id: `Task:${taskId}`,
+            fragment: TaskRowFragmentDoc,
+          },
+          (taskRow) =>
+            taskRow && {
+              ...taskRow,
+              comments: {
+                ...taskRow.comments,
+                totalCount: taskRow.comments.totalCount + 1,
+              },
+            },
+        );
       },
     });
     handleFormClose(false);
@@ -138,5 +155,3 @@ const TaskModalCommentsListForm = ({
     </motion.div>
   );
 };
-
-export default TaskModalCommentsListForm;

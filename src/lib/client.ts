@@ -1,16 +1,8 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  NormalizedCacheObject,
-  createHttpLink,
-  split,
-} from '@apollo/client';
+import { ApolloClient, createHttpLink, split } from '@apollo/client';
 import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { onError } from '@apollo/client/link/error';
 import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
-import fetch from 'isomorphic-fetch';
 import { signOut } from 'next-auth/react';
-import generatedIntrospection from 'src/graphql/possibleTypes.generated';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import snackNotifications from '../components/Snackbar/Snackbar';
 import { dispatch } from './analytics';
@@ -57,27 +49,6 @@ const clientErrorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-const serverErrorLink = onError(({ graphQLErrors, networkError }) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const Rollbar = require('rollbar');
-  const rollbar = new Rollbar({
-    accessToken: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
-    environment: 'react_development_server',
-    captureUncaught: true,
-    captureUnhandledRejections: true,
-  });
-
-  if (graphQLErrors) {
-    graphQLErrors.map(({ message, extensions }) => {
-      rollbar.error(message, extensions);
-    });
-  }
-
-  if (networkError) {
-    rollbar.error(networkError);
-  }
-});
-
 if (process.browser && process.env.NODE_ENV === 'production') {
   persistCache({
     cache,
@@ -96,27 +67,5 @@ const client = new ApolloClient({
     },
   },
 });
-
-export const ssrClient = (
-  apiToken?: string,
-): ApolloClient<NormalizedCacheObject> => {
-  const httpLink = createHttpLink({
-    uri: process.env.API_URL,
-    fetch,
-    headers: {
-      Authorization: apiToken ? `Bearer ${apiToken}` : null,
-      Accept: 'application/json',
-    },
-  });
-
-  return new ApolloClient({
-    link: serverErrorLink.concat(httpLink),
-    ssrMode: true,
-    assumeImmutableResults: true,
-    cache: new InMemoryCache({
-      possibleTypes: generatedIntrospection.possibleTypes,
-    }),
-  });
-};
 
 export default client;

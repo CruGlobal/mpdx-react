@@ -5,7 +5,6 @@ import Collapse from '@mui/material/Collapse';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useTranslation } from 'react-i18next';
-import HandoffLink from 'src/components/HandoffLink';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { NavTypeEnum } from '../MultiPageMenu';
@@ -64,39 +63,35 @@ export const Item: React.FC<Props> = ({
     </ListItem>
   );
 
-  if (item.id === 'coaching') {
-    return <HandoffLink path={`/${navType}/coaching`}>{children}</HandoffLink>;
-  } else {
-    return (
-      <>
-        <NextLink
-          href={`/accountLists/${accountListId}/${navType}/${item.id}`}
-          scroll={false}
+  return (
+    <>
+      <NextLink
+        href={`/accountLists/${accountListId}/${navType}/${item.id}`}
+        scroll={false}
+      >
+        {children}
+      </NextLink>
+      {item?.subItems?.length && (
+        <Collapse
+          in={openSubMenu || isSelected}
+          timeout="auto"
+          unmountOnExit
+          style={{
+            background: theme.palette.cruGrayLight.main,
+          }}
         >
-          {children}
-        </NextLink>
-        {item?.subItems?.length && (
-          <Collapse
-            in={openSubMenu || isSelected}
-            timeout="auto"
-            unmountOnExit
-            style={{
-              background: theme.palette.cruGrayLight.main,
-            }}
-          >
-            {item.subItems.map((subItem) => {
-              return (
-                <Item
-                  key={subItem.id}
-                  item={subItem}
-                  selectedId={selectedId}
-                  navType={navType}
-                />
-              );
-            })}
-          </Collapse>
-        )}
-      </>
-    );
-  }
+          {item.subItems.map((subItem) => {
+            return (
+              <Item
+                key={subItem.id}
+                item={subItem}
+                selectedId={selectedId}
+                navType={navType}
+              />
+            );
+          })}
+        </Collapse>
+      )}
+    </>
+  );
 };

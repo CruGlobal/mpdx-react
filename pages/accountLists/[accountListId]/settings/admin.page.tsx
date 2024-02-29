@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Admin/ImpersonateUser/ImpersonateUserAccordion';
 import { ResetAccountAccordion } from 'src/components/Settings/Admin/ResetAccount/ResetAccountAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
+import { enforceAdmin } from 'src/lib/enforceAdmin';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 
@@ -47,5 +48,7 @@ const Admin = (): ReactElement => {
     </SettingsWrapper>
   );
 };
+
+export const getServerSideProps = enforceAdmin;
 
 export default Admin;

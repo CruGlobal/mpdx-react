@@ -9,7 +9,8 @@ const createJestConfig = nextJest({
 /** @type {import('jest').Config} */
 const customJestConfig = {
   // Add more setup options before each test is run
-  roots: ['<rootDir>/src', '<rootDir>/pages', '<rootDir>/__tests__/pages'],
+  roots: ['<rootDir>/src', '<rootDir>/pages', '<rootDir>/__tests__'],
+  testRegex: '.+\\.test\\.[jt]sx?$',
   globalSetup: '<rootDir>/__tests__/util/globalSetup.ts',
   setupFilesAfterEnv: ['<rootDir>/__tests__/util/setup.ts'],
   transform: {
@@ -28,6 +29,7 @@ const customJestConfig = {
   moduleDirectories: ['node_modules', '<rootDir>/'],
   collectCoverageFrom: [
     '{src,pages}/**/*.{js,jsx,ts,tsx}',
+    '__tests__/util/extensions/**/*.{js,jsx,ts,tsx}',
     '!pages/api/**',
     '!**/*.generated.ts',
     '!**/*.mock.*',

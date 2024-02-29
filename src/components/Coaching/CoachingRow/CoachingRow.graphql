@@ -1,5 +1,7 @@
-mutation DeleteCoachingAccountList($id: ID!) {
-  deleteAccountListCoach(input: { id: $id }) {
+mutation DeleteCoachingAccountList($accountListId: ID!, $coachId: ID!) {
+  deleteAccountListCoach(
+    input: { accountListId: $accountListId, coachId: $coachId }
+  ) {
     id
   }
 }

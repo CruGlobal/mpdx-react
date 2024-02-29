@@ -28,7 +28,6 @@ query LoadConstants {
       codeSymbolString
       name
       code
-      symbol
     }
     pledgeFrequencies {
       id

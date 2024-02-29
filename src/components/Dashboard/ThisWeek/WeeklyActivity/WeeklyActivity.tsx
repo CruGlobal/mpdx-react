@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { ReactElement, useState } from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -22,7 +23,6 @@ import { makeStyles, withStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
 import { numberFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
-import HandoffLink from '../../../HandoffLink';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
 import { WeeklyReportModal } from './WeeklyReportModal/WeeklyReportModal';
 
@@ -247,11 +247,14 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
           </Table>
         </TableContainer>
         <CardActions sx={{ justifyContent: 'space-between' }}>
-          <HandoffLink path="/reports/coaching">
+          <Link
+            href={`/accountLists/${accountListId}/reports/coaching`}
+            passHref
+          >
             <Button size="small" color="primary">
               {t('View Activity Detail')}
             </Button>
-          </HandoffLink>
+          </Link>
           <Button size="small" color="primary" onClick={onWeeklyReportOpen}>
             {t('Fill out weekly report')}
           </Button>
