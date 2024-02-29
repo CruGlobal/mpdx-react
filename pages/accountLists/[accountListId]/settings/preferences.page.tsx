@@ -79,7 +79,7 @@ const Preferences: React.FC = () => {
       selectedMenuId={'preferences'}
     >
       <ProfileInfo accountListId={accountListId} />
-      <AccordionGroup title="Personal Preferences">
+      <AccordionGroup title={t('Personal Preferences')}>
         {personalPreferencesLoading && (
           <>
             <AccordionLoading />
@@ -130,7 +130,7 @@ const Preferences: React.FC = () => {
           </>
         )}
       </AccordionGroup>
-      <AccordionGroup title="Account Preferences">
+      <AccordionGroup title={t('Account Preferences')}>
         {accountPreferencesLoading && (
           <>
             <AccordionLoading />
