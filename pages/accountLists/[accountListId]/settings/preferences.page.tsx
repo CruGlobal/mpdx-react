@@ -25,6 +25,8 @@ import { TimeZoneAccordion } from 'src/components/Settings/preferences/accordion
 import { ProfileInfo } from 'src/components/Settings/preferences/info/ProfileInfo';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGetTimezones } from 'src/hooks/useGetTimezones';
+import { countries } from 'src/lib/data/Countries';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 
@@ -40,6 +42,7 @@ const Preferences: React.FC = () => {
   const [expandedPanel, setExpandedPanel] = useState(
     typeof query.selectedTab === 'string' ? query.selectedTab : '',
   );
+  const timeZones = useGetTimezones();
 
   useEffect(() => {
     suggestArticles('HS_SETTINGS_PREFERENCES_SUGGESTIONS');
@@ -118,6 +121,7 @@ const Preferences: React.FC = () => {
               timeZone={
                 personalPreferencesData?.user?.preferences?.timeZone || ''
               }
+              timeZones={timeZones}
             />
             <HourToSendNotificationsAccordion
               handleAccordionChange={handleAccordionChange}
@@ -167,6 +171,7 @@ const Preferences: React.FC = () => {
                 accountPreferencesData?.accountList?.settings?.homeCountry || ''
               }
               accountListId={accountListId}
+              countries={countries}
             />
             <CurrencyAccordion
               handleAccordionChange={handleAccordionChange}

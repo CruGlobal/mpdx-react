@@ -9,18 +9,19 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
-import { timeZones } from './TimeZones';
 
 interface TimeZoneAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
   timeZone: string;
+  timeZones: Array<Record<string, string>>;
 }
 
 export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
   timeZone,
+  timeZones,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -60,7 +61,10 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={timeZone || ''}
+      value={
+        timeZones.find(({ key }) => String(key) === String(timeZone))?.value ??
+        ''
+      }
       fullWidth
     >
       <Formik

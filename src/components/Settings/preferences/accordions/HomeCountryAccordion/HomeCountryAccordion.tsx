@@ -8,7 +8,6 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
-import { countries } from 'src/lib/data/Countries';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 interface HomeCountryAccordionProps {
@@ -16,6 +15,7 @@ interface HomeCountryAccordionProps {
   expandedPanel: string;
   homeCountry: string;
   accountListId: string;
+  countries: { name: string; code: string }[];
 }
 
 export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
@@ -23,6 +23,7 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
   expandedPanel,
   homeCountry,
   accountListId,
+  countries,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();

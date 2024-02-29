@@ -32,6 +32,11 @@ jest.mock('notistack', () => ({
 const handleAccordionChange = jest.fn();
 const mutationSpy = jest.fn();
 
+const countries = [
+  { name: 'United States', code: 'US' },
+  { name: 'Albania', code: 'AL' },
+];
+
 interface ComponentsProps {
   homeCountry: string;
   expandedPanel: string;
@@ -50,6 +55,7 @@ const Components: React.FC<ComponentsProps> = ({
             expandedPanel={expandedPanel}
             homeCountry={homeCountry}
             accountListId={accountListId}
+            countries={countries}
           />
         </GqlMockedProvider>
       </ThemeProvider>
@@ -72,7 +78,7 @@ describe('HomeCountryAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components homeCountry={'USD'} expandedPanel="" />,
+      <Components homeCountry={'US'} expandedPanel="" />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -139,6 +145,7 @@ describe('HomeCountryAccordion', () => {
                 expandedPanel={label}
                 homeCountry={'USA'}
                 accountListId={accountListId}
+                countries={countries}
               />
             </MockedProvider>
           </ThemeProvider>

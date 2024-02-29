@@ -31,6 +31,17 @@ const handleAccordionChange = jest.fn();
 const mutationSpy = jest.fn();
 const label = 'Time Zone';
 
+const timeZones = [
+  {
+    key: 'Hawaii',
+    value: '(GMT-10:00) Hawaii',
+  },
+  {
+    key: 'Eastern Time (US & Canada)',
+    value: '(GMT-05:00) Eastern Time (US & Canada)',
+  },
+];
+
 interface ComponentsProps {
   timeZone: string;
   expandedPanel: string;
@@ -45,6 +56,7 @@ const Components: React.FC<ComponentsProps> = ({ timeZone, expandedPanel }) => (
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
             timeZone={timeZone}
+            timeZones={timeZones}
           />
         </GqlMockedProvider>
       </ThemeProvider>
@@ -89,7 +101,9 @@ describe('TimeZoneAccordion', () => {
     const input = getByRole('combobox');
     const button = getByRole('button', { name: 'Save' });
 
-    expect(getByText('Eastern Time (US & Canada)')).toBeInTheDocument();
+    expect(
+      getByText('(GMT-05:00) Eastern Time (US & Canada)'),
+    ).toBeInTheDocument();
     expect(input).toBeInTheDocument();
 
     expect(input).toHaveValue('(GMT-05:00) Eastern Time (US & Canada)');
