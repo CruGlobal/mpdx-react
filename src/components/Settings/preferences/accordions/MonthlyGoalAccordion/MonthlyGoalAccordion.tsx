@@ -105,7 +105,6 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
             isSubmitting={isSubmitting}
           >
             <FieldWrapper
-              labelText={label}
               helperText={t(
                 'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
               )}
@@ -122,6 +121,8 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
                 helperText={errors.monthlyGoal && t('Monthly Goal is required')}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
+                label={label}
+                sx={{ marginTop: 1 }}
               />
             </FieldWrapper>
           </FormWrapper>

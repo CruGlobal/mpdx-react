@@ -19,7 +19,7 @@ import {
 } from 'src/graphql/types.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
-import { VerticalyCenteredGrid } from '../PersonEmail/PersonEmailItem';
+import { VerticallyCenteredGrid } from '../PersonEmail/PersonEmailItem';
 import {
   ContactInputField,
   NewSocial,
@@ -152,7 +152,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             </PhoneNumberSelect>
           </FormControl>
         </Grid>
-        <VerticalyCenteredGrid item xs={12} sm={6} md={2}>
+        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
           <PrimaryControlLabel
             label={t('Primary')}
             control={
@@ -165,8 +165,8 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             }
             destroyed={phoneNumber.destroy ?? false}
           />
-        </VerticalyCenteredGrid>
-        <VerticalyCenteredGrid item xs={12} sm={6} md={2}>
+        </VerticallyCenteredGrid>
+        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
           <PrimaryControlLabel
             label={t('Invalid')}
             control={
@@ -183,7 +183,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             }
             destroyed={phoneNumber.destroy ?? false}
           />
-        </VerticalyCenteredGrid>
+        </VerticallyCenteredGrid>
         <ModalSectionDeleteIcon
           disabled={locked}
           handleClick={

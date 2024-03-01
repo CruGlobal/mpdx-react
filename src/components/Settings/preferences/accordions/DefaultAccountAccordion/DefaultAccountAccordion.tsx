@@ -97,7 +97,6 @@ export const DefaultAccountAccordion: React.FC<
             isSubmitting={isSubmitting}
           >
             <FieldWrapper
-              labelText={label}
               helperText={t(
                 'This sets which account you will land in whenever you login to {{appName}}.',
                 { appName },
@@ -117,8 +116,14 @@ export const DefaultAccountAccordion: React.FC<
                 }
                 fullWidth
                 renderInput={(params) => (
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  <TextField {...params} placeholder={label} autoFocus />
+                  <TextField
+                    {...params}
+                    placeholder={label}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                    label={label}
+                    sx={{ marginTop: 1 }}
+                  />
                 )}
               />
             </FieldWrapper>

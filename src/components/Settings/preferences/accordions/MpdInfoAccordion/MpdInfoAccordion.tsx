@@ -7,6 +7,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
+import { HelperPositionEnum } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
@@ -124,12 +125,10 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
       <Formik
         initialValues={{
           activeMpdMonthlyGoal: activeMpdMonthlyGoal,
-          activeMpdStartAt: activeMpdStartAt
-            ? new Date(activeMpdStartAt + 'T00:00:00').toISOString()
-            : null,
-          activeMpdFinishAt: activeMpdFinishAt
-            ? new Date(activeMpdFinishAt + 'T00:00:00').toISOString()
-            : null,
+          activeMpdStartAt:
+            activeMpdStartAt && DateTime.fromISO(activeMpdStartAt).toISO(),
+          activeMpdFinishAt:
+            activeMpdFinishAt && DateTime.fromISO(activeMpdFinishAt).toISO(),
         }}
         validationSchema={AccountPreferencesSchema}
         onSubmit={onSubmit}
@@ -176,7 +175,6 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                           actions: ['clear', 'accept'],
                         },
                       }}
-                      label={t('Start Date')}
                     />
                   </FieldWrapper>
                 </Grid>
@@ -189,7 +187,6 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                           inputProps={{
                             'aria-label': t('End Date'),
                           }}
-                          name="activeMpdFinishAt"
                           {...params}
                         />
                       )}
@@ -205,26 +202,28 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                           actions: ['clear', 'accept'],
                         },
                       }}
-                      label={t('End Date')}
                     />
                   </FieldWrapper>
                 </Grid>
               </Grid>
-              <FieldWrapper
-                labelText={t('New Recurring Commitment Goal')}
-                helperText={t(
-                  'This should be set to the amount of new recurring commitments you expect to raise during the period set above. If you do not know, make your best guess for now. You can change it at any time.',
-                )}
-              >
-                <TextField
-                  value={activeMpdMonthlyGoal}
-                  onChange={handleChange('activeMpdMonthlyGoal')}
-                  inputProps={{
-                    'aria-label': label,
-                    type: 'number',
-                  }}
-                />
-              </FieldWrapper>
+              <Grid sx={{ marginTop: 2 }}>
+                <FieldWrapper
+                  labelText={t('New Recurring Commitment Goal')}
+                  helperText={t(
+                    'This should be set to the amount of new recurring commitments you expect to raise during the period set above. If you do not know, make your best guess for now. You can change it at any time.',
+                  )}
+                  helperPosition={HelperPositionEnum.Bottom}
+                >
+                  <TextField
+                    value={activeMpdMonthlyGoal}
+                    onChange={handleChange('activeMpdMonthlyGoal')}
+                    inputProps={{
+                      'aria-label': label,
+                      type: 'number',
+                    }}
+                  />
+                </FieldWrapper>
+              </Grid>
             </>
           </FormWrapper>
         )}

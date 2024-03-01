@@ -1,4 +1,4 @@
-fragment accountList on AccountList {
+fragment AccountList on AccountList {
   id
   name
   activeMpdMonthlyGoal
@@ -18,7 +18,7 @@ query GetAccountPreferences($accountListId: ID!) {
     id
   }
   accountList(id: $accountListId) {
-    ...accountList
+    ...AccountList
   }
   accountLists {
     nodes {

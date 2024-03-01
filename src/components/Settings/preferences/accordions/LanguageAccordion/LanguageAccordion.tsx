@@ -92,7 +92,6 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
             isSubmitting={isSubmitting}
           >
             <FieldWrapper
-              labelText={label}
               helperText={t(
                 'The language determines your default language for {{appName}}.',
                 { appName },
@@ -109,8 +108,14 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
                 getOptionLabel={(locale): string => formatLanguage(locale)}
                 fullWidth
                 renderInput={(params) => (
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  <TextField {...params} placeholder={label} autoFocus />
+                  <TextField
+                    {...params}
+                    placeholder={label}
+                    label={label}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                    sx={{ marginTop: 1 }}
+                  />
                 )}
               />
             </FieldWrapper>

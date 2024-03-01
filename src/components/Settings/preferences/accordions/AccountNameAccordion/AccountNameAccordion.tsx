@@ -91,7 +91,6 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
             isSubmitting={isSubmitting}
           >
             <FieldWrapper
-              labelText={label}
               helperText={t(
                 'You can change the account name in {{appName}} into something that is more identifiable to you. This will not change the account name with your organization.',
                 { appName },
@@ -108,6 +107,8 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
                 name={'name'}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
+                label={label}
+                sx={{ marginTop: 1 }}
               />
             </FieldWrapper>
           </FormWrapper>

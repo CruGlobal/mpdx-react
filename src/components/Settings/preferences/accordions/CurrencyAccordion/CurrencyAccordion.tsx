@@ -95,7 +95,6 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
             isSubmitting={isSubmitting}
           >
             <FieldWrapper
-              labelText={label}
               helperText={t(
                 'This should be the place from which you are living and sending out physical communications. This will be used in exports for mailing address information.',
               )}
@@ -120,8 +119,14 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
                 }}
                 fullWidth
                 renderInput={(params) => (
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  <TextField {...params} placeholder={label} autoFocus />
+                  <TextField
+                    {...params}
+                    placeholder={label}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                    label={label}
+                    sx={{ marginTop: 1 }}
+                  />
                 )}
               />
             </FieldWrapper>

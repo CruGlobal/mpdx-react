@@ -26,7 +26,7 @@ import { ProfileInfo } from 'src/components/Settings/preferences/info/ProfileInf
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGetTimezones } from 'src/hooks/useGetTimezones';
-import { countries } from 'src/lib/data/Countries';
+import { getCountries } from 'src/lib/data/countries';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 
@@ -42,6 +42,7 @@ const Preferences: React.FC = () => {
   const [expandedPanel, setExpandedPanel] = useState(
     typeof query.selectedTab === 'string' ? query.selectedTab : '',
   );
+  const countries = getCountries();
   const timeZones = useGetTimezones();
 
   useEffect(() => {
@@ -221,7 +222,8 @@ const Preferences: React.FC = () => {
               }
               accountListId={accountListId}
             />
-            {canUserExportData?.canUserExportData.allowed && (
+            {/* {canUserExportData?.canUserExportData.allowed && ( */}
+            {true && (
               <ExportAllDataAccordion
                 handleAccordionChange={handleAccordionChange}
                 expandedPanel={expandedPanel}

@@ -129,7 +129,6 @@ export const dateTimeFormat = (
     year: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
-    hour12: true,
     timeZoneName: 'short',
   }).format(date.toJSDate());
 };

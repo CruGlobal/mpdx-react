@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -28,13 +28,6 @@ export const HourToSendNotificationsAccordion: React.FC<
   const constants = useApiConstants();
   const hours = constants?.times ?? [];
   const label = t('Hour To Send Notifications');
-
-  const selectedHour = useMemo(
-    () =>
-      hours.find(({ key }) => key === hourToSendNotifications)?.value ||
-      t('Immediately'),
-    [hours, hourToSendNotifications],
-  );
 
   const PreferencesSchema: yup.SchemaOf<
     Pick<Types.Preference, 'hourToSendNotifications'>
@@ -72,7 +65,10 @@ export const HourToSendNotificationsAccordion: React.FC<
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={selectedHour}
+      value={
+        hours.find(({ key }) => key === hourToSendNotifications)?.value ||
+        t('Immediately')
+      }
       fullWidth
     >
       <Formik
@@ -96,7 +92,6 @@ export const HourToSendNotificationsAccordion: React.FC<
             isSubmitting={isSubmitting}
           >
             <FieldWrapper
-              labelText={label}
               helperText={t(
                 '{{appName}} can send you app notifications immediately or at a particular time each day. Please make sure your time zone is set correctly so this time matches your local time.',
                 { appName },
@@ -119,8 +114,14 @@ export const HourToSendNotificationsAccordion: React.FC<
                 }
                 fullWidth
                 renderInput={(params) => (
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  <TextField {...params} placeholder={label} autoFocus />
+                  <TextField
+                    {...params}
+                    placeholder={label}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                    label={label}
+                    sx={{ marginTop: 1 }}
+                  />
                 )}
               />
             </FieldWrapper>

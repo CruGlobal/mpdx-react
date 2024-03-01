@@ -67,7 +67,6 @@ const Components: React.FC<ComponentsProps> = ({
 );
 
 const label = 'MPD Info';
-//const inputTestId = 'input' + label.replace(/\s/g, '');
 
 describe('MpdInfoAccordion', () => {
   afterEach(() => {
@@ -87,7 +86,7 @@ describe('MpdInfoAccordion', () => {
     expect(queryByRole('spinbutton')).not.toBeInTheDocument();
   });
   it('should render accordion open and field should have a value', async () => {
-    const { getByRole, getByLabelText } = render(
+    const { getByRole, getAllByRole } = render(
       <Components
         activeMpdStartAt={'2024-01-16'}
         activeMpdFinishAt={'2024-03-16'}
@@ -97,8 +96,8 @@ describe('MpdInfoAccordion', () => {
     );
 
     const inputGoal = getByRole('spinbutton', { name: label });
-    const inputStart = getByLabelText('Start Date');
-    const inputEnd = getByLabelText('End Date');
+    const inputStart = getAllByRole('textbox')[0];
+    const inputEnd = getAllByRole('textbox')[1];
     const button = getByRole('button', { name: 'Save' });
 
     expect(inputGoal).toBeInTheDocument();
@@ -127,7 +126,7 @@ describe('MpdInfoAccordion', () => {
   });
 
   it('Saves the input', async () => {
-    const { getByRole, getByText, getByLabelText } = render(
+    const { getByRole, getByText, getAllByRole } = render(
       <Components
         activeMpdStartAt={'2011-02-22'}
         activeMpdFinishAt={'2011-12-01'}
@@ -135,8 +134,8 @@ describe('MpdInfoAccordion', () => {
         expandedPanel={label}
       />,
     );
-    const inputStart = getByLabelText('Start Date');
-    const inputEnd = getByLabelText('End Date');
+    const inputStart = getAllByRole('textbox')[0];
+    const inputEnd = getAllByRole('textbox')[1];
     const goalInput = getByRole('spinbutton', { name: label });
     const button = getByRole('button', { name: 'Save' });
 

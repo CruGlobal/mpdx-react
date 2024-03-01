@@ -101,7 +101,6 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
             isSubmitting={isSubmitting}
           >
             <FieldWrapper
-              labelText={label}
               helperText={t(
                 'This should be the place from which you are living and sending out physical communications. This will be used in exports for mailing address information.',
               )}
@@ -113,14 +112,20 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
                 onChange={(_, value) => {
                   setFieldValue('homeCountry', value);
                 }}
-                options={countries.map((country) => country.code) || []}
+                options={countries.map((country) => country.code)}
                 getOptionLabel={(homeCountry): string =>
                   countries.find(({ code }) => code === homeCountry)?.name ?? ''
                 }
                 fullWidth
                 renderInput={(params) => (
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  <TextField {...params} placeholder={label} autoFocus />
+                  <TextField
+                    {...params}
+                    placeholder={label}
+                    label={label}
+                    sx={{ marginTop: 1 }}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                  />
                 )}
               />
             </FieldWrapper>

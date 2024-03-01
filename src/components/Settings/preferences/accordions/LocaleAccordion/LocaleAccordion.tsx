@@ -104,7 +104,6 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
             isSubmitting={isSubmitting}
           >
             <FieldWrapper
-              labelText={label}
               helperText={t(
                 'The locale determines how numbers, dates and other information are formatted.',
               )}
@@ -122,8 +121,14 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
                 }
                 fullWidth
                 renderInput={(params) => (
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  <TextField {...params} placeholder={label} autoFocus />
+                  <TextField
+                    {...params}
+                    placeholder={label}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                    label={label}
+                    sx={{ marginTop: 1 }}
+                  />
                 )}
               />
             </FieldWrapper>

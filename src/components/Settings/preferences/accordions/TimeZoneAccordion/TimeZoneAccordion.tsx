@@ -89,7 +89,6 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
             isSubmitting={isSubmitting}
           >
             <FieldWrapper
-              labelText={label}
               helperText={t(
                 'The timezone will be used in setting tasks, appointments, completion dates, etc. Please make sure it matches the one your computer is set to.',
               )}
@@ -101,15 +100,21 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
                 onChange={(_, value) => {
                   setFieldValue('timeZone', value);
                 }}
-                options={timeZones.map((zone) => zone.key) || []}
+                options={timeZones.map((zone) => zone.key)}
                 getOptionLabel={(timeZone): string =>
                   timeZones.find(({ key }) => String(key) === String(timeZone))
                     ?.value ?? ''
                 }
                 fullWidth
                 renderInput={(params) => (
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  <TextField {...params} placeholder={label} autoFocus />
+                  <TextField
+                    {...params}
+                    placeholder={label}
+                    label={label}
+                    sx={{ marginTop: 1 }}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                  />
                 )}
               />
             </FieldWrapper>
