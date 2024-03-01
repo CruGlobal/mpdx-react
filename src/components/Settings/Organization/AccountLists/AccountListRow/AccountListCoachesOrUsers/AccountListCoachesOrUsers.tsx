@@ -1,50 +1,64 @@
-import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import {
-  Delete as DeleteIcon,
+  DeleteForever,
   HelpOutline as HelpOutlineIcon,
+  PersonRemove,
 } from '@mui/icons-material';
-import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import { Box, IconButton, Link, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import * as Types from 'src/graphql/types.generated';
-import theme from 'src/theme';
+import { useLocale } from 'src/hooks/useLocale';
+import { BorderBottomBox, HeaderBox } from '../AccountListRow';
 
-export enum AccountListItemType {
-  COACH = 'coach',
-  USER = 'user',
-}
+const dateTimeFormat = (date: DateTime | null, locale: string): string => {
+  if (date === null) {
+    return '';
+  }
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    timeZoneName: 'short',
+  }).format(date.toJSDate());
+};
 
-type UserOrCoach =
+export type UserOrCoach =
   | Types.AccountListUsers
   | Types.OrganizationAccountListCoaches;
 
 interface Props {
-  name: string;
   accountListItems: Array<Types.Maybe<UserOrCoach>>;
-  type: AccountListItemType;
-  handleDelete: (item: UserOrCoach, type: AccountListItemType) => Promise<void>;
+  setRemoveUserDialogOpen: Dispatch<SetStateAction<boolean>>;
+  setDeleteUserDialogOpen: Dispatch<SetStateAction<boolean>>;
+  setRemoveCoachDialogOpen: Dispatch<SetStateAction<boolean>>;
+  setRemoveUserContent: Dispatch<SetStateAction<Types.AccountListUsers>>;
+  setDeleteUserContent: Dispatch<SetStateAction<Types.AccountListUsers>>;
+  setRemoveCoachContent: Dispatch<
+    SetStateAction<Types.OrganizationAccountListCoaches>
+  >;
 }
 
-const BorderBottomBox = styled(Box)(() => ({
-  borderBottom: '1px solid',
-  borderColor: theme.palette.cruGrayLight.main,
-}));
-
 const ContactAddressPrimaryText = styled(Typography)(({ theme }) => ({
-  margin: theme.spacing(0, 1),
+  margin: theme.spacing(0, 0.5),
   color: theme.palette.text.secondary,
 }));
 
 export const AccountListCoachesOrUsers: React.FC<Props> = ({
-  name,
   accountListItems,
-  type,
-  handleDelete,
+  setRemoveCoachDialogOpen,
+  setRemoveUserDialogOpen,
+  setDeleteUserDialogOpen,
+  setDeleteUserContent,
+  setRemoveUserContent,
+  setRemoveCoachContent,
 }) => {
   const { t } = useTranslation();
-  const [deleteUserDialogOpen, setDeleteUserDialogOpen] = useState(false);
+  const locale = useLocale();
 
   return (
     <>
@@ -65,12 +79,32 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
         return (
           <BorderBottomBox key={`designationAccounts-coaches-${idx}`}>
             <Typography component="span">
-              <Box sx={{ fontWeight: 'bold', m: 1 }}>
+              <HeaderBox>
                 {item.__typename === 'AccountListUsers' &&
                   `${item.userFirstName} ${item.userLastName}`}
                 {item.__typename === 'OrganizationAccountListCoaches' &&
                   `${item.coachFirstName} ${item.coachLastName}`}
-              </Box>
+                {item.__typename === 'AccountListUsers' && (
+                  <Tooltip
+                      title={t('Permanently delete this user.')}
+                      placement={'top'}
+                      arrow
+                      data-testid="DeleteUserButton"
+                    >
+                      <IconButton
+                        aria-label={t('Delete')}
+                        color="error"
+                        size="small"
+                        onClick={() => {
+                          setDeleteUserContent(item);
+                          setDeleteUserDialogOpen(true);
+                        }}
+                      >
+                        <DeleteForever fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                )}
+              </HeaderBox>
               <Box
                 style={{
                   display: 'flex',
@@ -86,91 +120,95 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                       return (
                         <Box
                           key={`email-${email?.id}-${idx}`}
-                          sx={{ fontWeight: 'regular', m: 1 }}
+                          sx={{ fontWeight: 'regular' }}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
                           }}
                         >
-                          <Link href={`mailto:${email?.email}`}>
+                          <Link
+                            underline="hover"
+                            href={`mailto:${email?.email}`}
+                          >
                             {email?.email}
                           </Link>
                           {email?.primary && (
                             <ContactAddressPrimaryText data-testid="ContactAddressPrimaryText">
-                              - {t('Primary')}
+                              <CheckIcon color="success" fontSize="small" />
                             </ContactAddressPrimaryText>
                           )}
                         </Box>
                       );
                     })}
                 </Box>
-
-                {item.__typename === 'AccountListUsers' && item.allowDeletion && (
-                  <IconButton
-                    aria-label={t('Delete')}
-                    color="error"
-                    onClick={() => setDeleteUserDialogOpen(true)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                )}
-                {item.__typename === 'AccountListUsers' && !item.allowDeletion && (
-                  <Tooltip
-                    title={t(
-                      'User has been granted access to this account list by donation services',
+                <Box style={{ textAlign: 'right' }}>
+                  {item.__typename === 'AccountListUsers' &&
+                    !item.allowDeletion && (
+                      <Tooltip
+                        title={t(
+                          'User has been granted access to this account list by donation services. Last synced: {{date}}',
+                          {
+                            date:
+                              item?.lastSyncedAt &&
+                              dateTimeFormat(
+                                DateTime.fromISO(item?.lastSyncedAt),
+                                locale,
+                              ),
+                          },
+                        )}
+                        placement={'top'}
+                        arrow
+                        data-testid="InformationButton"
+                      >
+                        <IconButton
+                          aria-label={t('Information')}
+                          color="primary"
+                          size="small"
+                        >
+                          <HelpOutlineIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
                     )}
-                    placement={'top'}
-                    arrow
-                    data-testid="InformationButton"
-                  >
-                    <IconButton
-                      aria-label={t('Information')}
-                      color="primary"
-                      size="small"
+                  {item.__typename === 'AccountListUsers' && (
+                    <Tooltip
+                      title={t('Remove this user from the account.')}
+                      placement={'top'}
+                      arrow
+                      data-testid="RemoveUserButton"
                     >
-                      <HelpOutlineIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-                {item.__typename === 'AccountListUsers' && item.allowDeletion && (
-                  <Confirmation
-                    isOpen={deleteUserDialogOpen}
-                    title={t('Confirm')}
-                    message={t(
-                      'Are you sure you want to remove {{user}} as a user from {{accountList}}?',
-                      {
-                        user: item.userFirstName,
-                        accountList: name,
-                      },
-                    )}
-                    handleClose={() => setDeleteUserDialogOpen(false)}
-                    mutation={() => handleDelete(item, type)}
-                  />
-                )}
-
+                      <IconButton
+                        aria-label={t('Remove')}
+                        color="error"
+                        size="small"
+                        onClick={() => {
+                          setRemoveUserContent(item);
+                          setRemoveUserDialogOpen(true);
+                        }}
+                      >
+                        <PersonRemove fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
                 {item.__typename === 'OrganizationAccountListCoaches' && (
-                  <>
-                    <IconButton
-                      aria-label={t('Delete')}
-                      color="error"
-                      onClick={() => setDeleteUserDialogOpen(true)}
+                  <Tooltip
+                      title={t('Remove this coach from the account.')}
+                      placement={'top'}
+                      arrow
+                      data-testid="RemoveCoachButton"
                     >
-                      <DeleteIcon />
-                    </IconButton>
-                    <Confirmation
-                      isOpen={deleteUserDialogOpen}
-                      title={t('Confirm')}
-                      message={t(
-                        'Are you sure you want to remove {{coach}} as a coach from {{accountList}}?',
-                        {
-                          coach: item.coachFirstName,
-                          accountList: name,
-                        },
-                      )}
-                      handleClose={() => setDeleteUserDialogOpen(false)}
-                      mutation={() => handleDelete(item, type)}
-                    />
-                  </>
+                      <IconButton
+                        aria-label={t('Remove')}
+                        color="error"
+                        onClick={() => {
+                          setRemoveCoachContent(item);
+                          setRemoveCoachDialogOpen(true);
+                        }}
+                        size="small"
+                      >
+                        <PersonRemove fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                 )}
               </Box>
             </Typography>

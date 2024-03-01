@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Delete as DeleteIcon } from '@mui/icons-material';
-import { Box, IconButton, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { PersonRemove } from '@mui/icons-material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useAppSettingsContext } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import * as Types from 'src/graphql/types.generated';
-import theme from 'src/theme';
+import { BorderBottomBox, HeaderBox, RegularBox } from '../AccountListRow';
 import { useAdminDeleteOrganizationInviteMutation } from './DeleteAccountListInvites.generated';
 
 interface Props {
@@ -15,11 +14,6 @@ interface Props {
   accountListId: string;
   accountListInvites: Types.Maybe<Types.AccountListInvites>[];
 }
-
-const BorderBottomBox = styled(Box)(() => ({
-  borderBottom: '1px solid',
-  borderColor: theme.palette.cruGrayLight.main,
-}));
 
 export const AccountListInvites: React.FC<Props> = ({
   name,
@@ -67,7 +61,10 @@ export const AccountListInvites: React.FC<Props> = ({
 
       {accountListInvites &&
         accountListInvites?.map((invite, idx) => (
-          <BorderBottomBox key={`designationAccounts-invites-${idx}`}>
+          <BorderBottomBox
+            sx={{ borderBottom: '0' }}
+            key={`designationAccounts-invites-${idx}`}
+          >
             <Typography
               component="span"
               style={{
@@ -77,22 +74,27 @@ export const AccountListInvites: React.FC<Props> = ({
               }}
             >
               <Box>
-                <Box sx={{ fontWeight: 'bold', m: 1 }}>
-                  {invite?.recipientEmail}
-                </Box>
-                <Box sx={{ fontWeight: 'regular', m: 1 }}>
+                <HeaderBox>{invite?.recipientEmail}</HeaderBox>
+                <RegularBox>
                   {t('Invited by')} {invite?.invitedByUser?.firstName}{' '}
                   {invite?.invitedByUser?.lastName}
-                </Box>
+                </RegularBox>
               </Box>
-
-              <IconButton
-                aria-label="delete"
-                color="error"
-                onClick={() => setDeleteInviteDialogOpen(true)}
+              <Tooltip
+                title={t('Remove this invite from the account.')}
+                placement={'top'}
+                arrow
+                data-testid="DeleteInviteButton"
               >
-                <DeleteIcon />
-              </IconButton>
+                <IconButton
+                  aria-label="delete"
+                  color="error"
+                  onClick={() => setDeleteInviteDialogOpen(true)}
+                  size="small"
+                >
+                  <PersonRemove fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Typography>
             <Confirmation
               isOpen={deleteInviteDialogOpen}
@@ -102,6 +104,7 @@ export const AccountListInvites: React.FC<Props> = ({
                 {
                   email: invite?.recipientEmail,
                   accountList: name,
+                  interpolation: { escapeValue: false },
                 },
               )}
               handleClose={() => setDeleteInviteDialogOpen(false)}
