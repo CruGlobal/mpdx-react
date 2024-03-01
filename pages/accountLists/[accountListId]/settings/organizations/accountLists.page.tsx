@@ -29,11 +29,15 @@ const HeaderAndDropdown = styled(Box)(() => ({
 
 const AccountListsOrganizations = (): ReactElement => {
   const { t } = useTranslation();
+  const selectedOrg = window.localStorage.getItem('admin-org')
+    ? JSON.parse(window.localStorage.getItem('admin-org') || '')
+    : '';
+
   const [search, setSearch] = useState('');
   const matches = useMediaQuery('(max-width:600px)');
   const [selectedOrganization, setSelectedOrganization] = useState<
     SettingsOrganizationFragment | null | undefined
-  >();
+  >(selectedOrg);
   const { data } = useOrganizationsQuery();
   const organizations = data?.getOrganizations.organizations;
   const contactSearch = useDebouncedValue(search, 1000);
@@ -68,9 +72,10 @@ const AccountListsOrganizations = (): ReactElement => {
                 <TextField
                   label={t('Search Account Lists')}
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                  }}
                   fullWidth
-                  multiline
                   inputProps={{ 'aria-label': 'Search Account Lists' }}
                   style={{
                     width: matches ? '150px' : '250px',
@@ -88,9 +93,8 @@ const AccountListsOrganizations = (): ReactElement => {
             <Box>
               <Autocomplete
                 style={{
-                  width: matches ? '150px' : '250px',
+                  width: matches ? '150px' : '350px',
                 }}
-                autoSelect
                 autoHighlight
                 options={organizations?.map((org) => org?.id) || []}
                 getOptionLabel={(orgId) =>
@@ -111,6 +115,11 @@ const AccountListsOrganizations = (): ReactElement => {
                     (org) => org?.id === organization,
                   );
                   setSelectedOrganization(org);
+                  org &&
+                    window.localStorage.setItem(
+                      `admin-org`,
+                      JSON.stringify(org),
+                    );
                 }}
               />
             </Box>
