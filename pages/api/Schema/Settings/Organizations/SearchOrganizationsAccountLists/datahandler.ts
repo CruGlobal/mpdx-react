@@ -89,6 +89,8 @@ type SearchOrganizationsAccountListsAccountList = {
     userFirstName: string;
     userLastName: string;
     allowDeletion: boolean;
+    userId: string;
+    lastSyncedAt: string;
     userEmailAddresses: emailAddress[];
   }[];
   accountListUsersInvites: accountListInvites[];

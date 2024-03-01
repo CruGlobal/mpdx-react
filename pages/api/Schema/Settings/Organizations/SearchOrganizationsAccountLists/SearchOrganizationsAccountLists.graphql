@@ -36,6 +36,8 @@ type AccountListUsers {
   userFirstName: String
   userLastName: String
   allowDeletion: Boolean
+  userId: String
+  lastSyncedAt: String
   userEmailAddresses: [AccountListEmailAddresses]
 }
 
