@@ -37,10 +37,12 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
 
   const formatLocale = (locale) => {
     const thisLocale = locales
-      ? locales.find(({ shortName }) => String(shortName) === String(locale))
+      ? locales.find(({ shortName }) => shortName === locale)
       : null;
-    return thisLocale
+    return thisLocale?.englishName && thisLocale?.nativeName
       ? `${thisLocale?.englishName} (${thisLocale?.nativeName})`
+      : thisLocale?.englishName
+      ? thisLocale?.englishName
       : '';
   };
 

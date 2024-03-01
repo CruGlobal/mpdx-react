@@ -49,6 +49,7 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
           },
         },
       },
+      refetchQueries: ['LoadConstants'],
       onCompleted: () => {
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',

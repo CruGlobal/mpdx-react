@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -10,6 +10,7 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import * as Types from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useLocale } from 'src/hooks/useLocale';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
 interface HourToSendNotificationsAccordionProps {
@@ -28,6 +29,18 @@ export const HourToSendNotificationsAccordion: React.FC<
   const constants = useApiConstants();
   const hours = constants?.times ?? [];
   const label = t('Hour To Send Notifications');
+  const locale = useLocale();
+
+  const formatHour = (hour) => {
+    return (
+      hours.find(({ key }) => key === hour || (hour === -1 && key === null))
+        ?.value || t('Immediately')
+    );
+  };
+  const selectedHour = useMemo(
+    () => formatHour(hourToSendNotifications),
+    [hours, hourToSendNotifications, locale],
+  );
 
   const PreferencesSchema: yup.SchemaOf<
     Pick<Types.Preference, 'hourToSendNotifications'>
@@ -65,10 +78,7 @@ export const HourToSendNotificationsAccordion: React.FC<
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={
-        hours.find(({ key }) => key === hourToSendNotifications)?.value ||
-        t('Immediately')
-      }
+      value={selectedHour || ''}
       fullWidth
     >
       <Formik
@@ -109,8 +119,7 @@ export const HourToSendNotificationsAccordion: React.FC<
                   hour.key === null ? -1 : hour.key,
                 )}
                 getOptionLabel={(hourToSendNotifications): string =>
-                  hours.find(({ key }) => key === hourToSendNotifications)
-                    ?.value ?? t('Immediately')
+                  formatHour(hourToSendNotifications) || ''
                 }
                 fullWidth
                 renderInput={(params) => (

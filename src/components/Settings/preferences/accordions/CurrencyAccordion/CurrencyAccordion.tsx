@@ -111,11 +111,8 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
                   const selectedCurrency = currencies.find(
                     ({ code }) => code === currency,
                   );
-                  return (
-                    selectedCurrency?.name +
-                    ' - ' +
-                    selectedCurrency?.codeSymbolString
-                  );
+                  if (!selectedCurrency) return '';
+                  return `${selectedCurrency.name} - ${selectedCurrency.codeSymbolString}`;
                 }}
                 fullWidth
                 renderInput={(params) => (

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -28,6 +28,14 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
   const [updatePersonalPreferences] = useUpdatePersonalPreferencesMutation();
   const label = t('Time Zone');
 
+  const formatTimeZone = (timeZone) => {
+    return timeZones.find(({ key }) => key === timeZone)?.value ?? '';
+  };
+
+  const selectedTimeZone = useMemo(
+    () => formatTimeZone(timeZone),
+    [timeZones, timeZone],
+  );
   const PreferencesSchema: yup.SchemaOf<Pick<Types.Preference, 'timeZone'>> =
     yup.object({
       timeZone: yup.string().required(),
@@ -61,10 +69,7 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={
-        timeZones.find(({ key }) => String(key) === String(timeZone))?.value ??
-        ''
-      }
+      value={selectedTimeZone}
       fullWidth
     >
       <Formik
@@ -101,10 +106,7 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
                   setFieldValue('timeZone', value);
                 }}
                 options={timeZones.map((zone) => zone.key)}
-                getOptionLabel={(timeZone): string =>
-                  timeZones.find(({ key }) => String(key) === String(timeZone))
-                    ?.value ?? ''
-                }
+                getOptionLabel={(timeZone): string => formatTimeZone(timeZone)}
                 fullWidth
                 renderInput={(params) => (
                   <TextField
