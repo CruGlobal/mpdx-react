@@ -61,6 +61,7 @@ export const AccountLists: React.FC = () => {
       <InfiniteList
         loading={loading}
         data={accountLists ?? []}
+        disableHover
         style={{
           height: infiniteListHeight
             ? infiniteListHeight
