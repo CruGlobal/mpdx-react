@@ -31,12 +31,13 @@ export type UserOrCoach =
   | Types.AccountListUsers
   | Types.OrganizationAccountListCoaches;
 
+export type UserState = { item: Types.AccountListUsers; dialogOpen: boolean };
+
 interface Props {
   accountListItems: Array<Types.Maybe<UserOrCoach>>;
-  setRemoveUserDialogOpen: Dispatch<SetStateAction<boolean>>;
   setDeleteUserDialogOpen: Dispatch<SetStateAction<boolean>>;
   setRemoveCoachDialogOpen: Dispatch<SetStateAction<boolean>>;
-  setRemoveUserContent: Dispatch<SetStateAction<Types.AccountListUsers>>;
+  setRemoveUser: Dispatch<SetStateAction<UserState>>;
   setDeleteUserContent: Dispatch<SetStateAction<Types.AccountListUsers>>;
   setRemoveCoachContent: Dispatch<
     SetStateAction<Types.OrganizationAccountListCoaches>
@@ -51,10 +52,9 @@ const ContactAddressPrimaryText = styled(Typography)(({ theme }) => ({
 export const AccountListCoachesOrUsers: React.FC<Props> = ({
   accountListItems,
   setRemoveCoachDialogOpen,
-  setRemoveUserDialogOpen,
   setDeleteUserDialogOpen,
   setDeleteUserContent,
-  setRemoveUserContent,
+  setRemoveUser,
   setRemoveCoachContent,
 }) => {
   const { t } = useTranslation();
@@ -86,23 +86,23 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                   `${item.coachFirstName} ${item.coachLastName}`}
                 {item.__typename === 'AccountListUsers' && (
                   <Tooltip
-                      title={t('Permanently delete this user.')}
-                      placement={'top'}
-                      arrow
-                      data-testid="DeleteUserButton"
+                    title={t('Permanently delete this user.')}
+                    placement={'top'}
+                    arrow
+                    data-testid="DeleteUserButton"
+                  >
+                    <IconButton
+                      aria-label={t('Delete')}
+                      color="error"
+                      size="small"
+                      onClick={() => {
+                        setDeleteUserContent(item);
+                        setDeleteUserDialogOpen(true);
+                      }}
                     >
-                      <IconButton
-                        aria-label={t('Delete')}
-                        color="error"
-                        size="small"
-                        onClick={() => {
-                          setDeleteUserContent(item);
-                          setDeleteUserDialogOpen(true);
-                        }}
-                      >
-                        <DeleteForever fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                      <DeleteForever fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 )}
               </HeaderBox>
               <Box
@@ -181,8 +181,10 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                         color="error"
                         size="small"
                         onClick={() => {
-                          setRemoveUserContent(item);
-                          setRemoveUserDialogOpen(true);
+                          setRemoveUser({
+                            item: item,
+                            dialogOpen: true,
+                          });
                         }}
                       >
                         <PersonRemove fontSize="small" />
@@ -192,23 +194,23 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                 </Box>
                 {item.__typename === 'OrganizationAccountListCoaches' && (
                   <Tooltip
-                      title={t('Remove this coach from the account.')}
-                      placement={'top'}
-                      arrow
-                      data-testid="RemoveCoachButton"
+                    title={t('Remove this coach from the account.')}
+                    placement={'top'}
+                    arrow
+                    data-testid="RemoveCoachButton"
+                  >
+                    <IconButton
+                      aria-label={t('Remove')}
+                      color="error"
+                      onClick={() => {
+                        setRemoveCoachContent(item);
+                        setRemoveCoachDialogOpen(true);
+                      }}
+                      size="small"
                     >
-                      <IconButton
-                        aria-label={t('Remove')}
-                        color="error"
-                        onClick={() => {
-                          setRemoveCoachContent(item);
-                          setRemoveCoachDialogOpen(true);
-                        }}
-                        size="small"
-                      >
-                        <PersonRemove fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                      <PersonRemove fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 )}
               </Box>
             </Typography>
