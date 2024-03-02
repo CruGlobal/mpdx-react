@@ -222,8 +222,7 @@ const Preferences: React.FC = () => {
               }
               accountListId={accountListId}
             />
-            {/* {canUserExportData?.canUserExportData.allowed && ( */}
-            {true && (
+            {canUserExportData?.canUserExportData.allowed && (
               <ExportAllDataAccordion
                 handleAccordionChange={handleAccordionChange}
                 expandedPanel={expandedPanel}
