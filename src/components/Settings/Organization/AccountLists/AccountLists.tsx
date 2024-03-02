@@ -58,58 +58,79 @@ export const AccountLists: React.FC = () => {
           data-testid="LoadingSpinner"
         />
       )}
-      <InfiniteList
-        loading={loading}
-        data={accountLists ?? []}
-        disableHover
-        style={{
-          height: infiniteListHeight
-            ? infiniteListHeight
-            : `calc(100vh - 300px)`,
-          minWidth: '920px',
-        }}
-        itemContent={(index, accountList) => {
-          return accountList ? (
-            <AccountListRow
-              key={`accountList-${index}-${accountList.id}`}
-              accountList={accountList}
-            />
-          ) : null;
-        }}
-        endReached={() =>
-          pagination &&
-          pagination.page < pagination.totalPages &&
-          fetchMore({
-            variables: {
-              input: {
-                organizationId: selectedOrganizationId,
-                search: search,
-                pageNumber: pagination.page + 1,
+      {!selectedOrganizationId && (
+        <Box width="100%" margin="auto" mt={2}>
+          <NullStateBox>
+            <Icon path={mdiHome} size={1.5} />
+            <Typography variant="h5">
+              {t('Start by adding search filters')}
+            </Typography>
+            <Typography>
+              {t('Choose an organization that you administrate.')}
+            </Typography>
+          </NullStateBox>
+        </Box>
+      )}
+      {selectedOrganizationId && (
+        <InfiniteList
+          loading={loading}
+          data={accountLists ?? []}
+          disableHover
+          style={{
+            height: infiniteListHeight
+              ? infiniteListHeight
+              : `calc(100vh - 300px)`,
+            minWidth: '920px',
+          }}
+          itemContent={(index, accountList) => {
+            return accountList ? (
+              <AccountListRow
+                key={`accountList-${index}-${accountList.id}`}
+                accountList={accountList}
+              />
+            ) : null;
+          }}
+          endReached={() =>
+            pagination &&
+            pagination.page < pagination.totalPages &&
+            fetchMore({
+              variables: {
+                input: {
+                  organizationId: selectedOrganizationId,
+                  search: search,
+                  pageNumber: pagination.page + 1,
+                },
               },
-            },
-          })
-        }
-        EmptyPlaceholder={
-          <Box width="75%" margin="auto" mt={2}>
-            <NullStateBox>
-              <Icon path={mdiHome} size={1.5} />
+            })
+          }
+          EmptyPlaceholder={
+            <Box width="100%" margin="auto" mt={2}>
+              <NullStateBox>
+                <Icon path={mdiHome} size={1.5} />
 
-              {pagination && pagination?.totalCount === 0 && search === '' && (
+                {pagination &&
+                  pagination?.totalCount === 0 &&
+                  search === '' && (
+                    <Typography variant="h5">
+                      {t('Looks like you have no account lists to manage yet')}
+                    </Typography>
+                  )}
                 <Typography variant="h5">
-                  {t('Looks like you have no account lists to manage yet')}
+                  {t('No account lists match your search filters.')}
                 </Typography>
-              )}
-              <Typography variant="h5">
-                {t('No account lists match your filters.')}
-              </Typography>
 
-              <Button onClick={clearFilters} variant="contained">
-                {t('Reset All Search Filters')}
-              </Button>
-            </NullStateBox>
-          </Box>
-        }
-      />
+                <Button
+                  sx={{ marginY: 2 }}
+                  onClick={clearFilters}
+                  variant="contained"
+                >
+                  {t('Reset All Search Filters')}
+                </Button>
+              </NullStateBox>
+            </Box>
+          }
+        />
+      )}
     </Box>
   );
 };

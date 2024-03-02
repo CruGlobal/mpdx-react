@@ -6,6 +6,7 @@ import {
   InputAdornment,
   Skeleton,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -69,25 +70,31 @@ const AccountListsOrganizations = (): ReactElement => {
           <HeaderAndDropdown>
             <Box>
               {selectedOrganization && (
-                <TextField
-                  label={t('Search Account Lists')}
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                  }}
-                  fullWidth
-                  inputProps={{ 'aria-label': 'Search Account Lists' }}
-                  style={{
-                    width: matches ? '150px' : '250px',
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PersonSearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Tooltip
+                  title={t('Search by name, email or account number')}
+                  placement={'bottom'}
+                  arrow
+                >
+                  <TextField
+                    label={t('Search Account Lists')}
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                    }}
+                    fullWidth
+                    inputProps={{ 'aria-label': 'Search Account Lists' }}
+                    style={{
+                      width: matches ? '150px' : '250px',
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonSearchIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Tooltip>
               )}
             </Box>
             <Box>
