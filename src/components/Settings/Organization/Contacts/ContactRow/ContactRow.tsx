@@ -1,12 +1,11 @@
-import Link from 'next/link';
 import React, { useMemo, useState } from 'react';
 import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
 import {
   Box,
   Button,
-  ButtonBase,
   Grid,
   Hidden,
+  Link,
   ListItemText,
   Typography,
 } from '@mui/material';
@@ -30,7 +29,6 @@ const DeleteOutline = styled(DeleteOutlined)(({ theme }) => ({
 
 interface Props {
   contact: OrganizationsContact;
-  useTopMargin?: boolean;
 }
 interface PersonDataProps {
   person: ContactPeople | ContactPeopleAccountListsUsers;
@@ -49,17 +47,6 @@ const SpaceBetweenBox = styled(Box)(() => ({
   justifyContent: 'space-between',
 }));
 
-const ListItemButton = styled(ButtonBase, {
-  shouldForwardProp: (prop) => prop !== 'useTopMargin',
-})<{ useTopMargin?: boolean }>(({ theme, useTopMargin }) => ({
-  flex: '1 1 auto',
-  textAlign: 'left',
-  marginTop: useTopMargin ? '16px' : '0',
-  padding: theme.spacing(0, 0.5, 0, 2),
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(0, 0.5),
-  },
-}));
 const PersonData: React.FC<PersonDataProps> = ({ person }) => {
   const email =
     person?.emailAddresses &&
@@ -73,7 +60,11 @@ const PersonData: React.FC<PersonDataProps> = ({ person }) => {
         {person?.firstName} {person?.lastName}
       </Typography>
       {email && (
-        <Link key={`email-${email.email}`} href={`mailto:${email.email}`}>
+        <Link
+          underline="hover"
+          key={`email-${email.email}`}
+          href={`mailto:${email.email}`}
+        >
           {email.email}
         </Link>
       )}
@@ -86,7 +77,7 @@ const PersonData: React.FC<PersonDataProps> = ({ person }) => {
   );
 };
 
-export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+export const ContactRow: React.FC<Props> = ({ contact }) => {
   const { t } = useTranslation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteOrganizationContact] = useDeleteOrganizationContactMutation();
@@ -127,7 +118,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   );
 
   return (
-    <ListItemButton data-testid="rowButton" useTopMargin={useTopMargin}>
+    <>
       <Grid container alignItems="center">
         <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
           <ListItemText
@@ -218,6 +209,6 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         handleClose={() => setDeleteDialogOpen(false)}
         mutation={handleDeleteContact}
       />
-    </ListItemButton>
+    </>
   );
 };
