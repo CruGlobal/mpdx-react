@@ -171,15 +171,13 @@ const config = {
 
     return config;
   },
-  redirects() {
-    return [
-      {
-        source: '/accountLists/:accountListId/settings',
-        destination: '/accountLists/:accountListId/settings/preferences',
-        permanent: true,
-      },
-    ];
-  },
+  redirects: () => [
+    {
+      source: '/accountLists/:accountListId/settings',
+      destination: '/accountLists/:accountListId/settings/preferences',
+      permanent: true,
+    },
+  ],
 };
 
 module.exports = withPlugins([

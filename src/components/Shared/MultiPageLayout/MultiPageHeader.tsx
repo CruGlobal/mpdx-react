@@ -19,14 +19,11 @@ interface MultiPageHeaderProps {
   rightExtra?: ReactNode;
 }
 
-const StickyHeader = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'headerType',
-})(({ headerType }: { headerType: HeaderTypeEnum }) => ({
+const StickyHeader = styled(Box)(() => ({
   position: 'sticky',
   top: 0,
-  height: 96,
-  paddingTop: headerType === HeaderTypeEnum.Settings ? theme.spacing(3) : '',
-  paddingBottom: headerType === HeaderTypeEnum.Settings ? theme.spacing(3) : '',
+  borderBottom: '1px solid',
+  borderBottomColor: theme.palette.grey[200],
 }));
 
 const NavListButton = styled(IconButton, {
@@ -71,7 +68,7 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
   }
 
   return (
-    <StickyHeader p={2} test-dataid="MultiPageHeader" headerType={headerType}>
+    <StickyHeader p={2} test-dataid="MultiPageHeader">
       <Box
         display="flex"
         justifyContent="space-between"
