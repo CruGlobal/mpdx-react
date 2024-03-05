@@ -6,6 +6,12 @@ frontend:
         - nvm install 18.13
         - nvm use 18.13
         - echo $secrets
+        - |
+          if [[ "${AWS_BRANCH_ARN#*/branches/}" == *"pr-"* ]]; then
+            PREVIEW_URL="https://${AWS_BRANCH_ARN#*/branches/}.${AWS_APP_ID}.amplifyapp.com";
+            NEXTAUTH_URL=$PREVIEW_URL;
+            echo "PREVIEW_URL=$PREVIEW_URL" >> .env;
+          fi
         - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
         - echo "NODE_ENV=$NODE_ENV" >> .env
         - yarn set version 3.2.3
