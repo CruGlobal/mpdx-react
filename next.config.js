@@ -23,11 +23,8 @@ if (prod && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not set');
 }
 
-if (process.env.PREVIEW_URL) {
-  process.env.SITE_URL = process.env.PREVIEW_URL;
-}
-
-const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000';
+const siteUrl =
+  process.env.PREVIEW_URL ?? process.env.SITE_URL ?? 'http://localhost:3000';
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
