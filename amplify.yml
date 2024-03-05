@@ -5,7 +5,6 @@ frontend:
       commands:
         - nvm install 18.13
         - nvm use 18.13
-        - echo $secrets
         - |
           if [[ "${AWS_BRANCH_ARN#*/branches/}" == *"pr-"* ]]; then
             PREVIEW_URL="https://${AWS_BRANCH_ARN#*/branches/}.${AWS_APP_ID}.amplifyapp.com";
