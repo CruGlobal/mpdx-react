@@ -4,7 +4,7 @@ const withOptimizedImages = require('next-optimized-images');
 const withPWA = require('next-pwa');
 require('dotenv').config();
 
-if (process.env.secrets) {
+if (process.env.secrets && process.env.secrets !== '{}') {
   process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
   process.env.OKTA_CLIENT_SECRET = JSON.parse(
     process.env.secrets,
