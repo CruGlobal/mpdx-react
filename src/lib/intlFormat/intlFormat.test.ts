@@ -207,7 +207,7 @@ describe('intlFormat', () => {
         DateTime.local(2024, 1, 16, 18, 34, 12),
         locale,
       );
-      // Do not use the special hidden character ' ' or else the test will not pass on GitHub.
+
       expect(date.trim()).toBe('Jan 16, 2024, 6:34\u202fPM UTC');
     });
 
