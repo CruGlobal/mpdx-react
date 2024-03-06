@@ -4,7 +4,7 @@ const withOptimizedImages = require('next-optimized-images');
 const withPWA = require('next-pwa');
 require('dotenv').config();
 
-if (process.env.secrets) {
+if (process.env.secrets && process.env.secrets !== '{}') {
   process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
   process.env.OKTA_CLIENT_SECRET = JSON.parse(
     process.env.secrets,
@@ -23,7 +23,8 @@ if (prod && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not set');
 }
 
-const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000';
+const siteUrl =
+  process.env.PREVIEW_URL ?? process.env.SITE_URL ?? 'http://localhost:3000';
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
