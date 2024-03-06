@@ -121,7 +121,7 @@ export const PersonEmailItem: React.FC<Props> = ({
               labelId={`email-type-label-${index}`}
               id={`email-type-${index}`}
               destroyed={emailAddress.destroy ?? false}
-              value={emailAddress.location ?? ''}
+              value={emailAddress.location?.toLowerCase() ?? ''}
               onChange={(event) =>
                 setFieldValue(
                   `emailAddresses.${index}.location`,

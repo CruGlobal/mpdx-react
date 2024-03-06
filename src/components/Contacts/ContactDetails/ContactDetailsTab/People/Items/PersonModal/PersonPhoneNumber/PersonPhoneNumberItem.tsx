@@ -121,7 +121,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
               labelId={`phone-type-label-${index}`}
               id={`phone-type-${index}`}
               destroyed={phoneNumber.destroy ?? false}
-              value={phoneNumber.location ?? ''}
+              value={phoneNumber.location?.toLowerCase() ?? ''}
               onChange={(event) =>
                 setFieldValue(
                   `phoneNumbers.${index}.location`,
