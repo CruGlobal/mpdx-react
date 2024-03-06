@@ -208,7 +208,7 @@ describe('intlFormat', () => {
         locale,
       );
       // Do not use the special hidden character ' ' or else the test will not pass on GitHub.
-      expect(date.trim()).toBe('Jan 16, 2024, 6:34 PM UTC');
+      expect(date.trim()).toBe('Jan 16, 2024, 6:34\u202fPM UTC');
     });
 
     it('returns null if month is null', () => {

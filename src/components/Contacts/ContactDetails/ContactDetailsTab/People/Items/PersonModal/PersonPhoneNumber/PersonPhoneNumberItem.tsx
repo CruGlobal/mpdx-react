@@ -143,7 +143,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
               <MenuItem value="home" aria-label={t('Home')}>
                 {t('Home')}
               </MenuItem>
-              <MenuItem value="Work" aria-label={t('Work')}>
+              <MenuItem value="work" aria-label={t('Work')}>
                 {t('Work')}
               </MenuItem>
               <MenuItem value="other" aria-label={t('Other')}>

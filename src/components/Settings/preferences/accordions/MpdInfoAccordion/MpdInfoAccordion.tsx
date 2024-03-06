@@ -149,7 +149,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
           >
             <>
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6}>
                   <FieldWrapper labelText={t('Start Date')}>
                     <DatePicker<Date, DateTime>
                       renderInput={(params) => (
@@ -178,7 +178,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                     />
                   </FieldWrapper>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6}>
                   <FieldWrapper labelText={t('End Date')}>
                     <DatePicker<Date, DateTime>
                       renderInput={(params) => (
