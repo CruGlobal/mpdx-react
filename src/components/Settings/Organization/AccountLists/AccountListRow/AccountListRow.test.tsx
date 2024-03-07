@@ -75,8 +75,8 @@ describe('AccountLists', () => {
       />,
     );
 
-    expect(getByText('No users')).toBeInTheDocument();
-    expect(getByText('No coaches')).toBeInTheDocument();
+    expect(getByText('No Users')).toBeInTheDocument();
+    expect(getByText('No Coaches')).toBeInTheDocument();
   });
 
   it('should show invites', () => {
@@ -103,24 +103,32 @@ describe('AccountLists', () => {
       );
 
       userEvent.click(getAllByRole('button', { name: 'Delete' })[0]);
+      userEvent.type(
+        getAllByRole('textbox', { name: 'Reason' })[0],
+        'this is a test',
+      );
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
         return expect(mutationSpy.mock.calls[0][0]).toMatchObject({
           operation: {
-            operationName: 'AdminDeleteOrganizationUser',
+            operationName: 'DeleteUser',
             variables: {
               input: {
-                accountListId: '1111',
-                userId: 'e8a19920',
+                clientMutationId: 'account-list-1',
+                reason: 'this is a test',
+                resettedUserId: 'e8a19920',
               },
             },
           },
         });
       });
-      expect(mockEnqueue).toHaveBeenCalledWith('Successfully deleted user', {
-        variant: 'success',
-      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully deleted user: userFirstName userLastName',
+        {
+          variant: 'success',
+        },
+      );
     });
 
     it('should delete coaches', async () => {
@@ -128,7 +136,7 @@ describe('AccountLists', () => {
         <Components accountList={accountList} />,
       );
 
-      userEvent.click(getAllByRole('button', { name: 'Delete' })[1]);
+      userEvent.click(getAllByRole('button', { name: 'Remove' })[1]);
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
@@ -144,9 +152,12 @@ describe('AccountLists', () => {
           },
         });
       });
-      expect(mockEnqueue).toHaveBeenCalledWith('Successfully deleted coach', {
-        variant: 'success',
-      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully removed coach: coachFirstName coachLastName',
+        {
+          variant: 'success',
+        },
+      );
     });
   });
 });

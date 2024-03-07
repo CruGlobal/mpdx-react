@@ -59,13 +59,13 @@ describe('AccountLists', () => {
       getByText('Invited by inviteCoachFirstName inviteCoachLastName'),
     ).toBeInTheDocument();
 
-    expect(getByTestId('DeleteIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('DeleteIcon'));
+    expect(getByTestId('PersonRemoveIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('PersonRemoveIcon'));
 
     await waitFor(() => {
       expect(
         getByText(
-          'Are you sure you want to remove the invite for {{email}} from {{accountList}}?',
+          'Are you sure you want to remove the invite for inviteCoach@cru.org from accountName?',
         ),
       ).toBeInTheDocument();
       userEvent.click(getByText('Yes'));

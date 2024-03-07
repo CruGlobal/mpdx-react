@@ -100,7 +100,7 @@ describe('AccountLists', () => {
   });
 
   it('should show default screen', async () => {
-    const { getByText, queryByText } = render(
+    const { queryByText } = render(
       <Components>
         <GqlMockedProvider<{
           SearchOrganizationsAccountLists: SearchOrganizationsAccountListsQuery;
@@ -126,18 +126,8 @@ describe('AccountLists', () => {
 
     await waitFor(() => {
       expect(
-        queryByText('Looks like you have no account lists to manage yet'),
+        queryByText('Start by adding search filters'),
       ).not.toBeInTheDocument();
-
-      expect(
-        getByText('No account lists match your filters.'),
-      ).toBeInTheDocument();
-    });
-
-    userEvent.click(getByText('Reset All Search Filters'));
-
-    await waitFor(() => {
-      expect(clearFilters).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -172,8 +162,12 @@ describe('AccountLists', () => {
       ).toBeInTheDocument();
 
       expect(
-        getByText('No account lists match your filters.'),
+        getByText('No account lists match your search filters.'),
       ).toBeInTheDocument();
+
+      userEvent.click(getByText('Reset All Search Filters'));
+
+      expect(clearFilters).toHaveBeenCalledTimes(1);
     });
   });
 
