@@ -1,10 +1,12 @@
 import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
+import { GetAccountsSharingWithQuery } from './ManageAccountAccess.generated';
 import { ManageAccountAccessAccordion } from './ManageAccountAccessAccordion';
 
 jest.mock('next-auth/react');
@@ -68,5 +70,66 @@ describe('ManageAccountAccessAccordion', () => {
     expect(
       getByText('Share this ministry account with other team members'),
     ).toBeVisible();
+  });
+
+  it('should remove user access and update cache', async () => {
+    const mutationSpy = jest.fn();
+    const { queryByText, getAllByTestId } = render(
+      <Components>
+        <GqlMockedProvider<{
+          GetAccountsSharingWith: GetAccountsSharingWithQuery;
+        }>
+          onCall={mutationSpy}
+          mocks={{
+            GetAccountsSharingWith: {
+              accountListUsers: {
+                nodes: [
+                  {
+                    id: 'user1',
+                    user: {
+                      id: '111111',
+                      firstName: 'firstName1',
+                      lastName: 'lastName1',
+                    },
+                  },
+                  {
+                    id: 'user2',
+                    user: {
+                      id: '222222',
+                      firstName: 'firstName2',
+                      lastName: 'lastName2',
+                    },
+                  },
+                ],
+              },
+            },
+          }}
+        >
+          <ManageAccountAccessAccordion
+            handleAccordionChange={handleAccordionChange}
+            expandedPanel={'Manage Account Access'}
+          />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    await waitFor(() => {
+      expect(queryByText('Account currently shared with')).toBeInTheDocument();
+      expect(queryByText('firstName1 lastName1')).toBeInTheDocument();
+      expect(queryByText('firstName2 lastName2')).toBeInTheDocument();
+    });
+
+    const deleteIcons = getAllByTestId('DeleteIcon');
+
+    userEvent.click(deleteIcons[0]);
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        '{{appName}} removed the user successfully',
+        { variant: 'success' },
+      );
+      expect(queryByText('firstName1 lastName1')).not.toBeInTheDocument();
+      expect(queryByText('firstName2 lastName2')).toBeInTheDocument();
+    });
   });
 });
