@@ -28,6 +28,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useLocale } from 'src/hooks/useLocale';
+import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
@@ -280,15 +281,7 @@ export const AddDonation = ({
                               }}
                             >
                               <MenuItem value={''} disabled></MenuItem>
-                              {pledgeCurrencies?.map(
-                                ({ value, id }) =>
-                                  value &&
-                                  id && (
-                                    <MenuItem key={id} value={id}>
-                                      {t(value)}
-                                    </MenuItem>
-                                  ),
-                              )}
+                              {getPledgeCurrencyOptions(pledgeCurrencies)}
                             </Select>
                           </Box>
                         )}

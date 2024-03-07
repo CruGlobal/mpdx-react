@@ -30,6 +30,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
+import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
 import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
@@ -230,15 +231,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       }}
                     >
                       <MenuItem value={''} disabled></MenuItem>
-                      {pledgeCurrencies?.map(
-                        ({ value, id }) =>
-                          value &&
-                          id && (
-                            <MenuItem key={id} value={id}>
-                              {t(value)}
-                            </MenuItem>
-                          ),
-                      )}
+                      {getPledgeCurrencyOptions(pledgeCurrencies)}
                     </Select>
                   </FormControl>
                 </Grid>

@@ -221,7 +221,6 @@ export const OrganizationAddAccountModal: React.FC<
                     ({ id }) => String(id) === String(option.id),
                   )?.name ?? ''
                 }
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   <TextField

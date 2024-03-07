@@ -1,0 +1,7 @@
+extend type Query {
+  canUserExportData(accountListId: ID!): CanUserExportData!
+}
+type CanUserExportData {
+  allowed: Boolean!
+  exportedAt: ISO8601DateTime
+}

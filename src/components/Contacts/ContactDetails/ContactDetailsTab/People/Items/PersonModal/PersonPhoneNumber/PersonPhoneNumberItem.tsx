@@ -19,6 +19,7 @@ import {
 } from 'src/graphql/types.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
+import { VerticallyCenteredGrid } from '../PersonEmail/PersonEmailItem';
 import {
   ContactInputField,
   NewSocial,
@@ -82,7 +83,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
   return (
     <ModalSectionContainer key={index}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={6}>
           <ContactInputField
             label={t('Phone Number')}
             destroyed={phoneNumber.destroy ?? false}
@@ -110,7 +111,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             required
           />
         </Grid>
-        <Grid item xs={12} md={2}>
+        <Grid item xs={12} sm={6} md={2}>
           <FormControl fullWidth>
             <InputLabel id={`phone-type-label-${index}`}>
               {t('Type')}
@@ -120,7 +121,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
               labelId={`phone-type-label-${index}`}
               id={`phone-type-${index}`}
               destroyed={phoneNumber.destroy ?? false}
-              value={phoneNumber.location ?? ''}
+              value={phoneNumber.location?.toLowerCase() ?? ''}
               onChange={(event) =>
                 setFieldValue(
                   `phoneNumbers.${index}.location`,
@@ -142,7 +143,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
               <MenuItem value="home" aria-label={t('Home')}>
                 {t('Home')}
               </MenuItem>
-              <MenuItem value="Work" aria-label={t('Work')}>
+              <MenuItem value="work" aria-label={t('Work')}>
                 {t('Work')}
               </MenuItem>
               <MenuItem value="other" aria-label={t('Other')}>
@@ -151,7 +152,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             </PhoneNumberSelect>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={2}>
+        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
           <PrimaryControlLabel
             label={t('Primary')}
             control={
@@ -164,8 +165,8 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             }
             destroyed={phoneNumber.destroy ?? false}
           />
-        </Grid>
-        <Grid item xs={12} md={2}>
+        </VerticallyCenteredGrid>
+        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
           <PrimaryControlLabel
             label={t('Invalid')}
             control={
@@ -182,7 +183,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
             }
             destroyed={phoneNumber.destroy ?? false}
           />
-        </Grid>
+        </VerticallyCenteredGrid>
         <ModalSectionDeleteIcon
           disabled={locked}
           handleClick={

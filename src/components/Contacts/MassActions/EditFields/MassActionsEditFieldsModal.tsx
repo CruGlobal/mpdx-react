@@ -30,6 +30,7 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
@@ -348,15 +349,9 @@ export const MassActionsEditFieldsModal: React.FC<
                         <em>{t("Don't change")}</em>
                       </MenuItem>
                       {!loadingConstants &&
-                        constants?.constant?.pledgeCurrencies?.map((val) => (
-                          <MenuItem key={val.id} value={val.id || ''}>
-                            {
-                              t(
-                                val.value || '',
-                              ) /* manually added to translation file */
-                            }
-                          </MenuItem>
-                        ))}
+                        getPledgeCurrencyOptions(
+                          constants?.constant?.pledgeCurrencies,
+                        )}
                     </Select>
                   </FormControl>
                 </Grid>

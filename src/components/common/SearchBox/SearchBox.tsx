@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { mdiAccountSearch } from '@mdi/js';
 import Icon from '@mdi/react';
+import Close from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import { InputAdornment, TextField } from '@mui/material';
+import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
@@ -41,6 +42,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     <SearchInput
       size="small"
       variant="outlined"
+      sx={{ width: { sm: '27ch', md: '31ch' } }}
       onChange={(e) => handleOnChange(e.target.value)}
       placeholder={placeholder ?? t('Search')}
       value={currentSearchTerm}
@@ -51,6 +53,25 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
               <Icon path={mdiAccountSearch} size={1} />
             ) : (
               <SearchIcon />
+            )}
+          </InputAdornment>
+        ),
+        endAdornment: (
+          <InputAdornment position="end">
+            {currentSearchTerm && (
+              <IconButton
+                onClick={() => handleOnChange('')}
+                data-testid="SearchInputCloseButton"
+              >
+                <Close
+                  titleAccess={t('Close')}
+                  sx={{
+                    width: 14,
+                    height: 14,
+                    color: 'text.primary',
+                  }}
+                />
+              </IconButton>
             )}
           </InputAdornment>
         ),

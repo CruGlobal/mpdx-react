@@ -8,6 +8,11 @@ query LoadConstants {
       id
       value
     }
+    locales {
+      englishName
+      nativeName
+      shortName
+    }
     likelyToGiveOptions {
       id
       value
@@ -20,8 +25,9 @@ query LoadConstants {
     #   value
     # }
     pledgeCurrencies {
-      id
-      value
+      codeSymbolString
+      name
+      code
     }
     pledgeFrequencies {
       id

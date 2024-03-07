@@ -132,6 +132,14 @@ const ProfileMenu = (): ReactElement => {
     ? !!(accountListId && data.accountLists.nodes.length > 1)
     : false;
 
+  let accountListIdFallback = accountListId;
+  if (!accountListIdFallback) {
+    if (data?.accountLists?.nodes.length === 1) {
+      accountListIdFallback = data.accountLists.nodes[0]?.id;
+    } else if (data?.user.defaultAccountList) {
+      accountListIdFallback = data.user.defaultAccountList;
+    }
+  }
   const handleStopImpersonating = async () => {
     enqueueSnackbar(
       t('Stopping Impersonating and redirecting you to the legacy MPDX'),
