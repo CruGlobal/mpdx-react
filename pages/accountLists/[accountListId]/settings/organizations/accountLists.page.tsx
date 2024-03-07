@@ -51,6 +51,7 @@ const AccountListsOrganizations = (): ReactElement => {
   return (
     <OrganizationsContextProvider
       selectedOrganizationId={selectedOrganization?.id ?? ''}
+      selectedOrganizationName={selectedOrganization?.name ?? ''}
       search={contactSearch}
       setSearch={setSearch}
       clearFilters={clearFilters}

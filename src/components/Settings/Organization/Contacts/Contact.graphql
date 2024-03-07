@@ -4,6 +4,12 @@ mutation DeleteOrganizationContact($input: DeleteOrganizationContactInput!) {
   }
 }
 
+mutation AnonymizeContact($input: ContactAnonymizeMutationInput!) {
+  anonymizeContact(input: $input) {
+    clientMutationId
+  }
+}
+
 query SearchOrganizationsContacts($input: SearchOrganizationsContactsInput!) {
   searchOrganizationsContacts(input: $input) {
     contacts {

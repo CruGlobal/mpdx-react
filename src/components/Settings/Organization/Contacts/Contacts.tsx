@@ -19,9 +19,12 @@ export const Contacts: React.FC = () => {
   const [infiniteListHeight, setInfiniteListHeight] = useState<number | null>(
     null,
   );
-  const { selectedOrganizationId, search, clearFilters } = useContext(
-    OrganizationsContext,
-  ) as OrganizationsContextType;
+  const {
+    selectedOrganizationId,
+    search,
+    clearFilters,
+    selectedOrganizationName,
+  } = useContext(OrganizationsContext) as OrganizationsContextType;
 
   const { data, loading, fetchMore } = useSearchOrganizationsContactsQuery({
     variables: {
@@ -64,7 +67,7 @@ export const Contacts: React.FC = () => {
             </Typography>
             <Typography>
               {t(
-                "You'll also need to search by contact name, email address, and partner number.",
+                "You'll also need to search by contact name, email address, or partner number.",
               )}
             </Typography>
           </NullStateBox>
@@ -83,7 +86,11 @@ export const Contacts: React.FC = () => {
           disableHover
           itemContent={(index, contact) => {
             return contact ? (
-              <ContactRow key={`contact-${contact?.id}`} contact={contact} />
+              <ContactRow
+                key={`contact-${contact?.id}`}
+                contact={contact}
+                selectedOrganizationName={selectedOrganizationName}
+              />
             ) : null;
           }}
           endReached={() =>
