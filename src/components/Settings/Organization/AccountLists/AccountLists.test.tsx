@@ -45,6 +45,7 @@ const ComponentsWithNoData = ({ children }: PropsWithChildren) => (
       <ThemeProvider theme={theme}>
         <OrganizationsContextProvider
           selectedOrganizationId={'Org123'}
+          selectedOrganizationName={'Org123'}
           search={''}
           setSearch={setSearch}
           clearFilters={clearFilters}
@@ -62,6 +63,7 @@ const Components = ({ children }: PropsWithChildren) => (
       <ThemeProvider theme={theme}>
         <OrganizationsContextProvider
           selectedOrganizationId={selectedOrganizationId}
+          selectedOrganizationName={selectedOrganizationId}
           search={search}
           setSearch={setSearch}
           clearFilters={clearFilters}

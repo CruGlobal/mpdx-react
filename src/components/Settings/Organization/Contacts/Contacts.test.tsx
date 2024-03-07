@@ -37,6 +37,7 @@ const setSearch = jest.fn().mockImplementation((value) => {
 });
 const clearFilters = jest.fn();
 const selectedOrganizationId = 'org111';
+const selectedOrganizationName = 'Cru';
 
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
@@ -44,6 +45,7 @@ const Components = ({ children }: PropsWithChildren) => (
       <ThemeProvider theme={theme}>
         <OrganizationsContextProvider
           selectedOrganizationId={selectedOrganizationId}
+          selectedOrganizationName={selectedOrganizationName}
           search={search}
           setSearch={setSearch}
           clearFilters={clearFilters}
@@ -112,12 +114,7 @@ describe('Contacts', () => {
 
     await waitFor(() => {
       expect(
-        getByText(
-          'Unfortunately none of the contacts match your current search or filters.',
-        ),
-      ).toBeInTheDocument();
-      expect(
-        getByText('Try searching for a different keyword or organization.'),
+        getByText('No contacts match your search filters'),
       ).toBeInTheDocument();
     });
   });
