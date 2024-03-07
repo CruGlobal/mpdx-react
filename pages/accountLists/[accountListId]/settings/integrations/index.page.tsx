@@ -22,7 +22,7 @@ const Integrations = ({ apiToken }: Props): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
   const [expandedPanel, setExpandedPanel] = useState(
-    (query?.selectedTab as string) || '',
+    (query?.selectedTab as string | undefined) || '',
   );
 
   useEffect(() => {
