@@ -6,15 +6,19 @@ import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/Accordion
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 
-const ManageAccounts = (): ReactElement => {
+export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
+
+const ManageCoaching = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
   const [expandedPanel, setExpandedPanel] = useState(
-    (query?.selectedTab as string | undefined) || '',
+    typeof query.selectedTab === 'string'
+      ? query.selectedTab
+      : 'Manage Account Coaching Access',
   );
 
   useEffect(() => {
-    suggestArticles('HS_SETTINGS_SERVICES_SUGGESTIONS');
+    suggestArticles(suggestedArticles);
   }, []);
 
   const handleAccordionChange = (panel: string) => {
@@ -38,4 +42,4 @@ const ManageAccounts = (): ReactElement => {
   );
 };
 
-export default ManageAccounts;
+export default ManageCoaching;

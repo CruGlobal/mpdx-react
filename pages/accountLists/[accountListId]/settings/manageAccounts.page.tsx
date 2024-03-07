@@ -8,11 +8,15 @@ import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/Accordion
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 
+export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
+
 const ManageAccounts = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
   const [expandedPanel, setExpandedPanel] = useState(
-    (query?.selectedTab as string | undefined) || '',
+    typeof query.selectedTab === 'string'
+      ? query.selectedTab
+      : 'Manage Account Access',
   );
 
   useEffect(() => {
