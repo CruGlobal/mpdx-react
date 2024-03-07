@@ -12,13 +12,9 @@ import {
 import { styled } from '@mui/material/styles';
 import { FieldArray, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
-import {
-  PersonCreateInput,
-  PersonUpdateInput,
-} from 'src/graphql/types.generated';
+import { PersonUpdateInput } from 'src/graphql/types.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
-import { NewSocial } from '../PersonModal';
 import { PersonEmailItem } from './PersonEmailItem';
 
 const ContactPrimaryPersonSelectLabel = styled(InputLabel)(() => ({
@@ -40,7 +36,13 @@ const OptOutENewsletterLabel = styled(FormControlLabel)(() => ({
 }));
 
 interface PersonEmailProps {
-  formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  showOptOutENewsletter?: boolean;
+  formikProps: Pick<
+    FormikProps<
+      Pick<PersonUpdateInput, 'emailAddresses' | 'optoutEnewsletter'>
+    >,
+    'values' | 'setFieldValue' | 'errors'
+  >;
   sources:
     | {
         id: string;
@@ -50,6 +52,7 @@ interface PersonEmailProps {
 }
 
 export const PersonEmail: React.FC<PersonEmailProps> = ({
+  showOptOutENewsletter = false,
   formikProps,
   sources,
 }) => {
@@ -94,19 +97,17 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
         render={({ push }) => (
           <>
             {emailAddresses?.map((emailAddress, index) => (
-              <>
-                <span key={index} />
-                <PersonEmailItem
-                  emailAddress={emailAddress}
-                  index={index}
-                  primaryIndex={primaryIndex}
-                  emailAddresses={emailAddresses}
-                  setFieldValue={setFieldValue}
-                  errors={errors}
-                  handleChangePrimary={handleChangePrimary}
-                  sources={sources}
-                />
-              </>
+              <PersonEmailItem
+                key={index}
+                emailAddress={emailAddress}
+                index={index}
+                primaryIndex={primaryIndex}
+                emailAddresses={emailAddresses}
+                setFieldValue={setFieldValue}
+                errors={errors}
+                handleChangePrimary={handleChangePrimary}
+                sources={sources}
+              />
             ))}
             <ModalSectionContainer>
               <Grid container alignItems="center">
@@ -129,18 +130,23 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
                   </Button>
                 </Grid>
                 <Grid container item xs={6} alignItems="center">
-                  <OptOutENewsletterLabel
-                    control={
-                      <Checkbox
-                        color="secondary"
-                        checked={!!optoutEnewsletter}
-                        onChange={() =>
-                          setFieldValue('optoutEnewsletter', !optoutEnewsletter)
-                        }
-                      />
-                    }
-                    label={t('Opt-out of Email Newsletter')}
-                  />
+                  {showOptOutENewsletter && (
+                    <OptOutENewsletterLabel
+                      control={
+                        <Checkbox
+                          color="secondary"
+                          checked={!!optoutEnewsletter}
+                          onChange={() =>
+                            setFieldValue(
+                              'optoutEnewsletter',
+                              !optoutEnewsletter,
+                            )
+                          }
+                        />
+                      }
+                      label={t('Opt-out of Email Newsletter')}
+                    />
+                  )}
                 </Grid>
               </Grid>
             </ModalSectionContainer>

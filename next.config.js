@@ -172,6 +172,13 @@ const config = {
 
     return config;
   },
+  redirects: () => [
+    {
+      source: '/accountLists/:accountListId/settings',
+      destination: '/accountLists/:accountListId/settings/preferences',
+      permanent: true,
+    },
+  ],
 };
 
 module.exports = withPlugins([

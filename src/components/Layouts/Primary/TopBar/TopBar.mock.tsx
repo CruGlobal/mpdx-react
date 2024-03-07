@@ -87,3 +87,30 @@ export const getTopBarMultipleMock = (): MockedResponse => {
     },
   };
 };
+export const getTopBarNoAccountListMock = (): MockedResponse => {
+  const data: GetTopBarQuery = {
+    accountLists: {
+      nodes: [],
+    },
+    user: {
+      id: 'user-5',
+      firstName: 'John',
+      lastName: 'Smith',
+      admin: false,
+      developer: false,
+      keyAccounts: [{ id: '5', email: 'john.smith@gmail.com' }],
+      administrativeOrganizations: {
+        nodes: [],
+      },
+      defaultAccountList: '12345',
+    },
+  };
+  return {
+    request: {
+      query: GetTopBarDocument,
+    },
+    result: {
+      data,
+    },
+  };
+};

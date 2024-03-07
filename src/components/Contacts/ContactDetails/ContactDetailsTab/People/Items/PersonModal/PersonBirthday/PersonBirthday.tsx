@@ -30,15 +30,15 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
     setFieldValue,
   } = formikProps;
 
-  const handleDateChange = (date: DateTime) => {
-    setFieldValue('birthdayDay', date.day);
-    setFieldValue('birthdayMonth', date.month);
-    setFieldValue('birthdayYear', date.year);
+  const handleDateChange = (date: DateTime | null) => {
+    setFieldValue('birthdayDay', date?.day || null);
+    setFieldValue('birthdayMonth', date?.month || null);
+    setFieldValue('birthdayYear', date?.year || null);
   };
 
   return (
     <ModalSectionContainer>
-      <ModalSectionIcon icon={<CakeIcon />} />
+      <ModalSectionIcon transform="translateY(-100%)" icon={<CakeIcon />} />
       <DatePicker<Date, DateTime>
         renderInput={(params) => (
           <TextField
@@ -48,7 +48,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
             {...params}
           />
         )}
-        onChange={(date) => (!date ? null : handleDateChange(date))}
+        onChange={(date) => handleDateChange(date)}
         value={
           birthdayMonth && birthdayDay
             ? new Date(birthdayYear ?? 1900, birthdayMonth - 1, birthdayDay)
@@ -56,6 +56,11 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
         }
         inputFormat={getDateFormatPattern(locale)}
         label={t('Birthday')}
+        componentsProps={{
+          actionBar: {
+            actions: ['cancel', 'clear'],
+          },
+        }}
       />
     </ModalSectionContainer>
   );

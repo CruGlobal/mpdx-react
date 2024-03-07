@@ -99,18 +99,17 @@ export const PersonPhoneNumber: React.FC<PersonPhoneNumberProps> = ({
         render={({ push }) => (
           <>
             {phoneNumbers?.map((phoneNumber, index) => (
-              <React.Fragment key={index}>
-                <PersonPhoneNumberItem
-                  phoneNumber={phoneNumber}
-                  index={index}
-                  primaryIndex={primaryIndex}
-                  phoneNumbers={phoneNumbers}
-                  setFieldValue={setFieldValue}
-                  errors={errors}
-                  handleChangePrimary={handleChangePrimary}
-                  sources={sources}
-                />
-              </React.Fragment>
+              <PersonPhoneNumberItem
+                key={index}
+                phoneNumber={phoneNumber}
+                index={index}
+                primaryIndex={primaryIndex}
+                phoneNumbers={phoneNumbers}
+                setFieldValue={setFieldValue}
+                errors={errors}
+                handleChangePrimary={handleChangePrimary}
+                sources={sources}
+              />
             ))}
             <ModalSectionContainer>
               <Grid container alignItems="center">

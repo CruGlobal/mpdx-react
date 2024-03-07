@@ -17,11 +17,10 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { MergePeopleModal } from 'src/components/Contacts/MassActions/MergePeople/MergePeopleModal';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat, dayMonthFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateFromParts } from 'src/lib/intlFormat/intlFormat';
 import { RingIcon } from '../../../RingIcon';
 import {
   ContactDetailContext,
@@ -112,22 +111,6 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const dateFromParts = (
-    year: number | null | undefined,
-    month: number | null | undefined,
-    day: number | null | undefined,
-  ): string | null => {
-    if (typeof month !== 'number' || typeof day !== 'number') {
-      return null;
-    }
-
-    if (typeof year === 'number') {
-      return dateFormat(DateTime.local(year, month, day), locale);
-    } else {
-      return dayMonthFormat(day, month, locale);
-    }
-  };
-
   const {
     editPersonModalOpen,
     setEditPersonModalOpen,
@@ -171,11 +154,13 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
       person.birthdayYear,
       person.birthdayMonth,
       person.birthdayDay,
+      locale,
     );
     const anniversary = dateFromParts(
       person.anniversaryYear,
       person.anniversaryMonth,
       person.anniversaryDay,
+      locale,
     );
 
     const hasNullPhoneNumbers = person.phoneNumbers.nodes?.some(

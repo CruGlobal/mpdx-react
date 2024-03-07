@@ -59,7 +59,6 @@ const Modal = ({
       <CloseButton onClick={handleClose} aria-label={t('Close')}>
         <CloseIcon />
       </CloseButton>
-
       {children}
     </Dialog>
   );

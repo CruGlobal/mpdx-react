@@ -12,6 +12,7 @@ query GetTopBar {
     lastName
     admin
     developer
+    defaultAccountList
     keyAccounts {
       id
       email

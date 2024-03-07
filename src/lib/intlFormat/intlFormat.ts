@@ -99,6 +99,40 @@ export const dateFormatWithoutYear = (
   }).format(date.toJSDate());
 };
 
+export const dateFromParts = (
+  year: number | null | undefined,
+  month: number | null | undefined,
+  day: number | null | undefined,
+  locale: string,
+): string | null => {
+  if (typeof month !== 'number' || typeof day !== 'number') {
+    return null;
+  }
+
+  if (typeof year === 'number') {
+    return dateFormat(DateTime.local(year, month, day), locale);
+  } else {
+    return dayMonthFormat(day, month, locale);
+  }
+};
+
+export const dateTimeFormat = (
+  date: DateTime | null,
+  locale: string,
+): string => {
+  if (date === null) {
+    return '';
+  }
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    timeZoneName: 'short',
+  }).format(date.toJSDate());
+};
+
 const intlFormat = {
   numberFormat,
   percentageFormat,
