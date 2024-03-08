@@ -67,7 +67,7 @@ export const Contacts: React.FC = () => {
             </Typography>
             <Typography>
               {t(
-                "You'll also need to search by contact name, email address, or partner number.",
+                "You'll also need to search by contact name, email address, phone number, or partner number.",
               )}
             </Typography>
           </NullStateBox>

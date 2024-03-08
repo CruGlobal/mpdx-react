@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 import { List, ListItem, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
@@ -91,8 +91,11 @@ export const InfiniteList = <T, C>({
     [data, groupBy],
   );
 
-  const Item: React.ComponentType<ItemProps> = (props) => (
-    <ItemWithBorders disableGutters disableHover={disableHover} {...props} />
+  const Item: React.ComponentType<ItemProps> = useCallback(
+    (props) => (
+      <ItemWithBorders disableGutters disableHover={disableHover} {...props} />
+    ),
+    [disableHover],
   );
 
   const commonProps: Omit<VirtuosoProps<T, C>, 'itemContent'> = {

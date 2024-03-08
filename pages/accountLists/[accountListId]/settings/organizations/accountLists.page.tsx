@@ -30,12 +30,13 @@ const HeaderAndDropdown = styled(Box)(() => ({
 
 const AccountListsOrganizations = (): ReactElement => {
   const { t } = useTranslation();
-  const selectedOrg = window.localStorage.getItem('admin-org')
-    ? JSON.parse(window.localStorage.getItem('admin-org') || '')
-    : '';
+  const savedOrg = window.localStorage.getItem('admin-org');
+  const selectedOrg: SettingsOrganizationFragment | null | undefined = savedOrg
+    ? JSON.parse(savedOrg)
+    : null;
 
   const [search, setSearch] = useState('');
-  const matches = useMediaQuery('(max-width:600px)');
+  const isNarrowScreen = useMediaQuery('(max-width:600px)');
   const [selectedOrganization, setSelectedOrganization] = useState<
     SettingsOrganizationFragment | null | undefined
   >(selectedOrg);
@@ -85,7 +86,7 @@ const AccountListsOrganizations = (): ReactElement => {
                     fullWidth
                     inputProps={{ 'aria-label': 'Search Account Lists' }}
                     style={{
-                      width: matches ? '150px' : '250px',
+                      width: isNarrowScreen ? '150px' : '250px',
                     }}
                     InputProps={{
                       startAdornment: (
@@ -101,7 +102,7 @@ const AccountListsOrganizations = (): ReactElement => {
             <Box>
               <Autocomplete
                 style={{
-                  width: matches ? '150px' : '350px',
+                  width: isNarrowScreen ? '150px' : '350px',
                 }}
                 autoHighlight
                 options={organizations?.map((org) => org?.id) || []}
