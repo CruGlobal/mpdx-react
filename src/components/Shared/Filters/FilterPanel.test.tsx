@@ -4,17 +4,27 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import TestRouter from '__tests__/util/TestRouter';
+import {
+  ContactFilterSetInput,
+  ContactFilterStatusEnum,
+  ReportContactFilterSetInput,
+  TaskFilterSetInput,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { ContactsProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { FilterPanel, FilterPanelProps } from './FilterPanel';
+import {
+  FilterPanelGroupFragment,
+  UserOptionFragment,
+} from './FilterPanel.generated';
 import {
   filterPanelDefaultMock,
   filterPanelFeaturedMock,
   filterPanelNoteSearchMock,
   filterPanelSlidersMock,
   filterPanelTagsMock,
-  filterPanelZeroTagsMock,
   noteSearchSavedFilterMock,
   noteSearchSavedGraphQLFilterMock,
   savedFiltersMock,
@@ -40,23 +50,70 @@ jest.mock('notistack', () => ({
   },
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const useRouter = jest.spyOn(require('next/router'), 'useRouter');
+const router = {
+  query: {
+    accountListId: 'account-list-1',
+    contactId: 'contact-1',
+  },
+  isReady: true,
+};
 
 describe('FilterPanel', () => {
+  type FilterInput = ContactFilterSetInput &
+    TaskFilterSetInput &
+    ReportContactFilterSetInput;
+
+  interface Props {
+    filters: FilterPanelGroupFragment[];
+    defaultExpandedFilterGroups?: Set<string>;
+    savedFilters: UserOptionFragment[];
+    selectedFilters: FilterInput;
+    onClose: () => void;
+    onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
+  }
+
+  const ContactsProviderFilterWrapper: React.FC<Props> = ({
+    filters,
+    defaultExpandedFilterGroups = new Set(),
+    savedFilters,
+    selectedFilters,
+    onClose,
+    onSelectedFiltersChanged,
+  }) => {
+    return (
+      <TestRouter router={router}>
+        <ContactsProvider
+          urlFilters={{}}
+          activeFilters={{}}
+          setActiveFilters={() => {}}
+          starredFilter={{}}
+          setStarredFilter={() => {}}
+          filterPanelOpen={false}
+          setFilterPanelOpen={() => {}}
+          contactId={[]}
+          searchTerm={'test'}
+        >
+          <FilterPanel
+            filters={filters}
+            defaultExpandedFilterGroups={defaultExpandedFilterGroups}
+            savedFilters={savedFilters}
+            selectedFilters={selectedFilters}
+            onClose={onClose}
+            onSelectedFiltersChanged={onSelectedFiltersChanged}
+          />
+        </ContactsProvider>
+      </TestRouter>
+    );
+  };
+
   describe('Contacts', () => {
-    beforeEach(() => {
-      useRouter.mockReturnValue({
-        route: '/contacts',
-      });
-    });
     it('default', async () => {
       const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider>
-                <FilterPanel
+                <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock]}
                   selectedFilters={{}}
@@ -104,7 +161,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
                 selectedFilters={{}}
@@ -164,7 +221,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[filterPanelDefaultMock, filterPanelNoteSearchMock]}
                 savedFilters={[savedFiltersMock]}
                 selectedFilters={{}}
@@ -213,7 +270,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
                 selectedFilters={{
@@ -249,7 +306,7 @@ describe('FilterPanel', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider>
-                <FilterPanel
+                <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock, savedGraphQLContactMock]}
                   selectedFilters={{}}
@@ -417,7 +474,7 @@ describe('FilterPanel', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider>
-                <FilterPanel
+                <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMockTwo, savedGraphQLContactMock]}
                   selectedFilters={{}}
@@ -516,7 +573,7 @@ describe('FilterPanel', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider>
-                <FilterPanel
+                <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[
                     savedFiltersMockThree,
@@ -568,7 +625,7 @@ describe('FilterPanel', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider onCall={mutationSpy}>
-                <FilterPanel
+                <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMockThree]}
                   selectedFilters={{}}
@@ -600,7 +657,7 @@ describe('FilterPanel', () => {
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
         <GqlMockedProvider>
-          <FilterPanel
+          <ContactsProviderFilterWrapper
             filters={[]}
             savedFilters={[savedFiltersMock]}
             selectedFilters={{}}
@@ -621,7 +678,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
                 selectedFilters={{
@@ -649,10 +706,12 @@ describe('FilterPanel', () => {
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
         <GqlMockedProvider>
-          <FilterPanel
+          <ContactsProviderFilterWrapper
             filters={[]}
             savedFilters={[savedFiltersMock]}
-            selectedFilters={{}}
+            selectedFilters={{
+              status: [ContactFilterStatusEnum.ContactForAppointment],
+            }}
             onClose={onClose}
             onSelectedFiltersChanged={onSelectedFiltersChanged}
           />
@@ -668,30 +727,26 @@ describe('FilterPanel', () => {
   });
 
   describe('Report Contacts', () => {
-    beforeEach(() => {
-      useRouter.mockReturnValue({
-        route: '/reports/partnerGivingAnalysis',
-      });
-    });
-
     it('default', async () => {
       const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <FilterPanel
-                  filters={[
-                    filterPanelDefaultMock,
-                    filterPanelFeaturedMock,
-                    filterPanelSlidersMock,
-                  ]}
-                  savedFilters={[savedFiltersMock]}
-                  selectedFilters={{}}
-                  onClose={onClose}
-                  onSelectedFiltersChanged={onSelectedFiltersChanged}
-                />
-              </GqlMockedProvider>
+              <TestRouter router={router}>
+                <GqlMockedProvider>
+                  <ContactsProviderFilterWrapper
+                    filters={[
+                      filterPanelDefaultMock,
+                      filterPanelFeaturedMock,
+                      filterPanelSlidersMock,
+                    ]}
+                    savedFilters={[savedFiltersMock]}
+                    selectedFilters={{}}
+                    onClose={onClose}
+                    onSelectedFiltersChanged={onSelectedFiltersChanged}
+                  />
+                </GqlMockedProvider>
+              </TestRouter>
             </ThemeProvider>
           </LocalizationProvider>,
         );
@@ -726,7 +781,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[
                   filterPanelDefaultMock,
                   filterPanelFeaturedMock,
@@ -756,18 +811,13 @@ describe('FilterPanel', () => {
   });
 
   describe('Tasks', () => {
-    beforeEach(() => {
-      useRouter.mockReturnValue({
-        route: '/tasks',
-      });
-    });
     it('default', async () => {
       const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider>
-                <FilterPanel
+                <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock]}
                   selectedFilters={{}}
@@ -817,7 +867,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
                 selectedFilters={{}}
@@ -872,7 +922,7 @@ describe('FilterPanel', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider>
-                <FilterPanel
+                <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedGraphQLTaskMock]}
                   selectedFilters={{}}
@@ -904,7 +954,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[noteSearchSavedGraphQLFilterMock]}
                 selectedFilters={{}}
@@ -932,7 +982,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[noteSearchSavedFilterMock]}
                 selectedFilters={{}}
@@ -964,7 +1014,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[filterPanelDefaultMock, filterPanelNoteSearchMock]}
                 savedFilters={[]}
                 selectedFilters={{
@@ -1000,7 +1050,7 @@ describe('FilterPanel', () => {
     it('closes panel', async () => {
       const { queryByTestId, getByLabelText } = render(
         <GqlMockedProvider>
-          <FilterPanel
+          <ContactsProviderFilterWrapper
             filters={[]}
             savedFilters={[savedFiltersMock]}
             selectedFilters={{}}
@@ -1021,7 +1071,7 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
+              <ContactsProviderFilterWrapper
                 filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                 savedFilters={[savedFiltersMock]}
                 selectedFilters={{
@@ -1049,7 +1099,7 @@ describe('FilterPanel', () => {
     it('no filters', async () => {
       const { queryByTestId, queryAllByTestId } = render(
         <GqlMockedProvider>
-          <FilterPanel
+          <ContactsProviderFilterWrapper
             filters={[]}
             savedFilters={[]}
             selectedFilters={{}}
@@ -1075,7 +1125,7 @@ describe('FilterPanel', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider>
-                <FilterPanel
+                <ContactsProviderFilterWrapper
                   filters={[filterPanelTagsMock]}
                   savedFilters={[savedFiltersMock]}
                   selectedFilters={selectedFilters}
@@ -1108,12 +1158,12 @@ describe('FilterPanel', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <FilterPanel
-                filters={[filterPanelZeroTagsMock]}
-                savedFilters={[savedFiltersMock]}
+              <ContactsProviderFilterWrapper
+                filters={[]}
+                savedFilters={[]}
                 selectedFilters={{}}
                 onClose={onClose}
-                onSelectedFiltersChanged={jest.fn()}
+                onSelectedFiltersChanged={() => {}}
               />
             </GqlMockedProvider>
           </ThemeProvider>

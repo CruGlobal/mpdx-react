@@ -49,7 +49,6 @@ describe('Contacts', () => {
       replace: routeReplace,
       push: routePush,
     });
-
     const {
       getByTestId,
       getByText,

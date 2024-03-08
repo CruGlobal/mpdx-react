@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { mdiAccountSearch } from '@mdi/js';
 import Icon from '@mdi/react';
 import Close from '@mui/icons-material/Close';
@@ -32,6 +32,12 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
 }) => {
   const { t } = useTranslation();
   const [currentSearchTerm, setSearchTerm] = useState(searchTerm ?? '');
+
+  useEffect(() => {
+    if (!searchTerm) {
+      setSearchTerm('');
+    }
+  }, [searchTerm]);
 
   const handleOnChange = (searchTerm: string) => {
     setSearchTerm(searchTerm);

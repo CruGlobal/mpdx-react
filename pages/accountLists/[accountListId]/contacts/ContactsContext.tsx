@@ -43,6 +43,7 @@ export type ContactsType = {
   filterData: ContactFiltersQuery | undefined;
   filtersLoading: boolean;
   toggleFilterPanel: () => void;
+  handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
   setContactFocus: (
     id?: string | undefined,
@@ -265,6 +266,10 @@ export const ContactsProvider: React.FC<Props> = ({
     setFilterPanelOpen(!filterPanelOpen);
   };
 
+  const handleClearAll = () => {
+    setSearchTerm('');
+  };
+
   const savedFilters: UserOptionFragment[] = ContactsContextSavedFilters(
     filterData,
     accountListId,
@@ -394,6 +399,7 @@ export const ContactsProvider: React.FC<Props> = ({
         filterData: filterData,
         filtersLoading: filtersLoading,
         toggleFilterPanel: toggleFilterPanel,
+        handleClearAll: handleClearAll,
         savedFilters: savedFilters,
         setContactFocus: setContactFocus,
         setSearchTerm: setSearchTerm,
