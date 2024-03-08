@@ -34,6 +34,10 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import {
+  ContactsContext,
+  ContactsType,
+} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterListItem } from './FilterListItem';
 import { FilterListItemShowAll } from './FilterListItemShowAll';
@@ -173,6 +177,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { handleClearAll } = React.useContext(ContactsContext) as ContactsType;
 
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);
@@ -694,6 +699,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     setDeleteFilterModalOpen(true);
   };
 
+  const handleClearAllClick = () => {
+    handleClearAll();
+    clearSelectedFilter();
+  };
+
   const tagsFilters =
     (
       filters.find((filter) => filter?.filters[0]?.filterKey === 'tags')
@@ -738,7 +748,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               <LinkButton
                 style={{ marginInlineStart: theme.spacing(2) }}
                 disabled={noSelectedFilters}
-                onClick={clearSelectedFilter}
+                onClick={handleClearAllClick}
               >
                 {t('Clear All')}
               </LinkButton>
