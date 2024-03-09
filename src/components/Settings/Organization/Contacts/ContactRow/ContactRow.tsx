@@ -44,12 +44,6 @@ const StyledBox = styled(Box)(() => ({
   justifyContent: 'flex-start',
 }));
 
-const SpaceBetweenBox = styled(Box)(() => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-}));
-
 const PersonData: React.FC<PersonDataProps> = ({ person }) => {
   const email =
     person?.emailAddresses &&
@@ -155,7 +149,7 @@ export const ContactRow: React.FC<Props> = ({
   return (
     <>
       <Grid container alignItems="center">
-        <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
+        <Grid item xs={6} style={{ paddingRight: 16 }}>
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -192,49 +186,46 @@ export const ContactRow: React.FC<Props> = ({
           />
         </Grid>
 
-        <Grid item xs={2} md={6} style={{ paddingRight: 16 }}>
-          <SpaceBetweenBox>
-            <ListItemText
-              primary={
-                <Typography component="span" variant="h6" noWrap>
-                  <Box component="span" display="flex" alignItems="center">
-                    {accountList?.name}
-                  </Box>
-                </Typography>
-              }
-              secondary={accountList?.accountListUsers?.map(
-                (person, idx) =>
-                  person && (
-                    <PersonData person={person} key={`person-${idx}`} />
-                  ),
-              )}
-            />
-
-            <Box>
-              {allowDeletion && (
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={() => setDeleteDialogOpen(true)}
-                  size="small"
-                >
-                  <Delete fontSize="small" style={styles.buttonIcon} />{' '}
-                  {t('Delete')}
-                </Button>
-              )}
+        <Grid item xs={3}>
+          <ListItemText
+            primary={
+              <Typography component="span" variant="h6">
+                <Box component="span" display="flex" alignItems="center">
+                  {accountList?.name}
+                </Box>
+              </Typography>
+            }
+            secondary={accountList?.accountListUsers?.map(
+              (person, idx) =>
+                person && <PersonData person={person} key={`person-${idx}`} />,
+            )}
+          />
+        </Grid>
+        <Grid item xs={3} style={{ paddingRight: 16, textAlign: 'right' }}>
+          <Box>
+            {allowDeletion && (
               <Button
                 variant="contained"
                 color="error"
-                onClick={() => setAnonymizeDialogOpen(true)}
+                onClick={() => setDeleteDialogOpen(true)}
                 size="small"
-                sx={{ ml: '7px' }}
-                className="ml-1"
               >
-                <Lock fontSize="small" style={styles.buttonIcon} />{' '}
-                {t('Anonymize')}
+                <Delete fontSize="small" style={styles.buttonIcon} />{' '}
+                {t('Delete')}
               </Button>
-            </Box>
-          </SpaceBetweenBox>
+            )}
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => setAnonymizeDialogOpen(true)}
+              size="small"
+              sx={{ ml: '7px' }}
+              className="ml-1"
+            >
+              <Lock fontSize="small" style={styles.buttonIcon} />{' '}
+              {t('Anonymize')}
+            </Button>
+          </Box>
         </Grid>
       </Grid>
       {allowDeletion && (

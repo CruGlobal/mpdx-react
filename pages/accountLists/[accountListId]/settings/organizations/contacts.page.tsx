@@ -31,7 +31,7 @@ const HeaderAndDropdown = styled(Box)(() => ({
 const OrganizationsContacts = (): ReactElement => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
-  const matches = useMediaQuery('(max-width:600px)');
+  const isNarrowScreen = useMediaQuery('(max-width:600px)');
   const [selectedOrganization, setSelectedOrganization] = useState<
     SettingsOrganizationFragment | null | undefined
   >();
@@ -80,7 +80,7 @@ const OrganizationsContacts = (): ReactElement => {
                     fullWidth
                     inputProps={{ 'aria-label': 'Search Contacts' }}
                     style={{
-                      width: matches ? '150px' : '250px',
+                      width: isNarrowScreen ? '150px' : '250px',
                     }}
                     InputProps={{
                       startAdornment: (
@@ -96,7 +96,7 @@ const OrganizationsContacts = (): ReactElement => {
             <Box>
               <Autocomplete
                 style={{
-                  width: matches ? '150px' : '350px',
+                  width: isNarrowScreen ? '150px' : '350px',
                 }}
                 autoHighlight
                 options={organizations?.map((org) => org?.id) || []}
