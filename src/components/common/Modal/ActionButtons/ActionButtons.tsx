@@ -7,7 +7,7 @@ const StyledButton = styled(Button)(() => ({
   fontWeight: 700,
 }));
 
-interface ActionButtonProps {
+export interface ActionButtonProps {
   onClick?: () => void;
   size?: ButtonProps['size'];
   color?: ButtonProps['color'];

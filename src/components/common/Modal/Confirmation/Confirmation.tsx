@@ -5,14 +5,13 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
+  ActionButtonProps,
   CancelButton,
-  SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+ SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from '../Modal';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -29,9 +28,9 @@ export interface ConfirmationProps {
   title: string;
   subtitle?: string;
   formLabel?: string;
-  handleFormChange?: (string) => void;
   message?: ReactNode;
   mutation: () => Promise<unknown>;
+  confirmButtonProps?: ActionButtonProps;
   handleClose: () => void;
 }
 
@@ -39,25 +38,16 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
   isOpen,
   title,
   subtitle,
-  formLabel,
-  handleFormChange,
+  confirmButtonProps,
   message,
   mutation,
   handleClose,
 }) => {
   const { t } = useTranslation();
   const [mutating, setMutating] = useState(false);
-  const [formValue, setFormValue] = useState('');
-  const includeForm = !!formLabel && !!handleFormChange;
 
   const onClickDecline = () => {
     handleClose();
-    setFormValue('');
-    handleFormChange && handleFormChange('');
-  };
-  const handleChange = (e) => {
-    setFormValue(e.target.value); // keep track of the formValue state so that formValue is not needed to be passed down from the parent.
-    handleFormChange && handleFormChange(e.target.value);
   };
 
   const onClickConfirm = () => {
@@ -67,14 +57,12 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
       .catch(() => undefined)
       .finally(() => {
         setMutating(false);
-        setFormValue('');
-        handleFormChange && handleFormChange('');
         handleClose();
       });
   };
 
   return (
-    <Modal isOpen={isOpen} title={title} handleClose={onClickDecline}>
+    <Modal isOpen={isOpen} title={title} handleClose={handleClose}>
       <DialogContent dividers>
         {mutating ? (
           <Box style={{ textAlign: 'center' }}>
@@ -96,21 +84,6 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
             )}
           </>
         )}
-        {includeForm && (
-          <TextField
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus
-            margin="dense"
-            id={formLabel}
-            label={formLabel}
-            type="text"
-            fullWidth
-            multiline
-            value={formValue}
-            onChange={handleChange}
-            sx={{ marginTop: 2 }}
-          />
-        )}
       </DialogContent>
 
       <DialogActions>
@@ -120,7 +93,8 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
         <SubmitButton
           type="button"
           onClick={onClickConfirm}
-          disabled={mutating || (includeForm && formValue?.length < 5)}
+          {...confirmButtonProps}
+          disabled={mutating || confirmButtonProps?.disabled}
         >
           {t('Yes')}
         </SubmitButton>
