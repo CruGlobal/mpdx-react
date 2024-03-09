@@ -5,6 +5,7 @@ import {
   Grid,
   IconButton,
   ListItemText,
+  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -18,7 +19,6 @@ import {
   OrganizationsAccountList,
 } from 'src/graphql/types.generated';
 import * as Types from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import { AccountListCoachesOrUsers } from './AccountListCoachesOrUsers/AccountListCoachesOrUsers';
@@ -29,27 +29,11 @@ import {
   useDeleteUserMutation,
   useRemoveAccountListUserMutation,
 } from './DeleteAccountListsItems.generated';
+import { BorderBottomBox, HeaderBox } from './accountListRowHelper';
 
 export interface AccountListRowProps {
   accountList: OrganizationsAccountList;
 }
-
-export const BorderBottomBox = styled(Box)(() => ({
-  borderBottom: '1px solid',
-  borderColor: theme.palette.cruGrayLight.main,
-  padding: theme.spacing(1),
-  '&:last-child': {
-    borderBottom: '0px',
-  },
-}));
-
-export const HeaderBox = styled(Box)(() => ({
-  fontWeight: 'bold',
-  paddingX: '5px',
-}));
-export const RegularBox = styled(Box)(() => ({
-  fontWeight: 'regular',
-}));
 
 const BorderRightGrid = styled(Grid)(() => ({
   borderRight: '1px solid',
@@ -67,27 +51,24 @@ const NoItemsBox = styled(Box)(() => ({
 export const AccountListRow: React.FC<AccountListRowProps> = ({
   accountList,
 }) => {
-  const emptyUser: Types.AccountListUsers = {};
-  const emptyCoach: Types.OrganizationAccountListCoaches = {};
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const accountListId = useAccountListId();
   const [adminDeleteOrganizationCoach] =
     useAdminDeleteOrganizationCoachMutation();
   const [removeAccountListUser] = useRemoveAccountListUserMutation();
-  const [deleteUser] = useDeleteUserMutation();
+  const [deleteUserMutation] = useDeleteUserMutation();
   const [deleteAccountList] = useDeleteAccountListMutation();
+  const [removeUser, setRemoveUser] = useState<Types.AccountListUsers | null>(
+    null,
+  );
+  const [deleteUser, setDeleteUser] = useState<Types.AccountListUsers | null>(
+    null,
+  );
+  const [removeCoach, setRemoveCoach] =
+    useState<Types.OrganizationAccountListCoaches | null>(null);
   const [deleteAccountListDialogOpen, setDeleteAccountListDialogOpen] =
     useState(false);
-  const [deleteUserDialogOpen, setDeleteUserDialogOpen] = useState(false);
-  const [removeCoachDialogOpen, setRemoveCoachDialogOpen] = useState(false);
-  const [removeUser, setRemoveUser] = useState({
-    item: emptyUser,
-    dialogOpen: false,
-  });
-  const [deleteUserContent, setDeleteUserContent] = useState(emptyUser);
-  const [removeCoachContent, setRemoveCoachContent] = useState(emptyCoach);
   const [reason, setReason] = useState('');
   const {
     id,
@@ -99,51 +80,55 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
     accountListCoaches,
   } = accountList;
 
-  const handleDeleteUser = async (item: AccountListUsers) => {
-    const fullName = item.userFirstName + ' ' + item.userLastName;
-    const errorMessage = t('{{appName}} could not delete user: {{fullName}}', {
-      appName,
-      fullName,
-    });
-    if (!item?.userId) {
-      enqueueSnackbar(errorMessage, {
-        variant: 'error',
-      });
-      return;
-    }
-    if (!reason) {
-      enqueueSnackbar(t('You must include a reason for this action.'), {
-        variant: 'error',
-      });
-      return;
-    }
-
-    await deleteUser({
-      variables: {
-        input: {
-          clientMutationId: accountListId,
-          reason: reason,
-          resettedUserId: item?.userId,
+  const handleDeleteUser = async (item: AccountListUsers | null) => {
+    if (item) {
+      const fullName = item.userFirstName + ' ' + item.userLastName;
+      const errorMessage = t(
+        '{{appName}} could not delete user: {{fullName}}',
+        {
+          appName,
+          fullName,
         },
-      },
-      update: (cache) => {
-        cache.evict({ id: `AccountListUsers:${item.id}` });
-        cache.gc();
-      },
-      onCompleted: () => {
-        enqueueSnackbar(
-          t('Successfully deleted user: {{fullName}}', { fullName }),
-          {
-            variant: 'success',
-          },
-        );
-      },
-      onError: () => {
+      );
+      if (!item?.userId) {
         enqueueSnackbar(errorMessage, {
           variant: 'error',
         });
-      },
-    });
+        return;
+      }
+      if (!reason) {
+        enqueueSnackbar(t('You must include a reason for this action.'), {
+          variant: 'error',
+        });
+        return;
+      }
+
+      await deleteUserMutation({
+        variables: {
+          input: {
+            reason: reason,
+            resettedUserId: item.userId,
+          },
+        },
+        update: (cache) => {
+          cache.evict({ id: `AccountListUsers:${item.id}` });
+          cache.gc();
+        },
+        onCompleted: () => {
+          enqueueSnackbar(
+            t('Successfully deleted user: {{fullName}}', { fullName }),
+            {
+              variant: 'success',
+            },
+          );
+        },
+        onError: () => {
+          enqueueSnackbar(errorMessage, {
+            variant: 'error',
+          });
+        },
+      });
+    }
     setReason('');
   };
 
@@ -168,10 +153,8 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
       variables: {
         input: {
           accountListName: name,
-          clientMutationId: accountListId,
           reason: reason,
-          resettedUserId:
-            (accountListUsers && accountListUsers[0]?.userId) || '',
+          resettedUserId: accountListUsers?.[0]?.userId || '',
         },
       },
       update: (cache) => {
@@ -192,83 +175,94 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
     setReason('');
   };
 
-  const handleRemoveCoach = async (item: OrganizationAccountListCoaches) => {
-    const fullName = item.coachFirstName + ' ' + item.coachLastName;
-    const errorMessage = t('{{appName}} could not remove coach: {{fullName}}', {
-      appName,
-      fullName,
-    });
-    if (!item?.id) {
-      enqueueSnackbar(errorMessage, {
-        variant: 'error',
-      });
-      return;
-    }
-    await adminDeleteOrganizationCoach({
-      variables: {
-        input: {
-          accountListId: id,
-          coachId: item.id,
+  const handleRemoveCoach = async (
+    item: OrganizationAccountListCoaches | null,
+  ) => {
+    if (item) {
+      const fullName = item.coachFirstName + ' ' + item.coachLastName;
+      const errorMessage = t(
+        '{{appName}} could not remove coach: {{fullName}}',
+        {
+          appName,
+          fullName,
         },
-      },
-      update: (cache) => {
-        cache.evict({ id: `OrganizationAccountListCoaches:${item.id}` });
-        cache.gc();
-      },
-      onCompleted: () => {
-        enqueueSnackbar(
-          t('Successfully removed coach: {{fullName}}', { fullName }),
-          {
-            variant: 'success',
-          },
-        );
-      },
-      onError: () => {
+      );
+      if (!item?.id) {
         enqueueSnackbar(errorMessage, {
           variant: 'error',
         });
-      },
-    });
+        return;
+      }
+      await adminDeleteOrganizationCoach({
+        variables: {
+          input: {
+            accountListId: id,
+            coachId: item.id,
+          },
+        },
+        update: (cache) => {
+          cache.evict({ id: `OrganizationAccountListCoaches:${item.id}` });
+          cache.gc();
+        },
+        onCompleted: () => {
+          enqueueSnackbar(
+            t('Successfully removed coach: {{fullName}}', { fullName }),
+            {
+              variant: 'success',
+            },
+          );
+        },
+        onError: () => {
+          enqueueSnackbar(errorMessage, {
+            variant: 'error',
+          });
+        },
+      });
+    }
   };
 
-  const handleRemoveUser = async (item: AccountListUsers) => {
-    const fullName = item.userFirstName + ' ' + item.userLastName;
-    const errorMessage = t('{{appName}} could not remove user: {{fullName}}', {
-      appName,
-      fullName,
-    });
-    if (!item?.userId) {
-      enqueueSnackbar(errorMessage, {
-        variant: 'error',
-      });
-      return;
-    }
-    await removeAccountListUser({
-      variables: {
-        input: {
-          accountListId: id,
-          clientMutationId: accountListId,
-          userId: item?.userId,
+  const handleRemoveUser = async (item: AccountListUsers | null) => {
+    if (item) {
+      const fullName = item.userFirstName + ' ' + item.userLastName;
+      const errorMessage = t(
+        '{{appName}} could not remove user: {{fullName}}',
+        {
+          appName,
+          fullName,
         },
-      },
-      update: (cache) => {
-        cache.evict({ id: `AccountListUsers:${item.id}` });
-        cache.gc();
-      },
-      onCompleted: () => {
-        enqueueSnackbar(
-          t('Successfully removed user: {{fullName}}', { fullName }),
-          {
-            variant: 'success',
-          },
-        );
-      },
-      onError: () => {
+      );
+      if (!item?.userId) {
         enqueueSnackbar(errorMessage, {
           variant: 'error',
         });
-      },
-    });
+        return;
+      }
+      await removeAccountListUser({
+        variables: {
+          input: {
+            accountListId: id,
+            userId: item?.userId,
+          },
+        },
+        update: (cache) => {
+          cache.evict({ id: `AccountListUsers:${item.id}` });
+          cache.gc();
+        },
+        onCompleted: () => {
+          enqueueSnackbar(
+            t('Successfully removed user: {{fullName}}', { fullName }),
+            {
+              variant: 'success',
+            },
+          );
+        },
+        onError: () => {
+          enqueueSnackbar(errorMessage, {
+            variant: 'error',
+          });
+        },
+      });
+    }
   };
 
   return (
@@ -312,14 +306,31 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                             interpolation: { escapeValue: false },
                           },
                         )}
-                        message={t(
-                          'WARNING: Only delete if you know this user/staff reports to your ministry AND does not serve with any other CCCI ministry AND will not be returning to any ministry of CCCI. You may need to confirm this with them.',
-                        )}
-                        formLabel="Reason"
-                        handleFormChange={setReason}
-                        handleClose={() =>
-                          setDeleteAccountListDialogOpen(false)
+                        message={
+                          <>
+                            {t(
+                              'WARNING: Only delete if you know this user/staff reports to your ministry AND does not serve with any other CCCI ministry AND will not be returning to any ministry of CCCI. You may need to confirm this with them.',
+                            )}
+                            <TextField
+                              // eslint-disable-next-line jsx-a11y/no-autofocus
+                              autoFocus
+                              margin="dense"
+                              id={t('Reason')}
+                              label={t('Reason')}
+                              type="text"
+                              fullWidth
+                              multiline
+                              value={reason}
+                              onChange={(e) => setReason(e.target.value)}
+                              sx={{ marginTop: 2 }}
+                            />
+                          </>
                         }
+                        confirmButtonProps={{ disabled: reason?.length < 5 }}
+                        handleClose={() => {
+                          setDeleteAccountListDialogOpen(false);
+                          setReason('');
+                        }}
                         mutation={() => handleDeleteAccountList()}
                       />
                     </>
@@ -378,7 +389,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
               <BorderBottomBox key={`designationAccounts-${idx}`}>
                 <Typography component="span">
                   <HeaderBox>{account?.organization?.name}</HeaderBox>
-                  <RegularBox>{account?.displayName}</RegularBox>
+                  <Box>{account?.displayName}</Box>
                 </Typography>
               </BorderBottomBox>
             ))}
@@ -389,10 +400,8 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
             <AccountListCoachesOrUsers
               accountListItems={accountListUsers}
               setRemoveUser={setRemoveUser}
-              setRemoveCoachContent={setRemoveCoachContent}
-              setDeleteUserContent={setDeleteUserContent}
-              setDeleteUserDialogOpen={setDeleteUserDialogOpen}
-              setRemoveCoachDialogOpen={setRemoveCoachDialogOpen}
+              setRemoveCoach={setRemoveCoach}
+              setDeleteUser={setDeleteUser}
             />
           )}
           {accountListUsersInvites && (
@@ -419,10 +428,8 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
             <AccountListCoachesOrUsers
               accountListItems={accountListCoaches}
               setRemoveUser={setRemoveUser}
-              setRemoveCoachContent={setRemoveCoachContent}
-              setDeleteUserContent={setDeleteUserContent}
-              setDeleteUserDialogOpen={setDeleteUserDialogOpen}
-              setRemoveCoachDialogOpen={setRemoveCoachDialogOpen}
+              setRemoveCoach={setRemoveCoach}
+              setDeleteUser={setDeleteUser}
             />
           )}
           {accountListCoachInvites && (
@@ -441,56 +448,70 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
         </Grid>
       </Grid>
       <Confirmation
-        isOpen={removeUser.dialogOpen}
+        isOpen={!!removeUser}
         title={t('Confirm')}
         message={t(
           'Are you sure you want to remove {{user}} as a user from {{accountList}}?',
           {
-            user: removeUser?.item?.userFirstName,
+            user: removeUser?.userFirstName,
             accountList: name,
             interpolation: { escapeValue: false },
           },
         )}
-        handleClose={() =>
-          setRemoveUser({
-            item: removeUser?.item,
-            dialogOpen: false,
-          })
-        }
-        mutation={() => handleRemoveUser(removeUser?.item)}
+        handleClose={() => setRemoveUser(null)}
+        mutation={() => handleRemoveUser(removeUser)}
       />
       <Confirmation
-        isOpen={deleteUserDialogOpen}
+        isOpen={!!deleteUser}
         title={t('Confirm')}
         subtitle={t(
           'Are you sure you want to permanently delete the user: {{first}} {{last}}?',
           {
-            first: deleteUserContent.userFirstName,
-            last: deleteUserContent.userLastName,
+            first: deleteUser?.userFirstName,
+            last: deleteUser?.userLastName,
             interpolation: { escapeValue: false },
           },
         )}
-        message={t(
-          'WARNING: Only delete if you know this user/staff reports to your ministry AND does not serve with any other CCCI ministry AND will not be returning to any ministry of CCCI. You may need to confirm this with them.',
-        )}
+        message={
+          <>
+            {t(
+              'WARNING: Only delete if you know this user/staff reports to your ministry AND does not serve with any other CCCI ministry AND will not be returning to any ministry of CCCI. You may need to confirm this with them.',
+            )}
+            <TextField
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus
+              margin="dense"
+              id={t('Reason')}
+              label={t('Reason')}
+              type="text"
+              fullWidth
+              multiline
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              sx={{ marginTop: 2 }}
+            />
+          </>
+        }
         formLabel="Reason"
-        handleFormChange={setReason}
-        handleClose={() => setDeleteUserDialogOpen(false)}
-        mutation={() => handleDeleteUser(deleteUserContent)}
+        mutation={() => handleDeleteUser(deleteUser)}
+        handleClose={() => {
+          setDeleteUser(null);
+          setReason('');
+        }}
       />
       <Confirmation
-        isOpen={removeCoachDialogOpen}
+        isOpen={!!removeCoach}
         title={t('Confirm')}
         message={t(
           'Are you sure you want to remove {{coach}} as a coach from {{accountList}}?',
           {
-            coach: removeCoachContent?.coachFirstName,
+            coach: removeCoach?.coachFirstName,
             accountList: name,
             interpolation: { escapeValue: false },
           },
         )}
-        handleClose={() => setRemoveCoachDialogOpen(false)}
-        mutation={() => handleRemoveCoach(removeCoachContent)}
+        mutation={() => handleRemoveCoach(removeCoach)}
+        handleClose={() => setRemoveCoach(null)}
       />
     </Box>
   );

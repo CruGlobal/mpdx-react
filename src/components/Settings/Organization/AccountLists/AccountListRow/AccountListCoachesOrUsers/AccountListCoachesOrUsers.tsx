@@ -11,7 +11,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as Types from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { BorderBottomBox, HeaderBox } from '../AccountListRow';
+import { BorderBottomBox, HeaderBox } from '../accountListRowHelper';
 
 const dateTimeFormat = (date: DateTime | null, locale: string): string => {
   if (date === null) {
@@ -31,16 +31,12 @@ export type UserOrCoach =
   | Types.AccountListUsers
   | Types.OrganizationAccountListCoaches;
 
-export type UserState = { item: Types.AccountListUsers; dialogOpen: boolean };
-
 interface Props {
   accountListItems: Array<Types.Maybe<UserOrCoach>>;
-  setDeleteUserDialogOpen: Dispatch<SetStateAction<boolean>>;
-  setRemoveCoachDialogOpen: Dispatch<SetStateAction<boolean>>;
-  setRemoveUser: Dispatch<SetStateAction<UserState>>;
-  setDeleteUserContent: Dispatch<SetStateAction<Types.AccountListUsers>>;
-  setRemoveCoachContent: Dispatch<
-    SetStateAction<Types.OrganizationAccountListCoaches>
+  setRemoveUser: Dispatch<SetStateAction<Types.AccountListUsers | null>>;
+  setDeleteUser: Dispatch<SetStateAction<Types.AccountListUsers | null>>;
+  setRemoveCoach: Dispatch<
+    SetStateAction<Types.OrganizationAccountListCoaches | null>
   >;
 }
 
@@ -51,11 +47,9 @@ const ContactAddressPrimaryText = styled(Typography)(({ theme }) => ({
 
 export const AccountListCoachesOrUsers: React.FC<Props> = ({
   accountListItems,
-  setRemoveCoachDialogOpen,
-  setDeleteUserDialogOpen,
-  setDeleteUserContent,
+  setDeleteUser,
   setRemoveUser,
-  setRemoveCoachContent,
+  setRemoveCoach,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -96,8 +90,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                       color="error"
                       size="small"
                       onClick={() => {
-                        setDeleteUserContent(item);
-                        setDeleteUserDialogOpen(true);
+                        setDeleteUser(item);
                       }}
                     >
                       <DeleteForever fontSize="small" />
@@ -181,10 +174,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                         color="error"
                         size="small"
                         onClick={() => {
-                          setRemoveUser({
-                            item: item,
-                            dialogOpen: true,
-                          });
+                          setRemoveUser(item);
                         }}
                       >
                         <PersonRemove fontSize="small" />
@@ -203,8 +193,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                       aria-label={t('Remove')}
                       color="error"
                       onClick={() => {
-                        setRemoveCoachContent(item);
-                        setRemoveCoachDialogOpen(true);
+                        setRemoveCoach(item);
                       }}
                       size="small"
                     >

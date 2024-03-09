@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSettingsContext } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import * as Types from 'src/graphql/types.generated';
-import { BorderBottomBox, HeaderBox, RegularBox } from '../AccountListRow';
+import { BorderBottomBox, HeaderBox } from '../accountListRowHelper';
 import { useAdminDeleteOrganizationInviteMutation } from './DeleteAccountListInvites.generated';
 
 interface Props {
@@ -22,13 +22,14 @@ export const AccountListInvites: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { appName } = useAppSettingsContext();
-  const [deleteInviteDialogOpen, setDeleteInviteDialogOpen] = useState(false);
+  const [deleteInvite, setDeleteInvite] =
+    useState<Types.AccountListInvites | null>(null);
   const [adminDeleteOrganizationInvite] =
     useAdminDeleteOrganizationInviteMutation();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const haneleInviteDelete = async (invite) => {
+  const handleInviteDelete = async (invite) => {
     if (!invite?.id) return;
 
     await adminDeleteOrganizationInvite({
@@ -75,10 +76,10 @@ export const AccountListInvites: React.FC<Props> = ({
             >
               <Box>
                 <HeaderBox>{invite?.recipientEmail}</HeaderBox>
-                <RegularBox>
+                <Box>
                   {t('Invited by')} {invite?.invitedByUser?.firstName}{' '}
                   {invite?.invitedByUser?.lastName}
-                </RegularBox>
+                </Box>
               </Box>
               <Tooltip
                 title={t('Remove this invite from the account.')}
@@ -89,29 +90,29 @@ export const AccountListInvites: React.FC<Props> = ({
                 <IconButton
                   aria-label="delete"
                   color="error"
-                  onClick={() => setDeleteInviteDialogOpen(true)}
+                  onClick={() => setDeleteInvite(invite)}
                   size="small"
                 >
                   <PersonRemove fontSize="small" />
                 </IconButton>
               </Tooltip>
             </Typography>
-            <Confirmation
-              isOpen={deleteInviteDialogOpen}
-              title={t('Confirm')}
-              message={t(
-                'Are you sure you want to remove the invite for {{email}} from {{accountList}}?',
-                {
-                  email: invite?.recipientEmail,
-                  accountList: name,
-                  interpolation: { escapeValue: false },
-                },
-              )}
-              handleClose={() => setDeleteInviteDialogOpen(false)}
-              mutation={() => haneleInviteDelete(invite)}
-            />
           </BorderBottomBox>
         ))}
+      <Confirmation
+        isOpen={!!deleteInvite}
+        title={t('Confirm')}
+        message={t(
+          'Are you sure you want to remove the invite for {{email}} from {{accountList}}?',
+          {
+            email: deleteInvite?.recipientEmail,
+            accountList: name,
+            interpolation: { escapeValue: false },
+          },
+        )}
+        mutation={() => handleInviteDelete(deleteInvite)}
+        handleClose={() => setDeleteInvite(null)}
+      />
     </>
   );
 };

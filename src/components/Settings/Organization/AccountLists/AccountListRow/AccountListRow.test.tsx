@@ -115,7 +115,6 @@ describe('AccountLists', () => {
             operationName: 'DeleteUser',
             variables: {
               input: {
-                clientMutationId: 'account-list-1',
                 reason: 'this is a test',
                 resettedUserId: 'e8a19920',
               },

@@ -97,10 +97,8 @@ describe('AccountLists', () => {
           <AccountListCoachesOrUsers
             accountListItems={userAccountListItems}
             setRemoveUser={handleDelete}
-            setRemoveCoachContent={handleDelete}
-            setDeleteUserContent={handleDelete}
-            setDeleteUserDialogOpen={handleDelete}
-            setRemoveCoachDialogOpen={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
           />
         </GqlMockedProvider>
       </Components>,
@@ -119,10 +117,8 @@ describe('AccountLists', () => {
           <AccountListCoachesOrUsers
             accountListItems={[userAccountListItems[0]]}
             setRemoveUser={handleDelete}
-            setRemoveCoachContent={handleDelete}
-            setDeleteUserContent={handleDelete}
-            setDeleteUserDialogOpen={handleDelete}
-            setRemoveCoachDialogOpen={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
           />
         </GqlMockedProvider>
       </Components>,
@@ -146,10 +142,8 @@ describe('AccountLists', () => {
           <AccountListCoachesOrUsers
             accountListItems={[userAccountListItems[1]]}
             setRemoveUser={handleDelete}
-            setRemoveCoachContent={handleDelete}
-            setDeleteUserContent={handleDelete}
-            setDeleteUserDialogOpen={handleDelete}
-            setRemoveCoachDialogOpen={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
           />
         </GqlMockedProvider>
       </Components>,
@@ -177,10 +171,8 @@ describe('AccountLists', () => {
           <AccountListCoachesOrUsers
             accountListItems={coachAccountListItems}
             setRemoveUser={handleDelete}
-            setRemoveCoachContent={handleDelete}
-            setDeleteUserContent={handleDelete}
-            setDeleteUserDialogOpen={handleDelete}
-            setRemoveCoachDialogOpen={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
           />
         </GqlMockedProvider>
       </Components>,
