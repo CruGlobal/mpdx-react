@@ -28,12 +28,12 @@ const HeaderAndDropdown = styled(Box)(() => ({
   alignItems: 'center',
 }));
 
+type SelectedOrg = SettingsOrganizationFragment | null | undefined;
+
 const AccountListsOrganizations = (): ReactElement => {
   const { t } = useTranslation();
   const savedOrg = window.localStorage.getItem('admin-org');
-  const selectedOrg: SettingsOrganizationFragment | null | undefined = savedOrg
-    ? JSON.parse(savedOrg)
-    : null;
+  const selectedOrg: SelectedOrg = savedOrg ? JSON.parse(savedOrg) : null;
 
   const [search, setSearch] = useState('');
   const isNarrowScreen = useMediaQuery('(max-width:600px)');

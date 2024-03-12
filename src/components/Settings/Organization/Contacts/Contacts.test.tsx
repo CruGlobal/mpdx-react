@@ -1,4 +1,3 @@
-import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
@@ -36,10 +35,12 @@ const setSearch = jest.fn().mockImplementation((value) => {
   search = value;
 });
 const clearFilters = jest.fn();
-const selectedOrganizationId = 'org111';
-const selectedOrganizationName = 'Cru';
 
-const Components = ({ children }: PropsWithChildren) => (
+const Components = ({
+  children,
+  selectedOrganizationId = 'org111',
+  selectedOrganizationName = 'Cru',
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -88,6 +89,22 @@ describe('Contacts', () => {
   });
 
   it('should show default screen', async () => {
+    const { getByText } = render(
+      <Components selectedOrganizationId="" selectedOrganizationName="">
+        <GqlMockedProvider<{
+          SearchOrganizationsContacts: SearchOrganizationsContactsQuery;
+        }>>
+          <Contacts />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Start by adding search filters')).toBeInTheDocument();
+    });
+  });
+
+  it('should show message when not contacts are found', async () => {
     const { getByText } = render(
       <Components>
         <GqlMockedProvider<{
@@ -138,7 +155,7 @@ describe('Contacts', () => {
 
     await waitFor(() => {
       expect(
-        queryByText('Try searching for a different keyword or organization.'),
+        queryByText('No contacts match your search filters'),
       ).not.toBeInTheDocument();
     });
 

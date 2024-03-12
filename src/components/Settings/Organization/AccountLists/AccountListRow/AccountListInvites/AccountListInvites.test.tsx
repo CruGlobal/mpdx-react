@@ -40,7 +40,7 @@ const Components = ({ children }: PropsWithChildren) => (
   </SnackbarProvider>
 );
 
-describe('AccountLists', () => {
+describe('AccountList Invites', () => {
   it('should show user details', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByTestId } = render(

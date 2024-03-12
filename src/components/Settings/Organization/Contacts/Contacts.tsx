@@ -1,6 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { mdiHome } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Search } from '@mui/icons-material';
 import { Box, Button, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
@@ -56,7 +55,7 @@ export const Contacts: React.FC = () => {
       {!loading && !(search && selectedOrganizationId) && (
         <Box width="100%" margin="auto" mt={2}>
           <NullStateBox>
-            <Icon path={mdiHome} size={1.5} />
+            <Search fontSize="large" />
             <Typography variant="h5">
               {t('Start by adding search filters')}
             </Typography>
@@ -109,7 +108,7 @@ export const Contacts: React.FC = () => {
           EmptyPlaceholder={
             <Box width="100%" margin="auto" mt={2}>
               <NullStateBox>
-                <Icon path={mdiHome} size={1.5} />
+                <Search fontSize="large" />
                 <Typography variant="h5">
                   {t('No contacts match your search filters')}
                 </Typography>

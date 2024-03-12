@@ -2,6 +2,7 @@ import * as Types from 'src/graphql/types.generated';
 
 export class AccountListsMocks {
   accountList: Types.OrganizationsAccountList = {
+    __typename: 'OrganizationsAccountList',
     id: '1111',
     name: 'Name1',
     designationAccounts: [

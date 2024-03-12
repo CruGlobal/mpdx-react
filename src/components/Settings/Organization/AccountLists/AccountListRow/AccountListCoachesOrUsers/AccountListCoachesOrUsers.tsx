@@ -142,9 +142,9 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                           'User has been granted access to this account list by donation services. Last synced: {{date}}',
                           {
                             date:
-                              item?.lastSyncedAt &&
+                              item.lastSyncedAt &&
                               dateTimeFormat(
-                                DateTime.fromISO(item?.lastSyncedAt),
+                                DateTime.fromISO(item.lastSyncedAt),
                                 locale,
                               ),
                           },

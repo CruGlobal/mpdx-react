@@ -110,7 +110,7 @@ describe('AccountLists', () => {
     expect(getByText('userEmail2@cru.org')).toBeInTheDocument();
   });
 
-  it('should show user Info buttons', async () => {
+  it('should show user Info buttons and delete button', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
       <Components>
         <GqlMockedProvider>
@@ -124,7 +124,7 @@ describe('AccountLists', () => {
       </Components>,
     );
 
-    expect(queryByTestId('DeleteIcon')).not.toBeInTheDocument();
+    expect(queryByTestId('DeleteForeverIcon')).toBeInTheDocument();
     userEvent.hover(getByTestId('InformationButton'));
     await waitFor(() => {
       expect(
@@ -133,35 +133,6 @@ describe('AccountLists', () => {
         ),
       ).toBeVisible();
     });
-  });
-
-  it('should show user delete buttons and handleDelete()', async () => {
-    const { getByTestId } = render(
-      <Components>
-        <GqlMockedProvider>
-          <AccountListCoachesOrUsers
-            accountListItems={[userAccountListItems[1]]}
-            setRemoveUser={handleDelete}
-            setRemoveCoach={handleDelete}
-            setDeleteUser={handleDelete}
-          />
-        </GqlMockedProvider>
-      </Components>,
-    );
-
-    expect(getByTestId('DeleteForeverIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('DeleteForeverIcon'));
-
-    // await waitFor(() => {
-    //   expect(
-    //     getByText(
-    //       'Are you sure you want to remove {{user}} as a user from {{accountList}}?',
-    //     ),
-    //   ).toBeInTheDocument();
-    //   userEvent.click(getByText('Yes'));
-    // });
-
-    // await waitFor(() => expect(handleDelete).toHaveBeenCalledTimes(1));
   });
 
   it('should show coach delete buttons and handleDelete()', async () => {
@@ -181,17 +152,5 @@ describe('AccountLists', () => {
     expect(getByText('coach1@cru.org')).toBeInTheDocument();
 
     expect(getByTestId('CheckIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('CheckIcon'));
-
-    // await waitFor(() => {
-    //   expect(
-    //     getByText(
-    //       'Are you sure you want to remove {{coach}} as a coach from {{accountList}}?',
-    //     ),
-    //   ).toBeInTheDocument();
-    //   userEvent.click(getByText('Yes'));
-    // });
-
-    // await waitFor(() => expect(handleDelete).toHaveBeenCalledTimes(1));
   });
 });

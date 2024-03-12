@@ -82,7 +82,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
 
   const handleDeleteUser = async (item: AccountListUsers | null) => {
     if (item) {
-      const fullName = item.userFirstName + ' ' + item.userLastName;
+      const fullName = `${item.userFirstName} ${item.userLastName}`;
       const errorMessage = t(
         '{{appName}} could not delete user: {{fullName}}',
         {
@@ -90,7 +90,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
           fullName,
         },
       );
-      if (!item?.userId) {
+      if (!item.userId) {
         enqueueSnackbar(errorMessage, {
           variant: 'error',
         });
@@ -187,7 +187,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
           fullName,
         },
       );
-      if (!item?.id) {
+      if (!item.id) {
         enqueueSnackbar(errorMessage, {
           variant: 'error',
         });
@@ -223,7 +223,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
 
   const handleRemoveUser = async (item: AccountListUsers | null) => {
     if (item) {
-      const fullName = item.userFirstName + ' ' + item.userLastName;
+      const fullName = `${item.userFirstName} ${item.userLastName}`;
       const errorMessage = t(
         '{{appName}} could not remove user: {{fullName}}',
         {
@@ -231,7 +231,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
           fullName,
         },
       );
-      if (!item?.userId) {
+      if (!item.userId) {
         enqueueSnackbar(errorMessage, {
           variant: 'error',
         });
@@ -241,7 +241,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
         variables: {
           input: {
             accountListId: id,
-            userId: item?.userId,
+            userId: item.userId,
           },
         },
         update: (cache) => {
@@ -264,6 +264,22 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
       });
     }
   };
+
+  const ReasonTextField = () => (
+    <TextField
+      // eslint-disable-next-line jsx-a11y/no-autofocus
+      autoFocus
+      margin="dense"
+      id={t('Reason')}
+      label={t('Reason')}
+      type="text"
+      fullWidth
+      multiline
+      value={reason}
+      onChange={(e) => setReason(e.target.value)}
+      sx={{ marginTop: 2 }}
+    />
+  );
 
   return (
     <Box
@@ -289,7 +305,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                         data-testid="DeleteAccountListButton"
                       >
                         <IconButton
-                          aria-label={t('Delete')}
+                          aria-label={t('Delete Account')}
                           color="error"
                           onClick={() => setDeleteAccountListDialogOpen(true)}
                         >
@@ -311,19 +327,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                             {t(
                               'WARNING: Only delete if you know this user/staff reports to your ministry AND does not serve with any other CCCI ministry AND will not be returning to any ministry of CCCI. You may need to confirm this with them.',
                             )}
-                            <TextField
-                              // eslint-disable-next-line jsx-a11y/no-autofocus
-                              autoFocus
-                              margin="dense"
-                              id={t('Reason')}
-                              label={t('Reason')}
-                              type="text"
-                              fullWidth
-                              multiline
-                              value={reason}
-                              onChange={(e) => setReason(e.target.value)}
-                              sx={{ marginTop: 2 }}
-                            />
+                            <ReasonTextField />
                           </>
                         }
                         confirmButtonProps={{ disabled: reason?.length < 5 }}
@@ -477,19 +481,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
             {t(
               'WARNING: Only delete if you know this user/staff reports to your ministry AND does not serve with any other CCCI ministry AND will not be returning to any ministry of CCCI. You may need to confirm this with them.',
             )}
-            <TextField
-              // eslint-disable-next-line jsx-a11y/no-autofocus
-              autoFocus
-              margin="dense"
-              id={t('Reason')}
-              label={t('Reason')}
-              type="text"
-              fullWidth
-              multiline
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              sx={{ marginTop: 2 }}
-            />
+            <ReasonTextField />
           </>
         }
         formLabel="Reason"

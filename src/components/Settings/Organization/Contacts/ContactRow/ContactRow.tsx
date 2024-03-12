@@ -61,6 +61,7 @@ const PersonData: React.FC<PersonDataProps> = ({ person }) => {
           underline="hover"
           key={`email-${email.email}`}
           href={`mailto:${email.email}`}
+          target="_blank"
         >
           {email.email}
         </Link>
@@ -145,11 +146,23 @@ export const ContactRow: React.FC<Props> = ({
         : null,
     [addresses],
   );
+  const primaryAddressString = useMemo(
+    () =>
+      [
+        primaryAddress?.street,
+        primaryAddress?.city,
+        primaryAddress?.state,
+        primaryAddress?.postalCode,
+      ]
+        .filter(Boolean)
+        .join(', '),
+    [primaryAddress],
+  );
 
   return (
     <>
       <Grid container alignItems="center">
-        <Grid item xs={6} style={{ paddingRight: 16 }}>
+        <Grid item xs={6} sx={{ paddingRight: 16 }}>
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -170,14 +183,7 @@ export const ContactRow: React.FC<Props> = ({
                 {primaryAddress && (
                   <Hidden smDown>
                     <Typography component="span" variant="body2">
-                      {[
-                        primaryAddress.street,
-                        primaryAddress.city,
-                        primaryAddress.state,
-                        primaryAddress.postalCode,
-                      ]
-                        .filter(Boolean)
-                        .join(', ')}
+                      {primaryAddressString}
                     </Typography>
                   </Hidden>
                 )}
@@ -201,7 +207,7 @@ export const ContactRow: React.FC<Props> = ({
             )}
           />
         </Grid>
-        <Grid item xs={3} style={{ paddingRight: 16, textAlign: 'right' }}>
+        <Grid item xs={3} sx={{ paddingRight: 16, textAlign: 'right' }}>
           <Box>
             {allowDeletion && (
               <Button
