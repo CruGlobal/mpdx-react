@@ -115,7 +115,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   headerHeight = '0px',
 }) => {
   const isMobile = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('sm'),
+    theme.breakpoints.down('md'),
   );
 
   return (

@@ -29,10 +29,6 @@ const DonationsTabContainer = styled(Box)(({ theme }) => ({
   borderBottom: '1px solid #DCDCDC',
 }));
 
-const DonationsGraphContainer = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(1),
-}));
-
 const DonationsTabList = styled(TabList)(({}) => ({
   minHeight: 40,
 }));
@@ -95,23 +91,21 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
   };
   return (
     <ContactDonationsContainer>
-      <DonationsGraphContainer>
-        {loading ? (
-          <>
-            <ContactDonationsLoadingPlaceHolder />
-            <ContactDonationsLoadingPlaceHolder />
-            <ContactDonationsLoadingPlaceHolder />
-          </>
-        ) : (
-          <DonationsGraph
-            accountListId={accountListId}
-            donorAccountIds={donorAccountIds}
-            convertedCurrency={
-              data?.contact.lastDonation?.amount.convertedCurrency ?? ''
-            }
-          />
-        )}
-      </DonationsGraphContainer>
+      {loading ? (
+        <>
+          <ContactDonationsLoadingPlaceHolder />
+          <ContactDonationsLoadingPlaceHolder />
+          <ContactDonationsLoadingPlaceHolder />
+        </>
+      ) : (
+        <DonationsGraph
+          accountListId={accountListId}
+          donorAccountIds={donorAccountIds}
+          convertedCurrency={
+            data?.contact.lastDonation?.amount.convertedCurrency ?? ''
+          }
+        />
+      )}
       <TabContext value={selectedDonationTabKey}>
         <DonationsTabContainer role="region">
           <DonationsTabList
