@@ -12,7 +12,6 @@ import { dispatch } from 'src/lib/analytics';
 import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
-import { getDataForTaskModalMock } from '../TaskModalForm.mock';
 import { CompleteTaskDocument } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 import {
@@ -61,10 +60,9 @@ describe('TaskModalCompleteForm', () => {
   };
 
   it('default', async () => {
-    const { getAllByRole } = render(
+    const { getByRole } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
@@ -76,9 +74,9 @@ describe('TaskModalCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    expect(
-      getAllByRole('textbox').find((item) => item.id === ':r0:'),
-    ).toHaveValue('1/1/2020');
+    expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
+      '01/01/2020',
+    );
   });
 
   it('saves simple', async () => {
@@ -86,7 +84,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByText } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeSimpleTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
@@ -121,7 +118,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByRole, getByText } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
           {
@@ -178,7 +174,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByRole } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeSimpleTaskMutationMock(accountListId, taskId),
           addTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
@@ -203,11 +198,61 @@ describe('TaskModalCompleteForm', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
+  describe('completed date', () => {
+    it('is the start date for appointments', () => {
+      const onClose = jest.fn();
+      const { getByRole } = render(
+        <TestWrapper>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={onClose}
+            task={{
+              ...task,
+              activityType: ActivityTypeEnum.Appointment,
+              startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+            }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
+        '01/05/2015',
+      );
+      expect(getByRole('textbox', { name: /^Choose time/ })).toHaveValue(
+        '01:02 AM',
+      );
+    });
+
+    it('is now for other tasks', () => {
+      const onClose = jest.fn();
+      const { getByRole } = render(
+        <TestWrapper>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={onClose}
+            task={{
+              ...task,
+              activityType: ActivityTypeEnum.Call,
+              startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+            }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
+        '01/01/2020',
+      );
+      expect(getByRole('textbox', { name: /^Choose time/ })).toHaveValue(
+        '12:00 AM',
+      );
+    });
+  });
+
   const getOptions = (
     activityType?: ActivityTypeEnum,
   ): { results: ResultEnum[]; nextActions: ActivityTypeEnum[] } => {
     const { getByRole, queryByRole } = render(
-      <TestWrapper mocks={[getDataForTaskModalMock(accountListId)]}>
+      <TestWrapper>
         <TaskModalCompleteForm
           accountListId={accountListId}
           onClose={jest.fn()}

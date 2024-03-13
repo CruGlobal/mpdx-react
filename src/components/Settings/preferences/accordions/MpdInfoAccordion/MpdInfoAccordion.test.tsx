@@ -103,8 +103,8 @@ describe('MpdInfoAccordion', () => {
     expect(inputGoal).toBeInTheDocument();
     expect(inputGoal).toHaveValue(20000);
 
-    expect(inputStart).toHaveValue('1/16/2024');
-    expect(inputEnd).toHaveValue('3/16/2024');
+    expect(inputStart).toHaveValue('01/16/2024');
+    expect(inputEnd).toHaveValue('03/16/2024');
     expect(button).not.toBeDisabled();
   });
 
@@ -162,6 +162,7 @@ describe('MpdInfoAccordion', () => {
               input: {
                 id: accountListId,
                 attributes: {
+                  activeMpdStartAt: '2011-02-15',
                   activeMpdFinishAt: null,
                   activeMpdMonthlyGoal: 3333,
                 },
@@ -170,9 +171,6 @@ describe('MpdInfoAccordion', () => {
           },
         },
       ]);
-      expect(
-        mutationSpy.mock.lastCall[0].operation.variables.input.attributes.activeMpdStartAt.toISODate(),
-      ).toBe('2011-02-15');
     });
   });
 });

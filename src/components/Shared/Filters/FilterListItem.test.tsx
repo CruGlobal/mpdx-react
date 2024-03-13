@@ -105,8 +105,8 @@ describe('FilterListItem', () => {
 
   it('DateRangeFilter filled', () => {
     const dateRange: DateRangeInput = { min: '2021-08-01', max: '2021-08-30' };
-    const convertedMinDate = '8/1/2021';
-    const convertedMaxDate = '8/30/2021';
+    const convertedMinDate = '08/01/2021';
+    const convertedMaxDate = '08/30/2021';
 
     const { getByText, getAllByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>

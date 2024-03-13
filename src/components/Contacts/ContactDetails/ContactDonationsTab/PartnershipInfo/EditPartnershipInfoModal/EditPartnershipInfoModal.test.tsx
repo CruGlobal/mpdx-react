@@ -500,7 +500,7 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const datePickerButton = getByLabelText('Change start date');
+    const datePickerButton = getByLabelText('Start Date');
     userEvent.click(datePickerButton);
 
     const day = await waitFor(async () => getAllByText('30')[0]);
@@ -726,7 +726,7 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const datePickerButton = getByLabelText('Change next ask date');
+    const datePickerButton = getByLabelText('Next Increase Ask');
     userEvent.click(datePickerButton);
 
     const day = await waitFor(async () => getAllByText('30')[0]);
