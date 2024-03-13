@@ -16,25 +16,6 @@ import {
 } from '../../TopBar.mock';
 import ProfileMenu from './ProfileMenu';
 
-const session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    email: 'Chair Library Bed',
-    image: null,
-    name: 'Dung Tapestry',
-    token: 'superLongJwtString',
-    impersonating: false,
-  },
-};
-
-jest.mock('next-auth/react', () => {
-  return {
-    signOut: jest.fn().mockImplementation(() => Promise.resolve()),
-    getSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
-    useSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
-  };
-});
-
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
@@ -204,12 +185,21 @@ describe('ProfileMenu while Impersonating', () => {
   });
 
   beforeEach(() => {
-    session.user.impersonating = true;
-    (useSession as jest.Mock).mockReturnValue({
+    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
       data: {
-        ...session,
+        expires: new Date().toISOString(),
+        user: {
+          name: 'First Last',
+          email: 'first.last@cru.org',
+          apiToken: 'apiToken',
+          userID: 'user-1',
+          admin: false,
+          developer: false,
+          impersonating: true,
+        },
       },
       status: 'authenticated',
+      update: () => Promise.resolve(null),
     });
   });
 

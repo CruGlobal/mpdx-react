@@ -42,6 +42,7 @@ import {
 } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { useUser } from 'src/hooks/useUser';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import {
   getLocalizedNotificationTimeUnit,
@@ -67,7 +68,6 @@ import {
 } from './TaskModal.generated';
 
 const taskSchema = yup.object({
-  id: yup.string().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>().nullable(),
   subject: yup.string().required(),
   startAt: nullableDateTime(),
@@ -102,11 +102,11 @@ const TaskModalForm = ({
   defaultValues,
   view,
 }: Props): ReactElement => {
+  const user = useUser();
   const initialTask: Attributes = useMemo(
     () =>
       task
         ? {
-            id: task.id,
             activityType: task.activityType ?? null,
             location: task.location ?? '',
             subject: task.subject ?? '',
@@ -118,14 +118,13 @@ const TaskModalForm = ({
             nextAction: task.nextAction ?? null,
             tagList: task.tagList ?? [],
             contactIds: task.contacts.nodes.map(({ id }) => id),
-            userId: task.user?.id ?? null,
+            userId: task.user?.id ?? user?.id ?? null,
             notificationTimeBefore: task.notificationTimeBefore,
             notificationType: task.notificationType,
             notificationTimeUnit: task.notificationTimeUnit,
             comment: '',
           }
         : {
-            id: null,
             activityType: defaultValues?.activityType ?? null,
             location: '',
             subject: defaultValues?.subject ?? '',
@@ -135,7 +134,9 @@ const TaskModalForm = ({
             nextAction: defaultValues?.nextAction ?? null,
             tagList: defaultValues?.tagList ?? [],
             contactIds: defaultValues?.contactIds ?? [],
-            userId: defaultValues?.userId ?? null,
+            // The assignee will not be set if `user` hasn't been loaded yet because we don't want to make
+            // the user wait for it to load
+            userId: defaultValues?.userId ?? user?.id ?? null,
             notificationTimeBefore: null,
             notificationType: null,
             notificationTimeUnit: null,
@@ -168,7 +169,6 @@ const TaskModalForm = ({
     : [];
 
   const onSubmit = async ({
-    id,
     comment,
     completedAt,
     startAt,
@@ -179,11 +179,11 @@ const TaskModalForm = ({
       completedAt: completedAt?.toISO(),
       startAt: startAt?.toISO(),
     };
-    if (id) {
+    if (task) {
       await updateTask({
         variables: {
           accountListId,
-          attributes: { ...sharedAttributes, id },
+          attributes: { id: task.id, ...sharedAttributes },
         },
         refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
       });
@@ -199,14 +199,11 @@ const TaskModalForm = ({
     update();
     enqueueSnackbar(t('Task(s) saved successfully'), { variant: 'success' });
     onClose();
-    if (
-      attributes.nextAction &&
-      attributes.nextAction !== ActivityTypeEnum.None &&
-      attributes.nextAction !== task?.nextAction
-    ) {
+    if (attributes.nextAction && attributes.nextAction !== task?.nextAction) {
       openTaskModal({
         view: 'add',
         defaultValues: {
+          subject: attributes.subject,
           activityType: attributes.nextAction,
           contactIds: attributes.contactIds,
           userId: task?.user?.id,
