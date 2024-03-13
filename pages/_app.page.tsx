@@ -12,6 +12,7 @@ import {
 } from '@mui/x-date-pickers/LocalizationProvider';
 import { ErrorBoundary, Provider } from '@rollbar/react';
 import { AnimatePresence } from 'framer-motion';
+import { DateTime } from 'luxon';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
@@ -48,7 +49,7 @@ export type PageWithLayout = NextPage & {
 
 // Wrapper for LocalizationProvider that adds the user's preferred locale
 const LocalizationProvider = (
-  props: LocalizationProviderProps,
+  props: LocalizationProviderProps<DateTime, string>,
 ): JSX.Element => {
   const locale = useLocale();
 

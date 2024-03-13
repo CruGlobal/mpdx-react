@@ -5,8 +5,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import CalendarToday from '@mui/icons-material/CalendarToday';
-import Schedule from '@mui/icons-material/Schedule';
 import {
   CircularProgress,
   DialogActions,
@@ -14,14 +12,12 @@ import {
   FormControl,
   FormControlLabel,
   Grid,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   Switch,
   TextField,
 } from '@mui/material';
-import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DateTime } from 'luxon';
@@ -37,13 +33,12 @@ import {
   ResultEnum,
   TaskCreateInput,
 } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
-import theme from '../../../../../theme';
+import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
 import { AssigneeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
@@ -60,7 +55,7 @@ const taskSchema = yup.object({
   activityType: yup.mixed<ActivityTypeEnum>().nullable(),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
-  completedAt: yup.string().nullable(),
+  completedAt: nullableDateTime(),
   userId: yup.string().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
   result: yup.mixed<ResultEnum>(),
@@ -88,7 +83,7 @@ const TaskModalLogForm = ({
       activityType: defaultValues?.activityType ?? null,
       subject: defaultValues?.subject ?? '',
       contactIds: defaultValues?.contactIds ?? [],
-      completedAt: DateTime.local().toISO(),
+      completedAt: DateTime.local(),
       userId: defaultValues?.userId ?? null,
       tagList: defaultValues?.tagList ?? [],
       result: defaultValues?.result ?? ResultEnum.Completed,
@@ -100,7 +95,6 @@ const TaskModalLogForm = ({
   );
 
   const { t } = useTranslation();
-  const locale = useLocale();
   const [showMore, setShowMore] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
@@ -114,11 +108,19 @@ const TaskModalLogForm = ({
     }
   }, []);
 
-  const onSubmit = async (attributes: Attributes): Promise<void> => {
+  const onSubmit = async ({
+    completedAt,
+    comment,
+    ...attributes
+  }: Attributes): Promise<void> => {
     await createTasks({
       variables: {
         accountListId,
-        attributes: { ...attributes, comment: attributes.comment?.trim() },
+        attributes: {
+          ...attributes,
+          completedAt: completedAt?.toISO(),
+          comment: comment?.trim(),
+        },
       },
       refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity'],
     });
@@ -260,57 +262,24 @@ const TaskModalLogForm = ({
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
-                  <Grid container spacing={2}>
-                    <Grid xs={6} item>
-                      <DatePicker
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CalendarToday
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }}
-                        inputFormat={getDateFormatPattern(locale)}
-                        closeOnSelect
-                        label={t('Completed Date')}
-                        value={completedAt}
-                        onChange={(date): void =>
-                          setFieldValue('completedAt', date)
-                        }
-                      />
-                    </Grid>
-                    <Grid xs={6} item>
-                      <TimePicker
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Schedule
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }}
-                        closeOnSelect
-                        label={t('Completed Time')}
-                        value={completedAt}
-                        onChange={(date): void =>
-                          setFieldValue('completedAt', date)
-                        }
-                      />
-                    </Grid>
-                  </Grid>
+                  <DateTimeFieldPair
+                    render={(dateField, timeField) => (
+                      <Grid container spacing={2}>
+                        <Grid xs={6} item>
+                          {dateField}
+                        </Grid>
+                        <Grid xs={6} item>
+                          {timeField}
+                        </Grid>
+                      </Grid>
+                    )}
+                    dateLabel={t('Completed Date')}
+                    timeLabel={t('Completed Time')}
+                    value={completedAt}
+                    onChange={(completedAt) =>
+                      setFieldValue('completedAt', completedAt)
+                    }
+                  />
                 </FormControl>
               </Grid>
               <Grid item>

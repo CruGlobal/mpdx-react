@@ -60,7 +60,7 @@ describe('TaskModalCompleteForm', () => {
   };
 
   it('default', async () => {
-    const { getAllByRole } = render(
+    const { getByRole } = render(
       <TestWrapper
         mocks={[
           completeTaskMutationMock(accountListId, taskId),
@@ -74,9 +74,9 @@ describe('TaskModalCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    expect(
-      getAllByRole('textbox').find((item) => item.id === ':r0:'),
-    ).toHaveValue('1/1/2020');
+    expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
+      '01/01/2020',
+    );
   });
 
   it('saves simple', async () => {
@@ -216,7 +216,7 @@ describe('TaskModalCompleteForm', () => {
       );
 
       expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
-        '1/5/2015',
+        '01/05/2015',
       );
       expect(getByRole('textbox', { name: /^Choose time/ })).toHaveValue(
         '01:02 AM',
@@ -240,7 +240,7 @@ describe('TaskModalCompleteForm', () => {
       );
 
       expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
-        '1/1/2020',
+        '01/01/2020',
       );
       expect(getByRole('textbox', { name: /^Choose time/ })).toHaveValue(
         '12:00 AM',

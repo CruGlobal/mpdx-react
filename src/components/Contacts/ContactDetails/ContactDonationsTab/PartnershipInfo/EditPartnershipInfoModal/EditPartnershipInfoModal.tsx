@@ -1,5 +1,4 @@
 import React, { ReactElement, useState } from 'react';
-import CalendarToday from '@mui/icons-material/CalendarToday';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
   Autocomplete,
@@ -10,7 +9,6 @@ import {
   DialogContent,
   FormControl,
   FormControlLabel,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -19,27 +17,25 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import {
   ContactReferralToMeInput,
-  ContactUpdateInput,
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
+import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
@@ -83,6 +79,38 @@ const SelectInteractive = styled(Select, {
   },
 }));
 
+const contactPartnershipSchema = yup.object({
+  id: yup.string().required(),
+  status: yup
+    .mixed<StatusEnum | null>()
+    .oneOf([...Object.values(StatusEnum), null])
+    .nullable(),
+  pledgeAmount: yup.number().moreThan(-1).nullable(),
+  pledgeStartDate: nullableDateTime(),
+  pledgeReceived: yup.boolean().default(false).nullable(),
+  pledgeCurrency: yup.string().nullable(),
+  nextAsk: nullableDateTime(),
+  noAppeals: yup.boolean().default(false).nullable(),
+  sendNewsletter: yup
+    .mixed<SendNewsletterEnum>()
+    .oneOf(Object.values(SendNewsletterEnum))
+    .nullable(),
+  pledgeFrequency: yup.mixed<PledgeFrequencyEnum>().nullable(),
+  contactReferralsToMe: yup
+    .array()
+    .of(
+      yup.object({
+        destroy: yup.boolean().default(false),
+        referredById: yup.string().nullable(),
+        id: yup.string().nullable(),
+      }),
+    )
+    .default([]),
+  likelyToGive: yup.mixed<LikelyToGiveEnum>().nullable(),
+});
+
+type Attributes = yup.InferType<typeof contactPartnershipSchema>;
+
 interface EditPartnershipInfoModalProps {
   contact: ContactDonorAccountsFragment;
   handleClose: () => void;
@@ -92,7 +120,6 @@ export const EditPartnershipInfoModal: React.FC<
   EditPartnershipInfoModalProps
 > = ({ contact, handleClose }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
   const [referredByName, setReferredByName] = useState('');
@@ -116,68 +143,7 @@ export const EditPartnershipInfoModal: React.FC<
     useUpdateContactPartnershipMutation();
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
-  const contactPartnershipSchema: yup.SchemaOf<
-    Pick<
-      ContactUpdateInput,
-      | 'id'
-      | 'status'
-      | 'pledgeAmount'
-      | 'pledgeFrequency'
-      | 'pledgeCurrency'
-      | 'pledgeReceived'
-      | 'pledgeStartDate'
-      | 'nextAsk'
-      | 'noAppeals'
-      | 'sendNewsletter'
-      | 'contactReferralsToMe'
-      | 'likelyToGive'
-    >
-  > = yup.object({
-    id: yup.string().required(),
-    status: yup
-      .mixed<StatusEnum | null>()
-      .oneOf([...Object.values(StatusEnum), null])
-      .nullable(),
-    pledgeAmount: yup.number().moreThan(-1).nullable(),
-    pledgeStartDate: yup.string().nullable(),
-    pledgeReceived: yup.boolean().default(false).nullable(),
-    pledgeCurrency: yup.string().nullable(),
-    nextAsk: yup.string().nullable(),
-    noAppeals: yup.boolean().default(false).nullable(),
-    sendNewsletter: yup
-      .mixed<SendNewsletterEnum>()
-      .oneOf(Object.values(SendNewsletterEnum))
-      .nullable(),
-    pledgeFrequency: yup.mixed<PledgeFrequencyEnum>().nullable(),
-    contactReferralsToMe: yup
-      .array()
-      .of(
-        yup.object({
-          destroy: yup.boolean().default(false),
-          referredById: yup.string().nullable(),
-          id: yup.string().nullable(),
-        }),
-      )
-      .default([]),
-    likelyToGive: yup.mixed<LikelyToGiveEnum>().nullable(),
-  });
-
-  const onSubmit = async (
-    attributes: Pick<
-      ContactUpdateInput,
-      | 'id'
-      | 'status'
-      | 'pledgeAmount'
-      | 'pledgeFrequency'
-      | 'pledgeCurrency'
-      | 'pledgeReceived'
-      | 'pledgeStartDate'
-      | 'nextAsk'
-      | 'noAppeals'
-      | 'contactReferralsToMe'
-      | 'likelyToGive'
-    >,
-  ) => {
+  const onSubmit = async (attributes: Attributes) => {
     const removedReferrals = contact.contactReferralsToMe.nodes
       .filter(
         (referral) =>
@@ -194,6 +160,8 @@ export const EditPartnershipInfoModal: React.FC<
         accountListId: accountListId ?? '',
         attributes: {
           ...attributes,
+          pledgeStartDate: attributes.pledgeStartDate?.toISODate(),
+          nextAsk: attributes.nextAsk?.toISODate(),
           contactReferralsToMe: [
             ...(attributes.contactReferralsToMe || []),
             ...removedReferrals,
@@ -308,7 +276,7 @@ export const EditPartnershipInfoModal: React.FC<
       title={t('Edit Partnership')}
       handleClose={handleClose}
     >
-      <Formik
+      <Formik<Attributes>
         initialValues={{
           id: contact.id,
           status: contact.status,
@@ -316,9 +284,11 @@ export const EditPartnershipInfoModal: React.FC<
           pledgeFrequency: contact.pledgeFrequency,
           pledgeReceived: contact.pledgeReceived,
           pledgeCurrency: contact.pledgeCurrency,
-          pledgeStartDate: contact.pledgeStartDate,
-          nextAsk: contact.nextAsk,
-          noAppeals: contact.noAppeals,
+          pledgeStartDate: contact.pledgeStartDate
+            ? DateTime.fromISO(contact.pledgeStartDate)
+            : null,
+          nextAsk: contact.nextAsk ? DateTime.fromISO(contact.nextAsk) : null,
+          noAppeals: Boolean(contact.noAppeals),
           sendNewsletter: contact.sendNewsletter ?? SendNewsletterEnum.None,
           contactReferralsToMe: contactReferrals,
           likelyToGive: contact.likelyToGive,
@@ -518,32 +488,10 @@ export const EditPartnershipInfoModal: React.FC<
                 </FormControl>
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <DatePicker
-                  renderInput={(params) => (
-                    <TextField
-                      fullWidth
-                      inputProps={{ 'aria-label': t('Start Date') }}
-                      {...params}
-                    />
-                  )}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment
-                        aria-label={t('Change start date')}
-                        position="end"
-                      >
-                        <CalendarToday />
-                      </InputAdornment>
-                    ),
-                  }}
-                  onChange={(date): void =>
-                    setFieldValue('pledgeStartDate', date)
-                  }
-                  value={
-                    pledgeStartDate ? DateTime.fromISO(pledgeStartDate) : null
-                  }
-                  inputFormat={getDateFormatPattern(locale)}
+                <CustomDateField
                   label={t('Start Date')}
+                  value={pledgeStartDate}
+                  onChange={(date) => setFieldValue('pledgeStartDate', date)}
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
@@ -612,30 +560,10 @@ export const EditPartnershipInfoModal: React.FC<
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>
-                <DatePicker
-                  renderInput={(params) => (
-                    <TextField
-                      fullWidth
-                      inputProps={{ 'aria-label': t('Next Ask Increase') }}
-                      {...params}
-                    />
-                  )}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment
-                        aria-label={t('Change next ask date')}
-                        position="end"
-                      >
-                        <CalendarToday />
-                      </InputAdornment>
-                    ),
-                  }}
-                  onChange={(date) =>
-                    !date ? null : setFieldValue('nextAsk', date)
-                  }
-                  value={nextAsk ? DateTime.fromISO(nextAsk) : null}
-                  inputFormat={getDateFormatPattern(locale)}
-                  label={t('Next Ask Increase')}
+                <CustomDateField
+                  label={t('Next Increase Ask')}
+                  value={nextAsk}
+                  onChange={(nextAsk) => setFieldValue('nextAsk', nextAsk)}
                 />
               </ContactInputWrapper>
               <ContactInputWrapper>

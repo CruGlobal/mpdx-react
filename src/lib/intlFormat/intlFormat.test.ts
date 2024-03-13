@@ -4,7 +4,6 @@ import {
   dateFormatWithoutYear,
   dateFromParts,
   dateTimeFormat,
-  getDateFormatPattern,
   monthYearFormat,
 } from './intlFormat';
 import {
@@ -20,16 +19,6 @@ describe('intlFormat', () => {
   beforeEach(() => {
     languageMock = jest.spyOn(window.navigator, 'language', 'get');
     languageMock.mockReturnValue(undefined);
-  });
-
-  describe('getDateFormatPattern', () => {
-    it('is M/d/yyyy for English', () => {
-      expect(getDateFormatPattern('en-US')).toBe('M/d/yyyy');
-    });
-
-    it('is d/M/yyyy for Spanish', () => {
-      expect(getDateFormatPattern('es')).toBe('d/M/yyyy');
-    });
   });
 
   describe('numberFormat', () => {

@@ -16,20 +16,19 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DatePicker } from '@mui/x-date-pickers';
 import { FastField, Field, FieldProps, Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useLocale } from 'src/hooks/useLocale';
+import { requiredDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
   useAddDonationMutation,
@@ -74,7 +73,7 @@ const donationSchema = yup.object({
   appealId: yup.string().nullable(),
   currency: yup.string().required(),
   designationAccountId: yup.string().required(),
-  donationDate: yup.string().required(),
+  donationDate: requiredDateTime(),
   donorAccountId: yup.string().required(),
   memo: yup.string().nullable(),
   motivation: yup.string().nullable(),
@@ -103,7 +102,6 @@ export const AddDonation = ({
   handleClose,
 }: AddDonationProps): ReactElement<AddDonationProps> => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const constants = useApiConstants();
   const isMobile = useMediaQuery((theme: Theme) =>
@@ -136,7 +134,7 @@ export const AddDonation = ({
     appealId: null,
     currency: data?.accountList.currency ?? '',
     designationAccountId: '',
-    donationDate: DateTime.local().startOf('day').toISO(),
+    donationDate: DateTime.local().startOf('day'),
     donorAccountId: '',
     memo: null,
     motivation: null,
@@ -158,6 +156,7 @@ export const AddDonation = ({
           appealAmount: parseFloat(
             attributes.appealAmount as unknown as string,
           ),
+          donationDate: attributes.donationDate.toISODate(),
         },
       },
     });
@@ -296,36 +295,24 @@ export const AddDonation = ({
                   <FormControl
                     size="small"
                     fullWidth
-                    error={!!errors.donationDate && touched.donationDate}
+                    error={Boolean(errors.donationDate && touched.donationDate)}
                   >
                     <LogFormLabel htmlFor="date-input" id="date-label" required>
                       {t('Date')}
                     </LogFormLabel>
                     <FastField name="donationDate">
                       {({ field }: FieldProps) => (
-                        <Box width="100%">
-                          <DatePicker
-                            renderInput={(params) => (
-                              <TextField
-                                id="date-input"
-                                fullWidth
-                                size="small"
-                                inputProps={{
-                                  'aria-labelledby': 'date-label',
-                                }}
-                                {...params}
-                              />
-                            )}
-                            {...field}
-                            onChange={(date) =>
-                              !date ? null : setFieldValue('donationDate', date)
-                            }
-                            value={
-                              field.value ? DateTime.fromISO(field.value) : null
-                            }
-                            inputFormat={getDateFormatPattern(locale)}
-                          />
-                        </Box>
+                        <CustomDateField
+                          id="date-input"
+                          size="small"
+                          inputProps={{
+                            'aria-labelledby': 'date-label',
+                          }}
+                          {...field}
+                          onChange={(date) =>
+                            setFieldValue('donationDate', date)
+                          }
+                        />
                       )}
                     </FastField>
                   </FormControl>

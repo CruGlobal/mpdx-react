@@ -289,7 +289,7 @@ describe('TaskModalForm', () => {
     );
 
     expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
-      '1/5/2016',
+      '01/05/2016',
     );
     expect(queryByText('Notifications')).not.toBeInTheDocument();
 

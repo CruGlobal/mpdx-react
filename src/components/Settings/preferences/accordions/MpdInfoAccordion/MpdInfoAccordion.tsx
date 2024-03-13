@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo } from 'react';
 import { Grid, TextField } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -10,14 +9,25 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { HelperPositionEnum } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { useLocale } from 'src/hooks/useLocale';
-import {
-  currencyFormat,
-  dateFormat,
-  getDateFormatPattern,
-} from 'src/lib/intlFormat/intlFormat';
+import { nullableDateTime } from 'src/lib/formikHelpers';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat/intlFormat';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
+
+const numberOrNullTransform = (_: unknown, val: unknown) =>
+  val === Number(val) ? val : null;
+
+const accountPreferencesSchema = yup.object({
+  activeMpdMonthlyGoal: yup
+    .number()
+    .nullable()
+    .transform(numberOrNullTransform),
+  activeMpdStartAt: nullableDateTime(),
+  activeMpdFinishAt: nullableDateTime(),
+});
+
+type Attributes = yup.InferType<typeof accountPreferencesSchema>;
 
 interface MpdInfoAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -44,28 +54,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
   const label = t('MPD Info');
 
-  const numberOrNullTransform = (_, val) => (val === Number(val) ? val : null);
-
-  const AccountPreferencesSchema: yup.SchemaOf<
-    Pick<
-      Types.AccountList,
-      'activeMpdMonthlyGoal' | 'activeMpdStartAt' | 'activeMpdFinishAt'
-    >
-  > = yup.object({
-    activeMpdMonthlyGoal: yup
-      .number()
-      .nullable()
-      .transform(numberOrNullTransform),
-    activeMpdStartAt: yup.string().nullable().transform(numberOrNullTransform),
-    activeMpdFinishAt: yup.string().nullable().transform(numberOrNullTransform),
-  });
-
-  const onSubmit = async (
-    attributes: Pick<
-      Types.AccountList,
-      'activeMpdMonthlyGoal' | 'activeMpdStartAt' | 'activeMpdFinishAt'
-    >,
-  ) => {
+  const onSubmit = async (attributes: Attributes) => {
     await updateAccountPreferences({
       variables: {
         input: {
@@ -73,8 +62,9 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
           attributes: {
             id: accountListId,
             activeMpdMonthlyGoal: attributes.activeMpdMonthlyGoal || null,
-            activeMpdStartAt: attributes.activeMpdStartAt || null,
-            activeMpdFinishAt: attributes.activeMpdFinishAt || null,
+            activeMpdStartAt: attributes.activeMpdStartAt?.toISODate() ?? null,
+            activeMpdFinishAt:
+              attributes.activeMpdFinishAt?.toISODate() ?? null,
           },
         },
       },
@@ -124,13 +114,15 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
     >
       <Formik
         initialValues={{
-          activeMpdMonthlyGoal: activeMpdMonthlyGoal,
-          activeMpdStartAt:
-            activeMpdStartAt && DateTime.fromISO(activeMpdStartAt).toISO(),
-          activeMpdFinishAt:
-            activeMpdFinishAt && DateTime.fromISO(activeMpdFinishAt).toISO(),
+          activeMpdMonthlyGoal,
+          activeMpdStartAt: activeMpdStartAt
+            ? DateTime.fromISO(activeMpdStartAt)
+            : null,
+          activeMpdFinishAt: activeMpdFinishAt
+            ? DateTime.fromISO(activeMpdFinishAt)
+            : null,
         }}
-        validationSchema={AccountPreferencesSchema}
+        validationSchema={accountPreferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
       >
@@ -147,84 +139,42 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
             isValid={isValid}
             isSubmitting={isSubmitting}
           >
-            <>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <FieldWrapper labelText={t('Start Date')}>
-                    <DatePicker<Date, DateTime>
-                      renderInput={(params) => (
-                        <TextField
-                          fullWidth
-                          inputProps={{
-                            'aria-label': t('Start Date'),
-                          }}
-                          // eslint-disable-next-line jsx-a11y/no-autofocus
-                          autoFocus
-                          {...params}
-                        />
-                      )}
-                      onChange={(date) =>
-                        setFieldValue('activeMpdStartAt', date)
-                      }
-                      value={
-                        activeMpdStartAt ? new Date(activeMpdStartAt) : null
-                      }
-                      inputFormat={getDateFormatPattern(locale)}
-                      componentsProps={{
-                        actionBar: {
-                          actions: ['clear', 'accept'],
-                        },
-                      }}
-                    />
-                  </FieldWrapper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FieldWrapper labelText={t('End Date')}>
-                    <DatePicker<Date, DateTime>
-                      renderInput={(params) => (
-                        <TextField
-                          fullWidth
-                          inputProps={{
-                            'aria-label': t('End Date'),
-                          }}
-                          {...params}
-                        />
-                      )}
-                      onChange={(date) =>
-                        setFieldValue('activeMpdFinishAt', date)
-                      }
-                      value={
-                        activeMpdFinishAt ? new Date(activeMpdFinishAt) : null
-                      }
-                      inputFormat={getDateFormatPattern(locale)}
-                      componentsProps={{
-                        actionBar: {
-                          actions: ['clear', 'accept'],
-                        },
-                      }}
-                    />
-                  </FieldWrapper>
-                </Grid>
+            <Grid container spacing={3} pt={1}>
+              <Grid item xs={12} sm={6}>
+                <CustomDateField
+                  label={t('Start Date')}
+                  value={activeMpdStartAt}
+                  onChange={(date) => setFieldValue('activeMpdStartAt', date)}
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
+                />
               </Grid>
-              <Grid sx={{ marginTop: 2 }}>
-                <FieldWrapper
-                  labelText={t('New Recurring Commitment Goal')}
-                  helperText={t(
-                    'This should be set to the amount of new recurring commitments you expect to raise during the period set above. If you do not know, make your best guess for now. You can change it at any time.',
-                  )}
-                  helperPosition={HelperPositionEnum.Bottom}
-                >
-                  <TextField
-                    value={activeMpdMonthlyGoal}
-                    onChange={handleChange('activeMpdMonthlyGoal')}
-                    inputProps={{
-                      'aria-label': label,
-                      type: 'number',
-                    }}
-                  />
-                </FieldWrapper>
+              <Grid item xs={12} sm={6}>
+                <CustomDateField
+                  label={t('End Date')}
+                  value={activeMpdFinishAt}
+                  onChange={(date) => setFieldValue('activeMpdFinishAt', date)}
+                />
               </Grid>
-            </>
+            </Grid>
+            <Grid sx={{ marginTop: 2 }}>
+              <FieldWrapper
+                helperText={t(
+                  'This should be set to the amount of new recurring commitments you expect to raise during the period set above. If you do not know, make your best guess for now. You can change it at any time.',
+                )}
+                helperPosition={HelperPositionEnum.Bottom}
+              >
+                <TextField
+                  label={t('New Recurring Commitment Goal')}
+                  value={activeMpdMonthlyGoal}
+                  onChange={handleChange('activeMpdMonthlyGoal')}
+                  inputProps={{
+                    'aria-label': label,
+                    type: 'number',
+                  }}
+                />
+              </FieldWrapper>
+            </Grid>
           </FormWrapper>
         )}
       </Formik>

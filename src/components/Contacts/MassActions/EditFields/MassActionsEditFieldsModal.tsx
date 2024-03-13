@@ -1,17 +1,14 @@
 import React, { ReactElement } from 'react';
-import CalendarToday from '@mui/icons-material/CalendarToday';
 import {
   DialogActions,
   DialogContent,
   FormControl,
   Grid,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +16,7 @@ import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { AssigneeAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
+import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
   CancelButton,
   SubmitButton,
@@ -28,10 +26,7 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
@@ -77,7 +72,6 @@ export const MassActionsEditFieldsModal: React.FC<
   MassActionsEditFieldsModalProps
 > = ({ handleClose, accountListId, ids }) => {
   const { t } = useTranslation();
-  const userLocale = useLocale();
 
   const [updateContacts] = useMassActionsUpdateContactFieldsMutation();
 
@@ -276,29 +270,10 @@ export const MassActionsEditFieldsModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <DatePicker
-                      renderInput={(params) => (
-                        <TextField fullWidth {...params} />
-                      )}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <CalendarToday
-                              style={{
-                                color: theme.palette.cruGrayMedium.main,
-                              }}
-                            />
-                          </InputAdornment>
-                        ),
-                      }}
-                      inputFormat={getDateFormatPattern(userLocale)}
-                      closeOnSelect
+                    <CustomDateField
                       label={t('Next Increase Ask')}
                       value={nextAsk}
-                      onChange={(date): void => setFieldValue('nextAsk', date)}
-                      componentsProps={{
-                        actionBar: { actions: ['clear', 'cancel', 'accept'] },
-                      }}
+                      onChange={(date) => setFieldValue('nextAsk', date)}
                     />
                   </FormControl>
                 </Grid>
