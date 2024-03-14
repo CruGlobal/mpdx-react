@@ -72,6 +72,7 @@ export const AccountListInvites: React.FC<Props> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                flexWrap: 'wrap',
               }}
             >
               <Box>
@@ -102,14 +103,21 @@ export const AccountListInvites: React.FC<Props> = ({
       <Confirmation
         isOpen={!!deleteInvite}
         title={t('Confirm')}
-        message={t(
-          'Are you sure you want to remove the invite for {{email}} from {{accountList}}?',
-          {
-            email: deleteInvite?.recipientEmail,
-            accountList: name,
-            interpolation: { escapeValue: false },
-          },
-        )}
+        message={
+          <>
+            <Typography component="span">
+              {t('Are you sure you want to remove the invite for ')}
+            </Typography>
+            <Typography component="span" sx={{ fontWeight: 'bold' }}>
+              {deleteInvite?.recipientEmail}
+            </Typography>
+            {t(' from the account: ')}
+            <Typography component="span" sx={{ fontWeight: 'bold' }}>
+              {name}
+            </Typography>
+            {t('?')}
+          </>
+        }
         mutation={() => handleInviteDelete(deleteInvite)}
         handleClose={() => setDeleteInvite(null)}
       />

@@ -12,6 +12,10 @@ import {
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import {
+  StyledList,
+  StyledListItem,
+} from 'src/components/Shared/Lists/listsHelper';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   AccountListUsers,
@@ -29,7 +33,7 @@ import {
   useDeleteUserMutation,
   useRemoveAccountListUserMutation,
 } from './DeleteAccountListsItems.generated';
-import { BorderBottomBox, HeaderBox } from './accountListRowHelper';
+import { BorderBottomBox, HeaderBox, WarningBox } from './accountListRowHelper';
 
 export interface AccountListRowProps {
   accountList: OrganizationsAccountList;
@@ -137,6 +141,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
       appName,
       name,
     });
+
     if (!id) {
       enqueueSnackbar(errorMessage, {
         variant: 'error',
@@ -152,9 +157,8 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
     await deleteAccountList({
       variables: {
         input: {
-          accountListName: name,
+          accountListId: id,
           reason: reason,
-          resettedUserId: accountListUsers?.[0]?.userId || '',
         },
       },
       update: (cache) => {
@@ -265,22 +269,6 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
     }
   };
 
-  const ReasonTextField = () => (
-    <TextField
-      // eslint-disable-next-line jsx-a11y/no-autofocus
-      autoFocus
-      margin="dense"
-      id={t('Reason')}
-      label={t('Reason')}
-      type="text"
-      fullWidth
-      multiline
-      value={reason}
-      onChange={(e) => setReason(e.target.value)}
-      sx={{ marginTop: 2 }}
-    />
-  );
-
   return (
     <Box
       data-testid="rowButton"
@@ -315,19 +303,88 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                       <Confirmation
                         isOpen={deleteAccountListDialogOpen}
                         title={t('Confirm')}
-                        subtitle={t(
-                          `Are you sure you want to permanently delete this account list: {{accountListName}}?`,
-                          {
-                            accountListName: name,
-                            interpolation: { escapeValue: false },
-                          },
-                        )}
                         message={
                           <>
-                            {t(
-                              'WARNING: Only delete if you know this user/staff reports to your ministry AND does not serve with any other CCCI ministry AND will not be returning to any ministry of CCCI. You may need to confirm this with them.',
-                            )}
-                            <ReasonTextField />
+                            <WarningBox
+                              sx={{
+                                fontSize: '10px',
+                                marginTop: 0,
+                                marginBottom: theme.spacing(1),
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontWeight: 'bold',
+                                  marginBottom: theme.spacing(1),
+                                }}
+                              >
+                                {t(
+                                  'WARNING: Please read the implications of deleting this account.',
+                                )}
+                              </Typography>
+                              <Typography>Users</Typography>
+                              <StyledList>
+                                <StyledListItem>
+                                  {t(
+                                    'You are about to delete an account list. It will not delete the user(s).',
+                                  )}
+                                </StyledListItem>
+                                <StyledListItem>
+                                  {t(
+                                    'The user(s) will lose gift data and donor contact data. Consider whether you should notify the user(s).',
+                                  )}
+                                </StyledListItem>
+                                <StyledListItem>
+                                  {t(
+                                    'This is not the place to remove a user’s access to this account.',
+                                  )}
+                                </StyledListItem>
+                              </StyledList>
+                              <Typography>Designations Accounts</Typography>
+                              <StyledList>
+                                <StyledListItem>
+                                  {t(
+                                    'This will delete all designation accounts that are not shared with other account lists. (including the donations for that designation)',
+                                  )}
+                                </StyledListItem>
+                                <StyledListItem>
+                                  {t(
+                                    'If this account contains ministry designations rather than a staff designation, then consider whether someone else in your organization needs this. If you want to retain the designation account, then share it with the appropriate user.',
+                                  )}
+                                </StyledListItem>
+                              </StyledList>
+                              <Typography>Donation System</Typography>
+                              <StyledList>
+                                <StyledListItem>
+                                  {t(
+                                    'A blue question icon indicates that the user may be active in the donation system and this account may be automatically recreated. Consider first updating the donation system.',
+                                  )}
+                                </StyledListItem>
+                              </StyledList>
+                            </WarningBox>
+                            <Typography sx={{ fontWeight: 'bold' }}>
+                              {t(
+                                `Are you sure you want to permanently delete the account list: {{accountListName}}?`,
+                                {
+                                  accountListName: name,
+                                  interpolation: { escapeValue: false },
+                                },
+                              )}
+                            </Typography>
+                            Please explain the reason for deleting this account.
+                            <TextField
+                              // eslint-disable-next-line jsx-a11y/no-autofocus
+                              autoFocus
+                              margin="dense"
+                              id={t('Reason')}
+                              label={t('Reason')}
+                              type="text"
+                              fullWidth
+                              multiline
+                              value={reason}
+                              onChange={(e) => setReason(e.target.value)}
+                              sx={{ marginTop: 2 }}
+                            />
                           </>
                         }
                         confirmButtonProps={{ disabled: reason?.length < 5 }}
@@ -454,34 +511,99 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
       <Confirmation
         isOpen={!!removeUser}
         title={t('Confirm')}
-        message={t(
-          'Are you sure you want to remove {{user}} as a user from {{accountList}}?',
-          {
-            user: removeUser?.userFirstName,
-            accountList: name,
-            interpolation: { escapeValue: false },
-          },
-        )}
+        message={
+          <>
+            <Typography component="span">
+              {t('Are you sure you want to remove  ')}
+            </Typography>
+            <Typography component="span" sx={{ fontWeight: 'bold' }}>
+              {`${removeUser?.userFirstName} ${removeUser?.userLastName}`}
+            </Typography>
+            {t(' as a user from the account: ')}
+            <Typography component="span" sx={{ fontWeight: 'bold' }}>
+              {name}
+            </Typography>
+            {t('?')}
+          </>
+        }
         handleClose={() => setRemoveUser(null)}
         mutation={() => handleRemoveUser(removeUser)}
       />
       <Confirmation
         isOpen={!!deleteUser}
         title={t('Confirm')}
-        subtitle={t(
-          'Are you sure you want to permanently delete the user: {{first}} {{last}}?',
-          {
-            first: deleteUser?.userFirstName,
-            last: deleteUser?.userLastName,
-            interpolation: { escapeValue: false },
-          },
-        )}
         message={
           <>
-            {t(
-              'WARNING: Only delete if you know this user/staff reports to your ministry AND does not serve with any other CCCI ministry AND will not be returning to any ministry of CCCI. You may need to confirm this with them.',
-            )}
-            <ReasonTextField />
+            <WarningBox
+              sx={{
+                fontSize: '10px',
+                marginTop: 0,
+                marginBottom: theme.spacing(1),
+              }}
+            >
+              <Typography
+                sx={{ marginBottom: theme.spacing(1), fontWeight: 'bold' }}
+              >
+                {t(
+                  'WARNING: Please read the implications of deleting this user.',
+                )}
+              </Typography>
+              <Typography>Accounts</Typography>
+              <StyledList>
+                <StyledListItem>
+                  {t(
+                    'You are about to delete a user and any unshared associated account(s). Associated accounts will be deleted unless they are shared with other users.',
+                  )}
+                </StyledListItem>
+                <StyledListItem>
+                  {t(
+                    'Only delete if you know that this user will not be returning to any other missional organization that uses {{appName}}. You may need to confirm this with them.',
+
+                    { appName: appName },
+                  )}
+                </StyledListItem>
+              </StyledList>
+              <Typography>Designations Accounts</Typography>
+              <StyledList>
+                <StyledListItem>
+                  {t(
+                    'If this user has access to a ministry designation, then consider whether someone else in your organization needs this. If you want to retain the account, then share it with the appropriate user.',
+                  )}
+                </StyledListItem>
+              </StyledList>
+              <Typography>Donation System</Typography>
+              <StyledList>
+                <StyledListItem>
+                  {t(
+                    'A blue question icon indicates that the user may be active in the donation system and this user and account may be automatically recreated. Consider first updating the donation system.',
+                  )}
+                </StyledListItem>
+              </StyledList>
+            </WarningBox>
+            <Typography sx={{ fontWeight: 'bold' }}>
+              {t(
+                'Are you sure you want to permanently delete the user: {{first}} {{last}}?',
+                {
+                  first: deleteUser?.userFirstName,
+                  last: deleteUser?.userLastName,
+                  interpolation: { escapeValue: false },
+                },
+              )}
+            </Typography>
+            Please explain the reason for deleting this user.
+            <TextField
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus
+              margin="dense"
+              id={t('Reason')}
+              label={t('Reason')}
+              type="text"
+              fullWidth
+              multiline
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              sx={{ marginTop: 2 }}
+            />
           </>
         }
         formLabel="Reason"
@@ -494,14 +616,21 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
       <Confirmation
         isOpen={!!removeCoach}
         title={t('Confirm')}
-        message={t(
-          'Are you sure you want to remove {{coach}} as a coach from {{accountList}}?',
-          {
-            coach: removeCoach?.coachFirstName,
-            accountList: name,
-            interpolation: { escapeValue: false },
-          },
-        )}
+        message={
+          <>
+            <Typography component="span">
+              {t('Are you sure you want to remove  ')}
+            </Typography>
+            <Typography component="span" sx={{ fontWeight: 'bold' }}>
+              {`${removeCoach?.coachFirstName} ${removeCoach?.coachLastName}`}
+            </Typography>
+            {t(' as a coach from the account: ')}
+            <Typography component="span" sx={{ fontWeight: 'bold' }}>
+              {name}
+            </Typography>
+            {t('?')}
+          </>
+        }
         mutation={() => handleRemoveCoach(removeCoach)}
         handleClose={() => setRemoveCoach(null)}
       />

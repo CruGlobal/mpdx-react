@@ -64,9 +64,7 @@ describe('AccountList Invites', () => {
 
     await waitFor(() => {
       expect(
-        getByText(
-          'Are you sure you want to remove the invite for {{email}} from {{accountList}}?',
-        ),
+        getByText('Are you sure you want to remove the invite for'),
       ).toBeInTheDocument();
       userEvent.click(getByText('Yes'));
     });

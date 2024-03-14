@@ -106,25 +106,26 @@ describe('AccountLists', () => {
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
-        return expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+        expect(mutationSpy.mock.calls[0][0]).toMatchObject({
           operation: {
             operationName: 'DeleteAccountList',
             variables: {
               input: {
-                accountListName: 'Name1',
+                accountListId: '1111',
                 reason: reason,
-                resettedUserId: 'e8a19920',
               },
             },
           },
         });
+        // });
+        // await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Successfully deleted account: Name1',
+          {
+            variant: 'success',
+          },
+        );
       });
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Successfully deleted account: Name1',
-        {
-          variant: 'success',
-        },
-      );
     });
 
     it('should delete users', async () => {
@@ -144,7 +145,7 @@ describe('AccountLists', () => {
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
-        return expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+        expect(mutationSpy.mock.calls[0][0]).toMatchObject({
           operation: {
             operationName: 'DeleteUser',
             variables: {
@@ -155,25 +156,31 @@ describe('AccountLists', () => {
             },
           },
         });
+
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Successfully deleted user: userFirstName userLastName',
+          {
+            variant: 'success',
+          },
+        );
       });
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Successfully deleted user: userFirstName userLastName',
-        {
-          variant: 'success',
-        },
-      );
     });
 
     it('should remove coaches', async () => {
-      const { getAllByRole, getByRole } = render(
+      const { getAllByRole, getByRole, getByText } = render(
         <Components accountList={accountList} />,
       );
 
       userEvent.click(getAllByRole('button', { name: 'Remove' })[1]);
+      await waitFor(() => {
+        expect(
+          getByText('Are you sure you want to remove'),
+        ).toBeInTheDocument();
+      });
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
-        return expect(mutationSpy.mock.calls[0][0]).toMatchObject({
+        expect(mutationSpy.mock.calls[0][0]).toMatchObject({
           operation: {
             operationName: 'AdminDeleteOrganizationCoach',
             variables: {
@@ -200,9 +207,7 @@ describe('AccountLists', () => {
       userEvent.click(getByTestId('RemoveUserButton'));
       await waitFor(() => {
         expect(
-          getByText(
-            'Are you sure you want to remove userFirstName as a user from Name1?',
-          ),
+          getByText('Are you sure you want to remove'),
         ).toBeInTheDocument();
       });
       userEvent.click(getByRole('button', { name: 'Yes' }));

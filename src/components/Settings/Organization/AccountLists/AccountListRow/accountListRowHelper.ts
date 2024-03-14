@@ -15,3 +15,10 @@ export const HeaderBox = styled(Box)(() => ({
   fontWeight: 'bold',
   paddingX: '5px',
 }));
+
+export const WarningBox = styled(Box)(() => ({
+  padding: '15px',
+  background: theme.palette.mpdxYellow.main,
+  maxWidth: 'calc(100% - 20px)',
+  margin: '10px auto 0',
+}));

@@ -11,7 +11,8 @@ import { useTranslation } from 'react-i18next';
 import {
   ActionButtonProps,
   CancelButton,
- SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from '../Modal';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -26,7 +27,7 @@ const StyledDialogContentText = styled(DialogContentText, {
 export interface ConfirmationProps {
   isOpen: boolean;
   title: string;
-  subtitle?: string;
+  subtitle?: ReactNode | string;
   formLabel?: string;
   message?: ReactNode;
   mutation: () => Promise<unknown>;
@@ -72,7 +73,7 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
           <>
             {subtitle && (
               <StyledDialogContentText
-                style={{
+                sx={{
                   fontWeight: 'bold',
                 }}
               >

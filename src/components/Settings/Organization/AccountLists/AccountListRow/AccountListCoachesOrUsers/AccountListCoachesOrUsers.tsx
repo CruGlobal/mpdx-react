@@ -103,6 +103,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  flexWrap: 'wrap',
                 }}
               >
                 <Box>
