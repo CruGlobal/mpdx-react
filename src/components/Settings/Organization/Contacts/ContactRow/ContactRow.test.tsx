@@ -73,69 +73,6 @@ describe('ContactRow', () => {
     expect(queryByText('222 test, city, FL, 22222')).not.toBeInTheDocument();
   });
 
-  it('should show both Delete and Anonymize button', () => {
-    const { getByText } = render(
-      <Components>
-        <GqlMockedProvider>
-          <ContactRow contact={contact} selectedOrganizationName="Cru" />
-        </GqlMockedProvider>
-      </Components>,
-    );
-    expect(getByText('Delete')).toBeInTheDocument();
-    expect(getByText('Anonymize')).toBeInTheDocument();
-  });
-
-  it('should only show Anonymize button', () => {
-    const { getByText, queryByText } = render(
-      <Components>
-        <GqlMockedProvider>
-          <ContactRow
-            contact={{
-              ...contact,
-              allowDeletion: false,
-            }}
-            selectedOrganizationName="Cru"
-          />
-        </GqlMockedProvider>
-      </Components>,
-    );
-    expect(getByText('Anonymize')).toBeInTheDocument();
-    expect(queryByText('Delete')).not.toBeInTheDocument();
-  });
-
-  it('should handle Delete', async () => {
-    const mutationSpy = jest.fn();
-    const { getByText } = render(
-      <Components>
-        <GqlMockedProvider onCall={mutationSpy}>
-          <ContactRow contact={contact} selectedOrganizationName="Cru" />
-        </GqlMockedProvider>
-      </Components>,
-    );
-    userEvent.click(getByText('Delete'));
-
-    await waitFor(() => {
-      expect(getByText('Confirm')).toBeInTheDocument();
-      expect(
-        getByText('Are you sure you want to delete {{name}} from {{orgName}}?'),
-      ).toBeInTheDocument();
-    });
-
-    userEvent.click(getByText('Yes'));
-
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith('Contact successfully deleted', {
-        variant: 'success',
-      });
-    });
-    expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
-      'DeleteOrganizationContact',
-    );
-    expect(mutationSpy.mock.calls[0][0].operation.variables.input).toEqual({
-      contactId: '2f5d998f',
-    });
-  });
-
   it('should handle Anonymize', async () => {
     const mutationSpy = jest.fn();
     const { getByText } = render(
@@ -157,7 +94,7 @@ describe('ContactRow', () => {
       expect(getByText('Confirm')).toBeInTheDocument();
       expect(
         getByText(
-          'Are you sure you want to anonymize {{name}} in {{orgName}}?',
+          'Are you sure you want to anonymize {{name}} in {{accountList}}?',
         ),
       ).toBeInTheDocument();
     });

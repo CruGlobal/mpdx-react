@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Delete, Lock } from '@mui/icons-material';
+import { Lock } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -18,16 +18,7 @@ import {
   ContactPeopleAccountListsUsers,
   OrganizationsContact,
 } from 'src/graphql/types.generated';
-import {
-  useAnonymizeContactMutation,
-  useDeleteOrganizationContactMutation,
-} from '../Contact.generated';
-
-const styles = {
-  buttonIcon: {
-    marginRight: '7px',
-  },
-};
+import { useAnonymizeContactMutation } from '../Contact.generated';
 
 interface Props {
   contact: OrganizationsContact;
@@ -79,40 +70,12 @@ const PersonData: React.FC<PersonDataProps> = ({ person }) => {
   );
 };
 
-export const ContactRow: React.FC<Props> = ({
-  contact,
-  selectedOrganizationName,
-}) => {
+export const ContactRow: React.FC<Props> = ({ contact }) => {
   const { t } = useTranslation();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [anonymizeDialogOpen, setAnonymizeDialogOpen] = useState(false);
-  const [deleteOrganizationContact] = useDeleteOrganizationContactMutation();
   const [anonymizeContact] = useAnonymizeContactMutation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleDeleteContact = async () => {
-    await deleteOrganizationContact({
-      variables: {
-        input: {
-          contactId: contact.id,
-        },
-      },
-      update: (cache) => {
-        cache.evict({ id: `OrganizationsContact:${contact.id}` });
-        cache.gc();
-      },
-      onCompleted: () => {
-        enqueueSnackbar(t('Contact successfully deleted'), {
-          variant: 'success',
-        });
-      },
-      onError: () => {
-        enqueueSnackbar(t('Error while trying to delete contact'), {
-          variant: 'error',
-        });
-      },
-    });
-  };
   const handleAnonymizeContact = async () => {
     await anonymizeContact({
       variables: {
@@ -137,7 +100,7 @@ export const ContactRow: React.FC<Props> = ({
     });
   };
 
-  const { name, people, addresses, accountList, allowDeletion } = contact;
+  const { name, people, addresses, accountList } = contact;
 
   const primaryAddress = useMemo(
     () =>
@@ -162,7 +125,7 @@ export const ContactRow: React.FC<Props> = ({
   return (
     <>
       <Grid container alignItems="center">
-        <Grid item xs={6} sx={{ paddingRight: 16 }}>
+        <Grid item xs={6} sx={{ paddingRight: '16px' }}>
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -207,19 +170,8 @@ export const ContactRow: React.FC<Props> = ({
             )}
           />
         </Grid>
-        <Grid item xs={3} sx={{ paddingRight: 16, textAlign: 'right' }}>
+        <Grid item xs={3} sx={{ paddingRight: '16px', textAlign: 'right' }}>
           <Box>
-            {allowDeletion && (
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => setDeleteDialogOpen(true)}
-                size="small"
-              >
-                <Delete fontSize="small" style={styles.buttonIcon} />{' '}
-                {t('Delete')}
-              </Button>
-            )}
             <Button
               variant="contained"
               color="error"
@@ -228,38 +180,20 @@ export const ContactRow: React.FC<Props> = ({
               sx={{ ml: '7px' }}
               className="ml-1"
             >
-              <Lock fontSize="small" style={styles.buttonIcon} />{' '}
+              <Lock fontSize="small" sx={{ marginRight: '7px' }} />{' '}
               {t('Anonymize')}
             </Button>
           </Box>
         </Grid>
       </Grid>
-      {allowDeletion && (
-        <Confirmation
-          isOpen={deleteDialogOpen}
-          title={t('Confirm')}
-          subtitle={t(
-            'Are you sure you want to delete {{name}} from {{orgName}}?',
-            {
-              name: name,
-              orgName: selectedOrganizationName,
-            },
-          )}
-          message={t(
-            "This is permanent and can't be recovered. This person will be deleted only in your MPDx organization. You can request removal across all other systems at dsar@cru.org. Only delete a contact if you need to fulfill a legal requirement or the person has made this request, AND you are 100% confident that you are looking at the correct contact.",
-          )}
-          handleClose={() => setDeleteDialogOpen(false)}
-          mutation={handleDeleteContact}
-        />
-      )}
       <Confirmation
         isOpen={anonymizeDialogOpen}
         title={t('Confirm')}
         subtitle={t(
-          'Are you sure you want to anonymize {{name}} in {{orgName}}?',
+          'Are you sure you want to anonymize {{name}} in {{accountList}}?',
           {
-            name: name,
-            orgName: selectedOrganizationName,
+            name: name.toLocaleUpperCase(),
+            accountList: accountList?.name?.toLocaleUpperCase(),
           },
         )}
         message={t(
