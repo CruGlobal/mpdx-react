@@ -155,6 +155,17 @@ describe('DonationTable', () => {
     expect(queryByText('Edit Donation')).not.toBeInTheDocument();
   });
 
+  it('renders loading spinner when loading prop is true', async () => {
+    const { findByTestId } = render(
+      <TestComponent tableProps={{ loading: true }} />,
+    );
+
+    expect(await findByTestId('LoadingBox')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(mutationSpy).not.toHaveGraphqlOperation('DonationTable'),
+    );
+  });
+
   it('renders empty', async () => {
     const { findByText } = render(<TestComponent isEmpty />);
 

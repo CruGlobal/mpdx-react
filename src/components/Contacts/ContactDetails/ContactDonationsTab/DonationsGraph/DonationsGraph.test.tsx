@@ -83,6 +83,19 @@ describe('Donations Graph', () => {
     expect(getByLabelText('Loading donations graph')).toBeInTheDocument();
   });
 
+  it('renders loading placeholders while waiting for donorAccountIds', async () => {
+    const { getByLabelText } = render(
+      <GqlMockedProvider>
+        <DonationsGraph
+          accountListId="accountListID"
+          donorAccountIds={undefined}
+          convertedCurrency="USD"
+        />
+      </GqlMockedProvider>,
+    );
+    expect(getByLabelText('Loading donations graph')).toBeInTheDocument();
+  });
+
   it('test query', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () =>

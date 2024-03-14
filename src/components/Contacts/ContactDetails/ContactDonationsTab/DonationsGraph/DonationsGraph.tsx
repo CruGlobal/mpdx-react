@@ -28,8 +28,8 @@ const GraphContainer = styled(Box)(({ theme }) => ({
 
 interface DonationsGraphProps {
   accountListId: string;
-  donorAccountIds: string[];
-  convertedCurrency: string;
+  donorAccountIds: string[] | undefined;
+  convertedCurrency: string | undefined;
 }
 
 export const DonationsGraph: React.FC<DonationsGraphProps> = ({
@@ -39,11 +39,13 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const skipped = !donorAccountIds;
   const { data, loading } = useGetDonationsGraphQuery({
     variables: {
       accountListId: accountListId,
       donorAccountIds: donorAccountIds,
     },
+    skip: skipped,
   });
 
   const monthFormatter = useMemo(
@@ -99,7 +101,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
         </Typography>
       )}
       <GraphContainer>
-        {loading ? (
+        {loading || skipped ? (
           <Skeleton
             variant="rounded"
             width="100%"
