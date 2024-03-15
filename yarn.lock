@@ -5214,7 +5214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^5.17.4":
+"@mui/x-data-grid@npm:5.17.4":
   version: 5.17.4
   resolution: "@mui/x-data-grid@npm:5.17.4"
   dependencies:
@@ -5229,6 +5229,24 @@ __metadata:
     react: ^17.0.2 || ^18.0.0
     react-dom: ^17.0.2 || ^18.0.0
   checksum: 9f88883fd9c99600ade8debc78d81ac4829690dede2c440f8feffae7832c3147c6e5d9e5a894b9fa36c043add4d2698496f82ab1988139f602375dbaed1f59a2
+  languageName: node
+  linkType: hard
+
+"@mui/x-data-grid@patch:@mui/x-data-grid@npm%3A5.17.4#./.yarn/patches/@mui-x-data-grid-npm-5.17.4-542730a19e.patch::locator=mpdx-react%40workspace%3A.":
+  version: 5.17.4
+  resolution: "@mui/x-data-grid@patch:@mui/x-data-grid@npm%3A5.17.4#./.yarn/patches/@mui-x-data-grid-npm-5.17.4-542730a19e.patch::version=5.17.4&hash=362dcd&locator=mpdx-react%40workspace%3A."
+  dependencies:
+    "@babel/runtime": ^7.18.9
+    "@mui/utils": ^5.10.3
+    clsx: ^1.2.1
+    prop-types: ^15.8.1
+    reselect: ^4.1.6
+  peerDependencies:
+    "@mui/material": ^5.4.1
+    "@mui/system": ^5.4.1
+    react: ^17.0.2 || ^18.0.0
+    react-dom: ^17.0.2 || ^18.0.0
+  checksum: 0c31923597e605528d3ce17e40eca4f97519af7174b768f5530d85fb7764194c75e22eb63252ddff5e455a236afc497a826de9b4eb722965519f2b1efaaef928
   languageName: node
   linkType: hard
 

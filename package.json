@@ -178,7 +178,8 @@
     "package-json/got": "^11.8.5",
     "http-cache-semantics": "~4.1.1",
     "cacheable-request": "^10.2.7",
-    "@mui/base@5.0.0-alpha.98": "patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch"
+    "@mui/base@5.0.0-alpha.98": "patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch",
+    "@mui/x-data-grid@^5.17.4": "patch:@mui/x-data-grid@npm%3A5.17.4#./.yarn/patches/@mui-x-data-grid-npm-5.17.4-542730a19e.patch"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix"
