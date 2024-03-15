@@ -49,8 +49,6 @@ const ExpandingContent = styled(Box)(({ open }: { open: boolean }) => ({
   flexBasis: open ? 0 : '100%',
   transition: 'flex-basis ease-in-out 225ms',
   overflowX: 'hidden',
-  position: 'relative',
-  zIndex: 10,
 }));
 
 const LeftPanelWrapper = styled(FullHeightBox)(({ theme }) => ({
@@ -62,7 +60,7 @@ const LeftPanelWrapper = styled(FullHeightBox)(({ theme }) => ({
     transition: 'transform ease-in-out 225ms',
     background: theme.palette.common.white,
     position: 'absolute',
-    zIndex: 20,
+    zIndex: 720, // Must be higher than RightPanelWrapper
   },
 }));
 
@@ -70,7 +68,7 @@ const RightPanelWrapper = styled(FullHeightBox)(({ theme, headerHeight }) => {
   const toolbar = theme.mixins.toolbar as ToolbarMixin;
   return {
     position: 'fixed',
-    zIndex: 20,
+    zIndex: 710, // Must be higher than MultiPageHeader's StickyHeader
     right: 0,
     transition: 'transform ease-in-out 225ms',
     overflowY: 'scroll',
@@ -120,6 +118,17 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
 
   return (
     <OuterWrapper>
+      <RightPanelWrapper
+        data-testid="RightPanelWrapper"
+        width={isMobile ? '100%' : rightWidth}
+        headerHeight={headerHeight}
+        isScrollable
+        style={{
+          transform: rightOpen ? 'none' : 'translate(100%)',
+        }}
+      >
+        {rightOpen && rightPanel}
+      </RightPanelWrapper>
       <ExpandingContent open={rightOpen}>
         <CollapsibleWrapper justifyContent="flex-end">
           <LeftPanelWrapper
@@ -135,16 +144,6 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
         </CollapsibleWrapper>
       </ExpandingContent>
-      <RightPanelWrapper
-        width={isMobile ? '100%' : rightWidth}
-        headerHeight={headerHeight}
-        isScrollable
-        style={{
-          transform: rightOpen ? 'none' : 'translate(100%)',
-        }}
-      >
-        {rightOpen && rightPanel}
-      </RightPanelWrapper>
     </OuterWrapper>
   );
 };
