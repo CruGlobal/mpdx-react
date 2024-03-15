@@ -242,7 +242,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
       renderCell: date,
     },
     {
-      field: 'partner',
+      field: 'donorAccountName',
       headerName: t('Partner'),
       width: 360,
       renderCell: link,
