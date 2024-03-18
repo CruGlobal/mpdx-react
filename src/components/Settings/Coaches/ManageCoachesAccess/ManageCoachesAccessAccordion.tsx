@@ -39,7 +39,7 @@ export const ManageCoachesAccessAccordion: React.FC<AccordionProps> = ({
     await deleteAccountListCoach({
       variables: {
         input: {
-          id: accountListId,
+          accountListId,
           coachId: coach.id,
         },
       },
