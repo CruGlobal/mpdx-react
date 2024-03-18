@@ -119,7 +119,7 @@ describe('ManageCoachesAccessAccordion', () => {
       'DeleteAccountListCoach',
     );
     expect(mutationSpy.mock.calls[3][0].operation.variables.input).toEqual({
-      id: accountListId,
+      accountListId,
       coachId: '123',
     });
   });
