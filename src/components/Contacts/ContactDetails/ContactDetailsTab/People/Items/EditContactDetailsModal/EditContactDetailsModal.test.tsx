@@ -156,7 +156,7 @@ describe('EditContactDetailsModal', () => {
       getByRole('textbox', { hidden: true, name: 'Contact' }),
       newContactName,
     );
-    userEvent.click(getByRole('button', { hidden: true, name: 'Primary' }));
+    userEvent.click(getByRole('combobox', { hidden: true, name: 'Primary' }));
     userEvent.click(
       getByRole('option', { hidden: true, name: newPrimaryContactName }),
     );

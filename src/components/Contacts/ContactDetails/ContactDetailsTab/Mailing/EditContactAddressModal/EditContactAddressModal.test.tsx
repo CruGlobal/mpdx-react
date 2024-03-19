@@ -309,7 +309,7 @@ describe('EditContactAddressModal', () => {
       getByText('This address is provided by Donation Services'),
     ).toBeInTheDocument();
     expect(getByRole('combobox', { name: 'Street' })).toBeDisabled();
-    expect(getByRole('button', { name: 'Location Home' })).not.toBeDisabled();
+    expect(getByRole('combobox', { name: 'Location' })).not.toBeDisabled();
     expect(getByRole('textbox', { name: 'City' })).toBeDisabled();
     expect(getByRole('textbox', { name: 'State' })).toBeDisabled();
     expect(getByRole('textbox', { name: 'Zip' })).toBeDisabled();

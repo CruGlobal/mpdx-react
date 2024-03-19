@@ -3,6 +3,8 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import { ApolloProvider } from '@apollo/client';
+import createEmotionCache from '@emotion/cache';
+import { CacheProvider } from '@emotion/react';
 import { Box } from '@mui/material';
 import StyledEngineProvider from '@mui/material/StyledEngineProvider';
 import { ThemeProvider } from '@mui/material/styles';
@@ -81,6 +83,7 @@ const App = ({
     },
     enabled: !!process.env.ROLLBAR_ACCESS_TOKEN,
   };
+  const emotionCache = createEmotionCache({ key: 'css' });
 
   return (
     <>
@@ -130,44 +133,47 @@ const App = ({
                 <UserPreferenceProvider>
                   <I18nextProvider i18n={i18n}>
                     <StyledEngineProvider injectFirst>
-                      <ThemeProvider theme={theme}>
-                        <LocalizationProvider
-                          dateAdapter={AdapterLuxon}
-                          localeText={{
-                            cancelButtonLabel: `${t('Cancel')}`,
-                            clearButtonLabel: `${t('Clear')}`,
-                            okButtonLabel: `${t('OK')}`,
-                            todayButtonLabel: `${t('Today')}`,
-                          }}
-                        >
-                          <SnackbarProvider maxSnack={3}>
-                            <GlobalStyles />
-                            <AnimatePresence
-                              mode="wait"
-                              onExitComplete={handleExitComplete}
-                            >
-                              <RouterGuard>
-                                <TaskModalProvider>
-                                  <Layout>
-                                    <SnackbarUtilsConfigurator />
-                                    <Box
-                                      sx={(theme) => ({
-                                        fontFamily: theme.typography.fontFamily,
-                                      })}
-                                    >
-                                      <Component
-                                        {...pageProps}
-                                        key={router.route}
-                                      />
-                                    </Box>
-                                  </Layout>
-                                </TaskModalProvider>
-                              </RouterGuard>
-                            </AnimatePresence>
-                            <Loading />
-                          </SnackbarProvider>
-                        </LocalizationProvider>
-                      </ThemeProvider>
+                      <CacheProvider value={emotionCache}>
+                        <ThemeProvider theme={theme}>
+                          <LocalizationProvider
+                            dateAdapter={AdapterLuxon}
+                            localeText={{
+                              cancelButtonLabel: `${t('Cancel')}`,
+                              clearButtonLabel: `${t('Clear')}`,
+                              okButtonLabel: `${t('OK')}`,
+                              todayButtonLabel: `${t('Today')}`,
+                            }}
+                          >
+                            <SnackbarProvider maxSnack={3}>
+                              <GlobalStyles />
+                              <AnimatePresence
+                                mode="wait"
+                                onExitComplete={handleExitComplete}
+                              >
+                                <RouterGuard>
+                                  <TaskModalProvider>
+                                    <Layout>
+                                      <SnackbarUtilsConfigurator />
+                                      <Box
+                                        sx={(theme) => ({
+                                          fontFamily:
+                                            theme.typography.fontFamily,
+                                        })}
+                                      >
+                                        <Component
+                                          {...pageProps}
+                                          key={router.route}
+                                        />
+                                      </Box>
+                                    </Layout>
+                                  </TaskModalProvider>
+                                </RouterGuard>
+                              </AnimatePresence>
+                              <Loading />
+                            </SnackbarProvider>
+                          </LocalizationProvider>
+                        </ThemeProvider>
+                      </CacheProvider>
                     </StyledEngineProvider>
                   </I18nextProvider>
                 </UserPreferenceProvider>

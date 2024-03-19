@@ -423,11 +423,12 @@ export const EditPartnershipInfoModal: React.FC<
               </ContactInputWrapper>
               <ContactInputWrapper>
                 <FormControl fullWidth>
-                  <InputLabel id="currency-select-label">
+                  <InputLabel id="likely-to-give-select-label">
                     {t('Likely To Give')}
                   </InputLabel>
                   <Select
                     label={t('Likely To Give')}
+                    labelId="likely-to-give-select-label"
                     value={likelyToGive ?? ''}
                     onChange={(e) =>
                       setFieldValue(
@@ -496,9 +497,12 @@ export const EditPartnershipInfoModal: React.FC<
               </ContactInputWrapper>
               <ContactInputWrapper>
                 <FormControl fullWidth>
-                  <InputLabel>{t('Newsletter')}</InputLabel>
+                  <InputLabel id="newsletter-select-label">
+                    {t('Newsletter')}
+                  </InputLabel>
                   <Select
                     label={t('Newsletter')}
+                    labelId="newsletter-select-label"
                     value={sendNewsletter}
                     onChange={(e) =>
                       setFieldValue(
