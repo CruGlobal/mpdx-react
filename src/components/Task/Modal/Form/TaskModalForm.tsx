@@ -40,9 +40,11 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from 'src/graphql/types.generated';
+import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { useUser } from 'src/hooks/useUser';
+import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import {
   getLocalizedNotificationTimeUnit,
@@ -150,6 +152,11 @@ const TaskModalForm = ({
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
+  // TODO - Change this to Task Type when Caleb Alldrin has created it.
+  // Remove PhaseTypeEnum.appointment
+  // Replace with Task Type
+  const [phaseData] = useGetPhaseData(PhaseTypeEnum.appointment);
+
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
   const { update } = useUpdateTasksQueries();
@@ -161,9 +168,7 @@ const TaskModalForm = ({
     }
   }, []);
 
-  const availableResults = task?.activityType
-    ? possibleResults(task.activityType)
-    : [];
+  const availableResults = phaseData ? possibleResults(phaseData) : [];
   const availableNextActions = task?.activityType
     ? possibleNextActions(task.activityType)
     : [];

@@ -24,7 +24,7 @@ import {
 import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
 import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { getAssociatedMPDPhase } from 'src/lib/MPDPhases';
+import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
@@ -91,15 +91,9 @@ const TaskModalCompleteForm = ({
   const { enqueueSnackbar } = useSnackbar();
 
   // TODO - Change this to Task Type when Caleb Alldrin has created it.
-  const contactStatus = useMemo(() => {
-    const contactStatus = task.contacts.nodes.map((contact) => contact.status);
-    return contactStatus[0] || null;
-  }, [task]);
-  const phaseType = useMemo(
-    () => getAssociatedMPDPhase(contactStatus),
-    [contactStatus],
-  );
-  const [phaseData] = useGetPhaseData(phaseType);
+  // Remove PhaseTypeEnum.appointment
+  // Replace with Task Type
+  const [phaseData] = useGetPhaseData(PhaseTypeEnum.appointment);
 
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
@@ -157,9 +151,7 @@ const TaskModalCompleteForm = ({
     }
   };
 
-  const availableResults = task.activityType
-    ? possibleResults(task.activityType)
-    : [];
+  const availableResults = phaseData ? possibleResults(phaseData) : [];
   const availableNextActions = task.activityType
     ? possibleNextActions(task.activityType)
     : [];

@@ -96,7 +96,7 @@ const TaskModalLogForm = ({
       // the user wait for it to load
       userId: defaultValues?.userId ?? user?.id ?? null,
       tagList: defaultValues?.tagList ?? [],
-      result: defaultValues?.result ?? ResultEnum.Completed,
+      result: defaultValues?.result ?? undefined,
       nextAction: defaultValues?.nextAction ?? null,
       location: '',
       comment: '',
@@ -175,6 +175,8 @@ const TaskModalLogForm = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const updateActionOptions = () => {};
 
+  const availableResults = phaseData ? possibleResults(phaseData) : [];
+
   return (
     <Formik
       initialValues={initialTask}
@@ -234,7 +236,8 @@ const TaskModalLogForm = ({
                   label={t('Task Type')}
                   value={taskType}
                   onChange={(phase) => {
-                    setFieldValue('activityType', phase);
+                    setFieldValue('taskType', phase);
+                    setFieldValue('result', undefined);
                     updateActionOptions();
                     fetchPhaseData(phase);
                   }}
@@ -270,6 +273,25 @@ const TaskModalLogForm = ({
                   />
                 </Grid>
               )}
+              {!!availableResults.length && (
+                <Grid item>
+                  <FormControl fullWidth>
+                    <InputLabel id="result">{t('Result')}</InputLabel>
+                    <Select
+                      labelId="result"
+                      label={t('Result')}
+                      value={result}
+                      onChange={(e) => setFieldValue('result', e.target.value)}
+                    >
+                      {availableResults.map((val) => (
+                        <MenuItem key={val} value={val}>
+                          {getLocalizedResultString(t, val)}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              )}
               <Grid item>
                 <ContactsAutocomplete
                   accountListId={accountListId}
@@ -278,29 +300,6 @@ const TaskModalLogForm = ({
                     setFieldValue('contactIds', contactIds)
                   }
                 />
-              </Grid>
-              <Grid item>
-                <FormControl fullWidth>
-                  <InputLabel id="result">{t('Result')}</InputLabel>
-                  <Select
-                    labelId="result"
-                    label={t('Result')}
-                    value={result}
-                    onChange={(e) => setFieldValue('result', e.target.value)}
-                  >
-                    {activityType ? (
-                      possibleResults(activityType).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedResultString(t, val)}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem value={ResultEnum.Completed}>
-                        {getLocalizedResultString(t, ResultEnum.Completed)}
-                      </MenuItem>
-                    )}
-                  </Select>
-                </FormControl>
               </Grid>
               <Grid item>
                 <FormControl fullWidth>

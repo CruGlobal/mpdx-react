@@ -9,13 +9,26 @@ export type ContactPhaseData = {
   suggestedContactStatus?: string[];
 };
 
+export enum NewResultEnum {
+  NoResponseYet = 'No Response Yet',
+  DoesNotWantToMeet = 'Does not want to meet',
+  CantMeetRightNowCircleBack = "Can't meet right now - circle back",
+  AppointmentScheduled = 'Appointment Scheduled',
+  CancelledNeedToReschedule = 'Cancelled-Need to reschedule',
+  FollowUp = 'FollowUp',
+  PartnerFinancial = 'Partner-Financial',
+  PartnerSpecial = 'Partner-Special',
+  PartnerPray = 'Partner-Pray',
+  NotInterested = 'Not Interested',
+}
+
 type resultOptions = {
   tags?: string[];
   results?: resultOptionsResults[];
 };
 
 type resultOptionsResults = {
-  name: string;
+  name: NewResultEnum;
   value: string;
   suggestedContactStatus: string[];
   suggestedActions: string[];
@@ -62,7 +75,7 @@ export const allPhaseData: ContactPhaseData[] = [
       ],
       results: [
         {
-          name: 'Cancelled',
+          name: NewResultEnum.CancelledNeedToReschedule,
           value: 'cancelled',
           suggestedContactStatus: ['contact_for_appointment'],
           suggestedActions: [
@@ -76,13 +89,13 @@ export const allPhaseData: ContactPhaseData[] = [
           ],
         },
         {
-          name: 'Rescheduled',
+          name: NewResultEnum.CantMeetRightNowCircleBack,
           value: 'rescheduled',
           suggestedContactStatus: ['appoint_scheduled'],
           suggestedActions: ['in_person', 'video_call', 'call'],
         },
         {
-          name: 'Follow Up',
+          name: NewResultEnum.FollowUp,
           value: 'follow_up',
           suggestedContactStatus: ['call_for_decision'],
           suggestedActions: [
@@ -93,18 +106,27 @@ export const allPhaseData: ContactPhaseData[] = [
             'in_person',
           ],
         },
+        // TODO - I have changed this from what Shelby gave me. Partner info needs to be broken down like this.
         {
-          name: 'Partnered Up',
+          name: NewResultEnum.PartnerFinancial,
           value: 'partnered',
-          suggestedContactStatus: [
-            'Partner - Financial',
-            'Partner - Special',
-            'Partner - Prayer',
-          ],
+          suggestedContactStatus: ['Partner - Financial'],
           suggestedActions: ['partner_care'],
         },
         {
-          name: 'Not Interested',
+          name: NewResultEnum.PartnerSpecial,
+          value: 'partnered',
+          suggestedContactStatus: ['Partner - Special'],
+          suggestedActions: ['partner_care'],
+        },
+        {
+          name: NewResultEnum.PartnerPray,
+          value: 'partnered',
+          suggestedContactStatus: ['Partner - Prayer'],
+          suggestedActions: ['partner_care'],
+        },
+        {
+          name: NewResultEnum.NotInterested,
           value: 'not_interested',
           suggestedContactStatus: ['archive'],
           suggestedActions: [],
@@ -124,6 +146,26 @@ export const allPhaseData: ContactPhaseData[] = [
         'For Special Gift',
         'For Connections',
         'For Increase',
+      ],
+      results: [
+        {
+          name: NewResultEnum.NoResponseYet,
+          value: 'no_response_yet',
+          suggestedContactStatus: [],
+          suggestedActions: [
+            'call',
+            'email',
+            'text_message',
+            'social_media',
+            'in_person',
+          ],
+        },
+        {
+          name: NewResultEnum.PartnerFinancial,
+          value: 'PartnerFinancial',
+          suggestedContactStatus: ['Partner - Financial'],
+          suggestedActions: ['in_person', 'video_call', 'call'],
+        },
       ],
     },
   },
