@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import {
   CircularProgress,
   DialogActions,
@@ -22,7 +22,9 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
+import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
+import { getAssociatedMPDPhase } from 'src/lib/MPDPhases';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
@@ -33,6 +35,7 @@ import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComm
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
+import { PhaseTags } from '../Inputs/PhaseTags/PhaseTags';
 import {
   TagTypeEnum,
   TagsAutocomplete,
@@ -87,6 +90,20 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
+  // TODO - Change this to Task Type when Caleb Alldrin has created it.
+  const contactStatus = useMemo(() => {
+    const contactStatus = task.contacts.nodes.map((contact) => contact.status);
+    return contactStatus[0] || null;
+  }, [task]);
+  const phaseType = useMemo(
+    () => getAssociatedMPDPhase(contactStatus),
+    [contactStatus],
+  );
+  const [phaseData] = useGetPhaseData(phaseType);
+
+  const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
+    [],
+  );
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
@@ -95,6 +112,9 @@ const TaskModalCompleteForm = ({
     comment,
     ...attributes
   }: Attributes): Promise<void> => {
+    if (selectedSuggestedTags.length) {
+      attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
+    }
     const mutations = [
       updateTask({
         variables: {
@@ -228,6 +248,13 @@ const TaskModalCompleteForm = ({
                   />
                 </Grid>
               )}
+              {phaseData?.resultOptions.tags && (
+                <PhaseTags
+                  tags={phaseData.resultOptions.tags}
+                  selectedTags={selectedSuggestedTags}
+                  setSelectedTags={setSelectedSuggestedTags}
+                />
+              )}
               {/*Add field to change contact statuses */}
               <Grid item>
                 <TagsAutocomplete
@@ -235,6 +262,9 @@ const TaskModalCompleteForm = ({
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
+                  label={
+                    phaseData?.resultOptions.tags ? t('Additional Tags') : ''
+                  }
                 />
               </Grid>
 

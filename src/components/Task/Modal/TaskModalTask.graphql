@@ -17,6 +17,7 @@ query GetTaskForTaskModal(
       nodes {
         id
         name
+        status
       }
     }
     comments @include(if: $includeComments) {

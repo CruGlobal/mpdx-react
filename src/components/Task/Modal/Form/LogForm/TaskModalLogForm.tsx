@@ -33,9 +33,11 @@ import {
   ResultEnum,
   TaskCreateInput,
 } from 'src/graphql/types.generated';
+import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { useUser } from 'src/hooks/useUser';
+import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
@@ -44,15 +46,18 @@ import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
 import { AssigneeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import { ContactsAutocomplete } from '../Inputs/ContactsAutocomplete/ContactsAutocomplete';
+import { PhaseTags } from '../Inputs/PhaseTags/PhaseTags';
 import {
   TagTypeEnum,
   TagsAutocomplete,
 } from '../Inputs/TagsAutocomplete/TagsAutocomplete';
+import { TaskTypeAutocomplete } from '../Inputs/TaskTypeAutocomplete/TaskTypeAutocomplete';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
 import { useCreateTasksMutation } from '../TaskModal.generated';
 
 const taskSchema = yup.object({
+  taskType: yup.mixed<PhaseTypeEnum>().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>().nullable(),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
@@ -82,6 +87,7 @@ const TaskModalLogForm = ({
   const user = useUser();
   const initialTask: Attributes = useMemo(
     () => ({
+      taskType: null,
       activityType: defaultValues?.activityType ?? null,
       subject: defaultValues?.subject ?? '',
       contactIds: defaultValues?.contactIds ?? [],
@@ -102,6 +108,11 @@ const TaskModalLogForm = ({
   const [showMore, setShowMore] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
+  // TODO - Replace null with Caleb Alldrin's Contact's status
+  const [phaseData, fetchPhaseData] = useGetPhaseData(null);
+  const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
+    [],
+  );
 
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const { update } = useUpdateTasksQueries();
@@ -117,6 +128,9 @@ const TaskModalLogForm = ({
     comment,
     ...attributes
   }: Attributes): Promise<void> => {
+    if (selectedSuggestedTags.length) {
+      attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
+    }
     await createTasks({
       variables: {
         accountListId,
@@ -157,6 +171,10 @@ const TaskModalLogForm = ({
     setShowMore((prevState) => !prevState);
   };
 
+  // TODO - Remove with Caleb Alldrin's function
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const updateActionOptions = () => {};
+
   return (
     <Formik
       initialValues={initialTask}
@@ -167,6 +185,7 @@ const TaskModalLogForm = ({
     >
       {({
         values: {
+          taskType,
           activityType,
           subject,
           userId,
@@ -208,6 +227,20 @@ const TaskModalLogForm = ({
                   inputRef={inputRef}
                 />
               </Grid>
+              {/* TODO - Replace with Caleb Alldrin's input */}
+              <Grid item>
+                <TaskTypeAutocomplete
+                  options={Object.values(PhaseTypeEnum)}
+                  label={t('Task Type')}
+                  value={taskType}
+                  onChange={(phase) => {
+                    setFieldValue('activityType', phase);
+                    updateActionOptions();
+                    fetchPhaseData(phase);
+                  }}
+                />
+              </Grid>
+
               <Grid item>
                 <ActivityTypeAutocomplete
                   options={Object.values(ActivityTypeEnum)}
@@ -324,6 +357,13 @@ const TaskModalLogForm = ({
                             inputProps={{ 'aria-label': t('Comment') }}
                           />
                         </Grid>
+                        {phaseData?.resultOptions.tags && (
+                          <PhaseTags
+                            tags={phaseData.resultOptions.tags}
+                            selectedTags={selectedSuggestedTags}
+                            setSelectedTags={setSelectedSuggestedTags}
+                          />
+                        )}
                         <Grid item xs={12}>
                           <TagsAutocomplete
                             accountListId={accountListId}
@@ -331,6 +371,11 @@ const TaskModalLogForm = ({
                             value={tagList ?? []}
                             onChange={(tagList) =>
                               setFieldValue('tagList', tagList)
+                            }
+                            label={
+                              phaseData?.resultOptions.tags
+                                ? t('Additional Tags')
+                                : ''
                             }
                           />
                         </Grid>
