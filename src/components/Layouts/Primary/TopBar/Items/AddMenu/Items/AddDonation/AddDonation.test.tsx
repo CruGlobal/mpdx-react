@@ -53,7 +53,7 @@ describe('AddDonation', () => {
 
   it('Creates a donation', async () => {
     const mutationSpy = jest.fn();
-    const { getByRole, queryByText, getByTestId } = render(
+    const { getByRole, findByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
@@ -84,7 +84,7 @@ describe('AddDonation', () => {
                     },
                   ],
                 },
-                GetAccountListDonorAccounts: {
+                GetDonorAccounts: {
                   accountListDonorAccounts: [
                     {
                       id: 'donor-acc-1',
@@ -105,37 +105,46 @@ describe('AddDonation', () => {
       </LocalizationProvider>,
     );
 
-    await waitFor(() => expect(queryByText('Amount')).toBeInTheDocument());
-    userEvent.clear(getByRole('textbox', { hidden: true, name: 'Amount' }));
-    userEvent.type(
-      getByRole('textbox', { hidden: true, name: 'Amount' }),
-      '500.50',
-    );
-    // expect(
-    //   getByRole('combobox', { hidden: true, name: 'Currency USD ($)' }),
-    // ).toBeInTheDocument();
+    const amountTextbox = await findByRole('textbox', { name: 'Amount' });
+    userEvent.clear(amountTextbox);
+    userEvent.type(amountTextbox, '500.50');
+    expect(getByRole('combobox', { name: 'Currency' })).toBeInTheDocument();
+
+    userEvent.type(getByRole('combobox', { name: 'Partner Account' }), 'Cool');
+    userEvent.click(await findByRole('option', { name: 'Cool Donor Account' }));
 
     userEvent.type(
-      getByRole('combobox', { hidden: true, name: 'Partner Account' }),
+      getByRole('combobox', { name: 'Designation Account' }),
       'Cool',
     );
-    // TODO Figure out why menus won't render in order to complete test for adding donation
-    // await waitFor(() => expect(getByText('Cool Donor Account')).toBeVisible());
+    userEvent.click(
+      await findByRole('option', { name: 'Cool Designation Account (321)' }),
+    );
 
-    userEvent.type(
-      getByRole('combobox', { hidden: true, name: 'Designation Account' }),
-      'Cool',
-    );
+    userEvent.type(getByRole('combobox', { name: 'Appeal' }), 'Cool');
+    userEvent.click(await findByRole('option', { name: 'Cool appeal' }));
+
+    userEvent.type(getByRole('textbox', { name: 'Memo' }), 'cool memo');
+
     await waitFor(() =>
-      expect(queryByText('Cool Designation Account (321)')).toBeInTheDocument(),
+      expect(getByRole('button', { name: 'Save' })).not.toBeDisabled(),
     );
-    userEvent.type(
-      getByRole('combobox', { hidden: true, name: 'Appeal' }),
-      'Cool',
-    );
-    // await waitFor(() => expect(getByText('Cool appeal')).toBeVisible());
-    userEvent.type(getByTestId('memo-label'), 'cool memo');
+    userEvent.click(getByRole('button', { name: 'Save' }));
 
-    // userEvent.click(getByText('Save'));
-  });
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AddDonation', {
+        accountListId,
+        attributes: {
+          amount: 500.5,
+          appealAmount: null,
+          appealId: 'appeal-1',
+          currency: 'USD',
+          designationAccountId: '321',
+          donationDate: '2020-01-01',
+          donorAccountId: 'donor-acc-1',
+          memo: 'cool memo',
+        },
+      }),
+    );
+  }, 20000);
 });
