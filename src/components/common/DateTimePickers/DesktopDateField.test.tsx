@@ -1,9 +1,9 @@
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
-import { AdapterLuxon } from 'src/lib/AdapterLuxon';
 import { DesktopDateField } from './DesktopDateField';
 
 interface TestComponentProps {
@@ -135,5 +135,33 @@ describe('DesktopDateField', () => {
     userEvent.click(getByRole('button'));
 
     expect(getByRole('dialog')).toBeInTheDocument();
+  });
+
+  describe('start of the week', () => {
+    it('is Sunday for en-US locale', () => {
+      const { getByRole, getAllByRole } = render(
+        <TestComponent value={null} locale={'en-US'} />,
+      );
+
+      userEvent.click(getByRole('button'));
+      expect(
+        getAllByRole('columnheader')
+          .map((item) => item.textContent)
+          .join(''),
+      ).toEqual('SMTWTFS');
+    });
+
+    it('is Monday for en-NZ locale', () => {
+      const { getByRole, getAllByRole } = render(
+        <TestComponent value={null} locale={'en-NZ'} />,
+      );
+
+      userEvent.click(getByRole('button'));
+      expect(
+        getAllByRole('columnheader')
+          .map((item) => item.textContent)
+          .join(''),
+      ).toEqual('MTWTFSS');
+    });
   });
 });
