@@ -156,7 +156,7 @@ export const AddDonation = ({
           appealAmount: parseFloat(
             attributes.appealAmount as unknown as string,
           ),
-          donationDate: attributes.donationDate.toISODate(),
+          donationDate: attributes.donationDate.toISODate() ?? '',
         },
       },
     });

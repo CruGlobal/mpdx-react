@@ -80,7 +80,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/google.maps", "npm:3.50.2"],\
             ["@types/jest", "npm:29.0.3"],\
             ["@types/lodash", "npm:4.14.191"],\
-            ["@types/luxon", "npm:3.1.0"],\
+            ["@types/luxon", "npm:3.4.2"],\
             ["@types/node", "npm:18.7.18"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/seedrandom", "npm:3.0.5"],\
@@ -10760,7 +10760,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/dayjs", null],\
             ["@types/emotion__react", null],\
             ["@types/emotion__styled", null],\
-            ["@types/luxon", "npm:3.1.0"],\
+            ["@types/luxon", "npm:3.4.2"],\
             ["@types/moment", null],\
             ["@types/moment-hijri", null],\
             ["@types/moment-jalaali", null],\
@@ -13749,10 +13749,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/luxon", [\
-        ["npm:3.1.0", {\
-          "packageLocation": "./.yarn/cache/@types-luxon-npm-3.1.0-f928cad5bc-0476802934.zip/node_modules/@types/luxon/",\
+        ["npm:3.4.2", {\
+          "packageLocation": "./.yarn/cache/@types-luxon-npm-3.4.2-092583f006-6f92d5bd02.zip/node_modules/@types/luxon/",\
           "packageDependencies": [\
-            ["@types/luxon", "npm:3.1.0"]\
+            ["@types/luxon", "npm:3.4.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -27286,7 +27286,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/google.maps", "npm:3.50.2"],\
             ["@types/jest", "npm:29.0.3"],\
             ["@types/lodash", "npm:4.14.191"],\
-            ["@types/luxon", "npm:3.1.0"],\
+            ["@types/luxon", "npm:3.4.2"],\
             ["@types/node", "npm:18.7.18"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/seedrandom", "npm:3.0.5"],\

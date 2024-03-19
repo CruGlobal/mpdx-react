@@ -84,7 +84,7 @@ describe('Export All Data Accordion', () => {
     const { getByText, queryByRole } = render(
       <Components
         expandedPanel={label}
-        exportedAt={DateTime.local(2024, 1, 16, 18, 34, 12).toISO()}
+        exportedAt={DateTime.local(2024, 1, 16, 18, 34, 12).toISO() ?? ''}
       />,
     );
 

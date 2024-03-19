@@ -72,10 +72,13 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
 
   const [interval, setInterval] = useState(
     Interval.fromDateTimes(
-      DateTime.local().set({ weekday: 0 }),
-      DateTime.local().set({ weekday: 6 }),
+      DateTime.local().set({ localWeekday: 1 }),
+      DateTime.local().set({ localWeekday: 7 }),
     ),
   );
+  if (!interval.isValid) {
+    throw new Error(`Invalid interval: ${interval.invalidReason}`);
+  }
 
   const { data, loading } = useGetWeeklyActivityQuery({
     variables: {
