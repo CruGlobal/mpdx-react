@@ -1,3 +1,4 @@
+import { StatusEnum } from 'src/graphql/types.generated';
 import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 
 export type ContactPhaseData = {
@@ -6,7 +7,6 @@ export type ContactPhaseData = {
   tasks: string[];
   contactStatuses: string[];
   resultOptions: resultOptions;
-  suggestedContactStatus?: string[];
 };
 
 export enum NewResultEnum {
@@ -30,7 +30,7 @@ type resultOptions = {
 type resultOptionsResults = {
   name: NewResultEnum;
   value: string;
-  suggestedContactStatus: string[];
+  suggestedContactStatus: StatusEnum | null;
   suggestedActions: string[];
 };
 
@@ -77,7 +77,8 @@ export const allPhaseData: ContactPhaseData[] = [
         {
           name: NewResultEnum.CancelledNeedToReschedule,
           value: 'cancelled',
-          suggestedContactStatus: ['contact_for_appointment'],
+          // TODO - tell Shelby to convert this into a string and not string[]
+          suggestedContactStatus: StatusEnum.ContactForAppointment,
           suggestedActions: [
             'phone_call',
             'email',
@@ -91,13 +92,13 @@ export const allPhaseData: ContactPhaseData[] = [
         {
           name: NewResultEnum.CantMeetRightNowCircleBack,
           value: 'rescheduled',
-          suggestedContactStatus: ['appoint_scheduled'],
+          suggestedContactStatus: StatusEnum.AppointmentScheduled,
           suggestedActions: ['in_person', 'video_call', 'call'],
         },
         {
           name: NewResultEnum.FollowUp,
           value: 'follow_up',
-          suggestedContactStatus: ['call_for_decision'],
+          suggestedContactStatus: StatusEnum.CallForDecision,
           suggestedActions: [
             'call',
             'email',
@@ -110,25 +111,25 @@ export const allPhaseData: ContactPhaseData[] = [
         {
           name: NewResultEnum.PartnerFinancial,
           value: 'partnered',
-          suggestedContactStatus: ['Partner - Financial'],
+          suggestedContactStatus: StatusEnum.PartnerFinancial,
           suggestedActions: ['partner_care'],
         },
         {
           name: NewResultEnum.PartnerSpecial,
           value: 'partnered',
-          suggestedContactStatus: ['Partner - Special'],
+          suggestedContactStatus: StatusEnum.PartnerSpecial,
           suggestedActions: ['partner_care'],
         },
         {
           name: NewResultEnum.PartnerPray,
           value: 'partnered',
-          suggestedContactStatus: ['Partner - Prayer'],
+          suggestedContactStatus: StatusEnum.PartnerPray,
           suggestedActions: ['partner_care'],
         },
         {
           name: NewResultEnum.NotInterested,
           value: 'not_interested',
-          suggestedContactStatus: ['archive'],
+          suggestedContactStatus: StatusEnum.NeverAsk,
           suggestedActions: [],
         },
       ],
@@ -151,7 +152,7 @@ export const allPhaseData: ContactPhaseData[] = [
         {
           name: NewResultEnum.NoResponseYet,
           value: 'no_response_yet',
-          suggestedContactStatus: [],
+          suggestedContactStatus: null,
           suggestedActions: [
             'call',
             'email',
@@ -163,7 +164,7 @@ export const allPhaseData: ContactPhaseData[] = [
         {
           name: NewResultEnum.PartnerFinancial,
           value: 'PartnerFinancial',
-          suggestedContactStatus: ['Partner - Financial'],
+          suggestedContactStatus: StatusEnum.PartnerFinancial,
           suggestedActions: ['in_person', 'video_call', 'call'],
         },
       ],

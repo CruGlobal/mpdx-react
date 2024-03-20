@@ -1,9 +1,11 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import {
+  Checkbox,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -21,8 +23,13 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  ResultEnum,
+  StatusEnum,
+} from 'src/graphql/types.generated';
 import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
+import { NewResultEnum } from 'src/hooks/useContactPhaseDataMockData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import { dispatch } from 'src/lib/analytics';
@@ -41,12 +48,15 @@ import {
   TagsAutocomplete,
 } from '../Inputs/TagsAutocomplete/TagsAutocomplete';
 import { possibleNextActions } from '../PossibleNextActions';
+import { possiblePartnerStatus } from '../PossiblePartnerStatus';
 import { possibleResults } from '../PossibleResults';
+import { useUpdateContactStatusMutation } from '../TaskModal.generated';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const taskSchema = yup.object({
   id: yup.string().required(),
   result: yup.mixed<ResultEnum>().required(),
+  updateContactStatus: yup.boolean().nullable(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   tagList: yup.array().of(yup.string().required()).default([]),
   completedAt: nullableDateTime(),
@@ -76,6 +86,7 @@ const TaskModalCompleteForm = ({
         ? DateTime.fromISO(initialCompletedAt)
         : DateTime.local(),
       result: ResultEnum.Completed,
+      updateContactStatus: false,
       nextAction:
         activityType && possibleNextActions(activityType).includes(activityType)
           ? activityType
@@ -98,17 +109,30 @@ const TaskModalCompleteForm = ({
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
+  // TODO replace with ResultEnum when available
+  const [resultSelected, setResultSelected] = useState<NewResultEnum | null>(
+    null,
+  );
+  const [updateContactStatus] = useUpdateContactStatusMutation();
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
-  const onSubmit = async ({
-    completedAt,
-    comment,
-    ...attributes
-  }: Attributes): Promise<void> => {
+  const onSubmit = async (
+    { completedAt, comment, ...attributes }: Attributes,
+    suggestedPartnerStatus: StatusEnum | null,
+  ): Promise<void> => {
     if (selectedSuggestedTags.length) {
       attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
     }
+    // TODO - remove this when NewResultEnum are added
+    attributes.result = ResultEnum.Completed;
+    const updatingContactStatus =
+      attributes.updateContactStatus && !!suggestedPartnerStatus;
+    if (updatingContactStatus) {
+      // Delete updateContactStatus, as we don't want to send it to the server.
+      delete attributes.updateContactStatus;
+    }
+
     const mutations = [
       updateTask({
         variables: {
@@ -130,11 +154,32 @@ const TaskModalCompleteForm = ({
         }),
       );
     }
+    if (updatingContactStatus) {
+      // TODO - Should only be one contact, but just in case
+      task.contacts.nodes.forEach((contact) => {
+        mutations.push(
+          updateContactStatus({
+            variables: {
+              accountListId,
+              attributes: {
+                id: contact.id,
+                status: suggestedPartnerStatus,
+              },
+            },
+          }),
+        );
+      });
+    }
     await Promise.all(mutations);
     update();
 
     dispatch('mpdx-task-completed');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    if (updatingContactStatus) {
+      enqueueSnackbar(t('Updated contact(s) status successfully'), {
+        variant: 'success',
+      });
+    }
     onClose();
     if (attributes.nextAction) {
       openTaskModal({
@@ -151,7 +196,15 @@ const TaskModalCompleteForm = ({
     }
   };
 
-  const availableResults = phaseData ? possibleResults(phaseData) : [];
+  const availableResults = useMemo(
+    () => possibleResults(phaseData),
+    [phaseData],
+  );
+  const suggestedPartnerStatus = useMemo(
+    () => possiblePartnerStatus(phaseData, resultSelected),
+    [phaseData, resultSelected],
+  );
+
   const availableNextActions = task.activityType
     ? possibleNextActions(task.activityType)
     : [];
@@ -160,11 +213,20 @@ const TaskModalCompleteForm = ({
     <Formik<Attributes>
       initialValues={initialTask}
       validationSchema={taskSchema}
-      onSubmit={onSubmit}
+      onSubmit={async (values) => {
+        await onSubmit(values, suggestedPartnerStatus);
+      }}
       enableReinitialize
     >
       {({
-        values: { completedAt, tagList, result, nextAction, comment },
+        values: {
+          completedAt,
+          tagList,
+          result,
+          updateContactStatus,
+          nextAction,
+          comment,
+        },
         setFieldValue,
         handleChange,
         handleSubmit,
@@ -217,7 +279,10 @@ const TaskModalCompleteForm = ({
                       label={t('Result')}
                       labelId="result"
                       value={result}
-                      onChange={(e) => setFieldValue('result', e.target.value)}
+                      onChange={(e) => {
+                        setFieldValue('result', e.target.value);
+                        setResultSelected(e.target.value as NewResultEnum);
+                      }}
                     >
                       {availableResults.map((val) => (
                         <MenuItem key={val} value={val}>
@@ -226,6 +291,22 @@ const TaskModalCompleteForm = ({
                       ))}
                     </Select>
                   </FormControl>
+                </Grid>
+              )}
+              {suggestedPartnerStatus && (
+                <Grid item>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        value={updateContactStatus}
+                        name="updateContactStatus"
+                        onChange={handleChange}
+                      />
+                    }
+                    label={t("Change the contact's status to: {{status}}", {
+                      status: suggestedPartnerStatus,
+                    })}
+                  />
                 </Grid>
               )}
               {availableNextActions.length > 0 && (

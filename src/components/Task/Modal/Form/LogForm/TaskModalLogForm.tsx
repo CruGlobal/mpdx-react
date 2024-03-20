@@ -6,11 +6,13 @@ import React, {
   useState,
 } from 'react';
 import {
+  Checkbox,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -31,9 +33,11 @@ import {
 import {
   ActivityTypeEnum,
   ResultEnum,
+  StatusEnum,
   TaskCreateInput,
 } from 'src/graphql/types.generated';
 import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
+import { NewResultEnum } from 'src/hooks/useContactPhaseDataMockData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { useUser } from 'src/hooks/useUser';
@@ -53,8 +57,12 @@ import {
 } from '../Inputs/TagsAutocomplete/TagsAutocomplete';
 import { TaskTypeAutocomplete } from '../Inputs/TaskTypeAutocomplete/TaskTypeAutocomplete';
 import { possibleNextActions } from '../PossibleNextActions';
+import { possiblePartnerStatus } from '../PossiblePartnerStatus';
 import { possibleResults } from '../PossibleResults';
-import { useCreateTasksMutation } from '../TaskModal.generated';
+import {
+  useCreateTasksMutation,
+  useUpdateContactStatusMutation,
+} from '../TaskModal.generated';
 
 const taskSchema = yup.object({
   taskType: yup.mixed<PhaseTypeEnum>().nullable(),
@@ -65,6 +73,7 @@ const taskSchema = yup.object({
   userId: yup.string().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
   result: yup.mixed<ResultEnum>(),
+  updateContactStatus: yup.boolean().nullable(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
   // when those fields fields are blank for some reason, and we need to allow blank values
@@ -97,15 +106,20 @@ const TaskModalLogForm = ({
       userId: defaultValues?.userId ?? user?.id ?? null,
       tagList: defaultValues?.tagList ?? [],
       result: defaultValues?.result ?? undefined,
+      updateContactStatus: false,
       nextAction: defaultValues?.nextAction ?? null,
       location: '',
       comment: '',
     }),
     [],
   );
-
   const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
+  // TODO replace with ResultEnum when available
+  const [resultSelected, setResultSelected] = useState<NewResultEnum | null>(
+    null,
+  );
+
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
   // TODO - Replace null with Caleb Alldrin's Contact's status
@@ -115,6 +129,7 @@ const TaskModalLogForm = ({
   );
 
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
+  const [updateContactStatus] = useUpdateContactStatusMutation();
   const { update } = useUpdateTasksQueries();
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
@@ -123,13 +138,23 @@ const TaskModalLogForm = ({
     }
   }, []);
 
-  const onSubmit = async ({
-    completedAt,
-    comment,
-    ...attributes
-  }: Attributes): Promise<void> => {
+  const onSubmit = async (
+    { completedAt, comment, ...attributes }: Attributes,
+    suggestedPartnerStatus: StatusEnum | null,
+  ): Promise<void> => {
     if (selectedSuggestedTags.length) {
       attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
+    }
+    // TODO - remove this when Caleb and the API has been
+    delete attributes.taskType;
+    // TODO - remove this when NewResultEnum are added
+    attributes.result = ResultEnum.Completed;
+
+    const updatingContactStatus =
+      attributes.updateContactStatus && !!suggestedPartnerStatus;
+    if (updatingContactStatus) {
+      // Delete updateContactStatus, as we don't want to send it to the server.
+      delete attributes.updateContactStatus;
     }
     await createTasks({
       variables: {
@@ -142,6 +167,31 @@ const TaskModalLogForm = ({
       },
       refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity'],
     });
+
+    if (updatingContactStatus) {
+      try {
+        await Promise.all(
+          attributes.contactIds.map((contactID) =>
+            updateContactStatus({
+              variables: {
+                accountListId,
+                attributes: {
+                  id: contactID,
+                  status: suggestedPartnerStatus,
+                },
+              },
+            }),
+          ),
+        );
+        enqueueSnackbar(t('Updated contact(s) status successfully'), {
+          variant: 'success',
+        });
+      } catch {
+        enqueueSnackbar(t('Error while updating contact(s) status'), {
+          variant: 'error',
+        });
+      }
+    }
     update();
     if (attributes.contactIds && attributes.contactIds.length > 1) {
       attributes.contactIds.forEach(() => {
@@ -175,13 +225,22 @@ const TaskModalLogForm = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const updateActionOptions = () => {};
 
-  const availableResults = phaseData ? possibleResults(phaseData) : [];
+  const availableResults = useMemo(
+    () => possibleResults(phaseData),
+    [phaseData],
+  );
+  const suggestedPartnerStatus = useMemo(
+    () => possiblePartnerStatus(phaseData, resultSelected),
+    [phaseData, resultSelected],
+  );
 
   return (
     <Formik
       initialValues={initialTask}
       validationSchema={taskSchema}
-      onSubmit={onSubmit}
+      onSubmit={async (values) => {
+        await onSubmit(values, suggestedPartnerStatus);
+      }}
       validateOnMount
       enableReinitialize
     >
@@ -195,6 +254,7 @@ const TaskModalLogForm = ({
           tagList,
           contactIds,
           result,
+          updateContactStatus,
           nextAction,
           location,
           comment,
@@ -238,6 +298,7 @@ const TaskModalLogForm = ({
                   onChange={(phase) => {
                     setFieldValue('taskType', phase);
                     setFieldValue('result', undefined);
+                    setResultSelected(null);
                     updateActionOptions();
                     fetchPhaseData(phase);
                   }}
@@ -281,7 +342,10 @@ const TaskModalLogForm = ({
                       labelId="result"
                       label={t('Result')}
                       value={result}
-                      onChange={(e) => setFieldValue('result', e.target.value)}
+                      onChange={(e) => {
+                        setFieldValue('result', e.target.value);
+                        setResultSelected(e.target.value as NewResultEnum);
+                      }}
                     >
                       {availableResults.map((val) => (
                         <MenuItem key={val} value={val}>
@@ -289,6 +353,34 @@ const TaskModalLogForm = ({
                         </MenuItem>
                       ))}
                     </Select>
+                  </FormControl>
+                </Grid>
+              )}
+              {suggestedPartnerStatus && (
+                <Grid item>
+                  <FormControl fullWidth>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value={updateContactStatus}
+                          name="updateContactStatus"
+                          onChange={handleChange}
+                        />
+                      }
+                      label={t("Change the contact's status to: {{status}}", {
+                        status: suggestedPartnerStatus,
+                      })}
+                    />
+                    {contactIds.length > 1 && (
+                      <FormHelperText>
+                        {t(
+                          'This will change the contact status for {{amount}} contacts',
+                          {
+                            amount: contactIds.length,
+                          },
+                        )}
+                      </FormHelperText>
+                    )}
                   </FormControl>
                 </Grid>
               )}
