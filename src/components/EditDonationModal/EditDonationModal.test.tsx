@@ -130,7 +130,7 @@ describe('EditDonationModal', () => {
     expect(getByText('Edit Donation')).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Appeal Amount' })).toHaveValue('50');
 
-    userEvent.click(getByRole('button', { name: 'Appeal' }));
+    userEvent.click(getByRole('combobox', { name: 'Appeal' }));
     await waitFor(() =>
       expect(
         getByRole('option', { name: 'End of Year Ask' }),

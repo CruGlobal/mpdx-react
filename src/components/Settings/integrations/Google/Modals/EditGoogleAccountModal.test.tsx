@@ -247,7 +247,7 @@ describe('EditGoogleAccountModal', () => {
       expect(getByText(/this field is required/i)).toBeInTheDocument(),
     );
     await act(async () => {
-      userEvent.click(getByRole('button', { name: /​/i }));
+      userEvent.click(getByRole('combobox'));
     });
     const calendarOption = getByRole('option', {
       name: /calendarsName@cru\.org/i,

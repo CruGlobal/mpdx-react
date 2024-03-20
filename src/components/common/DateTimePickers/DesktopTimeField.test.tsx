@@ -1,9 +1,9 @@
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
-import { AdapterLuxon } from 'src/lib/AdapterLuxon';
 import { DesktopTimeField } from './DesktopTimeField';
 
 interface TestComponentProps {

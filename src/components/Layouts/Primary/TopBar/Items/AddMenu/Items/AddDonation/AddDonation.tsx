@@ -153,10 +153,10 @@ export const AddDonation = ({
         attributes: {
           ...attributes,
           amount: parseFloat(amount),
-          appealAmount: parseFloat(
-            attributes.appealAmount as unknown as string,
-          ),
-          donationDate: attributes.donationDate.toISODate(),
+          appealAmount: attributes.appealAmount
+            ? parseFloat(attributes.appealAmount as unknown as string)
+            : null,
+          donationDate: attributes.donationDate.toISODate() ?? '',
         },
       },
     });
@@ -411,9 +411,7 @@ export const AddDonation = ({
                             autoSelect
                             autoHighlight
                             options={
-                              (newDesignationAccounts &&
-                                newDesignationAccounts.map(({ id }) => id)) ??
-                              []
+                              newDesignationAccounts?.map(({ id }) => id) ?? []
                             }
                             getOptionLabel={(accountId): string => {
                               const account =
@@ -449,14 +447,11 @@ export const AddDonation = ({
                               />
                             )}
                             value={field.value}
-                            onChange={(_, designationAccountId): void =>
+                            onChange={(_, designationAccountId) =>
                               setFieldValue(
                                 'designationAccountId',
                                 designationAccountId,
                               )
-                            }
-                            isOptionEqualToValue={(option, value): boolean =>
-                              option === value
                             }
                           />
                         </Box>

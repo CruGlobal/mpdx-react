@@ -13,11 +13,12 @@ import {
 import { DateTime } from 'luxon';
 
 interface SlotProps
-  extends UseDateTimeFieldProps<DateTime>,
+  extends UseDateTimeFieldProps<DateTime, false>,
     BaseSingleInputFieldProps<
       DateTime | null,
       DateTime,
       FieldSection,
+      false,
       DateTimeValidationError
     > {}
 

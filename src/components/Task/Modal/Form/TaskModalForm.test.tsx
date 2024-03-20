@@ -237,11 +237,11 @@ describe('TaskModalForm', () => {
 
     expect(getByText('Notifications')).toBeInTheDocument();
     expect(queryByText('Both')).not.toBeInTheDocument();
-    userEvent.click(getByRole('button', { hidden: true, name: 'Type' }));
+    userEvent.click(getByRole('combobox', { hidden: true, name: 'Type' }));
     expect(getByText('Both')).toBeInTheDocument();
     userEvent.click(getByText('Both'));
     expect(queryByText('Hours')).not.toBeInTheDocument();
-    userEvent.click(getByRole('button', { hidden: true, name: 'Unit' }));
+    userEvent.click(getByRole('combobox', { hidden: true, name: 'Unit' }));
     expect(getByText('Hours')).toBeInTheDocument();
     userEvent.click(getByText('Hours'));
   }, 25000);
@@ -358,7 +358,7 @@ describe('TaskModalForm', () => {
     );
     expect(queryByText('Notifications')).not.toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: 'Result' }));
+    userEvent.click(getByRole('combobox', { name: 'Result' }));
     userEvent.click(getByRole('option', { name: 'Completed' }));
 
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));

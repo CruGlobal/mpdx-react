@@ -27,8 +27,17 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
   onSelectContact,
   title,
 }) => {
-  const [time, setTime] = useState(DateTime.now().startOf('month'));
   const { query, replace } = useRouter();
+  const [time, setTime] = useState(() => {
+    if (typeof query.month === 'string') {
+      const date = DateTime.fromISO(query.month);
+      if (date.isValid) {
+        return date.startOf('month');
+      }
+    }
+
+    return DateTime.now().startOf('month');
+  });
 
   const { data } = useGetDonationGraphQuery({
     variables: {
@@ -39,10 +48,8 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
     },
   });
 
+  // Remove the month from the URL
   useEffect(() => {
-    if (typeof query.month === 'string') {
-      setTime(DateTime.fromISO(query.month));
-    }
     replace(
       {
         pathname: `/accountLists/${accountListId}/reports/donations`,

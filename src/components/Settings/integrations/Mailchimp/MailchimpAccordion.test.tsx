@@ -262,7 +262,7 @@ describe('MailchimpAccount', () => {
         ).toBeInTheDocument();
       });
 
-      userEvent.click(getByRole('button', { name: /Newsletter list 1/i }));
+      userEvent.click(getByRole('combobox'));
       await waitFor(() =>
         expect(
           getByRole('option', { name: /Newsletter list 2/i }),

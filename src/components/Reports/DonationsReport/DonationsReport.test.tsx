@@ -176,6 +176,31 @@ describe('DonationsReport', () => {
     expect(getByTestId('donationRow')).toBeInTheDocument();
   });
 
+  it('initializes with month from query', () => {
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            ...router,
+            query: { ...router.query, month: '2024-02-01' },
+          }}
+        >
+          <GqlMockedProvider<Mocks> mocks={mocks}>
+            <DonationsReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              onSelectContact={onSelectContact}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByRole('heading', { name: 'February 2024' })).toBeInTheDocument();
+  });
+
   it('filters report by designation account', async () => {
     const mutationSpy = jest.fn();
     render(

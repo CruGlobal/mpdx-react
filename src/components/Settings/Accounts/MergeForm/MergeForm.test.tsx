@@ -115,7 +115,7 @@ describe('MergeAccountsAccordion', () => {
     expect(queryByTestId('KeyboardArrowRightIcon')).not.toBeInTheDocument();
 
     userEvent.click(
-      getByRole('button', {
+      getByRole('combobox', {
         name: /select an account/i,
       }),
     );
@@ -176,7 +176,7 @@ describe('MergeAccountsAccordion', () => {
     });
 
     userEvent.click(
-      getByRole('button', {
+      getByRole('combobox', {
         name: /select an account/i,
       }),
     );
