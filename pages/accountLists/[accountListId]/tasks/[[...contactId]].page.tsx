@@ -10,6 +10,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -20,7 +21,6 @@ import theme from 'src/theme';
 import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
 import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
 import Loading from '../../../../src/components/Loading';
-import { FilterPanel } from '../../../../src/components/Shared/Filters/FilterPanel';
 import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
 import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
 import {
@@ -314,7 +314,7 @@ const TasksPage: React.FC = () => {
             <SidePanelsLayout
               leftPanel={
                 filterData && !filtersLoading ? (
-                  <FilterPanel
+                  <DynamicFilterPanel
                     filters={filterData?.accountList.taskFilterGroups}
                     savedFilters={savedFilters}
                     selectedFilters={activeFilters}
