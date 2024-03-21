@@ -13,7 +13,6 @@ import {
   LocalizationProvider as RawLocalizationProvider,
 } from '@mui/x-date-pickers/LocalizationProvider';
 import { ErrorBoundary, Provider } from '@rollbar/react';
-import { AnimatePresence } from 'framer-motion';
 import { DateTime } from 'luxon';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
@@ -37,12 +36,6 @@ import i18n from '../src/lib/i18n';
 import theme from '../src/theme';
 import './helpscout.css';
 import './print.css';
-
-const handleExitComplete = (): void => {
-  if (typeof window !== 'undefined') {
-    window.scrollTo({ top: 0 });
-  }
-};
 
 export type PageWithLayout = NextPage & {
   layout?: React.FC;
@@ -145,29 +138,23 @@ const App = ({
                           >
                             <SnackbarProvider maxSnack={3}>
                               <GlobalStyles />
-                              <AnimatePresence
-                                mode="wait"
-                                onExitComplete={handleExitComplete}
-                              >
-                                <RouterGuard>
-                                  <TaskModalProvider>
-                                    <Layout>
-                                      <SnackbarUtilsConfigurator />
-                                      <Box
-                                        sx={(theme) => ({
-                                          fontFamily:
-                                            theme.typography.fontFamily,
-                                        })}
-                                      >
-                                        <Component
-                                          {...pageProps}
-                                          key={router.route}
-                                        />
-                                      </Box>
-                                    </Layout>
-                                  </TaskModalProvider>
-                                </RouterGuard>
-                              </AnimatePresence>
+                              <RouterGuard>
+                                <TaskModalProvider>
+                                  <Layout>
+                                    <SnackbarUtilsConfigurator />
+                                    <Box
+                                      sx={(theme) => ({
+                                        fontFamily: theme.typography.fontFamily,
+                                      })}
+                                    >
+                                      <Component
+                                        {...pageProps}
+                                        key={router.route}
+                                      />
+                                    </Box>
+                                  </Layout>
+                                </TaskModalProvider>
+                              </RouterGuard>
                               <Loading />
                             </SnackbarProvider>
                           </LocalizationProvider>
