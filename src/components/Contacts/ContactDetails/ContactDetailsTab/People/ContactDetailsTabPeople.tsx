@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import AddIcon from '@mui/icons-material/Add';
 import Cake from '@mui/icons-material/Cake';
 import Email from '@mui/icons-material/Email';
 import MergeIcon from '@mui/icons-material/Merge';
@@ -7,7 +6,6 @@ import Phone from '@mui/icons-material/Phone';
 import {
   Avatar,
   Box,
-  Button,
   Grid,
   IconButton,
   Link,
@@ -25,7 +23,7 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../../ContactDetailContext';
-import { EditIcon } from '../EditIcon';
+import { AddButton, AddIcon, AddText, EditIcon } from '../StyledComponents';
 import {
   ContactPeopleFragment,
   ContactPersonFragment,
@@ -70,22 +68,8 @@ const ContactPersonIconContainer = styled(Box)(() => ({
   marginRight: '35px',
 }));
 
-export const ContactDetailsAddButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
-}));
-
-export const ContactDetailsAddIcon = styled(AddIcon)(({ theme }) => ({
+const MergePeopleIcon = styled(MergeIcon)(({ theme }) => ({
   color: theme.palette.info.main,
-}));
-
-export const MergePeopleIcon = styled(MergeIcon)(({ theme }) => ({
-  color: theme.palette.info.main,
-}));
-
-export const ContactDetailsAddText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.info.main,
-  textTransform: 'uppercase',
-  fontWeight: 'bold',
 }));
 
 const ContactEditIconContainer = styled(IconButton)(({ theme }) => ({
@@ -281,51 +265,42 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
         person.id !== primaryPerson?.id ? personView(person) : null,
       )}
       {!selecting && (
-        <ContactDetailsAddButton onClick={() => setCreatePersonModalOpen(true)}>
+        <AddButton onClick={() => setCreatePersonModalOpen(true)}>
           <Grid container alignItems="center">
-            <ContactDetailsAddIcon />
-            <ContactDetailsAddText variant="subtitle1">
-              {t('Add Person')}
-            </ContactDetailsAddText>
+            <AddIcon />
+            <AddText variant="subtitle1">{t('Add Person')}</AddText>
           </Grid>
-        </ContactDetailsAddButton>
+        </AddButton>
       )}
       {people.nodes.length > 1 &&
         (selecting ? (
           <>
-            <ContactDetailsAddButton onClick={() => setSelecting(false)}>
+            <AddButton onClick={() => setSelecting(false)}>
               <Grid container alignItems="center">
-                <ContactDetailsAddText variant="subtitle1">
-                  {t('Cancel')}
-                </ContactDetailsAddText>
+                <AddText variant="subtitle1">{t('Cancel')}</AddText>
               </Grid>
-            </ContactDetailsAddButton>
+            </AddButton>
 
-            <ContactDetailsAddButton
+            <AddButton
               onClick={() => setMergePeopleModalOpen(true)}
               variant="contained"
               disabled={selectedPeople.length < 2}
             >
               <Grid container alignItems="center">
                 <MergePeopleIcon sx={{ color: 'unset' }} />
-                <ContactDetailsAddText
-                  variant="subtitle1"
-                  sx={{ color: 'unset' }}
-                >
+                <AddText variant="subtitle1" sx={{ color: 'unset' }}>
                   {t('Merge Selected People')}
-                </ContactDetailsAddText>
+                </AddText>
               </Grid>
-            </ContactDetailsAddButton>
+            </AddButton>
           </>
         ) : (
-          <ContactDetailsAddButton onClick={() => setSelecting(true)}>
+          <AddButton onClick={() => setSelecting(true)}>
             <Grid container alignItems="center">
               <MergePeopleIcon />
-              <ContactDetailsAddText variant="subtitle1">
-                {t('Merge People')}
-              </ContactDetailsAddText>
+              <AddText variant="subtitle1">{t('Merge People')}</AddText>
             </Grid>
-          </ContactDetailsAddButton>
+          </AddButton>
         ))}
       {createPersonModalOpen ? (
         <PersonModal

@@ -12,7 +12,7 @@ import {
   renderDialog,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
+import { LeafButton, LeafListItem, Title } from '../../StyledComponents';
 
 type MenuContent = {
   text: string;

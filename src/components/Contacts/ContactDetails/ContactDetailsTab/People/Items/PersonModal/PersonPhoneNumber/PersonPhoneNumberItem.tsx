@@ -19,12 +19,12 @@ import {
 } from 'src/graphql/types.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
-import { VerticallyCenteredGrid } from '../PersonEmail/PersonEmailItem';
+import { NewSocial } from '../PersonModal';
 import {
   ContactInputField,
-  NewSocial,
   PrimaryControlLabel,
-} from '../PersonModal';
+  VerticallyCenteredGrid,
+} from '../StyledComponents';
 
 interface Props {
   phoneNumber: PersonPhoneNumberInput & { source?: string };
