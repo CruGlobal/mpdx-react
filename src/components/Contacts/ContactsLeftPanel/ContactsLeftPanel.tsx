@@ -1,9 +1,9 @@
 import React from 'react';
+import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import {
   ContactsContext,
   ContactsType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
-import { FilterPanel } from '../../Shared/Filters/FilterPanel';
 import { TableViewModeEnum } from '../../Shared/Header/ListHeader';
 import { ContactsMapPanel } from '../ContactsMap/ContactsMapPanel';
 
@@ -31,7 +31,7 @@ export const ContactsLeftPanel: React.FC = () => {
       onClose={toggleFilterPanel}
     />
   ) : filterData && !filtersLoading ? (
-    <FilterPanel
+    <DynamicFilterPanel
       filters={filterData?.accountList?.contactFilterGroups}
       savedFilters={savedFilters}
       selectedFilters={activeFilters}
