@@ -1,17 +1,15 @@
 import { DateTime } from 'luxon';
 import {
+  currencyFormat,
   dateFormat,
   dateFormatWithoutYear,
   dateFromParts,
   dateTimeFormat,
-  monthYearFormat,
-} from './intlFormat';
-import {
-  currencyFormat,
   dayMonthFormat,
+  monthYearFormat,
   numberFormat,
   percentageFormat,
-} from '.';
+} from './intlFormat';
 
 describe('intlFormat', () => {
   let languageMock: jest.SpyInstance;

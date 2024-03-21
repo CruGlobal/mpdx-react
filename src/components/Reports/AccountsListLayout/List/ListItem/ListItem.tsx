@@ -15,8 +15,7 @@ import { useTranslation } from 'react-i18next';
 import HandoffLink from 'src/components/HandoffLink';
 import { EntryHistoriesQuery } from 'src/components/Reports/ResponsibilityCentersReport/GetEntryHistories.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { Unarray } from '../../../Reports.type';
 import { AccountListItemChart as Chart } from './Chart/Chart';
 

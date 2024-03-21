@@ -22,7 +22,7 @@ import { makeStyles } from 'tss-react/mui';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
-import { numberFormat } from 'src/lib/intlFormat/intlFormat';
+import { numberFormat } from 'src/lib/intlFormat';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';

@@ -17,10 +17,7 @@ import { EditDonationModal } from 'src/components/EditDonationModal/EditDonation
 import { EditDonationModalDonationFragment } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { useGetAccountListCurrencyQuery } from 'src/components/Reports/DonationsReport/GetDonationsTable.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import {
-  currencyFormat,
-  dateFormat,
-} from '../../../../../lib/intlFormat/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { useContactDonationsListQuery } from './ContactDonationsList.generated';
 
 interface ContactDonationsListProp {

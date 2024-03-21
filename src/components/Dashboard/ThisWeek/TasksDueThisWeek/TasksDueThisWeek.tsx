@@ -22,7 +22,7 @@ import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.ge
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { numberFormat } from 'src/lib/intlFormat/intlFormat';
+import { numberFormat } from 'src/lib/intlFormat';
 import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
 import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import AnimatedCard from '../../../AnimatedCard';

@@ -12,7 +12,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateFormat } from 'src/lib/intlFormat';
 import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
 import ExportPhysical from './MenuItems/ExportPhysical/ExportPhysical';
 import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';
