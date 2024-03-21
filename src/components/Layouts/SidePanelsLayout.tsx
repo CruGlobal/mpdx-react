@@ -130,7 +130,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
             style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}
             data-testid="SidePanelsLayoutLeftPanel"
           >
-            {leftPanel}
+            {leftOpen && leftPanel}
           </LeftPanelWrapper>
           <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
         </CollapsibleWrapper>

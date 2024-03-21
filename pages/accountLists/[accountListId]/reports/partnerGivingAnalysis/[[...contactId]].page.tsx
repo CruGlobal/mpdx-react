@@ -12,7 +12,7 @@ import {
   Panel,
   PartnerGivingAnalysisReport,
 } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
-import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
+import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -116,7 +116,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
               filtersLoading ? (
                 <Loading loading />
               ) : (
-                <FilterPanel
+                <DynamicFilterPanel
                   filters={filterGroups}
                   defaultExpandedFilterGroups={new Set(['Report Filters'])}
                   savedFilters={[]}
