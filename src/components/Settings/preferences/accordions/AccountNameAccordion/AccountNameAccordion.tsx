@@ -7,9 +7,14 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { AccountList } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
+
+const accountPreferencesSchema: yup.SchemaOf<Pick<AccountList, 'name'>> =
+  yup.object({
+    name: yup.string().required(),
+  });
 
 interface AccountNameAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -30,13 +35,7 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
   const [updateAccountNamePreference] = useUpdateAccountPreferencesMutation();
   const label = t('Account Name');
 
-  const AccountPreferencesSchema: yup.SchemaOf<
-    Pick<Types.AccountList, 'name'>
-  > = yup.object({
-    name: yup.string().required(),
-  });
-
-  const onSubmit = async (attributes: Pick<Types.AccountList, 'name'>) => {
+  const onSubmit = async (attributes: Pick<AccountList, 'name'>) => {
     await updateAccountNamePreference({
       variables: {
         input: {
@@ -73,7 +72,7 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
         initialValues={{
           name: name,
         }}
-        validationSchema={AccountPreferencesSchema}
+        validationSchema={accountPreferencesSchema}
         onSubmit={onSubmit}
         validateOnMount
       >

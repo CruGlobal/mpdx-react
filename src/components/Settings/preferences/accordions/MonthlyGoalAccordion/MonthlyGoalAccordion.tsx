@@ -7,10 +7,16 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
+
+const accountPreferencesSchema: yup.SchemaOf<
+  Pick<AccountListSettingsInput, 'monthlyGoal'>
+> = yup.object({
+  monthlyGoal: yup.number().required(),
+});
 
 interface MonthlyGoalAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -33,12 +39,6 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   const locale = useLocale();
   const label = t('Monthly Goal');
 
-  const AccountPreferencesSchema: yup.SchemaOf<
-    Pick<Types.AccountListSettingsInput, 'monthlyGoal'>
-  > = yup.object({
-    monthlyGoal: yup.number().required(),
-  });
-
   const monthlyGoalString = useMemo(() => {
     return monthlyGoal && locale && currency
       ? currencyFormat(monthlyGoal, currency, locale)
@@ -48,7 +48,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   }, [monthlyGoal, locale, currency]);
 
   const onSubmit = async (
-    attributes: Pick<Types.AccountListSettingsInput, 'monthlyGoal'>,
+    attributes: Pick<AccountListSettingsInput, 'monthlyGoal'>,
   ) => {
     await updateAccountPreferences({
       variables: {
@@ -86,7 +86,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
         initialValues={{
           monthlyGoal: monthlyGoal,
         }}
-        validationSchema={AccountPreferencesSchema}
+        validationSchema={accountPreferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
         validateOnMount
