@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
 import { ContactDetailProvider } from './ContactDetailContext';
@@ -24,11 +24,11 @@ describe('ContactDetails', () => {
         <TestRouter router={router}>
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetails onClose={() => {}} />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>

@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
 import { ContactFlow } from './ContactFlow';
@@ -43,7 +43,7 @@ describe('ContactFlow', () => {
         <TestRouter router={router}>
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
-              <ContactsPage>
+              <ContactsWrapper>
                 <DndProvider backend={HTML5Backend}>
                   <ContactFlow
                     accountListId={accountListId}
@@ -51,7 +51,7 @@ describe('ContactFlow', () => {
                     selectedFilters={{}}
                   />
                 </DndProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>
@@ -69,7 +69,7 @@ describe('ContactFlow', () => {
             mocks={mocks}
           >
             <ThemeProvider theme={theme}>
-              <ContactsPage>
+              <ContactsWrapper>
                 <DndProvider backend={HTML5Backend}>
                   <ContactFlow
                     accountListId={accountListId}
@@ -77,7 +77,7 @@ describe('ContactFlow', () => {
                     selectedFilters={{}}
                   />
                 </DndProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>

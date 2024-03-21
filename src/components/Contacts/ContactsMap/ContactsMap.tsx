@@ -12,7 +12,10 @@ import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
-import { ContactsContext, ContactsType } from '../ContactsContext';
+import {
+  ContactsContext,
+  ContactsType,
+} from '../ContactsContext/ContactsContext';
 
 const ContactLink = styled(Typography)(({ theme }) => ({
   color: theme.palette.mpdxBlue.main,
@@ -27,22 +30,6 @@ const MapLoading = styled(CircularProgress)(() => ({
   top: '50%',
   left: '50%',
 }));
-
-export interface Coordinates {
-  id: string;
-  name: string;
-  avatar: string;
-  status?: StatusEnum | null;
-  lat?: number;
-  lng?: number;
-  street?: string | null;
-  city?: string | null;
-  state?: string | null;
-  country?: string | null;
-  postal?: string | null;
-  source?: string;
-  date?: string;
-}
 
 const mapContainerStyle = {
   height: '100%',

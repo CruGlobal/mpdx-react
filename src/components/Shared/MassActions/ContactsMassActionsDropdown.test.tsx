@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';

@@ -5,6 +5,7 @@ import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
@@ -24,8 +25,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
-import { ContactsProvider } from '../../contacts/ContactsContext';
-import { ContactsPage } from '../../contacts/ContactsPage';
+import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 
 // The order here is also the sort order and the display order
 const reportFilters = [
@@ -165,11 +165,11 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           }
           rightPanel={
             selectedContactId ? (
-              <ContactsPage>
+              <ContactsWrapper>
                 <DynamicContactsRightPanel
                   onClose={() => handleSelectContact('')}
                 />
-              </ContactsPage>
+              </ContactsWrapper>
             ) : undefined
           }
           rightOpen={typeof selectedContactId !== 'undefined'}
