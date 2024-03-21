@@ -10,8 +10,8 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../ContactDetailContext';
-import { EditIcon } from '../ContactDetailsTab/EditIcon';
 import { EditContactDetailsModal } from '../ContactDetailsTab/People/Items/EditContactDetailsModal/EditContactDetailsModal';
+import { EditIcon } from '../ContactDetailsTab/StyledComponents';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
 import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
