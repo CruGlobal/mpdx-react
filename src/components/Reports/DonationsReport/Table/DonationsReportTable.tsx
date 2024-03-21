@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { EditDonationModal } from 'src/components/EditDonationModal/EditDonationModal';
+import { DynamicEditDonationModal } from 'src/components/EditDonationModal/DynamicEditDonationModal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
@@ -462,7 +462,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
         />
       )}
       {selectedDonation && (
-        <EditDonationModal
+        <DynamicEditDonationModal
           open
           donation={selectedDonation.rawDonation}
           handleClose={() => handleClose()}

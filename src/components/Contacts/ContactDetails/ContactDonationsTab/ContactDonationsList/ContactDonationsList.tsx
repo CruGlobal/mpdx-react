@@ -13,7 +13,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { EditDonationModal } from 'src/components/EditDonationModal/EditDonationModal';
+import { DynamicEditDonationModal } from 'src/components/EditDonationModal/DynamicEditDonationModal';
 import { EditDonationModalDonationFragment } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { useGetAccountListCurrencyQuery } from 'src/components/Reports/DonationsReport/GetDonationsTable.generated';
 import { useLocale } from 'src/hooks/useLocale';
@@ -146,7 +146,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
         </>
       )}
       {editingDonation && (
-        <EditDonationModal
+        <DynamicEditDonationModal
           open
           donation={editingDonation}
           handleClose={() => setEditingDonation(null)}
