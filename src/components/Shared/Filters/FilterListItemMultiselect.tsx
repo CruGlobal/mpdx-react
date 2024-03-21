@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { MultiselectFilter } from 'src/graphql/types.generated';
-import { ReverseFiltersMap } from './FilterPanel';
+import { reverseFiltersMap } from './helpers';
 
 interface Props {
   filter: MultiselectFilter;
@@ -49,7 +49,7 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
     <div className="FilterListItemMultiselect-root">
       <ListItem
         secondaryAction={
-          ReverseFiltersMap.get(filter.filterKey) &&
+          reverseFiltersMap.get(filter.filterKey) &&
           onReverseFilter && (
             <Tooltip title={t('Reverse Filter')}>
               <IconButton
