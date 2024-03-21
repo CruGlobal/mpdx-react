@@ -12,11 +12,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import theme from '../../../theme';
+import { StyledInput } from '../StyledInput';
 import {
   ContactPrimaryAddressFragment,
   ContactPrimaryPersonFragment,
 } from './GetInvalidNewsletter.generated';
-import { StyledInput } from './StyledInput';
 
 const useStyles = makeStyles()(() => ({
   left: {

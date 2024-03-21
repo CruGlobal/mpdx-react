@@ -16,10 +16,11 @@ import {
   TableRow,
   Theme,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { makeStyles, withStyles } from 'tss-react/mui';
+import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
 import { numberFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
@@ -58,12 +59,9 @@ interface Props {
   accountListId: string;
 }
 
-const StyledTableCell = withStyles(TableCell, () => ({
-  root: {
-    paddingLeft: 4,
-    paddingRight: 4,
-  },
-}));
+const StyledTableCell = styled(TableCell)({
+  paddingInline: 4,
+});
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   const { classes } = useStyles();
