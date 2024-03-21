@@ -5,7 +5,6 @@ import {
   Link,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableRow,
   Typography,
@@ -17,6 +16,7 @@ import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
 import { Totals } from '../../FourteenMonthReport';
+import { StyledTableCell } from './StyledComponents';
 import {
   FourteenMonthReportTableHead as TableHead,
   FourteenMonthReportTableHeadProps as TableHeadProps,
@@ -64,12 +64,6 @@ const StickyTable = styled(Table)(({}) => ({
 const StyledInfoIcon = styled(InfoIcon)(({}) => ({
   '@media print': {
     display: 'none',
-  },
-}));
-
-export const StyledTableCell = styled(TableCell)(({}) => ({
-  '@media print': {
-    padding: '8px',
   },
 }));
 

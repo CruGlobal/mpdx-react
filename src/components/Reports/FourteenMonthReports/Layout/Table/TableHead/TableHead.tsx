@@ -7,7 +7,7 @@ import { useLocale } from 'src/hooks/useLocale';
 // eslint-disable-next-line import/extensions
 import { Totals } from '../../../FourteenMonthReport';
 import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
-import { StyledTableCell } from '../Table';
+import { StyledTableCell } from '../StyledComponents';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 import type { Order, Unarray } from '../../../../Reports.type';
 

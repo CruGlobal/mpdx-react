@@ -6,8 +6,6 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
-  FormControlLabel,
-  TextField,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -49,18 +47,6 @@ import { PersonPhoneNumber } from './PersonPhoneNumber/PersonPhoneNumber';
 import { PersonShowMore } from './PersonShowMore/PersonShowMore';
 import { formatSubmittedFields, getPersonSchema } from './personModalHelper';
 import { uploadAvatar, validateAvatar } from './uploadAvatar';
-
-export const ContactInputField = styled(TextField, {
-  shouldForwardProp: (prop) => prop !== 'destroyed',
-})(({ destroyed }: { destroyed: boolean }) => ({
-  textDecoration: destroyed ? 'line-through' : 'none',
-}));
-
-export const PrimaryControlLabel = styled(FormControlLabel, {
-  shouldForwardProp: (prop) => prop !== 'destroyed',
-})(({ destroyed }: { destroyed: boolean }) => ({
-  textDecoration: destroyed ? 'line-through' : 'none',
-}));
 
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
