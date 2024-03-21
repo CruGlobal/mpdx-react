@@ -7,8 +7,13 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { Preference } from 'src/graphql/types.generated';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
+
+const preferencesSchema: yup.SchemaOf<Pick<Preference, 'timeZone'>> =
+  yup.object({
+    timeZone: yup.string().required(),
+  });
 
 interface TimeZoneAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -36,12 +41,8 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
     () => formatTimeZone(timeZone),
     [timeZones, timeZone],
   );
-  const PreferencesSchema: yup.SchemaOf<Pick<Types.Preference, 'timeZone'>> =
-    yup.object({
-      timeZone: yup.string().required(),
-    });
 
-  const onSubmit = async (attributes: Pick<Types.Preference, 'timeZone'>) => {
+  const onSubmit = async (attributes: Pick<Preference, 'timeZone'>) => {
     await updatePersonalPreferences({
       variables: {
         input: {
@@ -76,7 +77,7 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
         initialValues={{
           timeZone: timeZone || '',
         }}
-        validationSchema={PreferencesSchema}
+        validationSchema={preferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
         validateOnMount

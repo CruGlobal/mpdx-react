@@ -14,9 +14,10 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import * as Types from 'src/graphql/types.generated';
+import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
+  NotificationsPreferencesQuery,
   useNotificationTypesQuery,
   useNotificationsPreferencesQuery,
 } from './Notifications.generated';
@@ -39,19 +40,38 @@ export enum notificationsEnum {
   Task = 'task',
 }
 
+type NotificationPreferenceNode =
+  NotificationsPreferencesQuery['notificationPreferences']['nodes'][number];
+
 type NotificationPreference = Pick<
-  Types.NotificationPreference,
+  NotificationPreferenceNode,
   'app' | 'email' | 'task'
 > & {
-  notificationType: Pick<
-    Types.NotificationType,
-    'id' | 'descriptionTemplate' | 'type'
+  notificationType: Omit<
+    NotificationPreferenceNode['notificationType'],
+    '__typename'
   >;
 };
-type NotificationType = Pick<
-  Types.NotificationType,
-  'id' | 'type' | 'descriptionTemplate'
->;
+
+const notificationSchema: yup.SchemaOf<{
+  notifications: NotificationPreference[];
+}> = yup.object({
+  notifications: yup.array(
+    yup.object({
+      app: yup.boolean().required(),
+      email: yup.boolean().required(),
+      task: yup.boolean().required(),
+      notificationType: yup.object({
+        id: yup.string().required(),
+        descriptionTemplate: yup.string().required(),
+        type: yup
+          .mixed<NotificationTypeTypeEnum>()
+          .oneOf(Object.values(NotificationTypeTypeEnum))
+          .required(),
+      }),
+    }),
+  ),
+});
 
 export const NotificationsTable: React.FC = () => {
   const { t } = useTranslation();
@@ -63,26 +83,6 @@ export const NotificationsTable: React.FC = () => {
   const [taskSelectAll, setTaskSelectAll] = useState(false);
 
   const [updateNotifications] = useUpdateNotificationPreferencesMutation();
-
-  const NotificationSchema: yup.SchemaOf<{
-    notifications: NotificationPreference[];
-  }> = yup.object({
-    notifications: yup.array(
-      yup.object({
-        app: yup.boolean().required(),
-        email: yup.boolean().required(),
-        task: yup.boolean().required(),
-        notificationType: yup.object({
-          id: yup.string().required(),
-          descriptionTemplate: yup.string().required(),
-          type: yup
-            .mixed<Types.NotificationTypeTypeEnum>()
-            .oneOf(Object.values(Types.NotificationTypeTypeEnum))
-            .required(),
-        }),
-      }),
-    ),
-  });
 
   const { data: notificationsPreferences, loading } =
     useNotificationsPreferencesQuery({
@@ -105,12 +105,11 @@ export const NotificationsTable: React.FC = () => {
   };
 
   const notifications = useMemo(() => {
-    const notificationsPreferencesData: NotificationPreference[] =
+    const notificationsPreferencesData =
       notificationsPreferences?.notificationPreferences?.nodes || [];
-    const notificationTypesData: NotificationType[] =
-      notificationTypes?.notificationTypes || [];
+    const notificationTypesData = notificationTypes?.notificationTypes || [];
 
-    return notificationTypesData.map((notification) => {
+    return notificationTypesData.map((notification): NotificationPreference => {
       const notificationPreference = notificationsPreferencesData.find(
         (object) => object.notificationType.id === notification.id,
       );
@@ -119,7 +118,7 @@ export const NotificationsTable: React.FC = () => {
         app: defaultIfInSetup(notificationPreference, 'app'),
         email: defaultIfInSetup(notificationPreference, 'email'),
         task: defaultIfInSetup(notificationPreference, 'task'),
-      } as NotificationPreference;
+      };
     });
   }, [notificationsPreferences, notificationTypes]);
 
@@ -173,7 +172,7 @@ export const NotificationsTable: React.FC = () => {
           initialValues={{
             notifications: notifications,
           }}
-          validationSchema={NotificationSchema}
+          validationSchema={notificationSchema}
           onSubmit={onSubmit}
         >
           {({
