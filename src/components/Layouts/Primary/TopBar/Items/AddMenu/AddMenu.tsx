@@ -11,9 +11,9 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import useTaskModal from '../../../../../../hooks/useTaskModal';
 import Modal from '../../../../../common/Modal/Modal';
-import { AddDonation } from './Items/AddDonation/AddDonation';
-import CreateContact from './Items/CreateContact/CreateContact';
-import { CreateMultipleContacts } from './Items/CreateMultipleContacts/CreateMultipleContacts';
+import { DynamicAddDonation } from './Items/AddDonation/DynamicAddDonation';
+import { DynamicCreateContact } from './Items/CreateContact/DynamicCreateContact';
+import { DynamicCreateMultipleContacts } from './Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 
 interface AddMenuProps {
   isInDrawer?: boolean;
@@ -102,21 +102,21 @@ export const renderDialog = (
     switch (selectedMenuItem) {
       case AddMenuItemsEnum.NewContact:
         return (
-          <CreateContact
+          <DynamicCreateContact
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />
         );
       case AddMenuItemsEnum.MultipleContacts:
         return (
-          <CreateMultipleContacts
+          <DynamicCreateMultipleContacts
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />
         );
       case AddMenuItemsEnum.AddDonation:
         return (
-          <AddDonation
+          <DynamicAddDonation
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />

@@ -125,7 +125,7 @@ describe('DonationsReportTable', () => {
   });
 
   it('opens and closes the edit donation modal', async () => {
-    const { queryByRole, queryByText, getByText, getByTestId, getByRole } =
+    const { queryByRole, queryByText, findByText, getByTestId, getByRole } =
       render(
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -159,7 +159,7 @@ describe('DonationsReportTable', () => {
 
     userEvent.click(getByTestId('edit-abc'));
 
-    expect(getByText('Edit Donation')).toBeInTheDocument();
+    expect(await findByText('Edit Donation')).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Cancel' }));
 

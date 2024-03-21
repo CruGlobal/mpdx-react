@@ -24,7 +24,7 @@ describe('NullState', () => {
   });
 
   it('render text for unfiltered null contact state', async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, findByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestWrapper>
@@ -51,7 +51,7 @@ describe('NullState', () => {
     ).toBeInTheDocument();
     expect(getByTestId('contact-null-state')).toBeInTheDocument();
     userEvent.click(getByText('Add new contact'));
-    expect(getByText('Save')).toBeInTheDocument();
+    expect(await findByText('Save')).toBeInTheDocument();
   });
 
   it('render text filtered contacts', async () => {

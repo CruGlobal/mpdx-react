@@ -17,7 +17,7 @@ import {
   ContactsContext,
   ContactsType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
-import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
+import { DynamicCreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import Modal from '../../../../common/Modal/Modal';
@@ -283,13 +283,11 @@ export const ContactDetailsMoreAcitions: React.FC<
         fullWidth
         size={'xl'} // TODO: Expand logic as more menu modals are added
       >
-        {
-          <CreateMultipleContacts
-            accountListId={accountListId ?? ''}
-            handleClose={handleModalClose}
-            referredById={contactId}
-          />
-        }
+        <DynamicCreateMultipleContacts
+          accountListId={accountListId ?? ''}
+          handleClose={handleModalClose}
+          referredById={contactId}
+        />
       </Modal>
       <DeleteContactModal
         open={deleteModalOpen}

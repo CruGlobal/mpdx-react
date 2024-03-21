@@ -15,7 +15,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
 import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
 import ExportPhysical from './MenuItems/ExportPhysical/ExportPhysical';
-import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';
+import { DynamicLogNewsletter } from './MenuItems/LogNewsLetter/DynamicLogNewsletter';
 import { useGetTaskAnalyticsQuery } from './NewsletterMenu.generated';
 
 interface Props {
@@ -91,7 +91,7 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
       switch (selectedMenuItem) {
         case 0:
           return (
-            <LogNewsletter
+            <DynamicLogNewsletter
               accountListId={accountListId}
               handleClose={handleDialogClose}
             />
