@@ -64,29 +64,24 @@ describe('Loading', () => {
   });
 
   it('changes loading state', async () => {
-    const { queryByTestId } = render(
+    const { getByTestId } = render(
       <TestRouter router={router}>
         <Loading />
       </TestRouter>,
     );
-    await waitFor(() => {
-      expect(queryByTestId('Loading')).not.toBeInTheDocument();
-    });
+    const spinner = getByTestId('Loading');
+    await waitFor(() => expect(spinner).not.toHaveClass('visible'));
+
     router.events.emit('routeChangeStart');
-    await waitFor(() => {
-      expect(queryByTestId('Loading')).toBeInTheDocument();
-    });
+    await waitFor(() => expect(spinner).toHaveClass('visible'));
+
     router.events.emit('routeChangeComplete');
-    await waitFor(() => {
-      expect(queryByTestId('Loading')).not.toBeInTheDocument();
-    });
+    await waitFor(() => expect(spinner).not.toHaveClass('visible'));
+
     router.events.emit('routeChangeStart');
-    await waitFor(() => {
-      expect(queryByTestId('Loading')).toBeInTheDocument();
-    });
+    await waitFor(() => expect(spinner).toHaveClass('visible'));
+
     router.events.emit('routeChangeError');
-    await waitFor(() => {
-      expect(queryByTestId('Loading')).not.toBeInTheDocument();
-    });
+    await waitFor(() => expect(spinner).not.toHaveClass('visible'));
   });
 });
