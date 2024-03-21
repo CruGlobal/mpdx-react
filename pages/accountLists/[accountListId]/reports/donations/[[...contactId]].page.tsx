@@ -16,7 +16,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
-import { ContactsPage } from '../../contacts/ContactsPage';
+import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 
 const DonationsReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -81,11 +81,11 @@ const DonationsReportPage: React.FC = () => {
             }
             rightPanel={
               selectedContactId ? (
-                <ContactsPage>
+                <ContactsWrapper>
                   <DynamicContactsRightPanel
                     onClose={() => handleSelectContact('')}
                   />
-                </ContactsPage>
+                </ContactsWrapper>
               ) : undefined
             }
             rightOpen={typeof selectedContactId !== 'undefined'}

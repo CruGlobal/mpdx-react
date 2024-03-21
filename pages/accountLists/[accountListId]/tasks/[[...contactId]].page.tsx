@@ -8,6 +8,7 @@ import { styled } from '@mui/material/styles';
 import { debounce } from 'lodash';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
@@ -34,7 +35,6 @@ import {
   TaskFilterTabsTypes,
   taskFiltersTabs,
 } from '../../../../src/utils/tasks/taskFilterTabs';
-import { ContactsProvider } from '../contacts/ContactsContext';
 import {
   TaskFiltersQuery,
   useTaskFiltersQuery,

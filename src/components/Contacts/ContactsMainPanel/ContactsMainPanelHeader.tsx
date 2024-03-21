@@ -4,7 +4,13 @@ import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
 import Map from '@mui/icons-material/Map';
 import Settings from '@mui/icons-material/Settings';
 import ViewColumn from '@mui/icons-material/ViewColumn';
-import { Box , Button , Hidden , ToggleButton , ToggleButtonGroup } from '@mui/material';
+import {
+  Box,
+  Button,
+  Hidden,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
@@ -15,7 +21,7 @@ import {
 import {
   ContactsContext,
   ContactsType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from '../ContactsContext/ContactsContext';
 
 const ViewSettingsButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',

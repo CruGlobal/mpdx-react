@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import theme from 'src/theme';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import {
@@ -73,9 +73,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
-            <ContactsPage>
+            <ContactsWrapper>
               <ContactRow contact={contact} />
-            </ContactsPage>
+            </ContactsWrapper>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -98,9 +98,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
-            <ContactsPage>
+            <ContactsWrapper>
               <ContactRow contact={contact} />
-            </ContactsPage>
+            </ContactsWrapper>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -117,9 +117,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
-            <ContactsPage>
+            <ContactsWrapper>
               <ContactRow contact={contact} />
-            </ContactsPage>
+            </ContactsWrapper>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -141,9 +141,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
-            <ContactsPage>
+            <ContactsWrapper>
               <ContactRow contact={contact} />
-            </ContactsPage>
+            </ContactsWrapper>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,

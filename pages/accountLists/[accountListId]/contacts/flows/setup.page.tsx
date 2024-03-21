@@ -8,26 +8,26 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
-import theme from 'src/theme';
 import {
   ContactFlowOption,
   colorMap,
   statusMap,
-} from '../../../../../src/components/Contacts/ContactFlow/ContactFlow';
-import { ContactFlowSetupColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
-import { UnusedStatusesColumn } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
-import { ContactFlowSetupDragLayer } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
-import { ContactFlowSetupHeader } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/Header/ContactFlowSetupHeader';
-import { useUpdateUserOptionsMutation } from '../../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
+} from 'src/components/Contacts/ContactFlow/ContactFlow';
+import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
+import { UnusedStatusesColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
+import { ContactFlowSetupDragLayer } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
+import { ContactFlowSetupHeader } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Header/ContactFlowSetupHeader';
+import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import {
   GetUserOptionsDocument,
   GetUserOptionsQuery,
   useGetUserOptionsQuery,
-} from '../../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
-import Loading from '../../../../../src/components/Loading';
-import { useAccountListId } from '../../../../../src/hooks/useAccountListId';
-import useGetAppSettings from '../../../../../src/hooks/useGetAppSettings';
+} from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import Loading from 'src/components/Loading';
+import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import theme from 'src/theme';
 
 const StickyBox = styled(Box)(() => ({
   ['@media (min-width:900px)']: {
