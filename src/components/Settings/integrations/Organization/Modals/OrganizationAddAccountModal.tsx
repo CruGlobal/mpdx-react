@@ -44,7 +44,12 @@ interface OrganizationAddAccountModalProps {
 export type OrganizationFormikSchema = {
   selectedOrganization: Pick<
     Organization,
-    'id' | 'name' | 'oauth' | 'apiClass' | 'giftAidPercentage'
+    | 'id'
+    | 'name'
+    | 'oauth'
+    | 'apiClass'
+    | 'giftAidPercentage'
+    | 'disableNewUsers'
   >;
   username: string | undefined;
   password: string | undefined;
@@ -145,6 +150,7 @@ export const OrganizationAddAccountModal: React.FC<
           name: yup.string().required(),
           oauth: yup.boolean().required(),
           giftAidPercentage: yup.number().nullable(),
+          disableNewUsers: yup.boolean(),
         })
         .required(),
       username: yup
@@ -200,7 +206,6 @@ export const OrganizationAddAccountModal: React.FC<
           <form onSubmit={handleSubmit}>
             <StyledBox>
               <Autocomplete
-                autoSelect
                 disabled={isSubmitting}
                 autoHighlight
                 loading={loading}
@@ -212,8 +217,8 @@ export const OrganizationAddAccountModal: React.FC<
                   setFieldValue('selectedOrganization', value);
                 }}
                 options={
-                  organizations?.organizations?.map(
-                    (organization) => organization,
+                  organizations?.organizations?.filter(
+                    (organization) => !organization?.disableNewUsers,
                   ) || []
                 }
                 getOptionLabel={(option) =>
