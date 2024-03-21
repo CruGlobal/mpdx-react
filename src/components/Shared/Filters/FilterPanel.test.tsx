@@ -13,7 +13,7 @@ import {
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ContactsProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
+import { ContactsProvider } from '../../Contacts/ContactsContext/ContactsContext';
 import { FilterPanel, FilterPanelProps } from './FilterPanel';
 import {
   FilterPanelGroupFragment,

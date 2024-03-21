@@ -9,6 +9,7 @@ import { debounce } from 'lodash';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
@@ -35,7 +36,6 @@ import {
   TaskFilterTabsTypes,
   taskFiltersTabs,
 } from '../../../../src/utils/tasks/taskFilterTabs';
-import { ContactsProvider } from '../contacts/ContactsContext';
 import {
   TaskFiltersQuery,
   useTaskFiltersQuery,

@@ -21,7 +21,7 @@ import {
 import {
   ContactsContext,
   ContactsType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from '../ContactsContext/ContactsContext';
 
 const ViewSettingsButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',

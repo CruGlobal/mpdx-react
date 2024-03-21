@@ -13,22 +13,25 @@ import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { useUpdateUserOptionsMutation } from '../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import { useGetUserOptionsQuery } from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
-import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
-import {
-  ListHeaderCheckBoxState,
-  TableViewModeEnum,
-} from '../../../../src/components/Shared/Header/ListHeader';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import {
   ContactFiltersQuery,
   useContactFiltersQuery,
   useContactsQuery,
-} from './Contacts.generated';
-import { coordinatesFromContacts, getRedirectPathname } from './helpers';
-import { Coordinates } from './map/map';
+} from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  coordinatesFromContacts,
+  getRedirectPathname,
+} from '../../../../pages/accountLists/[accountListId]/contacts/helpers';
+import { useAccountListId } from '../../../hooks/useAccountListId';
+import { useMassSelection } from '../../../hooks/useMassSelection';
+import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
+import {
+  ListHeaderCheckBoxState,
+  TableViewModeEnum,
+} from '../../Shared/Header/ListHeader';
+import { useUpdateUserOptionsMutation } from '../ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
+import { useGetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
+import { Coordinates } from '../ContactsMap/coordinates';
 
 export type ContactsType = {
   accountListId: string | undefined;

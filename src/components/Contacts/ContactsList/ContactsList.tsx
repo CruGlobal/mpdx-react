@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import {
   ContactsContext,
   ContactsType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';

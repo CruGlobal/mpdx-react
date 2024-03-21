@@ -5,11 +5,11 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Box, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import theme from '../../../theme';
 import {
   ContactsContext,
   ContactsType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
-import theme from '../../../theme';
+} from '../ContactsContext/ContactsContext';
 import {
   ContactDetailContext,
   ContactDetailsType,
