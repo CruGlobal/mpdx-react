@@ -4,7 +4,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import HandoffLink from 'src/components/HandoffLink';
-import { AddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
+import { DynamicAddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import Modal from '../Modal/Modal';
 
@@ -64,7 +64,7 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
         fullWidth
         size="sm"
       >
-        <AddDonation
+        <DynamicAddDonation
           accountListId={accountListId ?? ''}
           handleClose={handleCloseAddDonation}
         />
