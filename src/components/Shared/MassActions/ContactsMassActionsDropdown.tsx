@@ -4,21 +4,21 @@ import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { MassActionsAddTagsModal } from 'src/components/Contacts/MassActions/AddTags/MassActionsAddTagsModal';
-import { MassActionsAddToAppealModal } from 'src/components/Contacts/MassActions/AddToAppeal/MassActionsAddToAppealModal';
-import { MassActionsCreateAppealModal } from 'src/components/Contacts/MassActions/AddToAppeal/MassActionsCreateAppealModal';
-import { MassActionsEditFieldsModal } from 'src/components/Contacts/MassActions/EditFields/MassActionsEditFieldsModal';
-import { MassActionsExportEmailsModal } from 'src/components/Contacts/MassActions/Exports/Emails/MassActionsExportEmailsModal';
-import { ExportsModal } from 'src/components/Contacts/MassActions/Exports/ExportsModal';
-import { MailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/MailMergedLabelModal';
+import { DynamicMassActionsAddTagsModal } from 'src/components/Contacts/MassActions/AddTags/DynamicMassActionsAddTagsModal';
+import { DynamicMassActionsAddToAppealModal } from 'src/components/Contacts/MassActions/AddToAppeal/DynamicMassActionsAddToAppealModal';
+import { DynamicMassActionsCreateAppealModal } from 'src/components/Contacts/MassActions/AddToAppeal/DynamicMassActionsCreateAppealModal';
+import { DynamicMassActionsEditFieldsModal } from 'src/components/Contacts/MassActions/EditFields/DynamicMassActionsEditFieldsModal';
+import { DynamicExportsModal } from 'src/components/Contacts/MassActions/Exports/DynamicExportsModal';
+import { DynamicMassActionsExportEmailsModal } from 'src/components/Contacts/MassActions/Exports/Emails/DynamicMassActionsExportEmailsModal';
+import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/DynamicMailMergedLabelModal';
 import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
-import { MassActionsMergeModal } from 'src/components/Contacts/MassActions/Merge/MassActionsMergeModal';
-import { MassActionsRemoveTagsModal } from 'src/components/Contacts/MassActions/RemoveTags/MassActionsRemoveTagsModal';
-import { HideContactsModal } from 'src/components/Shared/HideContactsModal/HideContactsModal';
+import { DynamicMassActionsMergeModal } from 'src/components/Contacts/MassActions/Merge/DynamicMassActionsMergeModal';
+import { DynamicMassActionsRemoveTagsModal } from 'src/components/Contacts/MassActions/RemoveTags/DynamicMassActionsRemoveTagsModal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { TableViewModeEnum } from '../Header/ListHeader';
+import { DynamicHideContactsModal } from '../HideContactsModal/DynamicHideContactsModal';
 import { MassActionsDropdown } from './MassActionsDropdown';
 
 interface ContactsMassActionsDropdownProps {
@@ -235,42 +235,42 @@ export const ContactsMassActionsDropdown: React.FC<
       {buttonGroup}
 
       {openRemoveTagsModal && (
-        <MassActionsRemoveTagsModal
+        <DynamicMassActionsRemoveTagsModal
           accountListId={accountListId ?? ''}
           ids={selectedIds}
           handleClose={() => setOpenRemoveTagsModal(false)}
         />
       )}
       {openAddTagsModal && (
-        <MassActionsAddTagsModal
+        <DynamicMassActionsAddTagsModal
           accountListId={accountListId ?? ''}
           ids={selectedIds}
           handleClose={() => setOpenAddTagsModal(false)}
         />
       )}
       {addToAppealModalOpen && (
-        <MassActionsAddToAppealModal
+        <DynamicMassActionsAddToAppealModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setAddToAppealModalOpen(false)}
         />
       )}
       {createAppealModalOpen && (
-        <MassActionsCreateAppealModal
+        <DynamicMassActionsCreateAppealModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setCreateAppealModalOpen(false)}
         />
       )}
       {editFieldsModalOpen && (
-        <MassActionsEditFieldsModal
+        <DynamicMassActionsEditFieldsModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setEditFieldsModalOpen(false)}
         />
       )}
       {hideContactsModalOpen && (
-        <HideContactsModal
+        <DynamicHideContactsModal
           open={hideContactsModalOpen}
           setOpen={setHideContactsModalOpen}
           onConfirm={hideContacts}
@@ -278,7 +278,7 @@ export const ContactsMassActionsDropdown: React.FC<
         />
       )}
       {exportsModalOpen && (
-        <ExportsModal
+        <DynamicExportsModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setExportsModalOpen(false)}
@@ -286,21 +286,21 @@ export const ContactsMassActionsDropdown: React.FC<
         />
       )}
       {labelModalOpen && (
-        <MailMergedLabelModal
+        <DynamicMailMergedLabelModal
           accountListId={accountListId ?? ''}
           ids={selectedIds}
           handleClose={() => setLabelModalOpen(false)}
         />
       )}
       {exportEmailsModalOpen && (
-        <MassActionsExportEmailsModal
+        <DynamicMassActionsExportEmailsModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setExportEmailsModalOpen(false)}
         />
       )}
       {mergeModalOpen && (
-        <MassActionsMergeModal
+        <DynamicMassActionsMergeModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setMergeModalOpen(false)}

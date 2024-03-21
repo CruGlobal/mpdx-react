@@ -3,14 +3,14 @@ import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { MassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/MassActionsTasksAddTagsModal';
-import { MassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
-import { MassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/MassActionsEditTasksModal';
+import { DynamicMassActionsTasksAddTagsModal } from 'src/components/Task/MassActions/AddTags/DynamicMassActionsTasksAddTagsModal';
+import { DynamicMassActionsTasksConfirmationModal } from 'src/components/Task/MassActions/ConfirmationModal/DynamicMassActionsTasksConfirmationModal';
+import { DynamicMassActionsEditTasksModal } from 'src/components/Task/MassActions/EditTasks/DynamicMassActionsEditTasksModal';
 import {
   useMassActionsDeleteTasksMutation,
   useMassActionsUpdateTasksMutation,
 } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
-import { MassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/MassActionsTasksRemoveTagsModal';
+import { DynamicMassActionsTasksRemoveTagsModal } from 'src/components/Task/MassActions/RemoveTags/DynamicMassActionsTasksRemoveTagsModal';
 import { ResultEnum } from 'src/graphql/types.generated';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
@@ -168,7 +168,7 @@ export const TasksMassActionsDropdown: React.FC<
       </Hidden>
 
       {completeTasksModalOpen && (
-        <MassActionsTasksConfirmationModal
+        <DynamicMassActionsTasksConfirmationModal
           open={completeTasksModalOpen}
           action="complete"
           idsCount={selectedIds.length}
@@ -177,7 +177,7 @@ export const TasksMassActionsDropdown: React.FC<
         />
       )}
       {addTagsModalOpen && (
-        <MassActionsTasksAddTagsModal
+        <DynamicMassActionsTasksAddTagsModal
           ids={selectedIds}
           selectedIdCount={selectedIdCount}
           accountListId={accountListId}
@@ -185,7 +185,7 @@ export const TasksMassActionsDropdown: React.FC<
         />
       )}
       {deleteTasksModalOpen && (
-        <MassActionsTasksConfirmationModal
+        <DynamicMassActionsTasksConfirmationModal
           open={deleteTasksModalOpen}
           action="delete"
           idsCount={selectedIds.length}
@@ -194,7 +194,7 @@ export const TasksMassActionsDropdown: React.FC<
         />
       )}
       {editTasksModalOpen && (
-        <MassActionsEditTasksModal
+        <DynamicMassActionsEditTasksModal
           ids={selectedIds}
           selectedIdCount={selectedIdCount}
           accountListId={accountListId}
@@ -202,7 +202,7 @@ export const TasksMassActionsDropdown: React.FC<
         />
       )}
       {removeTagsModalOpen && (
-        <MassActionsTasksRemoveTagsModal
+        <DynamicMassActionsTasksRemoveTagsModal
           ids={selectedIds}
           selectedIdCount={selectedIdCount}
           accountListId={accountListId}

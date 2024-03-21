@@ -16,7 +16,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
+import { DynamicCreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import Modal from 'src/components/common/Modal/Modal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
@@ -149,7 +149,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
             fullWidth
             size={'xl'} // TODO: Expand logic as more menu modals are added
           >
-            <CreateMultipleContacts
+            <DynamicCreateMultipleContacts
               accountListId={accountListId ?? ''}
               handleClose={handleModalClose}
               referredById={contactId}

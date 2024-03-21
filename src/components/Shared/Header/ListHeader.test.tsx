@@ -4,8 +4,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import i18n from 'src/lib/i18n';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
@@ -50,9 +52,11 @@ jest.mock('../../Shared/MassActions/TasksMassActionsDropdown', () => ({
 
 const MocksProviders = (props: { children: JSX.Element }) => (
   <ThemeProvider theme={theme}>
-    <GqlMockedProvider>
-      <SnackbarProvider>{props.children}</SnackbarProvider>
-    </GqlMockedProvider>
+    <I18nextProvider i18n={i18n}>
+      <GqlMockedProvider>
+        <SnackbarProvider>{props.children}</SnackbarProvider>
+      </GqlMockedProvider>
+    </I18nextProvider>
   </ThemeProvider>
 );
 
@@ -173,22 +177,27 @@ describe('ListHeader', () => {
     });
   });
 
-  it('opens the more actions menu and clicks the add tags action', () => {
-    const { getByPlaceholderText, getByTestId, getByText, queryByText } =
-      render(
-        <MocksProviders>
-          <ListHeader
-            selectedIds={selectedIds}
-            page="contact"
-            activeFilters={false}
-            starredFilter={{}}
-            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
-            filterPanelOpen={false}
-            contactDetailsOpen={false}
-            {...mockedProps}
-          />
-        </MocksProviders>,
-      );
+  it('opens the more actions menu and clicks the add tags action', async () => {
+    const {
+      findByText,
+      getByPlaceholderText,
+      getByTestId,
+      getByText,
+      queryByText,
+    } = render(
+      <MocksProviders>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          {...mockedProps}
+        />
+      </MocksProviders>,
+    );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     expect(queryByText('Add Tags')).not.toBeInTheDocument();
@@ -197,7 +206,9 @@ describe('ListHeader', () => {
     expect(getByText('Add Tags')).toBeInTheDocument();
     userEvent.click(getByText('Add Tags'));
     expect(
-      queryByText('Create New Tags (separate multiple tags with Enter key) *'),
+      await findByText(
+        'Create New Tags (separate multiple tags with Enter key) *',
+      ),
     ).toBeInTheDocument();
     expect(getByTestId('star-filter-button')).toBeInTheDocument();
     expect(getByTestId('showing-text')).toBeInTheDocument();
