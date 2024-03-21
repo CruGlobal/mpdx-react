@@ -22,7 +22,6 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
-import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 
 // The order here is also the sort order and the display order
 const reportFilters = [
@@ -143,11 +142,9 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           }
           rightPanel={
             selectedContactId ? (
-              <ContactsWrapper>
-                <DynamicContactsRightPanel
-                  onClose={() => handleSelectContact('')}
-                />
-              </ContactsWrapper>
+              <DynamicContactsRightPanel
+                onClose={() => handleSelectContact('')}
+              />
             ) : undefined
           }
           rightOpen={typeof selectedContactId !== 'undefined'}

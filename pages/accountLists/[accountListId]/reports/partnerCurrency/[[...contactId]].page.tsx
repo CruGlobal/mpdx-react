@@ -17,7 +17,6 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
-import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 
 const PartnerCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -82,11 +81,9 @@ const PartnerCurrencyReportPage: React.FC = () => {
             }
             rightPanel={
               selectedContactId ? (
-                <ContactsWrapper>
-                  <DynamicContactsRightPanel
-                    onClose={() => handleSelectContact('')}
-                  />
-                </ContactsWrapper>
+                <DynamicContactsRightPanel
+                  onClose={() => handleSelectContact('')}
+                />
               ) : undefined
             }
             rightOpen={typeof selectedContactId !== 'undefined'}

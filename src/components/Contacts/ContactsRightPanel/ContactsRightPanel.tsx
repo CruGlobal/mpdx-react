@@ -1,4 +1,5 @@
 import React from 'react';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { ContactDetailProvider } from '../ContactDetails/ContactDetailContext';
 import { ContactDetails } from '../ContactDetails/ContactDetails';
 
@@ -7,8 +8,10 @@ interface Props {
 }
 export const ContactsRightPanel: React.FC<Props> = ({ onClose }) => {
   return (
-    <ContactDetailProvider>
-      <ContactDetails onClose={onClose} />
-    </ContactDetailProvider>
+    <ContactsWrapper>
+      <ContactDetailProvider>
+        <ContactDetails onClose={onClose} />
+      </ContactDetailProvider>
+    </ContactsWrapper>
   );
 };
