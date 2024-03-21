@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 
-export const StatusRow = styled(Box)(() => ({
+const StatusRow = styled(Box)(() => ({
   padding: theme.spacing(1.5),
   borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
   '&:hover': {

@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { mdiCheckboxMarkedCircle } from '@mdi/js';
-import Icon from '@mdi/react';
 import {
   Box,
   Button,
@@ -14,6 +12,7 @@ import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
+import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import NoData from '../NoData';
 import DeleteModal from './DeleteModal';
@@ -67,10 +66,6 @@ const ConfirmButton = styled(Button)(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.palette.mpdxBlue.main,
   },
-}));
-
-export const ConfirmButtonIcon = styled(Icon)(({ theme }) => ({
-  marginRight: theme.spacing(1),
 }));
 
 const DefaultSourceWrapper = styled(Box)(({ theme }) => ({
@@ -274,10 +269,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                       <option value="DataServer">DataServer</option>
                     </SourceSelect>
                     <ConfirmButton>
-                      <ConfirmButtonIcon
-                        path={mdiCheckboxMarkedCircle}
-                        size={0.8}
-                      />
+                      <ConfirmButtonIcon />
                       {t('Confirm {{amount}} as {{source}}', {
                         amount: data.people.nodes.length,
                         source: defaultSource,

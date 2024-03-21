@@ -13,12 +13,7 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../../ContactDetailContext';
-import { EditIcon } from '../EditIcon';
-import {
-  ContactDetailsAddButton,
-  ContactDetailsAddIcon,
-  ContactDetailsAddText,
-} from '../People/ContactDetailsTabPeople';
+import { AddButton, AddIcon, AddText, EditIcon } from '../StyledComponents';
 import { AddAddressModal } from './AddAddressModal/AddAddressModal';
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
@@ -252,12 +247,10 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
         <Grid container alignItems="center">
-          <ContactDetailsAddButton onClick={() => setAddAddressModalOpen(true)}>
-            <ContactDetailsAddIcon />
-            <ContactDetailsAddText variant="subtitle1">
-              {t('Add Address')}
-            </ContactDetailsAddText>
-          </ContactDetailsAddButton>
+          <AddButton onClick={() => setAddAddressModalOpen(true)}>
+            <AddIcon />
+            <AddText variant="subtitle1">{t('Add Address')}</AddText>
+          </AddButton>
         </Grid>
       </Box>
       {selectedAddress ? (

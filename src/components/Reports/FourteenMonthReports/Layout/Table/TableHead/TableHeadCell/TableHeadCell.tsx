@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { TableSortLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { StyledTableCell } from '../../Table';
+import { StyledTableCell } from '../../StyledComponents';
 
 type Align = 'center' | 'inherit' | 'justify' | 'left' | 'right';
 
