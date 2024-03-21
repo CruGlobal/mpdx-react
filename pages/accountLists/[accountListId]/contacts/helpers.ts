@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import { ContactsQuery } from './Contacts.generated';
 import { Coordinates } from './map/map';
 

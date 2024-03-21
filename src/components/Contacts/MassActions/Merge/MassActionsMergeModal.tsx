@@ -17,7 +17,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import {

@@ -20,7 +20,7 @@ import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/It
 import Modal from 'src/components/common/Modal/Modal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateFormat } from 'src/lib/intlFormat';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
