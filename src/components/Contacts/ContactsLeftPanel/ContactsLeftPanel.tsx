@@ -1,10 +1,10 @@
 import React from 'react';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
+import { TableViewModeEnum } from '../../Shared/Header/ListHeader';
 import {
   ContactsContext,
   ContactsType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
-import { TableViewModeEnum } from '../../Shared/Header/ListHeader';
+} from '../ContactsContext/ContactsContext';
 import { ContactsMapPanel } from '../ContactsMap/ContactsMapPanel';
 
 export const ContactsLeftPanel: React.FC = () => {

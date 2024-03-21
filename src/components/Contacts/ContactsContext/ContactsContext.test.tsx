@@ -6,19 +6,19 @@ import userEvent from '@testing-library/user-event';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import TestRouter from '../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactsWrapper } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { useMassSelection } from '../../../hooks/useMassSelection';
+import theme from '../../../theme';
 import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
-} from '../../../../src/components/Shared/Header/ListHeader';
-import { useMassSelection } from '../../../../src/hooks/useMassSelection';
-import theme from '../../../../src/theme';
-import { ContactFiltersQuery } from './Contacts.generated';
+} from '../../Shared/Header/ListHeader';
 import {
   ContactsContext,
   ContactsContextSavedFilters,
   ContactsType,
 } from './ContactsContext';
-import { ContactsPage } from './ContactsPage';
 
 const accountListId = 'account-list-1';
 const push = jest.fn();
@@ -121,9 +121,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPage>
+            <ContactsWrapper>
               <TestRender />
-            </ContactsPage>
+            </ContactsWrapper>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -164,9 +164,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPage>
+            <ContactsWrapper>
               <TestRender />
-            </ContactsPage>
+            </ContactsWrapper>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -215,9 +215,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPage>
+            <ContactsWrapper>
               <TestRender />
-            </ContactsPage>
+            </ContactsWrapper>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -259,9 +259,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPage>
+            <ContactsWrapper>
               <TestRenderContactsFilters />
-            </ContactsPage>
+            </ContactsWrapper>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -295,9 +295,9 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsPage>
+            <ContactsWrapper>
               <TestRenderContactsFilters />
-            </ContactsPage>
+            </ContactsWrapper>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,

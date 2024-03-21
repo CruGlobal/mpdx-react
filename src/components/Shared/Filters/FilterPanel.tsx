@@ -37,7 +37,7 @@ import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   ContactsContext,
   ContactsType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from '../../Contacts/ContactsContext/ContactsContext';
 import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterListItem } from './FilterListItem';
 import { FilterListItemShowAll } from './FilterListItemShowAll';

@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { VirtuosoMockContext } from 'react-virtuoso';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
@@ -52,7 +52,7 @@ describe('ContactFlowColumn', () => {
                   },
                 }}
               >
-                <ContactsPage>
+                <ContactsWrapper>
                   <VirtuosoMockContext.Provider
                     value={{ viewportHeight: 300, itemHeight: 100 }}
                   >
@@ -66,7 +66,7 @@ describe('ContactFlowColumn', () => {
                       statuses={[ContactFilterStatusEnum.PartnerFinancial]}
                     />
                   </VirtuosoMockContext.Provider>
-                </ContactsPage>
+                </ContactsWrapper>
               </GqlMockedProvider>
             </TestRouter>
           </ThemeProvider>

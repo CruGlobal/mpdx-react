@@ -14,7 +14,7 @@ import { styled } from '@mui/material/styles';
 import {
   ContactsContext,
   ContactsType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';

@@ -10,7 +10,7 @@ import { useDrop } from 'react-dnd';
 import {
   ContactsContext,
   ContactsType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,

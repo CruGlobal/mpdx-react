@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import {
   render,
   waitFor,
@@ -123,14 +123,14 @@ describe('ContactDetailsTabPeople', () => {
         <TestRouter router={router}>
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetailsTabPeople
                     accountListId={accountListId}
                     data={data}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>,
@@ -152,14 +152,14 @@ describe('ContactDetailsTabPeople', () => {
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
               <SnackbarProvider>
-                <ContactsPage>
+                <ContactsWrapper>
                   <ContactDetailProvider>
                     <ContactDetailsTabPeople
                       accountListId={accountListId}
                       data={data}
                     />
                   </ContactDetailProvider>
-                </ContactsPage>
+                </ContactsWrapper>
               </SnackbarProvider>
             </ThemeProvider>
           </GqlMockedProvider>
@@ -182,14 +182,14 @@ describe('ContactDetailsTabPeople', () => {
         <TestRouter router={router}>
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetailsTabPeople
                     accountListId={accountListId}
                     data={data}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>,
@@ -230,14 +230,14 @@ describe('ContactDetailsTabPeople', () => {
           <TestRouter router={router}>
             <GqlMockedProvider>
               <ThemeProvider theme={theme}>
-                <ContactsPage>
+                <ContactsWrapper>
                   <ContactDetailProvider>
                     <ContactDetailsTabPeople
                       accountListId={accountListId}
                       data={data}
                     />
                   </ContactDetailProvider>
-                </ContactsPage>
+                </ContactsWrapper>
               </ThemeProvider>
             </GqlMockedProvider>
           </TestRouter>,
@@ -270,14 +270,14 @@ describe('ContactDetailsTabPeople', () => {
           <TestRouter router={router}>
             <GqlMockedProvider>
               <ThemeProvider theme={theme}>
-                <ContactsPage>
+                <ContactsWrapper>
                   <ContactDetailProvider>
                     <ContactDetailsTabPeople
                       accountListId={accountListId}
                       data={data}
                     />
                   </ContactDetailProvider>
-                </ContactsPage>
+                </ContactsWrapper>
               </ThemeProvider>
             </GqlMockedProvider>
           </TestRouter>,

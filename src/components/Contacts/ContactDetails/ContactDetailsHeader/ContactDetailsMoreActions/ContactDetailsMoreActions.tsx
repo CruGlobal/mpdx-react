@@ -16,7 +16,7 @@ import {
 import {
   ContactsContext,
   ContactsType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { DynamicCreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';

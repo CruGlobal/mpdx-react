@@ -2,7 +2,7 @@ import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import { DateTime } from 'luxon';
 import { withDesign } from 'storybook-addon-designs';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { ContactRow } from './ContactRow';
 import {
@@ -25,9 +25,9 @@ export const Default: Story = () => {
   });
 
   return (
-    <ContactsPage>
+    <ContactsWrapper>
       <ContactRow contact={contact} />
-    </ContactsPage>
+    </ContactsWrapper>
   );
 };
 

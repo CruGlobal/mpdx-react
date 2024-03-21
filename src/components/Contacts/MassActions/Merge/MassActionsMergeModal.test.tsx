@@ -8,7 +8,7 @@ import {
   ContactsContext,
   ContactsProvider,
   ContactsType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
