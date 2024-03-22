@@ -20,7 +20,9 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import theme from 'src/theme';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { sourceToStr } from 'src/utils/sourceToStr';
 
 interface ContactMapsPanelProps {
@@ -32,6 +34,7 @@ interface ContactMapsPanelProps {
 }
 
 interface PanelItem {
+  key: string;
   title: string;
   imgUrl: string;
   data: Coordinates[] | undefined;
@@ -83,13 +86,11 @@ const CruFocus = styled(Typography)(({ theme }) => ({
   display: 'inline',
 }));
 
-const inactiveStatuses: (StatusEnum | null | undefined)[] = [
-  StatusEnum.ExpiredReferral,
-  StatusEnum.NeverAsk,
-  StatusEnum.NotInterested,
-  StatusEnum.ResearchAbandoned,
-  StatusEnum.Unresponsive,
-];
+const inactiveStatuses: (StatusEnum | null | undefined)[] = Object.entries(
+  contactPartnershipStatus,
+)
+  .filter(([_, status]) => status.phase === PhaseTypeEnum.archive)
+  .map(([statusKey]) => statusKey as StatusEnum);
 
 export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   data,
@@ -107,79 +108,27 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
     (_event: React.SyntheticEvent, newExpanded: boolean) => {
       setStatusContactsMapOpen(newExpanded ? panel : -1);
     };
+  const statusesForMap: PanelItem[] = Object.entries(contactPartnershipStatus)
+    .filter(
+      ([_, status]) =>
+        status.phase &&
+        status.phase !== PhaseTypeEnum.archive &&
+        status.phase !== PhaseTypeEnum.follow_up,
+    )
+    .map(([statusKey, status]) => {
+      return {
+        key: statusKey,
+        title: status.translated,
+        imgUrl: `/images/pin_${statusKey.toLowerCase()}.png`,
+        data: data?.filter(
+          (contact) => contact?.lat && contact?.status === statusKey,
+        ),
+      };
+    });
 
-  const panelData: Record<string, PanelItem> = {
-    AppointmentScheduled: {
-      title: t('Appointment Scheduled'),
-      imgUrl: '/images/pin_appt_scheduled.png',
-      data: data?.filter(
-        (contact) =>
-          contact?.lat && contact?.status === StatusEnum.AppointmentScheduled,
-      ),
-    },
-    AskInFuture: {
-      title: t('Ask In Future'),
-      imgUrl: '/images/pin_ask_in_future.png',
-      data: data?.filter(
-        (contact) => contact?.lat && contact?.status === StatusEnum.AskInFuture,
-      ),
-    },
-    CallForDecision: {
-      title: t('Call For Decision'),
-      imgUrl: '/images/pin_call_for_decision.png',
-      data: data?.filter(
-        (contact) =>
-          contact?.lat && contact?.status === StatusEnum.CallForDecision,
-      ),
-    },
-    ContactForAppointment: {
-      title: t('Contact For Appointment'),
-      imgUrl: '/images/pin_contact_for_appt.png',
-      data: data?.filter(
-        (contact) =>
-          contact?.lat && contact?.status === StatusEnum.ContactForAppointment,
-      ),
-    },
-    CultivateRelationship: {
-      title: t('Cultivate Relationship'),
-      imgUrl: '/images/pin_cultivate_relationship.png',
-      data: data?.filter(
-        (contact) =>
-          contact?.lat && contact?.status === StatusEnum.CultivateRelationship,
-      ),
-    },
-    NeverContacted: {
-      title: t('Never Contacted'),
-      imgUrl: '/images/pin_never_contacted.png',
-      data: data?.filter(
-        (contact) =>
-          contact?.lat && contact?.status === StatusEnum.NeverContacted,
-      ),
-    },
-    PartnerFinancial: {
-      title: t('Partner - Financial'),
-      imgUrl: '/images/pin_partner_financial.png',
-      data: data?.filter(
-        (contact) =>
-          contact?.lat && contact?.status === StatusEnum.PartnerFinancial,
-      ),
-    },
-    PartnerPray: {
-      title: t('Partner - Pray'),
-      imgUrl: '/images/pin_partner_pray.png',
-      data: data?.filter(
-        (contact) => contact?.lat && contact?.status === StatusEnum.PartnerPray,
-      ),
-    },
-    PartnerSpecial: {
-      title: t('Partner - Special'),
-      imgUrl: '/images/pin_partner_special.png',
-      data: data?.filter(
-        (contact) =>
-          contact?.lat && contact?.status === StatusEnum.PartnerSpecial,
-      ),
-    },
-    AllInactive: {
+  const panelData: PanelItem[] = statusesForMap.concat([
+    {
+      key: 'AllInactive',
       title: t('All Inactive'),
       imgUrl: '/images/pin_grey.png',
       data: data?.filter(
@@ -188,19 +137,20 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
           (inactiveStatuses.includes(contact?.status) || !contact.status),
       ),
     },
-    NoAddress: {
+    {
+      key: 'NoAddress',
       title: t('No Primary Address Set'),
       imgUrl: '/images/pin_inactive.png',
       data: data?.filter((contact) => !contact?.lat),
     },
-  };
+  ]);
 
   const cardRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (selected) {
       setStatusContactsMapOpen(
-        Object.values(panelData).findIndex((status) =>
+        panelData.findIndex((status) =>
           status.data?.find((contact) => contact.id === selected.id),
         ),
       );
@@ -226,12 +176,12 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
         </Box>
       </Box>
       <Box>
-        {Object.entries(panelData).map(
-          ([status, entry], index) =>
+        {panelData.map(
+          (entry, index) =>
             entry.data &&
             entry.data?.length > 0 && (
               <StatusAccordion
-                key={status}
+                key={entry.key}
                 expanded={statusContactsMapOpen === index}
                 onChange={handleExpansionChange(index)}
               >

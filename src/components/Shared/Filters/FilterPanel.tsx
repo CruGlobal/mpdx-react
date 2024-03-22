@@ -34,6 +34,7 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { statusMapForFilters } from 'src/utils/contacts/contactPartnershipStatus';
 import {
   ContactsContext,
   ContactsType,
@@ -468,45 +469,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 return {
                   ...acc,
                   [key]: value.split(',').map((enumValue) => {
-                    switch (enumValue) {
-                      // Status
-                      case 'active':
-                        return ContactFilterStatusEnum.Active;
-                      case 'hidden':
-                        return ContactFilterStatusEnum.Hidden;
-                      case 'null':
-                        return ContactFilterStatusEnum.Null;
-                      case 'Appointment Scheduled':
-                        return ContactFilterStatusEnum.AppointmentScheduled;
-                      case 'Ask in Future':
-                        return ContactFilterStatusEnum.AskInFuture;
-                      case 'Call for Decision':
-                        return ContactFilterStatusEnum.CallForDecision;
-                      case 'Contact for Appointment':
-                        return ContactFilterStatusEnum.ContactForAppointment;
-                      case 'Cultivate Relationship':
-                        return ContactFilterStatusEnum.CultivateRelationship;
-                      case 'Expired Referral':
-                        return ContactFilterStatusEnum.ExpiredReferral;
-                      case 'Never Ask':
-                        return ContactFilterStatusEnum.NeverAsk;
-                      case 'Never Contacted':
-                        return ContactFilterStatusEnum.NeverContacted;
-                      case 'Not Interested':
-                        return ContactFilterStatusEnum.NotInterested;
-                      case 'Partner - Financial':
-                        return ContactFilterStatusEnum.PartnerFinancial;
-                      case 'Partner - Pray':
-                        return ContactFilterStatusEnum.PartnerPray;
-                      case 'Partner - Special':
-                        return ContactFilterStatusEnum.PartnerSpecial;
-                      case 'Research Abandoned':
-                        return ContactFilterStatusEnum.ResearchAbandoned;
-                      case 'Unresponsive':
-                        return ContactFilterStatusEnum.Unresponsive;
-                      default:
-                        return ContactFilterStatusEnum.Null;
-                    }
+                    // Status
+                    return (
+                      statusMapForFilters[enumValue] ||
+                      ContactFilterStatusEnum.Null
+                    );
                   }),
                 };
               // Activity Type

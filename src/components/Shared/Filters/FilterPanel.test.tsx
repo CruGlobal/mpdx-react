@@ -12,6 +12,7 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactsProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { FilterPanel, FilterPanelProps } from './FilterPanel';
@@ -404,25 +405,7 @@ describe('FilterPanel', () => {
         reverseAlmaMater: false,
         reverseAppeal: true,
         state: ['FL'],
-        status: [
-          'ACTIVE',
-          'HIDDEN',
-          'NULL',
-          'NEVER_CONTACTED',
-          'ASK_IN_FUTURE',
-          'CULTIVATE_RELATIONSHIP',
-          'CONTACT_FOR_APPOINTMENT',
-          'APPOINTMENT_SCHEDULED',
-          'CALL_FOR_DECISION',
-          'PARTNER_FINANCIAL',
-          'PARTNER_SPECIAL',
-          'PARTNER_PRAY',
-          'NOT_INTERESTED',
-          'UNRESPONSIVE',
-          'NEVER_ASK',
-          'RESEARCH_ABANDONED',
-          'EXPIRED_REFERRAL',
-        ],
+        status: Object.keys(contactPartnershipStatus),
         activityType: [
           'APPOINTMENT',
           'CALL',
@@ -504,25 +487,7 @@ describe('FilterPanel', () => {
         almaMater: ['test1', 'test2'],
         newsletter: 'EMAIL',
         contactNewsletter: 'EMAIL_ONLY',
-        status: [
-          'ACTIVE',
-          'APPOINTMENT_SCHEDULED',
-          'ASK_IN_FUTURE',
-          'CALL_FOR_DECISION',
-          'CONTACT_FOR_APPOINTMENT',
-          'CULTIVATE_RELATIONSHIP',
-          'EXPIRED_REFERRAL',
-          'HIDDEN',
-          'NEVER_ASK',
-          'NEVER_CONTACTED',
-          'NOT_INTERESTED',
-          'NULL',
-          'PARTNER_FINANCIAL',
-          'PARTNER_PRAY',
-          'PARTNER_SPECIAL',
-          'RESEARCH_ABANDONED',
-          'UNRESPONSIVE',
-        ],
+        status: Object.keys(contactPartnershipStatus),
         activityType: [
           'APPOINTMENT',
           'CALL',
