@@ -27,7 +27,7 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import Modal from '../../../common/Modal/Modal';
@@ -172,7 +172,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       </MenuItem>
                       {Object.values(StatusEnum).map((val) => (
                         <MenuItem key={val} value={val}>
-                          {getLocalizedContactStatus(t, val)}
+                          {contactPartnershipStatus[val].translated}
                         </MenuItem>
                       ))}
                     </Select>

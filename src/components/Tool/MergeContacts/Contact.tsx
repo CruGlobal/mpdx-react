@@ -159,7 +159,9 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact1.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status: contactPartnershipStatus[contact1.status],
+                          status:
+                            contactPartnershipStatus[contact1.status]
+                              .translated,
                         })}
                       </Typography>
                     )}
@@ -301,7 +303,9 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact2.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status: contactPartnershipStatus[contact2.status],
+                          status:
+                            contactPartnershipStatus[contact2.status]
+                              .translated,
                         })}
                       </Typography>
                     )}
