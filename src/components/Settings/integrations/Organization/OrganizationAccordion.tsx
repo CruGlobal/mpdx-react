@@ -19,6 +19,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import { StyledServicesButton } from '../integrationsHelper';
+import { useOauthUrl } from '../useOauthUrl';
 import { OrganizationAddAccountModal } from './Modals/OrganizationAddAccountModal';
 import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
 import { OrganizationImportDataSyncModal } from './Modals/OrganizationImportDataSyncModal';
@@ -27,7 +28,6 @@ import {
   useGetUsersOrganizationsAccountsQuery,
   useSyncOrganizationAccountMutation,
 } from './Organizations.generated';
-import { useOauthUrl } from './useOauthUrl';
 
 interface OrganizationAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -95,7 +95,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
     useState(false);
   const [deleteOrganizationAccount] = useDeleteOrganizationAccountMutation();
   const [syncOrganizationAccount] = useSyncOrganizationAccountMutation();
-  const { getOauthUrl } = useOauthUrl();
+  const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
 
   const {
     data,
@@ -109,7 +109,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
       t('Redirecting you to complete authentication to reconnect.'),
       { variant: 'success' },
     );
-    window.location.href = getOauthUrl(organizationId);
+    window.location.assign(getOauthUrl(organizationId));
   };
 
   const handleSync = async (accountId: string) => {

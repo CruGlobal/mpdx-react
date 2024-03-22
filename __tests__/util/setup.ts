@@ -39,6 +39,10 @@ window.document.createRange = (): Range =>
     } as unknown as Node,
   } as unknown as Range);
 
+Object.defineProperty(window, 'location', {
+  value: { ...window.location, assign: jest.fn(), replace: jest.fn() },
+});
+
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 beforeEach(() => {

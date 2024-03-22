@@ -26,6 +26,7 @@ import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { articles, showArticle } from 'src/lib/helpScout';
 import theme from 'src/theme';
+import { useOauthUrl } from '../../useOauthUrl';
 import {
   OrganizationTypesEnum,
   getOrganizationType,
@@ -34,7 +35,6 @@ import {
   useCreateOrganizationAccountMutation,
   useGetOrganizationsQuery,
 } from '../Organizations.generated';
-import { useOauthUrl } from '../useOauthUrl';
 
 interface OrganizationAddAccountModalProps {
   handleClose: () => void;
@@ -83,7 +83,7 @@ export const OrganizationAddAccountModal: React.FC<
     useState<OrganizationTypesEnum>();
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
   const { data: organizations, loading } = useGetOrganizationsQuery();
-  const { getOauthUrl } = useOauthUrl();
+  const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
 
   const onSubmit = async (attributes: Partial<OrganizationFormikSchema>) => {
     if (!attributes?.selectedOrganization) return;

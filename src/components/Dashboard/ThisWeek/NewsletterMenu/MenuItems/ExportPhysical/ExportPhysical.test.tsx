@@ -64,8 +64,6 @@ describe('ExportPhysical', () => {
   });
 
   describe('Exporting Contacts', () => {
-    const { location } = window;
-
     const url = 'someRandomUrlToFile/abc1234';
     const createMock = (format: ExportFormatEnum) => {
       return {
@@ -74,18 +72,6 @@ describe('ExportPhysical', () => {
         },
       };
     };
-
-    beforeAll(() => {
-      // Have to ignore TS complaining about deleting window.location because location is not optional
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      delete window.location;
-      window.location = { ...location, replace: jest.fn() };
-    });
-
-    afterAll(() => {
-      window.location = location;
-    });
 
     it('Exports Contacts and Downloads File - PDF of Mail Merged Labels | Avery5160 and Contact Name', async () => {
       const { getByText, getByTestId } = render(

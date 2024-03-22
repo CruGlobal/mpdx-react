@@ -25,12 +25,12 @@ import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionBu
 import * as Types from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import {
   StyledList,
   StyledListItem,
   StyledServicesButton,
 } from '../integrationsHelper';
+import { useOauthUrl } from '../useOauthUrl';
 import {
   MailchimpAccountDocument,
   MailchimpAccountQuery,
@@ -63,7 +63,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const { apiToken } = useRequiredSession();
+  const { getMailChimpOauthUrl: getOauthUrl } = useOauthUrl();
   const accountListId = useAccountListId();
   const [updateMailchimpAccount] = useUpdateMailchimpAccountMutation();
   const [syncMailchimpAccount] = useSyncMailchimpAccountMutation();
@@ -83,12 +83,6 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
   const mailchimpAccount = data?.mailchimpAccount
     ? data.mailchimpAccount[0]
     : null;
-
-  const oAuth = `${
-    process.env.OAUTH_URL
-  }/auth/user/mailchimp?account_list_id=${accountListId}&redirect_to=${window.encodeURIComponent(
-    `${process.env.SITE_URL}/accountLists/${accountListId}/settings/integrations?selectedTab=mailchimp`,
-  )}&access_token=${apiToken}`;
 
   const MailchimpSchema: yup.SchemaOf<
     Pick<Types.MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
@@ -226,7 +220,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
               },
             )}
           </Typography>
-          <StyledServicesButton variant="contained" href={oAuth}>
+          <StyledServicesButton variant="contained" href={getOauthUrl()}>
             {t('Connect MailChimp')}
           </StyledServicesButton>
         </>
