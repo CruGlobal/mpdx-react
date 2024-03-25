@@ -142,6 +142,7 @@ jobs:
         uses: transferwise/actions-next-bundle-analyzer@4277633c21d084fe92f75bfe8921ddd93d002262
         with:
           # Filename of the workflow this step is defined in
+          base-branch: main
           workflow-id: ci.yml
         env:
           # This secret is automatically injected by GitHub
