@@ -142,7 +142,7 @@ jobs:
       - name: Analyze bundle sizes
         # Fork of transferwise/actions-next-bundle-analyzer to fix the failure because our repo does not have issues enabled
         # We can switch back to using transferwise/actions-next-bundle-analyzer if/when https://github.com/transferwise/actions-next-bundle-analyzer/pull/40 is merged
-        uses: canac/actions-next-bundle-analyzer@disable-issue
+        uses: CruGlobal/actions-next-bundle-analyzer@disable-issue
         with:
           # Filename of the workflow this step is defined in
           base-branch: main
