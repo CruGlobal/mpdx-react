@@ -47,7 +47,7 @@ const Components = ({ children }: PropsWithChildren) => (
 
 const GetOrganizationsMock: Pick<
   Types.Organization,
-  'apiClass' | 'id' | 'name' | 'oauth' | 'giftAidPercentage'
+  'apiClass' | 'id' | 'name' | 'oauth' | 'giftAidPercentage' | 'disableNewUsers'
 >[] = [
   {
     id: 'organizationId',
@@ -55,6 +55,7 @@ const GetOrganizationsMock: Pick<
     apiClass: 'OfflineOrg',
     oauth: false,
     giftAidPercentage: 0,
+    disableNewUsers: false,
   },
   {
     id: 'ministryId',
@@ -62,6 +63,7 @@ const GetOrganizationsMock: Pick<
     apiClass: 'Siebel',
     oauth: false,
     giftAidPercentage: 80,
+    disableNewUsers: false,
   },
   {
     id: 'loginId',
@@ -69,6 +71,7 @@ const GetOrganizationsMock: Pick<
     apiClass: 'DataServer',
     oauth: false,
     giftAidPercentage: 70,
+    disableNewUsers: false,
   },
   {
     id: 'oAuthId',
@@ -76,6 +79,15 @@ const GetOrganizationsMock: Pick<
     apiClass: 'DataServer',
     oauth: true,
     giftAidPercentage: 60,
+    disableNewUsers: false,
+  },
+  {
+    id: 'disableNewUserOrgId',
+    name: 'Not Allowed Org Name',
+    apiClass: 'DataServer',
+    oauth: false,
+    giftAidPercentage: 60,
+    disableNewUsers: true,
   },
 ];
 
@@ -97,8 +109,8 @@ describe('OrganizationAddAccountModal', () => {
     refetchOrganizations.mockClear();
     mocks = { ...standardMocks };
   });
-  it('should render modal', async () => {
-    const { getByText, getByTestId } = render(
+  it('should render modal and not show disabled Orgs', async () => {
+    const { getByText, getByTestId, getByRole, queryByRole } = render(
       <Components>
         <GqlMockedProvider>
           <OrganizationAddAccountModal
@@ -111,6 +123,13 @@ describe('OrganizationAddAccountModal', () => {
     );
 
     expect(getByText('Add Organization Account')).toBeInTheDocument();
+
+    userEvent.click(getByRole('combobox'));
+    await waitFor(() =>
+      expect(
+        queryByRole('option', { name: 'Not Allowed Org Name' }),
+      ).not.toBeInTheDocument(),
+    );
 
     userEvent.click(getByText(/cancel/i));
     expect(handleClose).toHaveBeenCalledTimes(1);
