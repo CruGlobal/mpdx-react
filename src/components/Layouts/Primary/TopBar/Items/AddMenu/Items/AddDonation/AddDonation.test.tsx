@@ -72,6 +72,8 @@ describe('AddDonation', () => {
                       },
                     ],
                   },
+                },
+                GetDesignationAccounts: {
                   designationAccounts: [
                     {
                       designationAccounts: [

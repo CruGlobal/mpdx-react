@@ -8,13 +8,6 @@ query GetDonationModal($accountListId: ID!) {
       id
     }
   }
-  designationAccounts(accountListId: $accountListId) {
-    designationAccounts {
-      id
-      name
-      active
-    }
-  }
 }
 
 mutation AddDonation($accountListId: ID!, $attributes: DonationCreateInput!) {
