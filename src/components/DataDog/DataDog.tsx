@@ -1,23 +1,20 @@
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { setDataDogUser } from 'src/hooks/useDataDog';
-import { useGetUserInfoQuery } from './GetUserInfo.generated';
+import { useUser } from 'src/hooks/useUser';
 
 const DataDog: React.FC = () => {
   const { query } = useRouter();
-  const { data: session } = useSession();
-  const { data, loading } = useGetUserInfoQuery({ skip: !session });
+  const user = useUser();
 
   useEffect(() => {
-    if (!loading && data) {
+    if (user) {
       const accountListId = query?.accountListId
         ? Array.isArray(query.accountListId)
           ? query.accountListId[0]
           : query.accountListId
         : '';
 
-      const { user } = data;
       setDataDogUser({
         userId: user?.id,
         accountListId,
@@ -25,7 +22,7 @@ const DataDog: React.FC = () => {
         email: user?.keyAccounts[0]?.email ?? '',
       });
     }
-  }, [loading, data]);
+  }, [user]);
   return null;
 };
 
