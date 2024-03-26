@@ -15,7 +15,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   ContactFiltersQuery,
-  useContactFiltersQuery,
+  useContactFiltersLazyQuery,
   useContactsQuery,
 } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
@@ -44,6 +44,7 @@ export type ContactsType = {
   toggleSelectAll: () => void;
   toggleSelectionById: (id: string) => void;
   filterData: ContactFiltersQuery | undefined;
+  loadFilters: () => void;
   filtersLoading: boolean;
   toggleFilterPanel: () => void;
   handleClearAll: () => void;
@@ -259,15 +260,17 @@ export const ContactsProvider: React.FC<Props> = ({
     }
   }, [loading, viewMode]);
 
-  const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
-    context: {
-      doNotBatch: true,
-    },
-  });
+  const [loadFilters, { data: filterData, loading: filtersLoading }] =
+    useContactFiltersLazyQuery({
+      variables: { accountListId: accountListId ?? '' },
+      fetchPolicy: 'cache-first',
+      context: {
+        doNotBatch: true,
+      },
+    });
 
   const toggleFilterPanel = () => {
+    loadFilters();
     setFilterPanelOpen(!filterPanelOpen);
   };
 
@@ -402,6 +405,7 @@ export const ContactsProvider: React.FC<Props> = ({
         toggleSelectAll: toggleSelectAll,
         toggleSelectionById: toggleSelectionById,
         filterData: filterData,
+        loadFilters: loadFilters,
         filtersLoading: filtersLoading,
         toggleFilterPanel: toggleFilterPanel,
         handleClearAll: handleClearAll,
