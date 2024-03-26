@@ -40,7 +40,7 @@ const ItemWithBorders = styled(ListItem, {
       }),
 }));
 
-const Item: React.ComponentType<ItemProps> = (props) => (
+const Item: React.ComponentType<ItemProps<any>> = (props) => (
   <ItemWithBorders disableGutters {...props} />
 );
 

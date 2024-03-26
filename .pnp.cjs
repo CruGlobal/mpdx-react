@@ -147,7 +147,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dnd-html5-backend", "npm:14.1.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.18.6"],\
-            ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
+            ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.7.4"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.2"],\
             ["rollbar", "npm:2.25.2"],\
             ["seedrandom", "npm:3.0.5"],\
@@ -14449,38 +14449,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["@virtuoso.dev/react-urx", [\
-        ["npm:0.2.13", {\
-          "packageLocation": "./.yarn/cache/@virtuoso.dev-react-urx-npm-0.2.13-778c2d6bbd-173e91c21f.zip/node_modules/@virtuoso.dev/react-urx/",\
-          "packageDependencies": [\
-            ["@virtuoso.dev/react-urx", "npm:0.2.13"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
-        ["virtual:26177e722f00ca89320a6a83c5a3f74eac9b6514cec04ec85fb7eae618184140929536c639ee96982e91b5b8ad588991cdbd72299e754702c14fefef975f289e#npm:0.2.13", {\
-          "packageLocation": "./.yarn/__virtual__/@virtuoso.dev-react-urx-virtual-a923eb6e20/0/cache/@virtuoso.dev-react-urx-npm-0.2.13-778c2d6bbd-173e91c21f.zip/node_modules/@virtuoso.dev/react-urx/",\
-          "packageDependencies": [\
-            ["@virtuoso.dev/react-urx", "virtual:26177e722f00ca89320a6a83c5a3f74eac9b6514cec04ec85fb7eae618184140929536c639ee96982e91b5b8ad588991cdbd72299e754702c14fefef975f289e#npm:0.2.13"],\
-            ["@types/react", "npm:18.0.21"],\
-            ["@virtuoso.dev/urx", "npm:0.2.13"],\
-            ["react", "npm:18.2.0"]\
-          ],\
-          "packagePeers": [\
-            "@types/react",\
-            "react"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@virtuoso.dev/urx", [\
-        ["npm:0.2.13", {\
-          "packageLocation": "./.yarn/cache/@virtuoso.dev-urx-npm-0.2.13-c1ced89fba-682a99cf40.zip/node_modules/@virtuoso.dev/urx/",\
-          "packageDependencies": [\
-            ["@virtuoso.dev/urx", "npm:0.2.13"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["@webassemblyjs/ast", [\
         ["npm:1.11.1", {\
           "packageLocation": "./.yarn/cache/@webassemblyjs-ast-npm-1.11.1-623d3d973e-1eee1534ad.zip/node_modules/@webassemblyjs/ast/",\
@@ -27358,7 +27326,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dnd-html5-backend", "npm:14.1.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.18.6"],\
-            ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
+            ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.7.4"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.2"],\
             ["rollbar", "npm:2.25.2"],\
             ["seedrandom", "npm:3.0.5"],\
@@ -30557,21 +30525,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["react-virtuoso", [\
-        ["npm:2.19.0", {\
-          "packageLocation": "./.yarn/cache/react-virtuoso-npm-2.19.0-61fadc72f6-146416808b.zip/node_modules/react-virtuoso/",\
+        ["npm:4.7.4", {\
+          "packageLocation": "./.yarn/cache/react-virtuoso-npm-4.7.4-151b27b8cc-e744b56f5d.zip/node_modules/react-virtuoso/",\
           "packageDependencies": [\
-            ["react-virtuoso", "npm:2.19.0"]\
+            ["react-virtuoso", "npm:4.7.4"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0", {\
-          "packageLocation": "./.yarn/__virtual__/react-virtuoso-virtual-26177e722f/0/cache/react-virtuoso-npm-2.19.0-61fadc72f6-146416808b.zip/node_modules/react-virtuoso/",\
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.7.4", {\
+          "packageLocation": "./.yarn/__virtual__/react-virtuoso-virtual-6f36e408b1/0/cache/react-virtuoso-npm-4.7.4-151b27b8cc-e744b56f5d.zip/node_modules/react-virtuoso/",\
           "packageDependencies": [\
-            ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
+            ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.7.4"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/react-dom", null],\
-            ["@virtuoso.dev/react-urx", "virtual:26177e722f00ca89320a6a83c5a3f74eac9b6514cec04ec85fb7eae618184140929536c639ee96982e91b5b8ad588991cdbd72299e754702c14fefef975f289e#npm:0.2.13"],\
-            ["@virtuoso.dev/urx", "npm:0.2.13"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"]\
           ],\

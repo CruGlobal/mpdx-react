@@ -13,6 +13,7 @@ import {
 } from 'src/components/Shared/Header/ListHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactRow } from '../ContactRow/ContactRow';
+import { ContactRowSkeleton } from '../ContactRow/ContactRowSkeleton';
 
 export const ContactsList: React.FC = () => {
   const {
@@ -25,6 +26,7 @@ export const ContactsList: React.FC = () => {
     urlFilters,
     isFiltered,
     setActiveFilters,
+    userOptionsLoading,
   } = React.useContext(ContactsContext) as ContactsType;
 
   const { data, loading, fetchMore } = useContactsQuery({
@@ -41,40 +43,55 @@ export const ContactsList: React.FC = () => {
       },
       first: contactId?.includes('map') ? 20000 : 25,
     },
-    skip: !accountListId,
+    skip: !accountListId || userOptionsLoading,
   });
 
   return (
-    <InfiniteList
-      loading={loading}
-      data={data?.contacts?.nodes ?? []}
-      style={{ height: `calc(100vh - ${navBarHeight} - ${headerHeight})` }}
-      itemContent={(index, contact) => (
-        <ContactRow
-          key={contact.id}
-          contact={contact}
-          useTopMargin={index === 0}
+    <>
+      {userOptionsLoading && (
+        <Box style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {[...Array(10).keys()].map((value) => (
+            <ContactRowSkeleton key={value} />
+          ))}
+        </Box>
+      )}
+      {!userOptionsLoading && (
+        <InfiniteList
+          loading={loading || userOptionsLoading}
+          data={data?.contacts?.nodes ?? []}
+          style={{ height: `calc(100vh - ${navBarHeight} - ${headerHeight})` }}
+          itemContent={
+            loading
+              ? (index) => <ContactRowSkeleton key={index} />
+              : (index, contact) => (
+                  <ContactRow
+                    key={contact.id}
+                    contact={contact}
+                    useTopMargin={index === 0}
+                  />
+                )
+          }
+          groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
+          endReached={() =>
+            data?.contacts?.pageInfo.hasNextPage &&
+            fetchMore({
+              variables: {
+                after: data.contacts?.pageInfo.endCursor,
+              },
+            })
+          }
+          EmptyPlaceholder={
+            <Box width="75%" margin="auto" mt={2}>
+              <NullState
+                page="contact"
+                totalCount={data?.allContacts.totalCount || 0}
+                filtered={isFiltered || !!searchTerm}
+                changeFilters={setActiveFilters}
+              />
+            </Box>
+          }
         />
       )}
-      groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
-      endReached={() =>
-        data?.contacts?.pageInfo.hasNextPage &&
-        fetchMore({
-          variables: {
-            after: data.contacts?.pageInfo.endCursor,
-          },
-        })
-      }
-      EmptyPlaceholder={
-        <Box width="75%" margin="auto" mt={2}>
-          <NullState
-            page="contact"
-            totalCount={data?.allContacts.totalCount || 0}
-            filtered={isFiltered || !!searchTerm}
-            changeFilters={setActiveFilters}
-          />
-        </Box>
-      }
-    />
+    </>
   );
 };

@@ -85,7 +85,7 @@
     "react-dnd-html5-backend": "^14.0.2",
     "react-dom": "^18.2.0",
     "react-i18next": "^11.18.6",
-    "react-virtuoso": "2.19.0",
+    "react-virtuoso": "^4.7.4",
     "recharts": "2.3.2",
     "rollbar": "^2.25.2",
     "seedrandom": "^3.0.5",
