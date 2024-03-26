@@ -57,14 +57,7 @@ export const ContactsContainer: React.FC = ({}) => {
               mainContent={<ContactsMainPanel />}
               rightPanel={
                 <ContactsRightPanel
-                  onClose={() =>
-                    setContactFocus(
-                      undefined,
-                      true,
-                      viewMode === TableViewModeEnum.Flows,
-                      viewMode === TableViewModeEnum.Map,
-                    )
-                  }
+                  onClose={() => setContactFocus(undefined, true)}
                 />
               }
               rightOpen={contactDetailsOpen}

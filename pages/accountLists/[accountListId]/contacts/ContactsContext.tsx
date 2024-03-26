@@ -45,12 +45,7 @@ export type ContactsType = {
   toggleFilterPanel: () => void;
   handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
-  setContactFocus: (
-    id?: string | undefined,
-    openDetails?: boolean,
-    flows?: boolean,
-    map?: boolean,
-  ) => void;
+  setContactFocus: (id?: string | undefined, openDetails?: boolean) => void;
   setSearchTerm: _.DebouncedFunc<(searchTerm: string) => void>;
   handleViewModeChange: (
     event: React.MouseEvent<HTMLElement>,
