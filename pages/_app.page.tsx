@@ -34,8 +34,7 @@ import { AppSettingsProvider } from '../src/components/common/AppSettings/AppSet
 import client from '../src/lib/client';
 import i18n from '../src/lib/i18n';
 import theme from '../src/theme';
-import './helpscout.css';
-import './print.css';
+import './styles.css';
 
 export type PageWithLayout = NextPage & {
   layout?: React.FC;
