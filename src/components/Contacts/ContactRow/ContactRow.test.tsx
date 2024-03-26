@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import theme from 'src/theme';
@@ -152,5 +152,44 @@ describe('ContactsRow', () => {
     const rowButton = getByTestId('rowButton');
     userEvent.click(rowButton);
     // TODO: Find a way to check that click event was pressed.
+  });
+
+  it('should NOT open menu on right-click', () => {
+    const { getByTestId, queryByRole } = render(
+      <TestRouter router={router}>
+        <GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <ContactsPage>
+              <ContactRow contact={contact} />
+            </ContactsPage>
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </TestRouter>,
+    );
+
+    const rowButton = getByTestId('rowButton');
+    expect(queryByRole('menu')).not.toBeInTheDocument();
+    userEvent.click(rowButton);
+    expect(queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('should open menu on right-click', async () => {
+    const { getByTestId, queryByRole, getByRole } = render(
+      <TestRouter router={router}>
+        <GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <ContactsPage>
+              <ContactRow contact={contact} />
+            </ContactsPage>
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </TestRouter>,
+    );
+
+    const rowButton = getByTestId('rowButton');
+    expect(queryByRole('menu')).not.toBeInTheDocument();
+
+    userEvent.click(rowButton, { button: 2 });
+    await waitFor(() => expect(getByRole('menu')).toBeInTheDocument());
   });
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Box,
   ButtonBase,
@@ -15,6 +15,7 @@ import {
   ContactsContext,
   ContactsType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+import { ContactRightClickMenu } from 'src/components/Shared/ContactRightClickMenu/ContactRightClickMenu';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
@@ -27,6 +28,8 @@ interface Props {
 }
 
 export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+  const rightClickRef = useRef(null);
+  const [showMenu, setShowMenu] = useState(false);
   const {
     accountListId,
     isRowChecked: isChecked,
@@ -59,6 +62,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const onClick = () => {
     onContactSelected(contact.id);
   };
+  const handleRightClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    setShowMenu(true);
+  };
 
   const {
     id: contactId,
@@ -75,74 +82,89 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   } = contact;
 
   return (
-    <ListItemButton focusRipple onClick={onClick} data-testid="rowButton">
-      <Hidden xsDown>
-        <ListItemIcon>
-          <StyledCheckbox
-            checked={isChecked(contact.id)}
-            color="secondary"
-            onClick={(event) => event.stopPropagation()}
-            onChange={() => onContactCheckToggle(contact.id)}
-            value={isChecked}
-          />
-        </ListItemIcon>
-      </Hidden>
-      <Grid container alignItems="center">
-        <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
-          <ListItemText
-            primary={
-              <Typography component="span" variant="h6" noWrap>
-                <Box component="span" display="flex" alignItems="center">
-                  {name}
-                  <CelebrationIcons contact={contact} />
-                </Box>
-              </Typography>
-            }
-            secondary={
-              primaryAddress && (
-                <Hidden smDown>
-                  <Typography component="span" variant="body2">
-                    {[
-                      primaryAddress.street,
-                      primaryAddress.city,
-                      primaryAddress.state,
-                      primaryAddress.postalCode,
-                    ].join(', ')}
-                  </Typography>
-                </Hidden>
-              )
-            }
-          />
+    <React.Fragment>
+      <ListItemButton
+        ref={rightClickRef}
+        focusRipple
+        onClick={onClick}
+        data-testid="rowButton"
+        onContextMenu={handleRightClick}
+      >
+        <Hidden xsDown>
+          <ListItemIcon>
+            <StyledCheckbox
+              checked={isChecked(contact.id)}
+              color="secondary"
+              onClick={(event) => event.stopPropagation()}
+              onChange={() => onContactCheckToggle(contact.id)}
+              value={isChecked}
+            />
+          </ListItemIcon>
+        </Hidden>
+        <Grid container alignItems="center">
+          <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
+            <ListItemText
+              primary={
+                <Typography component="span" variant="h6" noWrap>
+                  <Box component="span" display="flex" alignItems="center">
+                    {name}
+                    <CelebrationIcons contact={contact} />
+                  </Box>
+                </Typography>
+              }
+              secondary={
+                primaryAddress && (
+                  <Hidden smDown>
+                    <Typography component="span" variant="body2">
+                      {[
+                        primaryAddress.street,
+                        primaryAddress.city,
+                        primaryAddress.state,
+                        primaryAddress.postalCode,
+                      ].join(', ')}
+                    </Typography>
+                  </Hidden>
+                )
+              }
+            />
+          </Grid>
+          <Grid item xs={2} md={6}>
+            <ContactPartnershipStatus
+              contactDetailsOpen={contactDetailsOpen}
+              lateAt={lateAt}
+              pledgeAmount={pledgeAmount}
+              pledgeCurrency={pledgeCurrency}
+              pledgeFrequency={pledgeFrequency}
+              pledgeReceived={pledgeReceived}
+              status={status}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={2} md={6}>
-          <ContactPartnershipStatus
-            contactDetailsOpen={contactDetailsOpen}
-            lateAt={lateAt}
-            pledgeAmount={pledgeAmount}
-            pledgeCurrency={pledgeCurrency}
-            pledgeFrequency={pledgeFrequency}
-            pledgeReceived={pledgeReceived}
-            status={status}
-          />
-        </Grid>
-      </Grid>
-      <Hidden xsDown>
-        <Box onClick={(event) => event.stopPropagation()}>
-          <ContactUncompletedTasksCount
-            uncompletedTasksCount={uncompletedTasksCount}
-            contactId={contactId}
-          />
-        </Box>
-        <ListItemSecondaryAction
-          style={{ position: 'static', top: 0, transform: 'none' }}
-        >
-          <StarContactIconButton
-            accountListId={accountListId ?? ''}
-            contactId={contactId}
-            isStarred={starred || false}
-          />
-        </ListItemSecondaryAction>
-      </Hidden>
-    </ListItemButton>
+        <Hidden xsDown>
+          <Box onClick={(event) => event.stopPropagation()}>
+            <ContactUncompletedTasksCount
+              uncompletedTasksCount={uncompletedTasksCount}
+              contactId={contactId}
+            />
+          </Box>
+          <ListItemSecondaryAction
+            style={{ position: 'static', top: 0, transform: 'none' }}
+          >
+            <StarContactIconButton
+              accountListId={accountListId ?? ''}
+              contactId={contactId}
+              isStarred={starred || false}
+            />
+          </ListItemSecondaryAction>
+        </Hidden>
+      </ListItemButton>
+
+      <ContactRightClickMenu
+        contactId={contact.id}
+        rightClickRef={rightClickRef}
+        showMenu={showMenu}
+        setShowMenu={setShowMenu}
+      />
+    </React.Fragment>
   );
 };
