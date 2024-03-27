@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -66,12 +66,14 @@ describe('salaryCurrency page', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders contact panel', () => {
+  it('renders contact panel', async () => {
     const { getByRole } = render(
       <TestingComponent routerContactId={'contact-1'} />,
     );
 
-    expect(getByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
+    await waitFor(() =>
+      expect(getByRole('tab', { name: 'Tasks' })).toBeInTheDocument(),
+    );
   });
 
   it('toggles filter panel', async () => {

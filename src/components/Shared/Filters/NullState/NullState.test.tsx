@@ -51,7 +51,7 @@ describe('NullState', () => {
     ).toBeInTheDocument();
     expect(getByTestId('contact-null-state')).toBeInTheDocument();
     userEvent.click(getByText('Add new contact'));
-    expect(getByText('Save')).toBeInTheDocument();
+    await waitFor(() => expect(getByText('Save')).toBeInTheDocument());
   });
 
   it('render text filtered contacts', async () => {
