@@ -50,14 +50,19 @@ const SkeletonItem: React.FC<{ height: number }> = ({ height }) => (
   </ItemWithBorders>
 );
 
-const Loading: React.FC = () => (
+type LoadingProps = {
+  Skeleton: React.FC | null;
+  numberOfSkeletons: number;
+};
+const Loading: React.FC<LoadingProps> = ({ Skeleton, numberOfSkeletons }) => (
   <div aria-busy data-testid="infinite-list-skeleton-loading">
-    <SkeletonItem height={height} />
-    <SkeletonItem height={height} />
-    <SkeletonItem height={height} />
-    <SkeletonItem height={height} />
-    <SkeletonItem height={height} />
-    <SkeletonItem height={height} />
+    {[...Array(numberOfSkeletons).keys()].map((value) => {
+      return Skeleton ? (
+        <Skeleton key={value} />
+      ) : (
+        <SkeletonItem height={height} key={value} />
+      );
+    })}
   </div>
 );
 
@@ -72,6 +77,8 @@ export interface InfiniteListProps<T, C> {
   loading: boolean;
   EmptyPlaceholder?: ReactElement | null;
   itemContent: ItemContent<T, C>;
+  Skeleton?: React.FC | null;
+  numberOfSkeletons?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: any;
   groupBy?: (item: T) => { label: string; order?: number };
@@ -84,6 +91,8 @@ export const InfiniteList = <T, C>({
   context,
   groupBy,
   itemContent,
+  Skeleton = null,
+  numberOfSkeletons = 6,
   ...props
 }: Omit<GroupedVirtuosoProps<T, C>, 'groupCounts' | 'itemContent'> &
   InfiniteListProps<T, C>): ReactElement => {
@@ -95,11 +104,13 @@ export const InfiniteList = <T, C>({
   const commonProps: Omit<VirtuosoProps<T, C>, 'itemContent'> = {
     ...props,
     components: {
-      Footer: loading ? Loading : undefined,
+      Footer: loading
+        ? () => Loading({ Skeleton, numberOfSkeletons })
+        : undefined,
       EmptyPlaceholder: loading ? undefined : () => EmptyPlaceholder,
       List: ListContainer,
       Item,
-      ScrollSeekPlaceholder: SkeletonItem,
+      ScrollSeekPlaceholder: Skeleton ? Skeleton : SkeletonItem,
       ...props.components,
     },
     scrollSeekConfiguration: {
@@ -109,28 +120,33 @@ export const InfiniteList = <T, C>({
     },
   };
 
-  if (groupCounts.length > 0) {
-    return (
-      <GroupedVirtuoso
-        groupCounts={groupCounts}
-        groupContent={(index) => (
-          <GroupLabel variant="h5">{groupLabels[index]}</GroupLabel>
-        )}
-        itemContent={(index) =>
-          items[index] && itemContent(index, items[index], context)
-        }
-        {...commonProps}
-      />
-    );
-  } else {
-    return (
-      <Virtuoso
-        data={items}
-        itemContent={(index) =>
-          items[index] && itemContent(index, items[index], context)
-        }
-        {...commonProps}
-      />
-    );
-  }
+  return (
+    <React.Fragment>
+      {loading && !items.length && (
+        <Loading Skeleton={Skeleton} numberOfSkeletons={numberOfSkeletons} />
+      )}
+
+      {!!!groupCounts.length && (
+        <GroupedVirtuoso
+          groupCounts={groupCounts}
+          groupContent={(index) => (
+            <GroupLabel variant="h5">{groupLabels[index]}</GroupLabel>
+          )}
+          itemContent={(index) =>
+            items[index] && itemContent(index, items[index], context)
+          }
+          {...commonProps}
+        />
+      )}
+      {!!groupCounts.length && (
+        <Virtuoso
+          data={items}
+          itemContent={(index) =>
+            items[index] && itemContent(index, items[index], context)
+          }
+          {...commonProps}
+        />
+      )}
+    </React.Fragment>
+  );
 };

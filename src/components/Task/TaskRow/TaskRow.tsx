@@ -19,14 +19,14 @@ import { DeleteTaskIconButton } from '../../Contacts/ContactDetails/ContactTasks
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskRowFragment } from './TaskRow.generated';
 
-const SubjectWrapOuter = styled(Box)(({ theme }) => ({
+export const SubjectWrapOuter = styled(Box)(({ theme }) => ({
   width: 'fit-content',
   display: 'flex',
   alignItems: 'center',
   marginRight: theme.spacing(1),
 }));
 
-const SubjectWrapInner = styled(Box)(({}) => ({
+export const SubjectWrapInner = styled(Box)(({}) => ({
   display: 'flex',
   '&:hover': {
     textDecoration: 'underline',

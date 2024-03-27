@@ -4,7 +4,7 @@ import { Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
 
-const TaskRowWrap = styled(Button, {
+export const TaskRowWrap = styled(Button, {
   shouldForwardProp: (prop) => prop !== 'small' && prop !== 'detailsPage',
 })<{ small?: boolean; detailsPage?: boolean }>(
   ({ theme, small, detailsPage }) => ({
@@ -20,7 +20,7 @@ const TaskRowWrap = styled(Button, {
   }),
 );
 
-const TaskCommentIcon = styled(ChatBubbleOutline, {
+export const TaskCommentIcon = styled(ChatBubbleOutline, {
   shouldForwardProp: (prop) => prop !== 'small',
 })<{ small?: boolean }>(({ small }) => ({
   color: theme.palette.text.secondary,
