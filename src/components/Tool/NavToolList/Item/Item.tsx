@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
-import { ListItem , ListItemText } from '@mui/material';
+import { ListItem, ListItemText } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../../theme';

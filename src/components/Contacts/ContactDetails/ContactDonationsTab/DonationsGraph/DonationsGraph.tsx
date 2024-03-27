@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Skeleton , Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';

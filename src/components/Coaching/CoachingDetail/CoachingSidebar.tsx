@@ -15,7 +15,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { GetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat , dateFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { CollapsibleEmailList } from '../../Shared/CollapsibleContactInfo/CollapsibleEmailList';
 import { CollapsiblePhoneList } from '../../Shared/CollapsibleContactInfo/CollapsiblePhoneList';

@@ -7,7 +7,9 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
- TextField , Tooltip } from '@mui/material';
+  TextField,
+  Tooltip,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import { ReverseFiltersMap } from './FilterPanel';

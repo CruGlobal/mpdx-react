@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box , IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   ContactFilterSetInput,
