@@ -197,6 +197,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             <Divider />
             <CoachingItemContainer>
               <DonationHistories
+                loading={loading}
                 goal={accountListData?.monthlyGoal ?? undefined}
                 pledged={accountListData?.totalPledges}
                 reportsDonationHistories={
