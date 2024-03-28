@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'jest-fetch-mock';
 import { signOut, useSession } from 'next-auth/react';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import {
@@ -187,16 +188,8 @@ describe('ProfileMenu while Impersonating', () => {
   beforeEach(() => {
     (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
       data: {
-        expires: new Date().toISOString(),
-        user: {
-          name: 'First Last',
-          email: 'first.last@cru.org',
-          apiToken: 'apiToken',
-          userID: 'user-1',
-          admin: false,
-          developer: false,
-          impersonating: true,
-        },
+        ...session,
+        user: { ...session.user, impersonating: true },
       },
       status: 'authenticated',
       update: () => Promise.resolve(null),

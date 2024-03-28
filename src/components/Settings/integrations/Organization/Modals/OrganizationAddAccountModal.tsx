@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import {
   Autocomplete,
   Box,
@@ -25,11 +26,11 @@ import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { articles, showArticle } from 'src/lib/helpScout';
 import theme from 'src/theme';
+import { useOauthUrl } from '../../useOauthUrl';
 import {
   OrganizationTypesEnum,
   getOrganizationType,
 } from '../OrganizationAccordion';
-import { getOauthUrl } from '../OrganizationService';
 import {
   useCreateOrganizationAccountMutation,
   useGetOrganizationsQuery,
@@ -77,10 +78,12 @@ export const OrganizationAddAccountModal: React.FC<
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
+  const client = useApolloClient();
   const [organizationType, setOrganizationType] =
     useState<OrganizationTypesEnum>();
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
   const { data: organizations, loading } = useGetOrganizationsQuery();
+  const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
 
   const onSubmit = async (attributes: Partial<OrganizationFormikSchema>) => {
     if (!attributes?.selectedOrganization) return;
@@ -92,7 +95,7 @@ export const OrganizationAddAccountModal: React.FC<
         t('Redirecting you to complete authentication to connect.'),
         { variant: 'success' },
       );
-      window.location.href = await getOauthUrl(id);
+      window.location.href = getOauthUrl(id);
       return;
     }
 
@@ -281,6 +284,7 @@ export const OrganizationAddAccountModal: React.FC<
                         onClick={() => {
                           signOut({ callbackUrl: 'signOut' }).then(() => {
                             clearDataDogUser();
+                            client.clearStore();
                           });
                         }}
                       >

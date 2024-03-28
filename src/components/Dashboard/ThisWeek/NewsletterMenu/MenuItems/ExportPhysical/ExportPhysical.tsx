@@ -13,13 +13,13 @@ import {
   Select,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from 'src/graphql/types.generated';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useCreateExportedContactsMutation } from './ExportPhysical.generated';
 
 interface Props {
@@ -66,27 +66,14 @@ const ExportPhysical: React.FC<Props> = ({
   accountListId,
 }: Props) => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
   const [isExportingPdf, changeIsExportingPdf] = useState(false);
   const [labelType, changeLabelType] = useState(ExportLabelTypeEnum.Avery5160);
   const [sort, changeSort] = useState(ExportSortEnum.Name);
+  const { apiToken } = useRequiredSession();
 
   const [createExportedContacts] = useCreateExportedContactsMutation();
 
   const handleOnClick = async (format: ExportFormatEnum, mailing = false) => {
-    const fetchApiToken = await fetch(
-      `${process.env.SITE_URL}/api/auth/getTokenForFrontend`,
-    );
-    const apiTokenJson = await fetchApiToken.json();
-    if (!apiTokenJson?.apiToken) {
-      enqueueSnackbar(
-        'Unable to make request due to lack of proof of authenication.',
-        {
-          variant: 'error',
-        },
-      );
-      return;
-    }
     const { data } = await createExportedContacts({
       variables: {
         input: {
@@ -100,7 +87,7 @@ const ExportPhysical: React.FC<Props> = ({
     });
     data?.exportContacts &&
       window.location.replace(
-        `${data.exportContacts}?access_token=${apiTokenJson.apiToken}`,
+        `${data.exportContacts}?access_token=${apiToken}`,
       );
     handleClose();
   };

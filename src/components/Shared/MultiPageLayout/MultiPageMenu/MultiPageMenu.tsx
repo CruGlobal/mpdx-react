@@ -15,9 +15,9 @@ import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal
 import { FilterListItemMultiselect } from 'src/components/Shared/Filters/FilterListItemMultiselect';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { Item } from './Item/Item';
 import { reportNavItems, settingsNavItems } from './MultiPageMenuItems';
-import { useGetUserAccessQuery } from './MultiPageMenuItems.generated';
 
 export enum NavTypeEnum {
   Reports = 'reports',
@@ -66,7 +66,7 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { data: userPrivileges } = useGetUserAccessQuery();
+  const user = useRequiredSession();
   const navItems =
     navType === NavTypeEnum.Reports ? reportNavItems : settingsNavItems;
   const navTitle =
@@ -127,19 +127,19 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
                   if (item?.grantedAccess?.length) {
                     if (
                       item.grantedAccess.indexOf('admin') !== -1 &&
-                      userPrivileges?.user.admin
+                      user.admin
                     ) {
                       return true;
                     }
                     if (
                       item.grantedAccess.indexOf('developer') !== -1 &&
-                      userPrivileges?.user.developer
+                      user.developer
                     ) {
                       return true;
                     }
                   } else return true;
                   return false;
-                }, [item, userPrivileges]);
+                }, [item, user]);
 
                 if (!showItem) return null;
                 return (

@@ -1,6 +1,7 @@
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect } from 'react';
+import { useApolloClient } from '@apollo/client';
 import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -8,6 +9,7 @@ import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { loadSession } from './api/utils/pagePropsHelpers';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
@@ -24,10 +26,12 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
 const LogoutPage = ({}): ReactElement => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
+  const client = useApolloClient();
 
   useEffect(() => {
     signOut({ callbackUrl: 'signOut' }).then(() => {
       clearDataDogUser();
+      client.clearStore();
     });
   }, []);
 
@@ -49,14 +53,13 @@ const LogoutPage = ({}): ReactElement => {
     </>
   );
 };
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   context.res.setHeader(
     'Set-Cookie',
     `mpdx-handoff.logged-in=; path=/; Max-Age=0; domain=${process.env.REWRITE_DOMAIN}`,
   );
-  return {
-    props: {},
-  };
+  return loadSession(context);
 };
 
 export default LogoutPage;

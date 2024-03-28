@@ -14,6 +14,7 @@ interface restExportFields {
 }
 
 export const exportRest = async (
+  apiToken: string,
   accountListId: string,
   ids: string[],
   fileType: 'csv' | 'xlsx' | 'pdf',
@@ -48,21 +49,11 @@ export const exportRest = async (
       fields.attributes.params.sort = sort;
     }
 
-    const fetchApiToken = await fetch(
-      `${process.env.SITE_URL}/api/auth/getTokenForFrontend`,
-    );
-    const data = await fetchApiToken.json();
-    const BearerToken = data?.apiToken ?? '';
-    if (!BearerToken)
-      throw new Error(
-        'Unable to make request due to lack of proof of authenication.',
-      );
-
     return fetch(`${process.env.REST_API_URL}${exportPath}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/vnd.api+json',
-        authorization: `Bearer ${BearerToken}`,
+        authorization: `Bearer ${apiToken}`,
       },
       body: JSON.stringify({
         data: fields,
@@ -71,7 +62,7 @@ export const exportRest = async (
       .then((res) => res.json())
       .then((res) =>
         fetch(
-          `${process.env.REST_API_URL}${exportPath}/${res.data.id}.${fileType}?access_token=${BearerToken}`,
+          `${process.env.REST_API_URL}${exportPath}/${res.data.id}.${fileType}?access_token=${apiToken}`,
           {
             method: 'GET',
             headers: {

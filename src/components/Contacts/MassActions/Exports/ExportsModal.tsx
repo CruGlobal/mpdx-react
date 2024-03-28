@@ -3,6 +3,7 @@ import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import styled from '@mui/system/styled';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import theme from 'src/theme';
 import Modal from '../../../common/Modal/Modal';
 import { exportRest } from './exportRest';
@@ -42,6 +43,7 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
   const [exporting, setExporting] = useState<
     'mail_merge' | 'advanced_csv' | 'advanced_xlsx' | null
   >(null);
+  const { apiToken } = useRequiredSession();
 
   const restHandler = async (fileType: 'csv' | 'xlsx', mailing = false) => {
     try {
@@ -50,7 +52,7 @@ export const ExportsModal: React.FC<ExportsModalProps> = ({
       } else {
         setExporting('advanced_xlsx');
       }
-      await exportRest(accountListId, ids, fileType, mailing);
+      await exportRest(apiToken, accountListId, ids, fileType, mailing);
     } catch (err) {
       const error = (err as Error)?.message ?? JSON.stringify(err);
       enqueueSnackbar(error, {

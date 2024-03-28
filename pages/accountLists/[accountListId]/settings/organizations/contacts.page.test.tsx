@@ -4,6 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
@@ -11,9 +12,8 @@ import theme from 'src/theme';
 import { OrganizationsQuery } from '../organizations.generated';
 import OrganizationsContacts, { getServerSideProps } from './contacts.page';
 
-jest.mock('next-auth/react', () => ({ getSession: jest.fn() }));
 jest.useFakeTimers();
-interface getServerSidePropsReturn {
+interface GetServerSidePropsReturn {
   props: unknown;
   redirect: unknown;
 }
@@ -57,15 +57,17 @@ describe('OrganizationsContacts', () => {
 
   describe('No admin access', () => {
     it('should redirect to dashboard', async () => {
-      (getSession as jest.Mock).mockReturnValue({
+      (getSession as jest.MockedFn<typeof getSession>).mockResolvedValue({
+        ...session,
         user: {
+          ...session.user,
           admin: false,
         },
       });
 
       const { props, redirect } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
@@ -76,21 +78,27 @@ describe('OrganizationsContacts', () => {
   });
 
   describe('Has admin access', () => {
+    const adminSession = {
+      ...session,
+      user: {
+        ...session.user,
+        admin: true,
+      },
+    };
+
     beforeEach(() => {
-      (getSession as jest.Mock).mockReturnValue({
-        user: {
-          admin: true,
-        },
-      });
+      (getSession as jest.MockedFn<typeof getSession>).mockResolvedValue(
+        adminSession,
+      );
     });
 
     it('renders page without redirecting admin', async () => {
       const { props, redirect } = (await getServerSideProps(
         context as GetServerSidePropsContext,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(redirect).toBeUndefined();
-      expect(props).toEqual({});
+      expect(props).toEqual({ session: adminSession });
     });
 
     it('should render skeletons while contacts are loading', async () => {
@@ -129,32 +137,23 @@ describe('OrganizationsContacts', () => {
         name: /filter by organization/i,
       });
 
-      expect(autoCompleteInput).toBeInTheDocument();
       expect(
         queryByRole('textbox', {
           name: /search contacts/i,
         }),
       ).not.toBeInTheDocument();
 
-      await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(3));
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Organizations'),
+      );
 
-      userEvent.type(autoCompleteInput, 'O');
-      jest.advanceTimersByTime(300);
-      userEvent.type(autoCompleteInput, 'r');
-      jest.advanceTimersByTime(300);
-      userEvent.type(autoCompleteInput, 'g');
-      jest.advanceTimersByTime(1000);
-
+      userEvent.type(autoCompleteInput, 'Org');
       expect(getByRole('option', { name: 'Org1' })).toBeInTheDocument();
-      expect(getByRole('option', { name: 'Org2' })).toBeInTheDocument();
-
       userEvent.click(getByRole('option', { name: 'Org2' }));
 
       const accountInput = getByRole('textbox', {
         name: /search contacts/i,
       });
-
-      await waitFor(() => expect(accountInput).toBeInTheDocument());
 
       userEvent.type(accountInput, 'T');
       jest.advanceTimersByTime(300);
@@ -163,17 +162,27 @@ describe('OrganizationsContacts', () => {
       userEvent.type(accountInput, 'st');
       jest.advanceTimersByTime(1000);
 
-      await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(4));
-
-      expect(mutationSpy.mock.calls[3][0].operation.operationName).toEqual(
-        'SearchOrganizationsContacts',
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'SearchOrganizationsContacts',
+          {
+            input: {
+              organizationId: '222',
+              search: 'Test',
+            },
+          },
+        ),
       );
-      expect(mutationSpy.mock.calls[3][0].operation.variables).toEqual({
-        input: {
-          organizationId: '222',
-          search: 'Test',
+
+      // Ensure that debouncing worked and intermediate searches were not performed
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'SearchOrganizationsContacts',
+        {
+          input: {
+            search: 'T',
+          },
         },
-      });
+      );
     });
   });
 });

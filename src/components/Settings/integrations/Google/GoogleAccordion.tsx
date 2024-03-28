@@ -1,19 +1,14 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Alert, Box, Card, IconButton, Typography } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import {
-  IntegrationsContext,
-  IntegrationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import HandoffLink from 'src/components/HandoffLink';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { GoogleAccountAttributes } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import {
@@ -21,6 +16,7 @@ import {
   StyledListItem,
   StyledServicesButton,
 } from '../integrationsHelper';
+import { useOauthUrl } from '../useOauthUrl';
 import { useGoogleAccountsQuery } from './GoogleAccounts.generated';
 import { DeleteGoogleAccountModal } from './Modals/DeleteGoogleAccountModal';
 import { EditGoogleAccountModal } from './Modals/EditGoogleAccountModal';
@@ -81,17 +77,8 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
     skip: !expandedPanel,
   });
   const googleAccounts = data?.googleAccounts;
-  const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
-  const { apiToken } = useContext(
-    IntegrationsContext,
-  ) as IntegrationsContextType;
-
-  const oAuth = `${
-    process.env.OAUTH_URL
-  }/auth/user/google?account_list_id=${accountListId}&redirect_to=${encodeURIComponent(
-    `${process.env.SITE_URL}/accountLists/${accountListId}/settings/integrations?selectedTab=Google`,
-  )}&access_token=${apiToken}`;
+  const { getGoogleOauthUrl: getOauthUrl } = useOauthUrl();
 
   const handleEditAccount = (account) => {
     setSelectedAccount(account);
@@ -194,7 +181,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
                       { appName },
                     )}
                   </Alert>
-                  <StyledServicesButton variant="outlined" href={oAuth}>
+                  <StyledServicesButton variant="outlined" href={getOauthUrl()}>
                     {t('Refresh Google Account')}
                   </StyledServicesButton>
                 </>
@@ -202,7 +189,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
             </Card>
           ))}
         <Box>
-          <StyledServicesButton variant="contained" href={oAuth}>
+          <StyledServicesButton variant="contained" href={getOauthUrl()}>
             {t('Add Account')}
           </StyledServicesButton>
 
@@ -222,7 +209,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
         <EditGoogleAccountModal
           handleClose={() => setOpenEditGoogleAccount(false)}
           account={selectedAccount}
-          oAuth={oAuth}
+          oAuth={getOauthUrl()}
         />
       )}
       {openDeleteGoogleAccount && selectedAccount && (

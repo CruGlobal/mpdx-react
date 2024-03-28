@@ -59,7 +59,7 @@ export const impersonate = async (
       throw new Error('Unauthorized');
     }
 
-    const { apiToken, userID } = jwt as { apiToken: string; userID: string };
+    const { apiToken, userID } = jwt;
 
     if (typeof user !== 'string') {
       status = 400;

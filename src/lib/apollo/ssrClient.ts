@@ -1,40 +1,41 @@
 import {
   ApolloClient,
+  type ApolloLink,
   InMemoryCache,
   NormalizedCacheObject,
-  createHttpLink,
+  from,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import fetch from 'isomorphic-fetch';
 import rollbar, { isRollBarEnabled } from 'pages/api/utils/rollBar';
 import generatedIntrospection from 'src/graphql/possibleTypes.generated';
+import { batchLink, makeAuthLink } from './link';
 
 const serverErrorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors && isRollBarEnabled) {
+  if (graphQLErrors) {
     graphQLErrors.map(({ message, extensions }) => {
       rollbar.error(message, extensions);
     });
   }
 
-  if (networkError && isRollBarEnabled) {
+  if (networkError) {
     rollbar.error(networkError);
   }
 });
 
 const makeSsrClient = (
-  apiToken?: string,
+  apiToken: string | null,
 ): ApolloClient<NormalizedCacheObject> => {
-  const httpLink = createHttpLink({
-    uri: process.env.API_URL,
-    fetch,
-    headers: {
-      Authorization: apiToken ? `Bearer ${apiToken}` : null,
-      Accept: 'application/json',
-    },
-  });
+  const links: ApolloLink[] = [];
+  if (apiToken !== null) {
+    links.push(makeAuthLink(apiToken));
+  }
+  if (isRollBarEnabled) {
+    links.push(serverErrorLink);
+  }
+  links.push(batchLink);
 
   return new ApolloClient({
-    link: serverErrorLink.concat(httpLink),
+    link: from(links),
     ssrMode: true,
     assumeImmutableResults: true,
     cache: new InMemoryCache({

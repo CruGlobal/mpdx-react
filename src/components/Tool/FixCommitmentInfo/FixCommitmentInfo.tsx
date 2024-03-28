@@ -1,4 +1,5 @@
 import React from 'react';
+import { useApolloClient } from '@apollo/client';
 import {
   Box,
   CircularProgress,
@@ -16,7 +17,6 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import client from 'src/lib/client';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { useContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
@@ -73,6 +73,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
+  const client = useApolloClient();
   const { data, loading } = useGetInvalidStatusesQuery({
     variables: { accountListId },
   });

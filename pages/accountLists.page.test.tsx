@@ -1,9 +1,9 @@
 import { GetServerSidePropsContext } from 'next';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import { getToken } from 'next-auth/jwt';
+import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
-import makeSsrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import AccountListsPage, {
@@ -11,8 +11,7 @@ import AccountListsPage, {
   getServerSideProps,
 } from './accountLists.page';
 
-jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
-jest.mock('pages/api/utils/ssrClient', () => jest.fn());
+jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
 interface getServerSidePropsReturn {
   props: AccountListsPageProps;
@@ -28,9 +27,11 @@ describe('Account Lists page', () => {
 
   describe('NextAuth unauthorized', () => {
     it('should redirect to login', async () => {
-      (getToken as jest.Mock).mockReturnValue({
-        apiToken: null,
-        userID: null,
+      (getSession as jest.Mock).mockResolvedValue({
+        user: {
+          apiToken: null,
+          userID: null,
+        },
       });
 
       const { props, redirect } = (await getServerSideProps(
@@ -47,15 +48,17 @@ describe('Account Lists page', () => {
 
   describe('NextAuth authorized', () => {
     beforeEach(() => {
-      (getToken as jest.Mock).mockReturnValue({
-        apiToken: 'apiToken',
-        userID: 'userID',
+      (getSession as jest.Mock).mockResolvedValue({
+        user: {
+          apiToken: 'apiToken',
+          userID: 'userID',
+        },
       });
     });
 
     it('redirects user to their accountList page if only one accountList', async () => {
       (makeSsrClient as jest.Mock).mockReturnValue({
-        query: jest.fn().mockReturnValue({
+        query: jest.fn().mockResolvedValue({
           data: {
             accountLists: { nodes: [{ id: accountListId }] },
           },
@@ -88,7 +91,7 @@ describe('Account Lists page', () => {
       };
 
       (makeSsrClient as jest.Mock).mockReturnValue({
-        query: jest.fn().mockReturnValue({
+        query: jest.fn().mockResolvedValue({
           data: {
             accountLists,
           },

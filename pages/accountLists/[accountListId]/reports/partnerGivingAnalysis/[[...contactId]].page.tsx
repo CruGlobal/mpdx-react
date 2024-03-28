@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
@@ -157,5 +158,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     </>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default PartnerGivingAnalysisReportPage;

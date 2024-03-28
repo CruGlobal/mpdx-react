@@ -38,7 +38,9 @@ const Details: React.FC<DetailsProps> = ({ comment }) => {
   return (
     <Box>
       <CommentInfoText display="inline">
-        {comment.person?.firstName} {comment.person?.lastName}
+        {[comment.person?.firstName, comment.person?.lastName]
+          .filter(Boolean)
+          .join(' ')}
       </CommentInfoText>{' '}
       <Tooltip placement="bottom" title={comment.updatedAt} arrow>
         <CommentInfoText display="inline">

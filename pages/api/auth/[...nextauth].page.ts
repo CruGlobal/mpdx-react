@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import { Provider } from 'next-auth/providers';
 import OktaProvider from 'next-auth/providers/okta';
 import rollbar, { isRollBarEnabled } from 'pages/api/utils/rollBar';
@@ -8,7 +8,7 @@ import {
   GetUserAccessQuery,
   GetUserAccessQueryVariables,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems.generated';
-import makeSsrClient from '../utils/ssrClient';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
   ApiOauthSignInDocument,
   ApiOauthSignInMutation,
@@ -24,17 +24,30 @@ import { setUserInfo } from './setUserInfo';
 declare module 'next-auth' {
   interface Session {
     user: {
+      name: string;
+      email: string;
       admin: boolean;
       developer: boolean;
-      apiToken?: string;
-      userID?: string;
+      apiToken: string;
+      userID: string;
       impersonating?: boolean;
       impersonatorApiToken?: string;
-    } & DefaultSession['user'];
+    };
   }
 
   interface User {
     apiToken?: string;
+    userID?: string;
+    impersonating?: boolean;
+    impersonatorApiToken?: string;
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    admin: boolean;
+    developer: boolean;
+    apiToken: string;
     userID?: string;
     impersonating?: boolean;
     impersonatorApiToken?: string;
@@ -111,8 +124,8 @@ if (AUTH_PROVIDER === 'API_OAUTH') {
     },
     userinfo: {
       async request() {
-        // Our API doesn't use the auth/userInfo endpoint,  but NextAuth requires it to get the access token.
-        // Since we pass the access_token to our API, which returns a JWT, user and authenicates via Graph QL
+        // Our API doesn't use the auth/userInfo endpoint, but NextAuth requires it to get the access token.
+        // Since we pass the access_token to our API, which returns a JWT, user and authenticates via GraphQL
         // We can just return a object with hardcoded info, as it doesn't get used anywhere.
         return {
           sub: '83692',
@@ -149,22 +162,26 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           );
         }
 
-        const handleSettingUserInfo = async (access_token, userId) => {
-          const { user: userInfo, cookies } = await setUserInfo(
+        const handleSettingUserInfo = async (
+          access_token: string,
+          userId: string,
+        ) => {
+          const { user: userInfo, cookies } = setUserInfo(
             access_token,
             userId,
             req.headers?.cookie,
           );
-          user.apiToken = userInfo?.apiToken;
-          user.userID = userInfo?.userID;
-          user.impersonating = userInfo?.impersonating;
-          user.impersonatorApiToken = userInfo?.impersonatorApiToken;
+          user.apiToken = userInfo.apiToken;
+          user.userID = userInfo.userID;
+          user.impersonating = userInfo.impersonating;
+          user.impersonatorApiToken = userInfo.impersonatorApiToken;
           if (cookies) res.setHeader('Set-Cookie', cookies);
         };
 
-        const ssrClient = await makeSsrClient();
+        // An API token is not required for the apiOauthSignIn or oktaSignIn mutations
+        const ssrClient = makeSsrClient(null);
 
-        if (account?.provider === 'apioauth') {
+        if (account.provider === 'apioauth') {
           const { data } = await ssrClient.mutate<
             ApiOauthSignInMutation,
             ApiOauthSignInMutationVariables
@@ -175,14 +192,14 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             },
           });
 
-          if (data?.apiOauthSignIn?.token) {
+          if (data?.apiOauthSignIn?.token && data?.apiOauthSignIn?.user) {
             await handleSettingUserInfo(
               data.apiOauthSignIn.token,
-              data?.apiOauthSignIn?.user?.id,
+              data.apiOauthSignIn.user.id,
             );
             return true;
           }
-          throw new Error('ApiOauthSignIn mutation failed to return a token');
+          throw new Error('apiOauthSignIn mutation failed to return a token');
         }
 
         const { data } = await ssrClient.mutate<
@@ -194,17 +211,18 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             accessToken: access_token,
           },
         });
-        if (data?.oktaSignIn?.token) {
+        if (data?.oktaSignIn?.token && data?.oktaSignIn?.user) {
           await handleSettingUserInfo(
             data.oktaSignIn.token,
-            data?.oktaSignIn?.user?.id,
+            data.oktaSignIn.user.id,
           );
           return true;
         }
         throw new Error('oktaSignIn mutation failed to return a token');
       },
       jwt: async ({ token, user }) => {
-        if (user) {
+        // Despite the type being User | AdapterUser, user is undefined during the "update" trigger
+        if (user?.apiToken) {
           const ssrClient = makeSsrClient(user.apiToken);
           const { data } = await ssrClient.query<
             GetUserAccessQuery,
@@ -227,15 +245,17 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         }
       },
       session: ({ session, token }) => {
-        const { admin, developer, userID, impersonating } = token;
+        const { admin, developer, apiToken, userID, impersonating } = token;
+
         return {
           ...session,
           user: {
             ...session.user,
-            admin: admin as boolean,
-            developer: developer as boolean,
-            userID: userID as string,
-            impersonating: impersonating as boolean,
+            admin,
+            developer,
+            apiToken,
+            userID,
+            impersonating,
           },
         };
       },

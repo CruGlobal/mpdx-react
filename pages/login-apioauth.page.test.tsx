@@ -61,7 +61,7 @@ describe('Login - API_OAUTH', () => {
   process.env.API_OAUTH_VISIBLE_NAME = 'Third-party oAuth';
 
   it('should pass down props and render login', async () => {
-    (getSession as jest.Mock).mockReturnValue(null);
+    (getSession as jest.Mock).mockResolvedValue(null);
     const { props, redirect } = (await getServerSideProps(
       context,
     )) as getServerSidePropsReturn;

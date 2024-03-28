@@ -11,7 +11,6 @@ import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/Con
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { useUser } from 'src/hooks/useUser';
 import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalForm from './TaskModalForm';
@@ -285,19 +284,6 @@ describe('TaskModalForm', () => {
     const onClose = jest.fn();
     const mutationSpy = jest.fn();
 
-    // Wait for the user to load before rendering the modal
-    const TestComponent: React.FC = () => {
-      const user = useUser();
-
-      return user ? (
-        <TaskModalForm
-          accountListId={accountListId}
-          onClose={onClose}
-          task={mockTask}
-        />
-      ) : null;
-    };
-
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
@@ -323,7 +309,11 @@ describe('TaskModalForm', () => {
             }}
             onCall={mutationSpy}
           >
-            <TestComponent />
+            <TaskModalForm
+              accountListId={accountListId}
+              onClose={onClose}
+              task={mockTask}
+            />
           </GqlMockedProvider>
         </SnackbarProvider>
       </LocalizationProvider>,
