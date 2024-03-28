@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   ListHeader,
   TableViewModeEnum,
@@ -47,7 +46,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
   const {
     accountListId,
     sanitizedFilters,
-    contactId,
+    contactsQueryResult,
     toggleFilterPanel,
     toggleSelectAll,
     setSearchTerm,
@@ -58,27 +57,9 @@ export const ContactsMainPanelHeader: React.FC = () => {
     filterPanelOpen,
     contactDetailsOpen,
     viewMode,
-    urlFilters,
     handleViewModeChange,
     selectedIds,
   } = React.useContext(ContactsContext) as ContactsType;
-
-  const { data } = useContactsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-      contactsFilters: {
-        ...sanitizedFilters,
-        wildcardSearch: searchTerm as string,
-        ...starredFilter,
-        ids:
-          viewMode === TableViewModeEnum.Map && urlFilters
-            ? urlFilters.ids
-            : [],
-      },
-      first: contactId?.includes('map') ? 20000 : 25,
-    },
-    skip: !accountListId,
-  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
@@ -92,7 +73,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
       contactsView={viewMode}
       onSearchTermChanged={setSearchTerm}
       searchTerm={searchTerm}
-      totalItems={data?.contacts?.totalCount}
+      totalItems={contactsQueryResult.data?.contacts.totalCount}
       starredFilter={starredFilter}
       toggleStarredFilter={setStarredFilter}
       headerCheckboxState={selectionType}
