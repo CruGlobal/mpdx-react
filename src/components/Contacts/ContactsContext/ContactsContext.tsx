@@ -1,4 +1,4 @@
-import { NextRouter, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -37,8 +37,7 @@ export type ContactsType = {
   accountListId: string | undefined;
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
-  loading: boolean;
-  router: NextRouter;
+  contactsQueryResult: ReturnType<typeof useContactsQuery>;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
@@ -179,7 +178,7 @@ export const ContactsProvider: React.FC<Props> = ({
     [sanitizedFilters, starredFilter, searchTerm],
   );
 
-  const { data, loading, fetchMore } = useContactsQuery({
+  const contactsQueryResult = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters,
@@ -187,6 +186,7 @@ export const ContactsProvider: React.FC<Props> = ({
     },
     skip: !accountListId,
   });
+  const { data, loading, fetchMore } = contactsQueryResult;
 
   //#region Mass Actions
 
@@ -212,7 +212,7 @@ export const ContactsProvider: React.FC<Props> = ({
     toggleSelectionById,
     deselectAll,
   } = useMassSelection(
-    data?.contacts?.totalCount ?? 0,
+    contactCount,
     allContactIds,
     activeFilters,
     searchTerm as string,
@@ -395,8 +395,7 @@ export const ContactsProvider: React.FC<Props> = ({
         accountListId: accountListId ?? '',
         contactId: contactId,
         searchTerm: searchTerm,
-        loading: loading,
-        router: router,
+        contactsQueryResult: contactsQueryResult,
         selectionType: selectionType,
         isRowChecked: isRowChecked,
         toggleSelectAll: toggleSelectAll,

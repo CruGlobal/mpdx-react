@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -107,7 +108,8 @@ export const ContactDetailsMoreAcitions: React.FC<
 > = ({ contactId, status, onClose }) => {
   const { openTaskModal } = useTaskModal();
   const { t } = useTranslation();
-  const { accountListId, searchTerm, router } = React.useContext(
+  const { query, push } = useRouter();
+  const { accountListId, searchTerm } = React.useContext(
     ContactsContext,
   ) as ContactsType;
 
@@ -126,7 +128,6 @@ export const ContactDetailsMoreAcitions: React.FC<
 
   const [openHideModal, setOpenHideModal] = useState(false);
   const [updateHiding, setUpdateHiding] = useState(false);
-  const { query, push } = router;
   const { contactId: _, ...queryWithoutContactId } = query;
   const hideContact = async (): Promise<void> => {
     setUpdateHiding(true);
