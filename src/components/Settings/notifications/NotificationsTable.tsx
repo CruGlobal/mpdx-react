@@ -89,7 +89,6 @@ export const NotificationsTable: React.FC = () => {
       variables: {
         accountListId: accountListId ?? '',
       },
-      fetchPolicy: 'cache-and-network',
     });
   const { data: notificationTypes } = useNotificationTypesQuery({
     fetchPolicy: 'cache-first',
