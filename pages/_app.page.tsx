@@ -132,6 +132,11 @@ const App = ({
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <link rel="manifest" href="/manifest.json" />
         <link
+          rel="preconnect"
+          href={process.env.API_URL}
+          crossOrigin="anonymous"
+        />
+        <link
           href={process.env.NEXT_PUBLIC_MEDIA_FAVICON}
           rel="icon"
           type="image/png"
