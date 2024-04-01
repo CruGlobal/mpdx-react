@@ -13,7 +13,7 @@ import {
 } from 'src/components/Shared/Header/ListHeader';
 import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactRow } from '../ContactRow/ContactRow';
-import { ContactRowSkeleton } from '../ContactRow/ContactRowSkeleton';
+import { ContactRowSkeleton } from '../ContactRow/ContactRow.skeleton';
 
 export const ContactsList: React.FC = () => {
   const {

@@ -12,6 +12,7 @@ import { ContactsProvider } from 'src/components/Contacts/ContactsContext/Contac
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
+import { FilterPanelSkeleton } from 'src/components/Shared/Filters/FilterPanel.skeleton';
 import { TaskRowSkeleton } from 'src/components/Task/TaskRow/TaskRowSkeleton.skeleton.';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
@@ -38,7 +39,7 @@ import {
 } from '../../../../src/utils/tasks/taskFilterTabs';
 import {
   TaskFiltersQuery,
-  useTaskFiltersQuery,
+  useTaskFiltersLazyQuery,
   useTasksQuery,
 } from './Tasks.generated';
 
@@ -197,18 +198,23 @@ const TasksPage: React.FC = () => {
     }
   }, [sanitizedFilters, isReady]);
 
-  const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
-    variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
-  });
+  const [loadFilters, { data: filterData, loading: filtersLoading }] =
+    useTaskFiltersLazyQuery({
+      variables: { accountListId: accountListId ?? '' },
+    });
 
   const isFiltered = Object.keys(sanitizedFilters).length > 0;
 
   const toggleFilterPanel = () => {
+    if (accountListId && !filterData) {
+      loadFilters();
+    }
     setFilterPanelOpen(!filterPanelOpen);
   };
 
   const savedFilters = tasksSavedFilters(filterData, accountListId);
+
+  const loadingTaskFilterGroups = [t('Saved Filters'), t('Action')];
   //#endregion
 
   //#region Mass Actions
@@ -322,7 +328,12 @@ const TasksPage: React.FC = () => {
                     onClose={toggleFilterPanel}
                     onSelectedFiltersChanged={setActiveFilters}
                   />
-                ) : undefined
+                ) : (
+                  <FilterPanelSkeleton
+                    filterGroups={loadingTaskFilterGroups}
+                    onClose={toggleFilterPanel}
+                  />
+                )
               }
               leftOpen={filterPanelOpen}
               leftWidth="290px"

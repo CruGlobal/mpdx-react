@@ -108,13 +108,13 @@ const ReverseFiltersOptions = {
 };
 export const ReverseFiltersMap = new Map(Object.entries(ReverseFiltersOptions));
 
-const FilterHeader = styled(Box)(({ theme }) => ({
+export const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   borderBottom: '1px solid',
   borderBottomColor: theme.palette.grey[200],
 }));
 
-const FilterList = styled(List)(({ theme }) => ({
+export const FilterList = styled(List)(({ theme }) => ({
   '& .MuiListItemIcon-root': {
     minWidth: '37px',
   },
@@ -123,7 +123,7 @@ const FilterList = styled(List)(({ theme }) => ({
   },
 }));
 
-const LinkButton = styled(Button)(({ theme }) => ({
+export const LinkButton = styled(Button)(({ theme }) => ({
   minWidth: 0,
   textTransform: 'none',
   fontSize: 16,
