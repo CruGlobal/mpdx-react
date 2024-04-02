@@ -5,7 +5,7 @@ import {
   ContactsContext,
   ContactsType,
 } from '../ContactsContext/ContactsContext';
-import { ContactsMapPanel } from '../ContactsMap/ContactsMapPanel';
+import { DynamicContactsMapPanel } from '../ContactsMap/DynamicContactsMapPanel';
 
 export const ContactsLeftPanel: React.FC = () => {
   const {
@@ -23,7 +23,7 @@ export const ContactsLeftPanel: React.FC = () => {
   } = React.useContext(ContactsContext) as ContactsType;
 
   return viewMode === TableViewModeEnum.Map ? (
-    <ContactsMapPanel
+    <DynamicContactsMapPanel
       data={mapData}
       panTo={panTo}
       selected={selected}
