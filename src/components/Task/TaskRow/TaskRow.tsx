@@ -96,7 +96,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     marginTop: useTopMargin ? '20px' : '0',
   }));
 
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
   const onClick = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     contactId: string,
@@ -176,6 +176,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             <TaskCompleteButton
               isComplete={isComplete}
               onClick={handleCompleteButtonPressed}
+              onMouseEnter={() => preloadTaskModal('complete')}
             />
           </Box>
 
@@ -195,6 +196,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                   handleSubjectPressed();
                   e.stopPropagation();
                 }}
+                onMouseEnter={() => preloadTaskModal('edit')}
               >
                 <TaskType>
                   {activityType ? getLocalizedTaskType(t, activityType) : ''}
@@ -243,6 +245,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 isComplete={isComplete}
                 numberOfComments={comments?.totalCount}
                 onClick={handleCommentButtonPressed}
+                onMouseEnter={() => preloadTaskModal('comments')}
               />
             </Box>
           </Hidden>
@@ -254,6 +257,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                   isComplete={isComplete}
                   numberOfComments={comments?.totalCount}
                   onClick={handleCommentButtonPressed}
+                  onMouseEnter={() => preloadTaskModal('comments')}
                   small
                 />
               </Box>

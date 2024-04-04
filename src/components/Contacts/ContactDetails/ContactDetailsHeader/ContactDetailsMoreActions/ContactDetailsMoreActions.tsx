@@ -18,7 +18,10 @@ import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
-import { DynamicCreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
+import {
+  DynamicCreateMultipleContacts,
+  preloadCreateMultipleContacts,
+} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import Modal from '../../../../common/Modal/Modal';
@@ -28,8 +31,14 @@ import {
 } from '../../ContactDetailContext';
 import { useDeleteContactMutation } from '../../ContactDetailsTab/ContactDetailsTab.generated';
 import { useUpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
-import { DeleteContactModal } from '../DeleteContactModal/DeleteContactModal';
-import { MoreActionHideContactModal } from './MoreActionHideContactModal';
+import {
+  DynamicDeleteContactModal,
+  preloadDeleteContactModal,
+} from '../DeleteContactModal/DynamicDeleteContactModal';
+import {
+  DynamicMoreActionHideContactModal,
+  preloadMoreActionHideContactModal,
+} from './DynamicMoreActionHideContactModal';
 
 type AddMenuItem = {
   visibility: boolean;
@@ -37,6 +46,7 @@ type AddMenuItem = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
   onClick: () => void;
+  onMouseEnter: () => void;
 };
 
 const MoreButtonIcon = styled(MoreVert)(({ theme }) => ({
@@ -87,8 +97,13 @@ const ActionPanel = ({
     <Box display="flex" flexDirection="column" justifyContent="center">
       {actionContent
         .filter((i: AddMenuItem) => i.visibility)
-        .map(({ text, icon, onClick }, index) => (
-          <RowContainer key={index} display="flex" onClick={onClick}>
+        .map(({ text, icon, onClick, onMouseEnter }, index) => (
+          <RowContainer
+            key={index}
+            display="flex"
+            onClick={onClick}
+            onMouseEnter={onMouseEnter}
+          >
             {icon}
             <MenuItemText primary={t(`${text}`)} />
           </RowContainer>
@@ -106,7 +121,7 @@ interface ContactDetailsMoreAcitionsProps {
 export const ContactDetailsMoreAcitions: React.FC<
   ContactDetailsMoreAcitionsProps
 > = ({ contactId, status, onClose }) => {
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { t } = useTranslation();
   const { query, push } = useRouter();
   const { accountListId, searchTerm } = React.useContext(
@@ -207,6 +222,7 @@ export const ContactDetailsMoreAcitions: React.FC<
         setReferralsModalOpen(true);
         setAnchorEl(undefined);
       },
+      onMouseEnter: preloadCreateMultipleContacts,
     },
     {
       visibility: true,
@@ -219,6 +235,7 @@ export const ContactDetailsMoreAcitions: React.FC<
         });
         setAnchorEl(undefined);
       },
+      onMouseEnter: () => preloadTaskModal('add'),
     },
     {
       visibility: true,
@@ -231,6 +248,7 @@ export const ContactDetailsMoreAcitions: React.FC<
         });
         setAnchorEl(undefined);
       },
+      onMouseEnter: () => preloadTaskModal('log'),
     },
     {
       visibility: status !== StatusEnum.NeverAsk,
@@ -240,6 +258,7 @@ export const ContactDetailsMoreAcitions: React.FC<
         setOpenHideModal(true);
         setAnchorEl(undefined);
       },
+      onMouseEnter: preloadMoreActionHideContactModal,
     },
     {
       visibility: true,
@@ -249,6 +268,7 @@ export const ContactDetailsMoreAcitions: React.FC<
         setDeleteModalOpen(true);
         setAnchorEl(undefined);
       },
+      onMouseEnter: preloadDeleteContactModal,
     },
   ];
 
@@ -290,18 +310,22 @@ export const ContactDetailsMoreAcitions: React.FC<
           referredById={contactId}
         />
       </Modal>
-      <DeleteContactModal
-        open={deleteModalOpen}
-        setOpen={setDeleteModalOpen}
-        deleting={deleting}
-        deleteContact={handleDeleteContact}
-      />
-      <MoreActionHideContactModal
-        open={openHideModal}
-        setOpen={setOpenHideModal}
-        hiding={updateHiding}
-        hideContact={hideContact}
-      />
+      {deleteModalOpen && (
+        <DynamicDeleteContactModal
+          open
+          setOpen={setDeleteModalOpen}
+          deleting={deleting}
+          deleteContact={handleDeleteContact}
+        />
+      )}
+      {openHideModal && (
+        <DynamicMoreActionHideContactModal
+          open
+          setOpen={setOpenHideModal}
+          hiding={updateHiding}
+          hideContact={hideContact}
+        />
+      )}
     </>
   );
 };

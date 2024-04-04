@@ -16,7 +16,10 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { DynamicCreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
+import {
+  DynamicCreateMultipleContacts,
+  preloadCreateMultipleContacts,
+} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import Modal from 'src/components/common/Modal/Modal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
@@ -99,7 +102,10 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
       ) : (
         <>
           <Box width="100%" mb={2} justifyContent="end" display="flex">
-            <AddButton onClick={handleModalOpen}>
+            <AddButton
+              onClick={handleModalOpen}
+              onMouseEnter={preloadCreateMultipleContacts}
+            >
               <Add />
               {t('Add Referrals')}
             </AddButton>

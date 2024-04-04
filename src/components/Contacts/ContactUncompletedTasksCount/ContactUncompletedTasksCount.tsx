@@ -21,7 +21,7 @@ export const ContactUncompletedTasksCount: React.FC<
   ContactUncompletedTasksCountProps
 > = ({ uncompletedTasksCount, contactId }) => {
   const { t } = useTranslation();
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   return (
     <Box display="flex" alignItems="center" px={5}>
@@ -35,6 +35,7 @@ export const ContactUncompletedTasksCount: React.FC<
             },
           })
         }
+        onMouseEnter={() => preloadTaskModal('log')}
       />
       <Box ml={2}>
         <Typography

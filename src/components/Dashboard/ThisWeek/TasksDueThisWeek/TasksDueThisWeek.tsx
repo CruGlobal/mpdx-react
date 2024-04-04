@@ -77,7 +77,7 @@ const TasksDueThisWeek = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const locale = useLocale();
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { data } = useLoadConstantsQuery();
   const [activityTypes, setActivityTypes] = React.useState(
     data?.constant.activities,
@@ -156,6 +156,7 @@ const TasksDueThisWeek = ({
                     button
                     data-testid={`TasksDueThisWeekListItem-${task.id}`}
                     onClick={(): void => handleClick(task)}
+                    onMouseEnter={() => preloadTaskModal('edit')}
                   >
                     <ListItemText
                       disableTypography={true}

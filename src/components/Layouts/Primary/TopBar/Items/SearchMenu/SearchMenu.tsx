@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DynamicSearchDialog } from './DynamicSearchDialog';
+import {
+  DynamicSearchDialog,
+  preloadSearchDialog,
+} from './DynamicSearchDialog';
 
 const SearchButton = styled(IconButton)(() => ({
   textTransform: 'none',
@@ -22,6 +25,7 @@ const SearchMenu: React.FC = () => {
         aria-controls="search-menu"
         aria-haspopup="true"
         onClick={() => setOpen(true)}
+        onMouseEnter={preloadSearchDialog}
       >
         <SearchIcon />
       </SearchButton>

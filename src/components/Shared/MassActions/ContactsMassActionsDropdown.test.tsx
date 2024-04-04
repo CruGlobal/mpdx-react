@@ -57,6 +57,7 @@ describe('ContactsMassActionsDropdown', () => {
   beforeEach(() => {
     (useTaskModal as jest.Mock).mockReturnValue({
       openTaskModal,
+      preloadTaskModal: jest.fn(),
     });
     (useAccountListId as jest.Mock).mockReturnValue('123456789');
 

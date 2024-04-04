@@ -23,6 +23,7 @@ describe('AddMenu', () => {
   beforeEach(() => {
     (useTaskModal as jest.Mock).mockReturnValue({
       openTaskModal,
+      preloadTaskModal: jest.fn(),
     });
   });
 

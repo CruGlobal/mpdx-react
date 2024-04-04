@@ -96,7 +96,7 @@ const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
   const { query, push, replace, isReady, pathname } = useRouter();
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { appName } = useGetAppSettings();
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
@@ -347,6 +347,7 @@ const TasksPage: React.FC = () => {
                       <Hidden xsDown>
                         <TaskHeaderButton
                           onClick={() => openTaskModal({ view: 'add' })}
+                          onMouseEnter={() => preloadTaskModal('add')}
                           variant="text"
                           startIcon={<TaskAddIcon />}
                         >
@@ -355,6 +356,7 @@ const TasksPage: React.FC = () => {
                         </TaskHeaderButton>
                         <TaskHeaderButton
                           onClick={() => openTaskModal({ view: 'log' })}
+                          onMouseEnter={() => preloadTaskModal('log')}
                           variant="text"
                           startIcon={<TaskCheckIcon />}
                         >

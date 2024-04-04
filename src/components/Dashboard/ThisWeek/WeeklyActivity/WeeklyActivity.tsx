@@ -25,7 +25,10 @@ import { useLocale } from 'src/hooks/useLocale';
 import { numberFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
-import { DynamicWeeklyReportModal } from './WeeklyReportModal/DynamicWeeklyReportModal';
+import {
+  DynamicWeeklyReportModal,
+  preloadWeeklyReportModal,
+} from './WeeklyReportModal/DynamicWeeklyReportModal';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -256,7 +259,12 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
               {t('View Activity Detail')}
             </Button>
           </Link>
-          <Button size="small" color="primary" onClick={onWeeklyReportOpen}>
+          <Button
+            size="small"
+            color="primary"
+            onClick={onWeeklyReportOpen}
+            onMouseEnter={preloadWeeklyReportModal}
+          >
             {t('Fill out weekly report')}
           </Button>
           {openWeeklyReportModal && (
