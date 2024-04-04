@@ -14612,7 +14612,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["form-data-encoder", "npm:1.7.2"],\
             ["formdata-node", "npm:4.3.3"],\
             ["node-fetch", "virtual:e414995db9c779306e687c7a7c66965e66d0cd7270f6b9fc4f00cc9772c5d50b305ab83e142e0e21dbf10968f7437cbdfcb170d05f4bde68707ac7d0082c9cca#npm:2.6.7"],\
-            ["undici", "npm:5.28.3"],\
+            ["undici", "npm:5.28.4"],\
             ["web-streams-polyfill", "npm:3.2.1"]\
           ],\
           "linkType": "HARD"\
@@ -14627,7 +14627,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["form-data-encoder", "npm:1.7.2"],\
             ["formdata-node", "npm:4.3.3"],\
             ["node-fetch", "virtual:e414995db9c779306e687c7a7c66965e66d0cd7270f6b9fc4f00cc9772c5d50b305ab83e142e0e21dbf10968f7437cbdfcb170d05f4bde68707ac7d0082c9cca#npm:2.6.7"],\
-            ["undici", "npm:5.28.3"],\
+            ["undici", "npm:5.28.4"],\
             ["web-streams-polyfill", "npm:3.2.1"]\
           ],\
           "linkType": "HARD"\
@@ -33805,10 +33805,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["undici", [\
-        ["npm:5.28.3", {\
-          "packageLocation": "./.yarn/cache/undici-npm-5.28.3-fb5b0fbd18-fa1e65aff8.zip/node_modules/undici/",\
+        ["npm:5.28.4", {\
+          "packageLocation": "./.yarn/cache/undici-npm-5.28.4-63fa65e206-a8193132d8.zip/node_modules/undici/",\
           "packageDependencies": [\
-            ["undici", "npm:5.28.3"],\
+            ["undici", "npm:5.28.4"],\
             ["@fastify/busboy", "npm:2.1.0"]\
           ],\
           "linkType": "HARD"\
