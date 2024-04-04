@@ -13,7 +13,10 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { DynamicEditDonationModal } from 'src/components/EditDonationModal/DynamicEditDonationModal';
+import {
+  DynamicEditDonationModal,
+  preloadEditDonationModal,
+} from 'src/components/EditDonationModal/DynamicEditDonationModal';
 import { EditDonationModalDonationFragment } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { useGetAccountListCurrencyQuery } from 'src/components/Reports/DonationsReport/GetDonationsTable.generated';
 import { useLocale } from 'src/hooks/useLocale';
@@ -120,6 +123,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                       onClick={() => {
                         setEditingDonation(donation);
                       }}
+                      onMouseEnter={preloadEditDonationModal}
                     >
                       <EditIcon data-testid={`edit-${donation.id}`} />
                     </IconButton>

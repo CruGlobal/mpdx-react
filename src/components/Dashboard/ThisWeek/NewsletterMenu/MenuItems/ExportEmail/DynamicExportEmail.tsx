@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic';
 import { DynamicModalPlaceholder } from 'src/components/DynamicPlaceholders/DynamicModalPlaceholder';
 
-export const preloadLogNewsletter = () =>
-  import(/* webpackChunkName: "LogNewsletter" */ './LogNewsletter');
+export const preloadExportEmail = () =>
+  import(/* webpackChunkName: "ExportEmail" */ './ExportEmail');
 
-export const DynamicLogNewsletter = dynamic(preloadLogNewsletter, {
+export const DynamicExportEmail = dynamic(preloadExportEmail, {
   loading: DynamicModalPlaceholder,
 });

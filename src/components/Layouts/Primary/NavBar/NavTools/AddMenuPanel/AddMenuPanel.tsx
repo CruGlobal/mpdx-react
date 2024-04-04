@@ -12,6 +12,9 @@ import {
   renderDialog,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { preloadAddDonation } from '../../../TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
+import { preloadCreateContact } from '../../../TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
+import { preloadCreateMultipleContacts } from '../../../TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { LeafButton, LeafListItem, Title } from '../../StyledComponents';
 
 type MenuContent = {
@@ -19,12 +22,13 @@ type MenuContent = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
   onClick: () => void;
+  onMouseEnter: () => void;
 };
 
 export const AddMenuPanel = (): ReactElement => {
   const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
   const [dialogOpen, changeDialogOpen] = useState(false);
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -36,6 +40,7 @@ export const AddMenuPanel = (): ReactElement => {
         changeSelectedMenuItem(AddMenuItemsEnum.NEW_CONTACT);
         changeDialogOpen(true);
       },
+      onMouseEnter: preloadCreateContact,
     },
     {
       text: 'Add Multiple Contacts',
@@ -44,6 +49,7 @@ export const AddMenuPanel = (): ReactElement => {
         changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);
         changeDialogOpen(true);
       },
+      onMouseEnter: preloadCreateMultipleContacts,
     },
     {
       text: 'Add Donation',
@@ -52,6 +58,7 @@ export const AddMenuPanel = (): ReactElement => {
         changeSelectedMenuItem(AddMenuItemsEnum.ADD_DONATION);
         changeDialogOpen(true);
       },
+      onMouseEnter: preloadAddDonation,
     },
     {
       text: 'Add Task',
@@ -59,12 +66,15 @@ export const AddMenuPanel = (): ReactElement => {
       onClick: () => {
         openTaskModal({ view: 'add' });
       },
+      onMouseEnter: () => preloadTaskModal('add'),
     },
     {
       text: 'Log Task',
       icon: EditIcon,
-      // eslint-disable-next-line no-console
-      onClick: () => console.log('log task'),
+      onClick: () => {
+        openTaskModal({ view: 'log' });
+      },
+      onMouseEnter: () => preloadTaskModal('log'),
     },
   ];
 
@@ -78,14 +88,21 @@ export const AddMenuPanel = (): ReactElement => {
   return (
     <>
       <List disablePadding data-testid="AddMenuPanelForNavBar">
-        {addMenuContent.map(({ text, icon: Icon, onClick }, index) => (
-          <LeafListItem key={index} disableGutters onClick={onClick}>
-            <LeafButton style={style}>
-              <Icon size={18} style={iconStyle} />
-              <Title>{t(text)}</Title>
-            </LeafButton>
-          </LeafListItem>
-        ))}
+        {addMenuContent.map(
+          ({ text, icon: Icon, onClick, onMouseEnter }, index) => (
+            <LeafListItem
+              key={index}
+              disableGutters
+              onClick={onClick}
+              onMouseEnter={onMouseEnter}
+            >
+              <LeafButton style={style}>
+                <Icon size={18} style={iconStyle} />
+                <Title>{t(text)}</Title>
+              </LeafButton>
+            </LeafListItem>
+          ),
+        )}
       </List>
       {renderDialog(selectedMenuItem, dialogOpen, changeDialogOpen)}
     </>

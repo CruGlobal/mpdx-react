@@ -15,10 +15,22 @@ import {
   ContactDetailsType,
 } from './ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
-import { DynamicContactDetailsTab } from './ContactDetailsTab/DynamicContactDetailsTab';
-import { DynamicContactDonationsTab } from './ContactDonationsTab/DynamicContactDonationsTab';
-import { DynamicContactNotesTab } from './ContactNotesTab/DynamicContactNotesTab';
-import { DynamicContactReferralTab } from './ContactReferralTab/DynamicContactReferralTab';
+import {
+  DynamicContactDetailsTab,
+  preloadContactDetailsTab,
+} from './ContactDetailsTab/DynamicContactDetailsTab';
+import {
+  DynamicContactDonationsTab,
+  preloadContactDonationsTab,
+} from './ContactDonationsTab/DynamicContactDonationsTab';
+import {
+  DynamicContactNotesTab,
+  preloadContactNotesTab,
+} from './ContactNotesTab/DynamicContactNotesTab';
+import {
+  DynamicContactReferralTab,
+  preloadContactReferralTab,
+} from './ContactReferralTab/DynamicContactReferralTab';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 
 interface Props {
@@ -103,13 +115,26 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
             TabIndicatorProps={{ children: <span /> }}
           >
             <ContactTab value={TabKey.Tasks} label={t('Tasks')} />
-            <ContactTab value={TabKey.Donations} label={t('Donations')} />
-            <ContactTab value={TabKey.Referrals} label={t('Referrals')} />
+            <ContactTab
+              value={TabKey.Donations}
+              label={t('Donations')}
+              onMouseEnter={preloadContactDonationsTab}
+            />
+            <ContactTab
+              value={TabKey.Referrals}
+              label={t('Referrals')}
+              onMouseEnter={preloadContactReferralTab}
+            />
             <ContactTab
               value={TabKey.ContactDetails}
               label={t('Contact Details')}
+              onMouseEnter={preloadContactDetailsTab}
             />
-            <ContactTab value={TabKey.Notes} label={t('Notes')} />
+            <ContactTab
+              value={TabKey.Notes}
+              label={t('Notes')}
+              onMouseEnter={preloadContactNotesTab}
+            />
           </ContactTabs>
         </ContactTabsWrapper>
         <TabPanelNoBottomPadding value={TabKey.Tasks}>

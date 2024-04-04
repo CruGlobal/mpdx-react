@@ -143,7 +143,7 @@ const PartnerCare = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const [value, setValue] = useState(0);
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const handleClick = ({
     id: taskId,
@@ -467,6 +467,7 @@ const PartnerCare = ({
                                 person,
                               )
                             }
+                            onMouseEnter={() => preloadTaskModal('add')}
                           >
                             <Brightness1Outlined name="Circle Icon" />
                             <AddHoverIcon name="Add Icon" />

@@ -102,7 +102,7 @@ const CompleteButton = ({
   taskId: string;
   title?: string;
 }): ReactElement => {
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -111,7 +111,10 @@ const CompleteButton = ({
     event.stopPropagation();
   };
   return (
-    <TaskCompleteButton onClick={handleClick}>
+    <TaskCompleteButton
+      onClick={handleClick}
+      onMouseEnter={() => preloadTaskModal('complete')}
+    >
       <Check titleAccess={title ?? 'Check Icon'} />
     </TaskCompleteButton>
   );

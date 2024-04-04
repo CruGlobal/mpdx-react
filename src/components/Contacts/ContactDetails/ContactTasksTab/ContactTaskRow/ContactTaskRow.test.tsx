@@ -26,6 +26,7 @@ const onTaskCheckToggle = jest.fn();
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+    preloadTaskModal: jest.fn(),
   });
 });
 

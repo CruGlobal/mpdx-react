@@ -41,6 +41,7 @@ const openTaskModal = jest.fn();
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+    preloadTaskModal: jest.fn(),
   });
 });
 
@@ -142,7 +143,7 @@ describe('ContactDetailsMoreActions', () => {
   });
 
   it('handles hiding contact', async () => {
-    const { queryByText, getByRole, getByText } = render(
+    const { queryByText, getByRole, getByText, findByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
@@ -179,7 +180,7 @@ describe('ContactDetailsMoreActions', () => {
     );
     expect(getByText('Hide Contact')).toBeInTheDocument();
     userEvent.click(getByText('Hide Contact'));
-    userEvent.click(getByText('Hide'));
+    userEvent.click(await findByText('Hide'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contact hidden successfully!', {
         variant: 'success',
@@ -233,6 +234,7 @@ describe('ContactDetailsMoreActions', () => {
       getByLabelText,
       getByText,
       getByRole,
+      findByText,
     } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
@@ -259,7 +261,7 @@ describe('ContactDetailsMoreActions', () => {
     expect(getByText('Delete Contact')).toBeInTheDocument();
     expect(queryByText('Cancel')).not.toBeInTheDocument();
     userEvent.click(queryAllByText('Delete Contact')[0]);
-    expect(getByText('Cancel')).toBeInTheDocument();
+    expect(await findByText('Cancel')).toBeInTheDocument();
     userEvent.click(getByLabelText('Close'));
     await waitFor(() => expect(queryByText('Cancel')).not.toBeInTheDocument());
   });

@@ -4,21 +4,48 @@ import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { DynamicMassActionsAddTagsModal } from 'src/components/Contacts/MassActions/AddTags/DynamicMassActionsAddTagsModal';
-import { DynamicMassActionsAddToAppealModal } from 'src/components/Contacts/MassActions/AddToAppeal/DynamicMassActionsAddToAppealModal';
-import { DynamicMassActionsCreateAppealModal } from 'src/components/Contacts/MassActions/AddToAppeal/DynamicMassActionsCreateAppealModal';
-import { DynamicMassActionsEditFieldsModal } from 'src/components/Contacts/MassActions/EditFields/DynamicMassActionsEditFieldsModal';
-import { DynamicExportsModal } from 'src/components/Contacts/MassActions/Exports/DynamicExportsModal';
-import { DynamicMassActionsExportEmailsModal } from 'src/components/Contacts/MassActions/Exports/Emails/DynamicMassActionsExportEmailsModal';
+import {
+  DynamicMassActionsAddTagsModal,
+  preloadMassActionsAddTagsModal,
+} from 'src/components/Contacts/MassActions/AddTags/DynamicMassActionsAddTagsModal';
+import {
+  DynamicMassActionsAddToAppealModal,
+  preloadMassActionsAddToAppealModal,
+} from 'src/components/Contacts/MassActions/AddToAppeal/DynamicMassActionsAddToAppealModal';
+import {
+  DynamicMassActionsCreateAppealModal,
+  preloadMassActionsCreateAppealModal,
+} from 'src/components/Contacts/MassActions/AddToAppeal/DynamicMassActionsCreateAppealModal';
+import {
+  DynamicMassActionsEditFieldsModal,
+  preloadMassActionsEditFieldsModal,
+} from 'src/components/Contacts/MassActions/EditFields/DynamicMassActionsEditFieldsModal';
+import {
+  DynamicExportsModal,
+  preloadExportsModal,
+} from 'src/components/Contacts/MassActions/Exports/DynamicExportsModal';
+import {
+  DynamicMassActionsExportEmailsModal,
+  preloadMassActionsExportEmailsModal,
+} from 'src/components/Contacts/MassActions/Exports/Emails/DynamicMassActionsExportEmailsModal';
 import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/DynamicMailMergedLabelModal';
 import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
-import { DynamicMassActionsMergeModal } from 'src/components/Contacts/MassActions/Merge/DynamicMassActionsMergeModal';
-import { DynamicMassActionsRemoveTagsModal } from 'src/components/Contacts/MassActions/RemoveTags/DynamicMassActionsRemoveTagsModal';
+import {
+  DynamicMassActionsMergeModal,
+  preloadMassActionsMergeModal,
+} from 'src/components/Contacts/MassActions/Merge/DynamicMassActionsMergeModal';
+import {
+  DynamicMassActionsRemoveTagsModal,
+  preloadMassActionsRemoveTagsModal,
+} from 'src/components/Contacts/MassActions/RemoveTags/DynamicMassActionsRemoveTagsModal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { TableViewModeEnum } from '../Header/ListHeader';
-import { DynamicHideContactsModal } from '../HideContactsModal/DynamicHideContactsModal';
+import {
+  DynamicHideContactsModal,
+  preloadHideContactsModal,
+} from '../HideContactsModal/DynamicHideContactsModal';
 import { MassActionsDropdown } from './MassActionsDropdown';
 
 interface ContactsMassActionsDropdownProps {
@@ -52,7 +79,7 @@ export const ContactsMassActionsDropdown: React.FC<
     setAnchorEl(null);
   };
 
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const [openRemoveTagsModal, setOpenRemoveTagsModal] = useState(false);
   const [openAddTagsModal, setOpenAddTagsModal] = useState(false);
@@ -121,6 +148,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     setExportsModalOpen(true);
                     handleClose();
                   }}
+                  onMouseEnter={preloadExportsModal}
                 >
                   <ListItemText>{t('Export')}</ListItemText>
                 </MenuItem>
@@ -139,6 +167,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     }
                     handleClose();
                   }}
+                  onMouseEnter={preloadMassActionsMergeModal}
                 >
                   <ListItemText>{t('Merge')}</ListItemText>
                 </MenuItem>
@@ -147,6 +176,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     setOpenAddTagsModal(true);
                     handleClose();
                   }}
+                  onMouseEnter={preloadMassActionsAddTagsModal}
                 >
                   <ListItemText>{t('Add Tags')}</ListItemText>
                 </MenuItem>
@@ -156,6 +186,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     setOpenRemoveTagsModal(true);
                     handleClose();
                   }}
+                  onMouseEnter={preloadMassActionsRemoveTagsModal}
                 >
                   <ListItemText>{t('Remove Tags')}</ListItemText>
                 </MenuItem>
@@ -167,6 +198,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     });
                     handleClose();
                   }}
+                  onMouseEnter={() => preloadTaskModal('add')}
                 >
                   <ListItemText>{t('Add Task')}</ListItemText>
                 </MenuItem>
@@ -179,6 +211,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     });
                     handleClose();
                   }}
+                  onMouseEnter={() => preloadTaskModal('log')}
                 >
                   <ListItemText>{t('Log Task')}</ListItemText>
                 </MenuItem>
@@ -188,6 +221,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     setEditFieldsModalOpen(true);
                     handleClose();
                   }}
+                  onMouseEnter={preloadMassActionsEditFieldsModal}
                 >
                   <ListItemText>{t('Edit Fields')}</ListItemText>
                 </MenuItem>
@@ -196,6 +230,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     setHideContactsModalOpen(true);
                     handleClose();
                   }}
+                  onMouseEnter={preloadHideContactsModal}
                 >
                   <ListItemText>{t('Hide Contacts')}</ListItemText>
                 </MenuItem>
@@ -205,6 +240,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     setAddToAppealModalOpen(true);
                     handleClose();
                   }}
+                  onMouseEnter={preloadMassActionsAddToAppealModal}
                 >
                   <ListItemText>{t('Add to Appeal')}</ListItemText>
                 </MenuItem>
@@ -214,6 +250,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     setCreateAppealModalOpen(true);
                     handleClose();
                   }}
+                  onMouseEnter={preloadMassActionsCreateAppealModal}
                 >
                   <ListItemText>{t('Add to New Appeal')}</ListItemText>
                 </MenuItem>
@@ -223,6 +260,7 @@ export const ContactsMassActionsDropdown: React.FC<
                     setExportEmailsModalOpen(true);
                     handleClose();
                   }}
+                  onMouseEnter={preloadMassActionsExportEmailsModal}
                 >
                   <ListItemText>{t('Export Emails')}</ListItemText>
                 </MenuItem>
