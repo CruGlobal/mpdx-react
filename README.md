@@ -688,3 +688,11 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Troubleshooting
+
+If you run into issues with the Typescript linter saying that `types.generated` cannot be found, try running this command to clear out stale generated files:
+
+```bash
+find . -type f -name "*.generated.ts" -delete && yarn gql
+```
