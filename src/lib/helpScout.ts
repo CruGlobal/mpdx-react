@@ -80,6 +80,9 @@ const suggestions = {
   get HS_SETTINGS_SERVICES_SUGGESTIONS() {
     return process.env.HS_SETTINGS_SERVICES_SUGGESTIONS;
   },
+  get HS_SETTINGS_PREFERENCES_SUGGESTIONS() {
+    return process.env.HS_SETTINGS_PREFERENCES_SUGGESTIONS;
+  },
 };
 
 export const articles = {

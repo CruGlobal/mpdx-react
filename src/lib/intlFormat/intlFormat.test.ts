@@ -2,7 +2,8 @@ import { DateTime } from 'luxon';
 import {
   dateFormat,
   dateFormatWithoutYear,
-  getDateFormatPattern,
+  dateFromParts,
+  dateTimeFormat,
   monthYearFormat,
 } from './intlFormat';
 import {
@@ -18,16 +19,6 @@ describe('intlFormat', () => {
   beforeEach(() => {
     languageMock = jest.spyOn(window.navigator, 'language', 'get');
     languageMock.mockReturnValue(undefined);
-  });
-
-  describe('getDateFormatPattern', () => {
-    it('is M/d/yyyy for English', () => {
-      expect(getDateFormatPattern('en-US')).toBe('M/d/yyyy');
-    });
-
-    it('is d/M/yyyy for Spanish', () => {
-      expect(getDateFormatPattern('es')).toBe('d/M/yyyy');
-    });
   });
 
   describe('numberFormat', () => {
@@ -174,6 +165,45 @@ describe('intlFormat', () => {
           dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'es-419'),
         ).toEqual('5 ene');
       });
+    });
+  });
+
+  describe('dateFromParts', () => {
+    const locale = 'en-US';
+    it('returns formatted date with year, month and day', () => {
+      const date = dateFromParts(2005, 5, 6, locale);
+
+      expect(date).toBe('May 6, 2005');
+    });
+
+    it('returns month day format if year is null', () => {
+      const date = dateFromParts(null, 5, 6, locale);
+
+      expect(date).toBe('May 6');
+    });
+
+    it('returns null if month is null', () => {
+      const date = dateFromParts(null, null, 6, locale);
+
+      expect(date).toBeNull();
+    });
+  });
+  //this test often fails locally. It passes on github.
+  describe('dateTimeFormat', () => {
+    const locale = 'en-US';
+    it('returns formatted date with year, month, day, time and timezone', () => {
+      const date = dateTimeFormat(
+        DateTime.local(2024, 1, 16, 18, 34, 12),
+        locale,
+      );
+
+      expect(date.trim()).toBe('Jan 16, 2024, 6:34\u202fPM UTC');
+    });
+
+    it('returns null if month is null', () => {
+      const date = dateTimeFormat(null, locale);
+
+      expect(date).toBe('');
     });
   });
 });

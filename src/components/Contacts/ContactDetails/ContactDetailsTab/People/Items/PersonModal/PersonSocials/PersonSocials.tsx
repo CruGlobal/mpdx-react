@@ -105,7 +105,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                       destroyed={account.destroy ?? false}
                       labelId="social-type-label"
                       value={'facebook'}
-                      disabled={!!account.destroy}
+                      disabled
                       fullWidth
                       readOnly
                     >
@@ -162,7 +162,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                       destroyed={account.destroy ?? false}
                       labelId="social-type-label"
                       value={'twitter'}
-                      disabled={!!account.destroy}
+                      disabled
                       fullWidth
                       readOnly
                     >
@@ -219,7 +219,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                       destroyed={account.destroy ?? false}
                       labelId="social-type-label"
                       value={'linkedin'}
-                      disabled={!!account.destroy}
+                      disabled
                       fullWidth
                       readOnly
                     >
@@ -282,7 +282,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         destroyed={account.destroy ?? false}
                         labelId="social-type-label"
                         value={'website'}
-                        disabled={!!account.destroy}
+                        disabled
                         fullWidth
                         readOnly
                       >

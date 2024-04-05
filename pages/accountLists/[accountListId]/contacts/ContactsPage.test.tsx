@@ -4,6 +4,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import {
   filterPanelDefaultMock,
@@ -33,22 +34,18 @@ jest.mock('notistack', () => ({
   },
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const useRouter = jest.spyOn(require('next/router'), 'useRouter');
-
 describe('Contacts', () => {
   it('opens and selects a saved filter X2', async () => {
     const routeReplace = jest.fn();
-    const routePush = jest.fn();
-    useRouter.mockReturnValue({
-      route: '/contacts',
+    const router = {
+      pathname: '/contacts',
       query: {
         accountListId: 'account-list-1',
         filters: '%7B%22status%22:%5B%22ASK_IN_FUTURE%22%5D%7D',
       },
       replace: routeReplace,
-      push: routePush,
-    });
+      isReady: true,
+    };
 
     const {
       getByTestId,
@@ -59,17 +56,19 @@ describe('Contacts', () => {
     } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <ContactsPage>
-              <FilterPanel
-                filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-                savedFilters={[savedFiltersMock]}
-                selectedFilters={{}}
-                onClose={onClose}
-                onSelectedFiltersChanged={onSelectedFiltersChanged}
-              />
-            </ContactsPage>
-          </GqlMockedProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <ContactsPage>
+                <FilterPanel
+                  filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+                  savedFilters={[savedFiltersMock]}
+                  selectedFilters={{}}
+                  onClose={onClose}
+                  onSelectedFiltersChanged={onSelectedFiltersChanged}
+                />
+              </ContactsPage>
+            </GqlMockedProvider>
+          </TestRouter>
         </ThemeProvider>
       </LocalizationProvider>,
     );
@@ -114,16 +113,15 @@ describe('Contacts', () => {
 
   it('tags any/all toggle does not update the URL if no tags are selected', () => {
     const routeReplace = jest.fn();
-    const routePush = jest.fn();
-    useRouter.mockReturnValue({
-      route: '/contacts',
+    const router = {
+      pathname: '/contacts',
       query: {
         accountListId: 'account-list-1',
         filters: '%7B%7D',
       },
       replace: routeReplace,
-      push: routePush,
-    });
+      isReady: true,
+    };
 
     const ComponentWrapper: React.FC = () => {
       const { activeFilters, setActiveFilters } = useContext(
@@ -143,13 +141,15 @@ describe('Contacts', () => {
 
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider>
-            <ContactsPage>
-              <ComponentWrapper />
-            </ContactsPage>
-          </GqlMockedProvider>
-        </ThemeProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <ContactsPage>
+                <ComponentWrapper />
+              </ContactsPage>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
       </LocalizationProvider>,
     );
 
@@ -161,13 +161,13 @@ describe('Contacts', () => {
 
     userEvent.click(getByRole('button', { name: 'Any' }));
     expect(routeReplace).toHaveBeenLastCalledWith({
-      pathname: undefined,
+      pathname: '/contacts',
       query: { accountListId: 'account-list-1' },
     });
 
     userEvent.click(getByRole('button', { name: 'Tag 1' }));
     expect(routeReplace).toHaveBeenLastCalledWith({
-      pathname: undefined,
+      pathname: '/contacts',
       query: {
         accountListId: 'account-list-1',
         filters: '%7B%22tags%22:%5B%22Tag%201%22%5D,%22anyTags%22:true%7D',
@@ -176,7 +176,7 @@ describe('Contacts', () => {
 
     userEvent.click(getByRole('button', { name: 'All' }));
     expect(routeReplace).toHaveBeenLastCalledWith({
-      pathname: undefined,
+      pathname: '/contacts',
       query: {
         accountListId: 'account-list-1',
         filters: '%7B%22tags%22:%5B%22Tag%201%22%5D%7D',

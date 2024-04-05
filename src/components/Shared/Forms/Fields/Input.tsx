@@ -1,17 +1,18 @@
 import React from 'react';
 import { TextField, TextFieldProps } from '@mui/material';
 
-export interface InputProps {
-  children?: TextFieldProps['children'];
-  disabled?: TextFieldProps['disabled'];
-  error?: TextFieldProps['error'];
-  fullWidth?: TextFieldProps['fullWidth'];
-  helperText?: TextFieldProps['helperText'];
-  label?: TextFieldProps['label'];
-  required?: TextFieldProps['required'];
-  select?: TextFieldProps['select'];
-  value?: TextFieldProps['value'];
-}
+export type InputProps = Pick<
+  TextFieldProps,
+  | 'children'
+  | 'disabled'
+  | 'error'
+  | 'fullWidth'
+  | 'helperText'
+  | 'label'
+  | 'required'
+  | 'select'
+  | 'value'
+>;
 
 export const Input: React.FC<InputProps> = ({
   children,

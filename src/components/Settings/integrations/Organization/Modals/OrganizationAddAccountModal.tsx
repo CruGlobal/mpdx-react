@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import {
   Autocomplete,
   Box,
@@ -25,11 +26,11 @@ import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { articles, showArticle } from 'src/lib/helpScout';
 import theme from 'src/theme';
+import { useOauthUrl } from '../../useOauthUrl';
 import {
   OrganizationTypesEnum,
   getOrganizationType,
 } from '../OrganizationAccordion';
-import { getOauthUrl } from '../OrganizationService';
 import {
   useCreateOrganizationAccountMutation,
   useGetOrganizationsQuery,
@@ -44,7 +45,12 @@ interface OrganizationAddAccountModalProps {
 export type OrganizationFormikSchema = {
   selectedOrganization: Pick<
     Organization,
-    'id' | 'name' | 'oauth' | 'apiClass' | 'giftAidPercentage'
+    | 'id'
+    | 'name'
+    | 'oauth'
+    | 'apiClass'
+    | 'giftAidPercentage'
+    | 'disableNewUsers'
   >;
   username: string | undefined;
   password: string | undefined;
@@ -72,10 +78,12 @@ export const OrganizationAddAccountModal: React.FC<
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
+  const client = useApolloClient();
   const [organizationType, setOrganizationType] =
     useState<OrganizationTypesEnum>();
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
   const { data: organizations, loading } = useGetOrganizationsQuery();
+  const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
 
   const onSubmit = async (attributes: Partial<OrganizationFormikSchema>) => {
     if (!attributes?.selectedOrganization) return;
@@ -87,7 +95,7 @@ export const OrganizationAddAccountModal: React.FC<
         t('Redirecting you to complete authentication to connect.'),
         { variant: 'success' },
       );
-      window.location.href = await getOauthUrl(id);
+      window.location.href = getOauthUrl(id);
       return;
     }
 
@@ -145,6 +153,7 @@ export const OrganizationAddAccountModal: React.FC<
           name: yup.string().required(),
           oauth: yup.boolean().required(),
           giftAidPercentage: yup.number().nullable(),
+          disableNewUsers: yup.boolean(),
         })
         .required(),
       username: yup
@@ -200,7 +209,6 @@ export const OrganizationAddAccountModal: React.FC<
           <form onSubmit={handleSubmit}>
             <StyledBox>
               <Autocomplete
-                autoSelect
                 disabled={isSubmitting}
                 autoHighlight
                 loading={loading}
@@ -212,8 +220,8 @@ export const OrganizationAddAccountModal: React.FC<
                   setFieldValue('selectedOrganization', value);
                 }}
                 options={
-                  organizations?.organizations?.map(
-                    (organization) => organization,
+                  organizations?.organizations?.filter(
+                    (organization) => !organization?.disableNewUsers,
                   ) || []
                 }
                 getOptionLabel={(option) =>
@@ -221,7 +229,6 @@ export const OrganizationAddAccountModal: React.FC<
                     ({ id }) => String(id) === String(option.id),
                   )?.name ?? ''
                 }
-                filterSelectedOptions
                 fullWidth
                 renderInput={(params) => (
                   <TextField
@@ -277,6 +284,7 @@ export const OrganizationAddAccountModal: React.FC<
                         onClick={() => {
                           signOut({ callbackUrl: 'signOut' }).then(() => {
                             clearDataDogUser();
+                            client.clearStore();
                           });
                         }}
                       >

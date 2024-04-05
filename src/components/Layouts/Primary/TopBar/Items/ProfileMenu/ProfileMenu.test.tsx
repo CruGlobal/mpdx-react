@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'jest-fetch-mock';
 import { signOut, useSession } from 'next-auth/react';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '../../../../../../../__tests__/util/TestRouter';
 import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
 import {
@@ -15,25 +16,6 @@ import {
   getTopBarMockWithMultipleAccountLists,
 } from '../../TopBar.mock';
 import ProfileMenu from './ProfileMenu';
-
-const session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    email: 'Chair Library Bed',
-    image: null,
-    name: 'Dung Tapestry',
-    token: 'superLongJwtString',
-    impersonating: false,
-  },
-};
-
-jest.mock('next-auth/react', () => {
-  return {
-    signOut: jest.fn().mockImplementation(() => Promise.resolve()),
-    getSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
-    useSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
-  };
-});
 
 const mockEnqueue = jest.fn();
 
@@ -204,12 +186,13 @@ describe('ProfileMenu while Impersonating', () => {
   });
 
   beforeEach(() => {
-    session.user.impersonating = true;
-    (useSession as jest.Mock).mockReturnValue({
+    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
       data: {
         ...session,
+        user: { ...session.user, impersonating: true },
       },
       status: 'authenticated',
+      update: () => Promise.resolve(null),
     });
   });
 
@@ -258,3 +241,24 @@ describe('ProfileMenu while Impersonating', () => {
     );
   });
 });
+//eslint-disable-next-line jest/no-commented-out-tests
+// Add this back in after it goes live
+// it('should use defaultAccountList if accountListId does not exist', async () => {
+//   const { getByTestId, queryByTestId, getByRole } = render(
+//     <ThemeProvider theme={theme}>
+//       <TestWrapper mocks={[getTopBarNoAccountListMock()]}>
+//         <TestRouter router={routerNoAccountListId}>
+//           <ProfileMenu />
+//         </TestRouter>
+//       </TestWrapper>
+//     </ThemeProvider>,
+//   );
+//   expect(queryByTestId('accountListName')).not.toBeInTheDocument();
+//   userEvent.click(getByTestId('profileMenuButton'));
+//   await waitFor(() =>
+//     expect(getByRole('menuitem', { name: 'Preferences' })).toHaveAttribute(
+//       'href',
+//       '/accountLists/12345/settings/preferences',
+//     ),
+//   );
+// });

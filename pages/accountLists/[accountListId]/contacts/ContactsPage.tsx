@@ -11,7 +11,7 @@ interface Props {
 }
 export const ContactsPage: React.FC<Props> = ({ children }) => {
   const router = useRouter();
-  const { query, replace, pathname } = router;
+  const { query, replace, pathname, isReady } = router;
 
   const urlFilters =
     query?.filters && JSON.parse(decodeURI(query.filters as string));
@@ -29,6 +29,10 @@ export const ContactsPage: React.FC<Props> = ({ children }) => {
   const { contactId, searchTerm } = query;
 
   useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
     const { filters: _, ...oldQuery } = query;
     replace({
       pathname,
@@ -39,7 +43,7 @@ export const ContactsPage: React.FC<Props> = ({ children }) => {
           : undefined),
       },
     });
-  }, [sanitizedFilters]);
+  }, [sanitizedFilters, isReady]);
 
   useEffect(() => {
     suggestArticles(

@@ -4,7 +4,6 @@ import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
 import {
@@ -18,7 +17,6 @@ const accountListId = 'account-list-1';
 const organizationId = 'organizationId';
 const organizationName = 'organizationName';
 const contactId = 'contact-1';
-const apiToken = 'apiToken';
 const router = {
   query: { accountListId, contactId: [contactId] },
   isReady: true,
@@ -39,11 +37,7 @@ jest.mock('notistack', () => ({
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>
-        <IntegrationsContextProvider apiToken={apiToken}>
-          {children}
-        </IntegrationsContextProvider>
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </TestRouter>
   </SnackbarProvider>
 );

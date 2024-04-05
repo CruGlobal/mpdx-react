@@ -9,7 +9,4 @@ query Organizations {
       ...SettingsOrganization
     }
   }
-  user {
-    id
-  }
 }

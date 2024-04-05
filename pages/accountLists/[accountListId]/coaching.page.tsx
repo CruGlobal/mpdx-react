@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { CoachingList } from 'src/components/Coaching/CoachingList';
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -26,5 +27,7 @@ const CoachingPage: React.FC = () => {
     </>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default CoachingPage;

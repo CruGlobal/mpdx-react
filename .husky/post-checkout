@@ -1,14 +1,8 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
-digest='graphql-digest.txt'
-if [ -e $digest ]; then
-  previous_hash=`cat $digest`
-  current_hash=`cat $(find . -type f -name "*.graphql") | openssl dgst -sha256`
-  if [ "$previous_hash" != "$current_hash" ]; then
-    # Only update the hash if the gql codegen succeeded
-    yarn gql && yarn gql:server && echo $current_hash > $digest
-  fi
-else
-  current_hash=`cat $(find . -type f -name "*.graphql") | openssl dgst -sha256`
-  yarn gql && yarn gql:server && echo $current_hash > $digest
+digest_file='src/graphql/graphql-digest.txt'
+current_hash=`cat $(find . -type f -name "*.graphql") | openssl dgst -sha256`
+if [ ! -e $digest_file ] || [ `cat $digest_file` != "$current_hash" ]; then
+  # Only update the hash if the gql codegen succeeded
+  yarn gql && echo $current_hash > $digest_file
 fi

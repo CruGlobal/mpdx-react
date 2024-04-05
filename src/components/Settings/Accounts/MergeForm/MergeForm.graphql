@@ -1,0 +1,25 @@
+query GetAccountListsForMerging {
+  accountLists(first: 50) {
+    nodes {
+      id
+      name
+      currency
+    }
+  }
+}
+
+query AccountList($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    name
+  }
+}
+
+mutation MergeAccountList($input: AccountListMergeMutationInput!) {
+  mergeAccountList(input: $input) {
+    accountList {
+      id
+      name
+    }
+  }
+}

@@ -73,6 +73,7 @@ export const completeSimpleTaskMutationMock = (
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.Completed,
+    nextAction: null,
   };
   const data: CompleteTaskMutation = {
     updateTask: {
@@ -133,7 +134,7 @@ export const addTaskMutationMock = (
       comment: {
         id: 'comment-1',
         body: 'Comment',
-        updatedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+        updatedAt: DateTime.local(2015, 1, 5, 1, 2).toISO() ?? '',
         me: true,
         person: {
           id: 'person-1',

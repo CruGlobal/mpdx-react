@@ -2,10 +2,8 @@ import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import * as Types from 'src/graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
@@ -19,19 +17,9 @@ jest.mock('next-auth/react');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
-const apiToken = 'apiToken';
 const router = {
   query: { accountListId, contactId: [contactId] },
   isReady: true,
-};
-const session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    email: 'Chair Library Bed',
-    image: null,
-    name: 'Dung Tapestry',
-    token: 'superLongJwtString',
-  },
 };
 
 const mockEnqueue = jest.fn();
@@ -51,11 +39,7 @@ const handleClose = jest.fn();
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>
-        <IntegrationsContextProvider apiToken={apiToken}>
-          {children}
-        </IntegrationsContextProvider>
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </TestRouter>
   </SnackbarProvider>
 );
@@ -102,7 +86,6 @@ const standardGoogleIntegration: Pick<
 const oAuth = `https://auth.mpdx.org/urlpath/to/authenicate`;
 describe('EditGoogleAccountModal', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  (getSession as jest.Mock).mockResolvedValue(session);
   let googleIntegration = { ...standardGoogleIntegration };
 
   beforeEach(() => {
@@ -258,7 +241,7 @@ describe('EditGoogleAccountModal', () => {
       expect(getByText(/this field is required/i)).toBeInTheDocument(),
     );
     await act(async () => {
-      userEvent.click(getByRole('button', { name: /​/i }));
+      userEvent.click(getByRole('combobox'));
     });
     const calendarOption = getByRole('option', {
       name: /calendarsName@cru\.org/i,

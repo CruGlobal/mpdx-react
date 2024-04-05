@@ -10,6 +10,7 @@ const ModalSectionWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(0, 6),
   margin: theme.spacing(2, 0),
+  display: 'flex',
 }));
 
 export const ModalSectionContainer: React.FC<ModalSectionContainerProps> = ({

@@ -3,6 +3,12 @@ import { ThemeProvider } from '@mui/material/styles';
 import { queryByText, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
+import {
+  ContactsContext,
+  ContactsProvider,
+  ContactsType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
@@ -64,64 +70,60 @@ jest.mock('notistack', () => ({
   },
 }));
 
-describe('ExportModal', () => {
-  it('should render modal', () => {
-    const { getByText } = render(
-      <ThemeProvider theme={theme}>
+interface MassActionsMergeModalWrapperProps {
+  mutationSpy?: () => void;
+}
+
+const MassActionsMergeModalWrapper: React.FC<
+  MassActionsMergeModalWrapperProps
+> = ({ mutationSpy }) => {
+  return (
+    <ThemeProvider theme={theme}>
+      <TestRouter>
         <GqlMockedProvider<{
           GetContactsForMerging: GetContactsForMergingQuery;
         }>
           mocks={mocks}
+          onCall={mutationSpy}
         >
-          <MassActionsMergeModal
-            accountListId={accountListId}
-            ids={['contact-1', 'contact-2']}
-            handleClose={handleClose}
-          />
+          <ContactsProvider
+            activeFilters={{}}
+            setActiveFilters={() => {}}
+            starredFilter={{}}
+            setStarredFilter={() => {}}
+            filterPanelOpen={false}
+            setFilterPanelOpen={() => {}}
+            contactId={[]}
+            searchTerm={''}
+          >
+            <MassActionsMergeModal
+              accountListId={accountListId}
+              ids={['contact-1', 'contact-2']}
+              handleClose={handleClose}
+            />
+          </ContactsProvider>
         </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+      </TestRouter>
+    </ThemeProvider>
+  );
+};
+
+describe('MassActionsMergeModal', () => {
+  it('should render modal', () => {
+    const { getByText } = render(<MassActionsMergeModalWrapper />);
 
     expect(getByText('Merge Contacts')).toBeInTheDocument();
   });
 
   it('should close modal', () => {
-    const { getByLabelText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetContactsForMerging: GetContactsForMergingQuery;
-        }>
-          mocks={mocks}
-        >
-          <MassActionsMergeModal
-            accountListId={accountListId}
-            ids={['contact-1', 'contact-2']}
-            handleClose={handleClose}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { getByLabelText } = render(<MassActionsMergeModalWrapper />);
 
     userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
   });
 
   it('should select clicked contact', async () => {
-    const { queryAllByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetContactsForMerging: GetContactsForMergingQuery;
-        }>
-          mocks={mocks}
-        >
-          <MassActionsMergeModal
-            accountListId={accountListId}
-            ids={['contact-1', 'contact-2']}
-            handleClose={handleClose}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { queryAllByTestId } = render(<MassActionsMergeModalWrapper />);
 
     await waitFor(() =>
       expect(queryAllByTestId('MassActionsMergeModalContact')).toHaveLength(2),
@@ -139,22 +141,10 @@ describe('ExportModal', () => {
 
   it('should merge contacts', async () => {
     const mutationSpy = jest.fn();
+
     const { getByText, queryAllByTestId } = render(
       <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<{
-            GetContactsForMerging: GetContactsForMergingQuery;
-          }>
-            mocks={mocks}
-            onCall={mutationSpy}
-          >
-            <MassActionsMergeModal
-              accountListId={accountListId}
-              ids={['contact-1', 'contact-2']}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>
+        <MassActionsMergeModalWrapper mutationSpy={mutationSpy} />
       </SnackbarProvider>,
     );
 
@@ -176,6 +166,37 @@ describe('ExportModal', () => {
     expect(mergeCalls[0].variables).toEqual({
       loserContactIds: ['contact-2'],
       winnerContactId: 'contact-1',
+    });
+  });
+
+  it('calls function to deselect contacts when merge is complete', async () => {
+    const deselectAll = jest.fn();
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider<{
+            GetContactsForMerging: GetContactsForMergingQuery;
+          }>
+            mocks={mocks}
+          >
+            <ContactsContext.Provider
+              value={{ deselectAll } as unknown as ContactsType}
+            >
+              <MassActionsMergeModal
+                accountListId={accountListId}
+                ids={['contact-1', 'contact-2']}
+                handleClose={handleClose}
+              />
+            </ContactsContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    const button = getByRole('button', { name: 'Merge' });
+    expect(button).toBeInTheDocument();
+    await waitFor(() => userEvent.click(button));
+    await waitFor(() => {
+      expect(deselectAll).toHaveBeenCalled();
     });
   });
 });

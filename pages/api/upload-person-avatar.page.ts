@@ -40,7 +40,7 @@ const uploadPersonAvatar = async (
       req,
       secret: process.env.JWT_SECRET,
     });
-    const apiToken = (jwt as { apiToken: string } | null)?.apiToken;
+    const apiToken = jwt?.apiToken;
     if (!apiToken) {
       res.status(401).send('Unauthorized');
       return;

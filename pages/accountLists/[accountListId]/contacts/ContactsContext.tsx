@@ -43,6 +43,7 @@ export type ContactsType = {
   filterData: ContactFiltersQuery | undefined;
   filtersLoading: boolean;
   toggleFilterPanel: () => void;
+  handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
   setContactFocus: (
     id?: string | undefined,
@@ -76,6 +77,7 @@ export type ContactsType = {
   urlFilters: any;
   isFiltered: boolean;
   selectedIds: string[];
+  deselectAll: () => void;
   userOptionsLoading: boolean;
 };
 
@@ -205,6 +207,7 @@ export const ContactsProvider: React.FC<Props> = ({
     isRowChecked,
     toggleSelectAll,
     toggleSelectionById,
+    deselectAll,
   } = useMassSelection(
     data?.contacts?.totalCount ?? 0,
     allContactIds,
@@ -263,6 +266,10 @@ export const ContactsProvider: React.FC<Props> = ({
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
+  };
+
+  const handleClearAll = () => {
+    setSearchTerm('');
   };
 
   const savedFilters: UserOptionFragment[] = ContactsContextSavedFilters(
@@ -394,6 +401,7 @@ export const ContactsProvider: React.FC<Props> = ({
         filterData: filterData,
         filtersLoading: filtersLoading,
         toggleFilterPanel: toggleFilterPanel,
+        handleClearAll: handleClearAll,
         savedFilters: savedFilters,
         setContactFocus: setContactFocus,
         setSearchTerm: setSearchTerm,
@@ -419,6 +427,7 @@ export const ContactsProvider: React.FC<Props> = ({
         urlFilters: urlFilters,
         isFiltered: isFiltered,
         selectedIds: ids,
+        deselectAll: deselectAll,
         userOptionsLoading: userOptionsLoading,
       }}
     >

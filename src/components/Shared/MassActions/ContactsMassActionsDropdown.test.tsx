@@ -4,9 +4,10 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsProvider } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -58,10 +59,6 @@ describe('ContactsMassActionsDropdown', () => {
       openTaskModal,
     });
     (useAccountListId as jest.Mock).mockReturnValue('123456789');
-    (useSession as jest.Mock).mockReturnValue({
-      data: { user: { apiToken: 'someToken1234' } },
-      status: 'authenticated',
-    });
 
     massDeselectAll.mockClear();
   });
@@ -82,7 +79,9 @@ describe('ContactsMassActionsDropdown', () => {
   });
 
   it('opens the more actions menu and clicks the edit fields action', async () => {
-    const { queryByTestId, queryByText } = render(<ContactComponents />);
+    const { getByRole, queryByTestId, queryByText } = render(
+      <ContactComponents />,
+    );
     expect(queryByText('Edit Fields')).not.toBeInTheDocument();
     const actionsButton = queryByText('Actions') as HTMLInputElement;
     userEvent.click(actionsButton);
@@ -91,7 +90,7 @@ describe('ContactsMassActionsDropdown', () => {
     userEvent.click(button);
     const modal = queryByTestId('EditFieldsModal') as HTMLInputElement;
     await waitFor(() => expect(modal).toBeInTheDocument());
-    userEvent.click(queryByTestId('CloseIcon') as HTMLInputElement);
+    userEvent.click(getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(modal).not.toBeInTheDocument());
   });
 
@@ -258,18 +257,31 @@ describe('ContactsMassActionsDropdown', () => {
     const selectedIdsMerge = ['abc', 'def'];
     const { getByTestId, getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <SnackbarProvider>
-              <ContactsMassActionsDropdown
-                filterPanelOpen={false}
-                contactDetailsOpen={false}
-                contactsView={TableViewModeEnum.List}
-                selectedIds={selectedIdsMerge}
-              />
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </GqlMockedProvider>
+        <TestRouter>
+          <GqlMockedProvider>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <SnackbarProvider>
+                <ContactsProvider
+                  activeFilters={{}}
+                  setActiveFilters={() => {}}
+                  starredFilter={{}}
+                  setStarredFilter={() => {}}
+                  filterPanelOpen={false}
+                  setFilterPanelOpen={() => {}}
+                  contactId={[]}
+                  searchTerm={''}
+                >
+                  <ContactsMassActionsDropdown
+                    filterPanelOpen={false}
+                    contactDetailsOpen={false}
+                    contactsView={TableViewModeEnum.List}
+                    selectedIds={selectedIdsMerge}
+                  />
+                </ContactsProvider>
+              </SnackbarProvider>
+            </LocalizationProvider>
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
     expect(queryByText('Merge')).not.toBeInTheDocument();

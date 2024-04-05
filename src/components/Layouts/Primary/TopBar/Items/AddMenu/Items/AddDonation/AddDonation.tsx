@@ -16,20 +16,20 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DatePicker } from '@mui/x-date-pickers';
 import { FastField, Field, FieldProps, Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
+import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useLocale } from 'src/hooks/useLocale';
+import { requiredDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
   useAddDonationMutation,
@@ -74,7 +74,7 @@ const donationSchema = yup.object({
   appealId: yup.string().nullable(),
   currency: yup.string().required(),
   designationAccountId: yup.string().required(),
-  donationDate: yup.string().required(),
+  donationDate: requiredDateTime(),
   donorAccountId: yup.string().required(),
   memo: yup.string().nullable(),
   motivation: yup.string().nullable(),
@@ -103,18 +103,24 @@ export const AddDonation = ({
   handleClose,
 }: AddDonationProps): ReactElement<AddDonationProps> => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const constants = useApiConstants();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
 
-  const { data, loading } = useGetDonationModalQuery({
-    variables: {
-      accountListId,
-    },
-  });
+  const { data: accountListData, loading: accountListLoading } =
+    useGetDonationModalQuery({
+      variables: {
+        accountListId,
+      },
+    });
+  const { data: designationAccountsData, loading: designationAccountsLoading } =
+    useGetDesignationAccountsQuery({
+      variables: {
+        accountListId,
+      },
+    });
 
   const [addDonation, { loading: adding }] = useAddDonationMutation({
     refetchQueries: [
@@ -126,17 +132,18 @@ export const AddDonation = ({
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
-  const newDesignationAccounts =
-    data?.designationAccounts &&
-    data?.designationAccounts.flatMap((x) => x.designationAccounts);
+  const designationAccounts =
+    designationAccountsData?.designationAccounts?.flatMap(
+      ({ designationAccounts }) => designationAccounts,
+    );
 
   const initialDonation = {
     amount: 0,
     appealAmount: null,
     appealId: null,
-    currency: data?.accountList.currency ?? '',
+    currency: accountListData?.accountList.currency ?? '',
     designationAccountId: '',
-    donationDate: DateTime.local().startOf('day').toISO(),
+    donationDate: DateTime.local().startOf('day'),
     donorAccountId: '',
     memo: null,
     motivation: null,
@@ -155,9 +162,10 @@ export const AddDonation = ({
         attributes: {
           ...attributes,
           amount: parseFloat(amount),
-          appealAmount: parseFloat(
-            attributes.appealAmount as unknown as string,
-          ),
+          appealAmount: attributes.appealAmount
+            ? parseFloat(attributes.appealAmount as unknown as string)
+            : null,
+          donationDate: attributes.donationDate.toISODate() ?? '',
         },
       },
     });
@@ -169,7 +177,7 @@ export const AddDonation = ({
     handleClose();
   };
 
-  if (loading) {
+  if (accountListLoading || designationAccountsLoading) {
     return (
       <DialogContent dividers>
         <Box width="100%" display="flex" justifyContent="center">
@@ -296,36 +304,24 @@ export const AddDonation = ({
                   <FormControl
                     size="small"
                     fullWidth
-                    error={!!errors.donationDate && touched.donationDate}
+                    error={Boolean(errors.donationDate && touched.donationDate)}
                   >
                     <LogFormLabel htmlFor="date-input" id="date-label" required>
                       {t('Date')}
                     </LogFormLabel>
                     <FastField name="donationDate">
                       {({ field }: FieldProps) => (
-                        <Box width="100%">
-                          <DatePicker
-                            renderInput={(params) => (
-                              <TextField
-                                id="date-input"
-                                fullWidth
-                                size="small"
-                                inputProps={{
-                                  'aria-labelledby': 'date-label',
-                                }}
-                                {...params}
-                              />
-                            )}
-                            {...field}
-                            onChange={(date) =>
-                              !date ? null : setFieldValue('donationDate', date)
-                            }
-                            value={
-                              field.value ? DateTime.fromISO(field.value) : null
-                            }
-                            inputFormat={getDateFormatPattern(locale)}
-                          />
-                        </Box>
+                        <CustomDateField
+                          id="date-input"
+                          size="small"
+                          inputProps={{
+                            'aria-labelledby': 'date-label',
+                          }}
+                          {...field}
+                          onChange={(date) =>
+                            setFieldValue('donationDate', date)
+                          }
+                        />
                       )}
                     </FastField>
                   </FormControl>
@@ -420,20 +416,16 @@ export const AddDonation = ({
                           <Autocomplete
                             {...field}
                             id="designation-account-input"
-                            loading={loading}
+                            loading={designationAccountsLoading}
                             autoSelect
                             autoHighlight
                             options={
-                              (newDesignationAccounts &&
-                                newDesignationAccounts.map(({ id }) => id)) ??
-                              []
+                              designationAccounts?.map(({ id }) => id) ?? []
                             }
                             getOptionLabel={(accountId): string => {
-                              const account =
-                                newDesignationAccounts &&
-                                newDesignationAccounts.find(
-                                  ({ id }) => id === accountId,
-                                );
+                              const account = designationAccounts?.find(
+                                ({ id }) => id === accountId,
+                              );
                               return account
                                 ? `${account?.name} (${account.id}) `
                                 : '';
@@ -449,7 +441,7 @@ export const AddDonation = ({
                                     'designation-account-label',
                                   endAdornment: (
                                     <>
-                                      {loading && (
+                                      {designationAccountsLoading && (
                                         <CircularProgress
                                           color="primary"
                                           size={20}
@@ -462,14 +454,11 @@ export const AddDonation = ({
                               />
                             )}
                             value={field.value}
-                            onChange={(_, designationAccountId): void =>
+                            onChange={(_, designationAccountId) =>
                               setFieldValue(
                                 'designationAccountId',
                                 designationAccountId,
                               )
-                            }
-                            isOptionEqualToValue={(option, value): boolean =>
-                              option === value
                             }
                           />
                         </Box>
@@ -495,22 +484,19 @@ export const AddDonation = ({
                           <Autocomplete
                             {...field}
                             id="appeal-input"
-                            loading={loading}
+                            loading={accountListLoading}
                             autoSelect
                             autoHighlight
                             options={
-                              (data?.accountList.appeals &&
-                                data.accountList.appeals.map(({ id }) => id)) ??
-                              []
+                              accountListData?.accountList?.appeals?.map(
+                                ({ id }) => id,
+                              ) ?? []
                             }
-                            getOptionLabel={(appealId): string => {
-                              const appeal =
-                                data?.accountList.appeals &&
-                                data?.accountList?.appeals.find(
-                                  ({ id }) => id === appealId,
-                                );
-                              return appeal?.name ?? '';
-                            }}
+                            getOptionLabel={(appealId) =>
+                              accountListData?.accountList?.appeals?.find(
+                                ({ id }) => id === appealId,
+                              )?.name ?? ''
+                            }
                             renderInput={(params): ReactElement => (
                               <TextField
                                 {...params}
@@ -521,7 +507,7 @@ export const AddDonation = ({
                                   'aria-labelledby': 'appeal-label',
                                   endAdornment: (
                                     <>
-                                      {loading && (
+                                      {accountListLoading && (
                                         <CircularProgress
                                           color="primary"
                                           size={20}

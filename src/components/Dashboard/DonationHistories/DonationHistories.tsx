@@ -65,9 +65,8 @@ const useStyles = makeStyles()((theme: Theme) => ({
     },
   },
   img: {
-    height: '248px',
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       height: '114px',
     },
   },
@@ -247,7 +246,12 @@ const DonationHistories = ({
               className={classes.boxImg}
               data-testid="DonationHistoriesBoxEmpty"
             >
-              <img src={illustration15} className={classes.img} alt="empty" />
+              <img
+                src={illustration15}
+                className={classes.img}
+                alt="empty"
+                height="248"
+              />
               {t('No monthly activity to show.')}
             </Box>
           ) : (

@@ -1,0 +1,11 @@
+mutation UpdatePersonalPreferences($input: UserPreferenceUpdateMutationInput!) {
+  updatePreference(input: $input) {
+    preference {
+      id
+      hourToSendNotifications
+      locale
+      localeDisplay
+      timeZone
+    }
+  }
+}

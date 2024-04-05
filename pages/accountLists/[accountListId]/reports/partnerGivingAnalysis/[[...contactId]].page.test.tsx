@@ -7,6 +7,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
 import theme from 'src/theme';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
+import { ContactsProvider } from '../../contacts/ContactsContext';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
 
 const push = jest.fn();
@@ -66,7 +67,18 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
       <TestRouter router={router}>
         <GqlMockedProvider<Mocks> mocks={mocks}>
           <SnackbarProvider>
-            <PartnerGivingAnalysisPage />
+            <ContactsProvider
+              activeFilters={{}}
+              setActiveFilters={() => {}}
+              starredFilter={{}}
+              setStarredFilter={() => {}}
+              filterPanelOpen={false}
+              setFilterPanelOpen={() => {}}
+              contactId={[]}
+              searchTerm={''}
+            >
+              <PartnerGivingAnalysisPage />
+            </ContactsProvider>
           </SnackbarProvider>
         </GqlMockedProvider>
       </TestRouter>

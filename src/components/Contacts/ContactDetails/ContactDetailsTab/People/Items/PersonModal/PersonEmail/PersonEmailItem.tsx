@@ -50,6 +50,9 @@ const EmailSelect = styled(Select, {
 })(({ destroyed }: { destroyed: boolean }) => ({
   textDecoration: destroyed ? 'line-through' : 'none',
 }));
+export const VerticallyCenteredGrid = styled(Grid)(() => ({
+  margin: 'auto',
+}));
 
 export const PersonEmailItem: React.FC<Props> = ({
   emailAddress,
@@ -81,7 +84,7 @@ export const PersonEmailItem: React.FC<Props> = ({
   return (
     <ModalSectionContainer key={index}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={6}>
           <ContactInputField
             label={t('Email Address')}
             destroyed={emailAddress.destroy ?? false}
@@ -108,7 +111,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} md={2}>
+        <Grid item xs={12} sm={6} md={2}>
           <FormControl fullWidth>
             <InputLabel id={`email-type-label-${index}`}>
               {t('Type')}
@@ -118,7 +121,7 @@ export const PersonEmailItem: React.FC<Props> = ({
               labelId={`email-type-label-${index}`}
               id={`email-type-${index}`}
               destroyed={emailAddress.destroy ?? false}
-              value={emailAddress.location ?? ''}
+              value={emailAddress.location?.toLowerCase() ?? ''}
               onChange={(event) =>
                 setFieldValue(
                   `emailAddresses.${index}.location`,
@@ -137,7 +140,7 @@ export const PersonEmailItem: React.FC<Props> = ({
               <MenuItem value="work" aria-label={t('Work')}>
                 {t('Work')}
               </MenuItem>
-              <MenuItem value="Personal" aria-label={t('Personal')}>
+              <MenuItem value="personal" aria-label={t('Personal')}>
                 {t('Personal')}
               </MenuItem>
               <MenuItem value="other" aria-label={t('Other')}>
@@ -146,7 +149,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             </EmailSelect>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={2}>
+        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
           <PrimaryControlLabel
             label={t('Primary')}
             control={
@@ -159,8 +162,8 @@ export const PersonEmailItem: React.FC<Props> = ({
             }
             destroyed={emailAddress.destroy ?? false}
           />
-        </Grid>
-        <Grid item xs={12} md={2}>
+        </VerticallyCenteredGrid>
+        <VerticallyCenteredGrid item xs={12} sm={6} md={2}>
           <PrimaryControlLabel
             label={t('Invalid')}
             control={
@@ -177,7 +180,7 @@ export const PersonEmailItem: React.FC<Props> = ({
             }
             destroyed={emailAddress.destroy ?? false}
           />
-        </Grid>
+        </VerticallyCenteredGrid>
         <ModalSectionDeleteIcon
           disabled={locked}
           handleClick={

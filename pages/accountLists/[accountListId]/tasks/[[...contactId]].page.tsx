@@ -8,6 +8,7 @@ import { styled } from '@mui/material/styles';
 import debounce from 'lodash/debounce';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
@@ -167,6 +168,10 @@ const TasksPage: React.FC = () => {
   });
 
   useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
     const { filters: _, ...oldQuery } = query;
     replace({
       pathname,
@@ -190,7 +195,7 @@ const TasksPage: React.FC = () => {
     } else if (sanitizedFilters.dateRange === 'no_date') {
       setTaskType('NoDueDate');
     }
-  }, [sanitizedFilters]);
+  }, [sanitizedFilters, isReady]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
@@ -296,164 +301,168 @@ const TasksPage: React.FC = () => {
       </Head>
       {accountListId ? (
         <WhiteBackground>
-          <SidePanelsLayout
-            leftPanel={
-              filterData && !filtersLoading ? (
-                <FilterPanel
-                  filters={filterData?.accountList.taskFilterGroups}
-                  savedFilters={savedFilters}
-                  selectedFilters={activeFilters}
-                  onClose={toggleFilterPanel}
-                  onSelectedFiltersChanged={setActiveFilters}
-                />
-              ) : undefined
-            }
-            leftOpen={filterPanelOpen}
-            leftWidth="290px"
-            mainContent={
-              <>
-                <ListHeader
-                  page="task"
-                  activeFilters={isFiltered}
-                  filterPanelOpen={filterPanelOpen}
-                  toggleFilterPanel={toggleFilterPanel}
-                  contactDetailsOpen={contactDetailsOpen}
-                  onCheckAllItems={toggleSelectAll}
-                  onSearchTermChanged={setSearchTerm}
-                  searchTerm={searchTerm}
-                  totalItems={data?.tasks?.totalCount}
-                  starredFilter={starredFilter}
-                  toggleStarredFilter={setStarredFilter}
-                  headerCheckboxState={selectionType}
-                  massDeselectAll={deselectAll}
-                  selectedIds={ids}
-                  buttonGroup={
-                    <Hidden xsDown>
-                      <TaskHeaderButton
-                        onClick={() => openTaskModal({ view: 'add' })}
-                        variant="text"
-                        startIcon={<TaskAddIcon />}
-                      >
-                        <Hidden smUp>{t('Add')}</Hidden>
-                        <Hidden smDown>{t('Add Task')}</Hidden>
-                      </TaskHeaderButton>
-                      <TaskHeaderButton
-                        onClick={() => openTaskModal({ view: 'log' })}
-                        variant="text"
-                        startIcon={<TaskCheckIcon />}
-                      >
-                        <Hidden smUp>{t('Log')}</Hidden>
-                        <Hidden smDown>{t('Log Task')}</Hidden>
-                      </TaskHeaderButton>
-                    </Hidden>
-                  }
-                />
-                <Box>
-                  <TaskCurrentHistoryButtonGroup
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      // Subtract out one unit of margin for both the top and the bottom
-                      height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
-                    }}
-                  >
-                    {taskFiltersTabs.map((i) => (
-                      <Button
-                        variant={taskType === i.name ? 'contained' : 'outlined'}
-                        onClick={() => setTaskTypeFilter(i.name)}
-                        key={`btn-${i.name}`}
-                      >
-                        {i.translated ? t(i.uiName) : i.uiName}
-                      </Button>
-                    ))}
-                  </TaskCurrentHistoryButtonGroup>
-                  <InfiniteList
-                    data-foo="bar"
-                    loading={loading}
-                    data={data?.tasks.nodes}
-                    style={{
-                      height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
-                    }}
-                    itemContent={(index, task) => (
-                      <Box key={index} flexDirection="row" width="100%">
-                        <TaskRow
-                          accountListId={accountListId}
-                          task={task}
-                          onContactSelected={setContactFocus}
-                          onTaskCheckToggle={toggleSelectionById}
-                          isChecked={isRowChecked(task.id)}
-                          useTopMargin={index === 0}
-                        />
-                      </Box>
-                    )}
-                    groupBy={(item) => {
-                      if (item.completedAt) {
-                        return { order: 5, label: t('Completed') };
-                      } else if (!item.startAt) {
-                        return { order: 1, label: t('No Due Date') };
-                      } else if (
-                        DateTime.fromISO(item.startAt).hasSame(
-                          DateTime.now(),
-                          'day',
-                        )
-                      ) {
-                        return { order: 2, label: t('Today') };
-                      } else if (
-                        DateTime.now().startOf('day') >
-                        DateTime.fromISO(item.startAt).startOf('day')
-                      ) {
-                        return { order: 1, label: t('Overdue') };
-                      } else if (
-                        DateTime.now().startOf('day') <
-                        DateTime.fromISO(item.startAt).startOf('day')
-                      ) {
-                        return { order: 3, label: t('Upcoming') };
-                      }
-                      return { order: 4, label: t('No Due Date') };
-                    }}
-                    endReached={() =>
-                      data?.tasks?.pageInfo.hasNextPage &&
-                      fetchMore({
-                        variables: { after: data.tasks?.pageInfo.endCursor },
-                      })
-                    }
-                    EmptyPlaceholder={
-                      <Box width="75%" margin="auto" mt={2}>
-                        <NullState
-                          page="task"
-                          totalCount={data?.allTasks?.totalCount || 0}
-                          filtered={isFiltered || !!searchTerm}
-                          changeFilters={setActiveFilters}
-                        />
-                      </Box>
+          <ContactsProvider
+            urlFilters={urlFilters}
+            activeFilters={{}}
+            setActiveFilters={setActiveFilters}
+            starredFilter={{}}
+            setStarredFilter={setStarredFilter}
+            filterPanelOpen={filterPanelOpen}
+            setFilterPanelOpen={setFilterPanelOpen}
+            contactId={contactId}
+            searchTerm={searchTerm}
+          >
+            <SidePanelsLayout
+              leftPanel={
+                filterData && !filtersLoading ? (
+                  <FilterPanel
+                    filters={filterData?.accountList.taskFilterGroups}
+                    savedFilters={savedFilters}
+                    selectedFilters={activeFilters}
+                    onClose={toggleFilterPanel}
+                    onSelectedFiltersChanged={setActiveFilters}
+                  />
+                ) : undefined
+              }
+              leftOpen={filterPanelOpen}
+              leftWidth="290px"
+              mainContent={
+                <>
+                  <ListHeader
+                    page="task"
+                    activeFilters={isFiltered}
+                    filterPanelOpen={filterPanelOpen}
+                    toggleFilterPanel={toggleFilterPanel}
+                    contactDetailsOpen={contactDetailsOpen}
+                    onCheckAllItems={toggleSelectAll}
+                    onSearchTermChanged={setSearchTerm}
+                    searchTerm={searchTerm}
+                    totalItems={data?.tasks?.totalCount}
+                    starredFilter={starredFilter}
+                    toggleStarredFilter={setStarredFilter}
+                    headerCheckboxState={selectionType}
+                    massDeselectAll={deselectAll}
+                    selectedIds={ids}
+                    buttonGroup={
+                      <Hidden xsDown>
+                        <TaskHeaderButton
+                          onClick={() => openTaskModal({ view: 'add' })}
+                          variant="text"
+                          startIcon={<TaskAddIcon />}
+                        >
+                          <Hidden smUp>{t('Add')}</Hidden>
+                          <Hidden smDown>{t('Add Task')}</Hidden>
+                        </TaskHeaderButton>
+                        <TaskHeaderButton
+                          onClick={() => openTaskModal({ view: 'log' })}
+                          variant="text"
+                          startIcon={<TaskCheckIcon />}
+                        >
+                          <Hidden smUp>{t('Log')}</Hidden>
+                          <Hidden smDown>{t('Log Task')}</Hidden>
+                        </TaskHeaderButton>
+                      </Hidden>
                     }
                   />
-                </Box>
-              </>
-            }
-            rightPanel={
-              contactDetailsId ? (
-                <ContactsProvider
-                  urlFilters={urlFilters}
-                  activeFilters={{}}
-                  setActiveFilters={setActiveFilters}
-                  starredFilter={{}}
-                  setStarredFilter={setStarredFilter}
-                  filterPanelOpen={filterPanelOpen}
-                  setFilterPanelOpen={setFilterPanelOpen}
-                  contactId={contactId}
-                  searchTerm={searchTerm}
-                >
+                  <Box>
+                    <TaskCurrentHistoryButtonGroup
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        // Subtract out one unit of margin for both the top and the bottom
+                        height: `calc(${buttonBarHeight} - ${theme.spacing(
+                          2,
+                        )})`,
+                      }}
+                    >
+                      {taskFiltersTabs.map((i) => (
+                        <Button
+                          variant={
+                            taskType === i.name ? 'contained' : 'outlined'
+                          }
+                          onClick={() => setTaskTypeFilter(i.name)}
+                          key={`btn-${i.name}`}
+                        >
+                          {i.translated ? t(i.uiName) : i.uiName}
+                        </Button>
+                      ))}
+                    </TaskCurrentHistoryButtonGroup>
+                    <InfiniteList
+                      data-foo="bar"
+                      loading={loading}
+                      data={data?.tasks.nodes}
+                      style={{
+                        height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
+                      }}
+                      itemContent={(index, task) => (
+                        <Box key={index} flexDirection="row" width="100%">
+                          <TaskRow
+                            accountListId={accountListId}
+                            task={task}
+                            onContactSelected={setContactFocus}
+                            onTaskCheckToggle={toggleSelectionById}
+                            isChecked={isRowChecked(task.id)}
+                            useTopMargin={index === 0}
+                          />
+                        </Box>
+                      )}
+                      groupBy={(item) => {
+                        if (item.completedAt) {
+                          return { order: 5, label: t('Completed') };
+                        } else if (!item.startAt) {
+                          return { order: 1, label: t('No Due Date') };
+                        } else if (
+                          DateTime.fromISO(item.startAt).hasSame(
+                            DateTime.now(),
+                            'day',
+                          )
+                        ) {
+                          return { order: 2, label: t('Today') };
+                        } else if (
+                          DateTime.now().startOf('day') >
+                          DateTime.fromISO(item.startAt).startOf('day')
+                        ) {
+                          return { order: 1, label: t('Overdue') };
+                        } else if (
+                          DateTime.now().startOf('day') <
+                          DateTime.fromISO(item.startAt).startOf('day')
+                        ) {
+                          return { order: 3, label: t('Upcoming') };
+                        }
+                        return { order: 4, label: t('No Due Date') };
+                      }}
+                      endReached={() =>
+                        data?.tasks?.pageInfo.hasNextPage &&
+                        fetchMore({
+                          variables: { after: data.tasks?.pageInfo.endCursor },
+                        })
+                      }
+                      EmptyPlaceholder={
+                        <Box width="75%" margin="auto" mt={2}>
+                          <NullState
+                            page="task"
+                            totalCount={data?.allTasks?.totalCount || 0}
+                            filtered={isFiltered || !!searchTerm}
+                            changeFilters={setActiveFilters}
+                          />
+                        </Box>
+                      }
+                    />
+                  </Box>
+                </>
+              }
+              rightPanel={
+                contactDetailsId ? (
                   <ContactsRightPanel
                     onClose={() => setContactFocus(undefined)}
                   />
-                </ContactsProvider>
-              ) : undefined
-            }
-            rightOpen={contactDetailsOpen}
-            rightWidth="60%"
-            headerHeight={headerHeight}
-          />
+                ) : undefined
+              }
+              rightOpen={contactDetailsOpen}
+              rightWidth="60%"
+              headerHeight={headerHeight}
+            />
+          </ContactsProvider>
         </WhiteBackground>
       ) : (
         <Loading loading />
@@ -462,5 +471,7 @@ const TasksPage: React.FC = () => {
   );
   //#endregion
 };
+
+export const getServerSideProps = loadSession;
 
 export default TasksPage;

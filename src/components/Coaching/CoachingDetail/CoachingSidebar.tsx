@@ -2,7 +2,14 @@ import React, { Fragment, useMemo } from 'react';
 // TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, ButtonGroup, Divider, IconButton } from '@mui/material';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Divider,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -11,23 +18,30 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { dateFormat } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
+import { CollapsibleEmailList } from '../../Shared/CollapsibleContactInfo/CollapsibleEmailList';
+import { CollapsiblePhoneList } from '../../Shared/CollapsibleContactInfo/CollapsiblePhoneList';
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from './CoachingDetail';
-import { CollapsibleEmailList } from './CollapsibleEmailList';
-import { CollapsiblePhoneList } from './CollapsiblePhoneList';
 import {
   LoadAccountListCoachingDetailQuery,
   LoadCoachingDetailQuery,
 } from './LoadCoachingDetail.generated';
-import { SideContainerText } from './StyledComponents';
 import { getLastNewsletter } from './helpers';
 
-const Container = styled(Box)({
+const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   width: '20rem',
   height: '100%',
-});
+  backgroundColor: theme.palette.progressBarGray.main,
+  color: theme.palette.primary.contrastText,
+  '.MuiLink-root': {
+    color: theme.palette.primary.contrastText,
+  },
+  '.MuiTypography-body1': {
+    margin: theme.spacing(0, 1),
+  },
+}));
 
 const TitleContainer = styled('div')(({ theme }) => ({
   margin: theme.spacing(1),
@@ -35,9 +49,9 @@ const TitleContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
 }));
 
-const ContrastDivider = styled(Divider)(({ theme }) => ({
-  background: theme.palette.primary.contrastText,
-}));
+const ContrastDivider = styled(Divider)({
+  background: 'currentcolor',
+});
 
 const ContentContainer = styled('div')({
   flex: 1,
@@ -50,16 +64,11 @@ const MonthlyWeeklyButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
 }));
 
-const SectionHeaderText = styled(SideContainerText)(({ theme }) => ({
+const SectionHeaderText = styled(Typography)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
-const StyledCloseIcon = styled(CloseIcon)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
-}));
-
 const StyledUserIcon = styled(AccountCircleIcon)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
   margin: theme.spacing(0, 1),
 }));
 
@@ -104,7 +113,7 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
     isoDate ? dateFormat(DateTime.fromISO(isoDate), locale) : t('None');
 
   return (
-    <Container bgcolor={theme.palette.progressBarGray.main}>
+    <Container>
       <TitleContainer>
         {/* TODO: EcoOutlined is not defined on @mui/icons-material, find replacement.
           <EcoOutlined
@@ -113,12 +122,12 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
               margin: theme.spacing(1),
             }}
           /> */}
-        <SideContainerText variant="h5" flex={1}>
+        <Typography variant="h5" flex={1}>
           {t('Coaching')}
-        </SideContainerText>
+        </Typography>
         {showClose && (
           <IconButton onClick={handleClose} aria-label={t('Close')}>
-            <StyledCloseIcon />
+            <CloseIcon />
           </IconButton>
         )}
       </TitleContainer>
@@ -156,11 +165,11 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
               locale,
             )}
         </SectionHeaderText>
-        <SideContainerText>{t('Staff IDs:')}</SideContainerText>
-        <SideContainerText data-testid="StaffIds">
+        <Typography>{t('Staff IDs:')}</Typography>
+        <Typography data-testid="StaffIds">
           {staffIds.length ? staffIds.join(', ') : t('None')}
-        </SideContainerText>
-        <SideContainerText data-testid="LastPrayerLetter">
+        </Typography>
+        <Typography data-testid="LastPrayerLetter">
           {t('Last Prayer Letter:')}{' '}
           {taskAnalyticsData &&
             formatOptionalDate(
@@ -171,23 +180,23 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
                   .lastPhysicalNewsletterCompletedAt,
               ),
             )}
-        </SideContainerText>
+        </Typography>
         <ContrastDivider />
         <SectionHeaderText variant="h5">{t('MPD Info')}</SectionHeaderText>
-        <SideContainerText data-testid="WeeksOnMpd">
+        <Typography data-testid="WeeksOnMpd">
           {t('Weeks on MPD:')} {accountListData?.weeksOnMpd}
-        </SideContainerText>
-        <SideContainerText data-testid="MpdStartDate">
+        </Typography>
+        <Typography data-testid="MpdStartDate">
           {t('Start Date:')}{' '}
           {accountListData &&
             formatOptionalDate(accountListData?.activeMpdStartAt)}
-        </SideContainerText>
-        <SideContainerText data-testid="MpdEndDate">
+        </Typography>
+        <Typography data-testid="MpdEndDate">
           {t('End Date:')}{' '}
           {accountListData &&
             formatOptionalDate(accountListData?.activeMpdFinishAt)}
-        </SideContainerText>
-        <SideContainerText data-testid="MpdCommitmentGoal">
+        </Typography>
+        <Typography data-testid="MpdCommitmentGoal">
           {t('Commitment Goal:')}{' '}
           {accountListData &&
             (typeof accountListData.activeMpdMonthlyGoal === 'number'
@@ -197,7 +206,7 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
                   locale,
                 )
               : t('None'))}
-        </SideContainerText>
+        </Typography>
         <ContrastDivider />
         <SectionHeaderText variant="h5">{t('Users')}</SectionHeaderText>
         {loading ? (
@@ -206,9 +215,7 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
           accountListData?.users.nodes.map((user) => (
             <Fragment key={user.id}>
               <StyledUserIcon />
-              <SideContainerText>
-                {user.firstName + ' ' + user.lastName}
-              </SideContainerText>
+              <Typography>{user.firstName + ' ' + user.lastName}</Typography>
               <CollapsibleEmailList emails={user.emailAddresses.nodes} />
               <CollapsiblePhoneList phones={user.phoneNumbers.nodes} />
               <UserDivider />
@@ -223,9 +230,7 @@ export const CoachingSidebar: React.FC<CoachingSidebarProps> = ({
           accountListData?.coaches.nodes.map((coach) => (
             <Fragment key={coach.id}>
               <StyledUserIcon />
-              <SideContainerText>
-                {coach.firstName + ' ' + coach.lastName}
-              </SideContainerText>
+              <Typography>{coach.firstName + ' ' + coach.lastName}</Typography>
               <CollapsibleEmailList emails={coach.emailAddresses.nodes} />
               <CollapsiblePhoneList phones={coach.phoneNumbers.nodes} />
               <UserDivider />

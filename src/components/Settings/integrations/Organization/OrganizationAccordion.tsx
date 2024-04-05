@@ -19,10 +19,10 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import { StyledServicesButton } from '../integrationsHelper';
+import { useOauthUrl } from '../useOauthUrl';
 import { OrganizationAddAccountModal } from './Modals/OrganizationAddAccountModal';
 import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
 import { OrganizationImportDataSyncModal } from './Modals/OrganizationImportDataSyncModal';
-import { getOauthUrl } from './OrganizationService';
 import {
   useDeleteOrganizationAccountMutation,
   useGetUsersOrganizationsAccountsQuery,
@@ -95,6 +95,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
     useState(false);
   const [deleteOrganizationAccount] = useDeleteOrganizationAccountMutation();
   const [syncOrganizationAccount] = useSyncOrganizationAccountMutation();
+  const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
 
   const {
     data,
@@ -103,13 +104,12 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
   } = useGetUsersOrganizationsAccountsQuery();
   const organizations = data?.userOrganizationAccounts;
 
-  const handleReconnect = async (organizationId) => {
+  const handleReconnect = async (organizationId: string) => {
     enqueueSnackbar(
-      t('Redirecting you to complete authenication to reconnect.'),
+      t('Redirecting you to complete authentication to reconnect.'),
       { variant: 'success' },
     );
-    const oAuthUrl = await getOauthUrl(organizationId);
-    window.location.href = oAuthUrl;
+    window.location.assign(getOauthUrl(organizationId));
   };
 
   const handleSync = async (accountId: string) => {

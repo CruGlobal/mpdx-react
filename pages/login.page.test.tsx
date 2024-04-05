@@ -60,7 +60,7 @@ describe('Login - OKTA', () => {
 
   describe('Active session', () => {
     beforeEach(() => {
-      (getSession as jest.Mock).mockReturnValue({
+      (getSession as jest.Mock).mockResolvedValue({
         apiToken: 'apiToken',
       });
     });
@@ -96,7 +96,7 @@ describe('Login - OKTA', () => {
 
   describe('Inactive session', () => {
     beforeEach(() => {
-      (getSession as jest.Mock).mockReturnValue(null);
+      (getSession as jest.Mock).mockResolvedValue(null);
     });
 
     it('should pass down props and render login', async () => {

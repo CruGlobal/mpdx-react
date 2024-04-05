@@ -1,0 +1,40 @@
+fragment AccountList on AccountList {
+  id
+  name
+  activeMpdMonthlyGoal
+  activeMpdFinishAt
+  activeMpdStartAt
+  salaryOrganizationId
+  settings {
+    currency
+    homeCountry
+    monthlyGoal
+    tester
+  }
+}
+
+query GetAccountPreferences($accountListId: ID!) {
+  user {
+    id
+  }
+  accountList(id: $accountListId) {
+    ...AccountList
+  }
+  accountLists {
+    nodes {
+      name
+      id
+    }
+  }
+}
+
+query CanUserExportData($accountListId: ID!) {
+  canUserExportData(accountListId: $accountListId) {
+    allowed
+    exportedAt
+  }
+}
+
+mutation ExportData($input: ExportDataInput!) {
+  exportData(input: $input)
+}

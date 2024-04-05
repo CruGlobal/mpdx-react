@@ -1,0 +1,86 @@
+fragment UserFragment on User {
+  lastName
+  firstName
+  legalFirstName
+  title
+  suffix
+  id
+  occupation
+  employer
+  anniversaryYear
+  anniversaryDay
+  anniversaryMonth
+  almaMater
+  maritalStatus
+  birthdayDay
+  birthdayMonth
+  birthdayYear
+  gender
+  avatar
+  primaryEmailAddress {
+    id
+    email
+    primary
+    location
+    source
+  }
+  primaryPhoneNumber {
+    id
+    number
+    primary
+    location
+    source
+  }
+  phoneNumbers {
+    nodes {
+      id
+      number
+      primary
+      location
+      source
+      historic
+    }
+  }
+  emailAddresses {
+    nodes {
+      id
+      email
+      primary
+      location
+      source
+      historic
+    }
+  }
+  twitterAccounts {
+    nodes {
+      id
+      screenName
+    }
+  }
+  websites {
+    nodes {
+      url
+      id
+    }
+  }
+  linkedinAccounts {
+    nodes {
+      id
+      publicUrl
+    }
+  }
+  facebookAccounts {
+    nodes {
+      id
+      username
+    }
+  }
+}
+
+query GetProfileInfo {
+  user {
+    ...UserFragment
+    deceased
+    optoutEnewsletter
+  }
+}

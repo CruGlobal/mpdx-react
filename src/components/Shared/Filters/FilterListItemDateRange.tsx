@@ -1,12 +1,10 @@
 import React from 'react';
 import { ListItem, ListItemText } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import { DatePicker } from '@mui/x-date-pickers';
+import { styled } from '@mui/material/styles';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { DateRangeInput, DaterangeFilter } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 
 interface Props {
   filter: DaterangeFilter;
@@ -14,13 +12,21 @@ interface Props {
   onUpdate: (value?: DateRangeInput) => void;
 }
 
+const StyledDateField = styled(CustomDateField)(({ theme }) => ({
+  '.MuiInputBase-input': {
+    fontSize: '0.9rem',
+  },
+  '.MuiIconButton-root': {
+    marginInline: theme.spacing(-1.5),
+  },
+}));
+
 export const FilterListItemDateRange: React.FC<Props> = ({
   filter,
   value,
   onUpdate,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
 
   const range = value
     ? Interval.fromISO(value.min + '/' + value.max)
@@ -39,14 +45,8 @@ export const FilterListItemDateRange: React.FC<Props> = ({
         />
       </ListItem>
       <ListItem>
-        <DatePicker
-          renderInput={(params) => (
-            <TextField
-              placeholder={t('Start Date')}
-              style={{ marginRight: '8px' }}
-              {...params}
-            />
-          )}
+        <StyledDateField
+          label={t('Start Date')}
           value={range?.start ?? null}
           onChange={(date) =>
             onUpdate(
@@ -58,16 +58,10 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          inputFormat={getDateFormatPattern(locale)}
+          style={{ marginRight: '8px' }}
         />
-        <DatePicker
-          renderInput={(params) => (
-            <TextField
-              placeholder={t('End Date')}
-              style={{ marginLeft: '8px' }}
-              {...params}
-            />
-          )}
+        <StyledDateField
+          label={t('End Date')}
           value={range?.end ?? null}
           onChange={(date) =>
             onUpdate(
@@ -79,7 +73,7 @@ export const FilterListItemDateRange: React.FC<Props> = ({
                   ),
             )
           }
-          inputFormat={getDateFormatPattern(locale)}
+          style={{ marginLeft: '8px', fontSize: '0.9rem' }}
         />
       </ListItem>
     </>

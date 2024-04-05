@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import { Box, Button, Drawer, Link, List } from '@mui/material';
@@ -38,6 +39,7 @@ export const ProfileMenuPanel: React.FC = () => {
   const { data } = useGetTopBarQuery();
   const accountListId = useAccountListId();
   const { push, pathname } = useRouter();
+  const client = useApolloClient();
   const [accountsDrawerOpen, setAccountsDrawerOpen] = useState<boolean>(false);
 
   const toggleAccountsDrawer = (): void => {
@@ -201,6 +203,7 @@ export const ProfileMenuPanel: React.FC = () => {
             onClick={() =>
               signOut({ callbackUrl: 'signOut' }).then(() => {
                 clearDataDogUser();
+                client.clearStore();
               })
             }
           >

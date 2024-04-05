@@ -12,16 +12,14 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DatePicker } from '@mui/x-date-pickers';
 import { FormikProps } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
   PersonCreateInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
 import { RingIcon } from '../../../../../../RingIcon';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
@@ -34,13 +32,14 @@ const DeceasedLabel = styled(FormControlLabel)(() => ({
 
 interface PersonShowMoreProps {
   formikProps: FormikProps<(PersonUpdateInput | PersonCreateInput) & NewSocial>;
+  showDeceased?: boolean;
 }
 
 export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
   formikProps,
+  showDeceased = true,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
 
   const {
     values: {
@@ -59,51 +58,26 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
     setFieldValue,
   } = formikProps;
 
-  const handleDateChange = (date: DateTime) => {
-    setFieldValue('anniversaryDay', date.day);
-    setFieldValue('anniversaryMonth', date.month);
-    setFieldValue('anniversaryYear', date.year);
+  const handleDateChange = (date: DateTime | null) => {
+    setFieldValue('anniversaryDay', date?.day || null);
+    setFieldValue('anniversaryMonth', date?.month || null);
+    setFieldValue('anniversaryYear', date?.year || null);
   };
   return (
     <>
-      {/* Relationship Section */}
+      {/* Legal First Name and Gender Section */}
       <ModalSectionContainer>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel id="relationship-status-label">
-                {t('Relationship Status')}
-              </InputLabel>
-              <Select
-                label={t('Relationship Status')}
-                labelId="relationship-status-label"
-                value={maritalStatus ?? ''}
-                onChange={(e) => setFieldValue('maritalStatus', e.target.value)}
-                fullWidth
-              >
-                <MenuItem selected value=""></MenuItem>
-                <MenuItem value="Single" aria-label={t('Single')}>
-                  {t('Single')}
-                </MenuItem>
-                <MenuItem value="Engaged" aria-label={t('Engaged')}>
-                  {t('Engaged')}
-                </MenuItem>
-                <MenuItem value="Married" aria-label={t('Married')}>
-                  {t('Married')}
-                </MenuItem>
-                <MenuItem value="Separated" aria-label={t('Separated')}>
-                  {t('Separated')}
-                </MenuItem>
-                <MenuItem value="Divorced" aria-label={t('Divorced')}>
-                  {t('Divorced')}
-                </MenuItem>
-                <MenuItem value="Widowed" aria-label={t('Widowed')}>
-                  {t('Widowed')}
-                </MenuItem>
-              </Select>
-            </FormControl>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label={t('Legal First Name')}
+              value={legalFirstName}
+              onChange={handleChange('legalFirstName')}
+              inputProps={{ 'aria-label': t('Legal First Name') }}
+              fullWidth
+            />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel id="gender-label">{t('Gender')}</InputLabel>
               <Select
@@ -125,31 +99,62 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           </Grid>
         </Grid>
       </ModalSectionContainer>
-      {/* Anniversary Section */}
+      {/* Relationship and Anniversary Section */}
       <ModalSectionContainer>
         <ModalSectionIcon icon={<RingIcon />} />
-        <DatePicker<Date, DateTime>
-          renderInput={(params) => (
-            <TextField
-              fullWidth
-              helperText={getDateFormatPattern(locale).toLowerCase()}
-              inputProps={{ 'aria-label': t('Anniversary') }}
-              {...params}
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="relationship-status-label">
+                {t('Relationship Status')}
+              </InputLabel>
+              <Select
+                label={t('Relationship Status')}
+                labelId="relationship-status-label"
+                value={maritalStatus ?? ''}
+                onChange={(e) => setFieldValue('maritalStatus', e.target.value)}
+                fullWidth
+              >
+                <MenuItem selected value="">
+                  {t('None')}
+                </MenuItem>
+                <MenuItem value="Single" aria-label={t('Single')}>
+                  {t('Single')}
+                </MenuItem>
+                <MenuItem value="Engaged" aria-label={t('Engaged')}>
+                  {t('Engaged')}
+                </MenuItem>
+                <MenuItem value="Married" aria-label={t('Married')}>
+                  {t('Married')}
+                </MenuItem>
+                <MenuItem value="Separated" aria-label={t('Separated')}>
+                  {t('Separated')}
+                </MenuItem>
+                <MenuItem value="Divorced" aria-label={t('Divorced')}>
+                  {t('Divorced')}
+                </MenuItem>
+                <MenuItem value="Widowed" aria-label={t('Widowed')}>
+                  {t('Widowed')}
+                </MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <CustomDateField
+              label={t('Anniversary')}
+              value={
+                anniversaryMonth && anniversaryDay
+                  ? DateTime.local(
+                      anniversaryYear ?? 1900,
+                      anniversaryMonth,
+                      anniversaryDay,
+                    )
+                  : null
+              }
+              onChange={(date) => date && handleDateChange(date)}
             />
-          )}
-          onChange={(date) => (!date ? null : handleDateChange(date))}
-          value={
-            anniversaryMonth && anniversaryDay
-              ? new Date(
-                  anniversaryYear ?? 1900,
-                  anniversaryMonth - 1,
-                  anniversaryDay,
-                )
-              : null
-          }
-          inputFormat={getDateFormatPattern(locale)}
-          label={t('Anniversary')}
-        />
+          </Grid>
+        </Grid>
       </ModalSectionContainer>
       {/* Alma Mater Section */}
       <ModalSectionContainer>
@@ -166,7 +171,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       <ModalSectionContainer>
         <ModalSectionIcon icon={<BusinessIcon />} />
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               label={t('Employer')}
               value={employer}
@@ -175,7 +180,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               label={t('Occupation')}
               value={occupation}
@@ -188,32 +193,25 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       </ModalSectionContainer>
       {/* Socials Section */}
       <PersonSocial formikProps={formikProps} />
-      {/* Legal First Name & Deceased Section */}
-      <ModalSectionContainer>
-        <TextField
-          label={t('Legal First Name')}
-          value={legalFirstName}
-          onChange={handleChange('legalFirstName')}
-          inputProps={{ 'aria-label': t('Legal First Name') }}
-          fullWidth
-        />
-      </ModalSectionContainer>
-      <ModalSectionContainer>
-        <Grid container alignItems="center">
-          <Grid container item xs={6} alignItems="center">
-            <DeceasedLabel
-              control={
-                <Checkbox
-                  checked={!!deceased}
-                  onChange={() => setFieldValue('deceased', !deceased)}
-                  color="secondary"
-                />
-              }
-              label={t('Deceased')}
-            />
+      {/*Deceased Section */}
+      {showDeceased && (
+        <ModalSectionContainer>
+          <Grid container alignItems="center">
+            <Grid container item xs={6} alignItems="center">
+              <DeceasedLabel
+                control={
+                  <Checkbox
+                    checked={!!deceased}
+                    onChange={() => setFieldValue('deceased', !deceased)}
+                    color="secondary"
+                  />
+                }
+                label={t('Deceased')}
+              />
+            </Grid>
           </Grid>
-        </Grid>
-      </ModalSectionContainer>
+        </ModalSectionContainer>
+      )}
     </>
   );
 };

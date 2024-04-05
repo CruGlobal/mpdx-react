@@ -21,7 +21,7 @@ import { gql } from 'graphql-tag';
 import seedrandom from 'seedrandom';
 import { DeepPartial } from 'ts-essentials';
 import schema from 'src/graphql/schema.graphql';
-import { createCache } from 'src/lib/apolloCache';
+import { createCache } from 'src/lib/apollo/cache';
 
 const seed = 'seed';
 const rng = seedrandom(seed);
