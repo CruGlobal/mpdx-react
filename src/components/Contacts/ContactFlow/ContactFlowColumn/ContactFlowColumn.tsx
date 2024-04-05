@@ -7,6 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useDrop } from 'react-dnd';
+import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   ContactsContext,
   ContactsType,
@@ -16,7 +17,6 @@ import {
   ContactFilterStatusEnum,
   IdValue,
 } from 'src/graphql/types.generated';
-import { useContactsQuery } from '../../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../../theme';
 import { useLoadConstantsQuery } from '../../../Constants/LoadConstants.generated';
 import { InfiniteList } from '../../../InfiniteList/InfiniteList';

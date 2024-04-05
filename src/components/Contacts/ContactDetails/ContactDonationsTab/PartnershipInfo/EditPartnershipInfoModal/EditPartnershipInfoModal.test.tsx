@@ -5,16 +5,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import {
-  GqlMockedProvider,
-  gqlMock,
-} from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import {
   ContactDonorAccountsFragment,

@@ -5,7 +5,7 @@ import { Box, IconButton } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import i18n from 'i18next';
 import { makeStyles } from 'tss-react/mui';
-import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
+import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import theme from '../../../../theme';
 import AppealDetailsNoData from './AppealDetailsNoData';
 

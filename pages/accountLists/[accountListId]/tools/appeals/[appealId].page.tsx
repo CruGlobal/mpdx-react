@@ -4,10 +4,10 @@ import { Box, Container, Theme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { AppealProvider } from 'src/components/Tool/Appeal/AppealContextProvider/AppealContextProvider';
+import AppealDetailsMain from 'src/components/Tool/Appeal/AppealDetails/AppealDetailsMain';
+import AppealDrawer from 'src/components/Tool/Appeal/AppealDrawer/AppealDrawer';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { AppealProvider } from '../../../../../src/components/Tool/Appeal/AppealContextProvider/AppealContextProvider';
-import AppealDetailsMain from '../../../../../src/components/Tool/Appeal/AppealDetails/AppealDetailsMain';
-import AppealDrawer from '../../../../../src/components/Tool/Appeal/AppealDrawer/AppealDrawer';
 import { testAppeal2 } from './testAppeal';
 
 const useStyles = makeStyles()((theme: Theme) => ({

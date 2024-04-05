@@ -4,6 +4,7 @@ import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   ActivityTypeEnum,
   ContactFilterSetInput,
@@ -12,7 +13,6 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { ContactsDocument } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
 import Loading from '../../Loading';
 import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';

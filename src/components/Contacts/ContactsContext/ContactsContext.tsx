@@ -9,19 +9,19 @@ import React, {
   useState,
 } from 'react';
 import { type DebouncedFunc, debounce, omit } from 'lodash';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
-import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useLocale } from 'src/hooks/useLocale';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   ContactFiltersQuery,
   useContactFiltersQuery,
   useContactsQuery,
-} from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+} from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   coordinatesFromContacts,
   getRedirectPathname,
-} from '../../../../pages/accountLists/[accountListId]/contacts/helpers';
+} from 'pages/accountLists/[accountListId]/contacts/helpers';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
+import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { useMassSelection } from '../../../hooks/useMassSelection';
 import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';

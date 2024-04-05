@@ -8,7 +8,7 @@ import { cloneDeep } from 'lodash';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
 import { DonationsReportTable } from './DonationsReportTable';

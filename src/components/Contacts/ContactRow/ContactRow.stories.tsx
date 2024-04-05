@@ -2,8 +2,8 @@ import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import { DateTime } from 'luxon';
 import { withDesign } from 'storybook-addon-designs';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
-import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { ContactRow } from './ContactRow';
 import {
   ContactRowFragment,

@@ -1,7 +1,7 @@
 import { NextRouter } from 'next/router';
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import TestRouter from '../../../__tests__/util/TestRouter';
+import TestRouter from '__tests__/util/TestRouter';
 import Loading from '.';
 
 describe('Loading', () => {

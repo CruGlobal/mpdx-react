@@ -2,12 +2,12 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from 'src/graphql/types.generated';
-import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import ExportPhysical from './ExportPhysical';
 import { CreateExportedContactsMutation } from './ExportPhysical.generated';

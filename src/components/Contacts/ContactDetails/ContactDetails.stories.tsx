@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from './ContactDetailContext';
 import { ContactDetails } from './ContactDetails';
 import { GetContactDetailsHeaderDocument } from './ContactDetailsHeader/ContactDetailsHeader.generated';

@@ -2,10 +2,10 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { StatusEnum } from 'src/graphql/types.generated';
-import TestRouter from '../../../../__tests__/util/TestRouter';
 import theme from '../../../theme';
 import { ContactsMapPanel } from './ContactsMapPanel';
 
