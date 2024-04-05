@@ -91,7 +91,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
         }),
       1000,
     ),
-    [],
+    [accountListId],
   );
 
   const defaultOptions: Option[] = [
