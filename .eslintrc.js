@@ -13,6 +13,7 @@ module.exports = {
   ],
   rules: {
     '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
     'import/no-duplicates': 'error',
     'import/extensions': 'error',
     'import/order': [
