@@ -71,7 +71,7 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-export interface address {
+export interface Address {
   street: string;
   city: string;
   state?: string;

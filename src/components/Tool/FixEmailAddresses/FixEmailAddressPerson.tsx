@@ -95,7 +95,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-export interface email {
+export interface Email {
   source: string;
   date: string;
   address: string;

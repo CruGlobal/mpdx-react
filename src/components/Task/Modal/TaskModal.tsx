@@ -20,9 +20,9 @@ export interface TaskModalProps {
 }
 
 export enum TaskModalTabsEnum {
-  details = '1',
-  contacts = '2',
-  comments = '3',
+  Details = '1',
+  Contacts = '2',
+  Comments = '3',
 }
 
 const TaskModal = ({

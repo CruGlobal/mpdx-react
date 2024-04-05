@@ -15,7 +15,7 @@ jest.mock('next-auth/react', () => ({
   signIn: jest.fn(),
 }));
 
-interface getServerSidePropsReturn {
+interface GetServerSidePropsReturn {
   props: LoginProps;
   redirect: unknown;
 }
@@ -68,7 +68,7 @@ describe('Login - OKTA', () => {
     it('should redirect user to account list page', async () => {
       const { props, redirect } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
@@ -83,7 +83,7 @@ describe('Login - OKTA', () => {
 
       const { props, redirect } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(props).toEqual({
         signInButtonText: 'Sign In',
@@ -102,7 +102,7 @@ describe('Login - OKTA', () => {
     it('should pass down props and render login', async () => {
       const { props, redirect } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(props).toEqual({
         signInButtonText: 'Sign In',
@@ -117,7 +117,7 @@ describe('Login - OKTA', () => {
         'cookieOne=valueOne;mpdx-handoff.redirect-url=http://URL.org;cookieTwo=valueTwo;';
       const { props, redirect } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(props).toEqual({
         signInButtonText: 'Sign In',
@@ -140,7 +140,7 @@ describe('Login - OKTA', () => {
       context.req.headers.cookie = '';
       const { props } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       const { queryByTestId, getByRole } = render(<Components props={props} />);
 
@@ -165,7 +165,7 @@ describe('Login - OKTA', () => {
         'cookieOne=valueOne;mpdx-handoff.redirect-url=http://URL.org;';
       const { props } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       const { getByRole } = render(<Components props={props} />);
 
