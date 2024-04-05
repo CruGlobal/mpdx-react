@@ -41,9 +41,9 @@ const Components = ({ children }: PropsWithChildren) => (
 );
 
 describe('AccountList Invites', () => {
-  it('should show user details', async () => {
+  it('should show invite details, tooltip and remove invite', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, findByRole } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <AccountListInvites
@@ -60,17 +60,20 @@ describe('AccountList Invites', () => {
     ).toBeInTheDocument();
 
     expect(getByTestId('PersonRemoveIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('PersonRemoveIcon'));
 
+    userEvent.hover(getByTestId('PersonRemoveIcon'));
     await waitFor(() => {
-      expect(
-        getByText('Are you sure you want to remove the invite for'),
-      ).toBeInTheDocument();
-      userEvent.click(getByText('Yes'));
+      expect(getByText('Remove this invite from the account.')).toBeVisible();
     });
 
+    userEvent.click(getByTestId('PersonRemoveIcon'));
+
+    const modal = await findByRole('dialog');
+    expect(modal).toContainHTML('Confirm');
+    userEvent.click(getByText('Yes'));
+
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith('Successfully deleted user', {
+      expect(mockEnqueue).toHaveBeenCalledWith('Successfully removed invite', {
         variant: 'success',
       });
     });

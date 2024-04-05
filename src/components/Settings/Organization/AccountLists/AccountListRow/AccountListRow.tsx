@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { Trans , useTranslation } from 'react-i18next';
 import {
   StyledList,
   StyledListItem,
@@ -340,7 +340,9 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                                   )}
                                 </StyledListItem>
                               </StyledList>
-                              <Typography>Designations Accounts</Typography>
+                              <Typography>
+                                {t('Designations Accounts')}
+                              </Typography>
                               <StyledList>
                                 <StyledListItem>
                                   {t(
@@ -353,7 +355,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                                   )}
                                 </StyledListItem>
                               </StyledList>
-                              <Typography>Donation System</Typography>
+                              <Typography>{t('Donation System')}</Typography>
                               <StyledList>
                                 <StyledListItem>
                                   {t(
@@ -387,7 +389,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                             />
                           </>
                         }
-                        confirmButtonProps={{ disabled: reason?.length < 5 }}
+                        confirmButtonProps={{ disabled: reason.length < 5 }}
                         handleClose={() => {
                           setDeleteAccountListDialogOpen(false);
                           setReason('');
@@ -512,19 +514,16 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
         isOpen={!!removeUser}
         title={t('Confirm')}
         message={
-          <>
-            <Typography component="span">
-              {t('Are you sure you want to remove  ')}
-            </Typography>
-            <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {`${removeUser?.userFirstName} ${removeUser?.userLastName}`}
-            </Typography>
-            {t(' as a user from the account: ')}
-            <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {name}
-            </Typography>
-            {t('?')}
-          </>
+          <Trans
+            t={t}
+            defaults="Are you sure you want to remove <strong>{{firstName}} {{lastName}}</strong> as a user from the account: <strong>{{accountName}}</strong>?"
+            values={{
+              firstName: removeUser?.userFirstName,
+              lastName: removeUser?.userLastName,
+              accountName: name,
+            }}
+            shouldUnescape={true}
+          />
         }
         handleClose={() => setRemoveUser(null)}
         mutation={() => handleRemoveUser(removeUser)}
@@ -590,7 +589,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                 },
               )}
             </Typography>
-            Please explain the reason for deleting this user.
+            {t('Please explain the reason for deleting this user.')}
             <TextField
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
@@ -617,19 +616,16 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
         isOpen={!!removeCoach}
         title={t('Confirm')}
         message={
-          <>
-            <Typography component="span">
-              {t('Are you sure you want to remove  ')}
-            </Typography>
-            <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {`${removeCoach?.coachFirstName} ${removeCoach?.coachLastName}`}
-            </Typography>
-            {t(' as a coach from the account: ')}
-            <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {name}
-            </Typography>
-            {t('?')}
-          </>
+          <Trans
+            t={t}
+            defaults="Are you sure you want to remove <strong>{{firstName}} {{lastName}}</strong> as a coach from the account: <strong>{{accountName}}</strong>?"
+            values={{
+              firstName: removeCoach?.coachFirstName,
+              lastName: removeCoach?.coachLastName,
+              accountName: name,
+            }}
+            shouldUnescape={true}
+          />
         }
         mutation={() => handleRemoveCoach(removeCoach)}
         handleClose={() => setRemoveCoach(null)}

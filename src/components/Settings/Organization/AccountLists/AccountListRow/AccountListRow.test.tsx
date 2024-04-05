@@ -98,8 +98,16 @@ describe('AccountLists', () => {
 
   describe('Handling Deletions', () => {
     it('should delete an accountList', async () => {
-      const { getByRole } = render(<Components accountList={accountList} />);
+      const { getByRole, getByText, getByTestId } = render(
+        <Components accountList={accountList} />,
+      );
       const reason = 'Because I am an admin';
+
+      userEvent.hover(getByTestId('DeleteAccountListButton'));
+      await waitFor(() => {
+        expect(getByText('Permanently delete this account.')).toBeVisible();
+      });
+
       userEvent.click(getByRole('button', { name: 'Delete Account' }));
       const reasonTextField = getByRole('textbox', { name: 'Reason' });
       userEvent.type(reasonTextField, reason);
@@ -117,8 +125,7 @@ describe('AccountLists', () => {
             },
           },
         });
-        // });
-        // await waitFor(() => {
+
         expect(mockEnqueue).toHaveBeenCalledWith(
           'Successfully deleted account: Name1',
           {
@@ -129,14 +136,10 @@ describe('AccountLists', () => {
     });
 
     it('should delete users', async () => {
-      const { getByText, getAllByRole, getByRole } = render(
+      const { getAllByRole, getByRole } = render(
         <Components accountList={accountList} />,
       );
       const firstDeleteButton = getAllByRole('button', { name: 'Delete' })[0];
-      userEvent.hover(firstDeleteButton);
-      await waitFor(() => {
-        expect(getByText('Permanently delete this user.')).toBeVisible();
-      });
       userEvent.click(firstDeleteButton);
       userEvent.type(
         getAllByRole('textbox', { name: 'Reason' })[0],
@@ -167,16 +170,13 @@ describe('AccountLists', () => {
     });
 
     it('should remove coaches', async () => {
-      const { getAllByRole, getByRole, getByText } = render(
+      const { getAllByRole, getByRole, findByRole } = render(
         <Components accountList={accountList} />,
       );
 
-      userEvent.click(getAllByRole('button', { name: 'Remove' })[1]);
-      await waitFor(() => {
-        expect(
-          getByText('Are you sure you want to remove'),
-        ).toBeInTheDocument();
-      });
+      userEvent.click(getAllByRole('button', { name: 'Remove Coach' })[0]);
+      const modal = await findByRole('dialog');
+      expect(modal).toContainHTML('Are you sure you want to remove');
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
@@ -200,16 +200,14 @@ describe('AccountLists', () => {
       );
     });
     it('should remove users', async () => {
-      const { getByText, getByTestId, getByRole } = render(
+      const { getAllByRole, getByRole, findByRole } = render(
         <Components accountList={accountList} />,
       );
 
-      userEvent.click(getByTestId('RemoveUserButton'));
-      await waitFor(() => {
-        expect(
-          getByText('Are you sure you want to remove'),
-        ).toBeInTheDocument();
-      });
+      userEvent.click(getAllByRole('button', { name: 'Remove User' })[0]);
+      const modal = await findByRole('dialog');
+      expect(modal).toContainHTML('Are you sure you want to remove');
+
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {

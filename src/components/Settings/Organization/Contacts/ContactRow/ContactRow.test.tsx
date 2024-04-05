@@ -75,7 +75,7 @@ describe('ContactRow', () => {
 
   it('should handle Anonymize', async () => {
     const mutationSpy = jest.fn();
-    const { getByText } = render(
+    const { getByText, findByRole } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <ContactRow
@@ -90,14 +90,8 @@ describe('ContactRow', () => {
     );
     userEvent.click(getByText('Anonymize'));
 
-    await waitFor(() => {
-      expect(getByText('Confirm')).toBeInTheDocument();
-      expect(
-        getByText(
-          'Are you sure you want to anonymize {{name}} in {{accountList}}?',
-        ),
-      ).toBeInTheDocument();
-    });
+    const modal = await findByRole('dialog');
+    expect(modal).toContainHTML("This is permanent and can't be recovered.");
 
     userEvent.click(getByText('Yes'));
 

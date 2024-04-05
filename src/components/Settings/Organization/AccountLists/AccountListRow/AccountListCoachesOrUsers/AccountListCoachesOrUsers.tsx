@@ -171,7 +171,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                       data-testid="RemoveUserButton"
                     >
                       <IconButton
-                        aria-label={t('Remove')}
+                        aria-label={t('Remove User')}
                         color="error"
                         size="small"
                         onClick={() => {
@@ -191,7 +191,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                     data-testid="RemoveCoachButton"
                   >
                     <IconButton
-                      aria-label={t('Remove')}
+                      aria-label={t('Remove Coach')}
                       color="error"
                       onClick={() => {
                         setRemoveCoach(item);

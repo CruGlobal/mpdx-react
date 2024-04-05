@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PersonRemove } from '@mui/icons-material';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useAppSettingsContext } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import * as Types from 'src/graphql/types.generated';
@@ -44,12 +44,12 @@ export const AccountListInvites: React.FC<Props> = ({
         cache.gc();
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Successfully deleted user'), {
+        enqueueSnackbar(t('Successfully removed invite'), {
           variant: 'success',
         });
       },
       onError: () => {
-        enqueueSnackbar(t('{{appName}} could not delete user', { appName }), {
+        enqueueSnackbar(t('{{appName}} could not remove invite', { appName }), {
           variant: 'error',
         });
       },
@@ -104,19 +104,15 @@ export const AccountListInvites: React.FC<Props> = ({
         isOpen={!!deleteInvite}
         title={t('Confirm')}
         message={
-          <>
-            <Typography component="span">
-              {t('Are you sure you want to remove the invite for ')}
-            </Typography>
-            <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {deleteInvite?.recipientEmail}
-            </Typography>
-            {t(' from the account: ')}
-            <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {name}
-            </Typography>
-            {t('?')}
-          </>
+          <Trans
+            t={t}
+            defaults="Are you sure you want to remove the invite for <strong>{{email}}</strong> from the account: <strong>{{accountName}}</strong>?"
+            values={{
+              email: deleteInvite?.recipientEmail,
+              accountName: name,
+            }}
+            shouldUnescape={true}
+          />
         }
         mutation={() => handleInviteDelete(deleteInvite)}
         handleClose={() => setDeleteInvite(null)}

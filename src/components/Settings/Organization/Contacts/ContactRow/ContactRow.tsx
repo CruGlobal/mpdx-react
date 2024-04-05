@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   ContactPeople,
@@ -125,7 +125,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
   return (
     <>
       <Grid container alignItems="center">
-        <Grid item xs={6} sx={{ paddingRight: '16px' }}>
+        <Grid item xs={6} sx={{ paddingRight: 2 }}>
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -189,13 +189,17 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
       <Confirmation
         isOpen={anonymizeDialogOpen}
         title={t('Confirm')}
-        subtitle={t(
-          'Are you sure you want to anonymize {{name}} in {{accountList}}?',
-          {
-            name: name.toLocaleUpperCase(),
-            accountList: accountList?.name?.toLocaleUpperCase(),
-          },
-        )}
+        subtitle={
+          <Trans
+            t={t}
+            defaults="Are you sure you want to anonymize <i>{{name}}</i> in <i>{{accountList}}</i>?"
+            values={{
+              name,
+              accountList: accountList?.name,
+            }}
+            shouldUnescape={true}
+          />
+        }
         message={t(
           "This is permanent and can't be recovered. This person will be removed only in your MPDx organization. You can request removal across all other systems at dsar@cru.org. Only anonymize a contact if you need to fulfill a legal requirement or the person has made this request, AND you are 100% confident that you are looking at the correct contact.",
         )}
