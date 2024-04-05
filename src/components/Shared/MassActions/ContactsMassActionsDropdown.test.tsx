@@ -21,7 +21,7 @@ const mockEnqueue = jest.fn();
 const openTaskModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
-jest.mock('../../../../src/hooks/useAccountListId');
+jest.mock('src/hooks/useAccountListId');
 jest.mock('next-auth/react');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

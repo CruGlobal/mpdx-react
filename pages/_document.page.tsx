@@ -10,7 +10,7 @@ import Document, {
 import Script from 'next/script';
 import React, { ReactElement } from 'react';
 import { ServerStyleSheets } from '@mui/styles';
-import theme from '../src/theme';
+import theme from 'src/theme';
 
 class MyDocument extends Document {
   render(): ReactElement {

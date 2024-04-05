@@ -2,13 +2,10 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import theme from 'src/theme';
-import TestRouter from '../../../../__tests__/util/TestRouter';
-import {
-  GqlMockedProvider,
-  gqlMock,
-} from '../../../../__tests__/util/graphqlMocking';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { ContactRow } from './ContactRow';
 import {

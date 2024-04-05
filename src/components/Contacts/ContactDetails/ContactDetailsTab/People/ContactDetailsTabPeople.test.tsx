@@ -6,12 +6,12 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import {
   render,
   waitFor,
   within,
-} from '../../../../../../__tests__/util/testingLibraryReactMock';
+} from '__tests__/util/testingLibraryReactMock';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import { ContactDetailsTabPeople } from './ContactDetailsTabPeople';

@@ -3,11 +3,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { VirtuosoMockContext } from 'react-virtuoso';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import useTaskModal from 'src/hooks/useTaskModal';
 import { dispatch } from 'src/lib/analytics';
-import TestRouter from '../../../../__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import useTaskModal from '../../../../src/hooks/useTaskModal';
-import theme from '../../../../src/theme';
+import theme from 'src/theme';
 import { TasksQuery } from './Tasks.generated';
 import Tasks from './[[...contactId]].page';
 
@@ -24,7 +24,7 @@ const task = {
   contacts: { nodes: [{ id: '2', name: 'Test Person' }] },
 };
 
-jest.mock('../../../../src/hooks/useTaskModal');
+jest.mock('src/hooks/useTaskModal');
 
 const openTaskModal = jest.fn();
 

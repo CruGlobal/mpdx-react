@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { taskFiltersTabs } from '../../src/utils/tasks/taskFilterTabs';
+import { taskFiltersTabs } from 'src/utils/tasks/taskFilterTabs';
 import {
   clearNextAuthSessionCookies,
   cookieDefaultInfo,

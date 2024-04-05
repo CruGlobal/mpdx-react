@@ -6,10 +6,10 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetTasksForAddingTagsQuery } from 'src/components/Task/MassActions/AddTags/TasksAddTags.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from './TasksMassActionsDropdown';
 
@@ -38,7 +38,7 @@ const mocks = {
   },
 };
 
-jest.mock('../../../../src/hooks/useAccountListId');
+jest.mock('src/hooks/useAccountListId');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

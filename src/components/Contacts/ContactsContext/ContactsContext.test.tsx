@@ -3,11 +3,11 @@ import { Box, Button, Typography } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
-import TestRouter from '../../../../__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ContactFiltersQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { ContactsWrapper } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { useMassSelection } from '../../../hooks/useMassSelection';
 import theme from '../../../theme';
 import {
@@ -24,7 +24,7 @@ const accountListId = 'account-list-1';
 const push = jest.fn();
 const isReady = true;
 
-jest.mock('../../../../src/hooks/useMassSelection');
+jest.mock('src/hooks/useMassSelection');
 
 (useMassSelection as jest.Mock).mockReturnValue({
   selectionType: ListHeaderCheckBoxState.unchecked,

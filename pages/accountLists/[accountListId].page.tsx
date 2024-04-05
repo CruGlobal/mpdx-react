@@ -3,12 +3,12 @@ import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
+import Dashboard from 'src/components/Dashboard';
 import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import useTaskModal from 'src/hooks/useTaskModal';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import { suggestArticles } from 'src/lib/helpScout';
-import Dashboard from '../../src/components/Dashboard';
-import useGetAppSettings from '../../src/hooks/useGetAppSettings';
-import useTaskModal from '../../src/hooks/useTaskModal';
 import {
   GetDashboardDocument,
   GetDashboardQuery,

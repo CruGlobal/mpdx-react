@@ -11,31 +11,31 @@ import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
+import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import Loading from 'src/components/Loading';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
+import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
+import NullState from 'src/components/Shared/Filters/NullState/NullState';
+import {
+  ListHeader,
+  headerHeight,
+} from 'src/components/Shared/Header/ListHeader';
+import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import theme from 'src/theme';
-import { InfiniteList } from '../../../../src/components/InfiniteList/InfiniteList';
-import { SidePanelsLayout } from '../../../../src/components/Layouts/SidePanelsLayout';
-import Loading from '../../../../src/components/Loading';
-import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
-import NullState from '../../../../src/components/Shared/Filters/NullState/NullState';
-import {
-  ListHeader,
-  headerHeight,
-} from '../../../../src/components/Shared/Header/ListHeader';
-import { TaskRow } from '../../../../src/components/Task/TaskRow/TaskRow';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { useMassSelection } from '../../../../src/hooks/useMassSelection';
 import {
   TaskFilterTabsTypes,
   taskFiltersTabs,
-} from '../../../../src/utils/tasks/taskFilterTabs';
+} from 'src/utils/tasks/taskFilterTabs';
 import {
   TaskFiltersQuery,
   useTaskFiltersQuery,

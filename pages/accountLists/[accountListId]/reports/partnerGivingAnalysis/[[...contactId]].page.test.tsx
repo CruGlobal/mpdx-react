@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
 import theme from 'src/theme';
-import { ContactsProvider } from '../../../../../src/components/Contacts/ContactsContext/ContactsContext';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
 

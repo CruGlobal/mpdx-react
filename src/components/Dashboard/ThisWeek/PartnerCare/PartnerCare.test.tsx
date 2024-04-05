@@ -1,11 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
+import { fireEvent, render } from '__tests__/util/testingLibraryReactMock';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
-import {
-  fireEvent,
-  render,
-} from '../../../../../__tests__/util/testingLibraryReactMock';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';

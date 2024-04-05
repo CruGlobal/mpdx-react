@@ -4,9 +4,9 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import * as Types from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { GetOrganizationsQuery } from '../Organizations.generated';
 import { OrganizationAddAccountModal } from './OrganizationAddAccountModal';
 
