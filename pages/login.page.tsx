@@ -47,6 +47,7 @@ const Login = ({
   partners in a quick and easy way.`}
       >
         <Button
+          id="sign-in-button"
           size="large"
           variant="contained"
           onClick={() => signIn(signInAuthProviderId)}
