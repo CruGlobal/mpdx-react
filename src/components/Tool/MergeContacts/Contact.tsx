@@ -72,13 +72,6 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-export interface Address {
-  street: string;
-  city: string;
-  state?: string;
-  zip: string;
-}
-
 interface Props {
   contact1: RecordInfoFragment;
   contact2: RecordInfoFragment;

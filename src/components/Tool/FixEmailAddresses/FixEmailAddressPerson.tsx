@@ -95,13 +95,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-export interface Email {
-  source: string;
-  date: string;
-  address: string;
-  primary: boolean;
-}
-
 interface FixEmailAddressPersonProps {
   name: string;
   emails: EmailAddressData[];

@@ -19,12 +19,6 @@ export interface TaskModalProps {
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
 }
 
-export enum TaskModalTabsEnum {
-  Details = '1',
-  Contacts = '2',
-  Comments = '3',
-}
-
 const TaskModal = ({
   taskId,
   onClose,

@@ -56,12 +56,6 @@ export interface TaskModalCommentsListProps {
   commentCount?: number;
 }
 
-export enum TaskModalTabsEnum {
-  Details = '1',
-  Contacts = '2',
-  Comments = '3',
-}
-
 export const TaskModalCommentsList = ({
   taskId,
   accountListId,
