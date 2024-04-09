@@ -35,6 +35,7 @@ import {
 } from './FilterPanel.mocks';
 
 const onSelectedFiltersChanged = jest.fn();
+const onHandleClearSearch = jest.fn();
 const onClose = jest.fn();
 
 const mockEnqueue = jest.fn();
@@ -70,6 +71,7 @@ describe('FilterPanel', () => {
     selectedFilters: FilterInput;
     onClose: () => void;
     onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
+    onHandleClearSearch?: () => void;
   }
 
   const ContactsProviderFilterWrapper: React.FC<Props> = ({
@@ -79,6 +81,7 @@ describe('FilterPanel', () => {
     selectedFilters,
     onClose,
     onSelectedFiltersChanged,
+    onHandleClearSearch,
   }) => {
     return (
       <TestRouter router={router}>
@@ -100,6 +103,7 @@ describe('FilterPanel', () => {
             selectedFilters={selectedFilters}
             onClose={onClose}
             onSelectedFiltersChanged={onSelectedFiltersChanged}
+            onHandleClearSearch={onHandleClearSearch}
           />
         </ContactsProvider>
       </TestRouter>
@@ -686,6 +690,7 @@ describe('FilterPanel', () => {
                 }}
                 onClose={onClose}
                 onSelectedFiltersChanged={onSelectedFiltersChanged}
+                onHandleClearSearch={onHandleClearSearch}
               />
             </GqlMockedProvider>
           </ThemeProvider>
@@ -701,6 +706,7 @@ describe('FilterPanel', () => {
 
       userEvent.click(getByText('Clear All'));
       expect(onSelectedFiltersChanged).toHaveBeenCalledWith({});
+      expect(onHandleClearSearch).toHaveBeenCalled();
     });
 
     it('no filters', async () => {
