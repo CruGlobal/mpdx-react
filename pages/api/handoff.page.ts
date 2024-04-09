@@ -6,6 +6,7 @@ import {
   GetDefaultAccountQuery,
   GetDefaultAccountQueryVariables,
 } from './getDefaultAccount.generated';
+import { logErrorOnRollbar } from './utils/rollBar';
 
 if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET env var is not set');
@@ -63,7 +64,8 @@ const handoff = async (
   try {
     const redirectUrl = await returnRedirectUrl(req);
     res.redirect(redirectUrl);
-  } catch (err) {
+  } catch (error) {
+    logErrorOnRollbar(error, '/api/handoff.page');
     res.redirect('/');
   }
 };
