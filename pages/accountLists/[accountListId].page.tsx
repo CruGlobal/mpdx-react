@@ -3,6 +3,7 @@ import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
+import { logErrorOnRollbar } from 'pages/api/utils/rollBar';
 import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import { suggestArticles } from 'src/lib/helpScout';
@@ -116,7 +117,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         session,
       },
     };
-  } catch {
+  } catch (error) {
+    logErrorOnRollbar(error, '/accountLists/[accountListId].page');
     return {
       redirect: {
         destination: '/',
