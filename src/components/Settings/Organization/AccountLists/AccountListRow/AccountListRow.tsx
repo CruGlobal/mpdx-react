@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
-import { Trans , useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   StyledList,
   StyledListItem,
@@ -25,6 +25,11 @@ import {
 import * as Types from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
+import {
+  SearchOrganizationsAccountListsDocument,
+  SearchOrganizationsAccountListsQuery,
+  SearchOrganizationsAccountListsQueryVariables,
+} from '../AccountLists.generated';
 import { AccountListCoachesOrUsers } from './AccountListCoachesOrUsers/AccountListCoachesOrUsers';
 import { AccountListInvites } from './AccountListInvites/AccountListInvites';
 import {
@@ -37,6 +42,8 @@ import { BorderBottomBox, HeaderBox, WarningBox } from './accountListRowHelper';
 
 export interface AccountListRowProps {
   accountList: OrganizationsAccountList;
+  search: string;
+  organizationId: string;
 }
 
 const BorderRightGrid = styled(Grid)(() => ({
@@ -54,6 +61,8 @@ const NoItemsBox = styled(Box)(() => ({
 
 export const AccountListRow: React.FC<AccountListRowProps> = ({
   accountList,
+  search,
+  organizationId,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -115,12 +124,46 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
           },
         },
         update: (cache) => {
-          cache.evict({ id: `AccountListUsers:${item.id}` });
-          cache.gc();
+          const deletedUserId = item.userId;
+          const query = {
+            query: SearchOrganizationsAccountListsDocument,
+            variables: {
+              input: {
+                organizationId,
+                search,
+              },
+            },
+          };
+
+          const dataFromCache = cache.readQuery<
+            SearchOrganizationsAccountListsQuery,
+            SearchOrganizationsAccountListsQueryVariables
+          >(query);
+
+          if (dataFromCache) {
+            const data = {
+              ...dataFromCache,
+              searchOrganizationsAccountLists: {
+                ...dataFromCache.searchOrganizationsAccountLists,
+                accountLists:
+                  dataFromCache.searchOrganizationsAccountLists.accountLists.map(
+                    (list) => ({
+                      ...list,
+                      accountListUsers: list?.accountListUsers
+                        ? list?.accountListUsers.filter(
+                            (user) => user?.userId !== deletedUserId,
+                          )
+                        : null,
+                    }),
+                  ),
+              },
+            };
+            cache.writeQuery({ ...query, data });
+          }
         },
         onCompleted: () => {
           enqueueSnackbar(
-            t('Successfully deleted user: {{fullName}}', { fullName }),
+            t('Deletion process enqueued: {{fullName}}', { fullName }),
             {
               variant: 'success',
             },
@@ -166,7 +209,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
         cache.gc();
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Successfully deleted account: {{name}}', { name }), {
+        enqueueSnackbar(t('Deletion process enqueued: {{name}}', { name }), {
           variant: 'success',
         });
       },

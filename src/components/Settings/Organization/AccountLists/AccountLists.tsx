@@ -87,6 +87,8 @@ export const AccountLists: React.FC = () => {
               <AccountListRow
                 key={`accountList-${index}-${accountList.id}`}
                 accountList={accountList}
+                search={search}
+                organizationId={selectedOrganizationId}
               />
             ) : null;
           }}
@@ -124,7 +126,7 @@ export const AccountLists: React.FC = () => {
                   onClick={clearFilters}
                   variant="contained"
                 >
-                  {t('Reset All Search Filters')}
+                  {t('Reset Search')}
                 </Button>
               </NullStateBox>
             </Box>

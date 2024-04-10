@@ -27,12 +27,10 @@ const dateTimeFormat = (date: DateTime | null, locale: string): string => {
   }).format(date.toJSDate());
 };
 
-export type UserOrCoach =
-  | Types.AccountListUsers
-  | Types.OrganizationAccountListCoaches;
-
 interface Props {
-  accountListItems: Array<Types.Maybe<UserOrCoach>>;
+  accountListItems: Array<
+    Types.Maybe<Types.AccountListUsers | Types.OrganizationAccountListCoaches>
+  >;
   setRemoveUser: Dispatch<SetStateAction<Types.AccountListUsers | null>>;
   setDeleteUser: Dispatch<SetStateAction<Types.AccountListUsers | null>>;
   setRemoveCoach: Dispatch<

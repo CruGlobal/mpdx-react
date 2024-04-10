@@ -165,7 +165,7 @@ describe('AccountLists', () => {
         getByText('No account lists match your search filters.'),
       ).toBeInTheDocument();
 
-      userEvent.click(getByText('Reset All Search Filters'));
+      userEvent.click(getByText('Reset Search'));
 
       expect(clearFilters).toHaveBeenCalledTimes(1);
     });

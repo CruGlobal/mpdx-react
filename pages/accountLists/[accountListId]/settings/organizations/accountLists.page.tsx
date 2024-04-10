@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import {
   Autocomplete,
@@ -28,25 +28,27 @@ const HeaderAndDropdown = styled(Box)(() => ({
   alignItems: 'center',
 }));
 
-type SelectedOrg = SettingsOrganizationFragment | null | undefined;
-
 const AccountListsOrganizations = (): ReactElement => {
   const { t } = useTranslation();
-  const savedOrg = window.localStorage.getItem('admin-org');
-  const selectedOrg: SelectedOrg = savedOrg ? JSON.parse(savedOrg) : null;
+  const [selectedOrganization, setSelectedOrganization] = useState<
+    SettingsOrganizationFragment | null | undefined
+  >(null);
+
+  useEffect(() => {
+    if (!window?.localStorage) return;
+    const savedOrg = window.localStorage.getItem('admin-org');
+    savedOrg && setSelectedOrganization(JSON.parse(savedOrg));
+  }, []);
 
   const [search, setSearch] = useState('');
   const isNarrowScreen = useMediaQuery('(max-width:600px)');
-  const [selectedOrganization, setSelectedOrganization] = useState<
-    SettingsOrganizationFragment | null | undefined
-  >(selectedOrg);
+
   const { data } = useOrganizationsQuery();
   const organizations = data?.getOrganizations.organizations;
   const contactSearch = useDebouncedValue(search, 1000);
 
   const clearFilters = () => {
     setSearch('');
-    setSelectedOrganization(undefined);
   };
 
   return (

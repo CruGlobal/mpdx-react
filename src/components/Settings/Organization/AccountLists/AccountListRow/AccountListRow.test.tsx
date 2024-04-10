@@ -37,7 +37,11 @@ const Components: React.FC<AccountListRowProps> = ({ accountList }) => (
     <TestRouter router={router}>
       <GqlMockedProvider onCall={mutationSpy}>
         <ThemeProvider theme={theme}>
-          <AccountListRow accountList={accountList} />
+          <AccountListRow
+            accountList={accountList}
+            search=""
+            organizationId=""
+          />
         </ThemeProvider>
       </GqlMockedProvider>
     </TestRouter>
@@ -47,7 +51,7 @@ const Components: React.FC<AccountListRowProps> = ({ accountList }) => (
 describe('AccountLists', () => {
   it('should show details', () => {
     const { getByText, queryByText } = render(
-      <Components accountList={accountList} />,
+      <Components accountList={accountList} search="" organizationId="" />,
     );
     expect(getByText('Name1')).toBeInTheDocument();
 
@@ -72,6 +76,8 @@ describe('AccountLists', () => {
           accountListUsersInvites: [],
           accountListCoachInvites: [],
         }}
+        search=""
+        organizationId=""
       />,
     );
 
@@ -87,6 +93,8 @@ describe('AccountLists', () => {
           accountListUsers: [],
           accountListCoaches: [],
         }}
+        search=""
+        organizationId=""
       />,
     );
 
@@ -99,7 +107,7 @@ describe('AccountLists', () => {
   describe('Handling Deletions', () => {
     it('should delete an accountList', async () => {
       const { getByRole, getByText, getByTestId } = render(
-        <Components accountList={accountList} />,
+        <Components accountList={accountList} search="" organizationId="" />,
       );
       const reason = 'Because I am an admin';
 
@@ -114,20 +122,12 @@ describe('AccountLists', () => {
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
-        expect(mutationSpy.mock.calls[0][0]).toMatchObject({
-          operation: {
-            operationName: 'DeleteAccountList',
-            variables: {
-              input: {
-                accountListId: '1111',
-                reason: reason,
-              },
-            },
-          },
+        expect(mutationSpy).toHaveGraphqlOperation('DeleteAccountList', {
+          input: { accountListId: '1111', reason },
         });
 
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Successfully deleted account: Name1',
+          'Deletion process enqueued: Name1',
           {
             variant: 'success',
           },
@@ -137,7 +137,7 @@ describe('AccountLists', () => {
 
     it('should delete users', async () => {
       const { getAllByRole, getByRole } = render(
-        <Components accountList={accountList} />,
+        <Components accountList={accountList} search="" organizationId="" />,
       );
       const firstDeleteButton = getAllByRole('button', { name: 'Delete' })[0];
       userEvent.click(firstDeleteButton);
@@ -161,7 +161,7 @@ describe('AccountLists', () => {
         });
 
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Successfully deleted user: userFirstName userLastName',
+          'Deletion process enqueued: userFirstName userLastName',
           {
             variant: 'success',
           },
@@ -171,7 +171,7 @@ describe('AccountLists', () => {
 
     it('should remove coaches', async () => {
       const { getAllByRole, getByRole, findByRole } = render(
-        <Components accountList={accountList} />,
+        <Components accountList={accountList} search="" organizationId="" />,
       );
 
       userEvent.click(getAllByRole('button', { name: 'Remove Coach' })[0]);
@@ -201,7 +201,7 @@ describe('AccountLists', () => {
     });
     it('should remove users', async () => {
       const { getAllByRole, getByRole, findByRole } = render(
-        <Components accountList={accountList} />,
+        <Components accountList={accountList} search="" organizationId="" />,
       );
 
       userEvent.click(getAllByRole('button', { name: 'Remove User' })[0]);
