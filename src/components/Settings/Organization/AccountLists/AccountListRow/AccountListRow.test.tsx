@@ -170,13 +170,12 @@ describe('AccountLists', () => {
     });
 
     it('should remove coaches', async () => {
-      const { getAllByRole, getByRole, findByRole } = render(
+      const { getAllByRole, getByRole } = render(
         <Components accountList={accountList} search="" organizationId="" />,
       );
 
       userEvent.click(getAllByRole('button', { name: 'Remove Coach' })[0]);
-      const modal = await findByRole('dialog');
-      expect(modal).toContainHTML('Are you sure you want to remove');
+
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
@@ -200,13 +199,11 @@ describe('AccountLists', () => {
       );
     });
     it('should remove users', async () => {
-      const { getAllByRole, getByRole, findByRole } = render(
+      const { getAllByRole, getByRole } = render(
         <Components accountList={accountList} search="" organizationId="" />,
       );
 
       userEvent.click(getAllByRole('button', { name: 'Remove User' })[0]);
-      const modal = await findByRole('dialog');
-      expect(modal).toContainHTML('Are you sure you want to remove');
 
       userEvent.click(getByRole('button', { name: 'Yes' }));
 

@@ -18,9 +18,7 @@ import Modal from '../Modal';
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
-const StyledDialogContentText = styled(DialogContentText, {
-  shouldForwardProp: (prop) => prop !== 'component',
-})(({ theme }) => ({
+const StyledDialogContentText = styled(DialogContentText)(({ theme }) => ({
   color: theme.palette.cruGrayDark.main,
 }));
 

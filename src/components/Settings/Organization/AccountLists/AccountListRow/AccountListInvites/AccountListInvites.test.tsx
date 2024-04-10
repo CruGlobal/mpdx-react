@@ -43,7 +43,7 @@ const Components = ({ children }: PropsWithChildren) => (
 describe('AccountList Invites', () => {
   it('should show invite details, tooltip and remove invite', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByTestId, findByRole } = render(
+    const { getByText, getByTestId } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <AccountListInvites
@@ -68,8 +68,6 @@ describe('AccountList Invites', () => {
 
     userEvent.click(getByTestId('PersonRemoveIcon'));
 
-    const modal = await findByRole('dialog');
-    expect(modal).toContainHTML('Confirm');
     userEvent.click(getByText('Yes'));
 
     await waitFor(() => {

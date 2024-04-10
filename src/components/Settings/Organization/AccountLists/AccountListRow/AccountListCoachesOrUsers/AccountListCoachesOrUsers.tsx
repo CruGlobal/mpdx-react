@@ -11,21 +11,8 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as Types from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { dateTimeFormat } from 'src/lib/intlFormat/intlFormat';
 import { BorderBottomBox, HeaderBox } from '../accountListRowHelper';
-
-const dateTimeFormat = (date: DateTime | null, locale: string): string => {
-  if (date === null) {
-    return '';
-  }
-  return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    timeZoneName: 'short',
-  }).format(date.toJSDate());
-};
 
 interface Props {
   accountListItems: Array<

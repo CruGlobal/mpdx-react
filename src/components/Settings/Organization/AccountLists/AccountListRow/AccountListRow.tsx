@@ -109,12 +109,6 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
         });
         return;
       }
-      if (!reason) {
-        enqueueSnackbar(t('You must include a reason for this action.'), {
-          variant: 'error',
-        });
-        return;
-      }
 
       await deleteUserMutation({
         variables: {
@@ -187,12 +181,6 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
 
     if (!id) {
       enqueueSnackbar(errorMessage, {
-        variant: 'error',
-      });
-      return;
-    }
-    if (!reason) {
-      enqueueSnackbar(t('You must include a reason for this action.'), {
         variant: 'error',
       });
       return;

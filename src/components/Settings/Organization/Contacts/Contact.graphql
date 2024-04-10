@@ -1,4 +1,3 @@
-
 mutation AnonymizeContact($input: ContactAnonymizeMutationInput!) {
   anonymizeContact(input: $input) {
     clientMutationId
