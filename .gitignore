@@ -60,3 +60,4 @@ build-storybook.log
 
 # Lighthouse
 .lighthouseci
+lighthouse-results.md

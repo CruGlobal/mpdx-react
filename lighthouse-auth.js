@@ -68,7 +68,7 @@ async function loginToOkta(page) {
   await redirectFromOkta;
 }
 
-async function main(browser) {
+async function main(browser, requestedUrl) {
   const lighthouse = await import(
     /* webpackChunkName: 'lighthouse' */
     'lighthouse'
@@ -80,12 +80,10 @@ async function main(browser) {
   const origin = process.env.PREVIEW_URL ?? 'http://localhost:3000';
   await login(page, origin);
 
-  const accountListsUrl = `${origin}/accountLists`;
-
   // Direct Lighthouse to use the same Puppeteer page.
   // Disable storage reset so login session is preserved.
   const result = await lighthouse.default(
-    accountListsUrl,
+    requestedUrl,
     { disableStorageReset: true },
     undefined,
     page,
@@ -94,20 +92,52 @@ async function main(browser) {
   // Direct Puppeteer to close the browser as we're done with it.
   await page.close();
 
-  // Output the result.
-  console.log(
-    `Lighthouse scores: ${Object.values(result.lhr.categories)
-      .map((category) => category.score)
-      .join(', ')}`,
-  );
-  const coreWebVitals = ['largest-contentful-paint', 'cumulative-layout-shift'];
-  Object.values(result.lhr.audits).map((audit) => {
-    if (coreWebVitals.includes(audit.id)) {
-      console.log(`${audit.title}: ${audit.displayValue}`);
-    }
-  });
+  storeResults(result);
 }
 
-module.exports = async (browser) => {
-  await main(browser);
+async function storeResults(result) {
+  const fs = await import(
+    /* webpackChunkName: 'fs' */
+    'fs'
+  );
+
+  const coreWebVitals = ['largest-contentful-paint', 'cumulative-layout-shift'];
+  let overallScores = Object.values(result.lhr.categories)
+    .map((category) => category.score)
+    .join(', ');
+  const coreWebVitalScores = [];
+  Object.values(result.lhr.audits).map((audit) => {
+    if (coreWebVitals.includes(audit.id)) {
+      coreWebVitalScores.push({
+        title: audit.title,
+        displayValue: audit.displayValue,
+        numericValue: audit.numericValue,
+        goodThreshold: audit.scoringOptions?.p10 ?? 0, // this should only happen if something goes wrong
+        badThreshold: audit.scoringOptions?.median ?? 0, // this should only happen if something goes wrong
+      });
+    }
+  });
+
+  let markdownResults = `${result.lhr.finalDisplayedUrl}\n<details><summary>Scores</summary>\n\n* **Overall Scores:** ${overallScores}\n`;
+
+  // Output the result.
+  console.log(`Lighthouse scores: ${overallScores}`);
+
+  let markdownWarning = '';
+  coreWebVitalScores.forEach((vital) => {
+    console.log(`${vital.title}: ${vital.displayValue}`);
+    if (vital.numericValue > vital.badThreshold) {
+      markdownWarning = `> [!CAUTION]\n > `;
+    } else if (vital.numericValue > vital.goodThreshold) {
+      markdownWarning = markdownWarning ?? `> [!WARNING]\n > `;
+    }
+    markdownResults += `* **${vital.title}:** ${vital.displayValue}\n`;
+  });
+  markdownResults += '</details>\n\n';
+
+  fs.appendFile('lighthouse-results.md', markdownWarning + markdownResults);
+}
+
+module.exports = async (browser, context) => {
+  await main(browser, context.url);
 };
