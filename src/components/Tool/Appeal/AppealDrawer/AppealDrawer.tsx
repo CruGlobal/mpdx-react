@@ -5,7 +5,6 @@ import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/tes
 import theme from '../../../../theme';
 import NavToolDrawerHandle from '../../NavToolList/NavToolDrawerHandle';
 import AppealDrawerList from './AppealDrawerList';
-//import { useAppealId } from 'src/hooks/useAppealId';
 
 const useStyles = makeStyles()(() => ({
   drawer: {
