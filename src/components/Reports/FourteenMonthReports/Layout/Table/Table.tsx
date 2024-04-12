@@ -1,8 +1,8 @@
+import Link from 'next/link';
 import React, { useMemo } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
-  Link,
   Table,
   TableBody,
   TableCell,
@@ -12,6 +12,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
@@ -27,17 +29,15 @@ interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[] | undefined;
   totals: Totals[];
-  onSelectContact: (contactId: string) => void;
+  currencyType: FourteenMonthReportCurrencyType;
 }
 
 const NameTypography = styled(Typography, {
   shouldForwardProp: (prop) => prop !== 'expanded',
 })(({ expanded }: { expanded: boolean }) => ({
   marginLeft: expanded ? 0 : theme.spacing(1),
-  cursor: 'pointer',
-  '&:hover': {
-    textDecoration: 'underline',
-  },
+  '& a': { color: theme.palette.primary.main },
+  '& a:not(:hover)': { textDecoration: 'none' },
   '@media print': {
     fontSize: '14px',
   },
@@ -83,11 +83,17 @@ export const FourteenMonthReportTable: React.FC<
   orderedContacts,
   onRequestSort,
   salaryCurrency,
-  onSelectContact,
+  currencyType,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
+  const accountListId = useAccountListId();
+
+  const reportUrl =
+    currencyType === FourteenMonthReportCurrencyType.Donor
+      ? `/accountLists/${accountListId}/reports/partnerCurrency`
+      : `/accountLists/${accountListId}/reports/salaryCurrency`;
 
   return (
     <PrintableContainer className="fourteen-month-report">
@@ -125,8 +131,9 @@ export const FourteenMonthReportTable: React.FC<
                       {!isExpanded && <StyledInfoIcon fontSize="small" />}
                       <NameTypography variant="body1" expanded={isExpanded}>
                         <Link
-                          onClick={() => onSelectContact(contact.id)}
-                          underline="hover"
+                          href={`${reportUrl}/${contact.id}`}
+                          scroll={false}
+                          shallow={true}
                         >
                           {contact.name}
                         </Link>

@@ -78,7 +78,6 @@ const SalaryCurrencyReportPage: React.FC = () => {
                 onNavListToggle={handleNavListToggle}
                 title={t('Contributions by Salary Currency')}
                 currencyType={FourteenMonthReportCurrencyType.Salary}
-                onSelectContact={handleSelectContact}
               />
             }
             rightPanel={
