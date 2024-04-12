@@ -2,6 +2,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { ContactUrl } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import {
   ActivityTypeEnum,
   ContactFilterSetInput,
@@ -21,11 +22,7 @@ interface Props {
   accountListId: string;
   selectedFilters: ContactFilterSetInput;
   searchTerm?: string | string[];
-  onContactSelected: (
-    contactId: string,
-    openDetails: boolean,
-    flows: boolean,
-  ) => void;
+  getContactUrl: (contactId: string) => ContactUrl;
 }
 
 export interface ContactFlowOption {
@@ -69,7 +66,7 @@ export const colorMap: { [key: string]: string } = {
 export const ContactFlow: React.FC<Props> = ({
   accountListId,
   selectedFilters,
-  onContactSelected,
+  getContactUrl,
   searchTerm,
 }: Props) => {
   const { data: userOptions, loading: loadingUserOptions } =
@@ -157,7 +154,7 @@ export const ContactFlow: React.FC<Props> = ({
               title={column.name}
               selectedFilters={selectedFilters}
               color={colorMap[column.color]}
-              onContactSelected={onContactSelected}
+              getContactUrl={getContactUrl}
               statuses={column.statuses.map(
                 (status) => statusMap[status] as ContactFilterStatusEnum,
               )}

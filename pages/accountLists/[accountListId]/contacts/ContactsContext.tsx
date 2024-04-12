@@ -31,9 +31,9 @@ import {
 import { coordinatesFromContacts, getRedirectPathname } from './helpers';
 import { Coordinates } from './map/map';
 
-type contactUrl = {
+export type ContactUrl = {
   pathname: string;
-  filteredQuery: string | ParsedUrlQueryInput | null | undefined;
+  filteredQuery: string | ParsedUrlQueryInput;
 };
 
 export type ContactsType = {
@@ -51,8 +51,8 @@ export type ContactsType = {
   toggleFilterPanel: () => void;
   handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
-  setContactFocus: (id?: string | undefined, openDetails?: boolean) => void;
-  returnContactUrl: (id?: string | undefined) => contactUrl;
+  setContactFocus: (id?: string, openDetails?: boolean) => void;
+  getContactUrl: (id?: string) => ContactUrl;
   setSearchTerm: _.DebouncedFunc<(searchTerm: string) => void>;
   handleViewModeChange: (
     event: React.MouseEvent<HTMLElement>,
@@ -288,7 +288,7 @@ export const ContactsProvider: React.FC<Props> = ({
 
   //#region User Actions
 
-  const returnContactUrl = (id?: string): contactUrl => {
+  const getContactUrl = (id?: string): ContactUrl => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -315,7 +315,7 @@ export const ContactsProvider: React.FC<Props> = ({
   };
 
   const setContactFocus = (id?: string, openDetails = true) => {
-    const { pathname, filteredQuery } = returnContactUrl(id);
+    const { pathname, filteredQuery } = getContactUrl(id);
     push({
       pathname,
       query: filteredQuery,
@@ -412,7 +412,7 @@ export const ContactsProvider: React.FC<Props> = ({
         handleClearAll: handleClearAll,
         savedFilters: savedFilters,
         setContactFocus: setContactFocus,
-        returnContactUrl: returnContactUrl,
+        getContactUrl: getContactUrl,
         setSearchTerm: setSearchTerm,
         handleViewModeChange: handleViewModeChange,
         selected: selected,

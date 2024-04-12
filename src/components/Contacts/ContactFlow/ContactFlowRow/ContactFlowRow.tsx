@@ -1,8 +1,10 @@
+import Link from 'next/link';
 import React, { useEffect } from 'react';
-import { Avatar, Box, Typography } from '@mui/material';
+import { Avatar, Box, Link as MuiLink, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
+import { ContactUrl } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { IdValue } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
@@ -15,17 +17,14 @@ interface Props {
     __typename?: 'IdValue' | undefined;
   } & Pick<IdValue, 'id' | 'value'>;
   starred: boolean;
-  onContactSelected: (
-    contactId: string,
-    openDetails: boolean,
-    flows: boolean,
-  ) => void;
+  getContactUrl: (contactId: string) => ContactUrl;
   columnWidth?: number;
   avatar?: string;
 }
 
-const ContactLink = styled(Typography)(() => ({
+const ContactLink = styled(MuiLink)(() => ({
   color: theme.palette.mpdxBlue.main,
+  textDecoration: 'none',
   '&:hover': {
     textDecoration: 'underline',
     cursor: 'pointer',
@@ -61,7 +60,7 @@ export const ContactFlowRow: React.FC<Props> = ({
   name,
   status,
   starred,
-  onContactSelected,
+  getContactUrl,
   columnWidth,
   avatar,
 }: Props) => {
@@ -86,6 +85,8 @@ export const ContactFlowRow: React.FC<Props> = ({
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
 
+  const { pathname } = getContactUrl(id);
+
   return (
     <Box
       {...{ ref: drag }} //TS gives an error if you try to pass a ref normally, seems to be a MUI issue
@@ -107,9 +108,17 @@ export const ContactFlowRow: React.FC<Props> = ({
             }}
           />
           <Box display="flex" flexDirection="column" ml={2} draggable>
-            <ContactLink onClick={() => onContactSelected(id, true, true)}>
-              {name}
-            </ContactLink>
+            <Link
+              href={pathname}
+              scroll={false}
+              prefetch={false}
+              shallow={true}
+              data-testid="rowButton"
+              legacyBehavior
+              passHref
+            >
+              <ContactLink href={pathname}>{name} </ContactLink>
+            </Link>
             <Typography>{status.value}</Typography>
           </Box>
         </Box>
