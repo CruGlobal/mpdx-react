@@ -2,6 +2,8 @@
 
 /* eslint-disable no-console */
 
+const { getOrigin } = require('./lighthouse-origin');
+
 /**
  * @param {puppeteer.Page} page
  * @param {string} origin
@@ -77,8 +79,7 @@ async function main(browser, requestedUrl) {
   const page = await browser.newPage();
 
   // Setup the browser session to be logged into our site.
-  const origin = process.env.PREVIEW_URL ?? 'http://localhost:3000';
-  await login(page, origin);
+  await login(page, getOrigin());
 
   // Direct Lighthouse to use the same Puppeteer page.
   // Disable storage reset so login session is preserved.
