@@ -1,3 +1,4 @@
+import { ParsedUrlQueryInput } from 'querystring';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -41,6 +42,12 @@ import {
   useTaskFiltersQuery,
   useTasksQuery,
 } from './Tasks.generated';
+
+export type ContactUrl = {
+  pathname: string;
+  filteredQuery: string | ParsedUrlQueryInput;
+  contactUrl: string;
+};
 
 const buttonBarHeight = theme.spacing(6);
 
@@ -244,23 +251,32 @@ const TasksPage: React.FC = () => {
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id?: string) => {
+  const getContactUrl = (id?: string): ContactUrl => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
       ...filteredQuery
     } = query;
-    push(
-      id
-        ? {
-            pathname: `/accountLists/${accountListId}/tasks/${id}`,
-            query: filteredQuery,
-          }
-        : {
-            pathname: `/accountLists/${accountListId}/tasks/`,
-            query: filteredQuery,
-          },
-    );
+
+    const filterParams =
+      Object.keys(filteredQuery).length > 0
+        ? `?${new URLSearchParams(
+            filteredQuery as Record<string, string>,
+          ).toString()}`
+        : '';
+
+    return {
+      pathname: `/accountLists/${accountListId}/tasks/${id ?? ''}`,
+      filteredQuery: filteredQuery,
+      contactUrl: pathname + filterParams,
+    };
+  };
+  const setContactFocus = (id?: string) => {
+    const { pathname, filteredQuery } = getContactUrl(id);
+    push({
+      pathname,
+      query: filteredQuery,
+    });
     id && setContactDetailsId(id);
     setContactDetailsOpen(!!id);
   };
@@ -399,7 +415,7 @@ const TasksPage: React.FC = () => {
                           <TaskRow
                             accountListId={accountListId}
                             task={task}
-                            onContactSelected={setContactFocus}
+                            getContactUrl={getContactUrl}
                             onTaskCheckToggle={toggleSelectionById}
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}

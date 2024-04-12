@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 import {
   Box,
@@ -10,6 +11,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { ContactUrl } from 'pages/accountLists/[accountListId]/tasks/[[...contactId]].page';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
@@ -53,17 +55,16 @@ const TaskContactName = styled(ContactText)(({ theme }) => ({
   fontWeight: 700,
   whiteSpace: 'nowrap',
   marginRight: theme.spacing(0.5),
-  '&:hover': {
-    textDecoration: 'underline',
-  },
+  '& a': { color: theme.palette.common.black },
+  '& a:not(:hover)': { textDecoration: 'none' },
 }));
 
 interface TaskRowProps {
   accountListId: string;
   task: TaskRowFragment;
   isChecked: boolean;
-  onContactSelected: (taskId: string) => void;
   onTaskCheckToggle: (taskId: string) => void;
+  getContactUrl: (id?: string) => ContactUrl;
   useTopMargin?: boolean;
 }
 
@@ -71,7 +72,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   accountListId,
   task,
   isChecked,
-  onContactSelected,
+  getContactUrl,
   onTaskCheckToggle,
   useTopMargin,
 }) => {
@@ -97,14 +98,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   }));
 
   const { openTaskModal } = useTaskModal();
-  const onClick = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-    contactId: string,
-  ) => {
-    // Prevent parent onClick from firing on child click
-    event.stopPropagation();
-    onContactSelected(contactId);
-  };
 
   const {
     activityType,
@@ -211,21 +204,21 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 textOverflow: 'ellipsis',
               }}
             >
-              {contacts.nodes.map((contact, index) => (
-                <TaskContactName
-                  noWrap
-                  display="inline"
-                  key={contact.id}
-                  onClick={(e) => {
-                    onClick(e, contact.id);
-                    e.stopPropagation();
-                  }}
-                >
-                  {index !== contacts.nodes.length - 1
-                    ? `${contact.name},`
-                    : contact.name}
-                </TaskContactName>
-              ))}
+              {contacts.nodes.map((contact, index) => {
+                const { contactUrl } = getContactUrl(contact.id);
+                return (
+                  <TaskContactName noWrap display="inline" key={contact.id}>
+                    <Link
+                      href={contactUrl}
+                      onClickCapture={(event) => event.stopPropagation}
+                    >
+                      {index !== contacts.nodes.length - 1
+                        ? `${contact.name},`
+                        : contact.name}
+                    </Link>
+                  </TaskContactName>
+                );
+              })}
             </Box>
             <Hidden smUp>
               <Button>
