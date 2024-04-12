@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import React, { useEffect } from 'react';
-import { Avatar, Box, Link as MuiLink, Typography } from '@mui/material';
+import { Avatar, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
@@ -22,13 +22,10 @@ interface Props {
   avatar?: string;
 }
 
-const ContactLink = styled(MuiLink)(() => ({
+const StyledTypography = styled(Typography)(() => ({
   color: theme.palette.mpdxBlue.main,
-  textDecoration: 'none',
-  '&:hover': {
-    textDecoration: 'underline',
-    cursor: 'pointer',
-  },
+  '& a': { color: theme.palette.primary.main },
+  '& a:not(:hover)': { textDecoration: 'none' },
 }));
 
 const DraggableBox = styled(Box)(() => ({
@@ -85,7 +82,7 @@ export const ContactFlowRow: React.FC<Props> = ({
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
 
-  const { pathname } = getContactUrl(id);
+  const { contactUrl } = getContactUrl(id);
 
   return (
     <Box
@@ -108,17 +105,16 @@ export const ContactFlowRow: React.FC<Props> = ({
             }}
           />
           <Box display="flex" flexDirection="column" ml={2} draggable>
-            <Link
-              href={pathname}
-              scroll={false}
-              prefetch={false}
-              shallow={true}
-              data-testid="rowButton"
-              legacyBehavior
-              passHref
-            >
-              <ContactLink href={pathname}>{name} </ContactLink>
-            </Link>
+            <StyledTypography>
+              <Link
+                href={contactUrl}
+                scroll={false}
+                prefetch={false}
+                shallow={true}
+              >
+                {name}
+              </Link>
+            </StyledTypography>
             <Typography>{status.value}</Typography>
           </Box>
         </Box>

@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import Link from 'next/link';
+import React from 'react';
 import {
   Box,
   ButtonBase,
@@ -15,7 +16,6 @@ import {
   ContactsContext,
   ContactsType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
-import { ContactRightClickMenu } from 'src/components/Shared/ContactRightClickMenu/ContactRightClickMenu';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
@@ -28,21 +28,20 @@ interface Props {
 }
 
 export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
-  const rightClickRef = useRef(null);
-  const [showMenu, setShowMenu] = useState(false);
   const {
     accountListId,
     isRowChecked: isChecked,
     contactDetailsOpen,
-    setContactFocus: onContactSelected,
     toggleSelectionById: onContactCheckToggle,
+    getContactUrl,
   } = React.useContext(ContactsContext) as ContactsType;
 
-  const ListItemButton = styled(ButtonBase)(({ theme }) => ({
+  const ListItemBox = styled(ButtonBase)(({ theme }) => ({
     flex: '1 1 auto',
     textAlign: 'left',
     marginTop: useTopMargin ? '16px' : '0',
     padding: theme.spacing(0, 0.5, 0, 2),
+    width: '100%',
     [theme.breakpoints.up('sm')]: {
       padding: theme.spacing(0, 0.5),
     },
@@ -59,14 +58,6 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     },
   }));
 
-  const onClick = () => {
-    onContactSelected(contact.id);
-  };
-  const handleRightClick = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    setShowMenu(true);
-  };
-
   const {
     id: contactId,
     lateAt,
@@ -81,15 +72,20 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     uncompletedTasksCount,
   } = contact;
 
+  const { contactUrl } = getContactUrl(contactId);
+
   return (
-    <React.Fragment>
-      <ListItemButton
-        ref={rightClickRef}
-        focusRipple
-        onClick={onClick}
-        data-testid="rowButton"
-        onContextMenu={handleRightClick}
-      >
+    <Link
+      href={contactUrl}
+      scroll={false}
+      prefetch={false}
+      shallow={true}
+      legacyBehavior
+      passHref
+      style={{ width: '100%', color: 'initial' }}
+      data-testid="contactRowLink"
+    >
+      <ListItemBox>
         <Hidden xsDown>
           <ListItemIcon>
             <StyledCheckbox
@@ -141,7 +137,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           </Grid>
         </Grid>
         <Hidden xsDown>
-          <Box onClick={(event) => event.stopPropagation()}>
+          <Box>
             <ContactUncompletedTasksCount
               uncompletedTasksCount={uncompletedTasksCount}
               contactId={contactId}
@@ -157,14 +153,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             />
           </ListItemSecondaryAction>
         </Hidden>
-      </ListItemButton>
-
-      <ContactRightClickMenu
-        contactId={contact.id}
-        rightClickRef={rightClickRef}
-        showMenu={showMenu}
-        setShowMenu={setShowMenu}
-      />
-    </React.Fragment>
+      </ListItemBox>
+    </Link>
   );
 };

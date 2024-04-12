@@ -34,6 +34,7 @@ import { Coordinates } from './map/map';
 export type ContactUrl = {
   pathname: string;
   filteredQuery: string | ParsedUrlQueryInput;
+  contactUrl: string;
 };
 
 export type ContactsType = {
@@ -311,7 +312,19 @@ export const ContactsProvider: React.FC<Props> = ({
       contactId: id,
       viewMode,
     });
-    return { pathname, filteredQuery };
+
+    const filterParams =
+      Object.keys(filteredQuery).length > 0
+        ? `?${new URLSearchParams(
+            filteredQuery as Record<string, string>,
+          ).toString()}`
+        : '';
+
+    return {
+      pathname,
+      filteredQuery,
+      contactUrl: pathname + filterParams,
+    };
   };
 
   const setContactFocus = (id?: string, openDetails = true) => {

@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -16,9 +15,18 @@ const status = {
   id: StatusEnum.PartnerFinancial,
   value: 'Partner - Financial',
 };
-const onContactSelected = jest.fn();
+const pathname = `/pathname/contacts/flow/${id}`;
+const getContactUrl = jest.fn().mockReturnValue({
+  pathname: pathname,
+  query: { filters: 'filterOptions' },
+  contactUrl: `${pathname}?filters=filterOptions`,
+});
 
 describe('ContactFlowRow', () => {
+  beforeEach(() => {
+    getContactUrl.mockClear();
+  });
+
   it('should display contact name and status', () => {
     const { getByText, getByTitle } = render(
       <DndProvider backend={HTML5Backend}>
@@ -30,7 +38,7 @@ describe('ContactFlowRow', () => {
               name={name}
               status={status}
               starred
-              onContactSelected={onContactSelected}
+              getContactUrl={getContactUrl}
             />
           </TestWrapper>
         </ThemeProvider>
@@ -40,8 +48,8 @@ describe('ContactFlowRow', () => {
     expect(getByTitle('Filled Star Icon')).toBeInTheDocument();
   });
 
-  it('should call contact selected function', () => {
-    const { getByText } = render(
+  it('should render the contact <a> correctly', () => {
+    const { getByRole } = render(
       <DndProvider backend={HTML5Backend}>
         <ThemeProvider theme={theme}>
           <TestWrapper>
@@ -51,14 +59,21 @@ describe('ContactFlowRow', () => {
               name={name}
               status={status}
               starred
-              onContactSelected={onContactSelected}
+              getContactUrl={getContactUrl}
             />
           </TestWrapper>
         </ThemeProvider>
       </DndProvider>,
     );
-    userEvent.click(getByText('Test Name'));
-    expect(getByText('Test Name')).toBeInTheDocument();
-    expect(onContactSelected).toHaveBeenCalledWith('123', true, true);
+    const contactLink = getByRole('link', {
+      name: 'Test Name',
+    });
+
+    expect(getContactUrl).toHaveBeenCalledWith(id);
+
+    expect(contactLink).toHaveAttribute(
+      'href',
+      `${pathname}?filters=filterOptions`,
+    );
   });
 });

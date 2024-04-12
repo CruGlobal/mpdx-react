@@ -1,7 +1,11 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {
+  ContactsContext,
+  ContactsType,
+} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
 import theme from 'src/theme';
 import TestRouter from '../../../../__tests__/util/TestRouter';
@@ -136,60 +140,42 @@ describe('ContactsRow', () => {
     });
   });
 
-  it('should render contact select event', () => {
-    const { getByTestId } = render(
-      <TestRouter router={router}>
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactsPage>
-              <ContactRow contact={contact} />
-            </ContactsPage>
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </TestRouter>,
-    );
-
-    const rowButton = getByTestId('rowButton');
-    userEvent.click(rowButton);
-    // TODO: Find a way to check that click event was pressed.
-  });
-
-  it('should NOT open menu on right-click', () => {
-    const { getByTestId, queryByRole } = render(
-      <TestRouter router={router}>
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactsPage>
-              <ContactRow contact={contact} />
-            </ContactsPage>
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </TestRouter>,
-    );
-
-    const rowButton = getByTestId('rowButton');
-    expect(queryByRole('menu')).not.toBeInTheDocument();
-    userEvent.click(rowButton);
-    expect(queryByRole('menu')).not.toBeInTheDocument();
-  });
-
   it('should open menu on right-click', async () => {
-    const { getByTestId, queryByRole, getByRole } = render(
+    const getContactUrl = jest.fn().mockReturnValue({
+      pathname: '/pathname/contacts/123456',
+      filteredQuery: { filter: 'filterOptions' },
+    });
+    const isRowChecked = jest.fn();
+    const onContactCheckToggle = jest.fn();
+    const { getAllByRole } = render(
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <ContactsPage>
-              <ContactRow contact={contact} />
+              <ContactsContext.Provider
+                value={
+                  {
+                    accountListId: 'accountListId',
+                    isRowChecked,
+                    contactDetailsOpen: false,
+                    getContactUrl,
+                    onContactCheckToggle,
+                  } as unknown as ContactsType
+                }
+              >
+                <ContactRow contact={contact} />
+              </ContactsContext.Provider>
             </ContactsPage>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
     );
 
-    const rowButton = getByTestId('rowButton');
-    expect(queryByRole('menu')).not.toBeInTheDocument();
+    const contactRowLink = getAllByRole('link')[0];
 
-    userEvent.click(rowButton, { button: 2 });
-    await waitFor(() => expect(getByRole('menu')).toBeInTheDocument());
+    expect(contactRowLink).toHaveAttribute(
+      'href',
+      `/pathname/contacts/123456?filter=filterOptions`,
+    );
   });
 });

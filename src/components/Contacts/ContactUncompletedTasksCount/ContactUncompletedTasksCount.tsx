@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -24,19 +24,23 @@ export const ContactUncompletedTasksCount: React.FC<
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
 
+  const handleLogTaskClick = useMemo(
+    () => (e) => {
+      // eslint-disable-next-line no-console
+      e.preventDefault();
+      openTaskModal({
+        view: 'log',
+        defaultValues: {
+          contactIds: [contactId],
+        },
+      });
+    },
+    [contactId],
+  );
+
   return (
     <Box display="flex" alignItems="center" px={5}>
-      <LogTaskButton
-        titleAccess={t('Log Task')}
-        onClick={() =>
-          openTaskModal({
-            view: 'log',
-            defaultValues: {
-              contactIds: [contactId],
-            },
-          })
-        }
-      />
+      <LogTaskButton titleAccess={t('Log Task')} onClick={handleLogTaskClick} />
       <Box ml={2}>
         <Typography
           color="textSecondary"
