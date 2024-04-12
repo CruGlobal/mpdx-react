@@ -9,7 +9,10 @@ import {
 } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
-import { renderDialog } from '../../../Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import {
+  AddMenuItemsEnum,
+  renderDialog,
+} from '../../../Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { NullStateBox } from './NullStateBox';
 
 interface Props {
@@ -107,7 +110,7 @@ const NullState: React.FC<Props> = ({
           </Box>
         </>
       )}
-      {renderDialog(0, dialogOpen, changeDialogOpen)}
+      {renderDialog(AddMenuItemsEnum.NewContact, dialogOpen, changeDialogOpen)}
     </NullStateBox>
   );
 };

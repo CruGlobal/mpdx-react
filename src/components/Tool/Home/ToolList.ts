@@ -13,20 +13,20 @@ import {
   mdiWrench,
 } from '@mdi/js';
 
-export interface toolItem {
+export interface ToolItem {
   tool: string;
   desc: string;
   icon: string;
   id: string;
 }
 
-interface toolsGroup {
+interface ToolsGroup {
   groupName: string;
   groupIcon: string;
-  items: toolItem[];
+  items: ToolItem[];
 }
 
-export const ToolsList: toolsGroup[] = [
+export const ToolsList: ToolsGroup[] = [
   {
     groupName: 'Appeals',
     groupIcon: mdiWrench,

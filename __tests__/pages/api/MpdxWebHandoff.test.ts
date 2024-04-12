@@ -24,17 +24,15 @@ const convertCookieStringToObject = (cookieString) => {
   }, {});
 };
 
-const grabCookies = (setCookieHeader: string[]): cookiesType[] => {
-  const cookies: cookiesType[] = [];
+const grabCookies = (setCookieHeader: string[]): Cookies[] => {
+  const cookies: Cookies[] = [];
   setCookieHeader.forEach((cookie) =>
     cookies.push(convertCookieStringToObject(cookie)),
   );
   return cookies;
 };
 
-interface cookiesType {
-  [key: string]: string;
-}
+type Cookies = Record<string, string>;
 
 describe('/api/mpdx-web-handoff', () => {
   it('No accountListId or path defined. Redirect to home', async () => {

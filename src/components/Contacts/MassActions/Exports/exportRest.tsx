@@ -1,4 +1,4 @@
-interface restExportFields {
+interface RestExportFields {
   type: string;
   attributes: {
     params: {
@@ -31,7 +31,7 @@ export const exportRest = async (
         ? 'application/xlsx'
         : 'text/pdf';
 
-    const fields: restExportFields = {
+    const fields: RestExportFields = {
       type: 'export_logs',
       attributes: {
         params: {

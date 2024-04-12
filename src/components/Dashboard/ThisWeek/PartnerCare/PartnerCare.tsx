@@ -129,8 +129,8 @@ interface Props {
 }
 
 enum CelebrationTypeEnum {
-  'birthday',
-  'anniversary',
+  Birthday = 'birthday',
+  Anniversary = 'anniversary',
 }
 
 const PartnerCare = ({
@@ -168,7 +168,7 @@ const PartnerCare = ({
       defaultValues: {
         contactIds: [person.parentContact.id],
         subject:
-          celebrationType === CelebrationTypeEnum.birthday
+          celebrationType === CelebrationTypeEnum.Birthday
             ? `${person.firstName} ${person.lastName}'s Birthday`
             : `${person.parentContact.name}'s Anniversary`,
       },
@@ -462,8 +462,8 @@ const PartnerCare = ({
                             onClick={() =>
                               handleCreateClick(
                                 person.birthdayDay
-                                  ? CelebrationTypeEnum.birthday
-                                  : CelebrationTypeEnum.anniversary,
+                                  ? CelebrationTypeEnum.Birthday
+                                  : CelebrationTypeEnum.Anniversary,
                                 person,
                               )
                             }

@@ -15,7 +15,7 @@ import AccountListIdPage, {
 
 jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
-interface getServerSidePropsReturn {
+interface GetServerSidePropsReturn {
   props: AccountListIdPageProps;
   redirect: unknown;
 }
@@ -39,7 +39,7 @@ describe('AccountListsId page', () => {
 
       const { props, redirect } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
@@ -68,7 +68,7 @@ describe('AccountListsId page', () => {
 
       const { props, redirect } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
@@ -97,7 +97,7 @@ describe('AccountListsId page', () => {
 
       const { props, redirect } = (await getServerSideProps(
         context,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(props.data.accountList.name).toEqual('accountListName');
       expect(redirect).toBeUndefined();

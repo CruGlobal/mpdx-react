@@ -14,7 +14,7 @@ type Errors = {
   detail: string;
 };
 
-type impersonateResponse = {
+type ImpersonateResponse = {
   status: number;
   errors: Errors[];
   invalidRequest: boolean;
@@ -37,7 +37,7 @@ type FetchTokenForOrganizationType = {
 export const impersonate = async (
   req: NextApiRequest,
   impersonationType: ImpersonationTypeEnum,
-): Promise<impersonateResponse> => {
+): Promise<ImpersonateResponse> => {
   let status = 400;
   let errors: Errors[] = [];
   const isUserImpersonate =
