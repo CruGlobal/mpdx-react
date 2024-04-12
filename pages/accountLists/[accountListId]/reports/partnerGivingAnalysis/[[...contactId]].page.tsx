@@ -136,7 +136,6 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
               panelOpen={panelOpen}
               onFilterListToggle={handleFilterListToggle}
               onNavListToggle={handleNavListToggle}
-              onSelectContact={handleSelectContact}
               title={t('Partner Giving Analysis')}
               contactFilters={debouncedFilters}
               contactDetailsOpen={!!selectedContactId}

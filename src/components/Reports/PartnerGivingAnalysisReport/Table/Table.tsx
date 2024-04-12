@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { FC } from 'react';
 import {
   Checkbox,
@@ -11,6 +12,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
@@ -18,7 +20,6 @@ import type { Order } from '../../Reports.type';
 import type { Contact } from '../PartnerGivingAnalysisReport';
 
 interface PartnerGivingAnalysisReportTableProps {
-  onClick: (contactId: string) => void;
   onSelectOne: (contactId: string) => void;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
@@ -47,10 +48,8 @@ const ContactName = styled(Typography)(({ theme }) => ({
   fontWeight: 700,
   whiteSpace: 'nowrap',
   marginRight: theme.spacing(0.5),
-  cursor: 'pointer',
-  '&:hover': {
-    textDecoration: 'underline',
-  },
+  '& a': { color: theme.palette.primary.main },
+  '& a:not(:hover)': { textDecoration: 'none' },
 }));
 
 export const PartnerGivingAnalysisReportTable: FC<
@@ -59,13 +58,13 @@ export const PartnerGivingAnalysisReportTable: FC<
   order,
   orderBy,
   contacts,
-  onClick,
   onRequestSort,
   onSelectOne,
   isRowChecked,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
 
   return (
     <StickyTableContainer>
@@ -125,8 +124,14 @@ export const PartnerGivingAnalysisReportTable: FC<
                   />
                 </TableCell>
                 <TableCell>
-                  <ContactName onClick={() => onClick(contact.id)}>
-                    {contact.name}
+                  <ContactName>
+                    <Link
+                      href={`/accountLists/${accountListId}/reports/partnerGivingAnalysis/${contact.id}`}
+                      scroll={false}
+                      shallow={true}
+                    >
+                      {contact.name}
+                    </Link>
                   </ContactName>
                 </TableCell>
                 <TableCell>

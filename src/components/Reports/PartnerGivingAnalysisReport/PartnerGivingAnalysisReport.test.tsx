@@ -12,7 +12,6 @@ const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
 const onFilterListToggle = jest.fn();
-const onSelectContact = jest.fn();
 const activeFilters = {};
 const defaultProps = {
   accountListId,
@@ -20,7 +19,6 @@ const defaultProps = {
   panelOpen: null,
   onNavListToggle,
   onFilterListToggle,
-  onSelectContact,
   contactDetailsOpen: false,
   activeFilters,
 };
@@ -500,31 +498,6 @@ describe('PartnerGivingAnalysisReport', () => {
     userEvent.click(getAllByRole('checkbox')[2]);
     userEvent.click(getAllByRole('checkbox')[3]);
     expect(getAllByRole('checkbox')[0]).not.toBeChecked();
-  });
-
-  it('can click on contact names', async () => {
-    const mutationSpy = jest.fn();
-    const { getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    userEvent.click(getByText('Ababa, Aladdin und Jasmine (Princess)'));
-    expect(onSelectContact).toHaveBeenCalledWith('01');
   });
 
   it('formats currencies', async () => {

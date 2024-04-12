@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { PartnerGivingAnalysisReportContact } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GetPartnerGivingAnalysisReportQuery } from '../PartnerGivingAnalysisReport.generated';
@@ -14,10 +15,15 @@ const order: Order = 'asc';
 const orderBy: keyof Contact = 'name';
 const ids = [];
 const isRowChecked = jest.fn();
-const onClick = jest.fn();
 const onRequestSort = jest.fn();
 const onSelectAll = jest.fn();
 const onSelectOne = jest.fn();
+
+const accountListId = 'accountListId';
+const router = {
+  query: { accountListId },
+  isReady: true,
+};
 
 const mocks: {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
@@ -82,7 +88,6 @@ const defaultProps = {
   order,
   orderBy,
   onRequestSort,
-  onClick,
   onSelectAll,
   onSelectOne,
   ids,
@@ -94,13 +99,15 @@ describe('PartnerGivingAnalysisReportTable', () => {
   it('default', async () => {
     const { getAllByTestId, getByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <PartnerGivingAnalysisReportTable
-          {...defaultProps}
-          contacts={
-            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-              .contacts
-          }
-        />
+        <TestRouter router={router}>
+          <PartnerGivingAnalysisReportTable
+            {...defaultProps}
+            contacts={
+              mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
+                .contacts
+            }
+          />
+        </TestRouter>
       </ThemeProvider>,
     );
 
@@ -120,13 +127,15 @@ describe('PartnerGivingAnalysisReportTable', () => {
   it('check event should happen', async () => {
     const { getAllByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <PartnerGivingAnalysisReportTable
-          {...defaultProps}
-          contacts={
-            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-              .contacts
-          }
-        />
+        <TestRouter router={router}>
+          <PartnerGivingAnalysisReportTable
+            {...defaultProps}
+            contacts={
+              mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
+                .contacts
+            }
+          />
+        </TestRouter>
       </ThemeProvider>,
     );
 
@@ -141,16 +150,18 @@ describe('PartnerGivingAnalysisReportTable', () => {
     expect(onSelectOne).toHaveBeenCalled();
   });
 
-  it('click event should happen', async () => {
-    const { getByText, queryByTestId } = render(
+  it('should render A tag with correct href', async () => {
+    const { getByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <PartnerGivingAnalysisReportTable
-          {...defaultProps}
-          contacts={
-            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-              .contacts
-          }
-        />
+        <TestRouter router={router}>
+          <PartnerGivingAnalysisReportTable
+            {...defaultProps}
+            contacts={
+              mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
+                .contacts
+            }
+          />
+        </TestRouter>
       </ThemeProvider>,
     );
 
@@ -160,7 +171,13 @@ describe('PartnerGivingAnalysisReportTable', () => {
       ).not.toBeInTheDocument();
     });
 
-    userEvent.click(getByText('Ababa, Aladdin und Jasmine (Princess)'));
-    expect(onClick).toHaveBeenCalledWith('01');
+    const partnerLink = getByRole('link', {
+      name: 'Ababa, Aladdin und Jasmine (Princess)',
+    });
+
+    expect(partnerLink).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/reports/partnerGivingAnalysis/01`,
+    );
   });
 });
