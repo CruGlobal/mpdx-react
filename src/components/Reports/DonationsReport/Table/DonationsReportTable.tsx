@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { useMemo, useState } from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -8,7 +9,7 @@ import {
   CircularProgress,
   Divider,
   LinearProgress,
-  Link,
+  Link as MuiLink,
   Table,
   TableBody,
   TableCell,
@@ -38,7 +39,6 @@ type RenderCell = GridColDef<DonationRow>['renderCell'];
 interface DonationReportTableProps {
   accountListId: string;
   designationAccounts?: string[];
-  onSelectContact: (contactId: string) => void;
   time: DateTime;
   setTime: (time: DateTime) => void;
 }
@@ -59,6 +59,12 @@ const DataTable = styled(Box)(({ theme }) => ({
       textOverflow: 'ellipsis',
     },
   },
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  cursor: 'pointer',
+  '& a': { color: theme.palette.primary.main },
+  '& a:not(:hover)': { textDecoration: 'none' },
 }));
 
 const LoadingBox = styled(Box)(({ theme }) => ({
@@ -119,7 +125,6 @@ const createDonationRow = (data: DonationTableRowFragment): DonationRow => ({
 export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
   accountListId,
   designationAccounts,
-  onSelectContact,
   time,
   setTime,
 }) => {
@@ -182,15 +187,24 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
     <Typography>{dateFormatShort(row.date, locale)}</Typography>
   );
 
+  const monthQuery = useMemo(
+    () =>
+      `?month=${time.year}-${time.month < 10 ? `0${time.month}` : time.month}`,
+    [time],
+  );
+
   const link: RenderCell = ({ row }) => (
-    <Typography sx={{ cursor: 'pointer' }}>
-      <Link
-        underline="hover"
-        onClick={() => row.contactId && onSelectContact(row.contactId)}
-      >
-        {row.donorAccountName}
-      </Link>
-    </Typography>
+    <StyledTypography>
+      {row.contactId ? (
+        <Link
+          href={`/accountLists/${accountListId}/reports/donations/${row.contactId}${monthQuery}`}
+        >
+          {row.donorAccountName}
+        </Link>
+      ) : (
+        <MuiLink underline="hover">{row.donorAccountName}</MuiLink>
+      )}
+    </StyledTypography>
   );
 
   const amount: RenderCell = ({ row }) => (
