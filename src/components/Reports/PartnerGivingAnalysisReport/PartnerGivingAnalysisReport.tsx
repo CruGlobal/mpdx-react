@@ -194,44 +194,50 @@ export const PartnerGivingAnalysisReport = forwardRef<
           >
             <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
           </Box>
-        ) : contacts.length > 0 ? (
-          <>
-            <Table
-              onRequestSort={handleRequestSort}
-              onSelectOne={toggleSelectionById}
-              order={order}
-              orderBy={orderBy}
-              contacts={contacts}
-              isRowChecked={isRowChecked}
-            />
-            <TablePagination
-              colSpan={3}
-              count={
-                data?.partnerGivingAnalysisReport.pagination.totalItems ?? 0
-              }
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleLimitChange}
-              // Page 0 is the first page for the component
-              page={page}
-              rowsPerPage={limit}
-              rowsPerPageOptions={[10, 25, 50]}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': t('rows per page'),
-                },
-                native: true,
-              }}
-            />
-          </>
         ) : (
-          <EmptyReport
-            title={t('You have {{contacts}} total contacts', {
-              contacts: data?.partnerGivingAnalysisReport.totalContacts ?? '?',
-            })}
-            subTitle={t(
-              'Unfortunately none of them match your current search or filters.',
+          <>
+            {contacts.length && (
+              <>
+                <Table
+                  onRequestSort={handleRequestSort}
+                  onSelectOne={toggleSelectionById}
+                  order={order}
+                  orderBy={orderBy}
+                  contacts={contacts}
+                  isRowChecked={isRowChecked}
+                />
+                <TablePagination
+                  colSpan={3}
+                  count={
+                    data?.partnerGivingAnalysisReport.pagination.totalItems ?? 0
+                  }
+                  onPageChange={handlePageChange}
+                  onRowsPerPageChange={handleLimitChange}
+                  // Page 0 is the first page for the component
+                  page={page}
+                  rowsPerPage={limit}
+                  rowsPerPageOptions={[10, 25, 50]}
+                  SelectProps={{
+                    inputProps: {
+                      'aria-label': t('rows per page'),
+                    },
+                    native: true,
+                  }}
+                />
+              </>
             )}
-          />
+            {!contacts.length && (
+              <EmptyReport
+                title={t('You have {{contacts}} total contacts', {
+                  contacts:
+                    data?.partnerGivingAnalysisReport.totalContacts ?? '?',
+                })}
+                subTitle={t(
+                  'Unfortunately none of them match your current search or filters.',
+                )}
+              />
+            )}
+          </>
         )}
       </Box>
     );
