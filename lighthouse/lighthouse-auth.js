@@ -157,7 +157,7 @@ async function storeResults(result) {
   });
   markdownResults += '</details>\n\n';
 
-  fs.appendFile('lighthouse-results.md', markdownWarning + markdownResults);
+  fs.appendFile('./lighthouse/lighthouse-results.md', markdownWarning + markdownResults);
 }
 
 module.exports = async (browser, context) => {

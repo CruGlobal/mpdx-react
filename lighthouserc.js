@@ -1,4 +1,4 @@
-const { getOrigin } = require('./lighthouse-origin');
+const { getOrigin } = require('./lighthouse/lighthouse-origin');
 
 const serverUrl = getOrigin();
 
@@ -21,7 +21,7 @@ module.exports = {
       numberOfRuns: 3,
       startServerCommand:
         serverUrl === 'http://localhost:3000' ? 'yarn serve' : '',
-      puppeteerScript: './lighthouse-auth.js',
+      puppeteerScript: 'lighthouse/lighthouse-auth.js',
       puppeteerLaunchOptions: { defaultViewport: null },
       headful: false,
       settings: {
