@@ -1,4 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
@@ -35,175 +40,202 @@ interface Props {
   title: string;
   contactFilters?: ReportContactFilterSetInput;
 }
+export type PartnerGivingAnalysisReportRef = {
+  clearSearchInput: () => void;
+};
 
 export type Contact = PartnerGivingAnalysisReportContact;
 
-export const PartnerGivingAnalysisReport: React.FC<Props> = ({
-  accountListId,
-  panelOpen,
-  onNavListToggle,
-  onFilterListToggle,
-  activeFilters,
-  contactDetailsOpen,
-  title,
-  contactFilters: filters,
-}) => {
-  const { t } = useTranslation();
-  const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Contact>('name');
-  const [limit, setLimit] = useState<number>(10);
-  const [page, setPage] = useState<number>(0);
-  const [query, setQuery] = useState<string>('');
-  const search = useDebouncedValue(query, 500);
-
-  const contactFilters: ReportContactFilterSetInput = {
-    ...(filters && sanitizeFilters(filters)),
-    ...(search.length > 0 && {
-      nameLike: `%${search}%`,
-    }),
-  };
-
-  const isActiveFilters = activeFilters
-    ? Object.keys(activeFilters).length > 0
-    : false;
-
-  const { data, loading } = useGetPartnerGivingAnalysisReportQuery({
-    variables: {
-      input: {
-        accountListId,
-        // Page 1 is the first page for the API
-        page: page + 1,
-        pageSize: limit,
-        sortField: orderBy ?? '',
-        sortDirection:
-          order === 'asc' ? SortDirection.Ascending : SortDirection.Descending,
-        contactFilters,
-      },
+export const PartnerGivingAnalysisReport = forwardRef<
+  PartnerGivingAnalysisReportRef,
+  Props
+>(
+  (
+    {
+      accountListId,
+      panelOpen,
+      onNavListToggle,
+      onFilterListToggle,
+      activeFilters,
+      contactDetailsOpen,
+      title,
+      contactFilters: filters,
     },
-  });
-  const contacts = data?.partnerGivingAnalysisReport.contacts ?? [];
+    ref,
+  ) => {
+    const { t } = useTranslation();
+    const [order, setOrder] = useState<Order>('asc');
+    const [orderBy, setOrderBy] = useState<keyof Contact>('name');
+    const [limit, setLimit] = useState<number>(10);
+    const [page, setPage] = useState<number>(0);
+    const [query, setQuery] = useState<string>('');
+    const search = useDebouncedValue(query, 500);
 
-  const contactCount = data?.partnerGivingAnalysisReport?.totalContacts ?? 0;
-  const { data: allContacts } =
-    useGetPartnerGivingAnalysisIdsForMassSelectionQuery({
+    useImperativeHandle(
+      ref,
+      () => ({
+        clearSearchInput() {
+          setQuery('');
+        },
+      }),
+      [],
+    );
+
+    const contactFilters: ReportContactFilterSetInput = {
+      ...(filters && sanitizeFilters(filters)),
+      ...(search.length > 0 && {
+        nameLike: `%${search}%`,
+      }),
+    };
+
+    const isActiveFilters = activeFilters
+      ? Object.keys(activeFilters).length > 0
+      : false;
+
+    const { data, loading } = useGetPartnerGivingAnalysisReportQuery({
       variables: {
         input: {
           accountListId,
-          page: 1,
-          pageSize: contactCount,
-          sortField: '',
-          sortDirection: SortDirection.Ascending,
+          // Page 1 is the first page for the API
+          page: page + 1,
+          pageSize: limit,
+          sortField: orderBy ?? '',
+          sortDirection:
+            order === 'asc'
+              ? SortDirection.Ascending
+              : SortDirection.Descending,
           contactFilters,
         },
       },
-      skip: contactCount === 0,
     });
-  const allContactIds = useMemo(
-    () =>
-      allContacts?.partnerGivingAnalysisReport?.contacts.map(
-        (contact) => contact.id,
-      ) ?? [],
-    [allContacts],
-  );
+    const contacts = data?.partnerGivingAnalysisReport.contacts ?? [];
 
-  const {
-    ids,
-    selectionType,
-    toggleSelectAll,
-    toggleSelectionById,
-    isRowChecked,
-  } = useMassSelection(contactCount, allContactIds, activeFilters, query);
+    const contactCount = data?.partnerGivingAnalysisReport?.totalContacts ?? 0;
+    const { data: allContacts } =
+      useGetPartnerGivingAnalysisIdsForMassSelectionQuery({
+        variables: {
+          input: {
+            accountListId,
+            page: 1,
+            pageSize: contactCount,
+            sortField: '',
+            sortDirection: SortDirection.Ascending,
+            contactFilters,
+          },
+        },
+        skip: contactCount === 0,
+      });
+    const allContactIds = useMemo(
+      () =>
+        allContacts?.partnerGivingAnalysisReport?.contacts.map(
+          (contact) => contact.id,
+        ) ?? [],
+      [allContacts],
+    );
 
-  const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: string,
-  ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property as keyof Contact);
-  };
+    const {
+      ids,
+      selectionType,
+      toggleSelectAll,
+      toggleSelectionById,
+      isRowChecked,
+    } = useMassSelection(contactCount, allContactIds, activeFilters, query);
 
-  const handlePageChange = (
-    event: React.MouseEvent<unknown> | null,
-    newPage: number,
-  ): void => {
-    setPage(newPage);
-  };
+    const handleRequestSort = (
+      event: React.MouseEvent<unknown>,
+      property: string,
+    ) => {
+      const isAsc = orderBy === property && order === 'asc';
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(property as keyof Contact);
+    };
 
-  const handleLimitChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setLimit(parseInt(event.target.value));
-  };
+    const handlePageChange = (
+      event: React.MouseEvent<unknown> | null,
+      newPage: number,
+    ): void => {
+      setPage(newPage);
+    };
 
-  return (
-    <Box>
-      <MultiPageHeader
-        isNavListOpen={panelOpen === Panel.Navigation}
-        onNavListToggle={onNavListToggle}
-        title={title}
-        headerType={HeaderTypeEnum.Report}
-      />
-      <ListHeader
-        page="report"
-        activeFilters={isActiveFilters}
-        filterPanelOpen={panelOpen === Panel.Filters}
-        toggleFilterPanel={onFilterListToggle}
-        contactDetailsOpen={contactDetailsOpen}
-        onCheckAllItems={toggleSelectAll}
-        showShowingCount={false}
-        onSearchTermChanged={(string) => setQuery(string)}
-        searchTerm={query}
-        totalItems={contactCount}
-        headerCheckboxState={selectionType}
-        selectedIds={ids}
-      />
-      {loading ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100%"
-        >
-          <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
-        </Box>
-      ) : contacts.length > 0 ? (
-        <>
-          <Table
-            onRequestSort={handleRequestSort}
-            onSelectOne={toggleSelectionById}
-            order={order}
-            orderBy={orderBy}
-            contacts={contacts}
-            isRowChecked={isRowChecked}
-          />
-          <TablePagination
-            colSpan={3}
-            count={data?.partnerGivingAnalysisReport.pagination.totalItems ?? 0}
-            onPageChange={handlePageChange}
-            onRowsPerPageChange={handleLimitChange}
-            // Page 0 is the first page for the component
-            page={page}
-            rowsPerPage={limit}
-            rowsPerPageOptions={[10, 25, 50]}
-            SelectProps={{
-              inputProps: {
-                'aria-label': t('rows per page'),
-              },
-              native: true,
-            }}
-          />
-        </>
-      ) : (
-        <EmptyReport
-          title={t('You have {{contacts}} total contacts', {
-            contacts: data?.partnerGivingAnalysisReport.totalContacts ?? '?',
-          })}
-          subTitle={t(
-            'Unfortunately none of them match your current search or filters.',
-          )}
+    const handleLimitChange = (
+      event: React.ChangeEvent<HTMLInputElement>,
+    ): void => {
+      setLimit(parseInt(event.target.value));
+    };
+
+    return (
+      <Box>
+        <MultiPageHeader
+          isNavListOpen={panelOpen === Panel.Navigation}
+          onNavListToggle={onNavListToggle}
+          title={title}
+          headerType={HeaderTypeEnum.Report}
         />
-      )}
-    </Box>
-  );
-};
+        <ListHeader
+          page="report"
+          activeFilters={isActiveFilters}
+          filterPanelOpen={panelOpen === Panel.Filters}
+          toggleFilterPanel={onFilterListToggle}
+          contactDetailsOpen={contactDetailsOpen}
+          onCheckAllItems={toggleSelectAll}
+          showShowingCount={false}
+          onSearchTermChanged={(string) => setQuery(string)}
+          searchTerm={query}
+          totalItems={contactCount}
+          headerCheckboxState={selectionType}
+          selectedIds={ids}
+        />
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+          >
+            <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
+          </Box>
+        ) : contacts.length > 0 ? (
+          <>
+            <Table
+              onRequestSort={handleRequestSort}
+              onSelectOne={toggleSelectionById}
+              order={order}
+              orderBy={orderBy}
+              contacts={contacts}
+              isRowChecked={isRowChecked}
+            />
+            <TablePagination
+              colSpan={3}
+              count={
+                data?.partnerGivingAnalysisReport.pagination.totalItems ?? 0
+              }
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleLimitChange}
+              // Page 0 is the first page for the component
+              page={page}
+              rowsPerPage={limit}
+              rowsPerPageOptions={[10, 25, 50]}
+              SelectProps={{
+                inputProps: {
+                  'aria-label': t('rows per page'),
+                },
+                native: true,
+              }}
+            />
+          </>
+        ) : (
+          <EmptyReport
+            title={t('You have {{contacts}} total contacts', {
+              contacts: data?.partnerGivingAnalysisReport.totalContacts ?? '?',
+            })}
+            subTitle={t(
+              'Unfortunately none of them match your current search or filters.',
+            )}
+          />
+        )}
+      </Box>
+    );
+  },
+);
+
+PartnerGivingAnalysisReport.displayName = 'PartnerGivingAnalysisReport';

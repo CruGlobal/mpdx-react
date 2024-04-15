@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { extractCookie } from 'src/lib/extractCookie';
 import { expireCookieDefaultInfo } from '../utils/cookies';
 
@@ -47,4 +48,16 @@ export const setUserInfo = (
     user,
     cookies,
   };
+};
+
+// Determinate whether a JWT is expired without validating its signature
+export const isJwtExpired = (jwt: string): boolean => {
+  try {
+    const decoded = Buffer.from(jwt.split('.')[1], 'base64').toString();
+    const payload = JSON.parse(decoded);
+    const now = DateTime.now().toSeconds();
+    return payload.exp <= now;
+  } catch {
+    throw new Error('Malformed API token');
+  }
 };

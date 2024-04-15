@@ -97,6 +97,14 @@ export type Person = Omit<
   __typename?: 'Person' | 'User';
 };
 
+interface Attributes {
+  id: string;
+  greeting: any;
+  envelopeGreeting: any;
+  name: any;
+  primaryPersonId?: string;
+}
+
 interface PersonModalProps {
   contactId: string;
   accountListId: string;
@@ -278,14 +286,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               removeNameFromGreetings(envelopeGreeting);
             const newName = removeNameFromGreetings(name, /,\s{1,}and /, ', ');
 
-            interface attributes {
-              id: string;
-              greeting: any;
-              envelopeGreeting: any;
-              name: any;
-              primaryPersonId?: string;
-            }
-            const attributes: attributes = {
+            const attributes: Attributes = {
               id: contactId,
               greeting: newGreeting,
               envelopeGreeting: newEnvelopeGreeting,

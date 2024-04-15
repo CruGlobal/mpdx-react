@@ -37,9 +37,9 @@ interface EditGoogleAccountModalProps {
   oAuth: string;
 }
 
-enum tabsEnum {
-  calendar = 'calendar',
-  setup = 'setup',
+enum TabsEnum {
+  Calendar = 'calendar',
+  Setup = 'setup',
 }
 
 const StyledDialogActions = styled(DialogActions)(() => ({
@@ -57,7 +57,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const [tabSelected, setTabSelected] = useState<tabsEnum>(tabsEnum.calendar);
+  const [tabSelected, setTabSelected] = useState<TabsEnum>(TabsEnum.Calendar);
 
   const [updateGoogleIntegration] = useUpdateGoogleIntegrationMutation();
   const [createGoogleIntegration] = useCreateGoogleIntegrationMutation();
@@ -156,7 +156,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
         input: {
           googleAccountId: account.id,
           googleIntegrationId: googleAccountDetails?.id ?? '',
-          integrationName: tabsEnum.calendar,
+          integrationName: TabsEnum.Calendar,
         },
       },
     });
@@ -192,12 +192,12 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
             aria-label="tabs"
           >
             <Tab
-              value={tabsEnum.calendar}
+              value={TabsEnum.Calendar}
               label="Calendar"
               style={{ width: '50%' }}
             />
             <Tab
-              value={tabsEnum.setup}
+              value={TabsEnum.Setup}
               label="Setup"
               style={{ width: '50%' }}
             />
@@ -213,7 +213,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
 
         {!loading &&
           googleAccountDetails?.calendarIntegration &&
-          tabSelected === tabsEnum.calendar && (
+          tabSelected === TabsEnum.Calendar && (
             <EditGoogleIntegrationForm
               googleAccountDetails={googleAccountDetails}
               loading={loading}
@@ -226,7 +226,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
 
         {!loading &&
           !googleAccountDetails?.calendarIntegration &&
-          tabSelected === tabsEnum.calendar && (
+          tabSelected === TabsEnum.Calendar && (
             <Typography>
               {t(
                 `{{appName}} can automatically update your google calendar with your tasks.
@@ -238,7 +238,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
             </Typography>
           )}
 
-        {tabSelected === tabsEnum.setup && (
+        {tabSelected === TabsEnum.Setup && (
           <Typography>
             {t(
               `If the link between {{appName}} and your Google account breaks,
@@ -251,7 +251,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
         )}
       </DialogContent>
 
-      {tabSelected === tabsEnum.calendar &&
+      {tabSelected === TabsEnum.Calendar &&
         !googleAccountDetails?.calendarIntegration && (
           <StyledDialogActions>
             <CancelButton onClick={handleClose} disabled={isSubmitting} />
@@ -263,7 +263,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
             </SubmitButton>
           </StyledDialogActions>
         )}
-      {tabSelected === tabsEnum.calendar &&
+      {tabSelected === TabsEnum.Calendar &&
         googleAccountDetails?.calendarIntegration && (
           <StyledDialogActions>
             <CancelButton
@@ -276,7 +276,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
             </ActionButton>
           </StyledDialogActions>
         )}
-      {tabSelected === tabsEnum.setup && (
+      {tabSelected === TabsEnum.Setup && (
         <StyledDialogActions>
           <CancelButton
             onClick={handleClose}
