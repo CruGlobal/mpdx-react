@@ -76,7 +76,6 @@ const DonationsReportPage: React.FC = () => {
                 designationAccounts={designationAccounts}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
-                onSelectContact={handleSelectContact}
                 title={t('Donations')}
               />
             }

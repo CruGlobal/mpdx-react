@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IconButton } from '@mui/material';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { useSetContactStarredMutation } from './SetContactStarred.generated';
@@ -16,26 +16,29 @@ export const StarContactIconButton: React.FC<Props> = ({
 }) => {
   const [setContactStarred] = useSetContactStarredMutation();
 
-  return (
-    <IconButton
-      component="div"
-      onClick={(event) => {
-        event.stopPropagation();
-        setContactStarred({
-          variables: { accountListId, contactId, starred: !isStarred },
-          optimisticResponse: {
-            updateContact: {
-              __typename: 'ContactUpdateMutationPayload',
-              contact: {
-                __typename: 'Contact',
-                id: contactId,
-                starred: !isStarred,
-              },
+  const handleIconClick = useMemo(
+    () => (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setContactStarred({
+        variables: { accountListId, contactId, starred: !isStarred },
+        optimisticResponse: {
+          updateContact: {
+            __typename: 'ContactUpdateMutationPayload',
+            contact: {
+              __typename: 'Contact',
+              id: contactId,
+              starred: !isStarred,
             },
           },
-        });
-      }}
-    >
+        },
+      });
+    },
+    [accountListId, contactId, isStarred],
+  );
+
+  return (
+    <IconButton component="div" onClick={handleIconClick}>
       <StarredItemIcon isStarred={isStarred} />
     </IconButton>
   );

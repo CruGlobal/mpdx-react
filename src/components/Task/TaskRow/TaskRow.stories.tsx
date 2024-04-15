@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import { ContactUrl } from 'pages/accountLists/[accountListId]/tasks/[[...contactId]].page';
 import { ResultEnum } from 'src/graphql/types.generated';
 import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
 import { TaskRow } from './TaskRow';
@@ -12,8 +13,8 @@ export default {
 const accountListId = 'abc';
 const startAt = '2021-04-12';
 const lateStartAt = '2019-10-12';
-const onContactSelected = () => {};
 const onTaskCheckSelected = () => {};
+const getContactUrl = () => ({} as ContactUrl);
 
 export const Default = (): ReactElement => {
   const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
@@ -29,7 +30,7 @@ export const Default = (): ReactElement => {
       accountListId={accountListId}
       task={task}
       isChecked={false}
-      onContactSelected={onContactSelected}
+      getContactUrl={getContactUrl}
       onTaskCheckToggle={onTaskCheckSelected}
     />
   );
@@ -47,7 +48,7 @@ export const Starred = (): ReactElement => {
       accountListId={accountListId}
       task={task}
       isChecked={false}
-      onContactSelected={onContactSelected}
+      getContactUrl={getContactUrl}
       onTaskCheckToggle={onTaskCheckSelected}
     />
   );
@@ -61,7 +62,7 @@ export const Checked = (): ReactElement => {
       accountListId={accountListId}
       task={task}
       isChecked={true}
-      onContactSelected={onContactSelected}
+      getContactUrl={getContactUrl}
       onTaskCheckToggle={onTaskCheckSelected}
     />
   );
@@ -80,7 +81,7 @@ export const Complete = (): ReactElement => {
       accountListId={accountListId}
       task={task}
       isChecked={false}
-      onContactSelected={onContactSelected}
+      getContactUrl={getContactUrl}
       onTaskCheckToggle={onTaskCheckSelected}
     />
   );
@@ -99,7 +100,7 @@ export const Late = (): ReactElement => {
       accountListId={accountListId}
       task={task}
       isChecked={false}
-      onContactSelected={onContactSelected}
+      getContactUrl={getContactUrl}
       onTaskCheckToggle={onTaskCheckSelected}
     />
   );

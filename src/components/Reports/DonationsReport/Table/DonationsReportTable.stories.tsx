@@ -8,7 +8,6 @@ export default {
   title: 'Reports/DonationsReport/Table',
 };
 
-const onSelectContact = () => {};
 const time = DateTime.now();
 
 export const Default = (): ReactElement => {
@@ -69,7 +68,6 @@ export const Default = (): ReactElement => {
     >
       <DonationsReportTable
         accountListId={'abc'}
-        onSelectContact={onSelectContact}
         time={time}
         setTime={() => {}}
       />
@@ -90,7 +88,6 @@ export const Empty = (): ReactElement => {
     >
       <DonationsReportTable
         accountListId={'abc'}
-        onSelectContact={onSelectContact}
         time={time}
         setTime={() => {}}
       />

@@ -75,7 +75,6 @@ const PartnerCurrencyReportPage: React.FC = () => {
                 accountListId={accountListId}
                 designationAccounts={designationAccounts}
                 currencyType={FourteenMonthReportCurrencyType.Donor}
-                onSelectContact={handleSelectContact}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Contributions by Partner Currency')}

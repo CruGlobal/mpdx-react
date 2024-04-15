@@ -7,8 +7,6 @@ export default {
   title: 'Reports/DonationsReport',
 };
 
-const onSelectContact = () => {};
-
 export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider
@@ -79,7 +77,6 @@ export const Default = (): ReactElement => {
         accountListId={'abc'}
         isNavListOpen={false}
         onNavListToggle={(): void => {}}
-        onSelectContact={onSelectContact}
         title="Donations"
       />
     </GqlMockedProvider>
@@ -128,7 +125,6 @@ export const Empty = (): ReactElement => {
         accountListId={'abc'}
         isNavListOpen={false}
         onNavListToggle={(): void => {}}
-        onSelectContact={onSelectContact}
         title="Donations"
       />
     </GqlMockedProvider>

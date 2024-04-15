@@ -13,7 +13,7 @@ import theme from '../../../../theme';
 import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
 import { DonationsReportTable } from './DonationsReportTable';
 
-const time = DateTime.now();
+const time = DateTime.local(2023, 8, 1);
 const setTime = jest.fn();
 const onSelectContact = jest.fn();
 
@@ -97,7 +97,6 @@ describe('DonationsReportTable', () => {
         >
           <DonationsReportTable
             accountListId={'abc'}
-            onSelectContact={onSelectContact}
             time={time}
             setTime={setTime}
           />
@@ -138,7 +137,6 @@ describe('DonationsReportTable', () => {
                 >
                   <DonationsReportTable
                     accountListId={'abc'}
-                    onSelectContact={onSelectContact}
                     time={time}
                     setTime={setTime}
                   />
@@ -186,7 +184,6 @@ describe('DonationsReportTable', () => {
           >
             <DonationsReportTable
               accountListId={'abc'}
-              onSelectContact={onSelectContact}
               time={time}
               setTime={setTime}
             />
@@ -204,15 +201,14 @@ describe('DonationsReportTable', () => {
     expect(queryByTestId('donationRow')).not.toBeInTheDocument();
   });
 
-  it('is clickable', async () => {
-    const { queryAllByText } = render(
+  it('should have render an <a> and set the correct href', async () => {
+    const { queryAllByText, getAllByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{ GetDonationsTable: GetDonationsTableQuery }>
           mocks={mocks}
         >
           <DonationsReportTable
             accountListId={'abc'}
-            onSelectContact={onSelectContact}
             time={time}
             setTime={setTime}
           />
@@ -222,8 +218,11 @@ describe('DonationsReportTable', () => {
 
     await waitFor(() => expect(queryAllByText('John')).toHaveLength(2));
 
-    userEvent.click(queryAllByText('John')[0]);
-    expect(onSelectContact).toHaveBeenCalledWith('contact1');
+    const contactLink = getAllByRole('link', { name: 'John' });
+    expect(contactLink[1]).toHaveAttribute(
+      'href',
+      '/accountLists/abc/reports/donations/contact2?month=2023-08',
+    );
   });
 
   it('filters report by designation account', async () => {
@@ -237,7 +236,6 @@ describe('DonationsReportTable', () => {
           <DonationsReportTable
             accountListId={'abc'}
             designationAccounts={['account-1']}
-            onSelectContact={onSelectContact}
             time={time}
             setTime={setTime}
           />
@@ -267,7 +265,6 @@ describe('DonationsReportTable', () => {
         >
           <DonationsReportTable
             accountListId={'abc'}
-            onSelectContact={onSelectContact}
             time={time}
             setTime={setTime}
           />
@@ -330,7 +327,6 @@ describe('DonationsReportTable', () => {
         >
           <DonationsReportTable
             accountListId={'abc'}
-            onSelectContact={onSelectContact}
             time={time}
             setTime={setTime}
           />
@@ -352,7 +348,6 @@ describe('DonationsReportTable', () => {
         >
           <DonationsReportTable
             accountListId={'abc'}
-            onSelectContact={onSelectContact}
             time={time}
             setTime={setTime}
           />
@@ -375,7 +370,6 @@ describe('DonationsReportTable', () => {
         >
           <DonationsReportTable
             accountListId={'abc'}
-            onSelectContact={onSelectContact}
             time={time}
             setTime={setTime}
           />
@@ -397,7 +391,6 @@ describe('DonationsReportTable', () => {
         >
           <DonationsReportTable
             accountListId={'abc'}
-            onSelectContact={onSelectContact}
             time={time}
             setTime={setTime}
           />
@@ -428,7 +421,6 @@ describe('DonationsReportTable', () => {
       return (
         <DonationsReportTable
           accountListId={'abc'}
-          onSelectContact={onSelectContact}
           time={time}
           setTime={setTime}
         />
@@ -475,7 +467,6 @@ describe('DonationsReportTable', () => {
       return (
         <DonationsReportTable
           accountListId={'abc'}
-          onSelectContact={onSelectContact}
           time={time}
           setTime={setTime}
         />

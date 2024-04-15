@@ -18,7 +18,7 @@ import { ContactFlowColumn } from './ContactFlowColumn';
 
 const accountListId = 'abc';
 const title = 'Test Column';
-const onContactSelected = jest.fn();
+const getContactUrl = jest.fn();
 const changeContactStatus = jest.fn();
 const contact = {
   id: '123',
@@ -61,7 +61,7 @@ describe('ContactFlowColumn', () => {
                       selectedFilters={{}}
                       color={theme.palette.mpdxBlue.main}
                       title={title}
-                      onContactSelected={onContactSelected}
+                      getContactUrl={getContactUrl}
                       changeContactStatus={changeContactStatus}
                       statuses={[ContactFilterStatusEnum.PartnerFinancial]}
                     />

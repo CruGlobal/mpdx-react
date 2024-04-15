@@ -1,3 +1,4 @@
+import { ParsedUrlQueryInput } from 'querystring';
 import { NextRouter, useRouter } from 'next/router';
 import React, {
   Dispatch,
@@ -30,6 +31,12 @@ import {
 import { coordinatesFromContacts, getRedirectPathname } from './helpers';
 import { Coordinates } from './map/map';
 
+export type ContactUrl = {
+  pathname: string;
+  filteredQuery: string | ParsedUrlQueryInput;
+  contactUrl: string;
+};
+
 export type ContactsType = {
   accountListId: string | undefined;
   contactId: string | string[] | undefined;
@@ -45,12 +52,8 @@ export type ContactsType = {
   toggleFilterPanel: () => void;
   handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
-  setContactFocus: (
-    id?: string | undefined,
-    openDetails?: boolean,
-    flows?: boolean,
-    map?: boolean,
-  ) => void;
+  setContactFocus: (id?: string, openDetails?: boolean) => void;
+  getContactUrl: (id?: string) => ContactUrl;
   setSearchTerm: _.DebouncedFunc<(searchTerm: string) => void>;
   handleViewModeChange: (
     event: React.MouseEvent<HTMLElement>,
@@ -285,7 +288,8 @@ export const ContactsProvider: React.FC<Props> = ({
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id?: string, openDetails = true) => {
+
+  const getContactUrl = (id?: string): ContactUrl => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -302,13 +306,29 @@ export const ContactsProvider: React.FC<Props> = ({
         delete filteredQuery['filters'];
       }
     }
-
     const pathname = getRedirectPathname({
       routerPathname: router.pathname,
       accountListId,
       contactId: id,
       viewMode,
     });
+
+    const filterParams =
+      Object.keys(filteredQuery).length > 0
+        ? `?${new URLSearchParams(
+            filteredQuery as Record<string, string>,
+          ).toString()}`
+        : '';
+
+    return {
+      pathname,
+      filteredQuery,
+      contactUrl: pathname + filterParams,
+    };
+  };
+
+  const setContactFocus = (id?: string, openDetails = true) => {
+    const { pathname, filteredQuery } = getContactUrl(id);
     push({
       pathname,
       query: filteredQuery,
@@ -318,6 +338,7 @@ export const ContactsProvider: React.FC<Props> = ({
       setContactDetailsOpen(!!id);
     }
   };
+
   const setSearchTerm = useCallback(
     debounce((searchTerm: string) => {
       const { searchTerm: _, ...oldQuery } = query;
@@ -404,6 +425,7 @@ export const ContactsProvider: React.FC<Props> = ({
         handleClearAll: handleClearAll,
         savedFilters: savedFilters,
         setContactFocus: setContactFocus,
+        getContactUrl: getContactUrl,
         setSearchTerm: setSearchTerm,
         handleViewModeChange: handleViewModeChange,
         selected: selected,

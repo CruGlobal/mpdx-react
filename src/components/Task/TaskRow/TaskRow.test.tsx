@@ -12,7 +12,10 @@ import theme from '../../../theme';
 import { TaskRow } from './TaskRow';
 import { TaskRowFragment, TaskRowFragmentDoc } from './TaskRow.generated';
 
-const onContactSelected = jest.fn();
+const getContactUrl = jest.fn().mockReturnValue({
+  pathname: '/pathname/tasks/123456',
+  query: { filter: 'filterOptions' },
+});
 const onTaskCheckSelected = jest.fn();
 const accountListId = 'abc';
 const startAt = '2021-10-12';
@@ -42,6 +45,9 @@ beforeEach(() => {
 });
 
 describe('TaskRow', () => {
+  beforeEach(() => {
+    getContactUrl.mockClear();
+  });
   it('should render not complete', async () => {
     const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
       mocks: {
@@ -57,7 +63,7 @@ describe('TaskRow', () => {
             accountListId={accountListId}
             task={task}
             onTaskCheckToggle={onTaskCheckSelected}
-            onContactSelected={onContactSelected}
+            getContactUrl={getContactUrl}
             isChecked={false}
           />
         </ThemeProvider>
@@ -85,7 +91,7 @@ describe('TaskRow', () => {
             accountListId={accountListId}
             task={task}
             onTaskCheckToggle={onTaskCheckSelected}
-            onContactSelected={onContactSelected}
+            getContactUrl={getContactUrl}
             isChecked={false}
           />
         </ThemeProvider>
@@ -111,7 +117,7 @@ describe('TaskRow', () => {
             accountListId={accountListId}
             task={task}
             onTaskCheckToggle={onTaskCheckSelected}
-            onContactSelected={onContactSelected}
+            getContactUrl={getContactUrl}
             isChecked={false}
           />
         </ThemeProvider>
@@ -145,7 +151,7 @@ describe('TaskRow', () => {
             accountListId={accountListId}
             task={task}
             onTaskCheckToggle={onTaskCheckSelected}
-            onContactSelected={onContactSelected}
+            getContactUrl={getContactUrl}
             isChecked={false}
           />
         </ThemeProvider>
@@ -177,7 +183,7 @@ describe('TaskRow', () => {
               accountListId={accountListId}
               task={task}
               onTaskCheckToggle={onTaskCheckSelected}
-              onContactSelected={onContactSelected}
+              getContactUrl={getContactUrl}
               isChecked={false}
             />
           </ThemeProvider>
@@ -202,7 +208,7 @@ describe('TaskRow', () => {
               accountListId={accountListId}
               task={task}
               onTaskCheckToggle={onTaskCheckSelected}
-              onContactSelected={onContactSelected}
+              getContactUrl={getContactUrl}
               isChecked={false}
             />
           </ThemeProvider>
@@ -227,7 +233,7 @@ describe('TaskRow', () => {
               accountListId={accountListId}
               task={task}
               onTaskCheckToggle={onTaskCheckSelected}
-              onContactSelected={onContactSelected}
+              getContactUrl={getContactUrl}
               isChecked={false}
             />
           </ThemeProvider>
@@ -242,7 +248,7 @@ describe('TaskRow', () => {
       });
     });
 
-    it('handles contact name click', async () => {
+    it('should render <a> tag and have correct attributes', async () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           startAt,
@@ -250,14 +256,14 @@ describe('TaskRow', () => {
         },
       });
 
-      const { findByText, getByText } = render(
+      const { findByText, getByRole } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
               accountListId={accountListId}
               task={task}
               onTaskCheckToggle={onTaskCheckSelected}
-              onContactSelected={onContactSelected}
+              getContactUrl={getContactUrl}
               isChecked={false}
             />
           </ThemeProvider>
@@ -265,8 +271,17 @@ describe('TaskRow', () => {
       );
 
       expect(await findByText(task.subject)).toBeVisible();
-      userEvent.click(getByText(task.contacts.nodes[0].name));
-      expect(onContactSelected).toHaveBeenCalledWith(task.contacts.nodes[0].id);
+
+      expect(getContactUrl).toHaveBeenCalledWith(task.contacts.nodes[0].id);
+
+      const contactLink = getByRole('link', {
+        name: task.contacts.nodes[0].name,
+      });
+
+      expect(contactLink).toHaveAttribute(
+        'href',
+        `/pathname/tasks/123456?filter=filterOptions`,
+      );
     });
 
     it('handle comment button click', async () => {
@@ -284,7 +299,7 @@ describe('TaskRow', () => {
               accountListId={accountListId}
               task={task}
               onTaskCheckToggle={onTaskCheckSelected}
-              onContactSelected={onContactSelected}
+              getContactUrl={getContactUrl}
               isChecked={false}
             />
           </ThemeProvider>
@@ -314,7 +329,7 @@ describe('TaskRow', () => {
               accountListId={accountListId}
               task={task}
               onTaskCheckToggle={onTaskCheckSelected}
-              onContactSelected={onContactSelected}
+              getContactUrl={getContactUrl}
               isChecked={false}
             />
           </ThemeProvider>
@@ -357,7 +372,7 @@ describe('TaskRow', () => {
             accountListId={accountListId}
             task={task}
             onTaskCheckToggle={onTaskCheckSelected}
-            onContactSelected={onContactSelected}
+            getContactUrl={getContactUrl}
             isChecked={false}
           />
         </ThemeProvider>

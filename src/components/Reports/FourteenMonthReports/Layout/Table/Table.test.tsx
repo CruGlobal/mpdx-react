@@ -1,13 +1,19 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { FourteenMonthReportTable } from './Table';
 
+const accountListId = 'accountListId';
+const router = {
+  query: { accountListId },
+  isReady: true,
+};
+
 const onRequestSort = jest.fn();
-const onSelectContact = jest.fn();
 
 const mocks = {
   FourteenMonthReport: {
@@ -202,24 +208,26 @@ describe('FourteenMonthReportTable', () => {
   it('default', async () => {
     const { getAllByTestId, getByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <FourteenMonthReportTable
-            isExpanded={true}
-            order="asc"
-            orderBy={null}
-            orderedContacts={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .contacts
-            }
-            salaryCurrency={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .currency
-            }
-            onRequestSort={onRequestSort}
-            onSelectContact={onSelectContact}
-            totals={totals}
-          />
-        </GqlMockedProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <FourteenMonthReportTable
+              isExpanded={true}
+              order="asc"
+              orderBy={null}
+              orderedContacts={
+                mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                  .contacts
+              }
+              salaryCurrency={
+                mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                  .currency
+              }
+              onRequestSort={onRequestSort}
+              totals={totals}
+              currencyType={FourteenMonthReportCurrencyType.Donor}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
 
@@ -239,24 +247,26 @@ describe('FourteenMonthReportTable', () => {
   it('should order by name', async () => {
     const { getAllByTestId, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <FourteenMonthReportTable
-            isExpanded={true}
-            order="asc"
-            orderBy="name"
-            orderedContacts={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .contacts
-            }
-            salaryCurrency={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .currency
-            }
-            onRequestSort={onRequestSort}
-            onSelectContact={onSelectContact}
-            totals={totals}
-          />
-        </GqlMockedProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <FourteenMonthReportTable
+              isExpanded={true}
+              order="asc"
+              orderBy="name"
+              orderedContacts={
+                mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                  .contacts
+              }
+              salaryCurrency={
+                mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                  .currency
+              }
+              onRequestSort={onRequestSort}
+              totals={totals}
+              currencyType={FourteenMonthReportCurrencyType.Donor}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
 
@@ -276,26 +286,28 @@ describe('FourteenMonthReportTable', () => {
   });
 
   it('can make contact click event happen and pledge amount is correct', async () => {
-    const { getByText, queryByTestId, getAllByTestId } = render(
+    const { getByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <FourteenMonthReportTable
-            isExpanded={true}
-            order="asc"
-            orderBy="name"
-            orderedContacts={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .contacts
-            }
-            salaryCurrency={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .currency
-            }
-            onRequestSort={onRequestSort}
-            onSelectContact={onSelectContact}
-            totals={totals}
-          />
-        </GqlMockedProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <FourteenMonthReportTable
+              isExpanded={true}
+              order="asc"
+              orderBy="name"
+              orderedContacts={
+                mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                  .contacts
+              }
+              salaryCurrency={
+                mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                  .currency
+              }
+              onRequestSort={onRequestSort}
+              totals={totals}
+              currencyType={FourteenMonthReportCurrencyType.Donor}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
 
@@ -305,11 +317,14 @@ describe('FourteenMonthReportTable', () => {
       ).not.toBeInTheDocument();
     });
 
-    userEvent.click(getByText('name again'));
-    expect(onSelectContact).toHaveBeenCalledWith('contact-2');
-    await waitFor(() => {
-      expect(getAllByTestId('pledgeAmount')[1].innerHTML).toEqual('16 USD ');
+    const partnerLink = getByRole('link', {
+      name: 'name again',
     });
+
+    expect(partnerLink).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/reports/partnerCurrency/contact-2`,
+    );
   });
 
   it('should return 0 if no months', async () => {
@@ -348,24 +363,26 @@ describe('FourteenMonthReportTable', () => {
 
     const { queryByTestId, getAllByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <FourteenMonthReportTable
-            isExpanded={true}
-            order="asc"
-            orderBy="name"
-            orderedContacts={
-              newMocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .contacts
-            }
-            salaryCurrency={
-              newMocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .currency
-            }
-            onRequestSort={onRequestSort}
-            onSelectContact={onSelectContact}
-            totals={totals}
-          />
-        </GqlMockedProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <FourteenMonthReportTable
+              isExpanded={true}
+              order="asc"
+              orderBy="name"
+              orderedContacts={
+                newMocks.FourteenMonthReport.fourteenMonthReport
+                  .currencyGroups[0].contacts
+              }
+              salaryCurrency={
+                newMocks.FourteenMonthReport.fourteenMonthReport
+                  .currencyGroups[0].currency
+              }
+              onRequestSort={onRequestSort}
+              totals={totals}
+              currencyType={FourteenMonthReportCurrencyType.Donor}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
 
@@ -382,24 +399,26 @@ describe('FourteenMonthReportTable', () => {
   it('should calulate the correct monthly totals', async () => {
     const { queryByTestId, getAllByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <FourteenMonthReportTable
-            isExpanded={true}
-            order="asc"
-            orderBy="name"
-            orderedContacts={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .contacts
-            }
-            salaryCurrency={
-              mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .currency
-            }
-            onRequestSort={onRequestSort}
-            onSelectContact={onSelectContact}
-            totals={totals}
-          />
-        </GqlMockedProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <FourteenMonthReportTable
+              isExpanded={true}
+              order="asc"
+              orderBy="name"
+              orderedContacts={
+                mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                  .contacts
+              }
+              salaryCurrency={
+                mocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
+                  .currency
+              }
+              onRequestSort={onRequestSort}
+              currencyType={FourteenMonthReportCurrencyType.Donor}
+              totals={totals}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
 

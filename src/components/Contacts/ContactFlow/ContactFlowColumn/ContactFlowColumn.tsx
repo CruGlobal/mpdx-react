@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { useDrop } from 'react-dnd';
 import {
+  ContactUrl,
   ContactsContext,
   ContactsType,
 } from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
@@ -32,11 +33,7 @@ interface Props {
   color: string;
   accountListId: string;
   searchTerm?: string | string[];
-  onContactSelected: (
-    contactId: string,
-    openDetails: boolean,
-    flows: boolean,
-  ) => void;
+  getContactUrl: (contactId: string) => ContactUrl;
   changeContactStatus: (
     id: string,
     status: {
@@ -58,7 +55,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
   color,
   accountListId,
   searchTerm,
-  onContactSelected,
+  getContactUrl,
   changeContactStatus,
 }: Props) => {
   const { sanitizedFilters } = React.useContext(
@@ -162,7 +159,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
                   ) || nullStatus
                 }
                 starred={contact.starred}
-                onContactSelected={onContactSelected}
+                getContactUrl={getContactUrl}
                 columnWidth={cardContentRef.current?.offsetWidth}
                 avatar={contact.avatar}
               />
