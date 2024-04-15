@@ -118,42 +118,37 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
           },
         },
         update: (cache) => {
-          const deletedUserId = item.userId;
-          const query = {
-            query: SearchOrganizationsAccountListsDocument,
-            variables: {
-              input: {
-                organizationId,
-                search,
-              },
-            },
-          };
-
-          const dataFromCache = cache.readQuery<
+          cache.updateQuery<
             SearchOrganizationsAccountListsQuery,
             SearchOrganizationsAccountListsQueryVariables
-          >(query);
-
-          if (dataFromCache) {
-            const data = {
-              ...dataFromCache,
-              searchOrganizationsAccountLists: {
-                ...dataFromCache.searchOrganizationsAccountLists,
-                accountLists:
-                  dataFromCache.searchOrganizationsAccountLists.accountLists.map(
-                    (list) => ({
-                      ...list,
-                      accountListUsers: list?.accountListUsers
-                        ? list?.accountListUsers.filter(
-                            (user) => user?.userId !== deletedUserId,
-                          )
-                        : null,
-                    }),
-                  ),
+          >(
+            {
+              query: SearchOrganizationsAccountListsDocument,
+              variables: {
+                input: {
+                  organizationId,
+                  search,
+                },
               },
-            };
-            cache.writeQuery({ ...query, data });
-          }
+            },
+            (data) =>
+              data && {
+                ...data,
+                searchOrganizationsAccountLists: {
+                  ...data.searchOrganizationsAccountLists,
+                  accountLists:
+                    data.searchOrganizationsAccountLists.accountLists.map(
+                      (list) =>
+                        list && {
+                          ...list,
+                          accountListUsers: list.accountListUsers?.filter(
+                            (user) => user?.userId !== item.userId,
+                          ),
+                        },
+                    ),
+                },
+              },
+          );
         },
         onCompleted: () => {
           enqueueSnackbar(
@@ -353,7 +348,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                                   'WARNING: Please read the implications of deleting this account.',
                                 )}
                               </Typography>
-                              <Typography>Users</Typography>
+                              <Typography>{t('Users')}</Typography>
                               <StyledList>
                                 <StyledListItem>
                                   {t(
@@ -404,7 +399,9 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                                 },
                               )}
                             </Typography>
-                            Please explain the reason for deleting this account.
+                            {t(
+                              'Please explain the reason for deleting this account.',
+                            )}
                             <TextField
                               // eslint-disable-next-line jsx-a11y/no-autofocus
                               autoFocus
@@ -578,7 +575,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                   'WARNING: Please read the implications of deleting this user.',
                 )}
               </Typography>
-              <Typography>Accounts</Typography>
+              <Typography>{t('Accounts')}</Typography>
               <StyledList>
                 <StyledListItem>
                   {t(
@@ -593,7 +590,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                   )}
                 </StyledListItem>
               </StyledList>
-              <Typography>Designations Accounts</Typography>
+              <Typography>{t('Designations Accounts')}</Typography>
               <StyledList>
                 <StyledListItem>
                   {t(
@@ -601,7 +598,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                   )}
                 </StyledListItem>
               </StyledList>
-              <Typography>Donation System</Typography>
+              <Typography>{t('Donation System')}</Typography>
               <StyledList>
                 <StyledListItem>
                   {t(
