@@ -1,22 +1,18 @@
-import { StatusEnum } from 'src/graphql/types.generated';
-import {
-  ContactPhaseData,
-  NewResultEnum,
-} from 'src/hooks/useContactPhaseDataMockData';
+import { ResultEnum, StatusEnum } from 'src/graphql/types.generated';
+import { TaskPhase } from 'src/hooks/useContactPhaseData';
 
 export const possiblePartnerStatus = (
-  phaseData: ContactPhaseData | null,
-  resultName: NewResultEnum | null,
+  phaseData: TaskPhase | null,
+  resultName: ResultEnum | null,
 ): StatusEnum | null => {
   if (!phaseData || !resultName) return null;
 
-  const suggestedContactStatuses = phaseData.resultOptions.results
-    ? phaseData.resultOptions.results.find(
-        (result) => result.name === resultName,
-      )
-    : null;
-  // TODO - Will need to replace ResultEnum with new results options
-  return suggestedContactStatuses
-    ? suggestedContactStatuses.suggestedContactStatus
-    : null;
+  const suggestedContactStatuses =
+    phaseData?.results?.resultOptions?.find(
+      (result) => result.name === resultName,
+    ) || null;
+  // TODO - Will need to replace StatusEnum
+  return (
+    (suggestedContactStatuses?.suggestedContactStatus as StatusEnum) || null
+  );
 };

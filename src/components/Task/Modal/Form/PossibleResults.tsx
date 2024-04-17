@@ -1,17 +1,13 @@
 import { ResultEnum } from 'src/graphql/types.generated';
-import {
-  ContactPhaseData,
-  NewResultEnum,
-} from 'src/hooks/useContactPhaseDataMockData';
+import { TaskPhase } from 'src/hooks/useContactPhaseData';
 
-export const possibleResults = (
-  phaseData: ContactPhaseData | null,
-): (ResultEnum | NewResultEnum)[] => {
+export const possibleResults = (phaseData: TaskPhase | null): ResultEnum[] => {
   if (!phaseData) return [];
 
-  const results = phaseData.resultOptions.results
-    ? phaseData.resultOptions.results.map((result) => result.name)
-    : [];
-  // TODO - Will need to replace ResultEnum with new results options
-  return results;
+  const results =
+    phaseData?.results?.resultOptions?.map(
+      (result) => result.name.value || '',
+    ) || [];
+  // TODO - ensure we fix this with real type
+  return results as ResultEnum[];
 };

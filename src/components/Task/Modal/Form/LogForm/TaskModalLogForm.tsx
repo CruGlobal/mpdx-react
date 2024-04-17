@@ -37,7 +37,6 @@ import {
   TaskCreateInput,
 } from 'src/graphql/types.generated';
 import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
-import { NewResultEnum } from 'src/hooks/useContactPhaseDataMockData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { useUser } from 'src/hooks/useUser';
@@ -45,6 +44,8 @@ import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
+import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
@@ -116,14 +117,12 @@ const TaskModalLogForm = ({
   const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
   // TODO replace with ResultEnum when available
-  const [resultSelected, setResultSelected] = useState<NewResultEnum | null>(
-    null,
-  );
+  const [resultSelected, setResultSelected] = useState<ResultEnum | null>(null);
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
   // TODO - Replace null with Caleb Alldrin's Contact's status
-  const [phaseData, fetchPhaseData] = useGetPhaseData(null);
+  const { phaseData, setPhaseId } = useGetPhaseData();
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -234,6 +233,12 @@ const TaskModalLogForm = ({
     [phaseData, resultSelected],
   );
 
+  const phaseTags = useMemo(
+    () =>
+      phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
+    [phaseData],
+  );
+
   return (
     <Formik
       initialValues={initialTask}
@@ -300,7 +305,7 @@ const TaskModalLogForm = ({
                     setFieldValue('result', undefined);
                     setResultSelected(null);
                     updateActionOptions();
-                    fetchPhaseData(phase);
+                    setPhaseId(phase);
                   }}
                 />
               </Grid>
@@ -322,7 +327,7 @@ const TaskModalLogForm = ({
                   }}
                 />
               </Grid>
-              {activityType === ActivityTypeEnum.Appointment && (
+              {isAppointmentActivityType(activityType) && (
                 <Grid item>
                   <TextField
                     label={t('Location')}
@@ -344,7 +349,7 @@ const TaskModalLogForm = ({
                       value={result}
                       onChange={(e) => {
                         setFieldValue('result', e.target.value);
-                        setResultSelected(e.target.value as NewResultEnum);
+                        setResultSelected(e.target.value as ResultEnum);
                       }}
                     >
                       {availableResults.map((val) => (
@@ -448,9 +453,9 @@ const TaskModalLogForm = ({
                             inputProps={{ 'aria-label': t('Comment') }}
                           />
                         </Grid>
-                        {phaseData?.resultOptions.tags && (
+                        {phaseTags?.length && (
                           <PhaseTags
-                            tags={phaseData.resultOptions.tags}
+                            tags={phaseTags}
                             selectedTags={selectedSuggestedTags}
                             setSelectedTags={setSelectedSuggestedTags}
                           />
@@ -464,9 +469,7 @@ const TaskModalLogForm = ({
                               setFieldValue('tagList', tagList)
                             }
                             label={
-                              phaseData?.resultOptions.tags
-                                ? t('Additional Tags')
-                                : ''
+                              phaseTags?.length ? t('Additional Tags') : ''
                             }
                           />
                         </Grid>

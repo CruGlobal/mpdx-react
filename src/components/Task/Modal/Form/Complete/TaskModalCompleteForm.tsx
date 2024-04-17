@@ -29,13 +29,13 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
-import { NewResultEnum } from 'src/hooks/useContactPhaseDataMockData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
+import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';
@@ -78,7 +78,7 @@ const TaskModalCompleteForm = ({
   const { activityType } = task;
   const initialCompletedAt =
     task.completedAt ||
-    (activityType === ActivityTypeEnum.Appointment ? task.startAt : null);
+    (isAppointmentActivityType(activityType) ? task.startAt : null);
   const initialTask = useMemo(
     () => ({
       id: task.id,
@@ -104,15 +104,13 @@ const TaskModalCompleteForm = ({
   // TODO - Change this to Task Type when Caleb Alldrin has created it.
   // Remove PhaseTypeEnum.appointment
   // Replace with Task Type
-  const [phaseData] = useGetPhaseData(PhaseTypeEnum.appointment);
+  const { phaseData } = useGetPhaseData();
 
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
   // TODO replace with ResultEnum when available
-  const [resultSelected, setResultSelected] = useState<NewResultEnum | null>(
-    null,
-  );
+  const [resultSelected, setResultSelected] = useState<ResultEnum | null>(null);
   const [updateContactStatus] = useUpdateContactStatusMutation();
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
@@ -209,6 +207,12 @@ const TaskModalCompleteForm = ({
     ? possibleNextActions(task.activityType)
     : [];
 
+  const phaseTags = useMemo(
+    () =>
+      phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
+    [phaseData],
+  );
+
   return (
     <Formik<Attributes>
       initialValues={initialTask}
@@ -281,7 +285,7 @@ const TaskModalCompleteForm = ({
                       value={result}
                       onChange={(e) => {
                         setFieldValue('result', e.target.value);
-                        setResultSelected(e.target.value as NewResultEnum);
+                        setResultSelected(e.target.value as ResultEnum);
                       }}
                     >
                       {availableResults.map((val) => (
@@ -321,9 +325,9 @@ const TaskModalCompleteForm = ({
                   />
                 </Grid>
               )}
-              {phaseData?.resultOptions.tags && (
+              {phaseTags?.length && (
                 <PhaseTags
-                  tags={phaseData.resultOptions.tags}
+                  tags={phaseTags}
                   selectedTags={selectedSuggestedTags}
                   setSelectedTags={setSelectedSuggestedTags}
                 />
@@ -335,9 +339,7 @@ const TaskModalCompleteForm = ({
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
-                  label={
-                    phaseData?.resultOptions.tags ? t('Additional Tags') : ''
-                  }
+                  label={phaseTags?.length ? t('Additional Tags') : ''}
                 />
               </Grid>
 

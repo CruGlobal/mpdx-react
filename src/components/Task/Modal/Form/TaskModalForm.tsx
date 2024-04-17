@@ -44,13 +44,13 @@ import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { useUser } from 'src/hooks/useUser';
-import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import {
   getLocalizedNotificationTimeUnit,
   getLocalizedNotificationType,
 } from 'src/utils/functions/getLocalizedNotificationStrings';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
 import theme from '../../../../theme';
 import { DateTimeFieldPair } from '../../../common/DateTimePickers/DateTimeFieldPair';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
@@ -155,7 +155,7 @@ const TaskModalForm = ({
   // TODO - Change this to Task Type when Caleb Alldrin has created it.
   // Remove PhaseTypeEnum.appointment
   // Replace with Task Type
-  const [phaseData] = useGetPhaseData(PhaseTypeEnum.appointment);
+  const { phaseData } = useGetPhaseData();
 
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
@@ -285,7 +285,7 @@ const TaskModalForm = ({
                   />
                 </FormControl>
               </Grid>
-              {activityType === ActivityTypeEnum.Appointment && (
+              {isAppointmentActivityType(activityType) && (
                 <Grid item>
                   <TextField
                     label={t('Location')}
