@@ -19,7 +19,7 @@ import {
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
 import theme from 'src/theme';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import Modal from '../../../common/Modal/Modal';
 import {
   useGetContactsForMergingQuery,
@@ -128,7 +128,9 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
             <Box sx={{ flex: 1 }}>
               <Typography variant="subtitle1">{contact.name}</Typography>
               <Typography variant="subtitle2">
-                {t('Status')}: {getLocalizedContactStatus(t, contact.status)}
+                {t('Status')}:{' '}
+                {contact.status &&
+                  contactPartnershipStatus[contact.status].translated}
                 <br />
                 {contact.primaryAddress && (
                   <>

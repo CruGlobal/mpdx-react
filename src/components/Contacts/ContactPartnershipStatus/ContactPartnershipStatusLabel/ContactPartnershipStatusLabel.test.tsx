@@ -21,7 +21,8 @@ describe('ContactPartnershipStatusLabel', () => {
     );
     expect(
       getByText(
-        contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerPray],
+        contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerPray]
+          .translated,
       ),
     ).toBeInTheDocument();
   });

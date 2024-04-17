@@ -27,7 +27,8 @@ describe('ContactPartnershipStatus', () => {
     );
     expect(
       queryByText(
-        contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerFinancial],
+        contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerFinancial]
+          .translated,
       ),
     ).toBeInTheDocument();
   });
@@ -50,7 +51,8 @@ describe('ContactPartnershipStatus', () => {
     );
     expect(
       getByText(
-        contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerPray],
+        contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerPray]
+          .translated,
       ),
     ).toBeInTheDocument();
   });
