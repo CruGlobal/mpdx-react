@@ -1,6 +1,6 @@
 import { TFunction } from 'react-i18next';
 import { ResultEnum } from 'src/graphql/types.generated';
-import { NewResultEnum } from 'src/hooks/useContactPhaseDataMockData';
+import { NewResultEnum } from 'src/utils/contacts/getContactPhaseDataMock';
 
 export const getLocalizedResultString = (
   t: TFunction,

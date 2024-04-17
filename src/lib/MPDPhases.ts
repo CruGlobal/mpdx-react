@@ -2,12 +2,12 @@ import { TFunction } from 'i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
 
 export enum PhaseTypeEnum {
-  connection = 'connection',
-  initiation = 'initiation',
-  appointment = 'appointment',
-  follow_up = 'follow_up',
-  partner_care = 'partner_care',
-  archive = 'archive',
+  connection = 'Connections',
+  initiation = 'Initiation',
+  appointment = 'Appointment',
+  follow_up = 'Follow Up',
+  partner_care = 'Partner Care',
+  archive = 'Archive',
 }
 
 export const getLocalizedTaskType = (
