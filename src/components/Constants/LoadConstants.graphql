@@ -58,9 +58,38 @@ query LoadConstants {
       key
       value
     }
-    # userNotificationTitles {
-    #   id
-    #   value
-    # }
+    phases {
+      tasks {
+        id
+        value
+      }
+      results {
+        tags {
+          id
+          value
+        }
+        resultOptions {
+          suggestedNextActions {
+            value
+            id
+          }
+          name {
+            id
+            value
+          }
+          suggestedContactStatus
+          dbResult {
+            key
+            value
+            id
+          }
+        }
+      }
+      name
+      contactStatuses {
+        value
+        id
+      }
+    }
   }
 }
