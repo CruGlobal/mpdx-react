@@ -23,6 +23,7 @@ import {
 import { Formik } from 'formik';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DateTime } from 'luxon';
+import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -39,7 +40,6 @@ import {
 import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { useUser } from 'src/hooks/useUser';
 import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
@@ -94,7 +94,7 @@ const TaskModalLogForm = ({
   onClose,
   defaultValues,
 }: Props): ReactElement => {
-  const user = useUser();
+  const session = useSession();
   const initialTask: Attributes = useMemo(
     () => ({
       taskType: null,
@@ -102,9 +102,7 @@ const TaskModalLogForm = ({
       subject: defaultValues?.subject ?? '',
       contactIds: defaultValues?.contactIds ?? [],
       completedAt: DateTime.local(),
-      // The assignee will not be set if `user` hasn't been loaded yet because we don't want to make
-      // the user wait for it to load
-      userId: defaultValues?.userId ?? user?.id ?? null,
+      userId: defaultValues?.userId ?? session.data?.user.userID ?? null,
       tagList: defaultValues?.tagList ?? [],
       result: defaultValues?.result ?? undefined,
       updateContactStatus: false,

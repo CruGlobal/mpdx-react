@@ -9,24 +9,25 @@ interface Props {
 }
 
 export const RouterGuard: React.FC<Props> = ({ children = null }) => {
-  const { push, pathname } = useRouter();
+  const { push } = useRouter();
 
   const session = useSession({
-    required: pathname !== '/login',
+    required: true,
     onUnauthenticated: () => {
       push('/login');
     },
   });
 
   useEffect(() => {
-    if (session.status === 'authenticated') {
-      if (DateTime.now().toISO() > session.data.expires) {
-        signIn('okta');
-      }
+    if (
+      session.status === 'authenticated' &&
+      DateTime.now().toISO() > session.data.expires
+    ) {
+      signIn('okta');
     }
   }, [session]);
 
-  return session.status === 'authenticated' || pathname === '/login' ? (
+  return session.status === 'authenticated' ? (
     children
   ) : (
     <Box

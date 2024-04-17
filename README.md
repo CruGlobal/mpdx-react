@@ -1,6 +1,7 @@
 # MPDX
 
-This is a [Next.js 12](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a [Next.js 12](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). This application is not free to re-create from this source code (see [LICENSE](./LICENSE)). If you wish to host your own version of
+this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org) to start the discussions.
 
 ## Environments
 
@@ -38,13 +39,7 @@ Once you have these variables you can install the dependencies.
 yarn
 ```
 
-Next, generate types for REST -> GraphQL:
-
-```bash
-yarn gql:server
-```
-
-Then, run create GraphQL generated files:
+Next, run the GraphQL codegen:
 
 ```bash
 yarn gql
@@ -139,21 +134,36 @@ This project uses GraphQL to load data from the API server. GraphQL allows us to
 
 ### Apollo Studio
 
-Apollo Studio is an invaluable tool/interface for testing out queries and mutations during development. If your dev server is running (use `yarn start` to start it), you can access Apollo Studio at http://localhost:3000/api/graphql. Once you navigate to Apollo Studio, you will need to set some a header to authenticate with the API server.
+Apollo Studio is an invaluable tool/interface for testing out queries and mutations during development. As described in the [architecture](#architecture) section, there are two distinct GraphQL servers that MPDX communicates with: the GraphQL API server and the REST proxy server. To figure out which server to use, you may need check whether your field is in `src/graphql/rootFields.generated.ts`. If it is, you should use the GraphQL API server. Otherwise, use the REST proxy server.
+
+#### Apollo Studio for the GraphQL API Server
+
+You can access Apollo Studio for the GraphQL API server at https://studio.apollographql.com/sandbox/explorer?endpoint=https://api.stage.mpdx.org/graphql. Once you navigate to Apollo Studio, you will need to set a header to authenticate with the API server.
+
+1. Go to https://stage.mpdx.org and login.
+2. Open developer tools and run `localStorage.getItem('token')` in the console.
+3. Copy the value of the token.
+4. Back in Apollo Studio, find the Headers tab near the bottom and click the "Set shared headers" button.
+5. In the modal, click the "+ New shared header button" and choose "Authorization" for the header key. For the value, type `Bearer` followed by a space followed by the value of the token.
+6. After you click save, all queries and mutations you make in Apollo Studio will be authenticated.
+
+#### Apollo Studio for the REST Proxy Server
+
+If your dev server is running (use `yarn start` to start it), you can access Apollo Studio for the REST proxy server at http://localhost:3000/api/graphql-rest. Once you navigate to Apollo Studio, you will need to set a header to authenticate with the API server.
 
 1. Go to http://localhost:3000 and login.
 2. Open Chrome DevTools and go to the Application tab.
 3. In the sidebar, click on Cookies > http://localhost:3000 in the Storage section.
 4. Copy the value of the `next-auth.session-token` cookie.
 5. Back in Apollo Studio, find the Headers tab near the bottom and click the "Set shared headers" button.
-6. In the modal, click the "+ New shared header button" and choose "Authorization" for the header key and the word `Bearer` followed by a space followed by the value of the `next-auth.session-token` cookie.
+6. In the modal, click the "+ New shared header button" and choose "Authorization" for the header key. For the value, type `Bearer` followed by a space followed by the value of the `next-auth.session-token` cookie.
 7. After you click save, all queries and mutations you make in Apollo Studio will be authenticated.
 
 Apollo also has a Chrome browser extension that will add an Apollo tab to Chrome DevTools. The extension lets you view the queries and mutations that the page has made and execute queries and mutations without needing to manually configure authorization headers. You can install it [here](https://chromewebstore.google.com/detail/jdkknkkbebbapilgoeccciglkfbmbnfm).
 
 ### Using a Query
 
-To load data in your component, the first step will be to write an operation definition based on the query and fields that your component needs. The easiest way to do this is to go to [Apollo Studio](http://localhost:3000/api/graphql), click the plus sign next to the query you want to load, and then click the plus signs next to the fields you want to use in your component. On line 1, give the operation a name that describes the data it loads and is unique across the entire project (the `yarn gql` step below will fail and tell you if your operation name isn't unique). Also, make sure the operation starts with a capital letter. Then create a `.graphql` file with the same name as your component (i.e. if your component is `Partners.tsx`, the operation goes in `Partners.graphql`) and copy and paste the operation from Apollo Studio into it. It should look something like this:
+To load data in your component, the first step will be to write an operation definition based on the query and fields that your component needs. The easiest way to do this is to go to [Apollo Studio](#apollo-studio), click the plus sign next to the query you want to load, and then click the plus signs next to the fields you want to use in your component. On line 1, give the operation a name that describes the data it loads and is unique across the entire project (the `yarn gql` step below will fail and tell you if your operation name isn't unique). Also, make sure the operation starts with a capital letter. Then create a `.graphql` file with the same name as your component (i.e. if your component is `Partners.tsx`, the operation goes in `Partners.graphql`) and copy and paste the operation from Apollo Studio into it. It should look something like this:
 
 ```gql
 # Partners.graphql
@@ -328,9 +338,15 @@ To learn more about Apollo's cache normalization, [this](https://www.apollograph
 
 ### Architecture
 
-Originally, the API server provided a REST API for reading and writing data that all clients used. However, with the rewrite of the web client in React, it was decided to use GraphQL. The API server now exposes a GraphQL endpoint in addition to the original REST API. However, the GraphQL API doesn't yet fully expose all of the data that was available in the REST API. To prevent the web client from having to query some data through GraphQL and other data through the REST API, this project includes a REST->GraphQL proxy. It essentially extends the API server's GraphQL schema with additional queries and mutations. When the web client uses those additional queries via the extended GraphQL API, the proxy makes a request to the REST API, manipulates the data as necessary, and returns the response back to the client in the GraphQL response. As complicated as this seems, the important part is that the client _doesn't have to know_ whether a particular query is ultimately satisfied by the API server's native GraphQL API or by the REST API. It can make queries and let the proxy worry about routing queries to the correct place.
+Originally, the API server provided a REST API for reading and writing data that all clients used. However, with the rewrite of the web client in React, it was decided to use GraphQL. The API server now exposes a GraphQL endpoint in addition to the original REST API. To see the queries and mutations provided by the API server, you can go [here](https://studio.apollographql.com/sandbox/explorer?endpoint=https://api.mpdx.org/graphql).
 
-The extended GraphQL server is implemented in JavaScript and is available at `/api/graphql` on the domain that the web client is running on. To see the queries and mutations provided by the API server, you can go [here](https://studio.apollographql.com/sandbox/explorer?endpoint=https://api.mpdx.org/graphql). To see the extended set of queries and mutations provided by the web client's supergraph, you can go [here](https://studio.apollographql.com/sandbox/explorer?endpoint=https://next.mpdx.org/api/graphql).
+However, the GraphQL API doesn't yet fully expose all of the data that was available in the REST API. To prevent the web client from having to query some data through GraphQL and other data through the REST API, this project includes a REST->GraphQL proxy. The REST proxy is a GraphQL server hosted at `/api/graphql-rest`. It runs as a Next.js lambda. It receives GraphQL requests, makes a fetch request to the REST API, manipulates the data as necessary, and returns the response back to the client in the GraphQL response. To see the queries and mutations provided by the REST proxy server, you can go [here](https://studio.apollographql.com/sandbox/explorer?endpoint=https://next.mpdx.org/api/graphql-rest).
+
+Additionally, there is logic in the Apollo link to route GraphQL operations to the correct GraphQL server. The link inspects the operation, and if it contains fields provided by the GraphQL API server, it forwards the request to that server. And if it contains fields provided by the REST proxy server, it forwards the request to that server.
+
+The only caveat is that operations cannot mix fields from the GraphQL API server and the REST proxy server. For example, if a component needs to query the `contact` field provided by the GraphQL API server and the `designationAccounts` field provided by the REST proxy server, it will have to split the operation into two separate operations. If the operation were sent as-is to the GraphQL API server, it would fail because it doesn't know about the `designationAccounts` field. And if it were sent to the REST proxy server, it would fail because it doesn't know about the `contact` field. To see the fields provided by the GraphQL API server, look at the generated file `src/graphql/rootFields.generated.ts`.
+
+As complicated as this seems, the important part is that the client _doesn't have to know_ whether a particular query is ultimately satisfied by the API server's native GraphQL API or by REST proxy. It can make queries and let the link figure out which server to route queries to.
 
 ### Adding REST Proxy Queries
 
@@ -338,7 +354,7 @@ To add a new GraphQL query that interacts with the REST API, you will need to fo
 
 1. Find an existing query folder in `pages/api/Schema` (`CoachingAnswerSets` is a good starting point), make a copy of it, and rename it to the name of the query you are adding.
 2. In the folder you just created, rename the `.graphql` file to the name of the query you are adding. Adjust the `extend type Query {}` section that `.graphql` file to contain the query or queries that you are adding, including their arguments and return types. Define the types of the return types of your query in the rest of the file.
-3. Run `yarn gql:server` to generate TypeScript definitions for the new queries. You will need to run this after every time you modify a `.graphql` file in `pages/api/Schema`. If you want it to rerun automatically when it detects changes, run `yarn gql:server:w`.
+3. Run `yarn gql` to generate TypeScript definitions for the new queries. You will need to run this after every time you modify a `.graphql` file in `pages/api/Schema`. If you want it to rerun automatically when it detects changes, run `yarn gql:w`.
 4. In `pages/api/graphql-rest.page.ts` add a method to the `MpdxRestApi` class that makes a request to the REST API.
 5. In the `dataHandler.ts` file for your query, rename the exported method to be appropriate for your query and modify it so that it takes the response from the REST API and returns data in the format returned by the GraphQL query. Make sure that the types match what you defined in the `.graphql` file. Also, make sure that the method you added to `graphql-rest.page.ts` imports and calls your datahandler.
 6. In the `resolvers.ts` file for your query, make sure that the `Query` property on the exported resolvers contains one property for each query you are adding (and the same for the `Mutation` property if you are adding mutations). The second argument of each of those query resolver functions will be an object containing the inputs to your query. Make sure they match the inputs you defined in your `.graphql`. Also make sure that the resolver functions call the `dataSources.mpdxRestApi` method that you defined in `graphq-rest.page.ts`.
@@ -672,3 +688,11 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Troubleshooting
+
+If you run into issues with the Typescript linter saying that `types.generated` cannot be found, try running this command to clear out stale generated files:
+
+```bash
+find . -type f -name "*.generated.ts" -delete && yarn gql
+```

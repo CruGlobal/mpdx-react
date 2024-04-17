@@ -8,6 +8,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { statusMap } from 'src/utils/contacts/contactPartnershipStatus';
@@ -260,5 +261,7 @@ const ContactFlowSetupPage: React.FC = () => {
     </>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default ContactFlowSetupPage;

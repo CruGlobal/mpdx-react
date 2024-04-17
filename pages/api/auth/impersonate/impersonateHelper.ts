@@ -14,7 +14,7 @@ type Errors = {
   detail: string;
 };
 
-type impersonateResponse = {
+type ImpersonateResponse = {
   status: number;
   errors: Errors[];
   invalidRequest: boolean;
@@ -37,7 +37,7 @@ type FetchTokenForOrganizationType = {
 export const impersonate = async (
   req: NextApiRequest,
   impersonationType: ImpersonationTypeEnum,
-): Promise<impersonateResponse> => {
+): Promise<ImpersonateResponse> => {
   let status = 400;
   let errors: Errors[] = [];
   const isUserImpersonate =
@@ -59,7 +59,7 @@ export const impersonate = async (
       throw new Error('Unauthorized');
     }
 
-    const { apiToken, userID } = jwt as { apiToken: string; userID: string };
+    const { apiToken, userID } = jwt;
 
     if (typeof user !== 'string') {
       status = 400;

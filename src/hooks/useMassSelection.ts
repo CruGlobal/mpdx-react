@@ -20,85 +20,85 @@ export const useMassSelection = (
   toggleSelectionById: (id: string) => void;
 } => {
   const [selectionType, setSelectionType] = useState(
-    ListHeaderCheckBoxState.unchecked,
+    ListHeaderCheckBoxState.Unchecked,
   );
   const [ids, setIds] = useState<string[]>([]);
 
   const toggleSelectionById = (id: string) => {
     switch (selectionType) {
-      case ListHeaderCheckBoxState.partial:
+      case ListHeaderCheckBoxState.Partial:
         if (ids.includes(id)) {
           setIds((previousIds) =>
             previousIds.filter((selectedIds) => selectedIds !== id),
           );
           if (ids.length - 1 === 0) {
-            setSelectionType(ListHeaderCheckBoxState.unchecked);
+            setSelectionType(ListHeaderCheckBoxState.Unchecked);
           }
         } else {
           setIds((previousIds) => [...previousIds, id]);
           if (ids.length + 1 === totalCount) {
-            setSelectionType(ListHeaderCheckBoxState.checked);
+            setSelectionType(ListHeaderCheckBoxState.Checked);
           }
         }
         break;
-      case ListHeaderCheckBoxState.checked:
+      case ListHeaderCheckBoxState.Checked:
         if (ids.includes(id)) {
           setIds((previousIds) =>
             previousIds.filter((previousId) => previousId !== id),
           );
           setSelectionType(
             ids.length - 1 === 0
-              ? ListHeaderCheckBoxState.unchecked
-              : ListHeaderCheckBoxState.partial,
+              ? ListHeaderCheckBoxState.Unchecked
+              : ListHeaderCheckBoxState.Partial,
           );
         } else {
           setIds((previousIds) => [...previousIds, id]);
         }
         break;
-      case ListHeaderCheckBoxState.unchecked:
+      case ListHeaderCheckBoxState.Unchecked:
         setIds((previousIds) => [...previousIds, id]);
         setSelectionType(
           ids.length + 1 === totalCount
-            ? ListHeaderCheckBoxState.checked
-            : ListHeaderCheckBoxState.partial,
+            ? ListHeaderCheckBoxState.Checked
+            : ListHeaderCheckBoxState.Partial,
         );
         break;
     }
   };
 
   const deselectAll = () => {
-    setSelectionType(ListHeaderCheckBoxState.unchecked);
+    setSelectionType(ListHeaderCheckBoxState.Unchecked);
     setIds([]);
   };
 
   const toggleSelectAll = () => {
-    if (selectionType === ListHeaderCheckBoxState.checked) {
-      setSelectionType(ListHeaderCheckBoxState.unchecked);
+    if (selectionType === ListHeaderCheckBoxState.Checked) {
+      setSelectionType(ListHeaderCheckBoxState.Unchecked);
       setIds([]);
     } else {
-      setSelectionType(ListHeaderCheckBoxState.checked);
+      setSelectionType(ListHeaderCheckBoxState.Checked);
       setIds(idsList);
     }
   };
 
   useEffect(() => {
     switch (selectionType) {
-      case ListHeaderCheckBoxState.checked:
+      case ListHeaderCheckBoxState.Checked:
         if (ids.length < totalCount) {
-          setSelectionType(ListHeaderCheckBoxState.partial);
+          setSelectionType(ListHeaderCheckBoxState.Partial);
         }
         break;
-      case ListHeaderCheckBoxState.partial:
+      case ListHeaderCheckBoxState.Partial:
         if (ids.length === totalCount) {
-          setSelectionType(ListHeaderCheckBoxState.checked);
+          setSelectionType(ListHeaderCheckBoxState.Checked);
         }
         break;
     }
   }, [activeFilters, totalCount, starredFilter, wildcardSearch]);
 
   const isRowChecked = (id: string) =>
-    (selectionType === ListHeaderCheckBoxState.partial && ids.includes(id)) ||
-    (selectionType === ListHeaderCheckBoxState.checked && ids.includes(id));
+    (selectionType === ListHeaderCheckBoxState.Partial && ids.includes(id)) ||
+    (selectionType === ListHeaderCheckBoxState.Checked && ids.includes(id));
 
   return {
     ids,

@@ -24,9 +24,12 @@ const dataPreviousWeek: GetWeeklyActivityQuery = {
 
 export const GetWeeklyActivityQueryDefaultMocks = (): MockedResponse[] => {
   const weekInterval = Interval.fromDateTimes(
-    DateTime.local().set({ weekday: 0 }),
-    DateTime.local().set({ weekday: 6 }),
+    DateTime.local().set({ localWeekday: 1 }),
+    DateTime.local().set({ localWeekday: 7 }),
   );
+  if (!weekInterval.isValid) {
+    throw new Error(`Invalid interval: ${weekInterval.invalidReason}`);
+  }
 
   return [
     {
@@ -82,9 +85,12 @@ const emptyData: GetWeeklyActivityQuery = {
 
 export const GetWeeklyActivityQueryEmptyMocks = (): MockedResponse[] => {
   const weekInterval = Interval.fromDateTimes(
-    DateTime.local().set({ weekday: 0 }),
-    DateTime.local().set({ weekday: 6 }),
+    DateTime.local().set({ localWeekday: 1 }),
+    DateTime.local().set({ localWeekday: 7 }),
   );
+  if (!weekInterval.isValid) {
+    throw new Error(`Invalid interval: ${weekInterval.invalidReason}`);
+  }
 
   return [
     {

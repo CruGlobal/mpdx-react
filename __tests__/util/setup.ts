@@ -1,22 +1,10 @@
 import '@testing-library/jest-dom/extend-expect';
+import 'isomorphic-fetch';
 import { Settings } from 'luxon';
-import { Session } from 'next-auth';
 import { type useSession } from 'next-auth/react';
+import { session } from '__tests__/fixtures/session';
 import { toHaveGraphqlOperation } from '../extensions/toHaveGraphqlOperation';
 import matchMediaMock from './matchMediaMock';
-
-const session: Session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    name: 'First Last',
-    email: 'first.last@cru.org',
-    apiToken: 'apiToken',
-    userID: 'user-1',
-    admin: false,
-    developer: false,
-    impersonating: false,
-  },
-};
 
 jest.mock('next-auth/react', () => {
   return {
@@ -28,6 +16,7 @@ jest.mock('next-auth/react', () => {
         data: session,
         update: () => Promise.resolve(null),
       }),
+    signIn: jest.fn().mockResolvedValue(undefined),
     signOut: jest.fn().mockResolvedValue(undefined),
   };
 });
@@ -49,6 +38,10 @@ window.document.createRange = (): Range =>
       ownerDocument: document,
     } as unknown as Node,
   } as unknown as Range);
+
+Object.defineProperty(window, 'location', {
+  value: { ...window.location, assign: jest.fn(), replace: jest.fn() },
+});
 
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 

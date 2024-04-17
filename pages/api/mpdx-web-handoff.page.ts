@@ -6,16 +6,17 @@ import {
   cookieDefaultInfo,
 } from './utils/cookies';
 
-interface defineRedirectUrlProps {
+interface DefineRedirectUrlProps {
   accountListId: string;
   path: string;
   rest: any;
 }
+
 const defineRedirectUrl = ({
   accountListId,
   path,
   rest,
-}: defineRedirectUrlProps): string => {
+}: DefineRedirectUrlProps): string => {
   let redirectUrl = `${process.env.SITE_URL}/accountLists/${accountListId}`;
   if (path) redirectUrl += path;
   if (rest) {
@@ -55,10 +56,10 @@ const mpdxWebHandoff = async (
   res: NextApiResponse,
 ): Promise<void> => {
   try {
-    const jwtToken = (await getToken({
+    const jwtToken = await getToken({
       req,
       secret: process.env.JWT_SECRET as string,
-    })) as { apiToken: string; userID: string } | null;
+    });
 
     const {
       path = '',

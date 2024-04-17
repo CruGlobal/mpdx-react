@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event';
 import { cloneDeep } from 'lodash';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import * as Types from 'src/graphql/types.generated';
 import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
@@ -19,7 +18,6 @@ jest.mock('next-auth/react');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
-const apiToken = 'apiToken';
 const router = {
   query: { accountListId, contactId: [contactId] },
   isReady: true,
@@ -42,11 +40,7 @@ const handleAccordionChange = jest.fn();
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>
-        <IntegrationsContextProvider apiToken={apiToken}>
-          {children}
-        </IntegrationsContextProvider>
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </TestRouter>
   </SnackbarProvider>
 );
@@ -299,6 +293,7 @@ describe('OrganizationAccordion', () => {
     });
 
     it('should render OAuth Organization', async () => {
+      process.env.SITE_URL = 'https://next.mpdx.org';
       const mutationSpy = jest.fn();
       mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].organization.apiClass =
         'DataServer';
@@ -337,6 +332,10 @@ describe('OrganizationAccordion', () => {
           },
         );
       });
+
+      expect(window.location.assign).toHaveBeenCalledWith(
+        'https://auth.mpdx.org/auth/user/donorhub?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dorganization&access_token=apiToken&organization_id=organizationId',
+      );
     });
 
     it('should delete Organization', async () => {

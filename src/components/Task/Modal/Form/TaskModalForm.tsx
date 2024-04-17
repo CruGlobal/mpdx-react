@@ -22,6 +22,7 @@ import {
 import { Formik } from 'formik';
 import _ from 'lodash';
 import { DateTime } from 'luxon';
+import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -43,7 +44,6 @@ import {
 import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { useUser } from 'src/hooks/useUser';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import {
   getLocalizedNotificationTimeUnit,
@@ -104,7 +104,7 @@ const TaskModalForm = ({
   defaultValues,
   view,
 }: Props): ReactElement => {
-  const user = useUser();
+  const session = useSession();
   const initialTask: Attributes = useMemo(
     () =>
       task
@@ -120,7 +120,7 @@ const TaskModalForm = ({
             nextAction: task.nextAction ?? null,
             tagList: task.tagList ?? [],
             contactIds: task.contacts.nodes.map(({ id }) => id),
-            userId: task.user?.id ?? user?.id ?? null,
+            userId: task.user?.id ?? session.data?.user.userID ?? null,
             notificationTimeBefore: task.notificationTimeBefore,
             notificationType: task.notificationType,
             notificationTimeUnit: task.notificationTimeUnit,
@@ -136,9 +136,7 @@ const TaskModalForm = ({
             nextAction: defaultValues?.nextAction ?? null,
             tagList: defaultValues?.tagList ?? [],
             contactIds: defaultValues?.contactIds ?? [],
-            // The assignee will not be set if `user` hasn't been loaded yet because we don't want to make
-            // the user wait for it to load
-            userId: defaultValues?.userId ?? user?.id ?? null,
+            userId: defaultValues?.userId ?? session.data?.user.userID ?? null,
             notificationTimeBefore: null,
             notificationType: null,
             notificationTimeUnit: null,

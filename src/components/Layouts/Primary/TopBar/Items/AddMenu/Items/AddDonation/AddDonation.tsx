@@ -21,6 +21,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
@@ -108,11 +109,18 @@ export const AddDonation = ({
     theme.breakpoints.down('sm'),
   );
 
-  const { data, loading } = useGetDonationModalQuery({
-    variables: {
-      accountListId,
-    },
-  });
+  const { data: accountListData, loading: accountListLoading } =
+    useGetDonationModalQuery({
+      variables: {
+        accountListId,
+      },
+    });
+  const { data: designationAccountsData, loading: designationAccountsLoading } =
+    useGetDesignationAccountsQuery({
+      variables: {
+        accountListId,
+      },
+    });
 
   const [addDonation, { loading: adding }] = useAddDonationMutation({
     refetchQueries: [
@@ -124,15 +132,16 @@ export const AddDonation = ({
 
   const pledgeCurrencies = constants?.pledgeCurrencies;
 
-  const newDesignationAccounts =
-    data?.designationAccounts &&
-    data?.designationAccounts.flatMap((x) => x.designationAccounts);
+  const designationAccounts =
+    designationAccountsData?.designationAccounts?.flatMap(
+      ({ designationAccounts }) => designationAccounts,
+    );
 
   const initialDonation = {
     amount: 0,
     appealAmount: null,
     appealId: null,
-    currency: data?.accountList.currency ?? '',
+    currency: accountListData?.accountList.currency ?? '',
     designationAccountId: '',
     donationDate: DateTime.local().startOf('day'),
     donorAccountId: '',
@@ -153,10 +162,10 @@ export const AddDonation = ({
         attributes: {
           ...attributes,
           amount: parseFloat(amount),
-          appealAmount: parseFloat(
-            attributes.appealAmount as unknown as string,
-          ),
-          donationDate: attributes.donationDate.toISODate(),
+          appealAmount: attributes.appealAmount
+            ? parseFloat(attributes.appealAmount as unknown as string)
+            : null,
+          donationDate: attributes.donationDate.toISODate() ?? '',
         },
       },
     });
@@ -168,7 +177,7 @@ export const AddDonation = ({
     handleClose();
   };
 
-  if (loading) {
+  if (accountListLoading || designationAccountsLoading) {
     return (
       <DialogContent dividers>
         <Box width="100%" display="flex" justifyContent="center">
@@ -407,20 +416,16 @@ export const AddDonation = ({
                           <Autocomplete
                             {...field}
                             id="designation-account-input"
-                            loading={loading}
+                            loading={designationAccountsLoading}
                             autoSelect
                             autoHighlight
                             options={
-                              (newDesignationAccounts &&
-                                newDesignationAccounts.map(({ id }) => id)) ??
-                              []
+                              designationAccounts?.map(({ id }) => id) ?? []
                             }
                             getOptionLabel={(accountId): string => {
-                              const account =
-                                newDesignationAccounts &&
-                                newDesignationAccounts.find(
-                                  ({ id }) => id === accountId,
-                                );
+                              const account = designationAccounts?.find(
+                                ({ id }) => id === accountId,
+                              );
                               return account
                                 ? `${account?.name} (${account.id}) `
                                 : '';
@@ -436,7 +441,7 @@ export const AddDonation = ({
                                     'designation-account-label',
                                   endAdornment: (
                                     <>
-                                      {loading && (
+                                      {designationAccountsLoading && (
                                         <CircularProgress
                                           color="primary"
                                           size={20}
@@ -449,14 +454,11 @@ export const AddDonation = ({
                               />
                             )}
                             value={field.value}
-                            onChange={(_, designationAccountId): void =>
+                            onChange={(_, designationAccountId) =>
                               setFieldValue(
                                 'designationAccountId',
                                 designationAccountId,
                               )
-                            }
-                            isOptionEqualToValue={(option, value): boolean =>
-                              option === value
                             }
                           />
                         </Box>
@@ -482,22 +484,19 @@ export const AddDonation = ({
                           <Autocomplete
                             {...field}
                             id="appeal-input"
-                            loading={loading}
+                            loading={accountListLoading}
                             autoSelect
                             autoHighlight
                             options={
-                              (data?.accountList.appeals &&
-                                data.accountList.appeals.map(({ id }) => id)) ??
-                              []
+                              accountListData?.accountList?.appeals?.map(
+                                ({ id }) => id,
+                              ) ?? []
                             }
-                            getOptionLabel={(appealId): string => {
-                              const appeal =
-                                data?.accountList.appeals &&
-                                data?.accountList?.appeals.find(
-                                  ({ id }) => id === appealId,
-                                );
-                              return appeal?.name ?? '';
-                            }}
+                            getOptionLabel={(appealId) =>
+                              accountListData?.accountList?.appeals?.find(
+                                ({ id }) => id === appealId,
+                              )?.name ?? ''
+                            }
                             renderInput={(params): ReactElement => (
                               <TextField
                                 {...params}
@@ -508,7 +507,7 @@ export const AddDonation = ({
                                   'aria-labelledby': 'appeal-label',
                                   endAdornment: (
                                     <>
-                                      {loading && (
+                                      {accountListLoading && (
                                         <CircularProgress
                                           color="primary"
                                           size={20}

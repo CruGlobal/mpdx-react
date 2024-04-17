@@ -1,63 +1,59 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import makeSsrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
   GetDefaultAccountQueryVariables,
 } from './getDefaultAccount.generated';
+import { logErrorOnRollbar } from './utils/rollBar';
 
 if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET env var is not set');
 }
 
 export const returnRedirectUrl = async (req: NextApiRequest) => {
-  try {
-    const jwtToken = (await getToken({
-      req,
-      secret: process.env.JWT_SECRET as string,
-    })) as { apiToken: string; userID: string } | null;
+  const jwtToken = await getToken({
+    req,
+    secret: process.env.JWT_SECRET as string,
+  });
 
-    const path = req.query.path ?? '';
+  const path = req.query.path ?? '';
 
-    if (jwtToken && req.query.auth !== 'true') {
-      const ssrClient = await makeSsrClient(jwtToken.apiToken);
-      const response = await ssrClient.query<
-        GetDefaultAccountQuery,
-        GetDefaultAccountQueryVariables
-      >({
-        query: GetDefaultAccountDocument,
-      });
-      let defaultAccountID = req.query?.accountListId;
-      if (!defaultAccountID) {
-        const {
-          data: { user, accountLists },
-        } = response;
-        defaultAccountID =
-          user?.defaultAccountList || accountLists?.nodes[0]?.id;
-      }
-      const userId = req.query.userId || jwtToken.userID;
-
-      const url = new URL(`https://${process.env.REWRITE_DOMAIN}/handoff`);
-
-      url.searchParams.append('accessToken', jwtToken.apiToken);
-      url.searchParams.append('accountListId', defaultAccountID.toString());
-      url.searchParams.append('userId', userId.toString());
-      url.searchParams.append('path', path.toString());
-      return url.href;
-    } else if (jwtToken && req.query.auth === 'true') {
-      const url = new URL(
-        `https://auth.${process.env.REWRITE_DOMAIN}/${path
-          .toString()
-          .replace(/^\/+/, '')}`,
-      );
-      url.searchParams.append('access_token', jwtToken.apiToken);
-      return url.href;
-    } else {
-      throw new Error('Something went wrong. jwtToken or auth are undefined');
+  if (jwtToken?.apiToken && jwtToken?.userID && req.query.auth !== 'true') {
+    const ssrClient = makeSsrClient(jwtToken.apiToken);
+    const response = await ssrClient.query<
+      GetDefaultAccountQuery,
+      GetDefaultAccountQueryVariables
+    >({
+      query: GetDefaultAccountDocument,
+    });
+    let defaultAccountID = req.query?.accountListId;
+    if (!defaultAccountID) {
+      const {
+        data: { user, accountLists },
+      } = response;
+      defaultAccountID = user?.defaultAccountList || accountLists?.nodes[0]?.id;
     }
-  } catch (error) {
-    throw new Error((error as Error).message);
+    const userId = req.query.userId || jwtToken.userID;
+
+    const url = new URL(`https://${process.env.REWRITE_DOMAIN}/handoff`);
+
+    url.searchParams.append('accessToken', jwtToken.apiToken);
+    url.searchParams.append('accountListId', defaultAccountID.toString());
+    url.searchParams.append('userId', userId.toString());
+    url.searchParams.append('path', path.toString());
+    return url.href;
+  } else if (jwtToken?.apiToken && req.query.auth === 'true') {
+    const url = new URL(
+      `https://auth.${process.env.REWRITE_DOMAIN}/${path
+        .toString()
+        .replace(/^\/+/, '')}`,
+    );
+    url.searchParams.append('access_token', jwtToken.apiToken);
+    return url.href;
+  } else {
+    throw new Error('Something went wrong. jwtToken or auth are undefined');
   }
 };
 
@@ -68,7 +64,8 @@ const handoff = async (
   try {
     const redirectUrl = await returnRedirectUrl(req);
     res.redirect(redirectUrl);
-  } catch (err) {
+  } catch (error) {
+    logErrorOnRollbar(error, '/api/handoff.page');
     res.redirect('/');
   }
 };

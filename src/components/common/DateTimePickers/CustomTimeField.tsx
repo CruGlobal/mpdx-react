@@ -22,7 +22,7 @@ export const CustomTimeField: React.FC<DesktopTimeFieldProps> = (props) => {
       label={label}
       value={value}
       onChange={onChange}
-      componentsProps={{
+      slotProps={{
         textField: {
           fullWidth: true,
           InputProps: {

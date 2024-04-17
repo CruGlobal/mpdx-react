@@ -182,7 +182,7 @@ describe('TaskModalCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    userEvent.click(getByRole('button', { name: 'Result' }));
+    userEvent.click(getByRole('combobox', { name: 'Result' }));
     userEvent.click(getByRole('option', { name: 'Received' }));
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
     userEvent.click(getByRole('option', { name: 'Appointment' }));
@@ -297,7 +297,7 @@ describe('TaskModalCompleteForm', () => {
       </TestWrapper>,
     );
     let results: ResultEnum[] = [];
-    const resultButton = queryByRole('button', { name: 'Result' });
+    const resultButton = queryByRole('combobox', { name: 'Result' });
     if (resultButton) {
       userEvent.click(resultButton);
       results = within(getByRole('listbox', { name: 'Result' }))

@@ -3,10 +3,10 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { Autocomplete, Box, Skeleton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { enforceAdmin } from 'pages/api/utils/pagePropsHelpers';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordion';
 import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
-import { enforceAdmin } from 'src/lib/enforceAdmin';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 import {

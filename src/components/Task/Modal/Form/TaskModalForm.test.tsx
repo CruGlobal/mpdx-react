@@ -11,7 +11,6 @@ import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/Con
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { useUser } from 'src/hooks/useUser';
 import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalForm from './TaskModalForm';
@@ -237,11 +236,11 @@ describe('TaskModalForm', () => {
 
     expect(getByText('Notifications')).toBeInTheDocument();
     expect(queryByText('Both')).not.toBeInTheDocument();
-    userEvent.click(getByRole('button', { hidden: true, name: 'Type' }));
+    userEvent.click(getByRole('combobox', { hidden: true, name: 'Type' }));
     expect(getByText('Both')).toBeInTheDocument();
     userEvent.click(getByText('Both'));
     expect(queryByText('Hours')).not.toBeInTheDocument();
-    userEvent.click(getByRole('button', { hidden: true, name: 'Unit' }));
+    userEvent.click(getByRole('combobox', { hidden: true, name: 'Unit' }));
     expect(getByText('Hours')).toBeInTheDocument();
     userEvent.click(getByText('Hours'));
   }, 25000);
@@ -285,19 +284,6 @@ describe('TaskModalForm', () => {
     const onClose = jest.fn();
     const mutationSpy = jest.fn();
 
-    // Wait for the user to load before rendering the modal
-    const TestComponent: React.FC = () => {
-      const user = useUser();
-
-      return user ? (
-        <TaskModalForm
-          accountListId={accountListId}
-          onClose={onClose}
-          task={mockTask}
-        />
-      ) : null;
-    };
-
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
@@ -323,7 +309,11 @@ describe('TaskModalForm', () => {
             }}
             onCall={mutationSpy}
           >
-            <TestComponent />
+            <TaskModalForm
+              accountListId={accountListId}
+              onClose={onClose}
+              task={mockTask}
+            />
           </GqlMockedProvider>
         </SnackbarProvider>
       </LocalizationProvider>,
@@ -358,7 +348,7 @@ describe('TaskModalForm', () => {
     );
     expect(queryByText('Notifications')).not.toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: 'Result' }));
+    userEvent.click(getByRole('combobox', { name: 'Result' }));
     userEvent.click(getByRole('option', { name: 'Completed' }));
 
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));

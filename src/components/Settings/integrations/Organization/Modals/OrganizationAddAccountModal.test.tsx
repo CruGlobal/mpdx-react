@@ -4,7 +4,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import * as Types from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
@@ -15,7 +14,6 @@ jest.mock('next-auth/react');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
-const apiToken = 'apiToken';
 const router = {
   query: { accountListId, contactId: [contactId] },
   isReady: true,
@@ -36,18 +34,14 @@ jest.mock('notistack', () => ({
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>
-        <IntegrationsContextProvider apiToken={apiToken}>
-          {children}
-        </IntegrationsContextProvider>
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </TestRouter>
   </SnackbarProvider>
 );
 
 const GetOrganizationsMock: Pick<
   Types.Organization,
-  'apiClass' | 'id' | 'name' | 'oauth' | 'giftAidPercentage'
+  'apiClass' | 'id' | 'name' | 'oauth' | 'giftAidPercentage' | 'disableNewUsers'
 >[] = [
   {
     id: 'organizationId',
@@ -55,6 +49,7 @@ const GetOrganizationsMock: Pick<
     apiClass: 'OfflineOrg',
     oauth: false,
     giftAidPercentage: 0,
+    disableNewUsers: false,
   },
   {
     id: 'ministryId',
@@ -62,6 +57,7 @@ const GetOrganizationsMock: Pick<
     apiClass: 'Siebel',
     oauth: false,
     giftAidPercentage: 80,
+    disableNewUsers: false,
   },
   {
     id: 'loginId',
@@ -69,6 +65,7 @@ const GetOrganizationsMock: Pick<
     apiClass: 'DataServer',
     oauth: false,
     giftAidPercentage: 70,
+    disableNewUsers: false,
   },
   {
     id: 'oAuthId',
@@ -76,6 +73,15 @@ const GetOrganizationsMock: Pick<
     apiClass: 'DataServer',
     oauth: true,
     giftAidPercentage: 60,
+    disableNewUsers: false,
+  },
+  {
+    id: 'disableNewUserOrgId',
+    name: 'Not Allowed Org Name',
+    apiClass: 'DataServer',
+    oauth: false,
+    giftAidPercentage: 60,
+    disableNewUsers: true,
   },
 ];
 
@@ -97,8 +103,8 @@ describe('OrganizationAddAccountModal', () => {
     refetchOrganizations.mockClear();
     mocks = { ...standardMocks };
   });
-  it('should render modal', async () => {
-    const { getByText, getByTestId } = render(
+  it('should render modal and not show disabled Orgs', async () => {
+    const { getByText, getByTestId, getByRole, queryByRole } = render(
       <Components>
         <GqlMockedProvider>
           <OrganizationAddAccountModal
@@ -111,6 +117,13 @@ describe('OrganizationAddAccountModal', () => {
     );
 
     expect(getByText('Add Organization Account')).toBeInTheDocument();
+
+    userEvent.click(getByRole('combobox'));
+    await waitFor(() =>
+      expect(
+        queryByRole('option', { name: 'Not Allowed Org Name' }),
+      ).not.toBeInTheDocument(),
+    );
 
     userEvent.click(getByText(/cancel/i));
     expect(handleClose).toHaveBeenCalledTimes(1);

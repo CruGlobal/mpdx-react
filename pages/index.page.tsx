@@ -1,7 +1,7 @@
 import { GetServerSideProps } from 'next';
 import { ReactNode } from 'react';
 import { getSession } from 'next-auth/react';
-import BaseLayout from '../src/components/Layouts/Basic';
+import BaseLayout from 'src/components/Layouts/Basic';
 
 const IndexPage = (): ReactNode => null;
 
@@ -14,6 +14,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     redirect: {
       destination: session ? '/accountLists' : '/login',
       permanent: false,
+    },
+    props: {
+      session,
     },
   };
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { NotificationsTable } from 'src/components/Settings/notifications/NotificationsTable';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { SettingsWrapper } from './Wrapper';
@@ -41,5 +42,7 @@ const Notifications: React.FC = () => {
     </SettingsWrapper>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default Notifications;

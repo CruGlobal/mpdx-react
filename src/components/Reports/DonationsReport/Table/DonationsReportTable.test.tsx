@@ -447,7 +447,7 @@ describe('DonationsReportTable', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(await findByRole('button', { name: 'Rows per page: 25' }));
+    userEvent.click(await findByRole('combobox', { name: 'Rows per page:' }));
     mutationSpy.mockClear();
     userEvent.click(getByRole('option', { name: '50' }));
 

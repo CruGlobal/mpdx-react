@@ -71,13 +71,6 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-export interface address {
-  street: string;
-  city: string;
-  state?: string;
-  zip: string;
-}
-
 interface Props {
   person1: PersonInfoFragment;
   person2: PersonInfoFragment;

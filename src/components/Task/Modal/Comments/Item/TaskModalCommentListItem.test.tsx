@@ -37,7 +37,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ cache }) => {
     {
       mocks: {
         id: commentId,
-        updatedAt: DateTime.local(2020, 1, 2).toISODate(),
+        updatedAt: DateTime.local(2020, 1, 2).toISODate() ?? '',
         body: 'Notes',
         person: {
           firstName: 'John',

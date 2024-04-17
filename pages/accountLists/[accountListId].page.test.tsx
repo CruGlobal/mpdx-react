@@ -1,11 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import { getToken } from 'next-auth/jwt';
+import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import makeSsrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import AccountListIdPage, {
@@ -13,29 +13,33 @@ import AccountListIdPage, {
   getServerSideProps,
 } from './[accountListId].page';
 
-jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
-jest.mock('pages/api/utils/ssrClient', () => jest.fn());
+jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
-interface getServerSidePropsReturn {
+interface GetServerSidePropsReturn {
   props: AccountListIdPageProps;
   redirect: unknown;
 }
 
 describe('AccountListsId page', () => {
   const context = {
-    req: {} as any,
-  };
+    req: {},
+    query: {
+      accountListId: 'account-list-1',
+    },
+  } as unknown as GetServerSidePropsContext;
 
   describe('NextAuth unauthorized', () => {
     it('should redirect to login', async () => {
-      (getToken as jest.Mock).mockReturnValue({
-        apiToken: null,
-        userID: null,
+      (getSession as jest.Mock).mockResolvedValue({
+        user: {
+          apiToken: null,
+          userID: null,
+        },
       });
 
       const { props, redirect } = (await getServerSideProps(
-        context as GetServerSidePropsContext,
-      )) as getServerSidePropsReturn;
+        context,
+      )) as GetServerSidePropsReturn;
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
@@ -47,20 +51,24 @@ describe('AccountListsId page', () => {
 
   describe('NextAuth authorized', () => {
     beforeEach(() => {
-      (getToken as jest.Mock).mockReturnValue({
-        apiToken: 'apiToken',
-        userID: 'userID',
+      (getSession as jest.Mock).mockResolvedValue({
+        user: {
+          apiToken: 'apiToken',
+          userID: 'userID',
+        },
       });
     });
 
     it('redirects to the home page on GraphQL query error', async () => {
-      (makeSsrClient as jest.Mock).mockRejectedValueOnce(
-        new Error('GraphQL Authenication error'),
-      );
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: jest
+          .fn()
+          .mockRejectedValueOnce(new Error('GraphQL Authentication error')),
+      });
 
       const { props, redirect } = (await getServerSideProps(
-        context as GetServerSidePropsContext,
-      )) as getServerSidePropsReturn;
+        context,
+      )) as GetServerSidePropsReturn;
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
@@ -70,13 +78,8 @@ describe('AccountListsId page', () => {
     });
 
     it('renders the page without redirect', async () => {
-      (getToken as jest.Mock).mockReturnValue({
-        apiToken: 'apiToken',
-        userID: 'userID',
-      });
-
       (makeSsrClient as jest.Mock).mockReturnValue({
-        query: jest.fn().mockReturnValue({
+        query: jest.fn().mockResolvedValue({
           data: {
             accountList: {
               name: 'accountListName',
@@ -93,8 +96,11 @@ describe('AccountListsId page', () => {
       });
 
       const { props, redirect } = (await getServerSideProps(
-        context as GetServerSidePropsContext,
-      )) as getServerSidePropsReturn;
+        context,
+      )) as GetServerSidePropsReturn;
+
+      expect(props.data.accountList.name).toEqual('accountListName');
+      expect(redirect).toBeUndefined();
 
       const { getByText } = render(
         <ThemeProvider theme={theme}>
@@ -108,8 +114,6 @@ describe('AccountListsId page', () => {
         </ThemeProvider>,
       );
 
-      expect(props.data.accountList.name).toEqual('accountListName');
-      expect(redirect).toBeUndefined();
       expect(getByText('Good Morning, firstName.')).toBeInTheDocument();
     });
   });

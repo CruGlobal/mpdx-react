@@ -1,10 +1,10 @@
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import matchMediaMock from '__tests__/util/matchMediaMock';
 import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
-import { AdapterLuxon } from 'src/lib/AdapterLuxon';
 import { DateTimeFieldPair } from './DateTimeFieldPair';
 
 interface TestComponentProps {

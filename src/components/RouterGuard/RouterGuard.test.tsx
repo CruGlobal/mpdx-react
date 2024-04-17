@@ -1,7 +1,8 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from '../../theme';
 import { RouterGuard } from './RouterGuard';
@@ -63,20 +64,17 @@ describe('RouterGuard', () => {
       );
       expect(getByTestId('LoadingIndicator')).toBeInTheDocument();
     });
-  });
 
-  describe('unauthenticated', () => {
-    it('should render when unauthenticated and on /login', async () => {
+    it('should reauthenticate with token expires', async () => {
       (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
-        data: null,
-        status: 'unauthenticated',
+        data: { ...session, expires: '2019-01-01T00:00:00Z' },
+        status: 'authenticated',
         update: () => Promise.resolve(null),
       });
 
-      const { getByText } = render(
-        <TestComponent pathname="/login">Login page</TestComponent>,
-      );
-      await waitFor(() => expect(getByText('Login page')).toBeInTheDocument());
+      render(<TestComponent pathname="/authRoute">Authed route</TestComponent>);
+
+      await waitFor(() => expect(signIn).toHaveBeenCalledWith('okta'));
     });
   });
 });
