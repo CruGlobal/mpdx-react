@@ -30,7 +30,6 @@ describe('exportRest()', () => {
       ],
       [file, { status: 200 }],
     );
-    process.env.SITE_URL = 'http://localhost:3000';
     process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
   });
 
@@ -134,7 +133,6 @@ describe('exportRest()', () => {
 describe('exportRest() Returns errors', () => {
   beforeEach(() => {
     fetchMock.resetMocks();
-    process.env.SITE_URL = 'http://localhost:3000';
     process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
   });
 

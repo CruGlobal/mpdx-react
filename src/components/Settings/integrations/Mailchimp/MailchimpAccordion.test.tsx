@@ -109,7 +109,6 @@ describe('MailchimpAccount', () => {
 
   describe('Not Connected', () => {
     it('should render Mailchimp Overview', async () => {
-      process.env.SITE_URL = 'https://next.mpdx.org';
       const mutationSpy = jest.fn();
       const { getByText } = render(
         <Components>
