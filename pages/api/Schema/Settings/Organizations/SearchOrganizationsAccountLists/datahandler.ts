@@ -91,7 +91,7 @@ type SearchOrganizationsAccountListsAccountList = {
     allowDeletion: boolean;
     userId: string;
     lastSyncedAt: string;
-    userEmailAddresses: emailAddress[];
+    userEmailAddresses: EmailAddress[];
   }[];
   accountListUsersInvites: AccountListInvite[];
   accountListCoaches: {
