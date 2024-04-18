@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import { useApolloClient } from '@apollo/client';
@@ -10,11 +11,11 @@ import {
   Box,
   Button,
   Divider,
-  Link,
   ListItemAvatar,
   ListItemText,
   Menu,
   MenuItem,
+  Link as MuiLink,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -255,45 +256,60 @@ const ProfileMenu = (): ReactElement => {
           </AccountListSelectorDetails>
         </Accordion>
         <Divider />
-        <HandoffLink path="/preferences/personal">
+        <Link
+          href={`/accountLists/${accountListId}/settings/preferences`}
+          shallow
+        >
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Preferences')} />
           </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/notifications">
+        </Link>
+        <Link
+          href={`/accountLists/${accountListId}/settings/notifications`}
+          shallow
+        >
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Notifications')} />
           </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/integrations">
+        </Link>
+        <Link
+          href={`/accountLists/${accountListId}/settings/integrations`}
+          shallow
+        >
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Connect Services')} />
           </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/accounts">
+        </Link>
+        <Link
+          href={`/accountLists/${accountListId}/settings/manageAccounts`}
+          shallow
+        >
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Manage Accounts')} />
           </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/coaches">
+        </Link>
+        <Link
+          href={`/accountLists/${accountListId}/settings/manageCoaches`}
+          shallow
+        >
           <MenuItem onClick={handleProfileMenuClose} component="a">
             <ListItemText primary={t('Manage Coaches')} />
           </MenuItem>
-        </HandoffLink>
+        </Link>
         {(data?.user?.admin ||
           !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-          <HandoffLink path="/preferences/organizations">
+          <Link href={`/accountLists/${accountListId}/settings/organizations`}>
             <MenuItem onClick={handleProfileMenuClose} component="a">
               <ListItemText primary={t('Manage Organizations')} />
             </MenuItem>
-          </HandoffLink>
+          </Link>
         )}
         {(data?.user?.admin || data?.user?.developer) && (
-          <HandoffLink path="/preferences/admin">
+          <Link href={`/accountLists/${accountListId}/settings/admin`}>
             <MenuItem onClick={handleProfileMenuClose} component="a">
               <ListItemText primary={t('Admin Console')} />
             </MenuItem>
-          </HandoffLink>
+          </Link>
         )}
         {data?.user?.developer && (
           <HandoffLink path="/auth/user/admin" auth>
@@ -335,21 +351,21 @@ const ProfileMenu = (): ReactElement => {
           )}
         </MenuItem>
         <MenuItemFooter>
-          <Link
+          <MuiLink
             href="https://get.mpdx.org/privacy-policy/"
             target="_blank"
             onClick={handleProfileMenuClose}
           >
             {t('Privacy Policy')}
-          </Link>
+          </MuiLink>
           &nbsp; • &nbsp;
-          <Link
+          <MuiLink
             href="https://get.mpdx.org/terms-of-use/"
             target="_blank"
             onClick={handleProfileMenuClose}
           >
             {t('Terms of Use')}
-          </Link>
+          </MuiLink>
         </MenuItemFooter>
       </MenuWrapper>
     </>

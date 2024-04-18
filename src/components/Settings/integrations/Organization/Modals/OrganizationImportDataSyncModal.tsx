@@ -16,6 +16,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import theme from 'src/theme';
 
@@ -34,13 +35,6 @@ export const validateFile = ({
       ),
     };
   }
-  if (file.size > 100_000_000) {
-    return {
-      success: false,
-      message: t('Cannot upload file: file size cannot exceed 100MB'),
-    };
-  }
-
   return { success: true };
 };
 
@@ -63,6 +57,7 @@ export const OrganizationImportDataSyncModal: React.FC<
   OrganizationImportDataSyncModalProps
 > = ({ handleClose, organizationId, organizationName, accountListId }) => {
   const { t } = useTranslation();
+  const { apiToken } = useRequiredSession();
   const { enqueueSnackbar } = useSnackbar();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValid, setIsValid] = useState(false);
@@ -71,20 +66,30 @@ export const OrganizationImportDataSyncModal: React.FC<
     event.preventDefault();
     try {
       if (!importFile) throw new Error('Please select a file to upload.');
-      // TODO
       setIsSubmitting(true);
 
       const form = new FormData();
-      form.append('accountListId', accountListId);
-      form.append('organizationId', organizationId);
-      form.append('tntDataSync', importFile);
+      form.append('data[type]', 'imports');
+      form.append('data[attributes][file]', importFile);
+      form.append(
+        'data[relationships][source_account][data][id]',
+        organizationId,
+      );
+      form.append(
+        'data[relationships][source_account][data][type]',
+        'organization_accounts',
+      );
 
-      const res = await fetch(`/api/uploads/tnt-data-sync`, {
-        method: 'POST',
-        body: form,
-      }).catch(() => {
-        throw new Error(t('Cannot upload file: server error'));
-      });
+      const res = await fetch(
+        `${process.env.REST_API_URL}account_lists/${accountListId}/imports/tnt_data_sync`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${apiToken}`,
+          },
+          body: form,
+        },
+      );
 
       if (res.status === 201) {
         enqueueSnackbar(
@@ -93,14 +98,17 @@ export const OrganizationImportDataSyncModal: React.FC<
             variant: 'success',
           },
         );
+      } else {
+        throw new Error(t('Cannot upload file: server error'));
       }
 
-      setIsSubmitting(false);
       handleClose();
     } catch (err) {
       enqueueSnackbar(getErrorMessage(err), {
         variant: 'error',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (

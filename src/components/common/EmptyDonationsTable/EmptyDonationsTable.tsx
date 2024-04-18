@@ -3,8 +3,8 @@ import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import HandoffLink from 'src/components/HandoffLink';
 import { AddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
+import { NextLinkComposed } from 'src/components/common/Links/NextLinkComposed';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import Modal from '../Modal/Modal';
 
@@ -46,9 +46,14 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
         )}
       </Typography>
       <Box sx={{ padding: 1, display: 'flex', gap: 2 }}>
-        <HandoffLink path="/preferences/integrations">
-          <Button variant="contained">{t('Connect Services')}</Button>
-        </HandoffLink>
+        <Button
+          component={NextLinkComposed}
+          to={`/accountLists/${accountListId}/settings/integrations`}
+          variant="contained"
+        >
+          {t('Connect Services')}
+        </Button>
+
         <Button
           variant="contained"
           color="primary"
