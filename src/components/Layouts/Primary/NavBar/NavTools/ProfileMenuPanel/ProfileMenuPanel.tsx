@@ -191,7 +191,7 @@ export const ProfileMenuPanel: React.FC = () => {
       )}
       {data?.user?.developer && (
         <LeafListItem disableGutters>
-          <HandoffLink path="/auth/user/admin">
+          <HandoffLink path="/auth/user/admin" auth>
             <StyledButton>
               <Title>{t('Backend Admin')}</Title>
             </StyledButton>
@@ -200,7 +200,7 @@ export const ProfileMenuPanel: React.FC = () => {
       )}
       {data?.user?.developer && (
         <LeafListItem disableGutters>
-          <HandoffLink path="/auth/user/sidekiq">
+          <HandoffLink path="/auth/user/sidekiq" auth>
             <StyledButton>
               <Title>{t('Sidekiq')}</Title>
             </StyledButton>
