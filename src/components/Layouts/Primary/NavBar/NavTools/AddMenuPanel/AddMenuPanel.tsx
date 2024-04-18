@@ -22,7 +22,8 @@ type MenuContent = {
 };
 
 export const AddMenuPanel = (): ReactElement => {
-  const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
+  const [selectedMenuItem, changeSelectedMenuItem] =
+    useState<AddMenuItemsEnum | null>(null);
   const [dialogOpen, changeDialogOpen] = useState(false);
   const { openTaskModal } = useTaskModal();
   const theme = useTheme();
@@ -33,7 +34,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: 'Add Contact',
       icon: PersonIcon,
       onClick: () => {
-        changeSelectedMenuItem(AddMenuItemsEnum.NEW_CONTACT);
+        changeSelectedMenuItem(AddMenuItemsEnum.NewContact);
         changeDialogOpen(true);
       },
     },
@@ -41,7 +42,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: 'Add Multiple Contacts',
       icon: PeopleIcon,
       onClick: () => {
-        changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);
+        changeSelectedMenuItem(AddMenuItemsEnum.MultipleContacts);
         changeDialogOpen(true);
       },
     },
@@ -49,7 +50,7 @@ export const AddMenuPanel = (): ReactElement => {
       text: 'Add Donation',
       icon: CardGiftcardIcon,
       onClick: () => {
-        changeSelectedMenuItem(AddMenuItemsEnum.ADD_DONATION);
+        changeSelectedMenuItem(AddMenuItemsEnum.AddDonation);
         changeDialogOpen(true);
       },
     },

@@ -38,12 +38,6 @@ type AddMenuItem = {
   onClick: () => void;
 };
 
-export enum AddMenuItemsEnum {
-  'ADD_REFERRALS',
-  'MULTIPLE_CONTACTS',
-  'ADD_DONATION',
-}
-
 const MoreButtonIcon = styled(MoreVert)(({ theme }) => ({
   width: 16,
   height: 16,

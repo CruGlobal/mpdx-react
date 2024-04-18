@@ -27,7 +27,7 @@ const isReady = true;
 jest.mock('../../../../src/hooks/useMassSelection');
 
 (useMassSelection as jest.Mock).mockReturnValue({
-  selectionType: ListHeaderCheckBoxState.unchecked,
+  selectionType: ListHeaderCheckBoxState.Unchecked,
   isRowChecked: jest.fn(),
   toggleSelectAll: jest.fn(),
   toggleSelectionById: jest.fn(),

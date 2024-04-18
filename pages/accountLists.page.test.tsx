@@ -13,7 +13,7 @@ import AccountListsPage, {
 
 jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
-interface getServerSidePropsReturn {
+interface GetServerSidePropsReturn {
   props: AccountListsPageProps;
   redirect: unknown;
 }
@@ -36,7 +36,7 @@ describe('Account Lists page', () => {
 
       const { props, redirect } = (await getServerSideProps(
         context as GetServerSidePropsContext,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
@@ -67,7 +67,7 @@ describe('Account Lists page', () => {
 
       const { props, redirect } = (await getServerSideProps(
         context as GetServerSidePropsContext,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       const { queryByText } = render(
         <ThemeProvider theme={theme}>
@@ -100,7 +100,7 @@ describe('Account Lists page', () => {
 
       const { props, redirect } = (await getServerSideProps(
         context as GetServerSidePropsContext,
-      )) as getServerSidePropsReturn;
+      )) as GetServerSidePropsReturn;
 
       const { getByText } = render(
         <ThemeProvider theme={theme}>

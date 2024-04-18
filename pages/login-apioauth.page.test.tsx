@@ -15,7 +15,7 @@ jest.mock('next-auth/react', () => ({
   signIn: jest.fn(),
 }));
 
-interface getServerSidePropsReturn {
+interface GetServerSidePropsReturn {
   props: LoginProps;
   redirect: unknown;
 }
@@ -64,7 +64,7 @@ describe('Login - API_OAUTH', () => {
     (getSession as jest.Mock).mockResolvedValue(null);
     const { props, redirect } = (await getServerSideProps(
       context,
-    )) as getServerSidePropsReturn;
+    )) as GetServerSidePropsReturn;
 
     expect(props).toEqual({
       signInButtonText: 'Sign In with Third-party oAuth',
@@ -79,7 +79,7 @@ describe('Login - API_OAUTH', () => {
       'cookieOne=valueOne;mpdx-handoff.redirect-url=http://URL.org;cookieTwo=valueTwo;';
     const { props, redirect } = (await getServerSideProps(
       context,
-    )) as getServerSidePropsReturn;
+    )) as GetServerSidePropsReturn;
 
     expect(props).toEqual({
       signInButtonText: 'Sign In with Third-party oAuth',
@@ -102,7 +102,7 @@ describe('Login - API_OAUTH', () => {
     context.req.headers.cookie = '';
     const { props } = (await getServerSideProps(
       context,
-    )) as getServerSidePropsReturn;
+    )) as GetServerSidePropsReturn;
 
     const { queryByTestId, getByRole } = render(<Components props={props} />);
 

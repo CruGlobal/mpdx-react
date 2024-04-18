@@ -9,7 +9,7 @@ describe('useMassSelection', () => {
     const { result } = renderHook(() => useMassSelection(10, []), {});
 
     expect(result.current.selectionType).toEqual(
-      ListHeaderCheckBoxState.unchecked,
+      ListHeaderCheckBoxState.Unchecked,
     );
   });
   //#endregion
@@ -20,14 +20,14 @@ describe('useMassSelection', () => {
       const { result } = renderHook(() => useMassSelection(10, []), {});
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
 
       result.current.toggleSelectionById(id);
 
       expect(result.current.isRowChecked(id)).toBe(true);
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.partial,
+        ListHeaderCheckBoxState.Partial,
       );
       expect(result.current.ids).toEqual([id]);
     });
@@ -39,14 +39,14 @@ describe('useMassSelection', () => {
       );
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
       // Toggle to selected
       result.current.toggleSelectionById(id);
 
       expect(result.current.isRowChecked(id)).toBe(true);
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.partial,
+        ListHeaderCheckBoxState.Partial,
       );
       expect(result.current.ids).toEqual([id]);
       // Toggle to unselected
@@ -57,7 +57,7 @@ describe('useMassSelection', () => {
       rerender();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
       expect(result.current.ids).toEqual([]);
     });
@@ -69,7 +69,7 @@ describe('useMassSelection', () => {
       );
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
       // Toggle to selected
       result.current.toggleSelectionById(id);
@@ -83,7 +83,7 @@ describe('useMassSelection', () => {
       rerender();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.checked,
+        ListHeaderCheckBoxState.Checked,
       );
       expect(result.current.ids).toEqual(['123', '321', '231']);
     });
@@ -95,13 +95,13 @@ describe('useMassSelection', () => {
       );
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
 
       result.current.toggleSelectAll();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.checked,
+        ListHeaderCheckBoxState.Checked,
       );
 
       // Toggle to unselected
@@ -116,7 +116,7 @@ describe('useMassSelection', () => {
       rerender();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
     });
 
@@ -127,13 +127,13 @@ describe('useMassSelection', () => {
       );
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
 
       result.current.toggleSelectAll();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.checked,
+        ListHeaderCheckBoxState.Checked,
       );
 
       // Toggle to unselected
@@ -149,7 +149,7 @@ describe('useMassSelection', () => {
       rerender();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.checked,
+        ListHeaderCheckBoxState.Checked,
       );
     });
   });
@@ -161,32 +161,32 @@ describe('useMassSelection', () => {
       const { result } = renderHook(() => useMassSelection(10, []), {});
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
       // Toggle to selected
       result.current.toggleSelectionById(id);
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.partial,
+        ListHeaderCheckBoxState.Partial,
       );
 
       result.current.toggleSelectAll();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.checked,
+        ListHeaderCheckBoxState.Checked,
       );
     });
     it('None', () => {
       const { result } = renderHook(() => useMassSelection(10, []), {});
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
 
       result.current.toggleSelectAll();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.checked,
+        ListHeaderCheckBoxState.Checked,
       );
     });
 
@@ -194,19 +194,19 @@ describe('useMassSelection', () => {
       const { result } = renderHook(() => useMassSelection(10, []), {});
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
       // Toggle to all
       result.current.toggleSelectAll();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.checked,
+        ListHeaderCheckBoxState.Checked,
       );
       // Toggle back to none
       result.current.toggleSelectAll();
 
       expect(result.current.selectionType).toEqual(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
     });
   });
@@ -220,7 +220,7 @@ describe('useMassSelection', () => {
       result.current.deselectAll();
 
       expect(result.current.selectionType).toBe(
-        ListHeaderCheckBoxState.unchecked,
+        ListHeaderCheckBoxState.Unchecked,
       );
       expect(result.current.ids).toHaveLength(0);
     });

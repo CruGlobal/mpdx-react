@@ -6,16 +6,17 @@ import {
   cookieDefaultInfo,
 } from './utils/cookies';
 
-interface defineRedirectUrlProps {
+interface DefineRedirectUrlProps {
   accountListId: string;
   path: string;
   rest: any;
 }
+
 const defineRedirectUrl = ({
   accountListId,
   path,
   rest,
-}: defineRedirectUrlProps): string => {
+}: DefineRedirectUrlProps): string => {
   let redirectUrl = `${process.env.SITE_URL}/accountLists/${accountListId}`;
   if (path) redirectUrl += path;
   if (rest) {

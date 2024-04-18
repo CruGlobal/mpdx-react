@@ -57,12 +57,12 @@ interface SearchOrganizationsAccountListsReturned {
   };
 }
 
-type emailAddress = {
+type EmailAddress = {
   email: string;
   primary: boolean;
   id: string;
 };
-type accountListInvites = {
+type AccountListInvite = {
   id: string;
   inviteUserAs: string;
   recipientEmail: string;
@@ -93,14 +93,14 @@ type SearchOrganizationsAccountListsAccountList = {
     lastSyncedAt: string;
     userEmailAddresses: emailAddress[];
   }[];
-  accountListUsersInvites: accountListInvites[];
+  accountListUsersInvites: AccountListInvite[];
   accountListCoaches: {
     id: string;
     coachFirstName: string;
     coachLastName: string;
-    coachEmailAddresses: emailAddress[];
+    coachEmailAddresses: EmailAddress[];
   }[];
-  accountListCoachInvites: accountListInvites[];
+  accountListCoachInvites: AccountListInvite[];
 };
 
 export const SearchOrganizationsAccountLists = (
@@ -111,7 +111,7 @@ export const SearchOrganizationsAccountLists = (
       SearchOrganizationsAccountListsAccountList,
       'id'
     > & {
-      accountListInvites?: accountListInvites[];
+      accountListInvites?: AccountListInvite[];
     };
 
     // Added functionality to separate invites by user or coach

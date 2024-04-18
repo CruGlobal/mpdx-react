@@ -5,8 +5,8 @@ import { taskFiltersTabs } from '../../../src/utils/tasks/taskFilterTabs';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
 
-const siteUrl = `${process.env.SITE_URL}`;
-const accountListsUrl = `${process.env.SITE_URL}/accountLists`;
+const siteUrl = process.env.SITE_URL;
+const accountListsUrl = `${siteUrl}/accountLists`;
 // User one
 const userOneId = 'userId_1';
 const userOneToken = 'userOne.token';
@@ -24,17 +24,15 @@ const convertCookieStringToObject = (cookieString) => {
   }, {});
 };
 
-const grabCookies = (setCookieHeader: string[]): cookiesType[] => {
-  const cookies: cookiesType[] = [];
+const grabCookies = (setCookieHeader: string[]): Cookies[] => {
+  const cookies: Cookies[] = [];
   setCookieHeader.forEach((cookie) =>
     cookies.push(convertCookieStringToObject(cookie)),
   );
   return cookies;
 };
 
-interface cookiesType {
-  [key: string]: string;
-}
+type Cookies = Record<string, string>;
 
 describe('/api/mpdx-web-handoff', () => {
   it('No accountListId or path defined. Redirect to home', async () => {
@@ -43,7 +41,7 @@ describe('/api/mpdx-web-handoff', () => {
     expect(res._getRedirectUrl()).toBe(`${siteUrl}/`);
   });
 
-  const redirectUrl = `${process.env.SITE_URL}/accountLists/accountListId/contacts`;
+  const redirectUrl = `${siteUrl}/accountLists/accountListId/contacts`;
 
   describe('No prev session', () => {
     beforeEach(() => {

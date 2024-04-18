@@ -6,6 +6,7 @@ import {
   GetDefaultAccountQuery,
   GetDefaultAccountQueryVariables,
 } from './getDefaultAccount.generated';
+import { logErrorOnRollbar } from './utils/rollBar';
 
 if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET env var is not set');
@@ -36,7 +37,11 @@ export const returnRedirectUrl = async (req: NextApiRequest) => {
     }
     const userId = req.query.userId || jwtToken.userID;
 
-    const url = new URL(`https://${process.env.REWRITE_DOMAIN}/handoff`);
+    let protocol = 'https';
+    if (process.env.REWRITE_DOMAIN?.includes('localhost')) {
+      protocol = 'http';
+    }
+    const url = new URL(`${protocol}://${process.env.REWRITE_DOMAIN}/handoff`);
 
     url.searchParams.append('accessToken', jwtToken.apiToken);
     url.searchParams.append('accountListId', defaultAccountID.toString());
@@ -63,7 +68,8 @@ const handoff = async (
   try {
     const redirectUrl = await returnRedirectUrl(req);
     res.redirect(redirectUrl);
-  } catch (err) {
+  } catch (error) {
+    logErrorOnRollbar(error, '/api/handoff.page');
     res.redirect('/');
   }
 };
