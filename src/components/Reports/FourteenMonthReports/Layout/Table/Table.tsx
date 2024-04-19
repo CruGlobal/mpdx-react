@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
@@ -120,6 +121,7 @@ export const FourteenMonthReportTable: React.FC<
                       <NameTypography variant="body1" expanded={isExpanded}>
                         <Link
                           onClick={() => onSelectContact(contact.id)}
+                          onMouseEnter={preloadContactsRightPanel}
                           underline="hover"
                         >
                           {contact.name}
