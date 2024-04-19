@@ -144,7 +144,7 @@ const TaskModalLogForm = ({
 
   const onSubmit = async (
     { completedAt, comment, ...attributes }: Attributes,
-    suggestedPartnerStatus: StatusEnum | null,
+    suggestedPartnerStatus?: StatusEnum | null,
   ): Promise<void> => {
     if (selectedSuggestedTags.length) {
       attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
@@ -225,9 +225,6 @@ const TaskModalLogForm = ({
     setShowMore((prevState) => !prevState);
   };
 
-  // TODO - Remove with Caleb Alldrin's function
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-
   const handleTaskTypeChange = ({
     phase,
     setFieldValue,
@@ -236,13 +233,15 @@ const TaskModalLogForm = ({
     setFieldValue('result', undefined);
     setResultSelected(null);
     setPhaseId(phase);
+    setSelectedSuggestedTags([]);
   };
 
   const availableResults = useMemo(
     () => possibleResults(phaseData),
     [phaseData],
   );
-  const suggestedPartnerStatus = useMemo(
+
+  const possiblePartnerStatusMemo = useMemo(
     () => possiblePartnerStatus(phaseData, resultSelected),
     [phaseData, resultSelected],
   );
@@ -252,12 +251,13 @@ const TaskModalLogForm = ({
       phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
     [phaseData],
   );
+
   return (
     <Formik
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={async (values) => {
-        await onSubmit(values, suggestedPartnerStatus);
+        await onSubmit(values, possiblePartnerStatusMemo?.dbResult?.id);
       }}
       validateOnMount
       enableReinitialize
@@ -361,16 +361,16 @@ const TaskModalLogForm = ({
                         setResultSelected(e.target.value as ResultEnum);
                       }}
                     >
-                      {availableResults.map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedResultString(t, val)}
+                      {availableResults.map((result) => (
+                        <MenuItem key={result.id} value={result.id}>
+                          {getLocalizedResultString(t, result.id)}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                 </Grid>
               )}
-              {suggestedPartnerStatus && (
+              {possiblePartnerStatusMemo && (
                 <Grid item>
                   <FormControl fullWidth>
                     <FormControlLabel
@@ -382,7 +382,8 @@ const TaskModalLogForm = ({
                         />
                       }
                       label={t("Change the contact's status to: {{status}}", {
-                        status: suggestedPartnerStatus,
+                        status:
+                          possiblePartnerStatusMemo.suggestedContactStatus,
                       })}
                     />
                     {contactIds.length > 1 && (
@@ -462,7 +463,7 @@ const TaskModalLogForm = ({
                             inputProps={{ 'aria-label': t('Comment') }}
                           />
                         </Grid>
-                        {phaseTags?.length && (
+                        {!!phaseTags?.length && (
                           <PhaseTags
                             tags={phaseTags}
                             selectedTags={selectedSuggestedTags}
