@@ -1,6 +1,5 @@
 import i18n from 'i18next';
-import { StatusEnum } from 'src/graphql/types.generated';
-import { PhaseTypeEnum } from "../../lib/MPDPhases";
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 
 function formatStatus(str) {
   const words = str.split('_');
@@ -18,72 +17,72 @@ export const contactPartnershipStatus = {
   [StatusEnum.NeverContacted]: {
     name: formatStatus(StatusEnum.NeverContacted),
     translated: i18n.t('Never Contacted'),
-    phase: PhaseTypeEnum.connection,
+    phase: PhaseEnum.Connection,
   },
   [StatusEnum.AskInFuture]: {
     name: formatStatus(StatusEnum.AskInFuture),
     translated: i18n.t('Ask in Future'),
-    phase: PhaseTypeEnum.connection,
+    phase: PhaseEnum.Connection,
   },
   [StatusEnum.CultivateRelationship]: {
     name: formatStatus(StatusEnum.CultivateRelationship),
     translated: i18n.t('Cultivate Relationship'),
-    phase: PhaseTypeEnum.connection,
+    phase: PhaseEnum.Connection,
   },
   [StatusEnum.ContactForAppointment]: {
     name: formatStatus(StatusEnum.ContactForAppointment),
     translated: i18n.t('Contact for Appointment'),
-    phase: PhaseTypeEnum.initiation,
+    phase: PhaseEnum.Initiation,
   },
   [StatusEnum.AppointmentScheduled]: {
     name: formatStatus(StatusEnum.AppointmentScheduled),
     translated: i18n.t('Appointment Scheduled'),
-    phase: PhaseTypeEnum.appointment,
+    phase: PhaseEnum.Appointment,
   },
   [StatusEnum.CallForDecision]: {
     name: formatStatus(StatusEnum.CallForDecision),
     translated: i18n.t('Call for Decision'),
-    phase: PhaseTypeEnum.follow_up,
+    phase: PhaseEnum.FollowUp,
   },
   [StatusEnum.PartnerFinancial]: {
     name: formatStatus(StatusEnum.PartnerFinancial),
     translated: i18n.t('Partner - Financial'),
-    phase: PhaseTypeEnum.partner_care,
+    phase: PhaseEnum.PartnerCare,
   },
   [StatusEnum.PartnerSpecial]: {
     name: formatStatus(StatusEnum.PartnerSpecial),
     translated: i18n.t('Partner - Special'),
-    phase: PhaseTypeEnum.partner_care,
+    phase: PhaseEnum.PartnerCare,
   },
   [StatusEnum.PartnerPray]: {
     name: formatStatus(StatusEnum.PartnerPray),
     translated: i18n.t('Partner - Pray'),
-    phase: PhaseTypeEnum.partner_care,
+    phase: PhaseEnum.PartnerCare,
   },
   [StatusEnum.NotInterested]: {
     name: formatStatus(StatusEnum.NotInterested),
     translated: i18n.t('Not Interested'),
-    phase: PhaseTypeEnum.archive,
+    phase: PhaseEnum.Archive,
   },
   [StatusEnum.Unresponsive]: {
     name: formatStatus(StatusEnum.Unresponsive),
     translated: i18n.t('Unresponsive'),
-    phase: PhaseTypeEnum.archive,
+    phase: PhaseEnum.Archive,
   },
   [StatusEnum.NeverAsk]: {
     name: formatStatus(StatusEnum.NeverAsk),
     translated: i18n.t('Never Ask'),
-    phase: PhaseTypeEnum.archive,
+    phase: PhaseEnum.Archive,
   },
   [StatusEnum.ResearchAbandoned]: {
     name: formatStatus(StatusEnum.ResearchAbandoned),
     translated: i18n.t('Research Abandoned'),
-    phase: PhaseTypeEnum.archive,
+    phase: PhaseEnum.Archive,
   },
   [StatusEnum.ExpiredReferral]: {
     name: formatStatus(StatusEnum.ExpiredReferral),
     translated: i18n.t('Expired Referral'),
-    phase: PhaseTypeEnum.archive,
+    phase: PhaseEnum.Archive,
   },
   NULL: {
     name: 'null',

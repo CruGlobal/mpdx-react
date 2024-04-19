@@ -33,6 +33,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import {
   ActivityTypeEnum,
+  PhaseEnum,
   ResultEnum,
   StatusEnum,
   TaskCreateInput,
@@ -40,7 +41,6 @@ import {
 import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
@@ -66,7 +66,7 @@ import {
 } from '../TaskModal.generated';
 
 const taskSchema = yup.object({
-  taskType: yup.mixed<PhaseTypeEnum>().nullable(),
+  taskType: yup.mixed<PhaseEnum>().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>().nullable(),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
@@ -88,6 +88,14 @@ interface Props {
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
 }
+type HandleTaskTypeChangeProps = {
+  phase: PhaseEnum | null;
+  setFieldValue: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean | undefined,
+  ) => void;
+};
 
 const TaskModalLogForm = ({
   accountListId,
@@ -119,7 +127,6 @@ const TaskModalLogForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  // TODO - Replace null with Caleb Alldrin's Contact's status
   const { phaseData, setPhaseId } = useGetPhaseData();
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
@@ -220,7 +227,16 @@ const TaskModalLogForm = ({
 
   // TODO - Remove with Caleb Alldrin's function
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const updateActionOptions = () => {};
+
+  const handleTaskTypeChange = ({
+    phase,
+    setFieldValue,
+  }: HandleTaskTypeChangeProps): void => {
+    setFieldValue('taskType', phase);
+    setFieldValue('result', undefined);
+    setResultSelected(null);
+    setPhaseId(phase);
+  };
 
   const availableResults = useMemo(
     () => possibleResults(phaseData),
@@ -236,7 +252,6 @@ const TaskModalLogForm = ({
       phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
     [phaseData],
   );
-
   return (
     <Formik
       initialValues={initialTask}
@@ -292,19 +307,14 @@ const TaskModalLogForm = ({
                   inputRef={inputRef}
                 />
               </Grid>
-              {/* TODO - Replace with Caleb Alldrin's input */}
               <Grid item>
                 <TaskTypeAutocomplete
-                  options={Object.values(PhaseTypeEnum)}
+                  options={Object.values(PhaseEnum)}
                   label={t('Task Type')}
                   value={taskType}
-                  onChange={(phase) => {
-                    setFieldValue('taskType', phase);
-                    setFieldValue('result', undefined);
-                    setResultSelected(null);
-                    updateActionOptions();
-                    setPhaseId(phase);
-                  }}
+                  onChange={(phase) =>
+                    handleTaskTypeChange({ phase, setFieldValue })
+                  }
                 />
               </Grid>
 
@@ -313,6 +323,7 @@ const TaskModalLogForm = ({
                   options={Object.values(ActivityTypeEnum)}
                   label={t('Action')}
                   value={activityType}
+                  phaseType={phaseData?.id}
                   onChange={(activityType) => {
                     setFieldValue('activityType', activityType);
                     setFieldValue(

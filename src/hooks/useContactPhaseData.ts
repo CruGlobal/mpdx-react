@@ -6,12 +6,12 @@ import {
   IdValue,
   Maybe,
   Phase,
+  PhaseEnum,
   ResultOption,
 } from 'src/graphql/types.generated';
-import { PhaseTypeEnum } from 'src/lib/MPDPhases';
 
 const phaseFromActivity = (
-  activity: PhaseTypeEnum | null,
+  activity: PhaseEnum | null,
   constants: LoadConstantsQuery['constant'] | undefined,
 ): TaskPhase | null => {
   const phases = constants?.phases;
@@ -24,10 +24,12 @@ const phaseFromActivity = (
 
 type GetPhaseData = {
   phaseData: TaskPhase | null;
-  setPhaseId: (activity: PhaseTypeEnum | null) => void;
+  setPhaseId: (activity: PhaseEnum | null) => void;
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useGetPhaseData = (activityId?: PhaseTypeEnum): GetPhaseData => {
+export const useGetPhaseData = (
+  activityId?: PhaseEnum | null,
+): GetPhaseData => {
   const constants = useApiConstants();
   const [phaseData, setPhaseData] = useState<TaskPhase | null>(
     phaseFromActivity(activityId ?? null, constants),

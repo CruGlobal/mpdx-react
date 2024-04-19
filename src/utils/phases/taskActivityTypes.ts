@@ -1,4 +1,4 @@
-import { ActivityTypeEnum } from 'src/graphql/types.generated';
+import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 
 export const callActivityTypes = [
   ActivityTypeEnum.AppointmentPhoneCall,
@@ -59,6 +59,80 @@ export const appointmentActivityTypes = [
   ActivityTypeEnum.AppointmentVideoCall,
   ActivityTypeEnum.AppointmentPhoneCall,
 ];
+
+export const getActivitiesByPhaseType = (
+  phase: PhaseEnum,
+): ActivityTypeEnum[] => {
+  switch (phase) {
+    case PhaseEnum.Appointment:
+      return [
+        ActivityTypeEnum.AppointmentInPerson,
+        ActivityTypeEnum.AppointmentPhoneCall,
+        ActivityTypeEnum.AppointmentVideoCall,
+      ];
+    case PhaseEnum.FollowUp:
+      return [
+        ActivityTypeEnum.FollowUpEmail,
+        ActivityTypeEnum.FollowUpInPerson,
+        ActivityTypeEnum.FollowUpPhoneCall,
+        ActivityTypeEnum.FollowUpSocialMedia,
+        ActivityTypeEnum.FollowUpTextMessage,
+      ];
+    case PhaseEnum.Initiation:
+      return [
+        ActivityTypeEnum.InitiationEmail,
+        ActivityTypeEnum.InitiationInPerson,
+        ActivityTypeEnum.InitiationLetter,
+        ActivityTypeEnum.InitiationPhoneCall,
+        ActivityTypeEnum.InitiationSocialMedia,
+        ActivityTypeEnum.InitiationSpecialGiftAppeal,
+        ActivityTypeEnum.InitiationTextMessage,
+      ];
+    case PhaseEnum.PartnerCare:
+      return [
+        ActivityTypeEnum.PartnerCareDigitalNewsletter,
+        ActivityTypeEnum.PartnerCareEmail,
+        ActivityTypeEnum.PartnerCareInPerson,
+        ActivityTypeEnum.PartnerCarePhoneCall,
+        ActivityTypeEnum.PartnerCarePhysicalNewsletter,
+        ActivityTypeEnum.PartnerCarePrayerRequest,
+        ActivityTypeEnum.PartnerCareSocialMedia,
+        ActivityTypeEnum.PartnerCareTextMessage,
+        ActivityTypeEnum.PartnerCareThank,
+        ActivityTypeEnum.PartnerCareToDo,
+        ActivityTypeEnum.PartnerCareUpdateInformation,
+      ];
+    default:
+      return [
+        ActivityTypeEnum.AppointmentInPerson,
+        ActivityTypeEnum.AppointmentPhoneCall,
+        ActivityTypeEnum.AppointmentVideoCall,
+        ActivityTypeEnum.FollowUpEmail,
+        ActivityTypeEnum.FollowUpInPerson,
+        ActivityTypeEnum.FollowUpPhoneCall,
+        ActivityTypeEnum.FollowUpSocialMedia,
+        ActivityTypeEnum.FollowUpTextMessage,
+        ActivityTypeEnum.InitiationEmail,
+        ActivityTypeEnum.InitiationInPerson,
+        ActivityTypeEnum.InitiationLetter,
+        ActivityTypeEnum.InitiationPhoneCall,
+        ActivityTypeEnum.InitiationSocialMedia,
+        ActivityTypeEnum.InitiationSpecialGiftAppeal,
+        ActivityTypeEnum.InitiationTextMessage,
+        ActivityTypeEnum.PartnerCareDigitalNewsletter,
+        ActivityTypeEnum.PartnerCareEmail,
+        ActivityTypeEnum.PartnerCareInPerson,
+        ActivityTypeEnum.PartnerCarePhoneCall,
+        ActivityTypeEnum.PartnerCarePhysicalNewsletter,
+        ActivityTypeEnum.PartnerCarePrayerRequest,
+        ActivityTypeEnum.PartnerCareSocialMedia,
+        ActivityTypeEnum.PartnerCareTextMessage,
+        ActivityTypeEnum.PartnerCareThank,
+        ActivityTypeEnum.PartnerCareToDo,
+        ActivityTypeEnum.PartnerCareUpdateInformation,
+      ];
+  }
+};
 
 // export enum ActivityTypeEnum {
 //   AppointmentInPerson = 'APPOINTMENT_IN_PERSON',

@@ -1,73 +1,64 @@
 import { TFunction } from 'i18next';
-import { StatusEnum } from 'src/graphql/types.generated';
-
-export enum PhaseTypeEnum {
-  connection = 'Connections',
-  initiation = 'Initiation',
-  appointment = 'Appointment',
-  follow_up = 'Follow Up',
-  partner_care = 'Partner Care',
-  archive = 'Archive',
-}
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 
 export const getLocalizedTaskType = (
   t: TFunction,
-  taskPhase: PhaseTypeEnum | null | undefined,
+  taskPhase?: PhaseEnum | null,
 ): string => {
   if (!taskPhase) {
     return '';
   }
 
   switch (taskPhase) {
-    case PhaseTypeEnum.connection:
+    case PhaseEnum.Connection:
       return t('Connection');
 
-    case PhaseTypeEnum.initiation:
+    case PhaseEnum.Initiation:
       return t('Initiation');
 
-    case PhaseTypeEnum.appointment:
+    case PhaseEnum.Appointment:
       return t('Appointment');
 
-    case PhaseTypeEnum.follow_up:
+    case PhaseEnum.FollowUp:
       return t('Follow Up');
 
-    case PhaseTypeEnum.partner_care:
+    case PhaseEnum.PartnerCare:
       return t('Partner Care');
 
-    case PhaseTypeEnum.archive:
+    case PhaseEnum.Archive:
       return t('Archive');
   }
 };
 
 export const getAssociatedMPDPhase = (
   partnerStatus: StatusEnum | null,
-): PhaseTypeEnum => {
+): PhaseEnum => {
   switch (partnerStatus) {
     case StatusEnum.ContactForAppointment:
-      return PhaseTypeEnum.initiation;
+      return PhaseEnum.Initiation;
 
     case StatusEnum.AppointmentScheduled:
-      return PhaseTypeEnum.appointment;
+      return PhaseEnum.Appointment;
 
     case StatusEnum.CallForDecision:
-      return PhaseTypeEnum.follow_up;
+      return PhaseEnum.FollowUp;
 
     case StatusEnum.PartnerFinancial:
     case StatusEnum.PartnerSpecial:
     case StatusEnum.PartnerPray:
-      return PhaseTypeEnum.partner_care;
+      return PhaseEnum.PartnerCare;
 
     case StatusEnum.NotInterested:
     case StatusEnum.Unresponsive:
     case StatusEnum.NeverAsk:
     case StatusEnum.ResearchAbandoned:
     case StatusEnum.ExpiredReferral:
-      return PhaseTypeEnum.archive;
+      return PhaseEnum.Appointment;
 
     case StatusEnum.NeverContacted:
     case StatusEnum.AskInFuture:
     case StatusEnum.CultivateRelationship:
     default:
-      return PhaseTypeEnum.connection;
+      return PhaseEnum.Connection;
   }
 };

@@ -19,8 +19,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
-import { StatusEnum } from 'src/graphql/types.generated';
-import { PhaseTypeEnum } from 'src/lib/MPDPhases';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { sourceToStr } from 'src/utils/sourceToStr';
@@ -89,7 +88,7 @@ const CruFocus = styled(Typography)(({ theme }) => ({
 const inactiveStatuses: (StatusEnum | null | undefined)[] = Object.entries(
   contactPartnershipStatus,
 )
-  .filter(([_, status]) => status.phase === PhaseTypeEnum.archive)
+  .filter(([_, status]) => status.phase === PhaseEnum.Archive)
   .map(([statusKey]) => statusKey as StatusEnum);
 
 export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
@@ -112,8 +111,8 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
     .filter(
       ([_, status]) =>
         status.phase &&
-        status.phase !== PhaseTypeEnum.archive &&
-        status.phase !== PhaseTypeEnum.follow_up,
+        status.phase !== PhaseEnum.Archive &&
+        status.phase !== PhaseEnum.FollowUp,
     )
     .map(([statusKey, status]) => {
       return {
