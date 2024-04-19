@@ -84,7 +84,6 @@ describe('PrayerlettersAccount', () => {
 
   describe('Not Connected', () => {
     it('should render PrayerLetters.com Overview', async () => {
-      process.env.SITE_URL = 'https://next.mpdx.org';
       const { getByText } = render(
         <Components>
           <GqlMockedProvider<{
@@ -123,7 +122,6 @@ describe('PrayerlettersAccount', () => {
       prayerlettersAccount = { ...standardPrayerlettersAccount };
     });
     it('is connected but token is not valid', async () => {
-      process.env.SITE_URL = 'https://next.mpdx.org';
       prayerlettersAccount.validToken = false;
       const mutationSpy = jest.fn();
       const { queryByText, getByText, getByRole } = render(

@@ -25,8 +25,6 @@ expect.extend({
   toHaveGraphqlOperation,
 });
 
-process.env.APP_NAME = 'MPDX';
-
 window.Beacon = jest.fn();
 
 window.document.createRange = (): Range =>
