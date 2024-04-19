@@ -4,6 +4,7 @@ import React, { ReactElement } from 'react';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
+import { logErrorOnRollbar } from 'pages/api/utils/rollBar';
 import AccountLists from 'src/components/AccountLists';
 import BaseLayout from 'src/components/Layouts/Primary';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -40,40 +41,45 @@ AccountListsPage.layout = BaseLayout;
 export const getServerSideProps: GetServerSideProps = async (
   context,
 ): Promise<GetServerSidePropsResult<AccountListsPageProps>> => {
-  const session = await getSession(context);
-  const apiToken = session?.user?.apiToken;
-  if (!apiToken) {
+  try {
+    const session = await getSession(context);
+    const apiToken = session?.user?.apiToken;
+    if (!apiToken) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      };
+    }
+
+    const ssrClient = makeSsrClient(apiToken);
+    const { data } = await ssrClient.query<
+      GetAccountListsQuery,
+      GetAccountListsQueryVariables
+    >({
+      query: GetAccountListsDocument,
+    });
+
+    if (data.accountLists.nodes.length === 1) {
+      return {
+        redirect: {
+          destination: `/accountLists/${data.accountLists.nodes[0].id}`,
+          permanent: false,
+        },
+      };
+    }
+
     return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
+      props: {
+        data,
+        session,
       },
     };
+  } catch (error) {
+    logErrorOnRollbar(error, '/accountLists.page');
+    throw error;
   }
-
-  const ssrClient = makeSsrClient(apiToken);
-  const { data } = await ssrClient.query<
-    GetAccountListsQuery,
-    GetAccountListsQueryVariables
-  >({
-    query: GetAccountListsDocument,
-  });
-
-  if (data.accountLists.nodes.length === 1) {
-    return {
-      redirect: {
-        destination: `/accountLists/${data.accountLists.nodes[0].id}`,
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      data,
-      session,
-    },
-  };
 };
 
 export default AccountListsPage;

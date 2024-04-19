@@ -13,6 +13,7 @@ import {
 
 jest.mock('next-auth/react');
 
+process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
 const accountListId = 'account-list-1';
 const organizationId = 'organizationId';
 const organizationName = 'organizationName';
@@ -63,19 +64,6 @@ describe('OrganizationImportDataSyncModal', () => {
       });
     });
 
-    it('File size is too big', () => {
-      const file = new File(['contents'], '.tntmpd', {
-        type: 'xml',
-      });
-      Object.defineProperty(file, 'size', { value: 200_000_000 });
-      const response = validateFile({ file, t });
-
-      expect(response).toEqual({
-        success: false,
-        message: 'Cannot upload file: file size cannot exceed 100MB',
-      });
-    });
-
     it('File type is correct', () => {
       const file = new File(['contents'], '.tntmpd', {
         type: 'xml',
@@ -122,41 +110,7 @@ describe('OrganizationImportDataSyncModal', () => {
         window.fetch = fetch;
       });
 
-      it('should return error when file is too large', async () => {
-        const mutationSpy = jest.fn();
-        const { getByText, getByTestId } = render(
-          <Components>
-            <GqlMockedProvider onCall={mutationSpy}>
-              <OrganizationImportDataSyncModal
-                handleClose={handleClose}
-                organizationId={organizationId}
-                organizationName={organizationName}
-                accountListId={accountListId}
-              />
-            </GqlMockedProvider>
-          </Components>,
-        );
-        const file = new File(['contents'], '.tntmpd', {
-          type: 'xml',
-        });
-        Object.defineProperty(file, 'size', {
-          value: 200_000_000,
-          configurable: true,
-        });
-        userEvent.upload(getByTestId('importFileUploader'), file);
-
-        await waitFor(() =>
-          expect(mockEnqueue).toHaveBeenCalledWith(
-            'Cannot upload file: file size cannot exceed 100MB',
-            {
-              variant: 'error',
-            },
-          ),
-        );
-        expect(getByText('Upload File')).toBeDisabled();
-      });
-
-      it('should inform user of the error when uploading file.', async () => {
+      it('should inform user of the error when uploaded incorrect file type.', async () => {
         const mutationSpy = jest.fn();
         const { getByTestId, getByText } = render(
           <Components>
@@ -205,14 +159,13 @@ describe('OrganizationImportDataSyncModal', () => {
           expect(getByText('Upload File')).toBeDisabled();
         });
 
-        const testValue = [{ isTest: 'It is a test' }];
-        const str = JSON.stringify(testValue);
+        const str = JSON.stringify([{ isTest: 'It is a test' }]);
         const blob = new Blob([str]);
         const tntDataSync = new File([blob], '.tntmpd', {
           type: 'xml',
         });
 
-        await act(() => {
+        act(() => {
           userEvent.upload(getByTestId('importFileUploader'), tntDataSync);
         });
         await waitFor(() => {
@@ -221,7 +174,7 @@ describe('OrganizationImportDataSyncModal', () => {
         userEvent.click(getByText('Upload File'));
         await waitFor(() => {
           expect(window.fetch).toHaveBeenCalledWith(
-            '/api/uploads/tnt-data-sync',
+            `${process.env.REST_API_URL}account_lists/${accountListId}/imports/tnt_data_sync`,
             expect.objectContaining({
               method: 'POST',
               body: expect.any(FormData),
@@ -234,15 +187,67 @@ describe('OrganizationImportDataSyncModal', () => {
         );
 
         expect(formData).toEqual({
-          accountListId,
-          organizationId,
-          tntDataSync,
+          'data[attributes][file]': tntDataSync,
+          'data[relationships][source_account][data][id]': organizationId,
+          'data[relationships][source_account][data][type]':
+            'organization_accounts',
+          'data[type]': 'imports',
         });
         await waitFor(() =>
           expect(mockEnqueue).toHaveBeenCalledWith(
             `File successfully uploaded. The import to ${organizationName} will begin in the background.`,
             {
               variant: 'success',
+            },
+          ),
+        );
+      });
+    });
+
+    describe('handleSubmit error when sending files to API', () => {
+      const fetch = jest.fn().mockResolvedValue({ status: 500 });
+      beforeEach(() => {
+        window.fetch = fetch;
+      });
+
+      it('should show an error when error occurs during upload', async () => {
+        const mutationSpy = jest.fn();
+        const { getByTestId, getByText } = render(
+          <Components>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <OrganizationImportDataSyncModal
+                handleClose={handleClose}
+                organizationId={organizationId}
+                organizationName={organizationName}
+                accountListId={accountListId}
+              />
+            </GqlMockedProvider>
+          </Components>,
+        );
+
+        await waitFor(() => {
+          expect(getByText('Upload File')).toBeDisabled();
+        });
+
+        const str = JSON.stringify([{ isTest: 'It is a test' }]);
+        const blob = new Blob([str]);
+        const tntDataSync = new File([blob], '.tntmpd', {
+          type: 'xml',
+        });
+
+        await act(() => {
+          userEvent.upload(getByTestId('importFileUploader'), tntDataSync);
+        });
+        await waitFor(() => {
+          expect(getByText('Upload File')).not.toBeDisabled();
+        });
+        userEvent.click(getByText('Upload File'));
+
+        await waitFor(() =>
+          expect(mockEnqueue).toHaveBeenCalledWith(
+            'Cannot upload file: server error',
+            {
+              variant: 'error',
             },
           ),
         );

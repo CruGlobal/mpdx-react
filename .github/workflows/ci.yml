@@ -140,13 +140,8 @@ jobs:
         env:
           secrets: '{"JWT_SECRET":"JWT_SECRET","OKTA_CLIENT_SECRET":"OKTA_CLIENT_SECRET"}'
       - name: Analyze bundle sizes
-        # Fork of transferwise/actions-next-bundle-analyzer to fix the failure because our repo does not have issues enabled
-        # We can switch back to using transferwise/actions-next-bundle-analyzer if/when https://github.com/transferwise/actions-next-bundle-analyzer/pull/40 is merged
-        uses: CruGlobal/actions-next-bundle-analyzer@disable-issue
+        uses: transferwise/actions-next-bundle-analyzer@v2
         with:
-          # Filename of the workflow this step is defined in
-          base-branch: main
-          workflow-id: ci.yml
           create-issue: false
         env:
           # This secret is automatically injected by GitHub

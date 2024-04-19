@@ -14,12 +14,12 @@ import {
   ApiOauthSignInMutation,
   ApiOauthSignInMutationVariables,
 } from './apiOauthSignIn';
+import { isJwtExpired, setUserInfo } from './helpers';
 import {
   OktaSignInDocument,
   OktaSignInMutation,
   OktaSignInMutationVariables,
 } from './oktaSignIn.generated';
-import { setUserInfo } from './setUserInfo';
 
 declare module 'next-auth' {
   interface Session {
@@ -246,6 +246,12 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
       },
       session: ({ session, token }) => {
         const { admin, developer, apiToken, userID, impersonating } = token;
+
+        // Check the expiration of the API token JWT without verifying its signature
+        // Throwing an exception here will cause a redirect to the login page
+        if (isJwtExpired(apiToken)) {
+          throw new Error('Expired API token');
+        }
 
         return {
           ...session,

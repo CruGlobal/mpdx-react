@@ -17,9 +17,6 @@ const handleClose = jest.fn();
 jest.mock('next-auth/react');
 
 describe('ExportPhysical', () => {
-  beforeEach(() => {
-    process.env.SITE_URL = 'http://localhost:3000';
-  });
   const mocks = {
     CreateExportedContacts: {
       exportContacts: 'someRandomUrlToFile/abc1234',

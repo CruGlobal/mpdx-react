@@ -14,7 +14,6 @@ describe('<AuthProvider />', () => {
         <TestingComponent />
       </AppSettingsProvider>,
     );
-    const appName = process.env.APP_NAME ?? '';
-    expect(getByTestId('app-name').textContent).toEqual(appName);
+    expect(getByTestId('app-name').textContent).toEqual(process.env.APP_NAME);
   });
 });

@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import { Collapse, ListItem, ListItemText } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import HandoffLink from 'src/components/HandoffLink';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { NavTypeEnum } from '../MultiPageMenu';
@@ -63,12 +64,19 @@ export const Item: React.FC<Props> = ({
 
   return (
     <>
-      <NextLink
-        href={`/accountLists/${accountListId}/${navType}/${item.id}`}
-        scroll={false}
-      >
-        {children}
-      </NextLink>
+      {item.handoff && (
+        <HandoffLink path={item.id} auth={item.handoffAuth}>
+          {children}
+        </HandoffLink>
+      )}
+      {!item.handoff && (
+        <NextLink
+          href={`/accountLists/${accountListId}/${navType}/${item.id}`}
+          scroll={false}
+        >
+          {children}
+        </NextLink>
+      )}
       {item?.subItems?.length && (
         <Collapse
           in={openSubMenu || isSelected}

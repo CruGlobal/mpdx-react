@@ -190,7 +190,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               selectedIds={ids}
               massDeselectAll={deselectAll}
               selectedIdCount={
-                selectionType === ListHeaderCheckBoxState.checked
+                selectionType === ListHeaderCheckBoxState.Checked
                   ? taskCount
                   : ids.length
               }
@@ -200,9 +200,9 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         <HeaderRow mb={2}>
           <HeaderItemsWrap>
             <Checkbox
-              checked={selectionType === ListHeaderCheckBoxState.checked}
+              checked={selectionType === ListHeaderCheckBoxState.Checked}
               color="secondary"
-              indeterminate={selectionType === ListHeaderCheckBoxState.partial}
+              indeterminate={selectionType === ListHeaderCheckBoxState.Partial}
               onChange={toggleSelectAll}
             />
             <SearchBox

@@ -1,4 +1,4 @@
-import { setUserInfo } from 'pages/api/auth/setUserInfo';
+import { setUserInfo } from 'pages/api/auth/helpers';
 import { expireCookieDefaultInfo } from 'pages/api/utils/cookies';
 
 // User One

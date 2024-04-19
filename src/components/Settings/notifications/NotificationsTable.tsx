@@ -34,7 +34,7 @@ import {
 } from './StyledComponents';
 import { useUpdateNotificationPreferencesMutation } from './UpdateNotifications.generated';
 
-export enum notificationsEnum {
+export enum NotificationsEnum {
   App = 'app',
   Email = 'email',
   Task = 'task',
@@ -229,7 +229,7 @@ export const NotificationsTable: React.FC = () => {
                             data-testid="select-all-app"
                             onClick={() =>
                               handleSelectAll(
-                                notificationsEnum.App,
+                                NotificationsEnum.App,
                                 notifications,
                                 setFieldValue,
                                 appSelectAll,
@@ -248,7 +248,7 @@ export const NotificationsTable: React.FC = () => {
                             data-testid="select-all-email"
                             onClick={() =>
                               handleSelectAll(
-                                notificationsEnum.Email,
+                                NotificationsEnum.Email,
                                 notifications,
                                 setFieldValue,
                                 emailSelectAll,
@@ -267,7 +267,7 @@ export const NotificationsTable: React.FC = () => {
                             data-testid="select-all-task"
                             onClick={() =>
                               handleSelectAll(
-                                notificationsEnum.Task,
+                                NotificationsEnum.Task,
                                 notifications,
                                 setFieldValue,
                                 taskSelectAll,

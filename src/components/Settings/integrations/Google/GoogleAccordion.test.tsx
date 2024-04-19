@@ -87,7 +87,6 @@ describe('GoogleAccordion', () => {
   });
 
   describe('Not Connected', () => {
-    process.env.SITE_URL = 'https://next.mpdx.org';
     it('should render Google Overview', async () => {
       const mutationSpy = jest.fn();
       const { getByText } = render(
@@ -185,7 +184,6 @@ describe('GoogleAccordion', () => {
     });
 
     it('shows account with expired token', async () => {
-      process.env.SITE_URL = 'https://next.mpdx.org';
       const mutationSpy = jest.fn();
       googleAccount.tokenExpired = true;
       const { getByText, getAllByText } = render(

@@ -30,7 +30,7 @@ interface Props {
   handleClose: () => void;
 }
 
-interface people {
+interface Person {
   firstName: string;
   lastName: string;
 }
@@ -89,7 +89,7 @@ const CreateContact = ({
 
     if (contactId) {
       const { name } = attributes;
-      const people: people[] = [];
+      const people: Person[] = [];
       let firstAndSpouseNames = name;
       let lastName = '';
       if (name.includes(',')) {

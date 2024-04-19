@@ -3,8 +3,12 @@ import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
+import { logErrorOnRollbar } from 'pages/api/utils/rollBar';
 import Dashboard from 'src/components/Dashboard';
-import { renderDialog } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import {
+  AddMenuItemsEnum,
+  renderDialog,
+} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import useTaskModal from 'src/hooks/useTaskModal';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
@@ -27,7 +31,8 @@ const AccountListIdPage = ({
 }: AccountListIdPageProps): ReactElement => {
   const { appName } = useGetAppSettings();
   const { openTaskModal } = useTaskModal();
-  const [selectedMenuItem, setSelectedMenuItem] = useState(-1);
+  const [selectedMenuItem, setSelectedMenuItem] =
+    useState<AddMenuItemsEnum | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -38,15 +43,15 @@ const AccountListIdPage = ({
     if (!modal || dialogOpen) return;
     switch (modal) {
       case 'AddContact':
-        setSelectedMenuItem(0);
+        setSelectedMenuItem(AddMenuItemsEnum.NewContact);
         setDialogOpen(true);
         break;
       case 'AddMultipleContacts':
-        setSelectedMenuItem(1);
+        setSelectedMenuItem(AddMenuItemsEnum.MultipleContacts);
         setDialogOpen(true);
         break;
       case 'AddDonation':
-        setSelectedMenuItem(2);
+        setSelectedMenuItem(AddMenuItemsEnum.AddDonation);
         setDialogOpen(true);
         break;
       case 'AddTask':
@@ -116,7 +121,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         session,
       },
     };
-  } catch {
+  } catch (error) {
+    logErrorOnRollbar(error, '/accountLists/[accountListId].page');
     return {
       redirect: {
         destination: '/',

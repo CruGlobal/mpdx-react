@@ -41,15 +41,14 @@ const setColumnWidth = jest.fn();
 const moveColumns = jest.fn();
 const updateColumns = jest.fn();
 
-interface flowOptionsArray {
+interface FlowOption {
   name: string;
   statuses: string[];
   color: string;
   id: string;
 }
-[];
 
-const flowOptions: flowOptionsArray[] = [
+const flowOptions: FlowOption[] = [
   {
     name: 'Untitled Two',
     id: '6ced166a-d570-4086-af56-e3eeed8a1f98',

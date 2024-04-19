@@ -293,7 +293,6 @@ describe('OrganizationAccordion', () => {
     });
 
     it('should render OAuth Organization', async () => {
-      process.env.SITE_URL = 'https://next.mpdx.org';
       const mutationSpy = jest.fn();
       mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].organization.apiClass =
         'DataServer';

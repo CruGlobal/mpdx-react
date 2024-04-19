@@ -63,7 +63,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-interface formProps {
+interface FormAttributes {
   name: string;
   initialGoal: number;
   letterCost: number;
@@ -151,7 +151,7 @@ const AddAppealForm = (): ReactElement => {
     }));
   };
 
-  const onSubmit = async (props: formProps) => {
+  const onSubmit = async (props: FormAttributes) => {
     const attributes = {
       name: props.name,
       amount: calculateGoal(

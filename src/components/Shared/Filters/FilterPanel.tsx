@@ -107,6 +107,7 @@ export interface FilterPanelProps {
   selectedFilters: FilterInput;
   onClose: () => void;
   onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
+  onHandleClearSearch?: () => void;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
@@ -116,12 +117,12 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   onClose,
   selectedFilters,
   onSelectedFiltersChanged,
+  onHandleClearSearch,
   ...boxProps
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const { handleClearAll } = React.useContext(ContactsContext) as ContactsType;
-
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
@@ -643,6 +644,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   };
 
   const handleClearAllClick = () => {
+    onHandleClearSearch && onHandleClearSearch();
     handleClearAll();
     clearSelectedFilter();
   };

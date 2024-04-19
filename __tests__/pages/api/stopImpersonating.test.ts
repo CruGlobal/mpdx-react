@@ -15,9 +15,7 @@ const convertCookieStringToObject = (cookieString) => {
     return prev;
   }, {});
 };
-interface cookiesType {
-  [key: string]: string;
-}
+type Cookies = Record<string, string>;
 
 describe('/api/stop-impersonating', () => {
   const defaultAccountList = 'defaultAccountList';
@@ -72,7 +70,7 @@ describe('/api/stop-impersonating', () => {
   it('Ensure Correct cookies are removed or added/edited', async () => {
     const { req, res } = createMocks({ method: 'GET' });
     await stopImpersonating(req, res);
-    const cookies: cookiesType[] = [];
+    const cookies: Cookies[] = [];
     res._getHeaders()['set-cookie'].forEach((cookie) => {
       cookies.push(convertCookieStringToObject(cookie));
     });

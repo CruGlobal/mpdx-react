@@ -55,7 +55,7 @@ const CreateButton: React.FC<CreateButtonProps> = ({ page }) => {
         <Trans defaults="Add new {{page}}" values={{ page }} />
       </Button>
       {renderDialog(
-        AddMenuItemsEnum.NEW_CONTACT,
+        AddMenuItemsEnum.NewContact,
         contactsDialogOpen,
         setContactsDialogOpen,
       )}
