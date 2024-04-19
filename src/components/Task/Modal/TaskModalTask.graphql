@@ -5,6 +5,7 @@ query GetTaskForTaskModal(
 ) {
   task(accountListId: $accountListId, id: $taskId) {
     id
+    taskPhase
     activityType
     subject
     location

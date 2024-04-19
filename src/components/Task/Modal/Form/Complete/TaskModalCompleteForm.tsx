@@ -102,9 +102,7 @@ const TaskModalCompleteForm = ({
   const { enqueueSnackbar } = useSnackbar();
 
   // TODO - Change this to Task Type when Caleb Alldrin has created it.
-  // Remove PhaseTypeEnum.appointment
-  // Replace with Task Type
-  const { phaseData } = useGetPhaseData();
+  const { phaseData } = useGetPhaseData(task?.taskPhase);
 
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],

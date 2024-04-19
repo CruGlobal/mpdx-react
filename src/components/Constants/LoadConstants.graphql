@@ -59,6 +59,7 @@ query LoadConstants {
       value
     }
     phases {
+      id
       tasks {
         id
         value

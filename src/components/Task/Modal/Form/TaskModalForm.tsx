@@ -150,10 +150,7 @@ const TaskModalForm = ({
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
-  // TODO - Change this to Task Type when Caleb Alldrin has created it.
-  // Remove PhaseTypeEnum.appointment
-  // Replace with Task Type
-  const { phaseData } = useGetPhaseData();
+  const { phaseData } = useGetPhaseData(task?.taskPhase);
 
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();

@@ -19,7 +19,10 @@ const phaseFromActivity = (
     return null;
   }
 
-  return phases.find((phase) => phase.name === activity.toLowerCase()) ?? null;
+  return (
+    phases.find((phase) => phase.id.toLowerCase() === activity.toLowerCase()) ??
+    null
+  );
 };
 
 type GetPhaseData = {
@@ -39,13 +42,14 @@ export const useGetPhaseData = (
     setPhaseData(phaseFromActivity(activity, constants));
   }, []);
 
-  constants?.phases;
-
   return { phaseData, setPhaseId };
 };
 
 // TODO - Replace this with actual type
-export type TaskPhase = { __typename?: 'Phase' } & Pick<Phase, 'name'> & {
+export type TaskPhase = { __typename?: 'Phase' } & Pick<
+  Phase,
+  'id' | 'name'
+> & {
     tasks?: Maybe<Array<IdValue>>;
     results?: Maybe<
       { __typename?: 'Result' } & {
