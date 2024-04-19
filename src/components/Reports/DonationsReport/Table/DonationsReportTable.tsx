@@ -21,6 +21,7 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import {
   DynamicEditDonationModal,
   preloadEditDonationModal,
@@ -190,6 +191,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
       <Link
         underline="hover"
         onClick={() => row.contactId && onSelectContact(row.contactId)}
+        onMouseEnter={preloadContactsRightPanel}
       >
         {row.donorAccountName}
       </Link>
