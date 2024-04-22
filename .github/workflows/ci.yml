@@ -141,8 +141,8 @@ jobs:
           secrets: '{"JWT_SECRET":"JWT_SECRET","OKTA_CLIENT_SECRET":"OKTA_CLIENT_SECRET"}'
       - name: Analyze bundle sizes
         uses: canac/actions-next-bundle-analyzer@dynamic-imports
-        with:
-          create-issue: false
+        # with:
+        #   create-issue: false
         env:
           # This secret is automatically injected by GitHub
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
