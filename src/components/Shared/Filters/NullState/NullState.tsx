@@ -4,6 +4,7 @@ import Icon from '@mdi/react';
 import { Box, Button, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { preloadCreateContact } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
@@ -26,7 +27,7 @@ const CreateButton: React.FC<CreateButtonProps> = ({ page }) => {
 
   const handleCreateClick = () => {
     if (page === 'task') {
-      openTaskModal({ view: 'add' });
+      openTaskModal({ view: TaskModalEnum.Add });
     } else {
       setContactsDialogOpen(true);
     }
@@ -34,7 +35,7 @@ const CreateButton: React.FC<CreateButtonProps> = ({ page }) => {
 
   const handleCreateHover = () => {
     if (page === 'task') {
-      preloadTaskModal('add');
+      preloadTaskModal(TaskModalEnum.Add);
     } else {
       preloadCreateContact();
     }

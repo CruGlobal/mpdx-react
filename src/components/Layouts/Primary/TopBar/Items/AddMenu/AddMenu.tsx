@@ -8,6 +8,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import { Box, IconButton, ListItemText, Menu, MenuItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import useTaskModal from '../../../../../../hooks/useTaskModal';
 import Modal from '../../../../../common/Modal/Modal';
@@ -224,19 +225,19 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       text: 'Add Task',
       icon: <ListIcon />,
       onClick: () => {
-        openTaskModal({ view: 'add' });
+        openTaskModal({ view: TaskModalEnum.Add });
         setAnchorEl(undefined);
       },
-      onMouseEnter: () => preloadTaskModal('add'),
+      onMouseEnter: () => preloadTaskModal(TaskModalEnum.Add),
     },
     {
       text: 'Log Task',
       icon: <EditIcon />,
       onClick: () => {
-        openTaskModal({ view: 'log' });
+        openTaskModal({ view: TaskModalEnum.Log });
         setAnchorEl(undefined);
       },
-      onMouseEnter: () => preloadTaskModal('log'),
+      onMouseEnter: () => preloadTaskModal(TaskModalEnum.Log),
     },
   ];
 

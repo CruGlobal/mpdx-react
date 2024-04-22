@@ -9,6 +9,7 @@ import {
   AddMenuItemsEnum,
   renderDialog,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import useTaskModal from 'src/hooks/useTaskModal';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
@@ -55,10 +56,10 @@ const AccountListIdPage = ({
         setDialogOpen(true);
         break;
       case 'AddTask':
-        openTaskModal({ view: 'add' });
+        openTaskModal({ view: TaskModalEnum.Add });
         break;
       case 'AddLogTask':
-        openTaskModal({ view: 'log' });
+        openTaskModal({ view: TaskModalEnum.Log });
         break;
     }
   }, [modal]);

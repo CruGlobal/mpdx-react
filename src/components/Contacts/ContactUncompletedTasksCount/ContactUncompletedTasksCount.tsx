@@ -3,6 +3,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useTaskModal from 'src/hooks/useTaskModal';
 
 interface ContactUncompletedTasksCountProps {
@@ -29,13 +30,13 @@ export const ContactUncompletedTasksCount: React.FC<
         titleAccess={t('Log Task')}
         onClick={() =>
           openTaskModal({
-            view: 'log',
+            view: TaskModalEnum.Log,
             defaultValues: {
               contactIds: [contactId],
             },
           })
         }
-        onMouseEnter={() => preloadTaskModal('log')}
+        onMouseEnter={() => preloadTaskModal(TaskModalEnum.Log)}
       />
       <Box ml={2}>
         <Typography

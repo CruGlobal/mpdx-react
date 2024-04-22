@@ -50,6 +50,7 @@ import {
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import theme from '../../../../theme';
 import { DateTimeFieldPair } from '../../../common/DateTimePickers/DateTimeFieldPair';
+import { TaskModalEnum } from '../TaskModal';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from './Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
@@ -198,7 +199,7 @@ const TaskModalForm = ({
     onClose();
     if (attributes.nextAction && attributes.nextAction !== task?.nextAction) {
       openTaskModal({
-        view: 'add',
+        view: TaskModalEnum.Add,
         defaultValues: {
           subject: attributes.subject,
           activityType: attributes.nextAction,
