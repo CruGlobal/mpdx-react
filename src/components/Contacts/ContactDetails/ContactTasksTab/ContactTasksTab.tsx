@@ -9,6 +9,7 @@ import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -161,11 +162,11 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
             <TaskButton
               onClick={() =>
                 openTaskModal({
-                  view: 'add',
+                  view: TaskModalEnum.Add,
                   defaultValues: { contactIds: [contactId] },
                 })
               }
-              onMouseEnter={() => preloadTaskModal('add')}
+              onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
             >
               <AddTaskButtonIcon />
               <TaskButtonText>{t('add task')}</TaskButtonText>
@@ -173,14 +174,14 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
             <TaskButton
               onClick={() =>
                 openTaskModal({
-                  view: 'log',
+                  view: TaskModalEnum.Log,
                   defaultValues: {
                     completedAt: DateTime.local().toISO(),
                     contactIds: [contactId],
                   },
                 })
               }
-              onMouseEnter={() => preloadTaskModal('log')}
+              onMouseEnter={() => preloadTaskModal(TaskModalEnum.Log)}
             >
               <LogTaskButtonIcon />
               <TaskButtonText>{t('log task')}</TaskButtonText>

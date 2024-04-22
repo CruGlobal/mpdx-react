@@ -38,6 +38,7 @@ import {
   DynamicMassActionsRemoveTagsModal,
   preloadMassActionsRemoveTagsModal,
 } from 'src/components/Contacts/MassActions/RemoveTags/DynamicMassActionsRemoveTagsModal';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useAccountListId } from '../../../hooks/useAccountListId';
@@ -193,12 +194,12 @@ export const ContactsMassActionsDropdown: React.FC<
                 <MenuItem
                   onClick={() => {
                     openTaskModal({
-                      view: 'add',
+                      view: TaskModalEnum.Add,
                       defaultValues: { contactIds: selectedIds },
                     });
                     handleClose();
                   }}
-                  onMouseEnter={() => preloadTaskModal('add')}
+                  onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
                 >
                   <ListItemText>{t('Add Task')}</ListItemText>
                 </MenuItem>
@@ -206,12 +207,12 @@ export const ContactsMassActionsDropdown: React.FC<
                   divider
                   onClick={() => {
                     openTaskModal({
-                      view: 'log',
+                      view: TaskModalEnum.Log,
                       defaultValues: { contactIds: selectedIds },
                     });
                     handleClose();
                   }}
-                  onMouseEnter={() => preloadTaskModal('log')}
+                  onMouseEnter={() => preloadTaskModal(TaskModalEnum.Log)}
                 >
                   <ListItemText>{t('Log Task')}</ListItemText>
                 </MenuItem>

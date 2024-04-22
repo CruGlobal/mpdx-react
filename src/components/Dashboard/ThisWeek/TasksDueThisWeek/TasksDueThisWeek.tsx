@@ -19,6 +19,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -96,7 +97,7 @@ const TasksDueThisWeek = ({
   const handleClick = ({
     id: taskId,
   }: GetThisWeekQuery['dueTasks']['nodes'][0]): void => {
-    openTaskModal({ taskId, view: 'edit' });
+    openTaskModal({ taskId, view: TaskModalEnum.Edit });
   };
 
   return (
@@ -156,7 +157,7 @@ const TasksDueThisWeek = ({
                     button
                     data-testid={`TasksDueThisWeekListItem-${task.id}`}
                     onClick={(): void => handleClick(task)}
-                    onMouseEnter={() => preloadTaskModal('edit')}
+                    onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
                   >
                     <ListItemText
                       disableTypography={true}

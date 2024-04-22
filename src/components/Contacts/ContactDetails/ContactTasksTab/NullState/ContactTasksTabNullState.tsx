@@ -5,6 +5,7 @@ import { Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { NullStateBox } from 'src/components/Shared/Filters/NullState/NullStateBox';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useTaskModal from 'src/hooks/useTaskModal';
 
 const AddTaskButton = styled(Button)(({ theme }) => ({
@@ -39,11 +40,11 @@ export const ContactTasksTabNullState: React.FC<
         variant="contained"
         onClick={() =>
           openTaskModal({
-            view: 'add',
+            view: TaskModalEnum.Add,
             defaultValues: { contactIds: [contactId] },
           })
         }
-        onMouseEnter={() => preloadTaskModal('add')}
+        onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
       >
         {t('Add New Task')}
       </AddTaskButton>

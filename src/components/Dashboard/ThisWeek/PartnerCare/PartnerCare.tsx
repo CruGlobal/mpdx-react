@@ -25,6 +25,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { Contact, PersonWithParentContact } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -148,7 +149,7 @@ const PartnerCare = ({
   const handleClick = ({
     id: taskId,
   }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
-    openTaskModal({ taskId, view: 'edit' });
+    openTaskModal({ taskId, view: TaskModalEnum.Edit });
   };
 
   const handleChange = (
@@ -164,7 +165,7 @@ const PartnerCare = ({
       GetThisWeekQuery['reportsPeopleWithBirthdays']['periods'][0]['people'][0],
   ) => {
     openTaskModal({
-      view: 'add',
+      view: TaskModalEnum.Add,
       defaultValues: {
         contactIds: [person.parentContact.id],
         subject:
@@ -178,7 +179,11 @@ const PartnerCare = ({
   const handleCompleteClick = ({
     id: taskId,
   }: GetThisWeekQuery['prayerRequestTasks']['nodes'][0]): void => {
-    openTaskModal({ taskId, showCompleteForm: true, view: 'complete' });
+    openTaskModal({
+      taskId,
+      showCompleteForm: true,
+      view: TaskModalEnum.Complete,
+    });
   };
 
   const mergedBirthdays =
@@ -467,7 +472,9 @@ const PartnerCare = ({
                                 person,
                               )
                             }
-                            onMouseEnter={() => preloadTaskModal('add')}
+                            onMouseEnter={() =>
+                              preloadTaskModal(TaskModalEnum.Add)
+                            }
                           >
                             <Brightness1Outlined name="Circle Icon" />
                             <AddHoverIcon name="Add Icon" />
