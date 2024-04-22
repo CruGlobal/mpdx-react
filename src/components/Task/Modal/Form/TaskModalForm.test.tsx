@@ -9,7 +9,7 @@ import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { ActivityTypeEnum } from 'src/graphql/types.generated';
+import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
@@ -48,7 +48,8 @@ describe('TaskModalForm', () => {
   };
 
   const mockCompletedTask = {
-    activityType: ActivityTypeEnum.Email,
+    taskPhase: PhaseEnum.Appointment,
+    activityType: ActivityTypeEnum.AppointmentInPerson,
     contacts: {
       nodes: [],
     },
@@ -404,7 +405,7 @@ describe('TaskModalForm', () => {
         view: 'add',
         defaultValues: {
           subject: mockCompletedTask.subject,
-          activityType: ActivityTypeEnum.Appointment,
+          activityType: ActivityTypeEnum.AppointmentInPerson,
           contactIds: [],
           tagList: [],
         },

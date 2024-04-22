@@ -18,7 +18,6 @@ const phaseFromActivity = (
   if (!activity || !phases) {
     return null;
   }
-
   return (
     phases.find((phase) => phase.id.toLowerCase() === activity.toLowerCase()) ??
     null

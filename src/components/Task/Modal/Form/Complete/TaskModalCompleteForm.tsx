@@ -201,9 +201,10 @@ const TaskModalCompleteForm = ({
     [phaseData, resultSelected],
   );
 
-  const availableNextActions = task.activityType
-    ? possibleNextActions(task.activityType)
-    : [];
+  const availableNextActions = useMemo(
+    () => possibleNextActions(phaseData, resultSelected),
+    [phaseData, resultSelected],
+  );
 
   const phaseTags = useMemo(
     () =>

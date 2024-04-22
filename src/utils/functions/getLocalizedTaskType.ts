@@ -68,5 +68,7 @@ export const getLocalizedTaskType = (
       return t('Connect In Person For Cultivation');
     case ActivityTypeEnum.PartnerCareToDo:
       return t('To Do');
+    case ActivityTypeEnum.VideoCall:
+      return t('Video Call');
   }
 };

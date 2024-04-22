@@ -43,6 +43,7 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
+import { NewResultEnum } from 'src/utils/contacts/getContactPhaseDataMock';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
@@ -123,7 +124,13 @@ const TaskModalLogForm = ({
   const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
   // TODO replace with ResultEnum when available
-  const [resultSelected, setResultSelected] = useState<ResultEnum | null>(null);
+  const [resultSelected, setResultSelected] = useState<
+    ResultEnum | NewResultEnum | null
+  >(null);
+
+  const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
+    null,
+  );
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
@@ -235,15 +242,18 @@ const TaskModalLogForm = ({
     setPhaseId(phase);
     setSelectedSuggestedTags([]);
   };
-
   const availableResults = useMemo(
     () => possibleResults(phaseData),
     [phaseData],
   );
-
   const possiblePartnerStatusMemo = useMemo(
     () => possiblePartnerStatus(phaseData, resultSelected),
     [phaseData, resultSelected],
+  );
+
+  const nextActions = useMemo(
+    () => possibleNextActions(phaseData, resultSelected, actionSelected),
+    [phaseData, resultSelected, actionSelected],
   );
 
   const phaseTags = useMemo(
@@ -326,13 +336,7 @@ const TaskModalLogForm = ({
                   phaseType={phaseData?.id}
                   onChange={(activityType) => {
                     setFieldValue('activityType', activityType);
-                    setFieldValue(
-                      'nextAction',
-                      activityType &&
-                        possibleNextActions(activityType).includes(activityType)
-                        ? activityType
-                        : null,
-                    );
+                    setActionSelected(activityType);
                   }}
                 />
               </Grid>
@@ -358,7 +362,7 @@ const TaskModalLogForm = ({
                       value={result}
                       onChange={(e) => {
                         setFieldValue('result', e.target.value);
-                        setResultSelected(e.target.value as ResultEnum);
+                        setResultSelected(e.target.value as NewResultEnum);
                       }}
                     >
                       {availableResults.map((result) => (
@@ -495,7 +499,7 @@ const TaskModalLogForm = ({
                         {activityType && (
                           <Grid item xs={12}>
                             <ActivityTypeAutocomplete
-                              options={possibleNextActions(activityType)}
+                              options={nextActions}
                               label={t('Next Action')}
                               value={nextAction}
                               onChange={(nextAction) =>

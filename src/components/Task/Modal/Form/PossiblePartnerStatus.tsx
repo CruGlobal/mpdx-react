@@ -13,7 +13,7 @@ type PossiblePartnerStatus = {
 
 export const possiblePartnerStatus = (
   phaseData: TaskPhase | null,
-  resultName: ResultEnum | NewResultEnum | null,
+  resultName: (ResultEnum | NewResultEnum) | null,
 ): PossiblePartnerStatus | null => {
   if (!phaseData || !resultName) return null;
 
