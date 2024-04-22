@@ -25,15 +25,15 @@ import {
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import AnimatedCard from 'src/components/AnimatedCard';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { Contact, PersonWithParentContact } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
+import illustration4 from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
+import illustration7 from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
+import { dayMonthFormat, numberFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
-import illustration7 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-7.svg';
-import { dayMonthFormat, numberFormat } from '../../../../lib/intlFormat';
-import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const CardContainer = styled(AnimatedCard)(({ theme }) => ({

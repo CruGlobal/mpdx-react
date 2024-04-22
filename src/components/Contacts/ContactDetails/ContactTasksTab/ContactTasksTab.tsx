@@ -10,11 +10,11 @@ import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { useMassSelection } from '../../../../hooks/useMassSelection';
-import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import { useContactTasksTabQuery } from './ContactTasksTab.generated';
 import { ContactTasksTabNullState } from './NullState/ContactTasksTabNullState';
