@@ -28,7 +28,7 @@ import {
 import { PersonCreateInput } from 'src/graphql/types.generated';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
-import { DynamicContactsRightPanel } from './DynamicCreateMultipleContactsFieldArray';
+import { DynamicCreateMultipleContactsFieldArray } from './DynamicCreateMultipleContactsFieldArray';
 
 const InputCell = styled(TableCell)(() => ({
   flex: 1,
@@ -255,7 +255,7 @@ export const CreateMultipleContacts = ({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <DynamicContactsRightPanel
+                  <DynamicCreateMultipleContactsFieldArray
                     t={t}
                     setFieldValue={setFieldValue}
                     contacts={contacts}
