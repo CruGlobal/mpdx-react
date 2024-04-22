@@ -156,7 +156,7 @@ describe('LogNewsletter', () => {
             mocks={[
               createNewsletterTaskMutationMock(
                 'task-1',
-                ActivityTypeEnum.NewsletterPhysical,
+                ActivityTypeEnum.PartnerCarePhysicalNewsletter,
               ),
             ]}
           >
@@ -190,11 +190,11 @@ describe('LogNewsletter', () => {
           mocks={[
             createNewsletterTaskMutationMock(
               'task-1',
-              ActivityTypeEnum.NewsletterPhysical,
+              ActivityTypeEnum.PartnerCarePhysicalNewsletter,
             ),
             createNewsletterTaskMutationMock(
               'task-2',
-              ActivityTypeEnum.NewsletterEmail,
+              ActivityTypeEnum.PartnerCareDigitalNewsletter,
             ),
           ]}
         >

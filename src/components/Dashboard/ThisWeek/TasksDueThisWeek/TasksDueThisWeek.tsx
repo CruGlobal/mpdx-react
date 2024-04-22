@@ -23,7 +23,7 @@ import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { numberFormat } from 'src/lib/intlFormat/intlFormat';
-import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import AnimatedCard from '../../../AnimatedCard';
 import TaskStatus from '../../../Task/Status';
@@ -88,7 +88,7 @@ const TasksDueThisWeek = ({
 
   const translatedActivityType = (type: ActivityTypeEnum): string => {
     return (
-      activityTypes?.find(({ id }) => id === constantIdFromActivityType(type))
+      activityTypes?.find(({ id }) => id === getLocalizedTaskType(t, type))
         ?.value ?? ''
     );
   };

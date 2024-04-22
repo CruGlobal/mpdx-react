@@ -37,9 +37,9 @@ export interface ContactFlowOption {
 }
 
 const taskStatuses: { [key: string]: ActivityTypeEnum } = {
-  APPOINTMENT_SCHEDULED: ActivityTypeEnum.Appointment,
-  CONTACT_FOR_APPOINTMENT: ActivityTypeEnum.Call,
-  CALL_FOR_DECISION: ActivityTypeEnum.Call,
+  APPOINTMENT_SCHEDULED: ActivityTypeEnum.AppointmentInPerson,
+  CONTACT_FOR_APPOINTMENT: ActivityTypeEnum.InitiationPhoneCall,
+  CALL_FOR_DECISION: ActivityTypeEnum.FollowUpPhoneCall,
 };
 
 export const colorMap: { [key: string]: string } = {
