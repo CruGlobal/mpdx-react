@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import useTaskModal from '../../../hooks/useTaskModal';
 import theme from '../../../theme';
+import { TaskModalEnum } from '../Modal/TaskModal';
 import TaskStatus from '.';
 
 jest.mock('../../../hooks/useTaskModal');
@@ -67,7 +68,7 @@ describe('TaskStatus', () => {
     userEvent.click(getByRole('button'));
     expect(openTaskModal).toHaveBeenCalledWith({
       taskId: 'task-1',
-      view: 'complete',
+      view: TaskModalEnum.Complete,
     });
   });
 });

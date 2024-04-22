@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { fireEvent, render } from '__tests__/util/testingLibraryReactMock';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
@@ -196,7 +197,7 @@ describe('PartnerCare', () => {
     userEvent.click(task1Element);
     expect(openTaskModal).toHaveBeenCalledWith({
       taskId: 'task_1',
-      view: 'edit',
+      view: TaskModalEnum.Edit,
     });
     expect(getByTestId('PartnerCarePrayerListItem-task_2').textContent).toEqual(
       'Roger Parker, Sarah Parkeron the boat to see uncle johnny',
@@ -242,7 +243,7 @@ describe('PartnerCare', () => {
     expect(openTaskModal).toHaveBeenCalledWith({
       taskId: 'task_1',
       showCompleteForm: true,
-      view: 'complete',
+      view: TaskModalEnum.Complete,
     });
   });
 
@@ -270,7 +271,7 @@ describe('PartnerCare', () => {
       queryAllByRole('button', { hidden: true, name: 'Complete' })[0],
     );
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'add',
+      view: TaskModalEnum.Add,
       defaultValues: {
         contactIds: ['contact'],
         subject: "John Doe's Birthday",
@@ -300,7 +301,7 @@ describe('PartnerCare', () => {
       queryAllByRole('button', { hidden: true, name: 'Complete' })[2],
     );
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'add',
+      view: TaskModalEnum.Add,
       defaultValues: {
         contactIds: ['contact'],
         subject: "John and Sarah, Doe's Anniversary",
