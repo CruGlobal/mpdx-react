@@ -40,6 +40,7 @@ import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
+import { TaskModalEnum } from '../../TaskModal';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
 import { AssigneeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
@@ -138,7 +139,7 @@ const TaskModalLogForm = ({
     onClose();
     if (attributes.nextAction) {
       openTaskModal({
-        view: 'add',
+        view: TaskModalEnum.Add,
         defaultValues: {
           subject: attributes.subject,
           activityType: attributes.nextAction,
