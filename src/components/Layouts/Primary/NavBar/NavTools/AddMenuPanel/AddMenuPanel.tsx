@@ -11,11 +11,11 @@ import {
   AddMenuItemsEnum,
   renderDialog,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import { preloadAddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
+import { preloadCreateContact } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
+import { preloadCreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { preloadAddDonation } from '../../../TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
-import { preloadCreateContact } from '../../../TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
-import { preloadCreateMultipleContacts } from '../../../TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { LeafButton, LeafListItem, Title } from '../../StyledComponents';
 
 type MenuContent = {

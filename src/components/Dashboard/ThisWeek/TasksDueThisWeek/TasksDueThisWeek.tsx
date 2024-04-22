@@ -18,16 +18,16 @@ import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import AnimatedCard from 'src/components/AnimatedCard';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import TaskStatus from 'src/components/Task/Status';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
+import illustration8 from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import { numberFormat } from 'src/lib/intlFormat';
 import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
-import illustration8 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
-import AnimatedCard from '../../../AnimatedCard';
-import TaskStatus from '../../../Task/Status';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({

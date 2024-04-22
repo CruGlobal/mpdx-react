@@ -23,9 +23,9 @@ import {
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import Modal from 'src/components/common/Modal/Modal';
 import { StatusEnum } from 'src/graphql/types.generated';
-import useTaskModal from '../../../../../hooks/useTaskModal';
-import Modal from '../../../../common/Modal/Modal';
+import useTaskModal from 'src/hooks/useTaskModal';
 import {
   ContactDetailContext,
   ContactDetailsType,

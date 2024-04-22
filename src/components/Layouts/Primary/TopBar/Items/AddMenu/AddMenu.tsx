@@ -9,9 +9,9 @@ import { Box, IconButton, ListItemText, Menu, MenuItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { useAccountListId } from '../../../../../../hooks/useAccountListId';
-import useTaskModal from '../../../../../../hooks/useTaskModal';
-import Modal from '../../../../../common/Modal/Modal';
+import Modal from 'src/components/common/Modal/Modal';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import useTaskModal from 'src/hooks/useTaskModal';
 import {
   DynamicAddDonation,
   preloadAddDonation,
