@@ -55,7 +55,7 @@
     "apollo3-cache-persist": "^0.14.1",
     "clsx": "^1.2.1",
     "dotenv": "^16.0.2",
-    "formidable": "^2.1.1",
+    "formidable": "^3.0.0",
     "formik": "^2.2.9",
     "framer-motion": "^7.3.6",
     "graphql": "^16.6.0",
