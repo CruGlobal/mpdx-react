@@ -37,9 +37,12 @@ export const useGetPhaseData = (
     phaseFromActivity(activityId ?? null, constants),
   );
 
-  const setPhaseId = useCallback((activity) => {
-    setPhaseData(phaseFromActivity(activity, constants));
-  }, []);
+  const setPhaseId = useCallback(
+    (activity) => {
+      setPhaseData(phaseFromActivity(activity, constants));
+    },
+    [constants],
+  );
 
   return { phaseData, setPhaseId };
 };

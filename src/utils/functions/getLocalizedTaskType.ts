@@ -16,9 +16,9 @@ export const getLocalizedTaskType = (
     case ActivityTypeEnum.AppointmentInPerson:
       return t('In Person Appointment');
     case ActivityTypeEnum.AppointmentPhoneCall:
-      return t('In Person Appointment');
-    case ActivityTypeEnum.AppointmentVideoCall:
       return t('Phone Appointment');
+    case ActivityTypeEnum.AppointmentVideoCall:
+      return t('Video Appointment');
 
     case ActivityTypeEnum.FollowUpEmail:
       return t('Email To Follow Up');
@@ -68,7 +68,5 @@ export const getLocalizedTaskType = (
       return t('Connect In Person For Cultivation');
     case ActivityTypeEnum.PartnerCareToDo:
       return t('To Do');
-    case ActivityTypeEnum.VideoCall:
-      return t('Video Call');
   }
 };

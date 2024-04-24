@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { DateTime, Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
@@ -15,6 +16,7 @@ import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutoc
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalForm from './TaskModalForm';
 import {
+  LoadConstants,
   createTasksMutationMock,
   deleteTaskMutationMock,
   updateTaskMutationMock,
@@ -103,6 +105,7 @@ describe('TaskModalForm', () => {
             AssigneeOptions: AssigneeOptionsQuery;
             ContactOptions: ContactOptionsQuery;
             TagOptions: TagOptionsQuery;
+            LoadConstants: LoadConstantsQuery;
           }>
             mocks={{
               AssigneeOptions: {
@@ -130,6 +133,7 @@ describe('TaskModalForm', () => {
                   taskTagList: ['tag-1', 'tag-2'],
                 },
               },
+              LoadConstants,
             }}
             onCall={mutationSpy}
           >
@@ -142,6 +146,12 @@ describe('TaskModalForm', () => {
     expect(queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
 
     userEvent.type(getByRole('textbox', { name: 'Subject' }), 'Do something');
+
+    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+    userEvent.click(getByRole('option', { name: 'Appointment' }));
+
+    userEvent.click(getByRole('combobox', { name: 'Action' }));
+    userEvent.click(getByRole('option', { name: 'In Person Appointment' }));
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
     userEvent.click(await findByRole('option', { name: 'Contact 2' }));
