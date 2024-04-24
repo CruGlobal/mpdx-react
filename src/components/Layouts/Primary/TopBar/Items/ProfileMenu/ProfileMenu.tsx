@@ -201,62 +201,62 @@ const ProfileMenu = (): ReactElement => {
         onClose={handleProfileMenuClose}
         disableRestoreFocus={true}
       >
+        {data && (
+          <MenuItemAccount>
+            <ListItemAvatar>
+              <Avatar>{data.user.firstName?.[0]}</Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={[data.user.firstName, data.user.lastName]
+                .filter(Boolean)
+                .join(' ')}
+              secondary={data.user.keyAccounts[0]?.email}
+            />
+          </MenuItemAccount>
+        )}
+        <Accordion>
+          <AccountListSelectorSummary
+            expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+            data-testid="accountListSelector"
+          >
+            <Typography>
+              {accountListId
+                ? data?.accountLists.nodes.find(
+                    (accountList) => accountList.id === accountListId,
+                  )?.name
+                : t('Account List Selector')}
+            </Typography>
+          </AccountListSelectorSummary>
+          <AccountListSelectorDetails>
+            {data?.accountLists.nodes.map((accountList) => (
+              <StyledMenuItem
+                key={accountList.id}
+                data-testid={`accountListButton-${accountList.id}`}
+                style={{
+                  backgroundColor:
+                    accountListId === accountList.id
+                      ? theme.palette.cruGrayMedium.main
+                      : 'inherit',
+                }}
+                onClick={() =>
+                  router.push({
+                    pathname: accountListId
+                      ? router.pathname
+                      : '/accountLists/[accountListId]/',
+                    query: {
+                      ...queryWithoutContactId,
+                      accountListId: accountList.id,
+                    },
+                  })
+                }
+              >
+                <ListItemText primary={accountList.name} />
+              </StyledMenuItem>
+            ))}
+          </AccountListSelectorDetails>
+        </Accordion>
         {accountListId && (
           <>
-            {data && (
-              <MenuItemAccount>
-                <ListItemAvatar>
-                  <Avatar>{data.user.firstName?.[0]}</Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={[data.user.firstName, data.user.lastName]
-                    .filter(Boolean)
-                    .join(' ')}
-                  secondary={data.user.keyAccounts[0]?.email}
-                />
-              </MenuItemAccount>
-            )}
-            <Accordion>
-              <AccountListSelectorSummary
-                expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-                data-testid="accountListSelector"
-              >
-                <Typography>
-                  {accountListId
-                    ? data?.accountLists.nodes.find(
-                        (accountList) => accountList.id === accountListId,
-                      )?.name
-                    : t('Account List Selector')}
-                </Typography>
-              </AccountListSelectorSummary>
-              <AccountListSelectorDetails>
-                {data?.accountLists.nodes.map((accountList) => (
-                  <StyledMenuItem
-                    key={accountList.id}
-                    data-testid={`accountListButton-${accountList.id}`}
-                    style={{
-                      backgroundColor:
-                        accountListId === accountList.id
-                          ? theme.palette.cruGrayMedium.main
-                          : 'inherit',
-                    }}
-                    onClick={() =>
-                      router.push({
-                        pathname: accountListId
-                          ? router.pathname
-                          : '/accountLists/[accountListId]/',
-                        query: {
-                          ...queryWithoutContactId,
-                          accountListId: accountList.id,
-                        },
-                      })
-                    }
-                  >
-                    <ListItemText primary={accountList.name} />
-                  </StyledMenuItem>
-                ))}
-              </AccountListSelectorDetails>
-            </Accordion>
             <Divider />
             <Link
               href={`/accountLists/${accountListId}/settings/preferences`}
