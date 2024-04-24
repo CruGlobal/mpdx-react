@@ -1,0 +1,46 @@
+name: Amplify Preview
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: gh pr checkout ${{ github.event.issue.number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    needs: prepare
+    if: |
+      github.event.issue.pull_request &&
+      (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'CONTRIBUTOR') &&
+      contains(github.event.comment.body, 'generate preview')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: configure AWS credentials
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE }}
+          output-credentials: true
+      - name: set branchname env
+        id: setenvname
+        run: |
+          # use GITHUB_HEAD_REF that is set to PR source branch
+          echo "setbranchname=$GITHUB_HEAD_REF" >> "$GITHUB_OUTPUT"
+      - name: deploy PR preview
+        uses: yinlinchen/amplify-preview-actions@v1.2
+        with:
+          branch_name: ${{ steps.setenvname.outputs.setbranchname }}
+          amplify_command: deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.creds.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.creds.outputs.aws-secret-access-key }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AmplifyAppId: ${{ secrets.AMPLIFY_APP_ID }}
+          AWS_REGION: 'us-east-1'
