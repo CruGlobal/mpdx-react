@@ -12,36 +12,6 @@ jobs:
       - run: gh pr checkout ${{ github.event.issue.number }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  conditionalone:
-    if: github.event.issue.pull_request
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: check if PR
-        run: |
-          echo "is PR"
-  conditionaltwo:
-    if: github.event.comment.author_association == 'MEMBER'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: check if PR
-        run: echo "is member"
-  conditionalthree:
-    if: github.event.comment.author_association == 'CONTRIBUTOR'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: check if PR
-        run: echo "is contributor"
-  conditionalfour:
-    needs: prepare
-    if: contains(github.event.comment.body, 'generate preview')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: check if PR
-        run: echo "has comment with 'generate preview' in it"
   deploy:
     needs: prepare
     if: |
@@ -62,7 +32,7 @@ jobs:
         id: setenvname
         run: |
           # use GITHUB_HEAD_REF that is set to PR source branch
-          echo "##[set-output name=setbranchname;]$(echo ${GITHUB_HEAD_REF})"
+          echo "setbranchname=$GITHUB_HEAD_REF" >> "$GITHUB_OUTPUT"
       - name: deploy PR preview
         uses: yinlinchen/amplify-preview-actions@v1.2
         with:
