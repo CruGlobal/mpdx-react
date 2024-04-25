@@ -98,7 +98,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.13.0
-      - name: 📦 Install Dependencies
+      - name: 🔍 Check Dependencies
         run: yarn install --immutable --immutable-cache --check-cache
 
   onesky-upload:
