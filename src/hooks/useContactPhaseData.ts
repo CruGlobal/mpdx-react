@@ -1,5 +1,8 @@
 import { useCallback, useState } from 'react';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import {
+  LoadConstantsQuery,
+  useLoadConstantsQuery,
+} from 'src/components/Constants/LoadConstants.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   IdKeyValue,
@@ -9,6 +12,11 @@ import {
   PhaseEnum,
   ResultOption,
 } from 'src/graphql/types.generated';
+
+const { data } = useLoadConstantsQuery({
+  fetchPolicy: 'cache-first',
+});
+const phases = data?.constant?.phases || [];
 
 const phaseFromActivity = (
   activity: PhaseEnum | null,
@@ -67,3 +75,48 @@ export type TaskResultOption = { __typename?: 'ResultOption' } & Pick<
     name: IdValue;
     dbResult?: Maybe<Array<IdKeyValue>>;
   };
+
+// TODO: Decide if we want to use this
+const getOldTaskActionName = (action) => {
+  let oldName = '';
+  const actionName = action.toLowerCase();
+  if (actionName.includes('appointment')) {
+    oldName = 'Appointment';
+  } else if (actionName.includes('phone call')) {
+    oldName = 'Call';
+  } else if (actionName.includes('email')) {
+    oldName = 'Email';
+  } else if (actionName.includes('social')) {
+    oldName = 'Facebook Message';
+  } else if (actionName.includes('prayer')) {
+    oldName = 'Prayer Request';
+  } else if (actionName.includes('person')) {
+    oldName = 'Talk to In Person';
+  } else if (actionName.includes('text')) {
+    oldName = 'Text Message';
+  } else if (actionName.includes('thank')) {
+    oldName = 'Thank';
+  } else if (actionName.includes('to do')) {
+    oldName = 'To Do';
+  } else if (actionName.includes('physical')) {
+    oldName = 'Newsletter - Physical';
+  } else if (actionName.includes('digital')) {
+    oldName = 'Newsletter - Email';
+  } else if (actionName.includes('Initiation - Letter')) {
+    oldName = 'Pre Call Letter';
+  } else if (actionName.includes('appeal')) {
+    oldName = 'Support Letter';
+  }
+  return oldName;
+};
+
+export const taskActionsObject = phases.reduce((acc, phase) => {
+  phase?.tasks?.map((task) => {
+    acc[task?.id as string] = {
+      name: task?.value,
+      phase: phase,
+      oldName: getOldTaskActionName(task?.value),
+    };
+  });
+  return acc;
+}, {});
