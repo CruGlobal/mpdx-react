@@ -69,10 +69,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   setContactDetailsLoaded,
   contactDetailsLoaded,
 }: Props) => {
-  const { data, error } = useGetContactDetailsHeaderQuery({
+  const { data } = useGetContactDetailsHeaderQuery({
     variables: { accountListId, contactId },
   });
-  const loading = !data && !error;
+  const loading = !data;
   const { t } = useTranslation();
 
   const { editModalOpen, setEditModalOpen } = React.useContext(
@@ -91,7 +91,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
       <HeaderBar>
         <ContactAvatar alt={data?.contact.name} src={data?.contact.avatar} />
         <HeaderBarContactWrap>
-          {loading ? (
+          {!data ? (
             <Box data-testid="Skeleton">
               <Skeleton
                 variant="text"
@@ -103,7 +103,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
                 }}
               />
             </Box>
-          ) : data?.contact ? (
+          ) : data.contact ? (
             <>
               <PrimaryContactName data-testid="ContactName" variant="h5">
                 {data.contact.name}
