@@ -1,8 +1,0 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-digest_file='src/graphql/graphql-digest.txt'
-current_hash=`cat $(find . -type f -name "*.graphql") | openssl dgst -sha256`
-if [ ! -e $digest_file ] || [ `cat $digest_file` != "$current_hash" ]; then
-  # Only update the hash if the gql codegen succeeded
-  yarn gql && echo $current_hash > $digest_file
-fi
