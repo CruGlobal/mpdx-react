@@ -239,6 +239,7 @@ const TaskModalLogForm = ({
     setFieldValue('taskType', phase);
     setFieldValue('result', undefined);
     setResultSelected(null);
+    setActionSelected(null);
     setPhaseId(phase);
     setSelectedSuggestedTags([]);
   };
@@ -246,7 +247,7 @@ const TaskModalLogForm = ({
     () => possibleResults(phaseData),
     [phaseData],
   );
-  const possiblePartnerStatusMemo = useMemo(
+  const partnerStatus = useMemo(
     () => possiblePartnerStatus(phaseData, resultSelected),
     [phaseData, resultSelected],
   );
@@ -267,7 +268,7 @@ const TaskModalLogForm = ({
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={async (values) => {
-        await onSubmit(values, possiblePartnerStatusMemo?.dbResult?.id);
+        await onSubmit(values, partnerStatus?.dbResult?.id);
       }}
       validateOnMount
       enableReinitialize
@@ -374,7 +375,7 @@ const TaskModalLogForm = ({
                   </FormControl>
                 </Grid>
               )}
-              {possiblePartnerStatusMemo && (
+              {partnerStatus && (
                 <Grid item>
                   <FormControl fullWidth>
                     <FormControlLabel
@@ -386,8 +387,7 @@ const TaskModalLogForm = ({
                         />
                       }
                       label={t("Change the contact's status to: {{status}}", {
-                        status:
-                          possiblePartnerStatusMemo.suggestedContactStatus,
+                        status: partnerStatus.suggestedContactStatus,
                       })}
                     />
                     {contactIds.length > 1 && (
