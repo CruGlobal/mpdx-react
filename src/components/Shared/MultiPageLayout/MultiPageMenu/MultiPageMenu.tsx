@@ -17,6 +17,7 @@ import { MultiselectFilter } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { Item } from './Item/Item';
+import { useManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
 import { reportNavItems, settingsNavItems } from './MultiPageMenuItems';
 
 export enum NavTypeEnum {
@@ -72,6 +73,12 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
   const navTitle =
     navType === NavTypeEnum.Reports ? t('Reports') : t('Settings');
 
+  const { data: organizations } = useManageOrganizationsAccessQuery({
+    skip: navType === NavTypeEnum.Reports,
+  });
+  const hasOrganizationsAccess =
+    !!organizations?.user.administrativeOrganizations.nodes.length;
+
   const { data } = useGetDesignationAccountsQuery({
     variables: {
       accountListId: accountListId ?? '',
@@ -125,6 +132,12 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
               {navItems.map((item) => {
                 const showItem = useMemo(() => {
                   if (item?.grantedAccess?.length) {
+                    if (
+                      hasOrganizationsAccess &&
+                      ['organizations'].includes(item.id)
+                    ) {
+                      return true;
+                    }
                     if (
                       item.grantedAccess.indexOf('admin') !== -1 &&
                       user.admin
