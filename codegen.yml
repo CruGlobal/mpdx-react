@@ -60,3 +60,4 @@ generates:
 hooks:
   afterAllFileWrite:
     - prettier --write
+    - node deleteStaleFiles.mjs
