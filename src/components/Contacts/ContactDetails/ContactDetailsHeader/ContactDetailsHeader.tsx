@@ -69,9 +69,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   setContactDetailsLoaded,
   contactDetailsLoaded,
 }: Props) => {
-  const { data, loading } = useGetContactDetailsHeaderQuery({
+  const { data, error } = useGetContactDetailsHeaderQuery({
     variables: { accountListId, contactId },
   });
+  const loading = !data && !error;
   const { t } = useTranslation();
 
   const { editModalOpen, setEditModalOpen } = React.useContext(
@@ -165,10 +166,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           />
         </Box>
       </HeaderSectionWrap>
-      {loading || !data ? null : (
+      {data && (
         <EditContactDetailsModal
           accountListId={accountListId}
-          contact={data?.contact}
+          contact={data.contact}
           isOpen={editModalOpen}
           handleClose={() => setEditModalOpen(false)}
         />
