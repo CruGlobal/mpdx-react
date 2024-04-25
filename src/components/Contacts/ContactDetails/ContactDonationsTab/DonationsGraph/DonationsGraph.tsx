@@ -47,7 +47,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { data, loading } = useGetDonationsGraphQuery({
+  const { data, error } = useGetDonationsGraphQuery({
     variables: {
       accountListId: accountListId,
       donorAccountIds: donorAccountIds,
@@ -107,7 +107,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
         </Typography>
       )}
       <GraphContainer fontFamily={theme.typography.fontFamily}>
-        {loading ? (
+        {!data && !error ? (
           <Box style={{ width: '100%' }} role="alert">
             <GraphLoadingPlaceHolder />
             <GraphLoadingPlaceHolder />
