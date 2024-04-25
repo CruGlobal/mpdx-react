@@ -5,14 +5,14 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type ApiOauthSignInMutationVariables = Types.Exact<{
-  accessToken: Types.Scalars['String'];
+  accessToken: Types.Scalars['String']['input'];
 }>;
 
 type ApiOauthSignInMutationPayload = {
   __typename?: 'ApiOauthSignInMutationPayload';
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Types.Maybe<Types.Scalars['String']>;
-  token?: Types.Maybe<Types.Scalars['String']>;
+  clientMutationId?: Types.Maybe<Types.Scalars['String']['input']>;
+  token?: Types.Maybe<Types.Scalars['String']['input']>;
   user?: Types.Maybe<Types.User>;
 };
 
