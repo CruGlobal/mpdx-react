@@ -1,4 +1,3 @@
-overwrite: true
 generates:
   ./src/graphql/types.generated.ts:
     schema:
