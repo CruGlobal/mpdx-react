@@ -12,7 +12,10 @@ if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET env var is not set');
 }
 
-export const returnRedirectUrl = async (req: NextApiRequest) => {
+export const returnRedirectUrl = async (
+  req: NextApiRequest,
+  useImpersonatorToken = false,
+) => {
   const jwtToken = await getToken({
     req,
     secret: process.env.JWT_SECRET as string,
@@ -20,8 +23,13 @@ export const returnRedirectUrl = async (req: NextApiRequest) => {
 
   const path = req.query.path ?? '';
 
-  if (jwtToken?.apiToken && jwtToken?.userID && req.query.auth !== 'true') {
-    const ssrClient = makeSsrClient(jwtToken.apiToken);
+  const apiToken =
+    useImpersonatorToken && jwtToken?.impersonating
+      ? jwtToken?.impersonatorApiToken
+      : jwtToken?.apiToken;
+
+  if (apiToken && jwtToken?.userID && req.query.auth !== 'true') {
+    const ssrClient = makeSsrClient(apiToken);
     const response = await ssrClient.query<
       GetDefaultAccountQuery,
       GetDefaultAccountQueryVariables
@@ -43,18 +51,18 @@ export const returnRedirectUrl = async (req: NextApiRequest) => {
     }
     const url = new URL(`${protocol}://${process.env.REWRITE_DOMAIN}/handoff`);
 
-    url.searchParams.append('accessToken', jwtToken.apiToken);
+    url.searchParams.append('accessToken', apiToken);
     url.searchParams.append('accountListId', defaultAccountID.toString());
     url.searchParams.append('userId', userId.toString());
     url.searchParams.append('path', path.toString());
     return url.href;
-  } else if (jwtToken?.apiToken && req.query.auth === 'true') {
+  } else if (apiToken && req.query.auth === 'true') {
     const url = new URL(
       `https://auth.${process.env.REWRITE_DOMAIN}/${path
         .toString()
         .replace(/^\/+/, '')}`,
     );
-    url.searchParams.append('access_token', jwtToken.apiToken);
+    url.searchParams.append('access_token', apiToken);
     return url.href;
   } else {
     throw new Error('Something went wrong. jwtToken or auth are undefined');
