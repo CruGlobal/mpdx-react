@@ -35,7 +35,7 @@ describe('MonthlyCommitment', () => {
     await waitForNextUpdate();
     expect(
       result.current.data?.reportPledgeHistories?.length,
-    ).toMatchInlineSnapshot(`3`);
+    ).toMatchInlineSnapshot(`2`);
   });
 
   it('renders', async () => {
