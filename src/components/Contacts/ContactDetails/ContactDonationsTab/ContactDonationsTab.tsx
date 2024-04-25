@@ -65,7 +65,7 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
   accountListId,
   contactId,
 }) => {
-  const { data, loading } = useGetContactDonationsQuery({
+  const { data } = useGetContactDonationsQuery({
     variables: {
       accountListId: accountListId,
       contactId: contactId,
@@ -86,7 +86,7 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
   return (
     <ContactDonationsContainer>
       <DonationsGraphContainer>
-        {loading ? (
+        {!data ? (
           <>
             <ContactDonationsLoadingPlaceHolder />
             <ContactDonationsLoadingPlaceHolder />
@@ -95,13 +95,11 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
         ) : (
           <DonationsGraph
             accountListId={accountListId}
-            donorAccountIds={
-              data?.contact.contactDonorAccounts.nodes.map((donor) => {
-                return donor.donorAccount.id;
-              }) ?? []
-            }
+            donorAccountIds={data.contact.contactDonorAccounts.nodes.map(
+              (donor) => donor.donorAccount.id,
+            )}
             convertedCurrency={
-              data?.contact.lastDonation?.amount.convertedCurrency ?? ''
+              data.contact.lastDonation?.amount.convertedCurrency ?? ''
             }
           />
         )}
@@ -123,28 +121,20 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
           </DonationsTabList>
         </DonationsTabContainer>
         <TabPanel value={DonationTabKey.Donations}>
-          {loading ? (
-            <>
-              <ContactDonationsLoadingPlaceHolder />
-              <ContactDonationsLoadingPlaceHolder />
-              <ContactDonationsLoadingPlaceHolder />
-            </>
-          ) : (
-            <ContactDonationsList
-              accountListId={accountListId}
-              contactId={contactId}
-            />
-          )}
+          <ContactDonationsList
+            accountListId={accountListId}
+            contactId={contactId}
+          />
         </TabPanel>
         <TabPanel value={DonationTabKey.PartnershipInfo}>
-          {loading ? (
+          {!data ? (
             <>
               <ContactDonationsLoadingPlaceHolder />
               <ContactDonationsLoadingPlaceHolder />
               <ContactDonationsLoadingPlaceHolder />
             </>
           ) : (
-            <PartnershipInfo contact={data?.contact ?? null} />
+            <PartnershipInfo contact={data.contact} />
           )}
         </TabPanel>
       </TabContext>

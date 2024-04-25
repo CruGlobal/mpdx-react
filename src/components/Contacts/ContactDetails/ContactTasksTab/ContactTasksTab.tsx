@@ -107,7 +107,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       tasksFilter: {
         contactIds: [contactId],
         ...starredFilter,
-        wildcardSearch: searchTerm as string,
+        wildcardSearch: searchTerm,
       },
     },
   });
@@ -116,7 +116,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     () => ({
       contactIds: [contactId],
       ...starredFilter,
-      wildcardSearch: searchTerm as string,
+      wildcardSearch: searchTerm,
     }),
     [starredFilter, searchTerm],
   );
