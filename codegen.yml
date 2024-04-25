@@ -21,6 +21,7 @@ generates:
       - typescript-operations
       - typescript-react-apollo
     config:
+      addDocBlocks: false
       preResolveTypes: false
   ./src/graphql/schema.graphql:
     schema:
