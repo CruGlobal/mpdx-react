@@ -5,8 +5,8 @@ import { ActivityTypeAutocomplete } from './ActivityTypeAutocomplete';
 
 describe('ActivityTypeAutocomplete', () => {
   const options = [
-    ActivityTypeEnum.Call,
-    ActivityTypeEnum.TextMessage,
+    ActivityTypeEnum.InitiationPhoneCall,
+    ActivityTypeEnum.InitiationTextMessage,
     ActivityTypeEnum.None,
   ];
 
@@ -17,7 +17,7 @@ describe('ActivityTypeAutocomplete', () => {
       <ActivityTypeAutocomplete
         options={options}
         label="Type"
-        value={ActivityTypeEnum.Call}
+        value={ActivityTypeEnum.InitiationPhoneCall}
         onChange={onChange}
       />,
     );
@@ -33,7 +33,7 @@ describe('ActivityTypeAutocomplete', () => {
       <ActivityTypeAutocomplete
         options={options}
         label="Type"
-        value={ActivityTypeEnum.Call}
+        value={ActivityTypeEnum.InitiationPhoneCall}
         onChange={onChange}
       />,
     );
@@ -51,7 +51,7 @@ describe('ActivityTypeAutocomplete', () => {
       <ActivityTypeAutocomplete
         options={options}
         label="Type"
-        value={ActivityTypeEnum.Call}
+        value={ActivityTypeEnum.InitiationPhoneCall}
         onChange={onChange}
         preserveNone
       />,
