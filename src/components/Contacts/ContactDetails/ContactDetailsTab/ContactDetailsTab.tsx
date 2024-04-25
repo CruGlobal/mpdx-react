@@ -70,9 +70,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   return (
     <>
       <ContactDetailsTabContainer>
-        {
-          // Tag Section
-        }
+        {/* Tag Section */}
         <ContactDetailHeadingContainer mt={-3}>
           {loading || !data ? (
             <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -85,9 +83,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailHeadingContainer>
         <Divider />
-        {
-          // People Section
-        }
+        {/* People Section */}
         <ContactDetailSectionContainer>
           {loading || !data ? (
             <>
@@ -103,9 +99,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        {
-          // Mailing Section
-        }
+        {/* Mailing Section */}
         <ContactDetailSectionContainer>
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
@@ -126,9 +120,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        {
-          // other Section
-        }
+        {/* Other Section */}
         <ContactDetailSectionContainer>
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
