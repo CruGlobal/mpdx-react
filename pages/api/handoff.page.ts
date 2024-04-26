@@ -23,10 +23,11 @@ export const returnRedirectUrl = async (
 
   const path = req.query.path ?? '';
 
-  const apiToken =
-    useImpersonatorToken && jwtToken?.impersonating
-      ? jwtToken?.impersonatorApiToken
-      : jwtToken?.apiToken;
+  const isImpersonating = !!(useImpersonatorToken && jwtToken?.impersonating);
+
+  const apiToken = isImpersonating
+    ? jwtToken?.impersonatorApiToken
+    : jwtToken?.apiToken;
 
   if (apiToken && jwtToken?.userID && req.query.auth !== 'true') {
     const ssrClient = makeSsrClient(apiToken);
@@ -36,13 +37,17 @@ export const returnRedirectUrl = async (
     >({
       query: GetDefaultAccountDocument,
     });
-    let defaultAccountID = req.query?.accountListId;
-    if (!defaultAccountID) {
-      const {
-        data: { user, accountLists },
-      } = response;
-      defaultAccountID = user?.defaultAccountList || accountLists?.nodes[0]?.id;
-    }
+    const {
+      data: { user, accountLists },
+    } = response;
+
+    const defaultAccountID =
+      isImpersonating && user.defaultAccountList
+        ? user.defaultAccountList
+        : req.query?.accountListId ||
+          user.defaultAccountList ||
+          accountLists?.nodes[0]?.id;
+
     const userId = req.query.userId || jwtToken.userID;
 
     let protocol = 'https';

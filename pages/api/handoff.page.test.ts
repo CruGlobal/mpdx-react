@@ -202,6 +202,7 @@ describe('Handoff', () => {
           jti: 'jti',
         });
 
+        nextApiRequest.query.accountListId = `${accountListId}-1`;
         const redirectUrl = await returnRedirectUrl(nextApiRequest, true);
 
         expect(redirectUrl).toEqual(
