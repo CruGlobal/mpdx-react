@@ -175,7 +175,7 @@
     "glob-stream/glob-parent": "^5.1.2",
     "fast-glob/glob-parent": "^5.1.2",
     "@storybook/theming/deep-object-diff": "^1.1.9",
-    "source-map-resolve/decode-uri-component": "^0.2.1",
+    "source-map-resolve/decode-uri-component": "^0.4.0",
     "openid-client/jose": "^4.9.2",
     "package-json/got": "^11.8.5",
     "http-cache-semantics": "~4.1.1",
