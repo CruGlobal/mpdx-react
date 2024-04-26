@@ -9,6 +9,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import theme from 'src/theme';
 import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
+import { ManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
 
 const accountListId = 'account-list-1';
 const selected = 'salaryCurrency';
@@ -16,6 +17,22 @@ const selected = 'salaryCurrency';
 const router = {
   query: { accountListId },
   isReady: true,
+};
+
+const noOrganizationsAccessMock = {
+  user: {
+    administrativeOrganizations: {
+      nodes: [],
+    },
+  },
+};
+
+const hasOrganizationsAccessMock = {
+  user: {
+    administrativeOrganizations: {
+      nodes: [{ id: '111' }],
+    },
+  },
 };
 
 describe('MultiPageMenu', () => {
@@ -145,6 +162,88 @@ describe('MultiPageMenu', () => {
     ).not.toBeInTheDocument();
   });
 
+  it("hides the organizations links when user isn't admin and manages no organization", async () => {
+    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+      data: {
+        ...session,
+        user: { ...session.user, admin: false, developer: false },
+      },
+      status: 'authenticated',
+      update: () => Promise.resolve(null),
+    });
+
+    const mutationSpy = jest.fn();
+    const { queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            ManageOrganizationsAccess: ManageOrganizationsAccessQuery;
+          }>
+            mocks={{
+              ManageOrganizationsAccess: noOrganizationsAccessMock,
+            }}
+            onCall={mutationSpy}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={jest.fn()}
+              navType={NavTypeEnum.Settings}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+
+    await waitFor(() => {
+      expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+    });
+  });
+
+  it("shows the organizations links when user isn't admin but manages an organization", async () => {
+    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+      data: {
+        ...session,
+        user: { ...session.user, admin: false, developer: false },
+      },
+      status: 'authenticated',
+      update: () => Promise.resolve(null),
+    });
+
+    const mutationSpy = jest.fn();
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            ManageOrganizationsAccess: ManageOrganizationsAccessQuery;
+          }>
+            mocks={{
+              ManageOrganizationsAccess: hasOrganizationsAccessMock,
+            }}
+            onCall={mutationSpy}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={jest.fn()}
+              navType={NavTypeEnum.Settings}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Manage Organizations')).toBeInTheDocument();
+    });
+  });
+
   it('shows the developer tools', async () => {
     (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
       data: {
@@ -159,7 +258,14 @@ describe('MultiPageMenu', () => {
     const { queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider<{
+            ManageOrganizationsAccess: ManageOrganizationsAccessQuery;
+          }>
+            mocks={{
+              ManageOrganizationsAccess: noOrganizationsAccessMock,
+            }}
+            onCall={mutationSpy}
+          >
             <MultiPageMenu
               selectedId={selected}
               isOpen={true}
@@ -200,7 +306,14 @@ describe('MultiPageMenu', () => {
     const { queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider<{
+            ManageOrganizationsAccess: ManageOrganizationsAccessQuery;
+          }>
+            mocks={{
+              ManageOrganizationsAccess: hasOrganizationsAccessMock,
+            }}
+            onCall={mutationSpy}
+          >
             <MultiPageMenu
               selectedId={selected}
               isOpen={true}
