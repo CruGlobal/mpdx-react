@@ -23,10 +23,11 @@ export const returnRedirectUrl = async (
 
   const path = req.query.path ?? '';
 
-  const apiToken =
-    useImpersonatorToken && jwtToken?.impersonating
-      ? jwtToken?.impersonatorApiToken
-      : jwtToken?.apiToken;
+  const isImpersonating = !!(useImpersonatorToken && jwtToken?.impersonating);
+
+  const apiToken = isImpersonating
+    ? jwtToken?.impersonatorApiToken
+    : jwtToken?.apiToken;
 
   if (apiToken && jwtToken?.userID && req.query.auth !== 'true') {
     const ssrClient = makeSsrClient(apiToken);
@@ -36,13 +37,24 @@ export const returnRedirectUrl = async (
     >({
       query: GetDefaultAccountDocument,
     });
-    let defaultAccountID = req.query?.accountListId;
-    if (!defaultAccountID) {
-      const {
-        data: { user, accountLists },
-      } = response;
-      defaultAccountID = user?.defaultAccountList || accountLists?.nodes[0]?.id;
-    }
+    const {
+      data: { user, accountLists },
+    } = response;
+
+    // When impersonating and useImpersonatorToken is set to TRUE
+    // - Fetch GraphQL data with the Impersonators ApiToken
+    // - This allows us to grab their accountListId when sending the impersonator back to the old MPDx
+    // When not impersonating and useImpersonatorToken is set to FALSE
+    // - We fetch the graphQL data with the user's ApiToken
+    // - By default use the accountListId from the request query
+
+    const defaultAccountID =
+      isImpersonating && user.defaultAccountList
+        ? user.defaultAccountList || accountLists?.nodes[0]?.id
+        : req.query?.accountListId ||
+          user.defaultAccountList ||
+          accountLists?.nodes[0]?.id;
+
     const userId = req.query.userId || jwtToken.userID;
 
     let protocol = 'https';

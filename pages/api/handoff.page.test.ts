@@ -206,7 +206,7 @@ describe('Handoff', () => {
         const redirectUrl = await returnRedirectUrl(nextApiRequest, true);
 
         expect(redirectUrl).toEqual(
-          `https://${rewriteDomain}/handoff?accessToken=${impersonatorApiToken}&accountListId=${accountListId}-1&userId=${userID}&path=${queryPath}`,
+          `https://${rewriteDomain}/handoff?accessToken=${impersonatorApiToken}&accountListId=${defaultAccountList}&userId=${userID}&path=${queryPath}`,
         );
       });
     });
