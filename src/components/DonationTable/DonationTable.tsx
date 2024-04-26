@@ -10,6 +10,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
@@ -176,23 +177,32 @@ export const DonationTable: React.FC<DonationTableProps> = ({
 
   const date: RenderCell = ({ row }) => dateFormatShort(row.date, locale);
 
-  const donor: RenderCell = ({ row }) =>
-    onSelectContact ? (
-      <Link
-        underline="hover"
-        onClick={() => row.contactId && onSelectContact(row.contactId)}
-      >
-        {row.donorAccountName}
-      </Link>
-    ) : (
-      row.donorAccountName
-    );
+  const donor: RenderCell = ({ row }) => (
+    <Tooltip title={row.donorAccountName}>
+      {onSelectContact ? (
+        <Link
+          underline="hover"
+          onClick={() => row.contactId && onSelectContact(row.contactId)}
+        >
+          {row.donorAccountName}
+        </Link>
+      ) : (
+        <span>{row.donorAccountName}</span>
+      )}
+    </Tooltip>
+  );
 
   const amount: RenderCell = ({ row }) =>
     currencyFormat(row.convertedAmount, row.currency, locale);
 
   const foreignAmount: RenderCell = ({ row }) =>
     currencyFormat(row.foreignAmount, row.foreignCurrency, locale);
+
+  const designationAccount: RenderCell = ({ row }) => (
+    <Tooltip title={row.designationAccount}>
+      <span>{row.designationAccount}</span>
+    </Tooltip>
+  );
 
   const appeal: RenderCell = ({ row: donation }) => donation.appealName;
 
@@ -243,6 +253,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       headerName: t('Designation'),
       flex: 3,
       minWidth: 200,
+      renderCell: designationAccount,
     },
     {
       field: 'paymentMethod',
