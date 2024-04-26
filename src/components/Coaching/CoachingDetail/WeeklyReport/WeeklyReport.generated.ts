@@ -7,49 +7,75 @@ export type WeeklyReportsQueryVariables = Types.Exact<{
   accountListId: Types.Scalars['ID']['input'];
 }>;
 
-
-export type WeeklyReportsQuery = (
-  { __typename?: 'Query' }
-  & { coachingAnswerSets: Array<(
-    { __typename?: 'CoachingAnswerSet' }
-    & Pick<Types.CoachingAnswerSet, 'id' | 'completedAt'>
-    & { answers: Array<(
-      { __typename?: 'CoachingAnswer' }
-      & Pick<Types.CoachingAnswer, 'id' | 'response'>
-      & { question: (
-        { __typename?: 'CoachingQuestion' }
-        & Pick<Types.CoachingQuestion, 'id' | 'position' | 'prompt'>
-      ) }
-    )> }
-  )> }
-);
-
+export type WeeklyReportsQuery = { __typename?: 'Query' } & {
+  coachingAnswerSets: Array<
+    { __typename?: 'CoachingAnswerSet' } & Pick<
+      Types.CoachingAnswerSet,
+      'id' | 'completedAt'
+    > & {
+        answers: Array<
+          { __typename?: 'CoachingAnswer' } & Pick<
+            Types.CoachingAnswer,
+            'id' | 'response'
+          > & {
+              question: { __typename?: 'CoachingQuestion' } & Pick<
+                Types.CoachingQuestion,
+                'id' | 'position' | 'prompt'
+              >;
+            }
+        >;
+      }
+  >;
+};
 
 export const WeeklyReportsDocument = gql`
-    query WeeklyReports($accountListId: ID!) {
-  coachingAnswerSets(accountListId: $accountListId, completed: true) {
-    id
-    answers {
+  query WeeklyReports($accountListId: ID!) {
+    coachingAnswerSets(accountListId: $accountListId, completed: true) {
       id
-      response
-      question {
+      answers {
         id
-        position
-        prompt
-      }
-    }
-    completedAt
-  }
-}
-    `;
-export function useWeeklyReportsQuery(baseOptions: Apollo.QueryHookOptions<WeeklyReportsQuery, WeeklyReportsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<WeeklyReportsQuery, WeeklyReportsQueryVariables>(WeeklyReportsDocument, options);
-      }
-export function useWeeklyReportsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<WeeklyReportsQuery, WeeklyReportsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<WeeklyReportsQuery, WeeklyReportsQueryVariables>(WeeklyReportsDocument, options);
+        response
+        question {
+          id
+          position
+          prompt
         }
-export type WeeklyReportsQueryHookResult = ReturnType<typeof useWeeklyReportsQuery>;
-export type WeeklyReportsLazyQueryHookResult = ReturnType<typeof useWeeklyReportsLazyQuery>;
-export type WeeklyReportsQueryResult = Apollo.QueryResult<WeeklyReportsQuery, WeeklyReportsQueryVariables>;
+      }
+      completedAt
+    }
+  }
+`;
+export function useWeeklyReportsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    WeeklyReportsQuery,
+    WeeklyReportsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<WeeklyReportsQuery, WeeklyReportsQueryVariables>(
+    WeeklyReportsDocument,
+    options,
+  );
+}
+export function useWeeklyReportsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    WeeklyReportsQuery,
+    WeeklyReportsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<WeeklyReportsQuery, WeeklyReportsQueryVariables>(
+    WeeklyReportsDocument,
+    options,
+  );
+}
+export type WeeklyReportsQueryHookResult = ReturnType<
+  typeof useWeeklyReportsQuery
+>;
+export type WeeklyReportsLazyQueryHookResult = ReturnType<
+  typeof useWeeklyReportsLazyQuery
+>;
+export type WeeklyReportsQueryResult = Apollo.QueryResult<
+  WeeklyReportsQuery,
+  WeeklyReportsQueryVariables
+>;

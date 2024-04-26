@@ -8,35 +8,50 @@ export type ChangePrimaryAppealMutationVariables = Types.Exact<{
   attributes: Types.AppealUpdateInput;
 }>;
 
-
-export type ChangePrimaryAppealMutation = (
-  { __typename?: 'Mutation' }
-  & { setPrimary?: Types.Maybe<(
-    { __typename?: 'AppealUpdateMutationPayload' }
-    & { appeal: (
-      { __typename?: 'Appeal' }
-      & Pick<Types.Appeal, 'id'>
-    ) }
-  )> }
-);
-
+export type ChangePrimaryAppealMutation = { __typename?: 'Mutation' } & {
+  setPrimary?: Types.Maybe<
+    { __typename?: 'AppealUpdateMutationPayload' } & {
+      appeal: { __typename?: 'Appeal' } & Pick<Types.Appeal, 'id'>;
+    }
+  >;
+};
 
 export const ChangePrimaryAppealDocument = gql`
-    mutation ChangePrimaryAppeal($accountListId: ID!, $attributes: AppealUpdateInput!) {
-  setPrimary: updateAppeal(
-    input: {accountListId: $accountListId, attributes: $attributes}
+  mutation ChangePrimaryAppeal(
+    $accountListId: ID!
+    $attributes: AppealUpdateInput!
   ) {
-    appeal {
-      id
+    setPrimary: updateAppeal(
+      input: { accountListId: $accountListId, attributes: $attributes }
+    ) {
+      appeal {
+        id
+      }
     }
   }
+`;
+export type ChangePrimaryAppealMutationFn = Apollo.MutationFunction<
+  ChangePrimaryAppealMutation,
+  ChangePrimaryAppealMutationVariables
+>;
+export function useChangePrimaryAppealMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ChangePrimaryAppealMutation,
+    ChangePrimaryAppealMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ChangePrimaryAppealMutation,
+    ChangePrimaryAppealMutationVariables
+  >(ChangePrimaryAppealDocument, options);
 }
-    `;
-export type ChangePrimaryAppealMutationFn = Apollo.MutationFunction<ChangePrimaryAppealMutation, ChangePrimaryAppealMutationVariables>;
-export function useChangePrimaryAppealMutation(baseOptions?: Apollo.MutationHookOptions<ChangePrimaryAppealMutation, ChangePrimaryAppealMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<ChangePrimaryAppealMutation, ChangePrimaryAppealMutationVariables>(ChangePrimaryAppealDocument, options);
-      }
-export type ChangePrimaryAppealMutationHookResult = ReturnType<typeof useChangePrimaryAppealMutation>;
-export type ChangePrimaryAppealMutationResult = Apollo.MutationResult<ChangePrimaryAppealMutation>;
-export type ChangePrimaryAppealMutationOptions = Apollo.BaseMutationOptions<ChangePrimaryAppealMutation, ChangePrimaryAppealMutationVariables>;
+export type ChangePrimaryAppealMutationHookResult = ReturnType<
+  typeof useChangePrimaryAppealMutation
+>;
+export type ChangePrimaryAppealMutationResult =
+  Apollo.MutationResult<ChangePrimaryAppealMutation>;
+export type ChangePrimaryAppealMutationOptions = Apollo.BaseMutationOptions<
+  ChangePrimaryAppealMutation,
+  ChangePrimaryAppealMutationVariables
+>;

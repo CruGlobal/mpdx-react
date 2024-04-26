@@ -7,23 +7,38 @@ export type CreateExportedContactsMutationVariables = Types.Exact<{
   input: Types.ExportContactsInput;
 }>;
 
-
-export type CreateExportedContactsMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Types.Mutation, 'exportContacts'>
-);
-
+export type CreateExportedContactsMutation = { __typename?: 'Mutation' } & Pick<
+  Types.Mutation,
+  'exportContacts'
+>;
 
 export const CreateExportedContactsDocument = gql`
-    mutation CreateExportedContacts($input: ExportContactsInput!) {
-  exportContacts(input: $input)
+  mutation CreateExportedContacts($input: ExportContactsInput!) {
+    exportContacts(input: $input)
+  }
+`;
+export type CreateExportedContactsMutationFn = Apollo.MutationFunction<
+  CreateExportedContactsMutation,
+  CreateExportedContactsMutationVariables
+>;
+export function useCreateExportedContactsMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateExportedContactsMutation,
+    CreateExportedContactsMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateExportedContactsMutation,
+    CreateExportedContactsMutationVariables
+  >(CreateExportedContactsDocument, options);
 }
-    `;
-export type CreateExportedContactsMutationFn = Apollo.MutationFunction<CreateExportedContactsMutation, CreateExportedContactsMutationVariables>;
-export function useCreateExportedContactsMutation(baseOptions?: Apollo.MutationHookOptions<CreateExportedContactsMutation, CreateExportedContactsMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateExportedContactsMutation, CreateExportedContactsMutationVariables>(CreateExportedContactsDocument, options);
-      }
-export type CreateExportedContactsMutationHookResult = ReturnType<typeof useCreateExportedContactsMutation>;
-export type CreateExportedContactsMutationResult = Apollo.MutationResult<CreateExportedContactsMutation>;
-export type CreateExportedContactsMutationOptions = Apollo.BaseMutationOptions<CreateExportedContactsMutation, CreateExportedContactsMutationVariables>;
+export type CreateExportedContactsMutationHookResult = ReturnType<
+  typeof useCreateExportedContactsMutation
+>;
+export type CreateExportedContactsMutationResult =
+  Apollo.MutationResult<CreateExportedContactsMutation>;
+export type CreateExportedContactsMutationOptions = Apollo.BaseMutationOptions<
+  CreateExportedContactsMutation,
+  CreateExportedContactsMutationVariables
+>;
