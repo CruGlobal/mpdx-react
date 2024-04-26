@@ -86,10 +86,19 @@ describe('StarTaskIconButton', () => {
     );
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('SetContactStarred', {
-        accountListId: 'abc',
-        contactId: '1',
-        starred: true,
+      expect(mutationSpy).toHaveBeenCalledWith({
+        operation: expect.objectContaining({
+          operationName: 'SetContactStarred',
+          variables: { accountListId: 'abc', contactId: '1', starred: true },
+        }),
+        response: {
+          data: {
+            updateContact: {
+              __typename: 'ContactUpdateMutationPayload',
+              contact: { __typename: 'Contact', id: '2418942', starred: true },
+            },
+          },
+        },
       }),
     );
   });
