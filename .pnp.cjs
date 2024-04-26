@@ -1,11 +1,6 @@
 #!/usr/bin/env node
 /* eslint-disable */
-
-try {
-  Object.freeze({}).detectStrictMode = true;
-} catch (error) {
-  throw new Error(`The whole PnP file got strict-mode-ified, which is known to break (Emscripten libraries aren't strict mode). This usually happens when the file goes through Babel.`);
-}
+"use strict";
 
 function $$SETUP_STATE(hydrateRuntimeState, basePath) {
   return hydrateRuntimeState(JSON.parse('{\
@@ -51,7 +46,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@graphql-codegen/typescript-react-apollo", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.3.7"],\
             ["@graphql-codegen/typescript-resolvers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.0.6"],\
             ["@graphql-tools/jest-transform", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.2.2"],\
-            ["@graphql-tools/schema", "virtual:98e8d266ce51117289e7b88e25c26cb2a071a9aec45e99c4976c54697ecd6a18e84c4bb9e52b047573a75fb76b3ba0b7464c8bf97ffc2634c538617637847833#npm:9.0.4"],\
+            ["@graphql-tools/schema", "virtual:546aaab8dd1c4af2cc4174ade931d59f3e81f6ed78332c06f8ea803cf7e91de592a75b2bbd8618fca41c0e34f2e3fca71697a0d6bc54b869e5b7de6551d9c01f#npm:9.0.4"],\
             ["@mdi/js", "npm:7.0.96"],\
             ["@mdi/react", "npm:1.6.1"],\
             ["@mui/icons-material", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.15.14"],\
@@ -112,8 +107,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["full-icu", "npm:1.5.0"],\
             ["glob", "npm:8.0.3"],\
             ["graphql", "npm:16.6.0"],\
-            ["graphql-ergonomock", "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=84aaaf&locator=mpdx-react%40workspace%3A."],\
-            ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
+            ["graphql-ergonomock", "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=4de2a5&locator=mpdx-react%40workspace%3A."],\
+            ["graphql-tag", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6"],\
             ["husky", "npm:8.0.1"],\
             ["i18next", "npm:21.9.2"],\
             ["i18next-browser-languagedetector", "npm:6.1.5"],\
@@ -157,7 +152,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-node", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:10.9.1"],\
             ["tslib", "npm:2.4.0"],\
             ["tss-react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.3"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["url-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.1"],\
             ["uuid", "npm:9.0.0"],\
             ["yup", "npm:0.32.11"]\
@@ -265,11 +260,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:98e8d266ce51117289e7b88e25c26cb2a071a9aec45e99c4976c54697ecd6a18e84c4bb9e52b047573a75fb76b3ba0b7464c8bf97ffc2634c538617637847833#npm:3.6.10", {\
-          "packageLocation": "./.yarn/__virtual__/@apollo-client-virtual-ad3c7be04a/0/cache/@apollo-client-npm-3.6.10-e23cb9caa8-a928492ae4.zip/node_modules/@apollo/client/",\
+        ["virtual:546aaab8dd1c4af2cc4174ade931d59f3e81f6ed78332c06f8ea803cf7e91de592a75b2bbd8618fca41c0e34f2e3fca71697a0d6bc54b869e5b7de6551d9c01f#npm:3.6.10", {\
+          "packageLocation": "./.yarn/__virtual__/@apollo-client-virtual-f9475058fb/0/cache/@apollo-client-npm-3.6.10-e23cb9caa8-a928492ae4.zip/node_modules/@apollo/client/",\
           "packageDependencies": [\
-            ["@apollo/client", "virtual:98e8d266ce51117289e7b88e25c26cb2a071a9aec45e99c4976c54697ecd6a18e84c4bb9e52b047573a75fb76b3ba0b7464c8bf97ffc2634c538617637847833#npm:3.6.10"],\
-            ["@graphql-typed-document-node/core", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:3.1.1"],\
+            ["@apollo/client", "virtual:546aaab8dd1c4af2cc4174ade931d59f3e81f6ed78332c06f8ea803cf7e91de592a75b2bbd8618fca41c0e34f2e3fca71697a0d6bc54b869e5b7de6551d9c01f#npm:3.6.10"],\
+            ["@graphql-typed-document-node/core", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:3.1.1"],\
             ["@types/graphql", null],\
             ["@types/graphql-ws", null],\
             ["@types/react", null],\
@@ -279,7 +274,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@wry/equality", "npm:0.5.3"],\
             ["@wry/trie", "npm:0.3.2"],\
             ["graphql", "npm:16.6.0"],\
-            ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
+            ["graphql-tag", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6"],\
             ["graphql-ws", null],\
             ["hoist-non-react-statics", "npm:3.3.2"],\
             ["optimism", "npm:0.16.1"],\
@@ -310,7 +305,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/__virtual__/@apollo-client-virtual-bc99b96f0f/0/cache/@apollo-client-npm-3.7.1-a80032e019-95bb1f226f.zip/node_modules/@apollo/client/",\
           "packageDependencies": [\
             ["@apollo/client", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.1"],\
-            ["@graphql-typed-document-node/core", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:3.1.1"],\
+            ["@graphql-typed-document-node/core", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:3.1.1"],\
             ["@types/graphql", null],\
             ["@types/graphql-ws", null],\
             ["@types/react", "npm:18.0.21"],\
@@ -320,7 +315,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@wry/equality", "npm:0.5.3"],\
             ["@wry/trie", "npm:0.3.2"],\
             ["graphql", "npm:16.6.0"],\
-            ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
+            ["graphql-tag", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6"],\
             ["graphql-ws", null],\
             ["hoist-non-react-statics", "npm:3.3.2"],\
             ["optimism", "npm:0.16.1"],\
@@ -762,7 +757,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["gensync", "npm:1.0.0-beta.2"],\
             ["json5", "npm:2.2.3"],\
             ["lodash", "npm:4.17.21"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["semver", "npm:5.7.1"],\
             ["source-map", "npm:0.5.7"]\
           ],\
@@ -949,6 +944,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@babel/helper-annotate-as-pure", "npm:7.18.6"],\
             ["@babel/types", "npm:7.18.10"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:7.22.5", {\
+          "packageLocation": "./.yarn/cache/@babel-helper-annotate-as-pure-npm-7.22.5-f38dc8aa1c-53da330f18.zip/node_modules/@babel/helper-annotate-as-pure/",\
+          "packageDependencies": [\
+            ["@babel/helper-annotate-as-pure", "npm:7.22.5"],\
+            ["@babel/types", "npm:7.23.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1140,6 +1143,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
+        ["npm:7.24.4", {\
+          "packageLocation": "./.yarn/cache/@babel-helper-create-class-features-plugin-npm-7.24.4-96c11021da-75b0a51ae1.zip/node_modules/@babel/helper-create-class-features-plugin/",\
+          "packageDependencies": [\
+            ["@babel/helper-create-class-features-plugin", "npm:7.24.4"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
         ["virtual:0d42dbafe4d520f045a653be598347a08811d9830d52ba2731832a8a12e4d04fb6830c538c344da7654493184125a547a8fdd57e48c58d1e9bb93fd9e4f8b920#npm:7.18.9", {\
           "packageLocation": "./.yarn/__virtual__/@babel-helper-create-class-features-plugin-virtual-66975d4512/0/cache/@babel-helper-create-class-features-plugin-npm-7.18.9-3c99e4cac5-020dba79b9.zip/node_modules/@babel/helper-create-class-features-plugin/",\
           "packageDependencies": [\
@@ -1233,6 +1243,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/helper-replace-supers", "npm:7.18.9"],\
             ["@babel/helper-split-export-declaration", "npm:7.18.6"],\
             ["@types/babel__core", null]\
+          ],\
+          "packagePeers": [\
+            "@babel/core",\
+            "@types/babel__core"\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["virtual:cd10674686ef291be70d495c9ec5ecd7d69a363d1cbd5f67526616cf1095014e52e7d24976daa8666e09ed741898156807cbc655c11b51eeec921cf75c20b49e#npm:7.24.4", {\
+          "packageLocation": "./.yarn/__virtual__/@babel-helper-create-class-features-plugin-virtual-f792e849b6/0/cache/@babel-helper-create-class-features-plugin-npm-7.24.4-96c11021da-75b0a51ae1.zip/node_modules/@babel/helper-create-class-features-plugin/",\
+          "packageDependencies": [\
+            ["@babel/helper-create-class-features-plugin", "virtual:cd10674686ef291be70d495c9ec5ecd7d69a363d1cbd5f67526616cf1095014e52e7d24976daa8666e09ed741898156807cbc655c11b51eeec921cf75c20b49e#npm:7.24.4"],\
+            ["@babel/core", "npm:7.19.1"],\
+            ["@babel/helper-annotate-as-pure", "npm:7.22.5"],\
+            ["@babel/helper-environment-visitor", "npm:7.22.20"],\
+            ["@babel/helper-function-name", "npm:7.23.0"],\
+            ["@babel/helper-member-expression-to-functions", "npm:7.23.0"],\
+            ["@babel/helper-optimise-call-expression", "npm:7.22.5"],\
+            ["@babel/helper-replace-supers", "virtual:f792e849b67b72d655873772ca66101408a3630d2023a3d373b899658d84c629b9fbca3a24c6d32b2e922b15f0f2ecef10d2bdd5092583279ac9e9ae8ceec2bb#npm:7.24.1"],\
+            ["@babel/helper-skip-transparent-expression-wrappers", "npm:7.22.5"],\
+            ["@babel/helper-split-export-declaration", "npm:7.22.6"],\
+            ["@types/babel__core", null],\
+            ["semver", "npm:6.3.1"]\
           ],\
           "packagePeers": [\
             "@babel/core",\
@@ -1349,7 +1381,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/babel__core", null],\
             ["debug", "virtual:4758feee42453c0e31b0d2032a7b1362d6b06281699830d2da9a056f2cca72bd2c5cfdb74005fdf03a64876be8eaca2dd7b0fc2dc59d14318badf19cb22ba18e#npm:4.3.4"],\
             ["lodash.debounce", "npm:4.0.8"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["semver", "npm:6.3.0"]\
           ],\
           "packagePeers": [\
@@ -1368,7 +1400,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/babel__core", null],\
             ["debug", "virtual:4758feee42453c0e31b0d2032a7b1362d6b06281699830d2da9a056f2cca72bd2c5cfdb74005fdf03a64876be8eaca2dd7b0fc2dc59d14318badf19cb22ba18e#npm:4.3.4"],\
             ["lodash.debounce", "npm:4.0.8"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["semver", "npm:6.3.0"]\
           ],\
           "packagePeers": [\
@@ -1389,7 +1421,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/babel__core", null],\
             ["debug", "virtual:4758feee42453c0e31b0d2032a7b1362d6b06281699830d2da9a056f2cca72bd2c5cfdb74005fdf03a64876be8eaca2dd7b0fc2dc59d14318badf19cb22ba18e#npm:4.3.4"],\
             ["lodash.debounce", "npm:4.0.8"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["semver", "npm:6.3.0"]\
           ],\
           "packagePeers": [\
@@ -1408,7 +1440,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/babel__core", null],\
             ["debug", "virtual:4758feee42453c0e31b0d2032a7b1362d6b06281699830d2da9a056f2cca72bd2c5cfdb74005fdf03a64876be8eaca2dd7b0fc2dc59d14318badf19cb22ba18e#npm:4.3.4"],\
             ["lodash.debounce", "npm:4.0.8"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["semver", "npm:6.3.0"]\
           ],\
           "packagePeers": [\
@@ -1497,6 +1529,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@babel/helper-member-expression-to-functions", "npm:7.18.9"],\
             ["@babel/types", "npm:7.18.10"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:7.23.0", {\
+          "packageLocation": "./.yarn/cache/@babel-helper-member-expression-to-functions-npm-7.23.0-4eb0647557-4946593613.zip/node_modules/@babel/helper-member-expression-to-functions/",\
+          "packageDependencies": [\
+            ["@babel/helper-member-expression-to-functions", "npm:7.23.0"],\
+            ["@babel/types", "npm:7.23.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1597,6 +1637,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@babel/helper-optimise-call-expression", "npm:7.18.6"],\
             ["@babel/types", "npm:7.18.10"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:7.22.5", {\
+          "packageLocation": "./.yarn/cache/@babel-helper-optimise-call-expression-npm-7.22.5-846964ef82-c70ef6cc6b.zip/node_modules/@babel/helper-optimise-call-expression/",\
+          "packageDependencies": [\
+            ["@babel/helper-optimise-call-expression", "npm:7.22.5"],\
+            ["@babel/types", "npm:7.23.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1715,6 +1763,29 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/types", "npm:7.19.0"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:7.24.1", {\
+          "packageLocation": "./.yarn/cache/@babel-helper-replace-supers-npm-7.24.1-0f96b0a406-c04182c34a.zip/node_modules/@babel/helper-replace-supers/",\
+          "packageDependencies": [\
+            ["@babel/helper-replace-supers", "npm:7.24.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:f792e849b67b72d655873772ca66101408a3630d2023a3d373b899658d84c629b9fbca3a24c6d32b2e922b15f0f2ecef10d2bdd5092583279ac9e9ae8ceec2bb#npm:7.24.1", {\
+          "packageLocation": "./.yarn/__virtual__/@babel-helper-replace-supers-virtual-a48096c22b/0/cache/@babel-helper-replace-supers-npm-7.24.1-0f96b0a406-c04182c34a.zip/node_modules/@babel/helper-replace-supers/",\
+          "packageDependencies": [\
+            ["@babel/helper-replace-supers", "virtual:f792e849b67b72d655873772ca66101408a3630d2023a3d373b899658d84c629b9fbca3a24c6d32b2e922b15f0f2ecef10d2bdd5092583279ac9e9ae8ceec2bb#npm:7.24.1"],\
+            ["@babel/core", "npm:7.19.1"],\
+            ["@babel/helper-environment-visitor", "npm:7.22.20"],\
+            ["@babel/helper-member-expression-to-functions", "npm:7.23.0"],\
+            ["@babel/helper-optimise-call-expression", "npm:7.22.5"],\
+            ["@types/babel__core", null]\
+          ],\
+          "packagePeers": [\
+            "@babel/core",\
+            "@types/babel__core"\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@babel/helper-simple-access", [\
@@ -1749,6 +1820,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@babel/helper-skip-transparent-expression-wrappers", "npm:7.18.9"],\
             ["@babel/types", "npm:7.18.10"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:7.22.5", {\
+          "packageLocation": "./.yarn/cache/@babel-helper-skip-transparent-expression-wrappers-npm-7.22.5-a398428942-1012ef2295.zip/node_modules/@babel/helper-skip-transparent-expression-wrappers/",\
+          "packageDependencies": [\
+            ["@babel/helper-skip-transparent-expression-wrappers", "npm:7.22.5"],\
+            ["@babel/types", "npm:7.23.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -2997,6 +3076,30 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
+        ["npm:7.21.11", {\
+          "packageLocation": "./.yarn/cache/@babel-plugin-proposal-private-property-in-object-npm-7.21.11-d474c5e67a-1b880543bc.zip/node_modules/@babel/plugin-proposal-private-property-in-object/",\
+          "packageDependencies": [\
+            ["@babel/plugin-proposal-private-property-in-object", "npm:7.21.11"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.18.6", {\
+          "packageLocation": "./.yarn/__virtual__/@babel-plugin-proposal-private-property-in-object-virtual-060de7a2b4/0/cache/@babel-plugin-proposal-private-property-in-object-npm-7.18.6-755223e615-c8e56a9729.zip/node_modules/@babel/plugin-proposal-private-property-in-object/",\
+          "packageDependencies": [\
+            ["@babel/plugin-proposal-private-property-in-object", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.18.6"],\
+            ["@babel/core", "npm:7.19.1"],\
+            ["@babel/helper-annotate-as-pure", "npm:7.18.6"],\
+            ["@babel/helper-create-class-features-plugin", "virtual:50248bf3fb27a47673d453c6c55ed396be23152ac4f51947f442593197af6b19bd07eb67747432bc623855bcfc66a8e1980c9139c46f020814d196b58b3f3bde#npm:7.18.9"],\
+            ["@babel/helper-plugin-utils", "npm:7.18.9"],\
+            ["@babel/plugin-syntax-private-property-in-object", "virtual:cd10674686ef291be70d495c9ec5ecd7d69a363d1cbd5f67526616cf1095014e52e7d24976daa8666e09ed741898156807cbc655c11b51eeec921cf75c20b49e#npm:7.14.5"],\
+            ["@types/babel__core", null]\
+          ],\
+          "packagePeers": [\
+            "@babel/core",\
+            "@types/babel__core"\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["virtual:6150cdab729fd502f16005cdedb3a2329071ff84edbacc7873fbc24290afae1fbaf8ddda5f7932cb28e356ee7262a0e06262706a802afd0f3dc005c034ee85bd#npm:7.18.6", {\
           "packageLocation": "./.yarn/__virtual__/@babel-plugin-proposal-private-property-in-object-virtual-834b4c3a1f/0/cache/@babel-plugin-proposal-private-property-in-object-npm-7.18.6-755223e615-c8e56a9729.zip/node_modules/@babel/plugin-proposal-private-property-in-object/",\
           "packageDependencies": [\
@@ -3031,15 +3134,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.6", {\
-          "packageLocation": "./.yarn/__virtual__/@babel-plugin-proposal-private-property-in-object-virtual-e0829e2c52/0/cache/@babel-plugin-proposal-private-property-in-object-npm-7.18.6-755223e615-c8e56a9729.zip/node_modules/@babel/plugin-proposal-private-property-in-object/",\
+        ["virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.21.11", {\
+          "packageLocation": "./.yarn/__virtual__/@babel-plugin-proposal-private-property-in-object-virtual-cd10674686/0/cache/@babel-plugin-proposal-private-property-in-object-npm-7.21.11-d474c5e67a-1b880543bc.zip/node_modules/@babel/plugin-proposal-private-property-in-object/",\
           "packageDependencies": [\
-            ["@babel/plugin-proposal-private-property-in-object", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.6"],\
+            ["@babel/plugin-proposal-private-property-in-object", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.21.11"],\
             ["@babel/core", "npm:7.19.1"],\
             ["@babel/helper-annotate-as-pure", "npm:7.18.6"],\
-            ["@babel/helper-create-class-features-plugin", "virtual:50248bf3fb27a47673d453c6c55ed396be23152ac4f51947f442593197af6b19bd07eb67747432bc623855bcfc66a8e1980c9139c46f020814d196b58b3f3bde#npm:7.18.9"],\
-            ["@babel/helper-plugin-utils", "npm:7.18.9"],\
-            ["@babel/plugin-syntax-private-property-in-object", "virtual:e0829e2c529d271683919de1e32ab7c5b5a56997a93316935950af4edd93d5a003f79f3b37256d5621dc0ad460b75cc873ef9dd38af836ddfb9fea19f735f56b#npm:7.14.5"],\
+            ["@babel/helper-create-class-features-plugin", "virtual:cd10674686ef291be70d495c9ec5ecd7d69a363d1cbd5f67526616cf1095014e52e7d24976daa8666e09ed741898156807cbc655c11b51eeec921cf75c20b49e#npm:7.24.4"],\
+            ["@babel/helper-plugin-utils", "npm:7.24.0"],\
+            ["@babel/plugin-syntax-private-property-in-object", "virtual:cd10674686ef291be70d495c9ec5ecd7d69a363d1cbd5f67526616cf1095014e52e7d24976daa8666e09ed741898156807cbc655c11b51eeec921cf75c20b49e#npm:7.14.5"],\
             ["@types/babel__core", null]\
           ],\
           "packagePeers": [\
@@ -4269,10 +4372,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:e0829e2c529d271683919de1e32ab7c5b5a56997a93316935950af4edd93d5a003f79f3b37256d5621dc0ad460b75cc873ef9dd38af836ddfb9fea19f735f56b#npm:7.14.5", {\
-          "packageLocation": "./.yarn/__virtual__/@babel-plugin-syntax-private-property-in-object-virtual-af249027af/0/cache/@babel-plugin-syntax-private-property-in-object-npm-7.14.5-ee837fdbb2-b317174783.zip/node_modules/@babel/plugin-syntax-private-property-in-object/",\
+        ["virtual:cd10674686ef291be70d495c9ec5ecd7d69a363d1cbd5f67526616cf1095014e52e7d24976daa8666e09ed741898156807cbc655c11b51eeec921cf75c20b49e#npm:7.14.5", {\
+          "packageLocation": "./.yarn/__virtual__/@babel-plugin-syntax-private-property-in-object-virtual-816ac9f632/0/cache/@babel-plugin-syntax-private-property-in-object-npm-7.14.5-ee837fdbb2-b317174783.zip/node_modules/@babel/plugin-syntax-private-property-in-object/",\
           "packageDependencies": [\
-            ["@babel/plugin-syntax-private-property-in-object", "virtual:e0829e2c529d271683919de1e32ab7c5b5a56997a93316935950af4edd93d5a003f79f3b37256d5621dc0ad460b75cc873ef9dd38af836ddfb9fea19f735f56b#npm:7.14.5"],\
+            ["@babel/plugin-syntax-private-property-in-object", "virtual:cd10674686ef291be70d495c9ec5ecd7d69a363d1cbd5f67526616cf1095014e52e7d24976daa8666e09ed741898156807cbc655c11b51eeec921cf75c20b49e#npm:7.14.5"],\
             ["@babel/core", "npm:7.19.1"],\
             ["@babel/helper-plugin-utils", "npm:7.18.9"],\
             ["@types/babel__core", null]\
@@ -6690,7 +6793,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/plugin-proposal-optional-catch-binding", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.18.6"],\
             ["@babel/plugin-proposal-optional-chaining", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.9"],\
             ["@babel/plugin-proposal-private-methods", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.6"],\
-            ["@babel/plugin-proposal-private-property-in-object", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.6"],\
+            ["@babel/plugin-proposal-private-property-in-object", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.18.6"],\
             ["@babel/plugin-proposal-unicode-property-regex", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.18.6"],\
             ["@babel/plugin-syntax-async-generators", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.8.4"],\
             ["@babel/plugin-syntax-class-properties", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.12.13"],\
@@ -6705,7 +6808,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/plugin-syntax-object-rest-spread", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.8.3"],\
             ["@babel/plugin-syntax-optional-catch-binding", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.8.3"],\
             ["@babel/plugin-syntax-optional-chaining", "virtual:f1b9be2bd32eb3b3beaaf3adfee663996b32ac6d7b01d903ffda0c2f4f62c24eb60801df4c2cae9f8aff9aa90dc18f6aafa34e1989064ced2486ae6bb0b2f048#npm:7.8.3"],\
-            ["@babel/plugin-syntax-private-property-in-object", "virtual:e0829e2c529d271683919de1e32ab7c5b5a56997a93316935950af4edd93d5a003f79f3b37256d5621dc0ad460b75cc873ef9dd38af836ddfb9fea19f735f56b#npm:7.14.5"],\
+            ["@babel/plugin-syntax-private-property-in-object", "virtual:cd10674686ef291be70d495c9ec5ecd7d69a363d1cbd5f67526616cf1095014e52e7d24976daa8666e09ed741898156807cbc655c11b51eeec921cf75c20b49e#npm:7.14.5"],\
             ["@babel/plugin-syntax-top-level-await", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.14.5"],\
             ["@babel/plugin-transform-arrow-functions", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.18.6"],\
             ["@babel/plugin-transform-async-to-generator", "virtual:5a5a88c225197a799e318d1b0bf004f3773f3ecf9796f53ccf8b80b087cabee64732dc1603c7b06d018a54be3816a112e633aeaff20665b3475d3712c199a873#npm:7.18.6"],\
@@ -8317,7 +8420,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["auto-bind", "npm:4.0.0"],\
             ["change-case-all", "npm:1.0.14"],\
             ["graphql", "npm:16.6.0"],\
-            ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
+            ["graphql-tag", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6"],\
             ["tslib", "npm:2.4.0"]\
           ],\
           "packagePeers": [\
@@ -8385,7 +8488,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["change-case-all", "npm:1.0.14"],\
             ["dependency-graph", "npm:0.11.0"],\
             ["graphql", "npm:16.6.0"],\
-            ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
+            ["graphql-tag", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6"],\
             ["parse-filepath", "npm:1.0.2"],\
             ["tslib", "npm:2.4.0"]\
           ],\
@@ -8408,7 +8511,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["change-case-all", "npm:1.0.15"],\
             ["dependency-graph", "npm:0.11.0"],\
             ["graphql", "npm:16.6.0"],\
-            ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
+            ["graphql-tag", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6"],\
             ["parse-filepath", "npm:1.0.2"],\
             ["tslib", "npm:2.6.2"]\
           ],\
@@ -8921,13 +9024,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:088acde1b719d2273dba631a8b4fec2226a21c2f3028095d6526522ca65401079ae51cd0b0376a67498e847f6b8951d82630988637773258b5336e6b1a40add2#npm:8.3.6", {\
-          "packageLocation": "./.yarn/__virtual__/@graphql-tools-merge-virtual-b00bff16fc/0/cache/@graphql-tools-merge-npm-8.3.6-ad2d6061ff-3e45ebff0d.zip/node_modules/@graphql-tools/merge/",\
+        ["virtual:25e94323be0451182eece1bebf5ddbc6328ee82d82e589686b2d017f734b4c0e5717766db721d055ad52dfb4f6f59cc63fb53effc82af9ec7de191b19fe3f781#npm:8.3.1", {\
+          "packageLocation": "./.yarn/__virtual__/@graphql-tools-merge-virtual-f9b3e558d9/0/cache/@graphql-tools-merge-npm-8.3.1-d710b86f19-16af6be224.zip/node_modules/@graphql-tools/merge/",\
           "packageDependencies": [\
-            ["@graphql-tools/merge", "virtual:088acde1b719d2273dba631a8b4fec2226a21c2f3028095d6526522ca65401079ae51cd0b0376a67498e847f6b8951d82630988637773258b5336e6b1a40add2#npm:8.3.6"],\
-            ["@graphql-tools/utils", "virtual:088acde1b719d2273dba631a8b4fec2226a21c2f3028095d6526522ca65401079ae51cd0b0376a67498e847f6b8951d82630988637773258b5336e6b1a40add2#npm:8.12.0"],\
+            ["@graphql-tools/merge", "virtual:25e94323be0451182eece1bebf5ddbc6328ee82d82e589686b2d017f734b4c0e5717766db721d055ad52dfb4f6f59cc63fb53effc82af9ec7de191b19fe3f781#npm:8.3.1"],\
+            ["@graphql-tools/utils", "virtual:25e94323be0451182eece1bebf5ddbc6328ee82d82e589686b2d017f734b4c0e5717766db721d055ad52dfb4f6f59cc63fb53effc82af9ec7de191b19fe3f781#npm:8.9.0"],\
             ["@types/graphql", null],\
-            ["graphql", "npm:16.6.0"],\
+            ["graphql", null],\
             ["tslib", "npm:2.4.0"]\
           ],\
           "packagePeers": [\
@@ -8936,13 +9039,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:25e94323be0451182eece1bebf5ddbc6328ee82d82e589686b2d017f734b4c0e5717766db721d055ad52dfb4f6f59cc63fb53effc82af9ec7de191b19fe3f781#npm:8.3.1", {\
-          "packageLocation": "./.yarn/__virtual__/@graphql-tools-merge-virtual-f9b3e558d9/0/cache/@graphql-tools-merge-npm-8.3.1-d710b86f19-16af6be224.zip/node_modules/@graphql-tools/merge/",\
+        ["virtual:2e4a544a4492ddda6228151505fa262b09cd31abb1d0c6e08381bb3101fb52a371acc32d19b109da4ff6c37e00f7b15d31d49b3a0c40fdf7ea7cc9082d5ce910#npm:8.3.6", {\
+          "packageLocation": "./.yarn/__virtual__/@graphql-tools-merge-virtual-6dcd105a43/0/cache/@graphql-tools-merge-npm-8.3.6-ad2d6061ff-3e45ebff0d.zip/node_modules/@graphql-tools/merge/",\
           "packageDependencies": [\
-            ["@graphql-tools/merge", "virtual:25e94323be0451182eece1bebf5ddbc6328ee82d82e589686b2d017f734b4c0e5717766db721d055ad52dfb4f6f59cc63fb53effc82af9ec7de191b19fe3f781#npm:8.3.1"],\
-            ["@graphql-tools/utils", "virtual:25e94323be0451182eece1bebf5ddbc6328ee82d82e589686b2d017f734b4c0e5717766db721d055ad52dfb4f6f59cc63fb53effc82af9ec7de191b19fe3f781#npm:8.9.0"],\
+            ["@graphql-tools/merge", "virtual:2e4a544a4492ddda6228151505fa262b09cd31abb1d0c6e08381bb3101fb52a371acc32d19b109da4ff6c37e00f7b15d31d49b3a0c40fdf7ea7cc9082d5ce910#npm:8.3.6"],\
+            ["@graphql-tools/utils", "virtual:2e4a544a4492ddda6228151505fa262b09cd31abb1d0c6e08381bb3101fb52a371acc32d19b109da4ff6c37e00f7b15d31d49b3a0c40fdf7ea7cc9082d5ce910#npm:8.12.0"],\
             ["@types/graphql", null],\
-            ["graphql", null],\
+            ["graphql", "npm:16.6.0"],\
             ["tslib", "npm:2.4.0"]\
           ],\
           "packagePeers": [\
@@ -9188,12 +9291,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:98e8d266ce51117289e7b88e25c26cb2a071a9aec45e99c4976c54697ecd6a18e84c4bb9e52b047573a75fb76b3ba0b7464c8bf97ffc2634c538617637847833#npm:9.0.4", {\
-          "packageLocation": "./.yarn/__virtual__/@graphql-tools-schema-virtual-088acde1b7/0/cache/@graphql-tools-schema-npm-9.0.4-897a8f53ac-0644ba225f.zip/node_modules/@graphql-tools/schema/",\
+        ["virtual:546aaab8dd1c4af2cc4174ade931d59f3e81f6ed78332c06f8ea803cf7e91de592a75b2bbd8618fca41c0e34f2e3fca71697a0d6bc54b869e5b7de6551d9c01f#npm:9.0.4", {\
+          "packageLocation": "./.yarn/__virtual__/@graphql-tools-schema-virtual-2e4a544a44/0/cache/@graphql-tools-schema-npm-9.0.4-897a8f53ac-0644ba225f.zip/node_modules/@graphql-tools/schema/",\
           "packageDependencies": [\
-            ["@graphql-tools/schema", "virtual:98e8d266ce51117289e7b88e25c26cb2a071a9aec45e99c4976c54697ecd6a18e84c4bb9e52b047573a75fb76b3ba0b7464c8bf97ffc2634c538617637847833#npm:9.0.4"],\
-            ["@graphql-tools/merge", "virtual:088acde1b719d2273dba631a8b4fec2226a21c2f3028095d6526522ca65401079ae51cd0b0376a67498e847f6b8951d82630988637773258b5336e6b1a40add2#npm:8.3.6"],\
-            ["@graphql-tools/utils", "virtual:088acde1b719d2273dba631a8b4fec2226a21c2f3028095d6526522ca65401079ae51cd0b0376a67498e847f6b8951d82630988637773258b5336e6b1a40add2#npm:8.12.0"],\
+            ["@graphql-tools/schema", "virtual:546aaab8dd1c4af2cc4174ade931d59f3e81f6ed78332c06f8ea803cf7e91de592a75b2bbd8618fca41c0e34f2e3fca71697a0d6bc54b869e5b7de6551d9c01f#npm:9.0.4"],\
+            ["@graphql-tools/merge", "virtual:2e4a544a4492ddda6228151505fa262b09cd31abb1d0c6e08381bb3101fb52a371acc32d19b109da4ff6c37e00f7b15d31d49b3a0c40fdf7ea7cc9082d5ce910#npm:8.3.6"],\
+            ["@graphql-tools/utils", "virtual:2e4a544a4492ddda6228151505fa262b09cd31abb1d0c6e08381bb3101fb52a371acc32d19b109da4ff6c37e00f7b15d31d49b3a0c40fdf7ea7cc9082d5ce910#npm:8.12.0"],\
             ["@types/graphql", null],\
             ["graphql", "npm:16.6.0"],\
             ["tslib", "npm:2.4.0"],\
@@ -9294,25 +9397,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:088acde1b719d2273dba631a8b4fec2226a21c2f3028095d6526522ca65401079ae51cd0b0376a67498e847f6b8951d82630988637773258b5336e6b1a40add2#npm:8.12.0", {\
-          "packageLocation": "./.yarn/__virtual__/@graphql-tools-utils-virtual-038099f3d8/0/cache/@graphql-tools-utils-npm-8.12.0-ffa93e9c17-24edc6ba3b.zip/node_modules/@graphql-tools/utils/",\
-          "packageDependencies": [\
-            ["@graphql-tools/utils", "virtual:088acde1b719d2273dba631a8b4fec2226a21c2f3028095d6526522ca65401079ae51cd0b0376a67498e847f6b8951d82630988637773258b5336e6b1a40add2#npm:8.12.0"],\
-            ["@types/graphql", null],\
-            ["graphql", "npm:16.6.0"],\
-            ["tslib", "npm:2.4.0"]\
-          ],\
-          "packagePeers": [\
-            "@types/graphql",\
-            "graphql"\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["virtual:1f0d0eb0cb93c7ed4306e06815f5ed1423e1648dfe7250fd8d7f071e218684795a9e95e112395a3818b94eea58cf0a4721e70768380db0569403e5563f2301ee#npm:9.2.0", {\
           "packageLocation": "./.yarn/__virtual__/@graphql-tools-utils-virtual-1919d5682d/0/cache/@graphql-tools-utils-npm-9.2.0-924077613e-9754f8c6d5.zip/node_modules/@graphql-tools/utils/",\
           "packageDependencies": [\
             ["@graphql-tools/utils", "virtual:1f0d0eb0cb93c7ed4306e06815f5ed1423e1648dfe7250fd8d7f071e218684795a9e95e112395a3818b94eea58cf0a4721e70768380db0569403e5563f2301ee#npm:9.2.0"],\
-            ["@graphql-typed-document-node/core", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:3.1.1"],\
+            ["@graphql-typed-document-node/core", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:3.1.1"],\
             ["@types/graphql", null],\
             ["graphql", "npm:16.6.0"],\
             ["tslib", "npm:2.4.0"]\
@@ -9337,11 +9426,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
+        ["virtual:2e4a544a4492ddda6228151505fa262b09cd31abb1d0c6e08381bb3101fb52a371acc32d19b109da4ff6c37e00f7b15d31d49b3a0c40fdf7ea7cc9082d5ce910#npm:8.12.0", {\
+          "packageLocation": "./.yarn/__virtual__/@graphql-tools-utils-virtual-d7b1fcd130/0/cache/@graphql-tools-utils-npm-8.12.0-ffa93e9c17-24edc6ba3b.zip/node_modules/@graphql-tools/utils/",\
+          "packageDependencies": [\
+            ["@graphql-tools/utils", "virtual:2e4a544a4492ddda6228151505fa262b09cd31abb1d0c6e08381bb3101fb52a371acc32d19b109da4ff6c37e00f7b15d31d49b3a0c40fdf7ea7cc9082d5ce910#npm:8.12.0"],\
+            ["@types/graphql", null],\
+            ["graphql", "npm:16.6.0"],\
+            ["tslib", "npm:2.4.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/graphql",\
+            "graphql"\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["virtual:44d00fbedb82008ff99003ee8be08dbd6369604726a8022cab2fd0a5670e152c6a069766843b39caff4e76a1cd6e4a14c319f4541d1b3b03bd847156a13310a9#npm:10.1.2", {\
           "packageLocation": "./.yarn/__virtual__/@graphql-tools-utils-virtual-b3a0bb1589/0/cache/@graphql-tools-utils-npm-10.1.2-2606110440-13ca772f80.zip/node_modules/@graphql-tools/utils/",\
           "packageDependencies": [\
             ["@graphql-tools/utils", "virtual:44d00fbedb82008ff99003ee8be08dbd6369604726a8022cab2fd0a5670e152c6a069766843b39caff4e76a1cd6e4a14c319f4541d1b3b03bd847156a13310a9#npm:10.1.2"],\
-            ["@graphql-typed-document-node/core", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:3.1.1"],\
+            ["@graphql-typed-document-node/core", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:3.1.1"],\
             ["@types/graphql", null],\
             ["cross-inspect", "npm:1.0.0"],\
             ["dset", "npm:3.1.2"],\
@@ -9472,10 +9575,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:3.1.1", {\
-          "packageLocation": "./.yarn/__virtual__/@graphql-typed-document-node-core-virtual-bb9ab14976/0/cache/@graphql-typed-document-node-core-npm-3.1.1-b1b114073d-87ff4cee30.zip/node_modules/@graphql-typed-document-node/core/",\
+        ["virtual:b30c0460c7e3fbb2a841b19da470e582233e9b18e69aa72c2861c8b620b140b4581e46c598570b2431d80282443c166d87aba9c3cfb357900e1b8b5e6f62d1b6#npm:3.2.0", {\
+          "packageLocation": "./.yarn/__virtual__/@graphql-typed-document-node-core-virtual-c364588e10/0/cache/@graphql-typed-document-node-core-npm-3.2.0-505adb1e90-fa44443acc.zip/node_modules/@graphql-typed-document-node/core/",\
           "packageDependencies": [\
-            ["@graphql-typed-document-node/core", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:3.1.1"],\
+            ["@graphql-typed-document-node/core", "virtual:b30c0460c7e3fbb2a841b19da470e582233e9b18e69aa72c2861c8b620b140b4581e46c598570b2431d80282443c166d87aba9c3cfb357900e1b8b5e6f62d1b6#npm:3.2.0"],\
             ["@types/graphql", null],\
             ["graphql", "npm:16.6.0"]\
           ],\
@@ -9485,10 +9588,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:b30c0460c7e3fbb2a841b19da470e582233e9b18e69aa72c2861c8b620b140b4581e46c598570b2431d80282443c166d87aba9c3cfb357900e1b8b5e6f62d1b6#npm:3.2.0", {\
-          "packageLocation": "./.yarn/__virtual__/@graphql-typed-document-node-core-virtual-c364588e10/0/cache/@graphql-typed-document-node-core-npm-3.2.0-505adb1e90-fa44443acc.zip/node_modules/@graphql-typed-document-node/core/",\
+        ["virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:3.1.1", {\
+          "packageLocation": "./.yarn/__virtual__/@graphql-typed-document-node-core-virtual-b8a7b0bf3c/0/cache/@graphql-typed-document-node-core-npm-3.1.1-b1b114073d-87ff4cee30.zip/node_modules/@graphql-typed-document-node/core/",\
           "packageDependencies": [\
-            ["@graphql-typed-document-node/core", "virtual:b30c0460c7e3fbb2a841b19da470e582233e9b18e69aa72c2861c8b620b140b4581e46c598570b2431d80282443c166d87aba9c3cfb357900e1b8b5e6f62d1b6#npm:3.2.0"],\
+            ["@graphql-typed-document-node/core", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:3.1.1"],\
             ["@types/graphql", null],\
             ["graphql", "npm:16.6.0"]\
           ],\
@@ -10183,20 +10286,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=56bdd4&locator=mpdx-react%40workspace%3A.", {\
-          "packageLocation": "./.yarn/cache/@mui-base-patch-404c9924aa-728d6e97c6.zip/node_modules/@mui/base/",\
+        ["patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=8e63fa&locator=mpdx-react%40workspace%3A.", {\
+          "packageLocation": "./.yarn/cache/@mui-base-patch-0c5c9c5ed4-728d6e97c6.zip/node_modules/@mui/base/",\
           "packageDependencies": [\
-            ["@mui/base", "patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=56bdd4&locator=mpdx-react%40workspace%3A."]\
+            ["@mui/base", "patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=8e63fa&locator=mpdx-react%40workspace%3A."]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=56bdd4&locator=mpdx-react%40workspace%3A.", {\
-          "packageLocation": "./.yarn/__virtual__/@mui-base-virtual-e6495c8ca2/0/cache/@mui-base-patch-404c9924aa-728d6e97c6.zip/node_modules/@mui/base/",\
+        ["virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=8e63fa&locator=mpdx-react%40workspace%3A.", {\
+          "packageLocation": "./.yarn/__virtual__/@mui-base-virtual-242e7b2bfd/0/cache/@mui-base-patch-0c5c9c5ed4-728d6e97c6.zip/node_modules/@mui/base/",\
           "packageDependencies": [\
-            ["@mui/base", "virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=56bdd4&locator=mpdx-react%40workspace%3A."],\
+            ["@mui/base", "virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=8e63fa&locator=mpdx-react%40workspace%3A."],\
             ["@babel/runtime", "npm:7.19.0"],\
             ["@emotion/is-prop-valid", "npm:1.2.0"],\
-            ["@mui/types", "virtual:e6495c8ca2d0927de3a303d0eb61aa06fe8a46f05d9d15c6bb1b021a3ccf8d8f548181d7178235e320b622b2c9f90f948437451a4ab9f7675a15e541bc32a7e4#npm:7.2.0"],\
+            ["@mui/types", "virtual:242e7b2bfd590f49fb2366cd9c464b0e9a6de3ed8b755595ea3e82404e7e97ead710cce6b30d654565f44210a871a3cc6d3484d0600965a21ffeedf900a299a5#npm:7.2.0"],\
             ["@mui/utils", "virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#npm:5.10.6"],\
             ["@popperjs/core", "npm:2.11.6"],\
             ["@types/react", "npm:18.0.21"],\
@@ -10291,7 +10394,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/runtime", "npm:7.19.0"],\
             ["@emotion/react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.11.4"],\
             ["@emotion/styled", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.11.0"],\
-            ["@mui/base", "virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=56bdd4&locator=mpdx-react%40workspace%3A."],\
+            ["@mui/base", "virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=8e63fa&locator=mpdx-react%40workspace%3A."],\
             ["@mui/material", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.15.14"],\
             ["@mui/system", "virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#npm:5.10.6"],\
             ["@mui/utils", "virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#npm:5.10.6"],\
@@ -10544,7 +10647,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@emotion/styled", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.11.0"],\
             ["@mui/private-theming", "virtual:4de75cb4742199182fa1ea4caa3ea75bfcf18719cbcf974b3f81d817d2607afe93dd5984607d4686c19ec47582b094fd6896a061b1b9b80a3f0c1c848e0d8994#npm:5.10.6"],\
             ["@mui/styled-engine", "virtual:4de75cb4742199182fa1ea4caa3ea75bfcf18719cbcf974b3f81d817d2607afe93dd5984607d4686c19ec47582b094fd6896a061b1b9b80a3f0c1c848e0d8994#npm:5.10.6"],\
-            ["@mui/types", "virtual:e6495c8ca2d0927de3a303d0eb61aa06fe8a46f05d9d15c6bb1b021a3ccf8d8f548181d7178235e320b622b2c9f90f948437451a4ab9f7675a15e541bc32a7e4#npm:7.2.0"],\
+            ["@mui/types", "virtual:242e7b2bfd590f49fb2366cd9c464b0e9a6de3ed8b755595ea3e82404e7e97ead710cce6b30d654565f44210a871a3cc6d3484d0600965a21ffeedf900a299a5#npm:7.2.0"],\
             ["@mui/utils", "virtual:4f3246b2cc09eb53ba2d876816336ba940a2597884de4b16b2746ae853bb5ba9b89ceee3abb6a5224f639c4bfd29159eb397daeed280ae07d7afcddc6b77536d#npm:5.10.6"],\
             ["@types/emotion__react", null],\
             ["@types/emotion__styled", null],\
@@ -10609,10 +10712,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:5c92ca6ffb783572f1efc9202fdff7932875aa6c1cb43f95b6e1f906ffc5a994a2cdf5ef032c3d24c41807a315b5f65ca86696c95a340ed70300b91a70422f48#npm:7.2.14", {\
-          "packageLocation": "./.yarn/__virtual__/@mui-types-virtual-561a0b4abb/0/cache/@mui-types-npm-7.2.14-c3027ebada-615c9f9110.zip/node_modules/@mui/types/",\
+        ["virtual:242e7b2bfd590f49fb2366cd9c464b0e9a6de3ed8b755595ea3e82404e7e97ead710cce6b30d654565f44210a871a3cc6d3484d0600965a21ffeedf900a299a5#npm:7.2.0", {\
+          "packageLocation": "./.yarn/__virtual__/@mui-types-virtual-95d2f9397b/0/cache/@mui-types-npm-7.2.0-d49360f603-a863140f20.zip/node_modules/@mui/types/",\
           "packageDependencies": [\
-            ["@mui/types", "virtual:5c92ca6ffb783572f1efc9202fdff7932875aa6c1cb43f95b6e1f906ffc5a994a2cdf5ef032c3d24c41807a315b5f65ca86696c95a340ed70300b91a70422f48#npm:7.2.14"],\
+            ["@mui/types", "virtual:242e7b2bfd590f49fb2366cd9c464b0e9a6de3ed8b755595ea3e82404e7e97ead710cce6b30d654565f44210a871a3cc6d3484d0600965a21ffeedf900a299a5#npm:7.2.0"],\
             ["@types/react", "npm:18.0.21"]\
           ],\
           "packagePeers": [\
@@ -10620,10 +10723,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:e6495c8ca2d0927de3a303d0eb61aa06fe8a46f05d9d15c6bb1b021a3ccf8d8f548181d7178235e320b622b2c9f90f948437451a4ab9f7675a15e541bc32a7e4#npm:7.2.0", {\
-          "packageLocation": "./.yarn/__virtual__/@mui-types-virtual-8d3a426219/0/cache/@mui-types-npm-7.2.0-d49360f603-a863140f20.zip/node_modules/@mui/types/",\
+        ["virtual:5c92ca6ffb783572f1efc9202fdff7932875aa6c1cb43f95b6e1f906ffc5a994a2cdf5ef032c3d24c41807a315b5f65ca86696c95a340ed70300b91a70422f48#npm:7.2.14", {\
+          "packageLocation": "./.yarn/__virtual__/@mui-types-virtual-561a0b4abb/0/cache/@mui-types-npm-7.2.14-c3027ebada-615c9f9110.zip/node_modules/@mui/types/",\
           "packageDependencies": [\
-            ["@mui/types", "virtual:e6495c8ca2d0927de3a303d0eb61aa06fe8a46f05d9d15c6bb1b021a3ccf8d8f548181d7178235e320b622b2c9f90f948437451a4ab9f7675a15e541bc32a7e4#npm:7.2.0"],\
+            ["@mui/types", "virtual:5c92ca6ffb783572f1efc9202fdff7932875aa6c1cb43f95b6e1f906ffc5a994a2cdf5ef032c3d24c41807a315b5f65ca86696c95a340ed70300b91a70422f48#npm:7.2.14"],\
             ["@types/react", "npm:18.0.21"]\
           ],\
           "packagePeers": [\
@@ -11573,7 +11676,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["builtin-modules", "npm:3.3.0"],\
             ["deepmerge", "npm:4.2.2"],\
             ["is-module", "npm:1.0.0"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["rollup", "npm:2.78.1"]\
           ],\
           "packagePeers": [\
@@ -11989,7 +12092,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["style-loader", "virtual:e5da202afe16573a782d9e1e603791508a614d4498754e7a49a7f287576abcda73dfa82312b010d12d77f426e44ae79a4aff4af3b74ef7fddee8dfaad55dcf3e#npm:1.3.0"],\
             ["terser-webpack-plugin", "virtual:e5da202afe16573a782d9e1e603791508a614d4498754e7a49a7f287576abcda73dfa82312b010d12d77f426e44ae79a4aff4af3b74ef7fddee8dfaad55dcf3e#npm:4.2.3"],\
             ["ts-dedent", "npm:2.2.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["url-loader", "virtual:e5da202afe16573a782d9e1e603791508a614d4498754e7a49a7f287576abcda73dfa82312b010d12d77f426e44ae79a4aff4af3b74ef7fddee8dfaad55dcf3e#npm:4.1.1"],\
             ["util-deprecate", "npm:1.0.2"],\
             ["webpack", "virtual:3a21077b62434929831d5198c2e632aff26fb55bfa82769362b4d659211f082b8aa604d03a610d7f3ffa397f25999a0f328ea5cb5663ab428b50e90121d10939#npm:4.46.0"],\
@@ -12226,7 +12329,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/webpack", null],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["webpack", "virtual:b91200453282cfa4d1b4ed5d6ff952c8795c8f1b04578d2cfa2fb8399bbe568be63d0d8a89e2edf448e123c69106d187857b7c2182e6c6fd3c4dba8bb04129ff#npm:5.74.0"]\
           ],\
           "packagePeers": [\
@@ -12282,7 +12385,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["regenerator-runtime", "npm:0.13.9"],\
             ["ts-dedent", "npm:2.2.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["unfetch", "npm:4.2.0"],\
             ["util-deprecate", "npm:1.0.2"],\
             ["webpack", "virtual:3a21077b62434929831d5198c2e632aff26fb55bfa82769362b4d659211f082b8aa604d03a610d7f3ffa397f25999a0f328ea5cb5663ab428b50e90121d10939#npm:4.46.0"]\
@@ -12327,7 +12430,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
             ["regenerator-runtime", "npm:0.13.9"],\
             ["ts-dedent", "npm:2.2.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["unfetch", "npm:4.2.0"],\
             ["util-deprecate", "npm:1.0.2"],\
             ["webpack", "virtual:b91200453282cfa4d1b4ed5d6ff952c8795c8f1b04578d2cfa2fb8399bbe568be63d0d8a89e2edf448e123c69106d187857b7c2182e6c6fd3c4dba8bb04129ff#npm:5.74.0"]\
@@ -12552,7 +12655,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["slash", "npm:3.0.0"],\
             ["telejson", "npm:6.0.8"],\
             ["ts-dedent", "npm:2.2.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["util-deprecate", "npm:1.0.2"],\
             ["webpack", "virtual:3a21077b62434929831d5198c2e632aff26fb55bfa82769362b4d659211f082b8aa604d03a610d7f3ffa397f25999a0f328ea5cb5663ab428b50e90121d10939#npm:4.46.0"]\
           ],\
@@ -12638,7 +12741,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["slash", "npm:3.0.0"],\
             ["telejson", "npm:6.0.8"],\
             ["ts-dedent", "npm:2.2.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["util-deprecate", "npm:1.0.2"],\
             ["watchpack", "npm:2.4.0"],\
             ["webpack", "virtual:3a21077b62434929831d5198c2e632aff26fb55bfa82769362b4d659211f082b8aa604d03a610d7f3ffa397f25999a0f328ea5cb5663ab428b50e90121d10939#npm:4.46.0"],\
@@ -12769,7 +12872,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["telejson", "npm:6.0.8"],\
             ["terser-webpack-plugin", "virtual:e5da202afe16573a782d9e1e603791508a614d4498754e7a49a7f287576abcda73dfa82312b010d12d77f426e44ae79a4aff4af3b74ef7fddee8dfaad55dcf3e#npm:4.2.3"],\
             ["ts-dedent", "npm:2.2.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["url-loader", "virtual:e5da202afe16573a782d9e1e603791508a614d4498754e7a49a7f287576abcda73dfa82312b010d12d77f426e44ae79a4aff4af3b74ef7fddee8dfaad55dcf3e#npm:4.1.1"],\
             ["util-deprecate", "npm:1.0.2"],\
             ["webpack", "virtual:3a21077b62434929831d5198c2e632aff26fb55bfa82769362b4d659211f082b8aa604d03a610d7f3ffa397f25999a0f328ea5cb5663ab428b50e90121d10939#npm:4.46.0"],\
@@ -12925,7 +13028,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["regenerator-runtime", "npm:0.13.9"],\
             ["require-from-string", null],\
             ["ts-dedent", "npm:2.2.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["util-deprecate", "npm:1.0.2"],\
             ["webpack", "virtual:b91200453282cfa4d1b4ed5d6ff952c8795c8f1b04578d2cfa2fb8399bbe568be63d0d8a89e2edf448e123c69106d187857b7c2182e6c6fd3c4dba8bb04129ff#npm:5.74.0"]\
           ],\
@@ -12973,7 +13076,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["micromatch", "npm:4.0.5"],\
             ["react-docgen-typescript", "virtual:3ce86e349059fab56e58f0edebea9c7f22f702262cec12b29cccc2074b8843cbb10e5aca9c7d23fe1c6d2724b75f02d601b720e332c5d5e1b34236c1789c96ab#npm:2.2.2"],\
             ["tslib", "npm:2.4.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["webpack", "virtual:b91200453282cfa4d1b4ed5d6ff952c8795c8f1b04578d2cfa2fb8399bbe568be63d0d8a89e2edf448e123c69106d187857b7c2182e6c6fd3c4dba8bb04129ff#npm:5.74.0"]\
           ],\
           "packagePeers": [\
@@ -13236,7 +13339,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["@surma/rollup-plugin-off-main-thread", [\
         ["npm:2.2.3", {\
-          "packageLocation": "./.yarn/cache/@surma-rollup-plugin-off-main-thread-npm-2.2.3-1f57d3eded-2c02134944.zip/node_modules/@surma/rollup-plugin-off-main-thread/",\
+          "packageLocation": "./.yarn/unplugged/@surma-rollup-plugin-off-main-thread-npm-2.2.3-1f57d3eded/node_modules/@surma/rollup-plugin-off-main-thread/",\
           "packageDependencies": [\
             ["@surma/rollup-plugin-off-main-thread", "npm:2.2.3"],\
             ["ejs", "npm:3.1.8"],\
@@ -14300,7 +14403,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["natural-compare", "npm:1.4.0"],\
             ["semver", "npm:7.6.0"],\
             ["ts-api-utils", "virtual:ffbd544ad0fe91b6a84d26da1b983efebd6dadd9a2ae0160d3effbd386edafd313452293d39a630ddc390a351a5cc7679a4b023d895be27d9a3a0972f47b5e95#npm:1.3.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"]\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"]\
           ],\
           "packagePeers": [\
             "@types/eslint",\
@@ -14333,7 +14436,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/visitor-keys", "npm:7.5.0"],\
             ["debug", "virtual:4758feee42453c0e31b0d2032a7b1362d6b06281699830d2da9a056f2cca72bd2c5cfdb74005fdf03a64876be8eaca2dd7b0fc2dc59d14318badf19cb22ba18e#npm:4.3.4"],\
             ["eslint", "npm:8.57.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"]\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"]\
           ],\
           "packagePeers": [\
             "@types/eslint",\
@@ -14383,7 +14486,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["debug", "virtual:4758feee42453c0e31b0d2032a7b1362d6b06281699830d2da9a056f2cca72bd2c5cfdb74005fdf03a64876be8eaca2dd7b0fc2dc59d14318badf19cb22ba18e#npm:4.3.4"],\
             ["eslint", "npm:8.57.0"],\
             ["ts-api-utils", "virtual:ffbd544ad0fe91b6a84d26da1b983efebd6dadd9a2ae0160d3effbd386edafd313452293d39a630ddc390a351a5cc7679a4b023d895be27d9a3a0972f47b5e95#npm:1.3.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"]\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"]\
           ],\
           "packagePeers": [\
             "@types/eslint",\
@@ -14458,7 +14561,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["minimatch", "npm:9.0.3"],\
             ["semver", "npm:7.6.0"],\
             ["ts-api-utils", "virtual:ffbd544ad0fe91b6a84d26da1b983efebd6dadd9a2ae0160d3effbd386edafd313452293d39a630ddc390a351a5cc7679a4b023d895be27d9a3a0972f47b5e95#npm:1.3.0"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"]\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"]\
           ],\
           "packagePeers": [\
             "@types/typescript",\
@@ -16465,7 +16568,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["babel-plugin-macros", "npm:3.1.0"],\
             ["@babel/runtime", "npm:7.18.9"],\
             ["cosmiconfig", "npm:7.0.1"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"]\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -16849,7 +16952,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/plugin-proposal-numeric-separator", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.6"],\
             ["@babel/plugin-proposal-optional-chaining", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.9"],\
             ["@babel/plugin-proposal-private-methods", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.6"],\
-            ["@babel/plugin-proposal-private-property-in-object", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.6"],\
+            ["@babel/plugin-proposal-private-property-in-object", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.21.11"],\
             ["@babel/plugin-transform-flow-strip-types", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.19.0"],\
             ["@babel/plugin-transform-react-display-name", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.18.6"],\
             ["@babel/plugin-transform-runtime", "virtual:a9a19b630a588155c92f4ae8a8db8144917ee83e3cd36bb76901eb84a4f5c22dc9e3132b483ed08b52ebbd0b97f69550387746aa970daf04db052b2bb054ab12#npm:7.19.1"],\
@@ -17876,7 +17979,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["anymatch", "npm:2.0.0"],\
             ["async-each", "npm:1.0.3"],\
             ["braces", "npm:2.3.2"],\
-            ["fsevents", "patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=18f3a7"],\
+            ["fsevents", "patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=d11327"],\
             ["glob-parent", "npm:5.1.2"],\
             ["inherits", "npm:2.0.4"],\
             ["is-binary-path", "npm:1.0.1"],\
@@ -17894,7 +17997,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chokidar", "npm:3.5.3"],\
             ["anymatch", "npm:3.1.2"],\
             ["braces", "npm:3.0.2"],\
-            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"],\
+            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
             ["glob-parent", "npm:5.1.2"],\
             ["is-binary-path", "npm:2.1.0"],\
             ["is-glob", "npm:4.0.3"],\
@@ -20472,7 +20575,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["eslint-import-resolver-node", "npm:0.3.6"],\
             ["debug", "virtual:1f43412872fd884ea1247d77cd236ac89b1b489fe66cda1675f885395b16fa7be38fca8f4ee0ddb7d79481d2482886d2d62a39f86813baeaf755095851975ab1#npm:3.2.7"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"]\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -20543,7 +20646,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["is-glob", "npm:4.0.3"],\
             ["minimatch", "npm:3.1.2"],\
             ["object.values", "npm:1.1.5"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["tsconfig-paths", "npm:3.14.1"]\
           ],\
           "packagePeers": [\
@@ -20677,7 +20780,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["object.hasown", "npm:1.1.1"],\
             ["object.values", "npm:1.1.5"],\
             ["prop-types", "npm:15.8.1"],\
-            ["resolve", "patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=c3c19d"],\
             ["semver", "npm:6.3.0"],\
             ["string.prototype.matchall", "npm:4.0.7"]\
           ],\
@@ -21669,7 +21772,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["minimatch", "npm:3.1.2"],\
             ["semver", "npm:5.7.1"],\
             ["tapable", "npm:1.1.3"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["vue-template-compiler", null],\
             ["webpack", "virtual:3a21077b62434929831d5198c2e632aff26fb55bfa82769362b4d659211f082b8aa604d03a610d7f3ffa397f25999a0f328ea5cb5663ab428b50e90121d10939#npm:4.46.0"],\
             ["worker-rpc", "npm:0.1.1"]\
@@ -21708,7 +21811,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["schema-utils", "npm:2.7.0"],\
             ["semver", "npm:7.3.7"],\
             ["tapable", "npm:1.1.3"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["vue-template-compiler", null],\
             ["webpack", "virtual:3a21077b62434929831d5198c2e632aff26fb55bfa82769362b4d659211f082b8aa604d03a610d7f3ffa397f25999a0f328ea5cb5663ab428b50e90121d10939#npm:4.46.0"]\
           ],\
@@ -22005,19 +22108,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["fsevents", [\
-        ["patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=18f3a7", {\
-          "packageLocation": "./.yarn/unplugged/fsevents-patch-fcdf30aaca/node_modules/fsevents/",\
+        ["patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=d11327", {\
+          "packageLocation": "./.yarn/unplugged/fsevents-patch-61ccaa93a2/node_modules/fsevents/",\
           "packageDependencies": [\
-            ["fsevents", "patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=18f3a7"],\
+            ["fsevents", "patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=d11327"],\
             ["bindings", "npm:1.5.0"],\
             ["nan", "npm:2.16.0"]\
           ],\
           "linkType": "HARD"\
         }],\
-        ["patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7", {\
-          "packageLocation": "./.yarn/unplugged/fsevents-patch-3340e2eb10/node_modules/fsevents/",\
+        ["patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1", {\
+          "packageLocation": "./.yarn/unplugged/fsevents-patch-2882183fbf/node_modules/fsevents/",\
           "packageDependencies": [\
-            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"],\
+            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
             ["node-gyp", "npm:9.1.0"]\
           ],\
           "linkType": "HARD"\
@@ -22505,13 +22608,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["graphql-ergonomock", [\
-        ["patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=84aaaf&locator=mpdx-react%40workspace%3A.", {\
-          "packageLocation": "./.yarn/cache/graphql-ergonomock-patch-68dabe26d7-7e7c7e1719.zip/node_modules/graphql-ergonomock/",\
+        ["patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=4de2a5&locator=mpdx-react%40workspace%3A.", {\
+          "packageLocation": "./.yarn/cache/graphql-ergonomock-patch-485781bf7f-7e7c7e1719.zip/node_modules/graphql-ergonomock/",\
           "packageDependencies": [\
-            ["graphql-ergonomock", "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=84aaaf&locator=mpdx-react%40workspace%3A."],\
+            ["graphql-ergonomock", "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=4de2a5&locator=mpdx-react%40workspace%3A."],\
             ["fast-json-stable-stringify", "npm:2.1.0"],\
             ["graphql", "npm:16.6.0"],\
-            ["graphql-tools", "virtual:68dabe26d70a51a1bb4cd0a1b4b0c6afed7f86eae88eef0e0868af77e8ba6bd4bc58a59f99aea433895088204190193c101d3d58b4c076845a1dc5d67d919268#npm:8.3.6"],\
+            ["graphql-tools", "virtual:485781bf7ff0601396a74f24100199f0b7a6fecac998b71b7d6181de37ea1c897dbe12115aeeb3bcb072efc7de1c66db7aec4fb5f2a31a3f301efc62e935f914#npm:8.3.6"],\
             ["seedrandom", "npm:3.0.5"]\
           ],\
           "linkType": "HARD"\
@@ -22563,10 +22666,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6", {\
-          "packageLocation": "./.yarn/__virtual__/graphql-tag-virtual-812d01a384/0/cache/graphql-tag-npm-2.12.6-99a5a7f6de-b15162a3d6.zip/node_modules/graphql-tag/",\
+        ["virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6", {\
+          "packageLocation": "./.yarn/__virtual__/graphql-tag-virtual-a294856934/0/cache/graphql-tag-npm-2.12.6-99a5a7f6de-b15162a3d6.zip/node_modules/graphql-tag/",\
           "packageDependencies": [\
-            ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
+            ["graphql-tag", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6"],\
             ["@types/graphql", null],\
             ["graphql", "npm:16.6.0"],\
             ["tslib", "npm:2.4.0"]\
@@ -22586,12 +22689,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:68dabe26d70a51a1bb4cd0a1b4b0c6afed7f86eae88eef0e0868af77e8ba6bd4bc58a59f99aea433895088204190193c101d3d58b4c076845a1dc5d67d919268#npm:8.3.6", {\
-          "packageLocation": "./.yarn/__virtual__/graphql-tools-virtual-98e8d266ce/0/cache/graphql-tools-npm-8.3.6-1c4f4adf34-26b774cf76.zip/node_modules/graphql-tools/",\
+        ["virtual:485781bf7ff0601396a74f24100199f0b7a6fecac998b71b7d6181de37ea1c897dbe12115aeeb3bcb072efc7de1c66db7aec4fb5f2a31a3f301efc62e935f914#npm:8.3.6", {\
+          "packageLocation": "./.yarn/__virtual__/graphql-tools-virtual-546aaab8dd/0/cache/graphql-tools-npm-8.3.6-1c4f4adf34-26b774cf76.zip/node_modules/graphql-tools/",\
           "packageDependencies": [\
-            ["graphql-tools", "virtual:68dabe26d70a51a1bb4cd0a1b4b0c6afed7f86eae88eef0e0868af77e8ba6bd4bc58a59f99aea433895088204190193c101d3d58b4c076845a1dc5d67d919268#npm:8.3.6"],\
-            ["@apollo/client", "virtual:98e8d266ce51117289e7b88e25c26cb2a071a9aec45e99c4976c54697ecd6a18e84c4bb9e52b047573a75fb76b3ba0b7464c8bf97ffc2634c538617637847833#npm:3.6.10"],\
-            ["@graphql-tools/schema", "virtual:98e8d266ce51117289e7b88e25c26cb2a071a9aec45e99c4976c54697ecd6a18e84c4bb9e52b047573a75fb76b3ba0b7464c8bf97ffc2634c538617637847833#npm:9.0.4"],\
+            ["graphql-tools", "virtual:485781bf7ff0601396a74f24100199f0b7a6fecac998b71b7d6181de37ea1c897dbe12115aeeb3bcb072efc7de1c66db7aec4fb5f2a31a3f301efc62e935f914#npm:8.3.6"],\
+            ["@apollo/client", "virtual:546aaab8dd1c4af2cc4174ade931d59f3e81f6ed78332c06f8ea803cf7e91de592a75b2bbd8618fca41c0e34f2e3fca71697a0d6bc54b869e5b7de6551d9c01f#npm:3.6.10"],\
+            ["@graphql-tools/schema", "virtual:546aaab8dd1c4af2cc4174ade931d59f3e81f6ed78332c06f8ea803cf7e91de592a75b2bbd8618fca41c0e34f2e3fca71697a0d6bc54b869e5b7de6551d9c01f#npm:9.0.4"],\
             ["@types/graphql", null],\
             ["graphql", "npm:16.6.0"],\
             ["tslib", "npm:2.4.0"]\
@@ -23365,7 +23468,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["rsvp", "npm:4.8.5"],\
             ["sort-keys", "npm:5.0.0"],\
             ["through2", "npm:4.0.2"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
             ["vinyl", "npm:3.0.0"],\
             ["vinyl-fs", "npm:3.0.3"],\
             ["vue-template-compiler", "npm:2.7.9"]\
@@ -24993,7 +25096,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.7.6"],\
             ["anymatch", "npm:3.1.2"],\
             ["fb-watchman", "npm:2.0.1"],\
-            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"],\
+            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
             ["graceful-fs", "npm:4.2.10"],\
             ["jest-regex-util", "npm:29.0.0"],\
             ["jest-util", "npm:29.0.3"],\
@@ -25126,7 +25229,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest-pnp-resolver", "virtual:90e57c5d53723ac6bd6f33068a1d98d5497120a0c435693d26b854754e252c6863b38ef211fb474e52dcc71a5a2b64ccbcabd4be20d76df7329e7e7406784241#npm:1.2.2"],\
             ["jest-util", "npm:29.0.3"],\
             ["jest-validate", "npm:29.0.3"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["resolve.exports", "npm:1.1.0"],\
             ["slash", "npm:3.0.0"]\
           ],\
@@ -25251,7 +25354,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["jest-transform-graphql", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.0"],\
             ["@types/graphql-tag", null],\
-            ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"]\
+            ["graphql-tag", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6"]\
           ],\
           "packagePeers": [\
             "@types/graphql-tag",\
@@ -27186,7 +27289,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@graphql-codegen/typescript-react-apollo", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.3.7"],\
             ["@graphql-codegen/typescript-resolvers", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.0.6"],\
             ["@graphql-tools/jest-transform", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.2.2"],\
-            ["@graphql-tools/schema", "virtual:98e8d266ce51117289e7b88e25c26cb2a071a9aec45e99c4976c54697ecd6a18e84c4bb9e52b047573a75fb76b3ba0b7464c8bf97ffc2634c538617637847833#npm:9.0.4"],\
+            ["@graphql-tools/schema", "virtual:546aaab8dd1c4af2cc4174ade931d59f3e81f6ed78332c06f8ea803cf7e91de592a75b2bbd8618fca41c0e34f2e3fca71697a0d6bc54b869e5b7de6551d9c01f#npm:9.0.4"],\
             ["@mdi/js", "npm:7.0.96"],\
             ["@mdi/react", "npm:1.6.1"],\
             ["@mui/icons-material", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.15.14"],\
@@ -27247,8 +27350,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["full-icu", "npm:1.5.0"],\
             ["glob", "npm:8.0.3"],\
             ["graphql", "npm:16.6.0"],\
-            ["graphql-ergonomock", "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=84aaaf&locator=mpdx-react%40workspace%3A."],\
-            ["graphql-tag", "virtual:ad3c7be04a7742e49bc25ead9c68d5ea605069d37923ea09fadaa29db0e9dedcadb9c2711b7cde48b9ac33ba4f9aca5ffa39afbb33e2b545ed0d1333782ff379#npm:2.12.6"],\
+            ["graphql-ergonomock", "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=4de2a5&locator=mpdx-react%40workspace%3A."],\
+            ["graphql-tag", "virtual:f9475058fbbb3057b4a1e0277c637db2023d8116d734451f64b6babb9893a9cd4482e0645d438a6e33ca87d03e8eaf7bc2ccfde1b4ba6c605103a434f84461f8#npm:2.12.6"],\
             ["husky", "npm:8.0.1"],\
             ["i18next", "npm:21.9.2"],\
             ["i18next-browser-languagedetector", "npm:6.1.5"],\
@@ -27292,7 +27395,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-node", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:10.9.1"],\
             ["tslib", "npm:2.4.0"],\
             ["tss-react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.3"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["url-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.1"],\
             ["uuid", "npm:9.0.0"],\
             ["yup", "npm:0.32.11"]\
@@ -27866,7 +27969,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["normalize-package-data", "npm:2.5.0"],\
             ["hosted-git-info", "npm:2.8.9"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["semver", "npm:5.7.1"],\
             ["validate-npm-package-license", "npm:3.0.4"]\
           ],\
@@ -30077,7 +30180,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["react-docgen-typescript", "virtual:3ce86e349059fab56e58f0edebea9c7f22f702262cec12b29cccc2074b8843cbb10e5aca9c7d23fe1c6d2724b75f02d601b720e332c5d5e1b34236c1789c96ab#npm:2.2.2"],\
             ["@types/typescript", null],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"]\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"]\
           ],\
           "packagePeers": [\
             "@types/typescript",\
@@ -30691,7 +30794,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/rechoir-npm-0.6.2-0df5f171ec-fe76bf9c21.zip/node_modules/rechoir/",\
           "packageDependencies": [\
             ["rechoir", "npm:0.6.2"],\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"]\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -31190,20 +31293,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["resolve", [\
-        ["patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b", {\
-          "packageLocation": "./.yarn/cache/resolve-patch-46f9469d0d-5656f4d0be.zip/node_modules/resolve/",\
+        ["patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d", {\
+          "packageLocation": "./.yarn/cache/resolve-patch-0c52e0e4f7-5656f4d0be.zip/node_modules/resolve/",\
           "packageDependencies": [\
-            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"],\
             ["is-core-module", "npm:2.10.0"],\
             ["path-parse", "npm:1.0.7"],\
             ["supports-preserve-symlinks-flag", "npm:1.0.0"]\
           ],\
           "linkType": "HARD"\
         }],\
-        ["patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=07638b", {\
-          "packageLocation": "./.yarn/cache/resolve-patch-bdbf6a2444-4bf9f4f8a4.zip/node_modules/resolve/",\
+        ["patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=c3c19d", {\
+          "packageLocation": "./.yarn/cache/resolve-patch-34cda421ec-4bf9f4f8a4.zip/node_modules/resolve/",\
           "packageDependencies": [\
-            ["resolve", "patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=07638b"],\
+            ["resolve", "patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=c3c19d"],\
             ["is-core-module", "npm:2.10.0"],\
             ["path-parse", "npm:1.0.7"],\
             ["supports-preserve-symlinks-flag", "npm:1.0.0"]\
@@ -31414,7 +31517,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/rollup-npm-2.78.1-25ffe2a567-9034814383.zip/node_modules/rollup/",\
           "packageDependencies": [\
             ["rollup", "npm:2.78.1"],\
-            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"]\
+            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -33639,7 +33742,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["ts-api-utils", "virtual:ffbd544ad0fe91b6a84d26da1b983efebd6dadd9a2ae0160d3effbd386edafd313452293d39a630ddc390a351a5cc7679a4b023d895be27d9a3a0972f47b5e95#npm:1.3.0"],\
             ["@types/typescript", null],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"]\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"]\
           ],\
           "packagePeers": [\
             "@types/typescript",\
@@ -33670,7 +33773,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["ts-essentials", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:9.3.0"],\
             ["@types/typescript", null],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"]\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"]\
           ],\
           "packagePeers": [\
             "@types/typescript",\
@@ -33727,7 +33830,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["create-require", "npm:1.1.1"],\
             ["diff", "npm:4.0.2"],\
             ["make-error", "npm:1.3.6"],\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"],\
             ["v8-compile-cache-lib", "npm:3.0.1"],\
             ["yn", "npm:3.1.1"]\
           ],\
@@ -34011,17 +34114,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["typescript", [\
-        ["patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=a1c5e5", {\
-          "packageLocation": "./.yarn/cache/typescript-patch-56273a7c66-9096d8f6c1.zip/node_modules/typescript/",\
+        ["patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307", {\
+          "packageLocation": "./.yarn/cache/typescript-patch-0feff98f1a-9096d8f6c1.zip/node_modules/typescript/",\
           "packageDependencies": [\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=a1c5e5"]\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "HARD"\
         }],\
-        ["patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5", {\
-          "packageLocation": "./.yarn/cache/typescript-patch-4d824bf818-2222d2382f.zip/node_modules/typescript/",\
+        ["patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f", {\
+          "packageLocation": "./.yarn/cache/typescript-patch-b0c04ffcae-dfe2ee3b9d.zip/node_modules/typescript/",\
           "packageDependencies": [\
-            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"]\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=3b564f"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -36142,6 +36245,8 @@ const StringDecoder = require('string_decoder');
 const url = require('url');
 const os = require('os');
 const nodeUtils = require('util');
+const readline = require('readline');
+const assert = require('assert');
 const stream = require('stream');
 const zlib = require('zlib');
 const events = require('events');
@@ -36171,6 +36276,7 @@ const path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 const require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0);
 const StringDecoder__default = /*#__PURE__*/_interopDefaultLegacy(StringDecoder);
 const nodeUtils__namespace = /*#__PURE__*/_interopNamespace(nodeUtils);
+const assert__default = /*#__PURE__*/_interopDefaultLegacy(assert);
 const zlib__default = /*#__PURE__*/_interopDefaultLegacy(zlib);
 
 const S_IFMT = 61440;
@@ -36362,15 +36468,10 @@ function areStatsEqual(a, b) {
   return true;
 }
 
-var PathType;
-(function(PathType2) {
-  PathType2[PathType2["File"] = 0] = "File";
-  PathType2[PathType2["Portable"] = 1] = "Portable";
-  PathType2[PathType2["Native"] = 2] = "Native";
-})(PathType || (PathType = {}));
 const PortablePath = {
   root: `/`,
-  dot: `.`
+  dot: `.`,
+  parent: `..`
 };
 const Filename = {
   nodeModules: `node_modules`,
@@ -36440,40 +36541,16 @@ function convertPath(targetPathUtils, sourcePath) {
   return targetPathUtils === npath ? fromPortablePath(sourcePath) : toPortablePath(sourcePath);
 }
 
-var __defProp$5 = Object.defineProperty;
-var __defProps$3 = Object.defineProperties;
-var __getOwnPropDescs$3 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$6 = Object.getOwnPropertySymbols;
-var __hasOwnProp$6 = Object.prototype.hasOwnProperty;
-var __propIsEnum$6 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, {enumerable: true, configurable: true, writable: true, value}) : obj[key] = value;
-var __spreadValues$5 = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$6.call(b, prop))
-      __defNormalProp$5(a, prop, b[prop]);
-  if (__getOwnPropSymbols$6)
-    for (var prop of __getOwnPropSymbols$6(b)) {
-      if (__propIsEnum$6.call(b, prop))
-        __defNormalProp$5(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$3 = (a, b) => __defProps$3(a, __getOwnPropDescs$3(b));
 const defaultTime = new Date(SAFE_TIME * 1e3);
-var LinkStrategy;
-(function(LinkStrategy2) {
-  LinkStrategy2["Allow"] = `allow`;
-  LinkStrategy2["ReadOnly"] = `readOnly`;
-})(LinkStrategy || (LinkStrategy = {}));
 async function copyPromise(destinationFs, destination, sourceFs, source, opts) {
   const normalizedDestination = destinationFs.pathUtils.normalize(destination);
   const normalizedSource = sourceFs.pathUtils.normalize(source);
   const prelayout = [];
   const postlayout = [];
-  const {atime, mtime} = opts.stableTime ? {atime: defaultTime, mtime: defaultTime} : await sourceFs.lstatPromise(normalizedSource);
-  await destinationFs.mkdirpPromise(destinationFs.pathUtils.dirname(destination), {utimes: [atime, mtime]});
+  const { atime, mtime } = opts.stableTime ? { atime: defaultTime, mtime: defaultTime } : await sourceFs.lstatPromise(normalizedSource);
+  await destinationFs.mkdirpPromise(destinationFs.pathUtils.dirname(destination), { utimes: [atime, mtime] });
   const updateTime = typeof destinationFs.lutimesPromise === `function` ? destinationFs.lutimesPromise.bind(destinationFs) : destinationFs.utimesPromise.bind(destinationFs);
-  await copyImpl(prelayout, postlayout, updateTime, destinationFs, normalizedDestination, sourceFs, normalizedSource, __spreadProps$3(__spreadValues$5({}, opts), {didParentExist: true}));
+  await copyImpl(prelayout, postlayout, updateTime, destinationFs, normalizedDestination, sourceFs, normalizedSource, { ...opts, didParentExist: true });
   for (const operation of prelayout)
     await operation();
   await Promise.all(postlayout.map((operation) => {
@@ -36484,7 +36561,7 @@ async function copyImpl(prelayout, postlayout, updateTime, destinationFs, destin
   var _a, _b;
   const destinationStat = opts.didParentExist ? await maybeLStat(destinationFs, destination) : null;
   const sourceStat = await sourceFs.lstatPromise(source);
-  const {atime, mtime} = opts.stableTime ? {atime: defaultTime, mtime: defaultTime} : sourceStat;
+  const { atime, mtime } = opts.stableTime ? { atime: defaultTime, mtime: defaultTime } : sourceStat;
   let updated;
   switch (true) {
     case sourceStat.isDirectory():
@@ -36537,7 +36614,7 @@ async function copyFolder(prelayout, postlayout, updateTime, destinationFs, dest
   if (destinationStat === null) {
     prelayout.push(async () => {
       try {
-        await destinationFs.mkdirPromise(destination, {mode: sourceStat.mode});
+        await destinationFs.mkdirPromise(destination, { mode: sourceStat.mode });
       } catch (err) {
         if (err.code !== `EEXIST`) {
           throw err;
@@ -36547,7 +36624,7 @@ async function copyFolder(prelayout, postlayout, updateTime, destinationFs, dest
     updated = true;
   }
   const entries = await sourceFs.readdirPromise(source);
-  const nextOpts = opts.didParentExist && !destinationStat ? __spreadProps$3(__spreadValues$5({}, opts), {didParentExist: false}) : opts;
+  const nextOpts = opts.didParentExist && !destinationStat ? { ...opts, didParentExist: false } : opts;
   if (opts.stableSort) {
     for (const entry of entries.sort()) {
       if (await copyImpl(prelayout, postlayout, updateTime, destinationFs, destinationFs.pathUtils.join(destination, entry), sourceFs, sourceFs.pathUtils.join(source, entry), nextOpts)) {
@@ -36564,11 +36641,11 @@ async function copyFolder(prelayout, postlayout, updateTime, destinationFs, dest
   }
   return updated;
 }
-const isCloneSupportedCache = new WeakMap();
+const isCloneSupportedCache = /* @__PURE__ */ new WeakMap();
 function makeLinkOperation(opFs, destination, source, sourceStat, linkStrategy) {
   return async () => {
     await opFs.linkPromise(source, destination);
-    if (linkStrategy === LinkStrategy.ReadOnly) {
+    if (linkStrategy === "readOnly" /* ReadOnly */) {
       sourceStat.mode &= ~146;
       await opFs.chmodPromise(destination, sourceStat.mode);
     }
@@ -36629,7 +36706,7 @@ async function copySymlink(prelayout, postlayout, updateTime, destinationFs, des
 }
 
 function makeError$1(code, message) {
-  return Object.assign(new Error(`${code}: ${message}`), {code});
+  return Object.assign(new Error(`${code}: ${message}`), { code });
 }
 function EBUSY(message) {
   return makeError$1(`EBUSY`, message);
@@ -36736,7 +36813,7 @@ class FakeFS {
   constructor(pathUtils) {
     this.pathUtils = pathUtils;
   }
-  async *genTraversePromise(init, {stableSort = false} = {}) {
+  async *genTraversePromise(init, { stableSort = false } = {}) {
     const stack = [init];
     while (stack.length > 0) {
       const p = stack.shift();
@@ -36755,7 +36832,7 @@ class FakeFS {
       }
     }
   }
-  async removePromise(p, {recursive = true, maxRetries = 5} = {}) {
+  async removePromise(p, { recursive = true, maxRetries = 5 } = {}) {
     let stat;
     try {
       stat = await this.lstatPromise(p);
@@ -36789,7 +36866,7 @@ class FakeFS {
       await this.unlinkPromise(p);
     }
   }
-  removeSync(p, {recursive = true} = {}) {
+  removeSync(p, { recursive = true } = {}) {
     let stat;
     try {
       stat = this.lstatSync(p);
@@ -36809,7 +36886,7 @@ class FakeFS {
       this.unlinkSync(p);
     }
   }
-  async mkdirpPromise(p, {chmod, utimes} = {}) {
+  async mkdirpPromise(p, { chmod, utimes } = {}) {
     p = this.resolve(p);
     if (p === this.pathUtils.dirname(p))
       return void 0;
@@ -36840,7 +36917,7 @@ class FakeFS {
     }
     return createdDirectory;
   }
-  mkdirpSync(p, {chmod, utimes} = {}) {
+  mkdirpSync(p, { chmod, utimes } = {}) {
     p = this.resolve(p);
     if (p === this.pathUtils.dirname(p))
       return void 0;
@@ -36871,17 +36948,17 @@ class FakeFS {
     }
     return createdDirectory;
   }
-  async copyPromise(destination, source, {baseFs = this, overwrite = true, stableSort = false, stableTime = false, linkStrategy = null} = {}) {
-    return await copyPromise(this, destination, baseFs, source, {overwrite, stableSort, stableTime, linkStrategy});
+  async copyPromise(destination, source, { baseFs = this, overwrite = true, stableSort = false, stableTime = false, linkStrategy = null } = {}) {
+    return await copyPromise(this, destination, baseFs, source, { overwrite, stableSort, stableTime, linkStrategy });
   }
-  copySync(destination, source, {baseFs = this, overwrite = true} = {}) {
+  copySync(destination, source, { baseFs = this, overwrite = true } = {}) {
     const stat = baseFs.lstatSync(source);
     const exists = this.existsSync(destination);
     if (stat.isDirectory()) {
       this.mkdirpSync(destination);
       const directoryListing = baseFs.readdirSync(source);
       for (const entry of directoryListing) {
-        this.copySync(this.pathUtils.join(destination, entry), baseFs.pathUtils.join(source, entry), {baseFs, overwrite});
+        this.copySync(this.pathUtils.join(destination, entry), baseFs.pathUtils.join(source, entry), { baseFs, overwrite });
       }
     } else if (stat.isFile()) {
       if (!exists || overwrite) {
@@ -36910,7 +36987,7 @@ class FakeFS {
       return this.changeFileTextPromise(p, content, opts);
     }
   }
-  async changeFileBufferPromise(p, content, {mode} = {}) {
+  async changeFileBufferPromise(p, content, { mode } = {}) {
     let current = Buffer.alloc(0);
     try {
       current = await this.readFilePromise(p);
@@ -36918,9 +36995,9 @@ class FakeFS {
     }
     if (Buffer.compare(current, content) === 0)
       return;
-    await this.writeFilePromise(p, content, {mode});
+    await this.writeFilePromise(p, content, { mode });
   }
-  async changeFileTextPromise(p, content, {automaticNewlines, mode} = {}) {
+  async changeFileTextPromise(p, content, { automaticNewlines, mode } = {}) {
     let current = ``;
     try {
       current = await this.readFilePromise(p, `utf8`);
@@ -36929,7 +37006,7 @@ class FakeFS {
     const normalizedContent = automaticNewlines ? normalizeLineEndings(current, content) : content;
     if (current === normalizedContent)
       return;
-    await this.writeFilePromise(p, normalizedContent, {mode});
+    await this.writeFilePromise(p, normalizedContent, { mode });
   }
   changeFileSync(p, content, opts = {}) {
     if (Buffer.isBuffer(content)) {
@@ -36938,7 +37015,7 @@ class FakeFS {
       return this.changeFileTextSync(p, content, opts);
     }
   }
-  changeFileBufferSync(p, content, {mode} = {}) {
+  changeFileBufferSync(p, content, { mode } = {}) {
     let current = Buffer.alloc(0);
     try {
       current = this.readFileSync(p);
@@ -36946,9 +37023,9 @@ class FakeFS {
     }
     if (Buffer.compare(current, content) === 0)
       return;
-    this.writeFileSync(p, content, {mode});
+    this.writeFileSync(p, content, { mode });
   }
-  changeFileTextSync(p, content, {automaticNewlines = false, mode} = {}) {
+  changeFileTextSync(p, content, { automaticNewlines = false, mode } = {}) {
     let current = ``;
     try {
       current = this.readFileSync(p, `utf8`);
@@ -36957,7 +37034,7 @@ class FakeFS {
     const normalizedContent = automaticNewlines ? normalizeLineEndings(current, content) : content;
     if (current === normalizedContent)
       return;
-    this.writeFileSync(p, normalizedContent, {mode});
+    this.writeFileSync(p, normalizedContent, { mode });
   }
   async movePromise(fromP, toP) {
     try {
@@ -37138,12 +37215,12 @@ class NodeFS extends BasePortableFakeFS {
         this.realFs.opendir(npath.fromPortablePath(p), this.makeCallback(resolve, reject));
       }
     }).then((dir) => {
-      return Object.defineProperty(dir, `path`, {value: p, configurable: true, writable: true});
+      return Object.defineProperty(dir, `path`, { value: p, configurable: true, writable: true });
     });
   }
   opendirSync(p, opts) {
     const dir = typeof opts !== `undefined` ? this.realFs.opendirSync(npath.fromPortablePath(p), opts) : this.realFs.opendirSync(npath.fromPortablePath(p));
-    return Object.defineProperty(dir, `path`, {value: p, configurable: true, writable: true});
+    return Object.defineProperty(dir, `path`, { value: p, configurable: true, writable: true });
   }
   async readPromise(fd, buffer, offset = 0, length = 0, position = -1) {
     return await new Promise((resolve, reject) => {
@@ -37280,6 +37357,14 @@ class NodeFS extends BasePortableFakeFS {
   }
   chmodSync(p, mask) {
     return this.realFs.chmodSync(npath.fromPortablePath(p), mask);
+  }
+  async fchownPromise(fd, uid, gid) {
+    return await new Promise((resolve, reject) => {
+      this.realFs.fchown(fd, uid, gid, this.makeCallback(resolve, reject));
+    });
+  }
+  fchownSync(fd, uid, gid) {
+    return this.realFs.fchownSync(fd, uid, gid);
   }
   async chownPromise(p, uid, gid) {
     return await new Promise((resolve, reject) => {
@@ -37420,7 +37505,7 @@ class NodeFS extends BasePortableFakeFS {
   async readdirPromise(p, opts) {
     return await new Promise((resolve, reject) => {
       if (opts == null ? void 0 : opts.withFileTypes) {
-        this.realFs.readdir(npath.fromPortablePath(p), {withFileTypes: true}, this.makeCallback(resolve, reject));
+        this.realFs.readdir(npath.fromPortablePath(p), { withFileTypes: true }, this.makeCallback(resolve, reject));
       } else {
         this.realFs.readdir(npath.fromPortablePath(p), this.makeCallback((value) => resolve(value), reject));
       }
@@ -37428,7 +37513,7 @@ class NodeFS extends BasePortableFakeFS {
   }
   readdirSync(p, opts) {
     if (opts == null ? void 0 : opts.withFileTypes) {
-      return this.realFs.readdirSync(npath.fromPortablePath(p), {withFileTypes: true});
+      return this.realFs.readdirSync(npath.fromPortablePath(p), { withFileTypes: true });
     } else {
       return this.realFs.readdirSync(npath.fromPortablePath(p));
     }
@@ -37460,10 +37545,18 @@ class NodeFS extends BasePortableFakeFS {
     return this.realFs.ftruncateSync(fd, len);
   }
   watch(p, a, b) {
-    return this.realFs.watch(npath.fromPortablePath(p), a, b);
+    return this.realFs.watch(
+      npath.fromPortablePath(p),
+      a,
+      b
+    );
   }
   watchFile(p, a, b) {
-    return this.realFs.watchFile(npath.fromPortablePath(p), a, b);
+    return this.realFs.watchFile(
+      npath.fromPortablePath(p),
+      a,
+      b
+    );
   }
   unwatchFile(p, cb) {
     return this.realFs.unwatchFile(npath.fromPortablePath(p), cb);
@@ -37479,27 +37572,16 @@ class NodeFS extends BasePortableFakeFS {
   }
 }
 
-var Event;
-(function(Event2) {
-  Event2["Change"] = `change`;
-  Event2["Stop"] = `stop`;
-})(Event || (Event = {}));
-var Status;
-(function(Status2) {
-  Status2["Ready"] = `ready`;
-  Status2["Running"] = `running`;
-  Status2["Stopped"] = `stopped`;
-})(Status || (Status = {}));
 function assertStatus(current, expected) {
   if (current !== expected) {
     throw new Error(`Invalid StatWatcher status: expected '${expected}', got '${current}'`);
   }
 }
 class CustomStatWatcher extends events.EventEmitter {
-  constructor(fakeFs, path, {bigint = false} = {}) {
+  constructor(fakeFs, path, { bigint = false } = {}) {
     super();
-    this.status = Status.Ready;
-    this.changeListeners = new Map();
+    this.status = "ready" /* Ready */;
+    this.changeListeners = /* @__PURE__ */ new Map();
     this.startTimeout = null;
     this.fakeFs = fakeFs;
     this.path = path;
@@ -37512,27 +37594,27 @@ class CustomStatWatcher extends events.EventEmitter {
     return statWatcher;
   }
   start() {
-    assertStatus(this.status, Status.Ready);
-    this.status = Status.Running;
+    assertStatus(this.status, "ready" /* Ready */);
+    this.status = "running" /* Running */;
     this.startTimeout = setTimeout(() => {
       this.startTimeout = null;
       if (!this.fakeFs.existsSync(this.path)) {
-        this.emit(Event.Change, this.lastStats, this.lastStats);
+        this.emit("change" /* Change */, this.lastStats, this.lastStats);
       }
     }, 3);
   }
   stop() {
-    assertStatus(this.status, Status.Running);
-    this.status = Status.Stopped;
+    assertStatus(this.status, "running" /* Running */);
+    this.status = "stopped" /* Stopped */;
     if (this.startTimeout !== null) {
       clearTimeout(this.startTimeout);
       this.startTimeout = null;
     }
-    this.emit(Event.Stop);
+    this.emit("stop" /* Stop */);
   }
   stat() {
     try {
-      return this.fakeFs.statSync(this.path, {bigint: this.bigint});
+      return this.fakeFs.statSync(this.path, { bigint: this.bigint });
     } catch (error) {
       const statInstance = this.bigint ? new BigIntStatsEntry() : new StatEntry();
       return clearStats(statInstance);
@@ -37545,16 +37627,16 @@ class CustomStatWatcher extends events.EventEmitter {
       if (areStatsEqual(currentStats, previousStats))
         return;
       this.lastStats = currentStats;
-      this.emit(Event.Change, currentStats, previousStats);
+      this.emit("change" /* Change */, currentStats, previousStats);
     }, opts.interval);
     return opts.persistent ? interval : interval.unref();
   }
   registerChangeListener(listener, opts) {
-    this.addListener(Event.Change, listener);
+    this.addListener("change" /* Change */, listener);
     this.changeListeners.set(listener, this.makeInterval(opts));
   }
   unregisterChangeListener(listener) {
-    this.removeListener(Event.Change, listener);
+    this.removeListener("change" /* Change */, listener);
     const interval = this.changeListeners.get(listener);
     if (typeof interval !== `undefined`)
       clearInterval(interval);
@@ -37580,7 +37662,7 @@ class CustomStatWatcher extends events.EventEmitter {
   }
 }
 
-const statWatchersByFakeFS = new WeakMap();
+const statWatchersByFakeFS = /* @__PURE__ */ new WeakMap();
 function watchFile(fakeFs, path, a, b) {
   let bigint;
   let persistent;
@@ -37608,13 +37690,13 @@ function watchFile(fakeFs, path, a, b) {
   }
   let statWatchers = statWatchersByFakeFS.get(fakeFs);
   if (typeof statWatchers === `undefined`)
-    statWatchersByFakeFS.set(fakeFs, statWatchers = new Map());
+    statWatchersByFakeFS.set(fakeFs, statWatchers = /* @__PURE__ */ new Map());
   let statWatcher = statWatchers.get(path);
   if (typeof statWatcher === `undefined`) {
-    statWatcher = CustomStatWatcher.create(fakeFs, path, {bigint});
+    statWatcher = CustomStatWatcher.create(fakeFs, path, { bigint });
     statWatchers.set(path, statWatcher);
   }
-  statWatcher.registerChangeListener(listener, {persistent, interval});
+  statWatcher.registerChangeListener(listener, { persistent, interval });
   return statWatcher;
 }
 function unwatchFile(fakeFs, path, cb) {
@@ -37642,27 +37724,11 @@ function unwatchAllFiles(fakeFs) {
   }
 }
 
-var __defProp$4 = Object.defineProperty;
-var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
-var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
-var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, {enumerable: true, configurable: true, writable: true, value}) : obj[key] = value;
-var __spreadValues$4 = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$5.call(b, prop))
-      __defNormalProp$4(a, prop, b[prop]);
-  if (__getOwnPropSymbols$5)
-    for (var prop of __getOwnPropSymbols$5(b)) {
-      if (__propIsEnum$5.call(b, prop))
-        __defNormalProp$4(a, prop, b[prop]);
-    }
-  return a;
-};
 const DEFAULT_COMPRESSION_LEVEL = `mixed`;
 function toUnixTimestamp(time) {
   if (typeof time === `string` && String(+time) === time)
     return +time;
-  if (Number.isFinite(time)) {
+  if (typeof time === `number` && Number.isFinite(time)) {
     if (time < 0) {
       return Date.now() / 1e3;
     } else {
@@ -37703,10 +37769,10 @@ class ZipFS extends BasePortableFakeFS {
   constructor(source, opts) {
     super();
     this.lzSource = null;
-    this.listings = new Map();
-    this.entries = new Map();
-    this.fileSources = new Map();
-    this.fds = new Map();
+    this.listings = /* @__PURE__ */ new Map();
+    this.entries = /* @__PURE__ */ new Map();
+    this.fileSources = /* @__PURE__ */ new Map();
+    this.fds = /* @__PURE__ */ new Map();
     this.nextFd = 0;
     this.ready = false;
     this.readOnly = false;
@@ -37715,7 +37781,7 @@ class ZipFS extends BasePortableFakeFS {
     this.level = typeof pathOptions.level !== `undefined` ? pathOptions.level : DEFAULT_COMPRESSION_LEVEL;
     source != null ? source : source = makeEmptyArchive();
     if (typeof source === `string`) {
-      const {baseFs = new NodeFS()} = pathOptions;
+      const { baseFs = new NodeFS() } = pathOptions;
       this.baseFs = baseFs;
       this.path = source;
     } else {
@@ -37768,7 +37834,7 @@ class ZipFS extends BasePortableFakeFS {
     } finally {
       this.libzip.free(errPtr);
     }
-    this.listings.set(PortablePath.root, new Set());
+    this.listings.set(PortablePath.root, /* @__PURE__ */ new Set());
     const entryCount = this.libzip.getNumEntries(this.zip, 0);
     for (let t = 0; t < entryCount; ++t) {
       const raw = this.libzip.getName(this.zip, t, 0);
@@ -37814,6 +37880,10 @@ class ZipFS extends BasePortableFakeFS {
     this.prepareClose();
     if (!this.lzSource)
       throw new Error(`ZipFS was not created from a Buffer`);
+    if (this.entries.size === 0) {
+      this.discardAndClose();
+      return makeEmptyArchive();
+    }
     try {
       this.libzip.source.keep(this.lzSource);
       if (this.libzip.close(this.zip) === -1)
@@ -37865,7 +37935,7 @@ class ZipFS extends BasePortableFakeFS {
     const newMode = this.baseFs.existsSync(this.path) || this.stats.mode === DEFAULT_MODE ? void 0 : this.stats.mode;
     if (this.entries.size === 0) {
       this.discardAndClose();
-      this.baseFs.writeFileSync(this.path, makeEmptyArchive(), {mode: newMode});
+      this.baseFs.writeFileSync(this.path, makeEmptyArchive(), { mode: newMode });
     } else {
       const rc = this.libzip.close(this.zip);
       if (rc === -1)
@@ -37889,7 +37959,7 @@ class ZipFS extends BasePortableFakeFS {
   }
   openSync(p, flags, mode) {
     const fd = this.nextFd++;
-    this.fds.set(fd, {cursor: 0, p});
+    this.fds.set(fd, { cursor: 0, p });
     return fd;
   }
   hasOpenFileHandles() {
@@ -37910,7 +37980,7 @@ class ZipFS extends BasePortableFakeFS {
     const onClose = () => {
       this.closeSync(fd);
     };
-    return opendir(this, resolvedP, entries, {onClose});
+    return opendir(this, resolvedP, entries, { onClose });
   }
   async readPromise(fd, buffer, offset, length, position) {
     return this.readSync(fd, buffer, offset, length, position);
@@ -37949,25 +38019,29 @@ class ZipFS extends BasePortableFakeFS {
       throw EBADF(`read`);
     this.fds.delete(fd);
   }
-  createReadStream(p, {encoding} = {}) {
+  createReadStream(p, { encoding } = {}) {
     if (p === null)
       throw new Error(`Unimplemented`);
     const fd = this.openSync(p, `r`);
-    const stream$1 = Object.assign(new stream.PassThrough({
-      emitClose: true,
-      autoDestroy: true,
-      destroy: (error, callback) => {
-        clearImmediate(immediate);
-        this.closeSync(fd);
-        callback(error);
+    const stream$1 = Object.assign(
+      new stream.PassThrough({
+        emitClose: true,
+        autoDestroy: true,
+        destroy: (error, callback) => {
+          clearImmediate(immediate);
+          this.closeSync(fd);
+          callback(error);
+        }
+      }),
+      {
+        close() {
+          stream$1.destroy();
+        },
+        bytesRead: 0,
+        path: p,
+        pending: false
       }
-    }), {
-      close() {
-        stream$1.destroy();
-      },
-      bytesRead: 0,
-      path: p
-    });
+    );
     const immediate = setImmediate(async () => {
       try {
         const data = await this.readFilePromise(p, encoding);
@@ -37979,37 +38053,41 @@ class ZipFS extends BasePortableFakeFS {
     });
     return stream$1;
   }
-  createWriteStream(p, {encoding} = {}) {
+  createWriteStream(p, { encoding } = {}) {
     if (this.readOnly)
       throw EROFS(`open '${p}'`);
     if (p === null)
       throw new Error(`Unimplemented`);
     const chunks = [];
     const fd = this.openSync(p, `w`);
-    const stream$1 = Object.assign(new stream.PassThrough({
-      autoDestroy: true,
-      emitClose: true,
-      destroy: (error, callback) => {
-        try {
-          if (error) {
-            callback(error);
-          } else {
-            this.writeFileSync(p, Buffer.concat(chunks), encoding);
-            callback(null);
+    const stream$1 = Object.assign(
+      new stream.PassThrough({
+        autoDestroy: true,
+        emitClose: true,
+        destroy: (error, callback) => {
+          try {
+            if (error) {
+              callback(error);
+            } else {
+              this.writeFileSync(p, Buffer.concat(chunks), encoding);
+              callback(null);
+            }
+          } catch (err) {
+            callback(err);
+          } finally {
+            this.closeSync(fd);
           }
-        } catch (err) {
-          callback(err);
-        } finally {
-          this.closeSync(fd);
         }
+      }),
+      {
+        close() {
+          stream$1.destroy();
+        },
+        bytesWritten: 0,
+        path: p,
+        pending: false
       }
-    }), {
-      bytesWritten: 0,
-      path: p,
-      close() {
-        stream$1.destroy();
-      }
-    });
+    );
     stream$1.on(`data`, (chunk) => {
       const chunkBuffer = Buffer.from(chunk);
       stream$1.bytesWritten += chunkBuffer.length;
@@ -38057,12 +38135,12 @@ class ZipFS extends BasePortableFakeFS {
       throw EROFS(`access '${p}'`);
     }
   }
-  async statPromise(p, opts = {bigint: false}) {
+  async statPromise(p, opts = { bigint: false }) {
     if (opts.bigint)
-      return this.statSync(p, {bigint: true});
+      return this.statSync(p, { bigint: true });
     return this.statSync(p);
   }
-  statSync(p, opts = {bigint: false, throwIfNoEntry: true}) {
+  statSync(p, opts = { bigint: false, throwIfNoEntry: true }) {
     const resolvedP = this.resolveFilename(`stat '${p}'`, p, void 0, opts.throwIfNoEntry);
     if (resolvedP === void 0)
       return void 0;
@@ -38082,7 +38160,7 @@ class ZipFS extends BasePortableFakeFS {
     const entry = this.fds.get(fd);
     if (typeof entry === `undefined`)
       throw EBADF(`fstatSync`);
-    const {p} = entry;
+    const { p } = entry;
     const resolvedP = this.resolveFilename(`stat '${p}'`, p);
     if (!this.entries.has(resolvedP) && !this.listings.has(resolvedP))
       throw ENOENT(`stat '${p}'`);
@@ -38090,12 +38168,12 @@ class ZipFS extends BasePortableFakeFS {
       throw ENOTDIR(`stat '${p}'`);
     return this.statImpl(`fstat '${p}'`, resolvedP, opts);
   }
-  async lstatPromise(p, opts = {bigint: false}) {
+  async lstatPromise(p, opts = { bigint: false }) {
     if (opts.bigint)
-      return this.lstatSync(p, {bigint: true});
+      return this.lstatSync(p, { bigint: true });
     return this.lstatSync(p);
   }
-  lstatSync(p, opts = {bigint: false, throwIfNoEntry: true}) {
+  lstatSync(p, opts = { bigint: false, throwIfNoEntry: true }) {
     const resolvedP = this.resolveFilename(`lstat '${p}'`, p, false, opts.throwIfNoEntry);
     if (resolvedP === void 0)
       return void 0;
@@ -38132,7 +38210,7 @@ class ZipFS extends BasePortableFakeFS {
       const defaultMode = type === S_IFDIR ? 493 : 420;
       const mode = type | this.getUnixMode(entry, defaultMode) & 511;
       const crc = this.libzip.struct.statCrc(stat);
-      const statInstance = Object.assign(new StatEntry(), {uid, gid, size, blksize, blocks, atime, birthtime, ctime, mtime, atimeMs, birthtimeMs, ctimeMs, mtimeMs, mode, crc});
+      const statInstance = Object.assign(new StatEntry(), { uid, gid, size, blksize, blocks, atime, birthtime, ctime, mtime, atimeMs, birthtimeMs, ctimeMs, mtimeMs, mode, crc });
       return opts.bigint === true ? convertToBigIntStats(statInstance) : statInstance;
     }
     if (this.listings.has(p)) {
@@ -38151,7 +38229,7 @@ class ZipFS extends BasePortableFakeFS {
       const mtime = new Date(mtimeMs);
       const mode = S_IFDIR | 493;
       const crc = 0;
-      const statInstance = Object.assign(new StatEntry(), {uid, gid, size, blksize, blocks, atime, birthtime, ctime, mtime, atimeMs, birthtimeMs, ctimeMs, mtimeMs, mode, crc});
+      const statInstance = Object.assign(new StatEntry(), { uid, gid, size, blksize, blocks, atime, birthtime, ctime, mtime, atimeMs, birthtimeMs, ctimeMs, mtimeMs, mode, crc });
       return opts.bigint === true ? convertToBigIntStats(statInstance) : statInstance;
     }
     throw new Error(`Unreachable`);
@@ -38171,7 +38249,7 @@ class ZipFS extends BasePortableFakeFS {
       return existingListing;
     const parentListing = this.registerListing(ppath.dirname(p));
     parentListing.add(ppath.basename(p));
-    const newListing = new Set();
+    const newListing = /* @__PURE__ */ new Set();
     this.listings.set(p, newListing);
     return newListing;
   }
@@ -38234,7 +38312,7 @@ class ZipFS extends BasePortableFakeFS {
       resolvedP = ppath.resolve(parentP, ppath.basename(resolvedP));
       if (!resolveLastComponent || this.symlinkCount === 0)
         break;
-      const index = this.libzip.name.locate(this.zip, resolvedP.slice(1));
+      const index = this.libzip.name.locate(this.zip, resolvedP.slice(1), 0);
       if (index === -1)
         break;
       if (this.isSymbolicLink(index)) {
@@ -38254,12 +38332,12 @@ class ZipFS extends BasePortableFakeFS {
       throw new Error(`Couldn't allocate enough memory`);
     const heap = new Uint8Array(this.libzip.HEAPU8.buffer, buffer, content.byteLength);
     heap.set(content);
-    return {buffer, byteLength: content.byteLength};
+    return { buffer, byteLength: content.byteLength };
   }
   allocateUnattachedSource(content) {
     const error = this.libzip.struct.errorS();
-    const {buffer, byteLength} = this.allocateBuffer(content);
-    const source = this.libzip.source.fromUnattachedBuffer(buffer, byteLength, 0, true, error);
+    const { buffer, byteLength } = this.allocateBuffer(content);
+    const source = this.libzip.source.fromUnattachedBuffer(buffer, byteLength, 0, 1, error);
     if (source === 0) {
       this.libzip.free(error);
       throw this.makeLibzipError(error);
@@ -38267,8 +38345,8 @@ class ZipFS extends BasePortableFakeFS {
     return source;
   }
   allocateSource(content) {
-    const {buffer, byteLength} = this.allocateBuffer(content);
-    const source = this.libzip.source.fromBuffer(this.zip, buffer, byteLength, 0, true);
+    const { buffer, byteLength } = this.allocateBuffer(content);
+    const source = this.libzip.source.fromBuffer(this.zip, buffer, byteLength, 0, 1);
     if (source === 0) {
       this.libzip.free(buffer);
       throw this.makeLibzipError(this.libzip.getError(this.zip));
@@ -38309,7 +38387,7 @@ class ZipFS extends BasePortableFakeFS {
     const attributes = this.libzip.getValue(this.libzip.uint32S, `i32`) >>> 16;
     return (attributes & S_IFMT) === S_IFLNK;
   }
-  getFileSource(index, opts = {asyncDecompress: false}) {
+  getFileSource(index, opts = { asyncDecompress: false }) {
     const cachedFileSource = this.fileSources.get(index);
     if (typeof cachedFileSource !== `undefined`)
       return cachedFileSource;
@@ -38384,6 +38462,12 @@ class ZipFS extends BasePortableFakeFS {
       throw this.makeLibzipError(this.libzip.getError(this.zip));
     }
   }
+  async fchownPromise(fd, uid, gid) {
+    return this.chownPromise(this.fdToPath(fd, `fchown`), uid, gid);
+  }
+  fchownSync(fd, uid, gid) {
+    return this.chownSync(this.fdToPath(fd, `fchownSync`), uid, gid);
+  }
   async chownPromise(p, uid, gid) {
     return this.chownSync(p, uid, gid);
   }
@@ -38397,15 +38481,15 @@ class ZipFS extends BasePortableFakeFS {
     throw new Error(`Unimplemented`);
   }
   async copyFilePromise(sourceP, destP, flags) {
-    const {indexSource, indexDest, resolvedDestP} = this.prepareCopyFile(sourceP, destP, flags);
-    const source = await this.getFileSource(indexSource, {asyncDecompress: true});
+    const { indexSource, indexDest, resolvedDestP } = this.prepareCopyFile(sourceP, destP, flags);
+    const source = await this.getFileSource(indexSource, { asyncDecompress: true });
     const newIndex = this.setFileSource(resolvedDestP, source);
     if (newIndex !== indexDest) {
       this.registerEntry(resolvedDestP, newIndex);
     }
   }
   copyFileSync(sourceP, destP, flags = 0) {
-    const {indexSource, indexDest, resolvedDestP} = this.prepareCopyFile(sourceP, destP, flags);
+    const { indexSource, indexDest, resolvedDestP } = this.prepareCopyFile(sourceP, destP, flags);
     const source = this.getFileSource(indexSource);
     const newIndex = this.setFileSource(resolvedDestP, source);
     if (newIndex !== indexDest) {
@@ -38435,22 +38519,22 @@ class ZipFS extends BasePortableFakeFS {
     if (this.readOnly)
       throw EROFS(`open '${p}'`);
     if (typeof opts === `undefined`)
-      opts = {flag: `a`};
+      opts = { flag: `a` };
     else if (typeof opts === `string`)
-      opts = {flag: `a`, encoding: opts};
+      opts = { flag: `a`, encoding: opts };
     else if (typeof opts.flag === `undefined`)
-      opts = __spreadValues$4({flag: `a`}, opts);
+      opts = { flag: `a`, ...opts };
     return this.writeFilePromise(p, content, opts);
   }
   appendFileSync(p, content, opts = {}) {
     if (this.readOnly)
       throw EROFS(`open '${p}'`);
     if (typeof opts === `undefined`)
-      opts = {flag: `a`};
+      opts = { flag: `a` };
     else if (typeof opts === `string`)
-      opts = {flag: `a`, encoding: opts};
+      opts = { flag: `a`, encoding: opts };
     else if (typeof opts.flag === `undefined`)
-      opts = __spreadValues$4({flag: `a`}, opts);
+      opts = { flag: `a`, ...opts };
     return this.writeFileSync(p, content, opts);
   }
   fdToPath(fd, reason) {
@@ -38461,9 +38545,9 @@ class ZipFS extends BasePortableFakeFS {
     return path;
   }
   async writeFilePromise(p, content, opts) {
-    const {encoding, mode, index, resolvedP} = this.prepareWriteFile(p, opts);
+    const { encoding, mode, index, resolvedP } = this.prepareWriteFile(p, opts);
     if (index !== void 0 && typeof opts === `object` && opts.flag && opts.flag.includes(`a`))
-      content = Buffer.concat([await this.getFileSource(index, {asyncDecompress: true}), Buffer.from(content)]);
+      content = Buffer.concat([await this.getFileSource(index, { asyncDecompress: true }), Buffer.from(content)]);
     if (encoding !== null)
       content = content.toString(encoding);
     const newIndex = this.setFileSource(resolvedP, content);
@@ -38474,7 +38558,7 @@ class ZipFS extends BasePortableFakeFS {
     }
   }
   writeFileSync(p, content, opts) {
-    const {encoding, mode, index, resolvedP} = this.prepareWriteFile(p, opts);
+    const { encoding, mode, index, resolvedP } = this.prepareWriteFile(p, opts);
     if (index !== void 0 && typeof opts === `object` && opts.flag && opts.flag.includes(`a`))
       content = Buffer.concat([this.getFileSource(index), Buffer.from(content)]);
     if (encoding !== null)
@@ -38559,9 +38643,9 @@ class ZipFS extends BasePortableFakeFS {
   async mkdirPromise(p, opts) {
     return this.mkdirSync(p, opts);
   }
-  mkdirSync(p, {mode = 493, recursive = false} = {}) {
+  mkdirSync(p, { mode = 493, recursive = false } = {}) {
     if (recursive)
-      return this.mkdirpSync(p, {chmod: mode});
+      return this.mkdirpSync(p, { chmod: mode });
     if (this.readOnly)
       throw EROFS(`mkdir '${p}'`);
     const resolvedP = this.resolveFilename(`mkdir '${p}'`, p);
@@ -38574,7 +38658,7 @@ class ZipFS extends BasePortableFakeFS {
   async rmdirPromise(p, opts) {
     return this.rmdirSync(p, opts);
   }
-  rmdirSync(p, {recursive = false} = {}) {
+  rmdirSync(p, { recursive = false } = {}) {
     if (this.readOnly)
       throw EROFS(`rmdir '${p}'`);
     if (recursive) {
@@ -38627,7 +38711,7 @@ class ZipFS extends BasePortableFakeFS {
   async readFilePromise(p, encoding) {
     if (typeof encoding === `object`)
       encoding = encoding ? encoding.encoding : void 0;
-    const data = await this.readFileBuffer(p, {asyncDecompress: true});
+    const data = await this.readFileBuffer(p, { asyncDecompress: true });
     return encoding ? data.toString(encoding) : data;
   }
   readFileSync(p, encoding) {
@@ -38636,7 +38720,7 @@ class ZipFS extends BasePortableFakeFS {
     const data = this.readFileBuffer(p);
     return encoding ? data.toString(encoding) : data;
   }
-  readFileBuffer(p, opts = {asyncDecompress: false}) {
+  readFileBuffer(p, opts = { asyncDecompress: false }) {
     if (typeof p === `number`)
       p = this.fdToPath(p, `read`);
     const resolvedP = this.resolveFilename(`open '${p}'`, p);
@@ -38672,7 +38756,7 @@ class ZipFS extends BasePortableFakeFS {
   }
   async readlinkPromise(p) {
     const entry = this.prepareReadlink(p);
-    return (await this.getFileSource(entry, {asyncDecompress: true})).toString();
+    return (await this.getFileSource(entry, { asyncDecompress: true })).toString();
   }
   readlinkSync(p) {
     const entry = this.prepareReadlink(p);
@@ -38698,7 +38782,7 @@ class ZipFS extends BasePortableFakeFS {
     const index = this.entries.get(resolvedP);
     if (typeof index === `undefined`)
       throw EINVAL(`open '${p}'`);
-    const source = await this.getFileSource(index, {asyncDecompress: true});
+    const source = await this.getFileSource(index, { asyncDecompress: true });
     const truncated = Buffer.alloc(len, 0);
     source.copy(truncated);
     return await this.writeFilePromise(p, truncated);
@@ -38731,20 +38815,20 @@ class ZipFS extends BasePortableFakeFS {
         break;
       default:
         {
-          ({persistent = true} = a);
+          ({ persistent = true } = a);
         }
         break;
     }
     if (!persistent)
-      return {on: () => {
+      return { on: () => {
       }, close: () => {
-      }};
+      } };
     const interval = setInterval(() => {
     }, 24 * 60 * 60 * 1e3);
-    return {on: () => {
+    return { on: () => {
     }, close: () => {
       clearInterval(interval);
-    }};
+    } };
   }
   watchFile(p, a, b) {
     const resolvedP = ppath.resolve(PortablePath.root, p);
@@ -38773,10 +38857,10 @@ class ProxiedFS extends FakeFS {
     return this.baseFs.openSync(this.mapToBase(p), flags, mode);
   }
   async opendirPromise(p, opts) {
-    return Object.assign(await this.baseFs.opendirPromise(this.mapToBase(p), opts), {path: p});
+    return Object.assign(await this.baseFs.opendirPromise(this.mapToBase(p), opts), { path: p });
   }
   opendirSync(p, opts) {
-    return Object.assign(this.baseFs.opendirSync(this.mapToBase(p), opts), {path: p});
+    return Object.assign(this.baseFs.opendirSync(this.mapToBase(p), opts), { path: p });
   }
   async readPromise(fd, buffer, offset, length, position) {
     return await this.baseFs.readPromise(fd, buffer, offset, length, position);
@@ -38858,6 +38942,12 @@ class ProxiedFS extends FakeFS {
   chmodSync(p, mask) {
     return this.baseFs.chmodSync(this.mapToBase(p), mask);
   }
+  async fchownPromise(fd, uid, gid) {
+    return this.baseFs.fchownPromise(fd, uid, gid);
+  }
+  fchownSync(fd, uid, gid) {
+    return this.baseFs.fchownSync(fd, uid, gid);
+  }
   async chownPromise(p, uid, gid) {
     return this.baseFs.chownPromise(this.mapToBase(p), uid, gid);
   }
@@ -38935,18 +39025,10 @@ class ProxiedFS extends FakeFS {
     return this.baseFs.symlinkSync(mappedTarget, mappedP, type);
   }
   async readFilePromise(p, encoding) {
-    if (encoding === `utf8`) {
-      return this.baseFs.readFilePromise(this.fsMapToBase(p), encoding);
-    } else {
-      return this.baseFs.readFilePromise(this.fsMapToBase(p), encoding);
-    }
+    return this.baseFs.readFilePromise(this.fsMapToBase(p), encoding);
   }
   readFileSync(p, encoding) {
-    if (encoding === `utf8`) {
-      return this.baseFs.readFileSync(this.fsMapToBase(p), encoding);
-    } else {
-      return this.baseFs.readFileSync(this.fsMapToBase(p), encoding);
-    }
+    return this.baseFs.readFileSync(this.fsMapToBase(p), encoding);
   }
   async readdirPromise(p, opts) {
     return this.baseFs.readdirPromise(this.mapToBase(p), opts);
@@ -38973,10 +39055,18 @@ class ProxiedFS extends FakeFS {
     return this.baseFs.ftruncateSync(fd, len);
   }
   watch(p, a, b) {
-    return this.baseFs.watch(this.mapToBase(p), a, b);
+    return this.baseFs.watch(
+      this.mapToBase(p),
+      a,
+      b
+    );
   }
   watchFile(p, a, b) {
-    return this.baseFs.watchFile(this.mapToBase(p), a, b);
+    return this.baseFs.watchFile(
+      this.mapToBase(p),
+      a,
+      b
+    );
   }
   unwatchFile(p, cb) {
     return this.baseFs.unwatchFile(this.mapToBase(p), cb);
@@ -39007,6 +39097,10 @@ const NUMBER_REGEXP = /^[0-9]+$/;
 const VIRTUAL_REGEXP = /^(\/(?:[^/]+\/)*?(?:\$\$virtual|__virtual__))((?:\/((?:[^/]+-)?[a-f0-9]+)(?:\/([^/]+))?)?((?:\/.*)?))$/;
 const VALID_COMPONENT = /^([^/]+-)?[a-f0-9]+$/;
 class VirtualFS extends ProxiedFS {
+  constructor({ baseFs = new NodeFS() } = {}) {
+    super(ppath);
+    this.baseFs = baseFs;
+  }
   static makeVirtualPath(base, component, to) {
     if (ppath.basename(base) !== `__virtual__`)
       throw new Error(`Assertion failed: Virtual folders must be named "__virtual__"`);
@@ -39035,10 +39129,6 @@ class VirtualFS extends ProxiedFS {
     const backstep = `../`.repeat(depth);
     const subpath = match[5] || `.`;
     return VirtualFS.resolveVirtual(ppath.join(target, backstep, subpath));
-  }
-  constructor({baseFs = new NodeFS()} = {}) {
-    super(ppath);
-    this.baseFs = baseFs;
   }
   getExtractHint(hints) {
     return this.baseFs.getExtractHint(hints);
@@ -39098,17 +39188,17 @@ const getArchivePart = (path, extension) => {
   return path.slice(0, nextCharIdx);
 };
 class ZipOpenFS extends BasePortableFakeFS {
-  constructor({libzip, baseFs = new NodeFS(), filter = null, maxOpenFiles = Infinity, readOnlyArchives = false, useCache = true, maxAge = 5e3, fileExtensions = null}) {
+  constructor({ libzip, baseFs = new NodeFS(), filter = null, maxOpenFiles = Infinity, readOnlyArchives = false, useCache = true, maxAge = 5e3, fileExtensions = null }) {
     super();
-    this.fdMap = new Map();
+    this.fdMap = /* @__PURE__ */ new Map();
     this.nextFd = 3;
-    this.isZip = new Set();
-    this.notZip = new Set();
-    this.realPaths = new Map();
+    this.isZip = /* @__PURE__ */ new Set();
+    this.notZip = /* @__PURE__ */ new Set();
+    this.realPaths = /* @__PURE__ */ new Map();
     this.limitOpenFilesTimeout = null;
     this.libzipFactory = typeof libzip !== `function` ? () => libzip : libzip;
     this.baseFs = baseFs;
-    this.zipInstances = useCache ? new Map() : null;
+    this.zipInstances = useCache ? /* @__PURE__ */ new Map() : null;
     this.filter = filter;
     this.maxOpenFiles = maxOpenFiles;
     this.readOnlyArchives = readOnlyArchives;
@@ -39137,7 +39227,7 @@ class ZipOpenFS extends BasePortableFakeFS {
   saveAndClose() {
     unwatchAllFiles(this);
     if (this.zipInstances) {
-      for (const [path, {zipFs}] of this.zipInstances.entries()) {
+      for (const [path, { zipFs }] of this.zipInstances.entries()) {
         zipFs.saveAndClose();
         this.zipInstances.delete(path);
       }
@@ -39146,7 +39236,7 @@ class ZipOpenFS extends BasePortableFakeFS {
   discardAndClose() {
     unwatchAllFiles(this);
     if (this.zipInstances) {
-      for (const [path, {zipFs}] of this.zipInstances.entries()) {
+      for (const [path, { zipFs }] of this.zipInstances.entries()) {
         zipFs.discardAndClose();
         this.zipInstances.delete(path);
       }
@@ -39163,21 +39253,21 @@ class ZipOpenFS extends BasePortableFakeFS {
   async openPromise(p, flags, mode) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.openPromise(p, flags, mode);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return this.remapFd(zipFs, await zipFs.openPromise(subPath, flags, mode));
     });
   }
   openSync(p, flags, mode) {
     return this.makeCallSync(p, () => {
       return this.baseFs.openSync(p, flags, mode);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return this.remapFd(zipFs, zipFs.openSync(subPath, flags, mode));
     });
   }
   async opendirPromise(p, opts) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.opendirPromise(p, opts);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.opendirPromise(subPath, opts);
     }, {
       requireSubpath: false
@@ -39186,7 +39276,7 @@ class ZipOpenFS extends BasePortableFakeFS {
   opendirSync(p, opts) {
     return this.makeCallSync(p, () => {
       return this.baseFs.opendirSync(p, opts);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.opendirSync(subPath, opts);
     }, {
       requireSubpath: false
@@ -39271,7 +39361,7 @@ class ZipOpenFS extends BasePortableFakeFS {
       return this.baseFs.createReadStream(p, opts);
     return this.makeCallSync(p, () => {
       return this.baseFs.createReadStream(p, opts);
-    }, (zipFs, {archivePath, subPath}) => {
+    }, (zipFs, { archivePath, subPath }) => {
       const stream = zipFs.createReadStream(subPath, opts);
       stream.path = npath.fromPortablePath(this.pathUtils.join(archivePath, subPath));
       return stream;
@@ -39282,14 +39372,14 @@ class ZipOpenFS extends BasePortableFakeFS {
       return this.baseFs.createWriteStream(p, opts);
     return this.makeCallSync(p, () => {
       return this.baseFs.createWriteStream(p, opts);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.createWriteStream(subPath, opts);
     });
   }
   async realpathPromise(p) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.realpathPromise(p);
-    }, async (zipFs, {archivePath, subPath}) => {
+    }, async (zipFs, { archivePath, subPath }) => {
       let realArchivePath = this.realPaths.get(archivePath);
       if (typeof realArchivePath === `undefined`) {
         realArchivePath = await this.baseFs.realpathPromise(archivePath);
@@ -39301,7 +39391,7 @@ class ZipOpenFS extends BasePortableFakeFS {
   realpathSync(p) {
     return this.makeCallSync(p, () => {
       return this.baseFs.realpathSync(p);
-    }, (zipFs, {archivePath, subPath}) => {
+    }, (zipFs, { archivePath, subPath }) => {
       let realArchivePath = this.realPaths.get(archivePath);
       if (typeof realArchivePath === `undefined`) {
         realArchivePath = this.baseFs.realpathSync(archivePath);
@@ -39313,42 +39403,42 @@ class ZipOpenFS extends BasePortableFakeFS {
   async existsPromise(p) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.existsPromise(p);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.existsPromise(subPath);
     });
   }
   existsSync(p) {
     return this.makeCallSync(p, () => {
       return this.baseFs.existsSync(p);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.existsSync(subPath);
     });
   }
   async accessPromise(p, mode) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.accessPromise(p, mode);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.accessPromise(subPath, mode);
     });
   }
   accessSync(p, mode) {
     return this.makeCallSync(p, () => {
       return this.baseFs.accessSync(p, mode);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.accessSync(subPath, mode);
     });
   }
   async statPromise(p, opts) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.statPromise(p, opts);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.statPromise(subPath, opts);
     });
   }
   statSync(p, opts) {
     return this.makeCallSync(p, () => {
       return this.baseFs.statSync(p, opts);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.statSync(subPath, opts);
     });
   }
@@ -39373,14 +39463,14 @@ class ZipOpenFS extends BasePortableFakeFS {
   async lstatPromise(p, opts) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.lstatPromise(p, opts);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.lstatPromise(subPath, opts);
     });
   }
   lstatSync(p, opts) {
     return this.makeCallSync(p, () => {
       return this.baseFs.lstatSync(p, opts);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.lstatSync(subPath, opts);
     });
   }
@@ -39405,28 +39495,46 @@ class ZipOpenFS extends BasePortableFakeFS {
   async chmodPromise(p, mask) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.chmodPromise(p, mask);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.chmodPromise(subPath, mask);
     });
   }
   chmodSync(p, mask) {
     return this.makeCallSync(p, () => {
       return this.baseFs.chmodSync(p, mask);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.chmodSync(subPath, mask);
     });
+  }
+  async fchownPromise(fd, uid, gid) {
+    if ((fd & ZIP_MASK) !== ZIP_MAGIC)
+      return this.baseFs.fchownPromise(fd, uid, gid);
+    const entry = this.fdMap.get(fd);
+    if (typeof entry === `undefined`)
+      throw EBADF(`fchown`);
+    const [zipFs, realFd] = entry;
+    return zipFs.fchownPromise(realFd, uid, gid);
+  }
+  fchownSync(fd, uid, gid) {
+    if ((fd & ZIP_MASK) !== ZIP_MAGIC)
+      return this.baseFs.fchownSync(fd, uid, gid);
+    const entry = this.fdMap.get(fd);
+    if (typeof entry === `undefined`)
+      throw EBADF(`fchownSync`);
+    const [zipFs, realFd] = entry;
+    return zipFs.fchownSync(realFd, uid, gid);
   }
   async chownPromise(p, uid, gid) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.chownPromise(p, uid, gid);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.chownPromise(subPath, uid, gid);
     });
   }
   chownSync(p, uid, gid) {
     return this.makeCallSync(p, () => {
       return this.baseFs.chownSync(p, uid, gid);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.chownSync(subPath, uid, gid);
     });
   }
@@ -39435,14 +39543,14 @@ class ZipOpenFS extends BasePortableFakeFS {
       return await this.makeCallPromise(newP, async () => {
         return await this.baseFs.renamePromise(oldP, newP);
       }, async () => {
-        throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), {code: `EEXDEV`});
+        throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), { code: `EEXDEV` });
       });
-    }, async (zipFsO, {subPath: subPathO}) => {
+    }, async (zipFsO, { subPath: subPathO }) => {
       return await this.makeCallPromise(newP, async () => {
-        throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), {code: `EEXDEV`});
-      }, async (zipFsN, {subPath: subPathN}) => {
+        throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), { code: `EEXDEV` });
+      }, async (zipFsN, { subPath: subPathN }) => {
         if (zipFsO !== zipFsN) {
-          throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), {code: `EEXDEV`});
+          throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), { code: `EEXDEV` });
         } else {
           return await zipFsO.renamePromise(subPathO, subPathN);
         }
@@ -39454,14 +39562,14 @@ class ZipOpenFS extends BasePortableFakeFS {
       return this.makeCallSync(newP, () => {
         return this.baseFs.renameSync(oldP, newP);
       }, () => {
-        throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), {code: `EEXDEV`});
+        throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), { code: `EEXDEV` });
       });
-    }, (zipFsO, {subPath: subPathO}) => {
+    }, (zipFsO, { subPath: subPathO }) => {
       return this.makeCallSync(newP, () => {
-        throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), {code: `EEXDEV`});
-      }, (zipFsN, {subPath: subPathN}) => {
+        throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), { code: `EEXDEV` });
+      }, (zipFsN, { subPath: subPathN }) => {
         if (zipFsO !== zipFsN) {
-          throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), {code: `EEXDEV`});
+          throw Object.assign(new Error(`EEXDEV: cross-device link not permitted`), { code: `EEXDEV` });
         } else {
           return zipFsO.renameSync(subPathO, subPathN);
         }
@@ -39471,27 +39579,27 @@ class ZipOpenFS extends BasePortableFakeFS {
   async copyFilePromise(sourceP, destP, flags = 0) {
     const fallback = async (sourceFs, sourceP2, destFs, destP2) => {
       if ((flags & fs.constants.COPYFILE_FICLONE_FORCE) !== 0)
-        throw Object.assign(new Error(`EXDEV: cross-device clone not permitted, copyfile '${sourceP2}' -> ${destP2}'`), {code: `EXDEV`});
+        throw Object.assign(new Error(`EXDEV: cross-device clone not permitted, copyfile '${sourceP2}' -> ${destP2}'`), { code: `EXDEV` });
       if (flags & fs.constants.COPYFILE_EXCL && await this.existsPromise(sourceP2))
-        throw Object.assign(new Error(`EEXIST: file already exists, copyfile '${sourceP2}' -> '${destP2}'`), {code: `EEXIST`});
+        throw Object.assign(new Error(`EEXIST: file already exists, copyfile '${sourceP2}' -> '${destP2}'`), { code: `EEXIST` });
       let content;
       try {
         content = await sourceFs.readFilePromise(sourceP2);
       } catch (error) {
-        throw Object.assign(new Error(`EINVAL: invalid argument, copyfile '${sourceP2}' -> '${destP2}'`), {code: `EINVAL`});
+        throw Object.assign(new Error(`EINVAL: invalid argument, copyfile '${sourceP2}' -> '${destP2}'`), { code: `EINVAL` });
       }
       await destFs.writeFilePromise(destP2, content);
     };
     return await this.makeCallPromise(sourceP, async () => {
       return await this.makeCallPromise(destP, async () => {
         return await this.baseFs.copyFilePromise(sourceP, destP, flags);
-      }, async (zipFsD, {subPath: subPathD}) => {
+      }, async (zipFsD, { subPath: subPathD }) => {
         return await fallback(this.baseFs, sourceP, zipFsD, subPathD);
       });
-    }, async (zipFsS, {subPath: subPathS}) => {
+    }, async (zipFsS, { subPath: subPathS }) => {
       return await this.makeCallPromise(destP, async () => {
         return await fallback(zipFsS, subPathS, this.baseFs, destP);
-      }, async (zipFsD, {subPath: subPathD}) => {
+      }, async (zipFsD, { subPath: subPathD }) => {
         if (zipFsS !== zipFsD) {
           return await fallback(zipFsS, subPathS, zipFsD, subPathD);
         } else {
@@ -39503,27 +39611,27 @@ class ZipOpenFS extends BasePortableFakeFS {
   copyFileSync(sourceP, destP, flags = 0) {
     const fallback = (sourceFs, sourceP2, destFs, destP2) => {
       if ((flags & fs.constants.COPYFILE_FICLONE_FORCE) !== 0)
-        throw Object.assign(new Error(`EXDEV: cross-device clone not permitted, copyfile '${sourceP2}' -> ${destP2}'`), {code: `EXDEV`});
+        throw Object.assign(new Error(`EXDEV: cross-device clone not permitted, copyfile '${sourceP2}' -> ${destP2}'`), { code: `EXDEV` });
       if (flags & fs.constants.COPYFILE_EXCL && this.existsSync(sourceP2))
-        throw Object.assign(new Error(`EEXIST: file already exists, copyfile '${sourceP2}' -> '${destP2}'`), {code: `EEXIST`});
+        throw Object.assign(new Error(`EEXIST: file already exists, copyfile '${sourceP2}' -> '${destP2}'`), { code: `EEXIST` });
       let content;
       try {
         content = sourceFs.readFileSync(sourceP2);
       } catch (error) {
-        throw Object.assign(new Error(`EINVAL: invalid argument, copyfile '${sourceP2}' -> '${destP2}'`), {code: `EINVAL`});
+        throw Object.assign(new Error(`EINVAL: invalid argument, copyfile '${sourceP2}' -> '${destP2}'`), { code: `EINVAL` });
       }
       destFs.writeFileSync(destP2, content);
     };
     return this.makeCallSync(sourceP, () => {
       return this.makeCallSync(destP, () => {
         return this.baseFs.copyFileSync(sourceP, destP, flags);
-      }, (zipFsD, {subPath: subPathD}) => {
+      }, (zipFsD, { subPath: subPathD }) => {
         return fallback(this.baseFs, sourceP, zipFsD, subPathD);
       });
-    }, (zipFsS, {subPath: subPathS}) => {
+    }, (zipFsS, { subPath: subPathS }) => {
       return this.makeCallSync(destP, () => {
         return fallback(zipFsS, subPathS, this.baseFs, destP);
-      }, (zipFsD, {subPath: subPathD}) => {
+      }, (zipFsD, { subPath: subPathD }) => {
         if (zipFsS !== zipFsD) {
           return fallback(zipFsS, subPathS, zipFsD, subPathD);
         } else {
@@ -39535,143 +39643,133 @@ class ZipOpenFS extends BasePortableFakeFS {
   async appendFilePromise(p, content, opts) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.appendFilePromise(p, content, opts);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.appendFilePromise(subPath, content, opts);
     });
   }
   appendFileSync(p, content, opts) {
     return this.makeCallSync(p, () => {
       return this.baseFs.appendFileSync(p, content, opts);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.appendFileSync(subPath, content, opts);
     });
   }
   async writeFilePromise(p, content, opts) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.writeFilePromise(p, content, opts);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.writeFilePromise(subPath, content, opts);
     });
   }
   writeFileSync(p, content, opts) {
     return this.makeCallSync(p, () => {
       return this.baseFs.writeFileSync(p, content, opts);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.writeFileSync(subPath, content, opts);
     });
   }
   async unlinkPromise(p) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.unlinkPromise(p);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.unlinkPromise(subPath);
     });
   }
   unlinkSync(p) {
     return this.makeCallSync(p, () => {
       return this.baseFs.unlinkSync(p);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.unlinkSync(subPath);
     });
   }
   async utimesPromise(p, atime, mtime) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.utimesPromise(p, atime, mtime);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.utimesPromise(subPath, atime, mtime);
     });
   }
   utimesSync(p, atime, mtime) {
     return this.makeCallSync(p, () => {
       return this.baseFs.utimesSync(p, atime, mtime);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.utimesSync(subPath, atime, mtime);
     });
   }
   async mkdirPromise(p, opts) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.mkdirPromise(p, opts);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.mkdirPromise(subPath, opts);
     });
   }
   mkdirSync(p, opts) {
     return this.makeCallSync(p, () => {
       return this.baseFs.mkdirSync(p, opts);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.mkdirSync(subPath, opts);
     });
   }
   async rmdirPromise(p, opts) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.rmdirPromise(p, opts);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.rmdirPromise(subPath, opts);
     });
   }
   rmdirSync(p, opts) {
     return this.makeCallSync(p, () => {
       return this.baseFs.rmdirSync(p, opts);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.rmdirSync(subPath, opts);
     });
   }
   async linkPromise(existingP, newP) {
     return await this.makeCallPromise(newP, async () => {
       return await this.baseFs.linkPromise(existingP, newP);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.linkPromise(existingP, subPath);
     });
   }
   linkSync(existingP, newP) {
     return this.makeCallSync(newP, () => {
       return this.baseFs.linkSync(existingP, newP);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.linkSync(existingP, subPath);
     });
   }
   async symlinkPromise(target, p, type) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.symlinkPromise(target, p, type);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.symlinkPromise(target, subPath);
     });
   }
   symlinkSync(target, p, type) {
     return this.makeCallSync(p, () => {
       return this.baseFs.symlinkSync(target, p, type);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.symlinkSync(target, subPath);
     });
   }
   async readFilePromise(p, encoding) {
     return this.makeCallPromise(p, async () => {
-      switch (encoding) {
-        case `utf8`:
-          return await this.baseFs.readFilePromise(p, encoding);
-        default:
-          return await this.baseFs.readFilePromise(p, encoding);
-      }
-    }, async (zipFs, {subPath}) => {
+      return await this.baseFs.readFilePromise(p, encoding);
+    }, async (zipFs, { subPath }) => {
       return await zipFs.readFilePromise(subPath, encoding);
     });
   }
   readFileSync(p, encoding) {
     return this.makeCallSync(p, () => {
-      switch (encoding) {
-        case `utf8`:
-          return this.baseFs.readFileSync(p, encoding);
-        default:
-          return this.baseFs.readFileSync(p, encoding);
-      }
-    }, (zipFs, {subPath}) => {
+      return this.baseFs.readFileSync(p, encoding);
+    }, (zipFs, { subPath }) => {
       return zipFs.readFileSync(subPath, encoding);
     });
   }
   async readdirPromise(p, opts) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.readdirPromise(p, opts);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.readdirPromise(subPath, opts);
     }, {
       requireSubpath: false
@@ -39680,7 +39778,7 @@ class ZipOpenFS extends BasePortableFakeFS {
   readdirSync(p, opts) {
     return this.makeCallSync(p, () => {
       return this.baseFs.readdirSync(p, opts);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.readdirSync(subPath, opts);
     }, {
       requireSubpath: false
@@ -39689,28 +39787,28 @@ class ZipOpenFS extends BasePortableFakeFS {
   async readlinkPromise(p) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.readlinkPromise(p);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.readlinkPromise(subPath);
     });
   }
   readlinkSync(p) {
     return this.makeCallSync(p, () => {
       return this.baseFs.readlinkSync(p);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.readlinkSync(subPath);
     });
   }
   async truncatePromise(p, len) {
     return await this.makeCallPromise(p, async () => {
       return await this.baseFs.truncatePromise(p, len);
-    }, async (zipFs, {subPath}) => {
+    }, async (zipFs, { subPath }) => {
       return await zipFs.truncatePromise(subPath, len);
     });
   }
   truncateSync(p, len) {
     return this.makeCallSync(p, () => {
       return this.baseFs.truncateSync(p, len);
-    }, (zipFs, {subPath}) => {
+    }, (zipFs, { subPath }) => {
       return zipFs.truncateSync(subPath, len);
     });
   }
@@ -39734,14 +39832,26 @@ class ZipOpenFS extends BasePortableFakeFS {
   }
   watch(p, a, b) {
     return this.makeCallSync(p, () => {
-      return this.baseFs.watch(p, a, b);
-    }, (zipFs, {subPath}) => {
-      return zipFs.watch(subPath, a, b);
+      return this.baseFs.watch(
+        p,
+        a,
+        b
+      );
+    }, (zipFs, { subPath }) => {
+      return zipFs.watch(
+        subPath,
+        a,
+        b
+      );
     });
   }
   watchFile(p, a, b) {
     return this.makeCallSync(p, () => {
-      return this.baseFs.watchFile(p, a, b);
+      return this.baseFs.watchFile(
+        p,
+        a,
+        b
+      );
     }, () => {
       return watchFile(this, p, a, b);
     });
@@ -39753,7 +39863,7 @@ class ZipOpenFS extends BasePortableFakeFS {
       return unwatchFile(this, p, cb);
     });
   }
-  async makeCallPromise(p, discard, accept, {requireSubpath = true} = {}) {
+  async makeCallPromise(p, discard, accept, { requireSubpath = true } = {}) {
     if (typeof p !== `string`)
       return await discard();
     const normalizedP = this.resolve(p);
@@ -39764,7 +39874,7 @@ class ZipOpenFS extends BasePortableFakeFS {
       return await discard();
     return await this.getZipPromise(zipInfo.archivePath, async (zipFs) => await accept(zipFs, zipInfo));
   }
-  makeCallSync(p, discard, accept, {requireSubpath = true} = {}) {
+  makeCallSync(p, discard, accept, { requireSubpath = true } = {}) {
     if (typeof p !== `string`)
       return discard();
     const normalizedP = this.resolve(p);
@@ -39820,7 +39930,7 @@ class ZipOpenFS extends BasePortableFakeFS {
     const now = Date.now();
     let nextExpiresAt = now + this.maxAge;
     let closeCount = max === null ? 0 : this.zipInstances.size - max;
-    for (const [path, {zipFs, expiresAt, refCount}] of this.zipInstances.entries()) {
+    for (const [path, { zipFs, expiresAt, refCount }] of this.zipInstances.entries()) {
       if (refCount !== 0 || zipFs.hasOpenFileHandles()) {
         continue;
       } else if (now >= expiresAt) {
@@ -39914,7 +40024,7 @@ class ZipOpenFS extends BasePortableFakeFS {
   }
 }
 
-class URLFS extends ProxiedFS {
+class NodePathFS extends ProxiedFS {
   constructor(baseFs) {
     super(npath);
     this.baseFs = baseFs;
@@ -39923,31 +40033,20 @@ class URLFS extends ProxiedFS {
     return path;
   }
   mapToBase(path) {
+    if (typeof path === `string`)
+      return path;
     if (path instanceof url.URL)
       return url.fileURLToPath(path);
-    return path;
+    if (Buffer.isBuffer(path)) {
+      const str = path.toString();
+      if (Buffer.byteLength(str) !== path.byteLength)
+        throw new Error(`Non-utf8 buffers are not supported at the moment. Please upvote the following issue if you encounter this error: https://github.com/yarnpkg/berry/issues/4942`);
+      return str;
+    }
+    throw new Error(`Unsupported path type: ${nodeUtils.inspect(path)}`);
   }
 }
 
-var __defProp$3 = Object.defineProperty;
-var __defProps$2 = Object.defineProperties;
-var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$4 = Object.getOwnPropertySymbols;
-var __hasOwnProp$4 = Object.prototype.hasOwnProperty;
-var __propIsEnum$4 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, {enumerable: true, configurable: true, writable: true, value}) : obj[key] = value;
-var __spreadValues$3 = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$4.call(b, prop))
-      __defNormalProp$3(a, prop, b[prop]);
-  if (__getOwnPropSymbols$4)
-    for (var prop of __getOwnPropSymbols$4(b)) {
-      if (__propIsEnum$4.call(b, prop))
-        __defNormalProp$3(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
 var _a, _b, _c, _d;
 const kBaseFs = Symbol(`kBaseFs`);
 const kFd = Symbol(`kFd`);
@@ -39974,13 +40073,18 @@ class FileHandle {
     try {
       this[kRef](this.appendFile);
       const encoding = (_a2 = typeof options === `string` ? options : options == null ? void 0 : options.encoding) != null ? _a2 : void 0;
-      return await this[kBaseFs].appendFilePromise(this.fd, data, encoding ? {encoding} : void 0);
+      return await this[kBaseFs].appendFilePromise(this.fd, data, encoding ? { encoding } : void 0);
     } finally {
       this[kUnref]();
     }
   }
-  chown(uid, gid) {
-    throw new Error(`Method not implemented.`);
+  async chown(uid, gid) {
+    try {
+      this[kRef](this.chown);
+      return await this[kBaseFs].fchownPromise(this.fd, uid, gid);
+    } finally {
+      this[kUnref]();
+    }
   }
   async chmod(mode) {
     try {
@@ -39991,10 +40095,10 @@ class FileHandle {
     }
   }
   createReadStream(options) {
-    return this[kBaseFs].createReadStream(null, __spreadProps$2(__spreadValues$3({}, options), {fd: this.fd}));
+    return this[kBaseFs].createReadStream(null, { ...options, fd: this.fd });
   }
   createWriteStream(options) {
-    return this[kBaseFs].createWriteStream(null, __spreadProps$2(__spreadValues$3({}, options), {fd: this.fd}));
+    return this[kBaseFs].createWriteStream(null, { ...options, fd: this.fd });
   }
   datasync() {
     throw new Error(`Method not implemented.`);
@@ -40043,6 +40147,12 @@ class FileHandle {
       this[kUnref]();
     }
   }
+  readLines(options) {
+    return readline.createInterface({
+      input: this.createReadStream(options),
+      crlfDelay: Infinity
+    });
+  }
   async stat(opts) {
     try {
       this[kRef](this.stat);
@@ -40078,11 +40188,11 @@ class FileHandle {
       if (ArrayBuffer.isView(args[0])) {
         const [buffer, offset, length, position] = args;
         const bytesWritten = await this[kBaseFs].writePromise(this.fd, buffer, offset != null ? offset : void 0, length != null ? length : void 0, position != null ? position : void 0);
-        return {bytesWritten, buffer};
+        return { bytesWritten, buffer };
       } else {
         const [data, position, encoding] = args;
         const bytesWritten = await this[kBaseFs].writePromise(this.fd, data, position, encoding);
-        return {bytesWritten, buffer: data};
+        return { bytesWritten, buffer: data };
       }
     } finally {
       this[kUnref]();
@@ -40158,7 +40268,7 @@ class FileHandle {
   }
 }
 
-const SYNC_IMPLEMENTATIONS = new Set([
+const SYNC_IMPLEMENTATIONS = /* @__PURE__ */ new Set([
   `accessSync`,
   `appendFileSync`,
   `createReadStream`,
@@ -40166,6 +40276,7 @@ const SYNC_IMPLEMENTATIONS = new Set([
   `chmodSync`,
   `fchmodSync`,
   `chownSync`,
+  `fchownSync`,
   `closeSync`,
   `copyFileSync`,
   `linkSync`,
@@ -40194,11 +40305,12 @@ const SYNC_IMPLEMENTATIONS = new Set([
   `writeFileSync`,
   `writeSync`
 ]);
-const ASYNC_IMPLEMENTATIONS = new Set([
+const ASYNC_IMPLEMENTATIONS = /* @__PURE__ */ new Set([
   `accessPromise`,
   `appendFilePromise`,
   `fchmodPromise`,
   `chmodPromise`,
+  `fchownPromise`,
   `chownPromise`,
   `closePromise`,
   `copyFilePromise`,
@@ -40226,7 +40338,7 @@ const ASYNC_IMPLEMENTATIONS = new Set([
   `writeSync`
 ]);
 function patchFs(patchedFs, fakeFs) {
-  fakeFs = new URLFS(fakeFs);
+  fakeFs = new NodePathFS(fakeFs);
   const setupFn = (target, name, replacement) => {
     const orig = target[name];
     target[name] = replacement;
@@ -40318,7 +40430,7 @@ function patchFs(patchedFs, fakeFs) {
       let [fd, buffer, offset, length, position] = args;
       if (args.length <= 3) {
         const options = args[2] || {};
-        ({offset = 0, length = buffer.byteLength, position} = options);
+        ({ offset = 0, length = buffer.byteLength, position } = options);
       }
       if (offset == null)
         offset = 0;
@@ -40341,47 +40453,37 @@ function patchFs(patchedFs, fakeFs) {
     patchedFs.realpathSync.native = patchedFs.realpathSync;
   }
   {
-    const origEmitWarning = process.emitWarning;
-    process.emitWarning = () => {
-    };
-    let patchedFsPromises;
-    try {
-      patchedFsPromises = patchedFs.promises;
-    } finally {
-      process.emitWarning = origEmitWarning;
-    }
-    if (typeof patchedFsPromises !== `undefined`) {
-      for (const fnName of ASYNC_IMPLEMENTATIONS) {
-        const origName = fnName.replace(/Promise$/, ``);
-        if (typeof patchedFsPromises[origName] === `undefined`)
-          continue;
-        const fakeImpl = fakeFs[fnName];
-        if (typeof fakeImpl === `undefined`)
-          continue;
-        if (fnName === `open`)
-          continue;
-        setupFn(patchedFsPromises, origName, (pathLike, ...args) => {
-          if (pathLike instanceof FileHandle) {
-            return pathLike[origName].apply(pathLike, args);
-          } else {
-            return fakeImpl.call(fakeFs, pathLike, ...args);
-          }
-        });
-      }
-      setupFn(patchedFsPromises, `open`, async (...args) => {
-        const fd = await fakeFs.openPromise(...args);
-        return new FileHandle(fd, fakeFs);
+    const patchedFsPromises = patchedFs.promises;
+    for (const fnName of ASYNC_IMPLEMENTATIONS) {
+      const origName = fnName.replace(/Promise$/, ``);
+      if (typeof patchedFsPromises[origName] === `undefined`)
+        continue;
+      const fakeImpl = fakeFs[fnName];
+      if (typeof fakeImpl === `undefined`)
+        continue;
+      if (fnName === `open`)
+        continue;
+      setupFn(patchedFsPromises, origName, (pathLike, ...args) => {
+        if (pathLike instanceof FileHandle) {
+          return pathLike[origName].apply(pathLike, args);
+        } else {
+          return fakeImpl.call(fakeFs, pathLike, ...args);
+        }
       });
     }
+    setupFn(patchedFsPromises, `open`, async (...args) => {
+      const fd = await fakeFs.openPromise(...args);
+      return new FileHandle(fd, fakeFs);
+    });
   }
   {
     patchedFs.read[nodeUtils.promisify.custom] = async (fd, buffer, ...args) => {
       const res = fakeFs.readPromise(fd, buffer, ...args);
-      return {bytesRead: await res, buffer};
+      return { bytesRead: await res, buffer };
     };
     patchedFs.write[nodeUtils.promisify.custom] = async (fd, buffer, ...args) => {
       const res = fakeFs.writePromise(fd, buffer, ...args);
-      return {bytesWritten: await res, buffer};
+      return { bytesWritten: await res, buffer };
     };
   }
 }
@@ -40511,7 +40613,10 @@ var createModule = function() {
     }
     function getCFunc(ident) {
       var func = Module["_" + ident];
-      assert(func, "Cannot call unknown function " + ident + ", make sure it is exported");
+      assert(
+        func,
+        "Cannot call unknown function " + ident + ", make sure it is exported"
+      );
       return func;
     }
     function ccall(ident, returnType, argTypes, args, opts) {
@@ -40810,14 +40915,16 @@ var createModule = function() {
         var str = e.toString();
         err("failed to compile wasm module: " + str);
         if (str.includes("imported Memory") || str.includes("memory import")) {
-          err("Memory size incompatibility issues may be due to changing INITIAL_MEMORY at runtime to something too large. Use ALLOW_MEMORY_GROWTH to allow any size memory (and also make sure not to set INITIAL_MEMORY at runtime to something smaller than it was at compile time).");
+          err(
+            "Memory size incompatibility issues may be due to changing INITIAL_MEMORY at runtime to something too large. Use ALLOW_MEMORY_GROWTH to allow any size memory (and also make sure not to set INITIAL_MEMORY at runtime to something smaller than it was at compile time)."
+          );
         }
         throw e;
       }
       return [instance, module2];
     }
     function createWasm() {
-      var info = {a: asmLibraryArg};
+      var info = { a: asmLibraryArg };
       function receiveInstance(instance, module2) {
         var exports3 = instance.exports;
         Module["asm"] = exports3;
@@ -40912,9 +41019,12 @@ var createModule = function() {
       },
       normalize: function(path) {
         var isAbsolute = path.charAt(0) === "/", trailingSlash = path.substr(-1) === "/";
-        path = PATH.normalizeArray(path.split("/").filter(function(p) {
-          return !!p;
-        }), !isAbsolute).join("/");
+        path = PATH.normalizeArray(
+          path.split("/").filter(function(p) {
+            return !!p;
+          }),
+          !isAbsolute
+        ).join("/");
         if (!path && !isAbsolute) {
           path = ".";
         }
@@ -40981,9 +41091,12 @@ var createModule = function() {
           resolvedPath = path + "/" + resolvedPath;
           resolvedAbsolute = path.charAt(0) === "/";
         }
-        resolvedPath = PATH.normalizeArray(resolvedPath.split("/").filter(function(p) {
-          return !!p;
-        }), !resolvedAbsolute).join("/");
+        resolvedPath = PATH.normalizeArray(
+          resolvedPath.split("/").filter(function(p) {
+            return !!p;
+          }),
+          !resolvedAbsolute
+        ).join("/");
         return (resolvedAbsolute ? "/" : "") + resolvedPath || ".";
       },
       relative: function(from, to) {
@@ -41029,7 +41142,7 @@ var createModule = function() {
       shutdown: function() {
       },
       register: function(dev, ops) {
-        TTY.ttys[dev] = {input: [], output: [], ops};
+        TTY.ttys[dev] = { input: [], output: [], ops };
         FS.registerDevice(dev, TTY.stream_ops);
       },
       stream_ops: {
@@ -41098,7 +41211,13 @@ var createModule = function() {
               var buf = Buffer.alloc ? Buffer.alloc(BUFSIZE) : new Buffer(BUFSIZE);
               var bytesRead = 0;
               try {
-                bytesRead = nodeFS.readSync(process.stdin.fd, buf, 0, BUFSIZE, null);
+                bytesRead = nodeFS.readSync(
+                  process.stdin.fd,
+                  buf,
+                  0,
+                  BUFSIZE,
+                  null
+                );
               } catch (e) {
                 if (e.toString().includes("EOF"))
                   bytesRead = 0;
@@ -41182,7 +41301,7 @@ var createModule = function() {
                 readdir: MEMFS.node_ops.readdir,
                 symlink: MEMFS.node_ops.symlink
               },
-              stream: {llseek: MEMFS.stream_ops.llseek}
+              stream: { llseek: MEMFS.stream_ops.llseek }
             },
             file: {
               node: {
@@ -41251,7 +41370,10 @@ var createModule = function() {
         if (prevCapacity >= newCapacity)
           return;
         var CAPACITY_DOUBLING_MAX = 1024 * 1024;
-        newCapacity = Math.max(newCapacity, prevCapacity * (prevCapacity < CAPACITY_DOUBLING_MAX ? 2 : 1.125) >>> 0);
+        newCapacity = Math.max(
+          newCapacity,
+          prevCapacity * (prevCapacity < CAPACITY_DOUBLING_MAX ? 2 : 1.125) >>> 0
+        );
         if (prevCapacity != 0)
           newCapacity = Math.max(newCapacity, 256);
         var oldContents = node.contents;
@@ -41269,7 +41391,9 @@ var createModule = function() {
           var oldContents = node.contents;
           node.contents = new Uint8Array(newSize);
           if (oldContents) {
-            node.contents.set(oldContents.subarray(0, Math.min(newSize, node.usedBytes)));
+            node.contents.set(
+              oldContents.subarray(0, Math.min(newSize, node.usedBytes))
+            );
           }
           node.usedBytes = newSize;
         }
@@ -41403,13 +41527,19 @@ var createModule = function() {
               node.usedBytes = length;
               return length;
             } else if (position + length <= node.usedBytes) {
-              node.contents.set(buffer2.subarray(offset, offset + length), position);
+              node.contents.set(
+                buffer2.subarray(offset, offset + length),
+                position
+              );
               return length;
             }
           }
           MEMFS.expandFileStorage(node, position + length);
           if (node.contents.subarray && buffer2.subarray) {
-            node.contents.set(buffer2.subarray(offset, offset + length), position);
+            node.contents.set(
+              buffer2.subarray(offset, offset + length),
+              position
+            );
           } else {
             for (var i = 0; i < length; i++) {
               node.contents[position + i] = buffer2[offset + i];
@@ -41434,7 +41564,10 @@ var createModule = function() {
         },
         allocate: function(stream, offset, length) {
           MEMFS.expandFileStorage(stream.node, offset + length);
-          stream.node.usedBytes = Math.max(stream.node.usedBytes, offset + length);
+          stream.node.usedBytes = Math.max(
+            stream.node.usedBytes,
+            offset + length
+          );
         },
         mmap: function(stream, address, length, position, prot, flags) {
           if (address !== 0) {
@@ -41454,7 +41587,11 @@ var createModule = function() {
               if (contents.subarray) {
                 contents = contents.subarray(position, position + length);
               } else {
-                contents = Array.prototype.slice.call(contents, position, position + length);
+                contents = Array.prototype.slice.call(
+                  contents,
+                  position,
+                  position + length
+                );
               }
             }
             allocated = true;
@@ -41464,7 +41601,7 @@ var createModule = function() {
             }
             HEAP8.set(contents, ptr);
           }
-          return {ptr, allocated};
+          return { ptr, allocated };
         },
         msync: function(stream, buffer2, offset, length, mmapFlags) {
           if (!FS.isFile(stream.node.mode)) {
@@ -41473,7 +41610,14 @@ var createModule = function() {
           if (mmapFlags & 2) {
             return 0;
           }
-          MEMFS.stream_ops.write(stream, buffer2, 0, length, offset, false);
+          MEMFS.stream_ops.write(
+            stream,
+            buffer2,
+            0,
+            length,
+            offset,
+            false
+          );
           return 0;
         }
       }
@@ -41605,7 +41749,7 @@ var createModule = function() {
       isWindows: false,
       staticInit: function() {
         NODEFS.isWindows = !!process.platform.match(/^win/);
-        var flags = {fs: fs.constants};
+        var flags = { fs: fs.constants };
         if (flags["fs"]) {
           flags = flags["fs"];
         }
@@ -41747,7 +41891,7 @@ var createModule = function() {
             if (FS.isDir(node.mode)) {
               fs.mkdirSync(path, node.mode);
             } else {
-              fs.writeFileSync(path, "", {mode: node.mode});
+              fs.writeFileSync(path, "", { mode: node.mode });
             }
           } catch (e) {
             if (!e.code)
@@ -41812,7 +41956,10 @@ var createModule = function() {
           var path = NODEFS.realPath(node);
           try {
             path = fs.readlinkSync(path);
-            path = NODEJS_PATH.relative(NODEJS_PATH.resolve(node.mount.opts.root), path);
+            path = NODEJS_PATH.relative(
+              NODEJS_PATH.resolve(node.mount.opts.root),
+              path
+            );
             return path;
           } catch (e) {
             if (!e.code)
@@ -41849,14 +41996,26 @@ var createModule = function() {
           if (length === 0)
             return 0;
           try {
-            return fs.readSync(stream.nfd, NODEFS.bufferFrom(buffer2.buffer), offset, length, position);
+            return fs.readSync(
+              stream.nfd,
+              NODEFS.bufferFrom(buffer2.buffer),
+              offset,
+              length,
+              position
+            );
           } catch (e) {
             throw new FS.ErrnoError(NODEFS.convertNodeCode(e));
           }
         },
         write: function(stream, buffer2, offset, length, position) {
           try {
-            return fs.writeSync(stream.nfd, NODEFS.bufferFrom(buffer2.buffer), offset, length, position);
+            return fs.writeSync(
+              stream.nfd,
+              NODEFS.bufferFrom(buffer2.buffer),
+              offset,
+              length,
+              position
+            );
           } catch (e) {
             throw new FS.ErrnoError(NODEFS.convertNodeCode(e));
           }
@@ -41889,7 +42048,7 @@ var createModule = function() {
           }
           var ptr = mmapAlloc(length);
           NODEFS.stream_ops.read(stream, HEAP8, ptr, length, position);
-          return {ptr, allocated: true};
+          return { ptr, allocated: true };
         },
         msync: function(stream, buffer2, offset, length, mmapFlags) {
           if (!FS.isFile(stream.node.mode)) {
@@ -41898,14 +42057,21 @@ var createModule = function() {
           if (mmapFlags & 2) {
             return 0;
           }
-          NODEFS.stream_ops.write(stream, buffer2, 0, length, offset, false);
+          NODEFS.stream_ops.write(
+            stream,
+            buffer2,
+            0,
+            length,
+            offset,
+            false
+          );
           return 0;
         }
       }
     };
     var NODERAWFS = {
       lookupPath: function(path) {
-        return {path, node: {mode: NODEFS.getMode(path)}};
+        return { path, node: { mode: NODEFS.getMode(path) } };
       },
       createStandardStreams: function() {
         FS.streams[0] = {
@@ -41939,7 +42105,7 @@ var createModule = function() {
         if (FS.isDir(path)) {
           fs.mkdirSync(path, mode);
         } else {
-          fs.writeFileSync(path, "", {mode});
+          fs.writeFileSync(path, "", { mode });
         }
       },
       mkdir: function() {
@@ -42041,7 +42207,13 @@ var createModule = function() {
         var seeking = typeof position !== "undefined";
         if (!seeking && stream.seekable)
           position = stream.position;
-        var bytesRead = fs.readSync(stream.nfd, NODEFS.bufferFrom(buffer2.buffer), offset, length, position);
+        var bytesRead = fs.readSync(
+          stream.nfd,
+          NODEFS.bufferFrom(buffer2.buffer),
+          offset,
+          length,
+          position
+        );
         if (!seeking)
           stream.position += bytesRead;
         return bytesRead;
@@ -42056,7 +42228,13 @@ var createModule = function() {
         var seeking = typeof position !== "undefined";
         if (!seeking && stream.seekable)
           position = stream.position;
-        var bytesWritten = fs.writeSync(stream.nfd, NODEFS.bufferFrom(buffer2.buffer), offset, length, position);
+        var bytesWritten = fs.writeSync(
+          stream.nfd,
+          NODEFS.bufferFrom(buffer2.buffer),
+          offset,
+          length,
+          position
+        );
         if (!seeking)
           stream.position += bytesWritten;
         return bytesWritten;
@@ -42073,7 +42251,7 @@ var createModule = function() {
         }
         var ptr = mmapAlloc(length);
         FS.read(stream, HEAP8, ptr, length, position);
-        return {ptr, allocated: true};
+        return { ptr, allocated: true };
       },
       msync: function(stream, buffer2, offset, length, mmapFlags) {
         if (stream.stream_ops) {
@@ -42103,7 +42281,7 @@ var createModule = function() {
       initialized: false,
       ignorePermissions: true,
       trackingDelegate: {},
-      tracking: {openFlags: {READ: 1, WRITE: 2}},
+      tracking: { openFlags: { READ: 1, WRITE: 2 } },
       ErrnoError: null,
       genericErrors: {},
       filesystems: null,
@@ -42112,8 +42290,8 @@ var createModule = function() {
         path = PATH_FS.resolve(FS.cwd(), path);
         opts = opts || {};
         if (!path)
-          return {path: "", node: null};
-        var defaults = {follow_mount: true, recurse_count: 0};
+          return { path: "", node: null };
+        var defaults = { follow_mount: true, recurse_count: 0 };
         for (var key2 in defaults) {
           if (opts[key2] === void 0) {
             opts[key2] = defaults[key2];
@@ -42122,9 +42300,12 @@ var createModule = function() {
         if (opts.recurse_count > 8) {
           throw new FS.ErrnoError(32);
         }
-        var parts = PATH.normalizeArray(path.split("/").filter(function(p) {
-          return !!p;
-        }), false);
+        var parts = PATH.normalizeArray(
+          path.split("/").filter(function(p) {
+            return !!p;
+          }),
+          false
+        );
         var current = FS.root;
         var current_path = "/";
         for (var i = 0; i < parts.length; i++) {
@@ -42154,7 +42335,7 @@ var createModule = function() {
             }
           }
         }
-        return {path: current_path, node: current};
+        return { path: current_path, node: current };
       },
       getPath: function(node) {
         var path;
@@ -42245,7 +42426,7 @@ var createModule = function() {
       isSocket: function(mode) {
         return (mode & 49152) === 49152;
       },
-      flagModes: {r: 0, "r+": 2, w: 577, "w+": 578, a: 1089, "a+": 1090},
+      flagModes: { r: 0, "r+": 2, w: 577, "w+": 578, a: 1089, "a+": 1090 },
       modeStringToFlags: function(str) {
         var flags = FS.flagModes[str];
         if (typeof flags === "undefined") {
@@ -42406,7 +42587,7 @@ var createModule = function() {
         return ma << 8 | mi;
       },
       registerDevice: function(dev, ops) {
-        FS.devices[dev] = {stream_ops: ops};
+        FS.devices[dev] = { stream_ops: ops };
       },
       getDevice: function(dev) {
         return FS.devices[dev];
@@ -42428,7 +42609,9 @@ var createModule = function() {
         }
         FS.syncFSRequests++;
         if (FS.syncFSRequests > 1) {
-          err("warning: " + FS.syncFSRequests + " FS.syncfs operations in flight at once, probably just doing extra work");
+          err(
+            "warning: " + FS.syncFSRequests + " FS.syncfs operations in flight at once, probably just doing extra work"
+          );
         }
         var mounts = FS.getMounts(FS.root.mount);
         var completed = 0;
@@ -42462,7 +42645,7 @@ var createModule = function() {
         if (root && FS.root) {
           throw new FS.ErrnoError(10);
         } else if (!root && !pseudo) {
-          var lookup = FS.lookupPath(mountpoint, {follow_mount: false});
+          var lookup = FS.lookupPath(mountpoint, { follow_mount: false });
           mountpoint = lookup.path;
           node = lookup.node;
           if (FS.isMountpoint(node)) {
@@ -42492,7 +42675,7 @@ var createModule = function() {
         return mountRoot;
       },
       unmount: function(mountpoint) {
-        var lookup = FS.lookupPath(mountpoint, {follow_mount: false});
+        var lookup = FS.lookupPath(mountpoint, { follow_mount: false });
         if (!FS.isMountpoint(lookup.node)) {
           throw new FS.ErrnoError(28);
         }
@@ -42517,7 +42700,7 @@ var createModule = function() {
         return parent.node_ops.lookup(parent, name);
       },
       mknod: function(path, mode, dev) {
-        var lookup = FS.lookupPath(path, {parent: true});
+        var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
         var name = PATH.basename(path);
         if (!name || name === "." || name === "..") {
@@ -42571,7 +42754,7 @@ var createModule = function() {
         if (!PATH_FS.resolve(oldpath)) {
           throw new FS.ErrnoError(44);
         }
-        var lookup = FS.lookupPath(newpath, {parent: true});
+        var lookup = FS.lookupPath(newpath, { parent: true });
         var parent = lookup.node;
         if (!parent) {
           throw new FS.ErrnoError(44);
@@ -42592,9 +42775,9 @@ var createModule = function() {
         var old_name = PATH.basename(old_path);
         var new_name = PATH.basename(new_path);
         var lookup, old_dir, new_dir;
-        lookup = FS.lookupPath(old_path, {parent: true});
+        lookup = FS.lookupPath(old_path, { parent: true });
         old_dir = lookup.node;
-        lookup = FS.lookupPath(new_path, {parent: true});
+        lookup = FS.lookupPath(new_path, { parent: true });
         new_dir = lookup.node;
         if (!old_dir || !new_dir)
           throw new FS.ErrnoError(44);
@@ -42644,7 +42827,9 @@ var createModule = function() {
             FS.trackingDelegate["willMovePath"](old_path, new_path);
           }
         } catch (e) {
-          err("FS.trackingDelegate['willMovePath']('" + old_path + "', '" + new_path + "') threw an exception: " + e.message);
+          err(
+            "FS.trackingDelegate['willMovePath']('" + old_path + "', '" + new_path + "') threw an exception: " + e.message
+          );
         }
         FS.hashRemoveNode(old_node);
         try {
@@ -42658,11 +42843,13 @@ var createModule = function() {
           if (FS.trackingDelegate["onMovePath"])
             FS.trackingDelegate["onMovePath"](old_path, new_path);
         } catch (e) {
-          err("FS.trackingDelegate['onMovePath']('" + old_path + "', '" + new_path + "') threw an exception: " + e.message);
+          err(
+            "FS.trackingDelegate['onMovePath']('" + old_path + "', '" + new_path + "') threw an exception: " + e.message
+          );
         }
       },
       rmdir: function(path) {
-        var lookup = FS.lookupPath(path, {parent: true});
+        var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
         var name = PATH.basename(path);
         var node = FS.lookupNode(parent, name);
@@ -42681,7 +42868,9 @@ var createModule = function() {
             FS.trackingDelegate["willDeletePath"](path);
           }
         } catch (e) {
-          err("FS.trackingDelegate['willDeletePath']('" + path + "') threw an exception: " + e.message);
+          err(
+            "FS.trackingDelegate['willDeletePath']('" + path + "') threw an exception: " + e.message
+          );
         }
         parent.node_ops.rmdir(parent, name);
         FS.destroyNode(node);
@@ -42689,11 +42878,13 @@ var createModule = function() {
           if (FS.trackingDelegate["onDeletePath"])
             FS.trackingDelegate["onDeletePath"](path);
         } catch (e) {
-          err("FS.trackingDelegate['onDeletePath']('" + path + "') threw an exception: " + e.message);
+          err(
+            "FS.trackingDelegate['onDeletePath']('" + path + "') threw an exception: " + e.message
+          );
         }
       },
       readdir: function(path) {
-        var lookup = FS.lookupPath(path, {follow: true});
+        var lookup = FS.lookupPath(path, { follow: true });
         var node = lookup.node;
         if (!node.node_ops.readdir) {
           throw new FS.ErrnoError(54);
@@ -42701,7 +42892,7 @@ var createModule = function() {
         return node.node_ops.readdir(node);
       },
       unlink: function(path) {
-        var lookup = FS.lookupPath(path, {parent: true});
+        var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
         var name = PATH.basename(path);
         var node = FS.lookupNode(parent, name);
@@ -42720,7 +42911,9 @@ var createModule = function() {
             FS.trackingDelegate["willDeletePath"](path);
           }
         } catch (e) {
-          err("FS.trackingDelegate['willDeletePath']('" + path + "') threw an exception: " + e.message);
+          err(
+            "FS.trackingDelegate['willDeletePath']('" + path + "') threw an exception: " + e.message
+          );
         }
         parent.node_ops.unlink(parent, name);
         FS.destroyNode(node);
@@ -42728,7 +42921,9 @@ var createModule = function() {
           if (FS.trackingDelegate["onDeletePath"])
             FS.trackingDelegate["onDeletePath"](path);
         } catch (e) {
-          err("FS.trackingDelegate['onDeletePath']('" + path + "') threw an exception: " + e.message);
+          err(
+            "FS.trackingDelegate['onDeletePath']('" + path + "') threw an exception: " + e.message
+          );
         }
       },
       readlink: function(path) {
@@ -42740,10 +42935,13 @@ var createModule = function() {
         if (!link.node_ops.readlink) {
           throw new FS.ErrnoError(28);
         }
-        return PATH_FS.resolve(FS.getPath(link.parent), link.node_ops.readlink(link));
+        return PATH_FS.resolve(
+          FS.getPath(link.parent),
+          link.node_ops.readlink(link)
+        );
       },
       stat: function(path, dontFollow) {
-        var lookup = FS.lookupPath(path, {follow: !dontFollow});
+        var lookup = FS.lookupPath(path, { follow: !dontFollow });
         var node = lookup.node;
         if (!node) {
           throw new FS.ErrnoError(44);
@@ -42759,7 +42957,7 @@ var createModule = function() {
       chmod: function(path, mode, dontFollow) {
         var node;
         if (typeof path === "string") {
-          var lookup = FS.lookupPath(path, {follow: !dontFollow});
+          var lookup = FS.lookupPath(path, { follow: !dontFollow });
           node = lookup.node;
         } else {
           node = path;
@@ -42785,7 +42983,7 @@ var createModule = function() {
       chown: function(path, uid, gid, dontFollow) {
         var node;
         if (typeof path === "string") {
-          var lookup = FS.lookupPath(path, {follow: !dontFollow});
+          var lookup = FS.lookupPath(path, { follow: !dontFollow });
           node = lookup.node;
         } else {
           node = path;
@@ -42793,7 +42991,7 @@ var createModule = function() {
         if (!node.node_ops.setattr) {
           throw new FS.ErrnoError(63);
         }
-        node.node_ops.setattr(node, {timestamp: Date.now()});
+        node.node_ops.setattr(node, { timestamp: Date.now() });
       },
       lchown: function(path, uid, gid) {
         FS.chown(path, uid, gid, true);
@@ -42811,7 +43009,7 @@ var createModule = function() {
         }
         var node;
         if (typeof path === "string") {
-          var lookup = FS.lookupPath(path, {follow: true});
+          var lookup = FS.lookupPath(path, { follow: true });
           node = lookup.node;
         } else {
           node = path;
@@ -42829,7 +43027,7 @@ var createModule = function() {
         if (errCode) {
           throw new FS.ErrnoError(errCode);
         }
-        node.node_ops.setattr(node, {size: len, timestamp: Date.now()});
+        node.node_ops.setattr(node, { size: len, timestamp: Date.now() });
       },
       ftruncate: function(fd, len) {
         var stream = FS.getStream(fd);
@@ -42842,9 +43040,9 @@ var createModule = function() {
         FS.truncate(stream.node, len);
       },
       utime: function(path, atime, mtime) {
-        var lookup = FS.lookupPath(path, {follow: true});
+        var lookup = FS.lookupPath(path, { follow: true });
         var node = lookup.node;
-        node.node_ops.setattr(node, {timestamp: Math.max(atime, mtime)});
+        node.node_ops.setattr(node, { timestamp: Math.max(atime, mtime) });
       },
       open: function(path, flags, mode, fd_start, fd_end) {
         if (path === "") {
@@ -42863,7 +43061,7 @@ var createModule = function() {
         } else {
           path = PATH.normalize(path);
           try {
-            var lookup = FS.lookupPath(path, {follow: !(flags & 131072)});
+            var lookup = FS.lookupPath(path, { follow: !(flags & 131072) });
             node = lookup.node;
           } catch (e) {
           }
@@ -42898,16 +43096,20 @@ var createModule = function() {
           FS.truncate(node, 0);
         }
         flags &= ~(128 | 512 | 131072);
-        var stream = FS.createStream({
-          node,
-          path: FS.getPath(node),
-          flags,
-          seekable: true,
-          position: 0,
-          stream_ops: node.stream_ops,
-          ungotten: [],
-          error: false
-        }, fd_start, fd_end);
+        var stream = FS.createStream(
+          {
+            node,
+            path: FS.getPath(node),
+            flags,
+            seekable: true,
+            position: 0,
+            stream_ops: node.stream_ops,
+            ungotten: [],
+            error: false
+          },
+          fd_start,
+          fd_end
+        );
         if (stream.stream_ops.open) {
           stream.stream_ops.open(stream);
         }
@@ -42931,7 +43133,9 @@ var createModule = function() {
             FS.trackingDelegate["onOpenFile"](path, trackingFlags);
           }
         } catch (e) {
-          err("FS.trackingDelegate['onOpenFile']('" + path + "', flags) threw an exception: " + e.message);
+          err(
+            "FS.trackingDelegate['onOpenFile']('" + path + "', flags) threw an exception: " + e.message
+          );
         }
         return stream;
       },
@@ -42991,7 +43195,13 @@ var createModule = function() {
         } else if (!stream.seekable) {
           throw new FS.ErrnoError(70);
         }
-        var bytesRead = stream.stream_ops.read(stream, buffer2, offset, length, position);
+        var bytesRead = stream.stream_ops.read(
+          stream,
+          buffer2,
+          offset,
+          length,
+          position
+        );
         if (!seeking)
           stream.position += bytesRead;
         return bytesRead;
@@ -43021,14 +43231,23 @@ var createModule = function() {
         } else if (!stream.seekable) {
           throw new FS.ErrnoError(70);
         }
-        var bytesWritten = stream.stream_ops.write(stream, buffer2, offset, length, position, canOwn);
+        var bytesWritten = stream.stream_ops.write(
+          stream,
+          buffer2,
+          offset,
+          length,
+          position,
+          canOwn
+        );
         if (!seeking)
           stream.position += bytesWritten;
         try {
           if (stream.path && FS.trackingDelegate["onWriteToFile"])
             FS.trackingDelegate["onWriteToFile"](stream.path);
         } catch (e) {
-          err("FS.trackingDelegate['onWriteToFile']('" + stream.path + "') threw an exception: " + e.message);
+          err(
+            "FS.trackingDelegate['onWriteToFile']('" + stream.path + "') threw an exception: " + e.message
+          );
         }
         return bytesWritten;
       },
@@ -43060,13 +43279,26 @@ var createModule = function() {
         if (!stream.stream_ops.mmap) {
           throw new FS.ErrnoError(43);
         }
-        return stream.stream_ops.mmap(stream, address, length, position, prot, flags);
+        return stream.stream_ops.mmap(
+          stream,
+          address,
+          length,
+          position,
+          prot,
+          flags
+        );
       },
       msync: function(stream, buffer2, offset, length, mmapFlags) {
         if (!stream || !stream.stream_ops.msync) {
           return 0;
         }
-        return stream.stream_ops.msync(stream, buffer2, offset, length, mmapFlags);
+        return stream.stream_ops.msync(
+          stream,
+          buffer2,
+          offset,
+          length,
+          mmapFlags
+        );
       },
       munmap: function(stream) {
         return 0;
@@ -43117,7 +43349,7 @@ var createModule = function() {
         return FS.currentPath;
       },
       chdir: function(path) {
-        var lookup = FS.lookupPath(path, {follow: true});
+        var lookup = FS.lookupPath(path, { follow: true });
         if (lookup.node === null) {
           throw new FS.ErrnoError(44);
         }
@@ -43160,31 +43392,35 @@ var createModule = function() {
         FS.mkdir("/proc");
         var proc_self = FS.mkdir("/proc/self");
         FS.mkdir("/proc/self/fd");
-        FS.mount({
-          mount: function() {
-            var node = FS.createNode(proc_self, "fd", 16384 | 511, 73);
-            node.node_ops = {
-              lookup: function(parent, name) {
-                var fd = +name;
-                var stream = FS.getStream(fd);
-                if (!stream)
-                  throw new FS.ErrnoError(8);
-                var ret = {
-                  parent: null,
-                  mount: {mountpoint: "fake"},
-                  node_ops: {
-                    readlink: function() {
-                      return stream.path;
+        FS.mount(
+          {
+            mount: function() {
+              var node = FS.createNode(proc_self, "fd", 16384 | 511, 73);
+              node.node_ops = {
+                lookup: function(parent, name) {
+                  var fd = +name;
+                  var stream = FS.getStream(fd);
+                  if (!stream)
+                    throw new FS.ErrnoError(8);
+                  var ret = {
+                    parent: null,
+                    mount: { mountpoint: "fake" },
+                    node_ops: {
+                      readlink: function() {
+                        return stream.path;
+                      }
                     }
-                  }
-                };
-                ret.parent = ret;
-                return ret;
-              }
-            };
-            return node;
-          }
-        }, {}, "/proc/self/fd");
+                  };
+                  ret.parent = ret;
+                  return ret;
+                }
+              };
+              return node;
+            }
+          },
+          {},
+          "/proc/self/fd"
+        );
       },
       createStandardStreams: function() {
         if (Module["stdin"]) {
@@ -43231,7 +43467,7 @@ var createModule = function() {
         FS.createDefaultDirectories();
         FS.createDefaultDevices();
         FS.createSpecialDirectories();
-        FS.filesystems = {MEMFS, NODEFS};
+        FS.filesystems = { MEMFS, NODEFS };
       },
       init: function(input, output, error) {
         FS.init.initialized = true;
@@ -43272,7 +43508,7 @@ var createModule = function() {
       },
       analyzePath: function(path, dontResolveLastLink) {
         try {
-          var lookup = FS.lookupPath(path, {follow: !dontResolveLastLink});
+          var lookup = FS.lookupPath(path, { follow: !dontResolveLastLink });
           path = lookup.path;
         } catch (e) {
         }
@@ -43288,12 +43524,12 @@ var createModule = function() {
           parentObject: null
         };
         try {
-          var lookup = FS.lookupPath(path, {parent: true});
+          var lookup = FS.lookupPath(path, { parent: true });
           ret.parentExists = true;
           ret.parentPath = lookup.path;
           ret.parentObject = lookup.node;
           ret.name = PATH.basename(path);
-          lookup = FS.lookupPath(path, {follow: !dontResolveLastLink});
+          lookup = FS.lookupPath(path, { follow: !dontResolveLastLink });
           ret.exists = true;
           ret.path = lookup.path;
           ret.object = lookup.node;
@@ -43321,12 +43557,18 @@ var createModule = function() {
         return current;
       },
       createFile: function(parent, name, properties, canRead, canWrite) {
-        var path = PATH.join2(typeof parent === "string" ? parent : FS.getPath(parent), name);
+        var path = PATH.join2(
+          typeof parent === "string" ? parent : FS.getPath(parent),
+          name
+        );
         var mode = FS.getMode(canRead, canWrite);
         return FS.create(path, mode);
       },
       createDataFile: function(parent, name, data, canRead, canWrite, canOwn) {
-        var path = name ? PATH.join2(typeof parent === "string" ? parent : FS.getPath(parent), name) : parent;
+        var path = name ? PATH.join2(
+          typeof parent === "string" ? parent : FS.getPath(parent),
+          name
+        ) : parent;
         var mode = FS.getMode(canRead, canWrite);
         var node = FS.create(path, mode);
         if (data) {
@@ -43345,7 +43587,10 @@ var createModule = function() {
         return node;
       },
       createDevice: function(parent, name, input, output) {
-        var path = PATH.join2(typeof parent === "string" ? parent : FS.getPath(parent), name);
+        var path = PATH.join2(
+          typeof parent === "string" ? parent : FS.getPath(parent),
+          name
+        );
         var mode = FS.getMode(!!input, !!output);
         if (!FS.createDevice.major)
           FS.createDevice.major = 64;
@@ -43413,7 +43658,7 @@ var createModule = function() {
       },
       createLazyFile: function(parent, name, url, canRead, canWrite) {
         var properties; {
-          var properties = {isDevice: false, url};
+          var properties = { isDevice: false, url };
         }
         var node = FS.createFile(parent, name, properties, canRead, canWrite);
         if (properties.contents) {
@@ -43466,7 +43711,14 @@ var createModule = function() {
             if (preFinish)
               preFinish();
             if (!dontCreateFile) {
-              FS.createDataFile(parent, name, byteArray2, canRead, canWrite, canOwn);
+              FS.createDataFile(
+                parent,
+                name,
+                byteArray2,
+                canRead,
+                canWrite,
+                canOwn
+              );
             }
             if (onload)
               onload();
@@ -43490,9 +43742,13 @@ var createModule = function() {
         }
         addRunDependency();
         if (typeof url == "string") {
-          Browser.asyncLoad(url, function(byteArray) {
-            processData(byteArray);
-          }, onerror);
+          Browser.asyncLoad(
+            url,
+            function(byteArray) {
+              processData(byteArray);
+            },
+            onerror
+          );
         } else {
           processData(url);
         }
@@ -43533,7 +43789,10 @@ var createModule = function() {
               onerror();
           }
           paths.forEach(function(path) {
-            var putRequest = files.put(FS.analyzePath(path).object.contents, path);
+            var putRequest = files.put(
+              FS.analyzePath(path).object.contents,
+              path
+            );
             putRequest.onsuccess = function putRequest_onsuccess() {
               ok++;
               if (ok + fail == total)
@@ -43583,7 +43842,14 @@ var createModule = function() {
               if (FS.analyzePath(path).exists) {
                 FS.unlink(path);
               }
-              FS.createDataFile(PATH.dirname(path), PATH.basename(path), getRequest.result, true, true, true);
+              FS.createDataFile(
+                PATH.dirname(path),
+                PATH.basename(path),
+                getRequest.result,
+                true,
+                true,
+                true
+              );
               ok++;
               if (ok + fail == total)
                 finish();
@@ -43644,7 +43910,9 @@ var createModule = function() {
         HEAP32[buf + 32 >> 2] = 0;
         tempI64 = [
           stat.size >>> 0,
-          (tempDouble = stat.size, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0)
+          (tempDouble = stat.size, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil(
+            (tempDouble - +(~~tempDouble >>> 0)) / 4294967296
+          ) >>> 0 : 0)
         ], HEAP32[buf + 40 >> 2] = tempI64[0], HEAP32[buf + 44 >> 2] = tempI64[1];
         HEAP32[buf + 48 >> 2] = 4096;
         HEAP32[buf + 52 >> 2] = stat.blocks;
@@ -43656,7 +43924,9 @@ var createModule = function() {
         HEAP32[buf + 76 >> 2] = 0;
         tempI64 = [
           stat.ino >>> 0,
-          (tempDouble = stat.ino, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0)
+          (tempDouble = stat.ino, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil(
+            (tempDouble - +(~~tempDouble >>> 0)) / 4294967296
+          ) >>> 0 : 0)
         ], HEAP32[buf + 80 >> 2] = tempI64[0], HEAP32[buf + 84 >> 2] = tempI64[1];
         return 0;
       },
@@ -43700,7 +43970,7 @@ var createModule = function() {
           return -28;
         }
         var node;
-        var lookup = FS.lookupPath(path, {follow: true});
+        var lookup = FS.lookupPath(path, { follow: true });
         node = lookup.node;
         if (!node) {
           return -44;
@@ -43976,8 +44246,14 @@ var createModule = function() {
       }
       for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
         var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown);
-        overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296);
-        var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
+        overGrownHeapSize = Math.min(
+          overGrownHeapSize,
+          requestedSize + 100663296
+        );
+        var newSize = Math.min(
+          maxHeapSize,
+          alignUp(Math.max(requestedSize, overGrownHeapSize), 65536)
+        );
         var replacement = emscripten_realloc_buffer(newSize);
         if (replacement) {
           return true;
@@ -44032,7 +44308,9 @@ var createModule = function() {
         FS.llseek(stream, offset, whence);
         tempI64 = [
           stream.position >>> 0,
-          (tempDouble = stream.position, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0)
+          (tempDouble = stream.position, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil(
+            (tempDouble - +(~~tempDouble >>> 0)) / 4294967296
+          ) >>> 0 : 0)
         ], HEAP32[newOffset >> 2] = tempI64[0], HEAP32[newOffset + 4 >> 2] = tempI64[1];
         if (stream.getdents && offset === 0 && whence === 0)
           stream.getdents = null;
@@ -44094,7 +44372,15 @@ var createModule = function() {
     }
     function _timegm(tmPtr) {
       _tzset();
-      var time = Date.UTC(HEAP32[tmPtr + 20 >> 2] + 1900, HEAP32[tmPtr + 16 >> 2], HEAP32[tmPtr + 12 >> 2], HEAP32[tmPtr + 8 >> 2], HEAP32[tmPtr + 4 >> 2], HEAP32[tmPtr >> 2], 0);
+      var time = Date.UTC(
+        HEAP32[tmPtr + 20 >> 2] + 1900,
+        HEAP32[tmPtr + 16 >> 2],
+        HEAP32[tmPtr + 12 >> 2],
+        HEAP32[tmPtr + 8 >> 2],
+        HEAP32[tmPtr + 4 >> 2],
+        HEAP32[tmPtr >> 2],
+        0
+      );
       var date = new Date(time);
       HEAP32[tmPtr + 24 >> 2] = date.getUTCDay();
       var start = Date.UTC(date.getUTCFullYear(), 0, 1, 0, 0, 0, 0);
@@ -44172,7 +44458,12 @@ var createModule = function() {
     function intArrayFromString(stringy, dontAddNull, length) {
       var len = length > 0 ? length : lengthBytesUTF8(stringy) + 1;
       var u8array = new Array(len);
-      var numBytesWritten = stringToUTF8Array(stringy, u8array, 0, u8array.length);
+      var numBytesWritten = stringToUTF8Array(
+        stringy,
+        u8array,
+        0,
+        u8array.length
+      );
       if (dontAddNull)
         u8array.length = numBytesWritten;
       return u8array;
@@ -44185,7 +44476,11 @@ var createModule = function() {
         } catch (_) {
           buf = new Buffer(s, "base64");
         }
-        return new Uint8Array(buf["buffer"], buf["byteOffset"], buf["byteLength"]);
+        return new Uint8Array(
+          buf["buffer"],
+          buf["byteOffset"],
+          buf["byteLength"]
+        );
       }
     }
     function tryParseAsDataURI(filename) {
@@ -44338,8 +44633,7 @@ const number64 = [
   `number`,
   `number`
 ];
-var Errors;
-(function(Errors2) {
+var Errors = /* @__PURE__ */ ((Errors2) => {
   Errors2[Errors2["ZIP_ER_OK"] = 0] = "ZIP_ER_OK";
   Errors2[Errors2["ZIP_ER_MULTIDISK"] = 1] = "ZIP_ER_MULTIDISK";
   Errors2[Errors2["ZIP_ER_RENAME"] = 2] = "ZIP_ER_RENAME";
@@ -44372,7 +44666,8 @@ var Errors;
   Errors2[Errors2["ZIP_ER_INUSE"] = 29] = "ZIP_ER_INUSE";
   Errors2[Errors2["ZIP_ER_TELL"] = 30] = "ZIP_ER_TELL";
   Errors2[Errors2["ZIP_ER_COMPRESSED_DATA"] = 31] = "ZIP_ER_COMPRESSED_DATA";
-})(Errors || (Errors = {}));
+  return Errors2;
+})(Errors || {});
 const makeInterface = (libzip) => ({
   get HEAP8() {
     return libzip.HEAP8;
@@ -44457,7 +44752,7 @@ const makeInterface = (libzip) => ({
     locate: libzip.cwrap(`zip_name_locate`, `number`, [`number`, `string`, `number`])
   },
   source: {
-    fromUnattachedBuffer: libzip.cwrap(`zip_source_buffer_create`, `number`, [`number`, `number`, `number`, `number`]),
+    fromUnattachedBuffer: libzip.cwrap(`zip_source_buffer_create`, `number`, [`number`, ...number64, `number`, `number`]),
     fromBuffer: libzip.cwrap(`zip_source_buffer`, `number`, [`number`, `number`, ...number64, `number`]),
     free: libzip.cwrap(`zip_source_free`, null, [`number`]),
     keep: libzip.cwrap(`zip_source_keep`, null, [`number`]),
@@ -44492,27 +44787,7 @@ function getLibzipSync() {
   return mod;
 }
 
-var __defProp$2 = Object.defineProperty;
-var __defProps$1 = Object.defineProperties;
-var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
-var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
-var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, {enumerable: true, configurable: true, writable: true, value}) : obj[key] = value;
-var __spreadValues$2 = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$3.call(b, prop))
-      __defNormalProp$2(a, prop, b[prop]);
-  if (__getOwnPropSymbols$3)
-    for (var prop of __getOwnPropSymbols$3(b)) {
-      if (__propIsEnum$3.call(b, prop))
-        __defNormalProp$2(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
-var ErrorCode;
-(function(ErrorCode2) {
+var ErrorCode = /* @__PURE__ */ ((ErrorCode2) => {
   ErrorCode2["API_ERROR"] = `API_ERROR`;
   ErrorCode2["BUILTIN_NODE_RESOLUTION_FAILED"] = `BUILTIN_NODE_RESOLUTION_FAILED`;
   ErrorCode2["EXPORTS_RESOLUTION_FAILED"] = `EXPORTS_RESOLUTION_FAILED`;
@@ -44522,13 +44797,14 @@ var ErrorCode;
   ErrorCode2["INTERNAL"] = `INTERNAL`;
   ErrorCode2["UNDECLARED_DEPENDENCY"] = `UNDECLARED_DEPENDENCY`;
   ErrorCode2["UNSUPPORTED"] = `UNSUPPORTED`;
-})(ErrorCode || (ErrorCode = {}));
-const MODULE_NOT_FOUND_ERRORS = new Set([
-  ErrorCode.BUILTIN_NODE_RESOLUTION_FAILED,
-  ErrorCode.MISSING_DEPENDENCY,
-  ErrorCode.MISSING_PEER_DEPENDENCY,
-  ErrorCode.QUALIFIED_PATH_RESOLUTION_FAILED,
-  ErrorCode.UNDECLARED_DEPENDENCY
+  return ErrorCode2;
+})(ErrorCode || {});
+const MODULE_NOT_FOUND_ERRORS = /* @__PURE__ */ new Set([
+  "BUILTIN_NODE_RESOLUTION_FAILED" /* BUILTIN_NODE_RESOLUTION_FAILED */,
+  "MISSING_DEPENDENCY" /* MISSING_DEPENDENCY */,
+  "MISSING_PEER_DEPENDENCY" /* MISSING_PEER_DEPENDENCY */,
+  "QUALIFIED_PATH_RESOLUTION_FAILED" /* QUALIFIED_PATH_RESOLUTION_FAILED */,
+  "UNDECLARED_DEPENDENCY" /* UNDECLARED_DEPENDENCY */
 ]);
 function makeError(pnpCode, message, data = {}, code) {
   code != null ? code : code = MODULE_NOT_FOUND_ERRORS.has(pnpCode) ? `MODULE_NOT_FOUND` : pnpCode;
@@ -44538,15 +44814,18 @@ function makeError(pnpCode, message, data = {}, code) {
     enumerable: false
   };
   return Object.defineProperties(new Error(message), {
-    code: __spreadProps$1(__spreadValues$2({}, propertySpec), {
+    code: {
+      ...propertySpec,
       value: code
-    }),
-    pnpCode: __spreadProps$1(__spreadValues$2({}, propertySpec), {
+    },
+    pnpCode: {
+      ...propertySpec,
       value: pnpCode
-    }),
-    data: __spreadProps$1(__spreadValues$2({}, propertySpec), {
+    },
+    data: {
+      ...propertySpec,
       value: data
-    })
+    }
   });
 }
 function getIssuerModule(parent) {
@@ -44558,6 +44837,9 @@ function getIssuerModule(parent) {
 function getPathForDisplay(p) {
   return npath.normalize(npath.fromPortablePath(p));
 }
+
+const [major, minor] = process.versions.node.split(`.`).map((value) => parseInt(value, 10));
+const WATCH_MODE_MESSAGE_USES_ARRAYS = major > 19 || major === 19 && minor >= 2 || major === 18 && minor >= 13;
 
 const builtinModules = new Set(require$$0.Module.builtinModules || Object.keys(process.binding(`natives`)));
 const isBuiltinModule = (request) => request.startsWith(`node:`) || builtinModules.has(request);
@@ -44593,24 +44875,20 @@ Instead change the require of ${basename} in ${parentPath} to a dynamic import()
   err.code = `ERR_REQUIRE_ESM`;
   return err;
 }
-
-var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
-var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
-var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
-var __objRest$1 = (source, exclude) => {
-  var target = {};
-  for (var prop in source)
-    if (__hasOwnProp$2.call(source, prop) && exclude.indexOf(prop) < 0)
-      target[prop] = source[prop];
-  if (source != null && __getOwnPropSymbols$2)
-    for (var prop of __getOwnPropSymbols$2(source)) {
-      if (exclude.indexOf(prop) < 0 && __propIsEnum$2.call(source, prop))
-        target[prop] = source[prop];
+function reportRequiredFilesToWatchMode(files) {
+  if (process.env.WATCH_REPORT_DEPENDENCIES && process.send) {
+    files = files.map((filename) => npath.fromPortablePath(VirtualFS.resolveVirtual(npath.toPortablePath(filename))));
+    if (WATCH_MODE_MESSAGE_USES_ARRAYS) {
+      process.send({ "watch:require": files });
+    } else {
+      for (const filename of files) {
+        process.send({ "watch:require": filename });
+      }
     }
-  return target;
-};
+  }
+}
+
 function applyPatch(pnpapi, opts) {
-  const defaultCache = {};
   let enableNativeHooks = true;
   process.versions.pnp = String(pnpapi.VERSIONS.std);
   const moduleExports = require$$0__default.default;
@@ -44630,61 +44908,13 @@ function applyPatch(pnpapi, opts) {
   }
   const originalModuleLoad = require$$0.Module._load;
   require$$0.Module._load = function(request, parent, isMain) {
-    if (!enableNativeHooks)
-      return originalModuleLoad.call(require$$0.Module, request, parent, isMain);
-    if (isBuiltinModule(request)) {
-      try {
-        enableNativeHooks = false;
-        return originalModuleLoad.call(require$$0.Module, request, parent, isMain);
-      } finally {
-        enableNativeHooks = true;
+    if (request === `pnpapi`) {
+      const parentApiPath = opts.manager.getApiPathFromParent(parent);
+      if (parentApiPath) {
+        return opts.manager.getApiEntry(parentApiPath, true).instance;
       }
     }
-    const parentApiPath = opts.manager.getApiPathFromParent(parent);
-    const parentApi = parentApiPath !== null ? opts.manager.getApiEntry(parentApiPath, true).instance : null;
-    if (parentApi === null)
-      return originalModuleLoad(request, parent, isMain);
-    if (request === `pnpapi`)
-      return parentApi;
-    const modulePath = require$$0.Module._resolveFilename(request, parent, isMain);
-    const isOwnedByRuntime = parentApi !== null ? parentApi.findPackageLocator(modulePath) !== null : false;
-    const moduleApiPath = isOwnedByRuntime ? parentApiPath : opts.manager.findApiPathFor(npath.dirname(modulePath));
-    const entry = moduleApiPath !== null ? opts.manager.getApiEntry(moduleApiPath) : {instance: null, cache: defaultCache};
-    const cacheEntry = entry.cache[modulePath];
-    if (cacheEntry) {
-      if (cacheEntry.loaded === false && cacheEntry.isLoading !== true) {
-        try {
-          cacheEntry.isLoading = true;
-          if (isMain) {
-            process.mainModule = cacheEntry;
-            cacheEntry.id = `.`;
-          }
-          cacheEntry.load(modulePath);
-        } finally {
-          cacheEntry.isLoading = false;
-        }
-      }
-      return cacheEntry.exports;
-    }
-    const module = new require$$0.Module(modulePath, parent != null ? parent : void 0);
-    module.pnpApiPath = moduleApiPath;
-    entry.cache[modulePath] = module;
-    if (isMain) {
-      process.mainModule = module;
-      module.id = `.`;
-    }
-    let hasThrown = true;
-    try {
-      module.isLoading = true;
-      module.load(modulePath);
-      hasThrown = false;
-    } finally {
-      module.isLoading = false;
-      if (hasThrown) {
-        delete require$$0.Module._cache[modulePath];
-      }
-    }
-    return module.exports;
+    return originalModuleLoad.call(require$$0.Module, request, parent, isMain);
   };
   function getIssuerSpecsFromPaths(paths) {
     return paths.map((path) => ({
@@ -44706,11 +44936,11 @@ function applyPatch(pnpapi, opts) {
     if (issuer !== null) {
       const path = npath.dirname(issuer.filename);
       const apiPath = opts.manager.getApiPathFromParent(issuer);
-      return [{apiPath, path, module}];
+      return [{ apiPath, path, module }];
     } else {
       const path = process.cwd();
       const apiPath = (_a = opts.manager.findApiPathFor(npath.join(path, `[file]`))) != null ? _a : opts.manager.getApiPathFromParent(null);
-      return [{apiPath, path, module}];
+      return [{ apiPath, path, module }];
     }
   }
   function makeFakeParent(path) {
@@ -44727,7 +44957,7 @@ function applyPatch(pnpapi, opts) {
     if (!enableNativeHooks)
       return originalModuleResolveFilename.call(require$$0.Module, request, parent, isMain, options);
     if (options && options.plugnplay === false) {
-      const _a = options, rest = __objRest$1(_a, ["plugnplay"]);
+      const { plugnplay, ...rest } = options;
       const forwardedOptions = Object.keys(rest).length > 0 ? rest : void 0;
       try {
         enableNativeHooks = false;
@@ -44741,7 +44971,10 @@ function applyPatch(pnpapi, opts) {
       optionNames.delete(`paths`);
       optionNames.delete(`plugnplay`);
       if (optionNames.size > 0) {
-        throw makeError(ErrorCode.UNSUPPORTED, `Some options passed to require() aren't supported by PnP yet (${Array.from(optionNames).join(`, `)})`);
+        throw makeError(
+          ErrorCode.UNSUPPORTED,
+          `Some options passed to require() aren't supported by PnP yet (${Array.from(optionNames).join(`, `)})`
+        );
       }
     }
     const issuerSpecs = options && options.paths ? getIssuerSpecsFromPaths(options.paths) : getIssuerSpecsFromModule(parent);
@@ -44749,7 +44982,7 @@ function applyPatch(pnpapi, opts) {
       const parentDirectory = (parent == null ? void 0 : parent.filename) != null ? npath.dirname(parent.filename) : null;
       const absoluteRequest = npath.isAbsolute(request) ? request : parentDirectory !== null ? npath.resolve(parentDirectory, request) : null;
       if (absoluteRequest !== null) {
-        const apiPath = parentDirectory === npath.dirname(absoluteRequest) && (parent == null ? void 0 : parent.pnpApiPath) ? parent.pnpApiPath : opts.manager.findApiPathFor(absoluteRequest);
+        const apiPath = parent && parentDirectory === npath.dirname(absoluteRequest) ? opts.manager.getApiPathFromParent(parent) : opts.manager.findApiPathFor(absoluteRequest);
         if (apiPath !== null) {
           issuerSpecs.unshift({
             apiPath,
@@ -44760,7 +44993,7 @@ function applyPatch(pnpapi, opts) {
       }
     }
     let firstError;
-    for (const {apiPath, path, module} of issuerSpecs) {
+    for (const { apiPath, path, module } of issuerSpecs) {
       let resolution;
       const issuerApi = apiPath !== null ? opts.manager.getApiEntry(apiPath, true).instance : null;
       try {
@@ -44841,7 +45074,12 @@ Require stack:
   const originalDlopen = process.dlopen;
   process.dlopen = function(...args) {
     const [module, filename, ...rest] = args;
-    return originalDlopen.call(this, module, npath.fromPortablePath(VirtualFS.resolveVirtual(npath.toPortablePath(filename))), ...rest);
+    return originalDlopen.call(
+      this,
+      module,
+      npath.fromPortablePath(VirtualFS.resolveVirtual(npath.toPortablePath(filename))),
+      ...rest
+    );
   };
   const originalEmit = process.emit;
   process.emit = function(name, data, ...args) {
@@ -44852,21 +45090,21 @@ Require stack:
   patchFs(fs__default.default, new PosixFS(opts.fakeFs));
 }
 
-function hydrateRuntimeState(data, {basePath}) {
+function hydrateRuntimeState(data, { basePath }) {
   const portablePath = npath.toPortablePath(basePath);
   const absolutePortablePath = ppath.resolve(portablePath);
   const ignorePattern = data.ignorePatternData !== null ? new RegExp(data.ignorePatternData) : null;
-  const packageLocatorsByLocations = new Map();
+  const packageLocatorsByLocations = /* @__PURE__ */ new Map();
   const packageRegistry = new Map(data.packageRegistryData.map(([packageName, packageStoreData]) => {
     return [packageName, new Map(packageStoreData.map(([packageReference, packageInformationData]) => {
       var _a;
       if (packageName === null !== (packageReference === null))
         throw new Error(`Assertion failed: The name and reference should be null, or neither should`);
       const discardFromLookup = (_a = packageInformationData.discardFromLookup) != null ? _a : false;
-      const packageLocator = {name: packageName, reference: packageReference};
+      const packageLocator = { name: packageName, reference: packageReference };
       const entry = packageLocatorsByLocations.get(packageInformationData.packageLocation);
       if (!entry) {
-        packageLocatorsByLocations.set(packageInformationData.packageLocation, {locator: packageLocator, discardFromLookup});
+        packageLocatorsByLocations.set(packageInformationData.packageLocation, { locator: packageLocator, discardFromLookup });
       } else {
         entry.discardFromLookup = entry.discardFromLookup && discardFromLookup;
         if (!discardFromLookup) {
@@ -44903,137 +45141,862 @@ function hydrateRuntimeState(data, {basePath}) {
   };
 }
 
+const ArrayIsArray = Array.isArray;
+const JSONStringify = JSON.stringify;
+const ObjectGetOwnPropertyNames = Object.getOwnPropertyNames;
+const ObjectPrototypeHasOwnProperty = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+const RegExpPrototypeExec = (obj, string) => RegExp.prototype.exec.call(obj, string);
+const RegExpPrototypeSymbolReplace = (obj, ...rest) => RegExp.prototype[Symbol.replace].apply(obj, rest);
+const StringPrototypeEndsWith = (str, ...rest) => String.prototype.endsWith.apply(str, rest);
+const StringPrototypeIncludes = (str, ...rest) => String.prototype.includes.apply(str, rest);
+const StringPrototypeLastIndexOf = (str, ...rest) => String.prototype.lastIndexOf.apply(str, rest);
+const StringPrototypeIndexOf = (str, ...rest) => String.prototype.indexOf.apply(str, rest);
+const StringPrototypeReplace = (str, ...rest) => String.prototype.replace.apply(str, rest);
+const StringPrototypeSlice = (str, ...rest) => String.prototype.slice.apply(str, rest);
+const StringPrototypeStartsWith = (str, ...rest) => String.prototype.startsWith.apply(str, rest);
+const SafeMap = Map;
+const JSONParse = JSON.parse;
+
+function createErrorType(code, messageCreator, errorType) {
+  return class extends errorType {
+    constructor(...args) {
+      super(messageCreator(...args));
+      this.code = code;
+      this.name = `${errorType.name} [${code}]`;
+    }
+  };
+}
+const ERR_PACKAGE_IMPORT_NOT_DEFINED = createErrorType(
+  `ERR_PACKAGE_IMPORT_NOT_DEFINED`,
+  (specifier, packagePath, base) => {
+    return `Package import specifier "${specifier}" is not defined${packagePath ? ` in package ${packagePath}package.json` : ``} imported from ${base}`;
+  },
+  TypeError
+);
+const ERR_INVALID_MODULE_SPECIFIER = createErrorType(
+  `ERR_INVALID_MODULE_SPECIFIER`,
+  (request, reason, base = void 0) => {
+    return `Invalid module "${request}" ${reason}${base ? ` imported from ${base}` : ``}`;
+  },
+  TypeError
+);
+const ERR_INVALID_PACKAGE_TARGET = createErrorType(
+  `ERR_INVALID_PACKAGE_TARGET`,
+  (pkgPath, key, target, isImport = false, base = void 0) => {
+    const relError = typeof target === `string` && !isImport && target.length && !StringPrototypeStartsWith(target, `./`);
+    if (key === `.`) {
+      assert__default.default(isImport === false);
+      return `Invalid "exports" main target ${JSONStringify(target)} defined in the package config ${pkgPath}package.json${base ? ` imported from ${base}` : ``}${relError ? `; targets must start with "./"` : ``}`;
+    }
+    return `Invalid "${isImport ? `imports` : `exports`}" target ${JSONStringify(
+      target
+    )} defined for '${key}' in the package config ${pkgPath}package.json${base ? ` imported from ${base}` : ``}${relError ? `; targets must start with "./"` : ``}`;
+  },
+  Error
+);
+const ERR_INVALID_PACKAGE_CONFIG = createErrorType(
+  `ERR_INVALID_PACKAGE_CONFIG`,
+  (path, base, message) => {
+    return `Invalid package config ${path}${base ? ` while importing ${base}` : ``}${message ? `. ${message}` : ``}`;
+  },
+  Error
+);
+const ERR_PACKAGE_PATH_NOT_EXPORTED = createErrorType(
+  "ERR_PACKAGE_PATH_NOT_EXPORTED",
+  (pkgPath, subpath, base = void 0) => {
+    if (subpath === ".")
+      return `No "exports" main defined in ${pkgPath}package.json${base ? ` imported from ${base}` : ""}`;
+    return `Package subpath '${subpath}' is not defined by "exports" in ${pkgPath}package.json${base ? ` imported from ${base}` : ""}`;
+  },
+  Error
+);
+
+function filterOwnProperties(source, keys) {
+  const filtered = /* @__PURE__ */ Object.create(null);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (ObjectPrototypeHasOwnProperty(source, key)) {
+      filtered[key] = source[key];
+    }
+  }
+  return filtered;
+}
+
+const packageJSONCache = new SafeMap();
+function getPackageConfig(path, specifier, base, readFileSyncFn) {
+  const existing = packageJSONCache.get(path);
+  if (existing !== void 0) {
+    return existing;
+  }
+  const source = readFileSyncFn(path);
+  if (source === void 0) {
+    const packageConfig2 = {
+      pjsonPath: path,
+      exists: false,
+      main: void 0,
+      name: void 0,
+      type: "none",
+      exports: void 0,
+      imports: void 0
+    };
+    packageJSONCache.set(path, packageConfig2);
+    return packageConfig2;
+  }
+  let packageJSON;
+  try {
+    packageJSON = JSONParse(source);
+  } catch (error) {
+    throw new ERR_INVALID_PACKAGE_CONFIG(
+      path,
+      (base ? `"${specifier}" from ` : "") + url.fileURLToPath(base || specifier),
+      error.message
+    );
+  }
+  let { imports, main, name, type } = filterOwnProperties(packageJSON, [
+    "imports",
+    "main",
+    "name",
+    "type"
+  ]);
+  const exports = ObjectPrototypeHasOwnProperty(packageJSON, "exports") ? packageJSON.exports : void 0;
+  if (typeof imports !== "object" || imports === null) {
+    imports = void 0;
+  }
+  if (typeof main !== "string") {
+    main = void 0;
+  }
+  if (typeof name !== "string") {
+    name = void 0;
+  }
+  if (type !== "module" && type !== "commonjs") {
+    type = "none";
+  }
+  const packageConfig = {
+    pjsonPath: path,
+    exists: true,
+    main,
+    name,
+    type,
+    exports,
+    imports
+  };
+  packageJSONCache.set(path, packageConfig);
+  return packageConfig;
+}
+function getPackageScopeConfig(resolved, readFileSyncFn) {
+  let packageJSONUrl = new URL("./package.json", resolved);
+  while (true) {
+    const packageJSONPath2 = packageJSONUrl.pathname;
+    if (StringPrototypeEndsWith(packageJSONPath2, "node_modules/package.json")) {
+      break;
+    }
+    const packageConfig2 = getPackageConfig(
+      url.fileURLToPath(packageJSONUrl),
+      resolved,
+      void 0,
+      readFileSyncFn
+    );
+    if (packageConfig2.exists) {
+      return packageConfig2;
+    }
+    const lastPackageJSONUrl = packageJSONUrl;
+    packageJSONUrl = new URL("../package.json", packageJSONUrl);
+    if (packageJSONUrl.pathname === lastPackageJSONUrl.pathname) {
+      break;
+    }
+  }
+  const packageJSONPath = url.fileURLToPath(packageJSONUrl);
+  const packageConfig = {
+    pjsonPath: packageJSONPath,
+    exists: false,
+    main: void 0,
+    name: void 0,
+    type: "none",
+    exports: void 0,
+    imports: void 0
+  };
+  packageJSONCache.set(packageJSONPath, packageConfig);
+  return packageConfig;
+}
+
 /**
- * @param {object} exports
- * @param {Set<string>} keys
- */
-function loop(exports, keys) {
-	if (typeof exports === 'string') {
-		return exports;
+  @license
+  Copyright Node.js contributors. All rights reserved.
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+*/
+function throwImportNotDefined(specifier, packageJSONUrl, base) {
+  throw new ERR_PACKAGE_IMPORT_NOT_DEFINED(
+    specifier,
+    packageJSONUrl && url.fileURLToPath(new URL(".", packageJSONUrl)),
+    url.fileURLToPath(base)
+  );
+}
+function throwInvalidSubpath(subpath, packageJSONUrl, internal, base) {
+  const reason = `request is not a valid subpath for the "${internal ? "imports" : "exports"}" resolution of ${url.fileURLToPath(packageJSONUrl)}`;
+  throw new ERR_INVALID_MODULE_SPECIFIER(
+    subpath,
+    reason,
+    base && url.fileURLToPath(base)
+  );
+}
+function throwInvalidPackageTarget(subpath, target, packageJSONUrl, internal, base) {
+  if (typeof target === "object" && target !== null) {
+    target = JSONStringify(target, null, "");
+  } else {
+    target = `${target}`;
+  }
+  throw new ERR_INVALID_PACKAGE_TARGET(
+    url.fileURLToPath(new URL(".", packageJSONUrl)),
+    subpath,
+    target,
+    internal,
+    base && url.fileURLToPath(base)
+  );
+}
+const invalidSegmentRegEx = /(^|\\|\/)((\.|%2e)(\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))(\\|\/|$)/i;
+const patternRegEx = /\*/g;
+function resolvePackageTargetString(target, subpath, match, packageJSONUrl, base, pattern, internal, conditions) {
+  if (subpath !== "" && !pattern && target[target.length - 1] !== "/")
+    throwInvalidPackageTarget(match, target, packageJSONUrl, internal, base);
+  if (!StringPrototypeStartsWith(target, "./")) {
+    if (internal && !StringPrototypeStartsWith(target, "../") && !StringPrototypeStartsWith(target, "/")) {
+      let isURL = false;
+      try {
+        new URL(target);
+        isURL = true;
+      } catch {
+      }
+      if (!isURL) {
+        const exportTarget = pattern ? RegExpPrototypeSymbolReplace(patternRegEx, target, () => subpath) : target + subpath;
+        return exportTarget;
+      }
+    }
+    throwInvalidPackageTarget(match, target, packageJSONUrl, internal, base);
+  }
+  if (RegExpPrototypeExec(
+    invalidSegmentRegEx,
+    StringPrototypeSlice(target, 2)
+  ) !== null)
+    throwInvalidPackageTarget(match, target, packageJSONUrl, internal, base);
+  const resolved = new URL(target, packageJSONUrl);
+  const resolvedPath = resolved.pathname;
+  const packagePath = new URL(".", packageJSONUrl).pathname;
+  if (!StringPrototypeStartsWith(resolvedPath, packagePath))
+    throwInvalidPackageTarget(match, target, packageJSONUrl, internal, base);
+  if (subpath === "")
+    return resolved;
+  if (RegExpPrototypeExec(invalidSegmentRegEx, subpath) !== null) {
+    const request = pattern ? StringPrototypeReplace(match, "*", () => subpath) : match + subpath;
+    throwInvalidSubpath(request, packageJSONUrl, internal, base);
+  }
+  if (pattern) {
+    return new URL(
+      RegExpPrototypeSymbolReplace(patternRegEx, resolved.href, () => subpath)
+    );
+  }
+  return new URL(subpath, resolved);
+}
+function isArrayIndex(key) {
+  const keyNum = +key;
+  if (`${keyNum}` !== key)
+    return false;
+  return keyNum >= 0 && keyNum < 4294967295;
+}
+function resolvePackageTarget(packageJSONUrl, target, subpath, packageSubpath, base, pattern, internal, conditions) {
+  if (typeof target === "string") {
+    return resolvePackageTargetString(
+      target,
+      subpath,
+      packageSubpath,
+      packageJSONUrl,
+      base,
+      pattern,
+      internal);
+  } else if (ArrayIsArray(target)) {
+    if (target.length === 0) {
+      return null;
+    }
+    let lastException;
+    for (let i = 0; i < target.length; i++) {
+      const targetItem = target[i];
+      let resolveResult;
+      try {
+        resolveResult = resolvePackageTarget(
+          packageJSONUrl,
+          targetItem,
+          subpath,
+          packageSubpath,
+          base,
+          pattern,
+          internal,
+          conditions
+        );
+      } catch (e) {
+        lastException = e;
+        if (e.code === "ERR_INVALID_PACKAGE_TARGET") {
+          continue;
+        }
+        throw e;
+      }
+      if (resolveResult === void 0) {
+        continue;
+      }
+      if (resolveResult === null) {
+        lastException = null;
+        continue;
+      }
+      return resolveResult;
+    }
+    if (lastException === void 0 || lastException === null)
+      return lastException;
+    throw lastException;
+  } else if (typeof target === "object" && target !== null) {
+    const keys = ObjectGetOwnPropertyNames(target);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (isArrayIndex(key)) {
+        throw new ERR_INVALID_PACKAGE_CONFIG(
+          url.fileURLToPath(packageJSONUrl),
+          base,
+          '"exports" cannot contain numeric property keys.'
+        );
+      }
+    }
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (key === "default" || conditions.has(key)) {
+        const conditionalTarget = target[key];
+        const resolveResult = resolvePackageTarget(
+          packageJSONUrl,
+          conditionalTarget,
+          subpath,
+          packageSubpath,
+          base,
+          pattern,
+          internal,
+          conditions
+        );
+        if (resolveResult === void 0)
+          continue;
+        return resolveResult;
+      }
+    }
+    return void 0;
+  } else if (target === null) {
+    return null;
+  }
+  throwInvalidPackageTarget(
+    packageSubpath,
+    target,
+    packageJSONUrl,
+    internal,
+    base
+  );
+}
+function patternKeyCompare(a, b) {
+  const aPatternIndex = StringPrototypeIndexOf(a, "*");
+  const bPatternIndex = StringPrototypeIndexOf(b, "*");
+  const baseLenA = aPatternIndex === -1 ? a.length : aPatternIndex + 1;
+  const baseLenB = bPatternIndex === -1 ? b.length : bPatternIndex + 1;
+  if (baseLenA > baseLenB)
+    return -1;
+  if (baseLenB > baseLenA)
+    return 1;
+  if (aPatternIndex === -1)
+    return 1;
+  if (bPatternIndex === -1)
+    return -1;
+  if (a.length > b.length)
+    return -1;
+  if (b.length > a.length)
+    return 1;
+  return 0;
+}
+function isConditionalExportsMainSugar(exports, packageJSONUrl, base) {
+  if (typeof exports === "string" || ArrayIsArray(exports))
+    return true;
+  if (typeof exports !== "object" || exports === null)
+    return false;
+  const keys = ObjectGetOwnPropertyNames(exports);
+  let isConditionalSugar = false;
+  let i = 0;
+  for (let j = 0; j < keys.length; j++) {
+    const key = keys[j];
+    const curIsConditionalSugar = key === "" || key[0] !== ".";
+    if (i++ === 0) {
+      isConditionalSugar = curIsConditionalSugar;
+    } else if (isConditionalSugar !== curIsConditionalSugar) {
+      throw new ERR_INVALID_PACKAGE_CONFIG(
+        url.fileURLToPath(packageJSONUrl),
+        base,
+        `"exports" cannot contain some keys starting with '.' and some not. The exports object must either be an object of package subpath keys or an object of main entry condition name keys only.`
+      );
+    }
+  }
+  return isConditionalSugar;
+}
+function throwExportsNotFound(subpath, packageJSONUrl, base) {
+  throw new ERR_PACKAGE_PATH_NOT_EXPORTED(
+    url.fileURLToPath(new URL(".", packageJSONUrl)),
+    subpath,
+    base && url.fileURLToPath(base)
+  );
+}
+const emittedPackageWarnings = /* @__PURE__ */ new Set();
+function emitTrailingSlashPatternDeprecation(match, pjsonUrl, base) {
+  const pjsonPath = url.fileURLToPath(pjsonUrl);
+  if (emittedPackageWarnings.has(pjsonPath + "|" + match))
+    return;
+  emittedPackageWarnings.add(pjsonPath + "|" + match);
+  process.emitWarning(
+    `Use of deprecated trailing slash pattern mapping "${match}" in the "exports" field module resolution of the package at ${pjsonPath}${base ? ` imported from ${url.fileURLToPath(base)}` : ""}. Mapping specifiers ending in "/" is no longer supported.`,
+    "DeprecationWarning",
+    "DEP0155"
+  );
+}
+function packageExportsResolve({
+  packageJSONUrl,
+  packageSubpath,
+  exports,
+  base,
+  conditions
+}) {
+  if (isConditionalExportsMainSugar(exports, packageJSONUrl, base))
+    exports = { ".": exports };
+  if (ObjectPrototypeHasOwnProperty(exports, packageSubpath) && !StringPrototypeIncludes(packageSubpath, "*") && !StringPrototypeEndsWith(packageSubpath, "/")) {
+    const target = exports[packageSubpath];
+    const resolveResult = resolvePackageTarget(
+      packageJSONUrl,
+      target,
+      "",
+      packageSubpath,
+      base,
+      false,
+      false,
+      conditions
+    );
+    if (resolveResult == null) {
+      throwExportsNotFound(packageSubpath, packageJSONUrl, base);
+    }
+    return resolveResult;
+  }
+  let bestMatch = "";
+  let bestMatchSubpath;
+  const keys = ObjectGetOwnPropertyNames(exports);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const patternIndex = StringPrototypeIndexOf(key, "*");
+    if (patternIndex !== -1 && StringPrototypeStartsWith(
+      packageSubpath,
+      StringPrototypeSlice(key, 0, patternIndex)
+    )) {
+      if (StringPrototypeEndsWith(packageSubpath, "/"))
+        emitTrailingSlashPatternDeprecation(
+          packageSubpath,
+          packageJSONUrl,
+          base
+        );
+      const patternTrailer = StringPrototypeSlice(key, patternIndex + 1);
+      if (packageSubpath.length >= key.length && StringPrototypeEndsWith(packageSubpath, patternTrailer) && patternKeyCompare(bestMatch, key) === 1 && StringPrototypeLastIndexOf(key, "*") === patternIndex) {
+        bestMatch = key;
+        bestMatchSubpath = StringPrototypeSlice(
+          packageSubpath,
+          patternIndex,
+          packageSubpath.length - patternTrailer.length
+        );
+      }
+    }
+  }
+  if (bestMatch) {
+    const target = exports[bestMatch];
+    const resolveResult = resolvePackageTarget(
+      packageJSONUrl,
+      target,
+      bestMatchSubpath,
+      bestMatch,
+      base,
+      true,
+      false,
+      conditions
+    );
+    if (resolveResult == null) {
+      throwExportsNotFound(packageSubpath, packageJSONUrl, base);
+    }
+    return resolveResult;
+  }
+  throwExportsNotFound(packageSubpath, packageJSONUrl, base);
+}
+function packageImportsResolve({ name, base, conditions, readFileSyncFn }) {
+  if (name === "#" || StringPrototypeStartsWith(name, "#/") || StringPrototypeEndsWith(name, "/")) {
+    const reason = "is not a valid internal imports specifier name";
+    throw new ERR_INVALID_MODULE_SPECIFIER(name, reason, url.fileURLToPath(base));
+  }
+  let packageJSONUrl;
+  const packageConfig = getPackageScopeConfig(base, readFileSyncFn);
+  if (packageConfig.exists) {
+    packageJSONUrl = url.pathToFileURL(packageConfig.pjsonPath);
+    const imports = packageConfig.imports;
+    if (imports) {
+      if (ObjectPrototypeHasOwnProperty(imports, name) && !StringPrototypeIncludes(name, "*")) {
+        const resolveResult = resolvePackageTarget(
+          packageJSONUrl,
+          imports[name],
+          "",
+          name,
+          base,
+          false,
+          true,
+          conditions
+        );
+        if (resolveResult != null) {
+          return resolveResult;
+        }
+      } else {
+        let bestMatch = "";
+        let bestMatchSubpath;
+        const keys = ObjectGetOwnPropertyNames(imports);
+        for (let i = 0; i < keys.length; i++) {
+          const key = keys[i];
+          const patternIndex = StringPrototypeIndexOf(key, "*");
+          if (patternIndex !== -1 && StringPrototypeStartsWith(
+            name,
+            StringPrototypeSlice(key, 0, patternIndex)
+          )) {
+            const patternTrailer = StringPrototypeSlice(key, patternIndex + 1);
+            if (name.length >= key.length && StringPrototypeEndsWith(name, patternTrailer) && patternKeyCompare(bestMatch, key) === 1 && StringPrototypeLastIndexOf(key, "*") === patternIndex) {
+              bestMatch = key;
+              bestMatchSubpath = StringPrototypeSlice(
+                name,
+                patternIndex,
+                name.length - patternTrailer.length
+              );
+            }
+          }
+        }
+        if (bestMatch) {
+          const target = imports[bestMatch];
+          const resolveResult = resolvePackageTarget(
+            packageJSONUrl,
+            target,
+            bestMatchSubpath,
+            bestMatch,
+            base,
+            true,
+            true,
+            conditions
+          );
+          if (resolveResult != null) {
+            return resolveResult;
+          }
+        }
+      }
+    }
+  }
+  throwImportNotDefined(name, packageJSONUrl, base);
+}
+
+const flagSymbol = Symbol('arg flag');
+
+class ArgError extends Error {
+	constructor(msg, code) {
+		super(msg);
+		this.name = 'ArgError';
+		this.code = code;
+
+		Object.setPrototypeOf(this, ArgError.prototype);
+	}
+}
+
+function arg(
+	opts,
+	{
+		argv = process.argv.slice(2),
+		permissive = false,
+		stopAtPositional = false
+	} = {}
+) {
+	if (!opts) {
+		throw new ArgError(
+			'argument specification object is required',
+			'ARG_CONFIG_NO_SPEC'
+		);
 	}
 
-	if (exports) {
-		let idx, tmp;
-		if (Array.isArray(exports)) {
-			for (idx=0; idx < exports.length; idx++) {
-				if (tmp = loop(exports[idx], keys)) return tmp;
-			}
+	const result = { _: [] };
+
+	const aliases = {};
+	const handlers = {};
+
+	for (const key of Object.keys(opts)) {
+		if (!key) {
+			throw new ArgError(
+				'argument key cannot be an empty string',
+				'ARG_CONFIG_EMPTY_KEY'
+			);
+		}
+
+		if (key[0] !== '-') {
+			throw new ArgError(
+				`argument key must start with '-' but found: '${key}'`,
+				'ARG_CONFIG_NONOPT_KEY'
+			);
+		}
+
+		if (key.length === 1) {
+			throw new ArgError(
+				`argument key must have a name; singular '-' keys are not allowed: ${key}`,
+				'ARG_CONFIG_NONAME_KEY'
+			);
+		}
+
+		if (typeof opts[key] === 'string') {
+			aliases[key] = opts[key];
+			continue;
+		}
+
+		let type = opts[key];
+		let isFlag = false;
+
+		if (
+			Array.isArray(type) &&
+			type.length === 1 &&
+			typeof type[0] === 'function'
+		) {
+			const [fn] = type;
+			type = (value, name, prev = []) => {
+				prev.push(fn(value, name, prev[prev.length - 1]));
+				return prev;
+			};
+			isFlag = fn === Boolean || fn[flagSymbol] === true;
+		} else if (typeof type === 'function') {
+			isFlag = type === Boolean || type[flagSymbol] === true;
 		} else {
-			for (idx in exports) {
-				if (keys.has(idx)) {
-					return loop(exports[idx], keys);
-				}
-			}
+			throw new ArgError(
+				`type missing or not a function or valid array type: ${key}`,
+				'ARG_CONFIG_VAD_TYPE'
+			);
 		}
+
+		if (key[1] !== '-' && key.length > 2) {
+			throw new ArgError(
+				`short argument keys (with a single hyphen) must have only one character: ${key}`,
+				'ARG_CONFIG_SHORTOPT_TOOLONG'
+			);
+		}
+
+		handlers[key] = [type, isFlag];
 	}
-}
 
-/**
- * @param {string} name The package name
- * @param {string} entry The target entry, eg "."
- * @param {number} [condition] Unmatched condition?
- */
-function bail(name, entry, condition) {
-	throw new Error(
-		condition
-		? `No known conditions for "${entry}" entry in "${name}" package`
-		: `Missing "${entry}" export in "${name}" package`
-	);
-}
+	for (let i = 0, len = argv.length; i < len; i++) {
+		const wholeArg = argv[i];
 
-/**
- * @param {string} name the package name
- * @param {string} entry the target path/import
- */
-function toName(name, entry) {
-	return entry === name ? '.'
-		: entry[0] === '.' ? entry
-		: entry.replace(new RegExp('^' + name + '\/'), './');
-}
-
-/**
- * @param {object} pkg package.json contents
- * @param {string} [entry] entry name or import path
- * @param {object} [options]
- * @param {boolean} [options.browser]
- * @param {boolean} [options.require]
- * @param {string[]} [options.conditions]
- * @param {boolean} [options.unsafe]
- */
-function resolve(pkg, entry='.', options={}) {
-	let { name, exports } = pkg;
-
-	if (exports) {
-		let { browser, require, unsafe, conditions=[] } = options;
-
-		let target = toName(name, entry);
-		if (target[0] !== '.') target = './' + target;
-
-		if (typeof exports === 'string') {
-			return target === '.' ? exports : bail(name, target);
-		}
-
-		let allows = new Set(['default', ...conditions]);
-		unsafe || allows.add(require ? 'require' : 'import');
-		unsafe || allows.add(browser ? 'browser' : 'node');
-
-		let key, tmp, isSingle=false;
-
-		for (key in exports) {
-			isSingle = key[0] !== '.';
+		if (stopAtPositional && result._.length > 0) {
+			result._ = result._.concat(argv.slice(i));
 			break;
 		}
 
-		if (isSingle) {
-			return target === '.'
-				? loop(exports, allows) || bail(name, target, 1)
-				: bail(name, target);
+		if (wholeArg === '--') {
+			result._ = result._.concat(argv.slice(i + 1));
+			break;
 		}
 
-		if (tmp = exports[target]) {
-			return loop(tmp, allows) || bail(name, target, 1);
-		}
+		if (wholeArg.length > 1 && wholeArg[0] === '-') {
+			/* eslint-disable operator-linebreak */
+			const separatedArguments =
+				wholeArg[1] === '-' || wholeArg.length === 2
+					? [wholeArg]
+					: wholeArg
+							.slice(1)
+							.split('')
+							.map((a) => `-${a}`);
+			/* eslint-enable operator-linebreak */
 
-		for (key in exports) {
-			tmp = key[key.length - 1];
-			if (tmp === '/' && target.startsWith(key)) {
-				return (tmp = loop(exports[key], allows))
-					? (tmp + target.substring(key.length))
-					: bail(name, target, 1);
-			}
-			if (tmp === '*' && target.startsWith(key.slice(0, -1))) {
-				// do not trigger if no *content* to inject
-				if (target.substring(key.length - 1).length > 0) {
-					return (tmp = loop(exports[key], allows))
-						? tmp.replace('*', target.substring(key.length - 1))
-						: bail(name, target, 1);
+			for (let j = 0; j < separatedArguments.length; j++) {
+				const arg = separatedArguments[j];
+				const [originalArgName, argStr] =
+					arg[1] === '-' ? arg.split(/=(.*)/, 2) : [arg, undefined];
+
+				let argName = originalArgName;
+				while (argName in aliases) {
+					argName = aliases[argName];
+				}
+
+				if (!(argName in handlers)) {
+					if (permissive) {
+						result._.push(arg);
+						continue;
+					} else {
+						throw new ArgError(
+							`unknown or unexpected option: ${originalArgName}`,
+							'ARG_UNKNOWN_OPTION'
+						);
+					}
+				}
+
+				const [type, isFlag] = handlers[argName];
+
+				if (!isFlag && j + 1 < separatedArguments.length) {
+					throw new ArgError(
+						`option requires argument (but was followed by another short argument): ${originalArgName}`,
+						'ARG_MISSING_REQUIRED_SHORTARG'
+					);
+				}
+
+				if (isFlag) {
+					result[argName] = type(true, argName, result[argName]);
+				} else if (argStr === undefined) {
+					if (
+						argv.length < i + 2 ||
+						(argv[i + 1].length > 1 &&
+							argv[i + 1][0] === '-' &&
+							!(
+								argv[i + 1].match(/^-?\d*(\.(?=\d))?\d*$/) &&
+								(type === Number ||
+									// eslint-disable-next-line no-undef
+									(typeof BigInt !== 'undefined' && type === BigInt))
+							))
+					) {
+						const extended =
+							originalArgName === argName ? '' : ` (alias for ${argName})`;
+						throw new ArgError(
+							`option requires argument: ${originalArgName}${extended}`,
+							'ARG_MISSING_REQUIRED_LONGARG'
+						);
+					}
+
+					result[argName] = type(argv[i + 1], argName, result[argName]);
+					++i;
+				} else {
+					result[argName] = type(argStr, argName, result[argName]);
 				}
 			}
+		} else {
+			result._.push(wholeArg);
 		}
-
-		return bail(name, target);
 	}
+
+	return result;
 }
 
-var __defProp$1 = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
-var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
-var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, {enumerable: true, configurable: true, writable: true, value}) : obj[key] = value;
-var __spreadValues$1 = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$1.call(b, prop))
-      __defNormalProp$1(a, prop, b[prop]);
-  if (__getOwnPropSymbols$1)
-    for (var prop of __getOwnPropSymbols$1(b)) {
-      if (__propIsEnum$1.call(b, prop))
-        __defNormalProp$1(a, prop, b[prop]);
-    }
-  return a;
+arg.flag = (fn) => {
+	fn[flagSymbol] = true;
+	return fn;
 };
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+// Utility types
+arg.COUNT = arg.flag((v, name, existingCount) => (existingCount || 0) + 1);
+
+// Expose error class
+arg.ArgError = ArgError;
+
+var arg_1 = arg;
+
+/**
+  @license
+  The MIT License (MIT)
+
+  Copyright (c) 2014 Blake Embrey (hello@blakeembrey.com)
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+*/
+function getOptionValue(opt) {
+  parseOptions();
+  return options[opt];
+}
+let options;
+function parseOptions() {
+  if (!options) {
+    options = {
+      "--conditions": [],
+      ...parseArgv(getNodeOptionsEnvArgv()),
+      ...parseArgv(process.execArgv)
+    };
+  }
+}
+function parseArgv(argv) {
+  return arg_1(
+    {
+      "--conditions": [String],
+      "-C": "--conditions"
+    },
+    {
+      argv,
+      permissive: true
+    }
+  );
+}
+function getNodeOptionsEnvArgv() {
+  const errors = [];
+  const envArgv = ParseNodeOptionsEnvVar(process.env.NODE_OPTIONS || "", errors);
+  if (errors.length !== 0) ;
+  return envArgv;
+}
+function ParseNodeOptionsEnvVar(node_options, errors) {
+  const env_argv = [];
+  let is_in_string = false;
+  let will_start_new_arg = true;
+  for (let index = 0; index < node_options.length; ++index) {
+    let c = node_options[index];
+    if (c === "\\" && is_in_string) {
+      if (index + 1 === node_options.length) {
+        errors.push("invalid value for NODE_OPTIONS (invalid escape)\n");
+        return env_argv;
+      } else {
+        c = node_options[++index];
+      }
+    } else if (c === " " && !is_in_string) {
+      will_start_new_arg = true;
+      continue;
+    } else if (c === '"') {
+      is_in_string = !is_in_string;
+      continue;
+    }
+    if (will_start_new_arg) {
+      env_argv.push(c);
+      will_start_new_arg = false;
+    } else {
+      env_argv[env_argv.length - 1] += c;
+    }
+  }
+  if (is_in_string) {
+    errors.push("invalid value for NODE_OPTIONS (unterminated string)\n");
+  }
+  return env_argv;
+}
+
 function makeApi(runtimeState, opts) {
   const alwaysWarnOnFallback = Number(process.env.PNP_ALWAYS_WARN_ON_FALLBACK) > 0;
   const debugLevel = Number(process.env.PNP_DEBUG_LEVEL);
@@ -45041,9 +46004,9 @@ function makeApi(runtimeState, opts) {
   const isStrictRegExp = /^(\/|\.{1,2}(\/|$))/;
   const isDirRegExp = /\/$/;
   const isRelativeRegexp = /^\.{0,2}\//;
-  const topLevelLocator = {name: null, reference: null};
+  const topLevelLocator = { name: null, reference: null };
   const fallbackLocators = [];
-  const emittedWarnings = new Set();
+  const emittedWarnings = /* @__PURE__ */ new Set();
   if (runtimeState.enableTopLevelFallback === true)
     fallbackLocators.push(topLevelLocator);
   if (opts.compatibilityMode !== false) {
@@ -45054,7 +46017,7 @@ function makeApi(runtimeState, opts) {
           if (reference === null) {
             throw new Error(`Assertion failed: This reference shouldn't be null`);
           } else {
-            fallbackLocators.push({name, reference});
+            fallbackLocators.push({ name, reference });
           }
         }
       }
@@ -45076,7 +46039,7 @@ function makeApi(runtimeState, opts) {
   function trace(entry) {
     var _a, _b, _c, _d, _e, _f;
     const colors = (_c = (_b = (_a = process.stderr) == null ? void 0 : _a.hasColors) == null ? void 0 : _b.call(_a)) != null ? _c : process.stdout.isTTY;
-    const c = (n, str) => `[${n}m${str}[0m`;
+    const c = (n, str) => `\x1B[${n}m${str}\x1B[0m`;
     const error = entry.error;
     if (error)
       console.error(c(`31;1`, `\u2716 ${(_d = entry.error) == null ? void 0 : _d.message.replace(/\n.*/s, ``)}`));
@@ -45085,10 +46048,10 @@ function makeApi(runtimeState, opts) {
     if (entry.args.length > 0)
       console.error();
     for (const arg of entry.args)
-      console.error(`  ${c(`37;1`, `In \u2190`)} ${nodeUtils.inspect(arg, {colors, compact: true})}`);
+      console.error(`  ${c(`37;1`, `In \u2190`)} ${nodeUtils.inspect(arg, { colors, compact: true })}`);
     if (entry.result) {
       console.error();
-      console.error(`  ${c(`37;1`, `Out \u2192`)} ${nodeUtils.inspect(entry.result, {colors, compact: true})}`);
+      console.error(`  ${c(`37;1`, `Out \u2192`)} ${nodeUtils.inspect(entry.result, { colors, compact: true })}`);
     }
     const stack = (_f = (_e = new Error().stack.match(/(?<=^ +)at.*/gm)) == null ? void 0 : _e.slice(2)) != null ? _f : [];
     if (stack.length > 0) {
@@ -45132,7 +46095,10 @@ function makeApi(runtimeState, opts) {
   function getPackageInformationSafe(packageLocator) {
     const packageInformation = getPackageInformation(packageLocator);
     if (!packageInformation) {
-      throw makeError(ErrorCode.INTERNAL, `Couldn't find a matching entry in the dependency tree for the specified parent (this is probably an internal error)`);
+      throw makeError(
+        ErrorCode.INTERNAL,
+        `Couldn't find a matching entry in the dependency tree for the specified parent (this is probably an internal error)`
+      );
     }
     return packageInformation;
   }
@@ -45144,40 +46110,57 @@ function makeApi(runtimeState, opts) {
         return true;
     return false;
   }
-  const defaultExportsConditions = new Set([`default`, `node`, `require`]);
-  function applyNodeExportsResolution(unqualifiedPath, conditions = defaultExportsConditions) {
+  const defaultExportsConditions = /* @__PURE__ */ new Set([
+    `node`,
+    `require`,
+    ...getOptionValue(`--conditions`)
+  ]);
+  function applyNodeExportsResolution(unqualifiedPath, conditions = defaultExportsConditions, issuer) {
     const locator = findPackageLocator(ppath.join(unqualifiedPath, `internal.js`), {
       resolveIgnored: true,
       includeDiscardFromLookup: true
     });
     if (locator === null) {
-      throw makeError(ErrorCode.INTERNAL, `The locator that owns the "${unqualifiedPath}" path can't be found inside the dependency tree (this is probably an internal error)`);
+      throw makeError(
+        ErrorCode.INTERNAL,
+        `The locator that owns the "${unqualifiedPath}" path can't be found inside the dependency tree (this is probably an internal error)`
+      );
     }
-    const {packageLocation} = getPackageInformationSafe(locator);
+    const { packageLocation } = getPackageInformationSafe(locator);
     const manifestPath = ppath.join(packageLocation, Filename.manifest);
     if (!opts.fakeFs.existsSync(manifestPath))
       return null;
     const pkgJson = JSON.parse(opts.fakeFs.readFileSync(manifestPath, `utf8`));
+    if (pkgJson.exports == null)
+      return null;
     let subpath = ppath.contains(packageLocation, unqualifiedPath);
     if (subpath === null) {
-      throw makeError(ErrorCode.INTERNAL, `unqualifiedPath doesn't contain the packageLocation (this is probably an internal error)`);
+      throw makeError(
+        ErrorCode.INTERNAL,
+        `unqualifiedPath doesn't contain the packageLocation (this is probably an internal error)`
+      );
     }
-    if (!isRelativeRegexp.test(subpath))
+    if (subpath !== `.` && !isRelativeRegexp.test(subpath))
       subpath = `./${subpath}`;
-    let resolvedExport;
     try {
-      resolvedExport = resolve(pkgJson, ppath.normalize(subpath), {
-        conditions,
-        unsafe: true
+      const resolvedExport = packageExportsResolve({
+        packageJSONUrl: url.pathToFileURL(npath.fromPortablePath(manifestPath)),
+        packageSubpath: subpath,
+        exports: pkgJson.exports,
+        base: issuer ? url.pathToFileURL(npath.fromPortablePath(issuer)) : null,
+        conditions
       });
+      return npath.toPortablePath(url.fileURLToPath(resolvedExport));
     } catch (error) {
-      throw makeError(ErrorCode.EXPORTS_RESOLUTION_FAILED, error.message, {unqualifiedPath: getPathForDisplay(unqualifiedPath), locator, pkgJson, subpath: getPathForDisplay(subpath), conditions}, `ERR_PACKAGE_PATH_NOT_EXPORTED`);
+      throw makeError(
+        ErrorCode.EXPORTS_RESOLUTION_FAILED,
+        error.message,
+        { unqualifiedPath: getPathForDisplay(unqualifiedPath), locator, pkgJson, subpath: getPathForDisplay(subpath), conditions },
+        error.code
+      );
     }
-    if (typeof resolvedExport === `string`)
-      return ppath.join(packageLocation, resolvedExport);
-    return null;
   }
-  function applyNodeExtensionResolution(unqualifiedPath, candidates, {extensions}) {
+  function applyNodeExtensionResolution(unqualifiedPath, candidates, { extensions }) {
     let stat;
     try {
       candidates.push(unqualifiedPath);
@@ -45196,7 +46179,7 @@ function makeApi(runtimeState, opts) {
       if (pkgJson && pkgJson.main)
         nextUnqualifiedPath = ppath.resolve(unqualifiedPath, pkgJson.main);
       if (nextUnqualifiedPath && nextUnqualifiedPath !== unqualifiedPath) {
-        const resolution = applyNodeExtensionResolution(nextUnqualifiedPath, candidates, {extensions});
+        const resolution = applyNodeExtensionResolution(nextUnqualifiedPath, candidates, { extensions });
         if (resolution !== null) {
           return resolution;
         }
@@ -45211,7 +46194,7 @@ function makeApi(runtimeState, opts) {
     }
     if (stat && stat.isDirectory()) {
       for (let i = 0, length = extensions.length; i < length; i++) {
-        const candidateFile = ppath.format({dir: unqualifiedPath, name: `index`, ext: extensions[i]});
+        const candidateFile = ppath.format({ dir: unqualifiedPath, name: `index`, ext: extensions[i] });
         candidates.push(candidateFile);
         if (opts.fakeFs.existsSync(candidateFile)) {
           return candidateFile;
@@ -45229,7 +46212,7 @@ function makeApi(runtimeState, opts) {
   function callNativeResolution(request, issuer) {
     if (issuer.endsWith(`/`))
       issuer = ppath.join(issuer, `internal.js`);
-    return require$$0.Module._resolveFilename(npath.fromPortablePath(request), makeFakeModule(npath.fromPortablePath(issuer)), false, {plugnplay: false});
+    return require$$0.Module._resolveFilename(npath.fromPortablePath(request), makeFakeModule(npath.fromPortablePath(issuer)), false, { plugnplay: false });
   }
   function isPathIgnored(path) {
     if (ignorePattern === null)
@@ -45243,9 +46226,9 @@ function makeApi(runtimeState, opts) {
       return false;
     }
   }
-  const VERSIONS = {std: 3, resolveVirtual: 1, getAllLocators: 1};
+  const VERSIONS = { std: 3, resolveVirtual: 1, getAllLocators: 1 };
   const topLevel = topLevelLocator;
-  function getPackageInformation({name, reference}) {
+  function getPackageInformation({ name, reference }) {
     const packageInformationStore = packageRegistry.get(name);
     if (!packageInformationStore)
       return null;
@@ -45254,7 +46237,7 @@ function makeApi(runtimeState, opts) {
       return null;
     return packageInformation;
   }
-  function findPackageDependents({name, reference}) {
+  function findPackageDependents({ name, reference }) {
     const dependents = [];
     for (const [dependentName, packageInformationStore] of packageRegistry) {
       if (dependentName === null)
@@ -45276,8 +46259,8 @@ function makeApi(runtimeState, opts) {
     return dependents;
   }
   function findBrokenPeerDependencies(dependency, initialPackage) {
-    const brokenPackages = new Map();
-    const alreadyVisited = new Set();
+    const brokenPackages = /* @__PURE__ */ new Map();
+    const alreadyVisited = /* @__PURE__ */ new Set();
     const traversal = (currentPackage) => {
       const identifier = JSON.stringify(currentPackage.name);
       if (alreadyVisited.has(identifier))
@@ -45291,7 +46274,7 @@ function makeApi(runtimeState, opts) {
         } else {
           let brokenSet = brokenPackages.get(dependent.name);
           if (typeof brokenSet === `undefined`)
-            brokenPackages.set(dependent.name, brokenSet = new Set());
+            brokenPackages.set(dependent.name, brokenSet = /* @__PURE__ */ new Set());
           brokenSet.add(dependent.reference);
         }
       }
@@ -45300,10 +46283,10 @@ function makeApi(runtimeState, opts) {
     const brokenList = [];
     for (const name of [...brokenPackages.keys()].sort())
       for (const reference of [...brokenPackages.get(name)].sort())
-        brokenList.push({name, reference});
+        brokenList.push({ name, reference });
     return brokenList;
   }
-  function findPackageLocator(location, {resolveIgnored = false, includeDiscardFromLookup = false} = {}) {
+  function findPackageLocator(location, { resolveIgnored = false, includeDiscardFromLookup = false } = {}) {
     if (isPathIgnored(location) && !resolveIgnored)
       return null;
     let relativeLocation = ppath.relative(runtimeState.basePath, location);
@@ -45321,7 +46304,18 @@ function makeApi(runtimeState, opts) {
     } while (relativeLocation !== ``);
     return null;
   }
-  function resolveToUnqualified(request, issuer, {considerBuiltins = true} = {}) {
+  function tryReadFile(filePath) {
+    try {
+      return opts.fakeFs.readFileSync(npath.toPortablePath(filePath), `utf8`);
+    } catch (err) {
+      if (err.code === `ENOENT`)
+        return void 0;
+      throw err;
+    }
+  }
+  function resolveToUnqualified(request, issuer, { considerBuiltins = true } = {}) {
+    if (request.startsWith(`#`))
+      throw new Error(`resolveToUnqualified can not handle private import mappings`);
     if (request === `pnpapi`)
       return npath.toPortablePath(opts.pnpapiResolution);
     if (considerBuiltins && isBuiltinModule(request))
@@ -45332,11 +46326,15 @@ function makeApi(runtimeState, opts) {
       if (!ppath.isAbsolute(request) || findPackageLocator(request) === null) {
         const result = callNativeResolution(request, issuer);
         if (result === false) {
-          throw makeError(ErrorCode.BUILTIN_NODE_RESOLUTION_FAILED, `The builtin node resolution algorithm was unable to resolve the requested module (it didn't go through the pnp resolver because the issuer was explicitely ignored by the regexp)
+          throw makeError(
+            ErrorCode.BUILTIN_NODE_RESOLUTION_FAILED,
+            `The builtin node resolution algorithm was unable to resolve the requested module (it didn't go through the pnp resolver because the issuer was explicitely ignored by the regexp)
 
 Require request: "${requestForDisplay}"
 Required by: ${issuerForDisplay}
-`, {request: requestForDisplay, issuer: issuerForDisplay});
+`,
+            { request: requestForDisplay, issuer: issuerForDisplay }
+          );
         }
         return npath.toPortablePath(result);
       }
@@ -45348,7 +46346,11 @@ Required by: ${issuerForDisplay}
         unqualifiedPath = ppath.normalize(request);
       } else {
         if (!issuer) {
-          throw makeError(ErrorCode.API_ERROR, `The resolveToUnqualified function must be called with a valid issuer when the path isn't a builtin nor absolute`, {request: requestForDisplay, issuer: issuerForDisplay});
+          throw makeError(
+            ErrorCode.API_ERROR,
+            `The resolveToUnqualified function must be called with a valid issuer when the path isn't a builtin nor absolute`,
+            { request: requestForDisplay, issuer: issuerForDisplay }
+          );
         }
         const absoluteIssuer = ppath.resolve(issuer);
         if (issuer.match(isDirRegExp)) {
@@ -45359,18 +46361,26 @@ Required by: ${issuerForDisplay}
       }
     } else {
       if (!issuer) {
-        throw makeError(ErrorCode.API_ERROR, `The resolveToUnqualified function must be called with a valid issuer when the path isn't a builtin nor absolute`, {request: requestForDisplay, issuer: issuerForDisplay});
+        throw makeError(
+          ErrorCode.API_ERROR,
+          `The resolveToUnqualified function must be called with a valid issuer when the path isn't a builtin nor absolute`,
+          { request: requestForDisplay, issuer: issuerForDisplay }
+        );
       }
       const [, dependencyName, subPath] = dependencyNameMatch;
       const issuerLocator = findPackageLocator(issuer);
       if (!issuerLocator) {
         const result = callNativeResolution(request, issuer);
         if (result === false) {
-          throw makeError(ErrorCode.BUILTIN_NODE_RESOLUTION_FAILED, `The builtin node resolution algorithm was unable to resolve the requested module (it didn't go through the pnp resolver because the issuer doesn't seem to be part of the Yarn-managed dependency tree).
+          throw makeError(
+            ErrorCode.BUILTIN_NODE_RESOLUTION_FAILED,
+            `The builtin node resolution algorithm was unable to resolve the requested module (it didn't go through the pnp resolver because the issuer doesn't seem to be part of the Yarn-managed dependency tree).
 
 Require path: "${requestForDisplay}"
 Required by: ${issuerForDisplay}
-`, {request: requestForDisplay, issuer: issuerForDisplay});
+`,
+            { request: requestForDisplay, issuer: issuerForDisplay }
+          );
         }
         return npath.toPortablePath(result);
       }
@@ -45407,60 +46417,88 @@ Required by: ${issuerForDisplay}
       let error = null;
       if (dependencyReference === null) {
         if (isDependencyTreeRoot(issuerLocator)) {
-          error = makeError(ErrorCode.MISSING_PEER_DEPENDENCY, `Your application tried to access ${dependencyName} (a peer dependency); this isn't allowed as there is no ancestor to satisfy the requirement. Use a devDependency if needed.
+          error = makeError(
+            ErrorCode.MISSING_PEER_DEPENDENCY,
+            `Your application tried to access ${dependencyName} (a peer dependency); this isn't allowed as there is no ancestor to satisfy the requirement. Use a devDependency if needed.
 
 Required package: ${dependencyName}${dependencyName !== requestForDisplay ? ` (via "${requestForDisplay}")` : ``}
 Required by: ${issuerForDisplay}
-`, {request: requestForDisplay, issuer: issuerForDisplay, dependencyName});
+`,
+            { request: requestForDisplay, issuer: issuerForDisplay, dependencyName }
+          );
         } else {
           const brokenAncestors = findBrokenPeerDependencies(dependencyName, issuerLocator);
           if (brokenAncestors.every((ancestor) => isDependencyTreeRoot(ancestor))) {
-            error = makeError(ErrorCode.MISSING_PEER_DEPENDENCY, `${issuerLocator.name} tried to access ${dependencyName} (a peer dependency) but it isn't provided by your application; this makes the require call ambiguous and unsound.
+            error = makeError(
+              ErrorCode.MISSING_PEER_DEPENDENCY,
+              `${issuerLocator.name} tried to access ${dependencyName} (a peer dependency) but it isn't provided by your application; this makes the require call ambiguous and unsound.
 
 Required package: ${dependencyName}${dependencyName !== requestForDisplay ? ` (via "${requestForDisplay}")` : ``}
 Required by: ${issuerLocator.name}@${issuerLocator.reference} (via ${issuerForDisplay})
 ${brokenAncestors.map((ancestorLocator) => `Ancestor breaking the chain: ${ancestorLocator.name}@${ancestorLocator.reference}
 `).join(``)}
-`, {request: requestForDisplay, issuer: issuerForDisplay, issuerLocator: Object.assign({}, issuerLocator), dependencyName, brokenAncestors});
+`,
+              { request: requestForDisplay, issuer: issuerForDisplay, issuerLocator: Object.assign({}, issuerLocator), dependencyName, brokenAncestors }
+            );
           } else {
-            error = makeError(ErrorCode.MISSING_PEER_DEPENDENCY, `${issuerLocator.name} tried to access ${dependencyName} (a peer dependency) but it isn't provided by its ancestors; this makes the require call ambiguous and unsound.
+            error = makeError(
+              ErrorCode.MISSING_PEER_DEPENDENCY,
+              `${issuerLocator.name} tried to access ${dependencyName} (a peer dependency) but it isn't provided by its ancestors; this makes the require call ambiguous and unsound.
 
 Required package: ${dependencyName}${dependencyName !== requestForDisplay ? ` (via "${requestForDisplay}")` : ``}
 Required by: ${issuerLocator.name}@${issuerLocator.reference} (via ${issuerForDisplay})
 
 ${brokenAncestors.map((ancestorLocator) => `Ancestor breaking the chain: ${ancestorLocator.name}@${ancestorLocator.reference}
 `).join(``)}
-`, {request: requestForDisplay, issuer: issuerForDisplay, issuerLocator: Object.assign({}, issuerLocator), dependencyName, brokenAncestors});
+`,
+              { request: requestForDisplay, issuer: issuerForDisplay, issuerLocator: Object.assign({}, issuerLocator), dependencyName, brokenAncestors }
+            );
           }
         }
       } else if (dependencyReference === void 0) {
         if (!considerBuiltins && isBuiltinModule(request)) {
           if (isDependencyTreeRoot(issuerLocator)) {
-            error = makeError(ErrorCode.UNDECLARED_DEPENDENCY, `Your application tried to access ${dependencyName}. While this module is usually interpreted as a Node builtin, your resolver is running inside a non-Node resolution context where such builtins are ignored. Since ${dependencyName} isn't otherwise declared in your dependencies, this makes the require call ambiguous and unsound.
+            error = makeError(
+              ErrorCode.UNDECLARED_DEPENDENCY,
+              `Your application tried to access ${dependencyName}. While this module is usually interpreted as a Node builtin, your resolver is running inside a non-Node resolution context where such builtins are ignored. Since ${dependencyName} isn't otherwise declared in your dependencies, this makes the require call ambiguous and unsound.
 
 Required package: ${dependencyName}${dependencyName !== requestForDisplay ? ` (via "${requestForDisplay}")` : ``}
 Required by: ${issuerForDisplay}
-`, {request: requestForDisplay, issuer: issuerForDisplay, dependencyName});
+`,
+              { request: requestForDisplay, issuer: issuerForDisplay, dependencyName }
+            );
           } else {
-            error = makeError(ErrorCode.UNDECLARED_DEPENDENCY, `${issuerLocator.name} tried to access ${dependencyName}. While this module is usually interpreted as a Node builtin, your resolver is running inside a non-Node resolution context where such builtins are ignored. Since ${dependencyName} isn't otherwise declared in ${issuerLocator.name}'s dependencies, this makes the require call ambiguous and unsound.
+            error = makeError(
+              ErrorCode.UNDECLARED_DEPENDENCY,
+              `${issuerLocator.name} tried to access ${dependencyName}. While this module is usually interpreted as a Node builtin, your resolver is running inside a non-Node resolution context where such builtins are ignored. Since ${dependencyName} isn't otherwise declared in ${issuerLocator.name}'s dependencies, this makes the require call ambiguous and unsound.
 
 Required package: ${dependencyName}${dependencyName !== requestForDisplay ? ` (via "${requestForDisplay}")` : ``}
 Required by: ${issuerForDisplay}
-`, {request: requestForDisplay, issuer: issuerForDisplay, issuerLocator: Object.assign({}, issuerLocator), dependencyName});
+`,
+              { request: requestForDisplay, issuer: issuerForDisplay, issuerLocator: Object.assign({}, issuerLocator), dependencyName }
+            );
           }
         } else {
           if (isDependencyTreeRoot(issuerLocator)) {
-            error = makeError(ErrorCode.UNDECLARED_DEPENDENCY, `Your application tried to access ${dependencyName}, but it isn't declared in your dependencies; this makes the require call ambiguous and unsound.
+            error = makeError(
+              ErrorCode.UNDECLARED_DEPENDENCY,
+              `Your application tried to access ${dependencyName}, but it isn't declared in your dependencies; this makes the require call ambiguous and unsound.
 
 Required package: ${dependencyName}${dependencyName !== requestForDisplay ? ` (via "${requestForDisplay}")` : ``}
 Required by: ${issuerForDisplay}
-`, {request: requestForDisplay, issuer: issuerForDisplay, dependencyName});
+`,
+              { request: requestForDisplay, issuer: issuerForDisplay, dependencyName }
+            );
           } else {
-            error = makeError(ErrorCode.UNDECLARED_DEPENDENCY, `${issuerLocator.name} tried to access ${dependencyName}, but it isn't declared in its dependencies; this makes the require call ambiguous and unsound.
+            error = makeError(
+              ErrorCode.UNDECLARED_DEPENDENCY,
+              `${issuerLocator.name} tried to access ${dependencyName}, but it isn't declared in its dependencies; this makes the require call ambiguous and unsound.
 
 Required package: ${dependencyName}${dependencyName !== requestForDisplay ? ` (via "${requestForDisplay}")` : ``}
 Required by: ${issuerLocator.name}@${issuerLocator.reference} (via ${issuerForDisplay})
-`, {request: requestForDisplay, issuer: issuerForDisplay, issuerLocator: Object.assign({}, issuerLocator), dependencyName});
+`,
+              { request: requestForDisplay, issuer: issuerForDisplay, issuerLocator: Object.assign({}, issuerLocator), dependencyName }
+            );
           }
         }
       }
@@ -45475,14 +46513,18 @@ Required by: ${issuerLocator.name}@${issuerLocator.reference} (via ${issuerForDi
           process.emitWarning(error);
         }
       }
-      const dependencyLocator = Array.isArray(dependencyReference) ? {name: dependencyReference[0], reference: dependencyReference[1]} : {name: dependencyName, reference: dependencyReference};
+      const dependencyLocator = Array.isArray(dependencyReference) ? { name: dependencyReference[0], reference: dependencyReference[1] } : { name: dependencyName, reference: dependencyReference };
       const dependencyInformation = getPackageInformationSafe(dependencyLocator);
       if (!dependencyInformation.packageLocation) {
-        throw makeError(ErrorCode.MISSING_DEPENDENCY, `A dependency seems valid but didn't get installed for some reason. This might be caused by a partial install, such as dev vs prod.
+        throw makeError(
+          ErrorCode.MISSING_DEPENDENCY,
+          `A dependency seems valid but didn't get installed for some reason. This might be caused by a partial install, such as dev vs prod.
 
 Required package: ${dependencyLocator.name}@${dependencyLocator.reference}${dependencyLocator.name !== requestForDisplay ? ` (via "${requestForDisplay}")` : ``}
 Required by: ${issuerLocator.name}@${issuerLocator.reference} (via ${issuerForDisplay})
-`, {request: requestForDisplay, issuer: issuerForDisplay, dependencyLocator: Object.assign({}, dependencyLocator)});
+`,
+          { request: requestForDisplay, issuer: issuerForDisplay, dependencyLocator: Object.assign({}, dependencyLocator) }
+        );
       }
       const dependencyLocation = dependencyInformation.packageLocation;
       if (subPath) {
@@ -45493,27 +46535,28 @@ Required by: ${issuerLocator.name}@${issuerLocator.reference} (via ${issuerForDi
     }
     return ppath.normalize(unqualifiedPath);
   }
-  function resolveUnqualifiedExport(request, unqualifiedPath, conditions = defaultExportsConditions) {
+  function resolveUnqualifiedExport(request, unqualifiedPath, conditions = defaultExportsConditions, issuer) {
     if (isStrictRegExp.test(request))
       return unqualifiedPath;
-    const unqualifiedExportPath = applyNodeExportsResolution(unqualifiedPath, conditions);
+    const unqualifiedExportPath = applyNodeExportsResolution(unqualifiedPath, conditions, issuer);
     if (unqualifiedExportPath) {
       return ppath.normalize(unqualifiedExportPath);
     } else {
       return unqualifiedPath;
     }
   }
-  function resolveUnqualified(unqualifiedPath, {extensions = Object.keys(require$$0.Module._extensions)} = {}) {
+  function resolveUnqualified(unqualifiedPath, { extensions = Object.keys(require$$0.Module._extensions) } = {}) {
     var _a, _b;
     const candidates = [];
-    const qualifiedPath = applyNodeExtensionResolution(unqualifiedPath, candidates, {extensions});
+    const qualifiedPath = applyNodeExtensionResolution(unqualifiedPath, candidates, { extensions });
     if (qualifiedPath) {
       return ppath.normalize(qualifiedPath);
     } else {
+      reportRequiredFilesToWatchMode(candidates.map((candidate) => npath.fromPortablePath(candidate)));
       const unqualifiedPathForDisplay = getPathForDisplay(unqualifiedPath);
       const containingPackage = findPackageLocator(unqualifiedPath);
       if (containingPackage) {
-        const {packageLocation} = getPackageInformationSafe(containingPackage);
+        const { packageLocation } = getPackageInformationSafe(containingPackage);
         let exists = true;
         try {
           opts.fakeFs.accessSync(packageLocation);
@@ -45526,38 +46569,67 @@ Required by: ${issuerLocator.name}@${issuerLocator.reference} (via ${issuerForDi
 
 Missing package: ${containingPackage.name}@${containingPackage.reference}
 Expected package location: ${getPathForDisplay(packageLocation)}
-`, {unqualifiedPath: unqualifiedPathForDisplay, extensions});
+`, { unqualifiedPath: unqualifiedPathForDisplay, extensions });
           }
         }
         if (!exists) {
           const errorMessage = packageLocation.includes(`/unplugged/`) ? `Required unplugged package missing from disk. This may happen when switching branches without running installs (unplugged packages must be fully materialized on disk to work).` : `Required package missing from disk. If you keep your packages inside your repository then restarting the Node process may be enough. Otherwise, try to run an install first.`;
-          throw makeError(ErrorCode.QUALIFIED_PATH_RESOLUTION_FAILED, `${errorMessage}
+          throw makeError(
+            ErrorCode.QUALIFIED_PATH_RESOLUTION_FAILED,
+            `${errorMessage}
 
 Missing package: ${containingPackage.name}@${containingPackage.reference}
 Expected package location: ${getPathForDisplay(packageLocation)}
-`, {unqualifiedPath: unqualifiedPathForDisplay, extensions});
+`,
+            { unqualifiedPath: unqualifiedPathForDisplay, extensions }
+          );
         }
       }
-      throw makeError(ErrorCode.QUALIFIED_PATH_RESOLUTION_FAILED, `Qualified path resolution failed: we looked for the following paths, but none could be accessed.
+      throw makeError(
+        ErrorCode.QUALIFIED_PATH_RESOLUTION_FAILED,
+        `Qualified path resolution failed: we looked for the following paths, but none could be accessed.
 
 Source path: ${unqualifiedPathForDisplay}
 ${candidates.map((candidate) => `Not found: ${getPathForDisplay(candidate)}
-`).join(``)}`, {unqualifiedPath: unqualifiedPathForDisplay, extensions});
+`).join(``)}`,
+        { unqualifiedPath: unqualifiedPathForDisplay, extensions }
+      );
     }
   }
-  function resolveRequest(request, issuer, {considerBuiltins, extensions, conditions} = {}) {
+  function resolvePrivateRequest(request, issuer, opts2) {
+    var _a;
+    if (!issuer)
+      throw new Error(`Assertion failed: An issuer is required to resolve private import mappings`);
+    const resolved = packageImportsResolve({
+      name: request,
+      base: url.pathToFileURL(npath.fromPortablePath(issuer)),
+      conditions: (_a = opts2.conditions) != null ? _a : defaultExportsConditions,
+      readFileSyncFn: tryReadFile
+    });
+    if (resolved instanceof url.URL) {
+      return resolveUnqualified(npath.toPortablePath(url.fileURLToPath(resolved)), { extensions: opts2.extensions });
+    } else {
+      if (resolved.startsWith(`#`))
+        throw new Error(`Mapping from one private import to another isn't allowed`);
+      return resolveRequest(resolved, issuer, opts2);
+    }
+  }
+  function resolveRequest(request, issuer, opts2 = {}) {
     try {
-      const unqualifiedPath = resolveToUnqualified(request, issuer, {considerBuiltins});
+      if (request.startsWith(`#`))
+        return resolvePrivateRequest(request, issuer, opts2);
+      const { considerBuiltins, extensions, conditions } = opts2;
+      const unqualifiedPath = resolveToUnqualified(request, issuer, { considerBuiltins });
       if (request === `pnpapi`)
         return unqualifiedPath;
       if (unqualifiedPath === null)
         return null;
       const isIssuerIgnored = () => issuer !== null ? isPathIgnored(issuer) : false;
-      const remappedPath = (!considerBuiltins || !isBuiltinModule(request)) && !isIssuerIgnored() ? resolveUnqualifiedExport(request, unqualifiedPath, conditions) : unqualifiedPath;
-      return resolveUnqualified(remappedPath, {extensions});
+      const remappedPath = (!considerBuiltins || !isBuiltinModule(request)) && !isIssuerIgnored() ? resolveUnqualifiedExport(request, unqualifiedPath, conditions, issuer) : unqualifiedPath;
+      return resolveUnqualified(remappedPath, { extensions });
     } catch (error) {
       if (Object.prototype.hasOwnProperty.call(error, `pnpCode`))
-        Object.assign(error.data, {request: getPathForDisplay(request), issuer: issuer && getPathForDisplay(issuer)});
+        Object.assign(error.data, { request: getPathForDisplay(request), issuer: issuer && getPathForDisplay(issuer) });
       throw error;
     }
   }
@@ -45571,9 +46643,9 @@ ${candidates.map((candidate) => `Not found: ${getPathForDisplay(candidate)}
     topLevel,
     getLocator: (name, referencish) => {
       if (Array.isArray(referencish)) {
-        return {name: referencish[0], reference: referencish[1]};
+        return { name: referencish[0], reference: referencish[1] };
       } else {
-        return {name, reference: referencish};
+        return { name, reference: referencish };
       }
     },
     getDependencyTreeRoots: () => {
@@ -45584,7 +46656,7 @@ ${candidates.map((candidate) => `Not found: ${getPathForDisplay(candidate)}
       for (const [name, entry] of packageRegistry)
         for (const reference of entry.keys())
           if (name !== null && reference !== null)
-            locators.push({name, reference});
+            locators.push({ name, reference });
       return locators;
     },
     getPackageInformation: (locator) => {
@@ -45592,7 +46664,7 @@ ${candidates.map((candidate) => `Not found: ${getPathForDisplay(candidate)}
       if (info === null)
         return null;
       const packageLocation = npath.fromPortablePath(info.packageLocation);
-      const nativeInfo = __spreadProps(__spreadValues$1({}, info), {packageLocation});
+      const nativeInfo = { ...info, packageLocation };
       return nativeInfo;
     },
     findPackageLocator: (path) => {
@@ -45629,9 +46701,8 @@ ${candidates.map((candidate) => `Not found: ${getPathForDisplay(candidate)}
 function makeManager(pnpapi, opts) {
   const initialApiPath = npath.toPortablePath(pnpapi.resolveToUnqualified(`pnpapi`, null));
   const initialApiStats = opts.fakeFs.statSync(npath.toPortablePath(initialApiPath));
-  const apiMetadata = new Map([
+  const apiMetadata = /* @__PURE__ */ new Map([
     [initialApiPath, {
-      cache: require$$0.Module._cache,
       instance: pnpapi,
       stats: initialApiStats,
       lastRefreshCheck: Date.now()
@@ -45650,7 +46721,7 @@ function makeManager(pnpapi, opts) {
     apiEntry.lastRefreshCheck = timeNow;
     const stats = opts.fakeFs.statSync(pnpApiPath);
     if (stats.mtime > apiEntry.stats.mtime) {
-      process.emitWarning(`[Warning] The runtime detected new informations in a PnP file; reloading the API instance (${npath.fromPortablePath(pnpApiPath)})`);
+      process.emitWarning(`[Warning] The runtime detected new information in a PnP file; reloading the API instance (${npath.fromPortablePath(pnpApiPath)})`);
       apiEntry.stats = stats;
       apiEntry.instance = loadApiInstance(pnpApiPath);
     }
@@ -45663,7 +46734,6 @@ function makeManager(pnpapi, opts) {
       }
     } else {
       apiMetadata.set(pnpApiPath, apiEntry = {
-        cache: {},
         instance: loadApiInstance(pnpApiPath),
         stats: opts.fakeFs.statSync(pnpApiPath),
         lastRefreshCheck: Date.now()
@@ -45671,7 +46741,7 @@ function makeManager(pnpapi, opts) {
     }
     return apiEntry;
   }
-  const findApiPathCache = new Map();
+  const findApiPathCache = /* @__PURE__ */ new Map();
   function addToCacheAndReturn(start, end, target) {
     if (target !== null)
       target = VirtualFS.resolveVirtual(target);
@@ -45696,11 +46766,11 @@ function makeManager(pnpapi, opts) {
       if (!packageInformation)
         throw new Error(`Assertion failed: Couldn't get package information for '${modulePath}'`);
       if (!bestCandidate)
-        bestCandidate = {packageLocation: packageInformation.packageLocation, apiPaths: []};
+        bestCandidate = { packageLocation: packageInformation.packageLocation, apiPaths: [] };
       if (packageInformation.packageLocation === bestCandidate.packageLocation) {
         bestCandidate.apiPaths.push(apiPath);
       } else if (packageInformation.packageLocation.length > bestCandidate.packageLocation.length) {
-        bestCandidate = {packageLocation: packageInformation.packageLocation, apiPaths: [apiPath]};
+        bestCandidate = { packageLocation: packageInformation.packageLocation, apiPaths: [apiPath] };
       }
     }
     if (bestCandidate) {
@@ -45733,19 +46803,16 @@ ${controlSegment}
     } while (curr !== PortablePath.root);
     return addToCacheAndReturn(start, curr, null);
   }
+  const moduleToApiPathCache = /* @__PURE__ */ new WeakMap();
   function getApiPathFromParent(parent) {
     if (parent == null)
       return initialApiPath;
-    if (typeof parent.pnpApiPath === `undefined`) {
-      if (parent.filename !== null) {
-        return parent.pnpApiPath = findApiPathFor(parent.filename);
-      } else {
-        return initialApiPath;
-      }
-    }
-    if (parent.pnpApiPath !== null)
-      return parent.pnpApiPath;
-    return null;
+    let apiPath = moduleToApiPathCache.get(parent);
+    if (typeof apiPath !== `undefined`)
+      return apiPath;
+    apiPath = parent.filename ? findApiPathFor(parent.filename) : null;
+    moduleToApiPathCache.set(parent, apiPath);
+    return apiPath;
   }
   return {
     getApiPathFromParent,
@@ -45754,35 +46821,7 @@ ${controlSegment}
   };
 }
 
-var __defProp = Object.defineProperty;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, {enumerable: true, configurable: true, writable: true, value}) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __objRest = (source, exclude) => {
-  var target = {};
-  for (var prop in source)
-    if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
-      target[prop] = source[prop];
-  if (source != null && __getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(source)) {
-      if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
-        target[prop] = source[prop];
-    }
-  return target;
-};
-const localFs = __spreadValues({}, fs__default.default);
+const localFs = { ...fs__default.default };
 const nodeFs = new NodeFS(localFs);
 const defaultRuntimeState = $$SETUP_STATE(hydrateRuntimeState);
 const defaultPnpapiResolution = __filename;
@@ -45812,21 +46851,18 @@ const defaultApi = Object.assign(makeApi(defaultRuntimeState, {
   fakeFs: dynamicFsLayer,
   pnpapiResolution: defaultPnpapiResolution
 }), {
-  makeApi: (_a) => {
-    var _b = _a, {
-      basePath = void 0,
-      fakeFs = dynamicFsLayer,
-      pnpapiResolution = defaultPnpapiResolution
-    } = _b, rest = __objRest(_b, [
-      "basePath",
-      "fakeFs",
-      "pnpapiResolution"
-    ]);
+  makeApi: ({
+    basePath = void 0,
+    fakeFs = dynamicFsLayer,
+    pnpapiResolution = defaultPnpapiResolution,
+    ...rest
+  }) => {
     const apiRuntimeState = typeof basePath !== `undefined` ? $$SETUP_STATE(hydrateRuntimeState, basePath) : defaultRuntimeState;
-    return makeApi(apiRuntimeState, __spreadValues({
+    return makeApi(apiRuntimeState, {
       fakeFs,
-      pnpapiResolution
-    }, rest));
+      pnpapiResolution,
+      ...rest
+    });
   },
   setup: (api) => {
     applyPatch(api || defaultApi, {
@@ -45847,7 +46883,7 @@ if (module.parent && module.parent.id === `internal/preload`) {
 }
 if (process.mainModule === module) {
   const reportError = (code, message, data) => {
-    process.stdout.write(`${JSON.stringify([{code, message, data}, null])}
+    process.stdout.write(`${JSON.stringify([{ code, message, data }, null])}
 `);
   };
   const reportSuccess = (resolution) => {
