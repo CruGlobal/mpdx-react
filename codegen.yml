@@ -54,4 +54,5 @@ generates:
       - ./extractRootFields.js
 hooks:
   afterAllFileWrite:
+    - prettier --write
     - ./delete-stale-files.sh
