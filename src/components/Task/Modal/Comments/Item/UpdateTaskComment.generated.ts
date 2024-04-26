@@ -9,28 +9,44 @@ export type UpdateCommentMutationVariables = Types.Exact<{
   body: Types.Scalars['String']['input'];
 }>;
 
-
-export type UpdateCommentMutation = (
-  { __typename?: 'Mutation' }
-  & { updateComment: (
-    { __typename?: 'CommentUpdateMutationPayload' }
-    & Pick<Types.CommentUpdateMutationPayload, 'id'>
-  ) }
-);
-
+export type UpdateCommentMutation = { __typename?: 'Mutation' } & {
+  updateComment: { __typename?: 'CommentUpdateMutationPayload' } & Pick<
+    Types.CommentUpdateMutationPayload,
+    'id'
+  >;
+};
 
 export const UpdateCommentDocument = gql`
-    mutation UpdateComment($taskId: ID!, $commentId: ID!, $body: String!) {
-  updateComment(input: {taskId: $taskId, commentId: $commentId, body: $body}) {
-    id
+  mutation UpdateComment($taskId: ID!, $commentId: ID!, $body: String!) {
+    updateComment(
+      input: { taskId: $taskId, commentId: $commentId, body: $body }
+    ) {
+      id
+    }
   }
+`;
+export type UpdateCommentMutationFn = Apollo.MutationFunction<
+  UpdateCommentMutation,
+  UpdateCommentMutationVariables
+>;
+export function useUpdateCommentMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateCommentMutation,
+    UpdateCommentMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateCommentMutation,
+    UpdateCommentMutationVariables
+  >(UpdateCommentDocument, options);
 }
-    `;
-export type UpdateCommentMutationFn = Apollo.MutationFunction<UpdateCommentMutation, UpdateCommentMutationVariables>;
-export function useUpdateCommentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCommentMutation, UpdateCommentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateCommentMutation, UpdateCommentMutationVariables>(UpdateCommentDocument, options);
-      }
-export type UpdateCommentMutationHookResult = ReturnType<typeof useUpdateCommentMutation>;
-export type UpdateCommentMutationResult = Apollo.MutationResult<UpdateCommentMutation>;
-export type UpdateCommentMutationOptions = Apollo.BaseMutationOptions<UpdateCommentMutation, UpdateCommentMutationVariables>;
+export type UpdateCommentMutationHookResult = ReturnType<
+  typeof useUpdateCommentMutation
+>;
+export type UpdateCommentMutationResult =
+  Apollo.MutationResult<UpdateCommentMutation>;
+export type UpdateCommentMutationOptions = Apollo.BaseMutationOptions<
+  UpdateCommentMutation,
+  UpdateCommentMutationVariables
+>;

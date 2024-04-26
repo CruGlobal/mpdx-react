@@ -8,33 +8,51 @@ export type MassActionsUpdateContactsMutationVariables = Types.Exact<{
   attributes: Array<Types.ContactUpdateInput> | Types.ContactUpdateInput;
 }>;
 
-
-export type MassActionsUpdateContactsMutation = (
-  { __typename?: 'Mutation' }
-  & { updateContacts?: Types.Maybe<(
-    { __typename?: 'ContactsUpdateMutationPayload' }
-    & { contacts: Array<(
-      { __typename?: 'Contact' }
-      & Pick<Types.Contact, 'id'>
-    )> }
-  )> }
-);
-
+export type MassActionsUpdateContactsMutation = { __typename?: 'Mutation' } & {
+  updateContacts?: Types.Maybe<
+    { __typename?: 'ContactsUpdateMutationPayload' } & {
+      contacts: Array<{ __typename?: 'Contact' } & Pick<Types.Contact, 'id'>>;
+    }
+  >;
+};
 
 export const MassActionsUpdateContactsDocument = gql`
-    mutation MassActionsUpdateContacts($accountListId: ID!, $attributes: [ContactUpdateInput!]!) {
-  updateContacts(input: {accountListId: $accountListId, attributes: $attributes}) {
-    contacts {
-      id
+  mutation MassActionsUpdateContacts(
+    $accountListId: ID!
+    $attributes: [ContactUpdateInput!]!
+  ) {
+    updateContacts(
+      input: { accountListId: $accountListId, attributes: $attributes }
+    ) {
+      contacts {
+        id
+      }
     }
   }
+`;
+export type MassActionsUpdateContactsMutationFn = Apollo.MutationFunction<
+  MassActionsUpdateContactsMutation,
+  MassActionsUpdateContactsMutationVariables
+>;
+export function useMassActionsUpdateContactsMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    MassActionsUpdateContactsMutation,
+    MassActionsUpdateContactsMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    MassActionsUpdateContactsMutation,
+    MassActionsUpdateContactsMutationVariables
+  >(MassActionsUpdateContactsDocument, options);
 }
-    `;
-export type MassActionsUpdateContactsMutationFn = Apollo.MutationFunction<MassActionsUpdateContactsMutation, MassActionsUpdateContactsMutationVariables>;
-export function useMassActionsUpdateContactsMutation(baseOptions?: Apollo.MutationHookOptions<MassActionsUpdateContactsMutation, MassActionsUpdateContactsMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<MassActionsUpdateContactsMutation, MassActionsUpdateContactsMutationVariables>(MassActionsUpdateContactsDocument, options);
-      }
-export type MassActionsUpdateContactsMutationHookResult = ReturnType<typeof useMassActionsUpdateContactsMutation>;
-export type MassActionsUpdateContactsMutationResult = Apollo.MutationResult<MassActionsUpdateContactsMutation>;
-export type MassActionsUpdateContactsMutationOptions = Apollo.BaseMutationOptions<MassActionsUpdateContactsMutation, MassActionsUpdateContactsMutationVariables>;
+export type MassActionsUpdateContactsMutationHookResult = ReturnType<
+  typeof useMassActionsUpdateContactsMutation
+>;
+export type MassActionsUpdateContactsMutationResult =
+  Apollo.MutationResult<MassActionsUpdateContactsMutation>;
+export type MassActionsUpdateContactsMutationOptions =
+  Apollo.BaseMutationOptions<
+    MassActionsUpdateContactsMutation,
+    MassActionsUpdateContactsMutationVariables
+  >;
