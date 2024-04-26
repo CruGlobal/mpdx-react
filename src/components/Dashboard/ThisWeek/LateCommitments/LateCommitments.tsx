@@ -18,7 +18,6 @@ import {
   Contact,
   ContactConnection,
   ContactFilterPledgeReceivedEnum,
-  Scalars,
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -92,7 +91,7 @@ const LateCommitments = ({
     return filteredLatePledges.length > 0;
   };
 
-  const determineDaysLate = (lateAt: Scalars['ISO8601Date']) => {
+  const determineDaysLate = (lateAt: string) => {
     return Math.round(
       DateTime.local().diff(DateTime.fromISO(lateAt), 'days').days,
     );
