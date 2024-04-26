@@ -72,7 +72,7 @@ const showMenuItem = ({
   hasOrganizationsAccess,
 }: ShowMenuItemProps): boolean => {
   if (item?.grantedAccess?.length) {
-    if (hasOrganizationsAccess && ['organizations'].includes(item.id)) {
+    if (hasOrganizationsAccess && item.id.startsWith('organizations')) {
       return true;
     }
     if (item.grantedAccess.indexOf('admin') !== -1 && user.admin) {
