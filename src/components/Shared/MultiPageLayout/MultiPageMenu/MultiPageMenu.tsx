@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import Close from '@mui/icons-material/Close';
 import {
   Box,
@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { Session } from 'next-auth';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
@@ -18,7 +19,11 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { Item } from './Item/Item';
 import { useManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
-import { reportNavItems, settingsNavItems } from './MultiPageMenuItems';
+import {
+  NavItems,
+  reportNavItems,
+  settingsNavItems,
+} from './MultiPageMenuItems';
 
 export enum NavTypeEnum {
   Reports = 'reports',
@@ -54,6 +59,31 @@ const FilterList = styled(List)(({ theme }) => ({
     marginBottom: theme.spacing(2),
   },
 }));
+
+type ShowMenuItemProps = {
+  item: NavItems;
+  user: Session['user'];
+  hasOrganizationsAccess: boolean;
+};
+
+const showMenuItem = ({
+  item,
+  user,
+  hasOrganizationsAccess,
+}: ShowMenuItemProps): boolean => {
+  if (item?.grantedAccess?.length) {
+    if (hasOrganizationsAccess && item.id.startsWith('organizations')) {
+      return true;
+    }
+    if (item.grantedAccess.indexOf('admin') !== -1 && user.admin) {
+      return true;
+    }
+    if (item.grantedAccess.indexOf('developer') !== -1 && user.developer) {
+      return true;
+    }
+  } else return true;
+  return false;
+};
 
 export const MultiPageMenu: React.FC<Props & BoxProps> = ({
   selectedId,
@@ -130,31 +160,9 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
                   />
                 )}
               {navItems.map((item) => {
-                const showItem = useMemo(() => {
-                  if (item?.grantedAccess?.length) {
-                    if (
-                      hasOrganizationsAccess &&
-                      ['organizations'].includes(item.id)
-                    ) {
-                      return true;
-                    }
-                    if (
-                      item.grantedAccess.indexOf('admin') !== -1 &&
-                      user.admin
-                    ) {
-                      return true;
-                    }
-                    if (
-                      item.grantedAccess.indexOf('developer') !== -1 &&
-                      user.developer
-                    ) {
-                      return true;
-                    }
-                  } else return true;
-                  return false;
-                }, [item, user]);
-
-                if (!showItem) return null;
+                if (!showMenuItem({ item, user, hasOrganizationsAccess })) {
+                  return null;
+                }
                 return (
                   <Item
                     key={item.id}
