@@ -1,6 +1,6 @@
 query ManageOrganizationsAccess {
   user {
-    administrativeOrganizations(first: 2) {
+    administrativeOrganizations(first: 1) {
       nodes {
         id
       }
