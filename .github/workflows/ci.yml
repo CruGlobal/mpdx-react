@@ -119,7 +119,7 @@ jobs:
           ONESKY_PROJECT_ID: ${{ secrets.ONESKY_PROJECT_ID }}
         run: yarn onesky:upload
 
-  performance-analyzer:
+  bundle-analyzer:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -146,17 +146,3 @@ jobs:
         env:
           # This secret is automatically injected by GitHub
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: 🚨 Run Lighthouse
-        run: yarn lighthouse
-        env:
-          secrets: '{"JWT_SECRET":"JWT_SECRET","OKTA_CLIENT_SECRET":"OKTA_CLIENT_SECRET"}'
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          MPDX_USERNAME: ${{ secrets.MPDX_USERNAME }}
-          MPDX_PASSWORD: ${{ secrets.MPDX_PASSWORD }}
-          PREVIEW_URL: 'https://${{ github.head_ref }}.${{ secrets.AMPLIFY_APP_ID }}.amplifyapp.com'
-      - name: Make a PR Comment
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          filePath: lighthouse/lighthouse-results.md
-          comment_tag: lighthouse
