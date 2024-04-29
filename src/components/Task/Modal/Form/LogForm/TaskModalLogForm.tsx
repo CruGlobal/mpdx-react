@@ -57,7 +57,7 @@ import {
   TagTypeEnum,
   TagsAutocomplete,
 } from '../Inputs/TagsAutocomplete/TagsAutocomplete';
-import { TaskTypeAutocomplete } from '../Inputs/TaskTypeAutocomplete/TaskTypeAutocomplete';
+import { TaskPhaseAutocomplete } from '../Inputs/TaskPhaseAutocomplete/TaskPhaseAutocomplete';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possiblePartnerStatus } from '../PossiblePartnerStatus';
 import { possibleResults } from '../PossibleResults';
@@ -65,9 +65,13 @@ import {
   useCreateTasksMutation,
   useUpdateContactStatusMutation,
 } from '../TaskModal.generated';
+import {
+  HandleTaskActionChangeProps,
+  HandleTaskPhaseChangeProps,
+} from '../TaskModalHelper';
 
 const taskSchema = yup.object({
-  taskType: yup.mixed<PhaseEnum>().nullable(),
+  taskPhase: yup.mixed<PhaseEnum>().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>().nullable(),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
@@ -89,14 +93,6 @@ interface Props {
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
 }
-type HandleTaskTypeChangeProps = {
-  phase: PhaseEnum | null;
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined,
-  ) => void;
-};
 
 const TaskModalLogForm = ({
   accountListId,
@@ -106,7 +102,7 @@ const TaskModalLogForm = ({
   const session = useSession();
   const initialTask: Attributes = useMemo(
     () => ({
-      taskType: null,
+      taskPhase: null,
       activityType: defaultValues?.activityType ?? null,
       subject: defaultValues?.subject ?? '',
       contactIds: defaultValues?.contactIds ?? [],
@@ -133,7 +129,7 @@ const TaskModalLogForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { phaseData, setPhaseId } = useGetPhaseData();
+  const { phaseData, setPhaseId, constants } = useGetPhaseData();
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -156,16 +152,15 @@ const TaskModalLogForm = ({
       attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
     }
     // TODO - remove this when Caleb and the API has been
-    delete attributes.taskType;
+    delete attributes.taskPhase;
     // TODO - remove this when NewResultEnum are added
     attributes.result = ResultEnum.Completed;
 
     const updatingContactStatus =
       attributes.updateContactStatus && !!suggestedPartnerStatus;
-    if (updatingContactStatus) {
-      // Delete updateContactStatus, as we don't want to send it to the server.
-      delete attributes.updateContactStatus;
-    }
+
+    delete attributes.updateContactStatus;
+
     await createTasks({
       variables: {
         accountListId,
@@ -231,16 +226,30 @@ const TaskModalLogForm = ({
     setShowMore((prevState) => !prevState);
   };
 
-  const handleTaskTypeChange = ({
+  const handleTaskPhaseChange = ({
     phase,
     setFieldValue,
-  }: HandleTaskTypeChangeProps): void => {
-    setFieldValue('taskType', phase);
+  }: HandleTaskPhaseChangeProps): void => {
+    setFieldValue('taskPhase', phase);
     setFieldValue('result', undefined);
     setResultSelected(null);
     setActionSelected(null);
     setPhaseId(phase);
     setSelectedSuggestedTags([]);
+  };
+
+  const handleTaskActionChange = ({
+    activityType,
+    setFieldValue,
+  }: HandleTaskActionChangeProps): void => {
+    setFieldValue('activityType', activityType);
+    setActionSelected(activityType);
+    const activity = constants?.activities?.find(
+      (activity) => activity.id === activityType,
+    );
+    if (activity) {
+      setFieldValue('subject', activity.value);
+    }
   };
   const availableResults = useMemo(
     () => possibleResults(phaseData),
@@ -274,7 +283,7 @@ const TaskModalLogForm = ({
     >
       {({
         values: {
-          taskType,
+          taskPhase,
           activityType,
           subject,
           userId,
@@ -300,6 +309,29 @@ const TaskModalLogForm = ({
           <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
+                <TaskPhaseAutocomplete
+                  options={Object.values(PhaseEnum)}
+                  label={t('Task Type *')}
+                  value={taskPhase}
+                  onChange={(phase) =>
+                    handleTaskPhaseChange({ phase, setFieldValue })
+                  }
+                />
+              </Grid>
+
+              <Grid item>
+                <ActivityTypeAutocomplete
+                  options={Object.values(ActivityTypeEnum)}
+                  label={t('Action *')}
+                  value={activityType}
+                  phaseType={phaseData?.id}
+                  onChange={(activityType) => {
+                    handleTaskActionChange({ activityType, setFieldValue });
+                  }}
+                />
+              </Grid>
+
+              <Grid item>
                 <TextField
                   name="subject"
                   label={t('Task Name')}
@@ -317,29 +349,7 @@ const TaskModalLogForm = ({
                   inputRef={inputRef}
                 />
               </Grid>
-              <Grid item>
-                <TaskTypeAutocomplete
-                  options={Object.values(PhaseEnum)}
-                  label={t('Task Type')}
-                  value={taskType}
-                  onChange={(phase) =>
-                    handleTaskTypeChange({ phase, setFieldValue })
-                  }
-                />
-              </Grid>
 
-              <Grid item>
-                <ActivityTypeAutocomplete
-                  options={Object.values(ActivityTypeEnum)}
-                  label={t('Action')}
-                  value={activityType}
-                  phaseType={phaseData?.id}
-                  onChange={(activityType) => {
-                    setFieldValue('activityType', activityType);
-                    setActionSelected(activityType);
-                  }}
-                />
-              </Grid>
               {isAppointmentActivityType(activityType) && (
                 <Grid item>
                   <TextField

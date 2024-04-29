@@ -70,7 +70,7 @@ import {
   TagTypeEnum,
   TagsAutocomplete,
 } from './Inputs/TagsAutocomplete/TagsAutocomplete';
-import { TaskTypeAutocomplete } from './Inputs/TaskTypeAutocomplete/TaskTypeAutocomplete';
+import { TaskPhaseAutocomplete } from './Inputs/TaskPhaseAutocomplete/TaskPhaseAutocomplete';
 import { possibleNextActions } from './PossibleNextActions';
 import { possiblePartnerStatus } from './PossiblePartnerStatus';
 import { possibleResults } from './PossibleResults';
@@ -79,6 +79,10 @@ import {
   useUpdateContactStatusMutation,
   useUpdateTaskMutation,
 } from './TaskModal.generated';
+import {
+  HandleTaskActionChangeProps,
+  HandleTaskPhaseChangeProps,
+} from './TaskModalHelper';
 
 const taskSchema = yup.object({
   taskPhase: yup.mixed<PhaseEnum>().nullable(),
@@ -109,15 +113,6 @@ interface Props {
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
 }
-
-type HandleTaskPhaseChangeProps = {
-  phase: PhaseEnum | null;
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined,
-  ) => void;
-};
 
 const TaskModalForm = ({
   accountListId,
@@ -184,7 +179,7 @@ const TaskModalForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { phaseData, setPhaseId } = useGetPhaseData(task?.taskPhase);
+  const { phaseData, setPhaseId, constants } = useGetPhaseData(task?.taskPhase);
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -205,20 +200,18 @@ const TaskModalForm = ({
     { comment, completedAt, startAt, ...attributes }: Attributes,
     suggestedPartnerStatus?: StatusEnum | null,
   ): Promise<void> => {
+    const updatingContactStatus =
+      attributes.updateContactStatus && !!suggestedPartnerStatus;
+    // TODO - remove this when Caleb and the API has been
+    delete attributes.taskPhase;
+    delete attributes.updateContactStatus;
+
     const sharedAttributes = {
       ...attributes,
       completedAt: completedAt?.toISO(),
       startAt: startAt?.toISO(),
     };
-    // TODO - remove this when Caleb and the API has been
-    delete attributes.taskPhase;
 
-    const updatingContactStatus =
-      attributes.updateContactStatus && !!suggestedPartnerStatus;
-    if (updatingContactStatus) {
-      // Delete updateContactStatus, as we don't want to send it to the server.
-      delete attributes.updateContactStatus;
-    }
     if (task) {
       await updateTask({
         variables: {
@@ -289,6 +282,20 @@ const TaskModalForm = ({
     setSelectedSuggestedTags([]);
   };
 
+  const handleTaskActionChange = ({
+    activityType,
+    setFieldValue,
+  }: HandleTaskActionChangeProps): void => {
+    setFieldValue('activityType', activityType);
+    setActionSelected(activityType);
+    const activity = constants?.activities?.find(
+      (activity) => activity.id === activityType,
+    );
+    if (activity) {
+      setFieldValue('subject', activity.value);
+    }
+  };
+
   const availableResults = useMemo(
     () => possibleResults(phaseData),
     [phaseData],
@@ -309,7 +316,6 @@ const TaskModalForm = ({
       phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
     [phaseData],
   );
-
   return (
     <Formik
       initialValues={initialTask}
@@ -352,6 +358,30 @@ const TaskModalForm = ({
           <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
+                <TaskPhaseAutocomplete
+                  options={Object.values(PhaseEnum)}
+                  label={t('Task Type')}
+                  value={taskPhase}
+                  onChange={(phase) =>
+                    handleTaskTypeChange({ phase, setFieldValue })
+                  }
+                />
+              </Grid>
+              <Grid item>
+                <FormControl fullWidth>
+                  <ActivityTypeAutocomplete
+                    options={Object.values(ActivityTypeEnum)}
+                    label={t('Action')}
+                    value={activityType}
+                    phaseType={phaseData?.id}
+                    onChange={(activityType) => {
+                      handleTaskActionChange({ activityType, setFieldValue });
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid item>
                 <TextField
                   name="subject"
                   label={t('Task Name')}
@@ -369,30 +399,7 @@ const TaskModalForm = ({
                   inputRef={inputRef}
                 />
               </Grid>
-              <Grid item>
-                <TaskTypeAutocomplete
-                  options={Object.values(PhaseEnum)}
-                  label={t('Task Type')}
-                  value={taskPhase}
-                  onChange={(phase) =>
-                    handleTaskTypeChange({ phase, setFieldValue })
-                  }
-                />
-              </Grid>
-              <Grid item>
-                <FormControl fullWidth>
-                  <ActivityTypeAutocomplete
-                    options={Object.values(ActivityTypeEnum)}
-                    label={t('Action')}
-                    value={activityType}
-                    phaseType={phaseData?.id}
-                    onChange={(activityType) => {
-                      setFieldValue('activityType', activityType);
-                      setActionSelected(activityType);
-                    }}
-                  />
-                </FormControl>
-              </Grid>
+
               {isAppointmentActivityType(activityType) && (
                 <Grid item>
                   <TextField

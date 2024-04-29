@@ -1,16 +1,16 @@
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { PhaseEnum } from 'src/graphql/types.generated';
-import { getLocalizedTaskType } from 'src/lib/MPDPhases';
+import { getLocalizedTaskPhase } from 'src/lib/MPDPhases';
 
-interface TaskTypeProps {
+interface TaskPhaseProps {
   options: PhaseEnum[];
   label: string;
   onChange: (value: PhaseEnum | null) => void;
   value?: PhaseEnum | null;
 }
-// TODO - I will replace this with Caleb Alldrin's task type
-export const TaskTypeAutocomplete: React.FC<TaskTypeProps> = ({
+
+export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
   options,
   label,
   value,
@@ -25,7 +25,7 @@ export const TaskTypeAutocomplete: React.FC<TaskTypeProps> = ({
       autoHighlight
       value={value === null || typeof value === 'undefined' ? null : value}
       options={options}
-      getOptionLabel={(activity) => getLocalizedTaskType(t, activity)}
+      getOptionLabel={(activity) => getLocalizedTaskPhase(t, activity)}
       renderInput={(params) => <TextField {...params} label={label} />}
       onChange={(_, value) => onChange(value)}
     />
