@@ -65,7 +65,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
       </ContactHeaderSection>
     );
   } else {
-    const statusText = status && contactPartnershipStatus[status];
+    const statusText = status && contactPartnershipStatus[status].translated;
     return (
       <>
         {status ? (

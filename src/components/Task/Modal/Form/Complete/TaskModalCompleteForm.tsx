@@ -1,9 +1,11 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import {
+  Checkbox,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -21,29 +23,41 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  DisplayResultEnum,
+  ResultEnum,
+  StatusEnum,
+} from 'src/graphql/types.generated';
+import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
+import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
+import { PhaseTags } from '../Inputs/PhaseTags/PhaseTags';
 import {
   TagTypeEnum,
   TagsAutocomplete,
 } from '../Inputs/TagsAutocomplete/TagsAutocomplete';
 import { possibleNextActions } from '../PossibleNextActions';
+import { possiblePartnerStatus } from '../PossiblePartnerStatus';
 import { possibleResults } from '../PossibleResults';
+import { useUpdateContactStatusMutation } from '../TaskModal.generated';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const taskSchema = yup.object({
   id: yup.string().required(),
   result: yup.mixed<ResultEnum>().required(),
+  updateContactStatus: yup.boolean().nullable(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   tagList: yup.array().of(yup.string().required()).default([]),
   completedAt: nullableDateTime(),
@@ -65,7 +79,7 @@ const TaskModalCompleteForm = ({
   const { activityType } = task;
   const initialCompletedAt =
     task.completedAt ||
-    (activityType === ActivityTypeEnum.Appointment ? task.startAt : null);
+    (isAppointmentActivityType(activityType) ? task.startAt : null);
   const initialTask = useMemo(
     () => ({
       id: task.id,
@@ -73,10 +87,8 @@ const TaskModalCompleteForm = ({
         ? DateTime.fromISO(initialCompletedAt)
         : DateTime.local(),
       result: ResultEnum.Completed,
-      nextAction:
-        activityType && possibleNextActions(activityType).includes(activityType)
-          ? activityType
-          : null,
+      updateContactStatus: false,
+      nextAction: null,
       tagList: task.tagList,
       comment: '',
     }),
@@ -87,14 +99,35 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { phaseData } = useGetPhaseData(task?.taskPhase);
+
+  const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
+    [],
+  );
+  // TODO replace with ResultEnum when available
+  const [resultSelected, setResultSelected] =
+    useState<DisplayResultEnum | null>(null);
+
+  const [updateContactStatus] = useUpdateContactStatusMutation();
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
-  const onSubmit = async ({
-    completedAt,
-    comment,
-    ...attributes
-  }: Attributes): Promise<void> => {
+  const onSubmit = async (
+    { completedAt, comment, ...attributes }: Attributes,
+    suggestedPartnerStatus?: StatusEnum | null,
+  ): Promise<void> => {
+    if (selectedSuggestedTags.length) {
+      attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
+    }
+    // TODO - remove this when NewResultEnum are added
+    attributes.result = ResultEnum.Completed;
+    const updatingContactStatus =
+      attributes.updateContactStatus && !!suggestedPartnerStatus;
+    if (updatingContactStatus) {
+      // Delete updateContactStatus, as we don't want to send it to the server.
+      delete attributes.updateContactStatus;
+    }
+
     const mutations = [
       updateTask({
         variables: {
@@ -116,11 +149,32 @@ const TaskModalCompleteForm = ({
         }),
       );
     }
+    if (updatingContactStatus) {
+      // TODO - Should only be one contact, but just in case
+      task.contacts.nodes.forEach((contact) => {
+        mutations.push(
+          updateContactStatus({
+            variables: {
+              accountListId,
+              attributes: {
+                id: contact.id,
+                status: suggestedPartnerStatus,
+              },
+            },
+          }),
+        );
+      });
+    }
     await Promise.all(mutations);
     update();
 
     dispatch('mpdx-task-completed');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    if (updatingContactStatus) {
+      enqueueSnackbar(t('Updated contact(s) status successfully'), {
+        variant: 'success',
+      });
+    }
     onClose();
     if (attributes.nextAction) {
       openTaskModal({
@@ -137,22 +191,50 @@ const TaskModalCompleteForm = ({
     }
   };
 
-  const availableResults = task.activityType
-    ? possibleResults(task.activityType)
-    : [];
-  const availableNextActions = task.activityType
-    ? possibleNextActions(task.activityType)
-    : [];
+  const availableResults = useMemo(
+    () => possibleResults(phaseData),
+    [phaseData],
+  );
+  const partnerStatus = useMemo(
+    () =>
+      possiblePartnerStatus(
+        phaseData,
+        resultSelected,
+        task.activityType || null,
+      ),
+    [phaseData, resultSelected],
+  );
+
+  const availableNextActions = useMemo(
+    () =>
+      possibleNextActions(phaseData, resultSelected, task.activityType || null),
+    [phaseData, resultSelected],
+  );
+
+  const phaseTags = useMemo(
+    () =>
+      phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
+    [phaseData],
+  );
 
   return (
     <Formik<Attributes>
       initialValues={initialTask}
       validationSchema={taskSchema}
-      onSubmit={onSubmit}
+      onSubmit={async (values) => {
+        await onSubmit(values, partnerStatus?.suggestedContactStatus);
+      }}
       enableReinitialize
     >
       {({
-        values: { completedAt, tagList, result, nextAction, comment },
+        values: {
+          completedAt,
+          tagList,
+          result,
+          updateContactStatus,
+          nextAction,
+          comment,
+        },
         setFieldValue,
         handleChange,
         handleSubmit,
@@ -205,7 +287,10 @@ const TaskModalCompleteForm = ({
                       label={t('Result')}
                       labelId="result"
                       value={result}
-                      onChange={(e) => setFieldValue('result', e.target.value)}
+                      onChange={(e) => {
+                        setFieldValue('result', e.target.value);
+                        setResultSelected(e.target.value as DisplayResultEnum);
+                      }}
                     >
                       {availableResults.map((val) => (
                         <MenuItem key={val} value={val}>
@@ -214,6 +299,22 @@ const TaskModalCompleteForm = ({
                       ))}
                     </Select>
                   </FormControl>
+                </Grid>
+              )}
+              {partnerStatus && (
+                <Grid item>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        value={updateContactStatus}
+                        name="updateContactStatus"
+                        onChange={handleChange}
+                      />
+                    }
+                    label={t("Change the contact's status to: {{status}}", {
+                      status: partnerStatus.suggestedContactStatus,
+                    })}
+                  />
                 </Grid>
               )}
               {availableNextActions.length > 0 && (
@@ -228,6 +329,13 @@ const TaskModalCompleteForm = ({
                   />
                 </Grid>
               )}
+              {phaseTags?.length && (
+                <PhaseTags
+                  tags={phaseTags}
+                  selectedTags={selectedSuggestedTags}
+                  setSelectedTags={setSelectedSuggestedTags}
+                />
+              )}
               {/*Add field to change contact statuses */}
               <Grid item>
                 <TagsAutocomplete
@@ -235,6 +343,7 @@ const TaskModalCompleteForm = ({
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
+                  label={phaseTags?.length ? t('Additional Tags') : ''}
                 />
               </Grid>
 

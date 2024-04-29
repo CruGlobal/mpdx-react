@@ -5,6 +5,7 @@ query GetTaskForTaskModal(
 ) {
   task(accountListId: $accountListId, id: $taskId) {
     id
+    taskPhase
     activityType
     subject
     location
@@ -17,6 +18,7 @@ query GetTaskForTaskModal(
       nodes {
         id
         name
+        status
       }
     }
     comments @include(if: $includeComments) {

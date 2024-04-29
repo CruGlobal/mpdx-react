@@ -101,7 +101,7 @@ const LogNewsletter = ({
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
 
   const initialTask = {
-    activityType: ActivityTypeEnum.NewsletterPhysical,
+    activityType: ActivityTypeEnum.PartnerCarePhysicalNewsletter,
     completedAt: null,
     subject: '',
   };
@@ -113,8 +113,8 @@ const LogNewsletter = ({
     const taskTypes =
       attributes.activityType === 'BOTH'
         ? [
-            ActivityTypeEnum.NewsletterPhysical,
-            ActivityTypeEnum.NewsletterEmail,
+            ActivityTypeEnum.PartnerCarePhysicalNewsletter,
+            ActivityTypeEnum.PartnerCareDigitalNewsletter,
           ]
         : [attributes.activityType];
     await Promise.all(
@@ -199,12 +199,12 @@ const LogNewsletter = ({
                     value={activityType}
                   >
                     <LogFormControlLabel
-                      value={ActivityTypeEnum.NewsletterPhysical}
+                      value={ActivityTypeEnum.PartnerCarePhysicalNewsletter}
                       control={<Radio color="secondary" required />}
                       label={t('Newsletter - Physical')}
                     />
                     <LogFormControlLabel
-                      value={ActivityTypeEnum.NewsletterEmail}
+                      value={ActivityTypeEnum.PartnerCareDigitalNewsletter}
                       control={<Radio color="secondary" required />}
                       label={t('Newsletter - Email')}
                     />

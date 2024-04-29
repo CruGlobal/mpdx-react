@@ -36,7 +36,7 @@ import {
 } from 'src/graphql/types.generated';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
@@ -351,7 +351,7 @@ export const EditPartnershipInfoModal: React.FC<
                   >
                     {Object.values(StatusEnum).map((value) => (
                       <MenuItem key={value} value={value}>
-                        {getLocalizedContactStatus(t, value)}
+                        {contactPartnershipStatus[value].translated}
                       </MenuItem>
                     ))}
                   </Select>

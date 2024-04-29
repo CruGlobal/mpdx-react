@@ -1,13 +1,16 @@
+import { useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ActivityTypeEnum } from 'src/graphql/types.generated';
+import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getActivitiesByPhaseType } from 'src/utils/phases/taskActivityTypes';
 
 interface ActivityTypeProps {
   options: ActivityTypeEnum[];
   label: string;
   value: ActivityTypeEnum | null | undefined;
   onChange: (value: ActivityTypeEnum | null) => void;
+  phaseType?: PhaseEnum;
   // Set to true to make None an acceptable value. Otherwise, None will be converted to null.
   preserveNone?: boolean;
 }
@@ -17,14 +20,20 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
   label,
   value,
   onChange,
+  phaseType,
   preserveNone = false,
 }) => {
   const { t } = useTranslation();
 
-  // Sort none to the top
-  const sortedOptions = options
-    .slice()
-    .sort((a) => (a === ActivityTypeEnum.None ? -1 : 0));
+  const sortedOptions = useMemo(() => {
+    const activityOptions = phaseType
+      ? getActivitiesByPhaseType(phaseType)
+      : options;
+    // Sort none to the top
+    return activityOptions
+      .slice()
+      .sort((a) => (a === ActivityTypeEnum.None ? -1 : 0));
+  }, [phaseType, options]);
 
   return (
     <Autocomplete<ActivityTypeEnum>

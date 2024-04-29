@@ -356,7 +356,7 @@ describe('TaskModalLogForm', () => {
       view: 'add',
       defaultValues: {
         subject: 'Subject',
-        activityType: ActivityTypeEnum.Call,
+        activityType: ActivityTypeEnum.AppointmentPhoneCall,
         contactIds: [],
         tagList: [],
         userId: 'user-1',

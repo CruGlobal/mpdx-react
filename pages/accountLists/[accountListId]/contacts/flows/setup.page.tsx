@@ -12,7 +12,6 @@ import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import {
   ContactFlowOption,
   colorMap,
-  statusMap,
 } from 'src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
 import { UnusedStatusesColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
@@ -29,6 +28,7 @@ import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
+import { statusMap } from 'src/utils/contacts/contactPartnershipStatus';
 
 const StickyBox = styled(Box)(() => ({
   ['@media (min-width:900px)']: {

@@ -228,14 +228,24 @@ export const Activity: React.FC<ActivityProps> = ({
   };
   const taskCallFilter: TaskFilterSetInput = {
     ...taskBaseFilter,
-    activityType: [ActivityTypeEnum.Call],
+    activityType: [
+      ActivityTypeEnum.InitiationPhoneCall,
+      ActivityTypeEnum.FollowUpPhoneCall,
+      ActivityTypeEnum.PartnerCarePhoneCall,
+    ],
   };
   const taskElectronicFilter: TaskFilterSetInput = {
     ...taskBaseFilter,
     activityType: [
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TextMessage,
+      ActivityTypeEnum.InitiationEmail,
+      ActivityTypeEnum.FollowUpEmail,
+      ActivityTypeEnum.PartnerCareEmail,
+      ActivityTypeEnum.InitiationSocialMedia,
+      ActivityTypeEnum.FollowUpSocialMedia,
+      ActivityTypeEnum.PartnerCareSocialMedia,
+      ActivityTypeEnum.InitiationTextMessage,
+      ActivityTypeEnum.FollowUpTextMessage,
+      ActivityTypeEnum.PartnerCareTextMessage,
     ],
   };
 
@@ -330,7 +340,11 @@ export const Activity: React.FC<ActivityProps> = ({
                 <Link
                   href={tasksLink({
                     ...taskBaseFilter,
-                    activityType: [ActivityTypeEnum.Appointment],
+                    activityType: [
+                      ActivityTypeEnum.AppointmentInPerson,
+                      ActivityTypeEnum.AppointmentPhoneCall,
+                      ActivityTypeEnum.AppointmentVideoCall,
+                    ],
                   })}
                   accountListType={accountListType}
                 >
@@ -355,7 +369,7 @@ export const Activity: React.FC<ActivityProps> = ({
                   <Link
                     href={tasksLink({
                       ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.PreCallLetter],
+                      activityType: [ActivityTypeEnum.InitiationLetter],
                     })}
                     accountListType={accountListType}
                   >
@@ -369,7 +383,9 @@ export const Activity: React.FC<ActivityProps> = ({
                   <Link
                     href={tasksLink({
                       ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.SupportLetter],
+                      activityType: [
+                        ActivityTypeEnum.InitiationSpecialGiftAppeal,
+                      ],
                     })}
                     accountListType={accountListType}
                   >
@@ -385,7 +401,7 @@ export const Activity: React.FC<ActivityProps> = ({
                   <Link
                     href={tasksLink({
                       ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.Thank],
+                      activityType: [ActivityTypeEnum.PartnerCareThank],
                     })}
                     accountListType={accountListType}
                   >
@@ -399,7 +415,9 @@ export const Activity: React.FC<ActivityProps> = ({
                   <Link
                     href={tasksLink({
                       ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.ReminderLetter],
+                      activityType: [
+                        ActivityTypeEnum.InitiationSpecialGiftAppeal,
+                      ],
                     })}
                     accountListType={accountListType}
                   >
@@ -467,10 +485,14 @@ export const Activity: React.FC<ActivityProps> = ({
                     href={tasksLink({
                       ...taskBaseFilter,
                       activityType: [
-                        ActivityTypeEnum.Call,
-                        ActivityTypeEnum.TalkToInPerson,
+                        ActivityTypeEnum.InitiationPhoneCall,
+                        ActivityTypeEnum.InitiationInPerson,
                       ],
-                      nextAction: [ActivityTypeEnum.Appointment],
+                      nextAction: [
+                        ActivityTypeEnum.AppointmentInPerson,
+                        ActivityTypeEnum.AppointmentPhoneCall,
+                        ActivityTypeEnum.AppointmentVideoCall,
+                      ],
                     })}
                     accountListType={accountListType}
                   >
@@ -571,7 +593,11 @@ export const Activity: React.FC<ActivityProps> = ({
                   <Link
                     href={tasksLink({
                       ...taskElectronicFilter,
-                      nextAction: [ActivityTypeEnum.Appointment],
+                      nextAction: [
+                        ActivityTypeEnum.AppointmentInPerson,
+                        ActivityTypeEnum.AppointmentPhoneCall,
+                        ActivityTypeEnum.AppointmentVideoCall,
+                      ],
                     })}
                     accountListType={accountListType}
                   >
@@ -588,7 +614,11 @@ export const Activity: React.FC<ActivityProps> = ({
                     <Link
                       href={tasksLink({
                         ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.Email],
+                        activityType: [
+                          ActivityTypeEnum.InitiationEmail,
+                          ActivityTypeEnum.FollowUpEmail,
+                          ActivityTypeEnum.PartnerCareEmail,
+                        ],
                         result: [ResultEnum.Completed, ResultEnum.Done],
                       })}
                       accountListType={accountListType}
@@ -599,7 +629,11 @@ export const Activity: React.FC<ActivityProps> = ({
                     <Link
                       href={tasksLink({
                         ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.Email],
+                        activityType: [
+                          ActivityTypeEnum.InitiationEmail,
+                          ActivityTypeEnum.FollowUpEmail,
+                          ActivityTypeEnum.PartnerCareEmail,
+                        ],
                         result: [ResultEnum.Received],
                       })}
                       accountListType={accountListType}
@@ -615,7 +649,11 @@ export const Activity: React.FC<ActivityProps> = ({
                     <Link
                       href={tasksLink({
                         ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.FacebookMessage],
+                        activityType: [
+                          ActivityTypeEnum.InitiationSocialMedia,
+                          ActivityTypeEnum.FollowUpSocialMedia,
+                          ActivityTypeEnum.PartnerCareSocialMedia,
+                        ],
                         result: [ResultEnum.Completed, ResultEnum.Done],
                       })}
                       accountListType={accountListType}
@@ -626,7 +664,11 @@ export const Activity: React.FC<ActivityProps> = ({
                     <Link
                       href={tasksLink({
                         ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.FacebookMessage],
+                        activityType: [
+                          ActivityTypeEnum.InitiationSocialMedia,
+                          ActivityTypeEnum.FollowUpSocialMedia,
+                          ActivityTypeEnum.PartnerCareSocialMedia,
+                        ],
                         result: [ResultEnum.Received],
                       })}
                       accountListType={accountListType}
@@ -642,7 +684,11 @@ export const Activity: React.FC<ActivityProps> = ({
                     <Link
                       href={tasksLink({
                         ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.TextMessage],
+                        activityType: [
+                          ActivityTypeEnum.InitiationTextMessage,
+                          ActivityTypeEnum.FollowUpTextMessage,
+                          ActivityTypeEnum.PartnerCareTextMessage,
+                        ],
                         result: [ResultEnum.Completed, ResultEnum.Done],
                       })}
                       accountListType={accountListType}
@@ -653,7 +699,11 @@ export const Activity: React.FC<ActivityProps> = ({
                     <Link
                       href={tasksLink({
                         ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.TextMessage],
+                        activityType: [
+                          ActivityTypeEnum.InitiationTextMessage,
+                          ActivityTypeEnum.FollowUpTextMessage,
+                          ActivityTypeEnum.PartnerCareTextMessage,
+                        ],
                         result: [ResultEnum.Received],
                       })}
                       accountListType={accountListType}

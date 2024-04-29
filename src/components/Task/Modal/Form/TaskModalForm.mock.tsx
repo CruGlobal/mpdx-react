@@ -1,9 +1,14 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import {
   ActivityTypeEnum,
+  DisplayResultEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
+  PhaseEnum,
+  ResultEnum,
+  StatusEnum,
   TaskCreateInput,
   TaskUpdateInput,
 } from 'src/graphql/types.generated';
@@ -56,7 +61,7 @@ export const createTasksMutationMock = (): MockedResponse => {
 export const updateTaskMutationMock = (): MockedResponse => {
   const task: TaskUpdateInput = {
     id: 'task-1',
-    activityType: ActivityTypeEnum.NewsletterEmail,
+    activityType: ActivityTypeEnum.AppointmentInPerson,
     subject: 'On the Journey with the Johnson Family',
     startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
     completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
@@ -84,7 +89,7 @@ export const updateTaskMutationMock = (): MockedResponse => {
 export const deleteTaskMutationMock = (): MockedResponse => {
   const task: GetTaskForTaskModalQuery['task'] = {
     id: 'task-1',
-    activityType: ActivityTypeEnum.NewsletterEmail,
+    activityType: ActivityTypeEnum.PartnerCareEmail,
     subject: 'On the Journey with the Johnson Family',
     startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
     completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
@@ -117,4 +122,126 @@ export const deleteTaskMutationMock = (): MockedResponse => {
     },
     result: { data },
   };
+};
+
+export const LoadConstants: LoadConstantsQuery = {
+  constant: {
+    activities: [
+      {
+        value: 'Appointment - In Person',
+        id: ActivityTypeEnum.AppointmentInPerson,
+      },
+      {
+        value: 'Follow Up - Email',
+        id: ActivityTypeEnum.FollowUpEmail,
+      },
+    ],
+    statuses: [
+      {
+        id: 'NEVER_CONTACTED',
+        value: 'New Connection',
+      },
+      {
+        id: 'APPOINTMENT_SCHEDULED',
+        value: 'Appointment Scheduled',
+      },
+    ],
+    phases: [
+      {
+        id: PhaseEnum.Connection,
+        tasks: [],
+        results: {
+          tags: null,
+          resultOptions: [],
+          __typename: 'Result',
+        },
+        name: 'Connection',
+        contactStatuses: [StatusEnum.NeverContacted, StatusEnum.AskInFuture],
+        __typename: 'Phase',
+      },
+      {
+        id: PhaseEnum.Appointment,
+        tasks: [
+          ActivityTypeEnum.AppointmentInPerson,
+          ActivityTypeEnum.AppointmentPhoneCall,
+        ],
+        results: {
+          tags: [
+            {
+              id: 'asked for support',
+              value: 'asked for support',
+              __typename: 'IdValue',
+            },
+            {
+              id: 'asked for connections',
+              value: 'asked for connections',
+              __typename: 'IdValue',
+            },
+          ],
+          resultOptions: [
+            {
+              suggestedNextActions: [
+                ActivityTypeEnum.InitiationPhoneCall,
+                ActivityTypeEnum.InitiationEmail,
+                ActivityTypeEnum.InitiationTextMessage,
+              ],
+              name: DisplayResultEnum.AppointmentResultCancelled,
+              suggestedContactStatus: StatusEnum.NotInterested,
+              dbResult: [
+                {
+                  task: ActivityTypeEnum.AppointmentInPerson,
+                  result: ResultEnum.Attempted,
+                },
+                {
+                  task: ActivityTypeEnum.AppointmentVideoCall,
+                  result: ResultEnum.Attempted,
+                },
+              ],
+              __typename: 'ResultOption',
+            },
+            {
+              suggestedNextActions: [
+                ActivityTypeEnum.FollowUpPhoneCall,
+                ActivityTypeEnum.FollowUpEmail,
+              ],
+              name: DisplayResultEnum.FollowUpResultNotInterested,
+              suggestedContactStatus: StatusEnum.CultivateRelationship,
+              dbResult: [
+                {
+                  task: ActivityTypeEnum.AppointmentInPerson,
+                  result: ResultEnum.Completed,
+                },
+                {
+                  task: ActivityTypeEnum.AppointmentVideoCall,
+                  result: ResultEnum.Completed,
+                },
+              ],
+              __typename: 'ResultOption',
+            },
+            {
+              suggestedNextActions: [ActivityTypeEnum.FollowUpPhoneCall],
+              name: DisplayResultEnum.FollowUpResultPartnerFinancial,
+              suggestedContactStatus: StatusEnum.PartnerFinancial,
+              dbResult: [
+                {
+                  task: ActivityTypeEnum.AppointmentInPerson,
+                  result: ResultEnum.Completed,
+                },
+                {
+                  task: ActivityTypeEnum.AppointmentVideoCall,
+                  result: ResultEnum.Completed,
+                },
+              ],
+              __typename: 'ResultOption',
+            },
+          ],
+          __typename: 'Result',
+        },
+        name: 'Appointment',
+        contactStatuses: [StatusEnum.AppointmentScheduled],
+        __typename: 'Phase',
+      },
+    ],
+    __typename: 'Constant',
+  },
 };

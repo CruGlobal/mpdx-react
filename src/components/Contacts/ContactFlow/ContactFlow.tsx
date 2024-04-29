@@ -13,6 +13,7 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { statusMap } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
 import Loading from '../../Loading';
 import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
@@ -38,27 +39,10 @@ export interface ContactFlowOption {
   color: string;
 }
 
-export const statusMap: { [key: string]: string } = {
-  'Never Contacted': 'NEVER_CONTACTED',
-  'Ask in Future': 'ASK_IN_FUTURE',
-  'Cultivate Relationship': 'CULTIVATE_RELATIONSHIP',
-  'Contact for Appointment': 'CONTACT_FOR_APPOINTMENT',
-  'Appointment Scheduled': 'APPOINTMENT_SCHEDULED',
-  'Call for Decision': 'CALL_FOR_DECISION',
-  'Partner - Financial': 'PARTNER_FINANCIAL',
-  'Partner - Special': 'PARTNER_SPECIAL',
-  'Partner - Pray': 'PARTNER_PRAY',
-  'Not Interested': 'NOT_INTERESTED',
-  Unresponsive: 'UNRESPONSIVE',
-  'Never Ask': 'NEVER_ASK',
-  'Research Abandoned': 'RESEARCH_ABANDONED',
-  'Expired Referral': 'EXPIRED_REFERRAL',
-};
-
 const taskStatuses: { [key: string]: ActivityTypeEnum } = {
-  APPOINTMENT_SCHEDULED: ActivityTypeEnum.Appointment,
-  CONTACT_FOR_APPOINTMENT: ActivityTypeEnum.Call,
-  CALL_FOR_DECISION: ActivityTypeEnum.Call,
+  APPOINTMENT_SCHEDULED: ActivityTypeEnum.AppointmentInPerson,
+  CONTACT_FOR_APPOINTMENT: ActivityTypeEnum.InitiationPhoneCall,
+  CALL_FOR_DECISION: ActivityTypeEnum.FollowUpPhoneCall,
 };
 
 export const colorMap: { [key: string]: string } = {

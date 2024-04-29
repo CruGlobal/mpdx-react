@@ -25,7 +25,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { PersonCreateInput } from 'src/graphql/types.generated';
+import { PersonCreateInput, StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 import { DynamicCreateMultipleContactsFieldArray } from './DynamicCreateMultipleContactsFieldArray';
@@ -138,6 +138,7 @@ export const CreateMultipleContacts = ({
                 contactReferralsToMe: referredById
                   ? [{ referredById }]
                   : undefined,
+                status: StatusEnum.NeverContacted,
               },
             },
             refetchQueries: [
