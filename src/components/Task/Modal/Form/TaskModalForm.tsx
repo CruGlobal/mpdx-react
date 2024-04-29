@@ -38,6 +38,7 @@ import {
 import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
   ActivityTypeEnum,
+  DisplayResultEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
   PhaseEnum,
@@ -50,7 +51,6 @@ import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { nullableDateTime } from 'src/lib/formikHelpers';
-import { NewResultEnum } from 'src/utils/contacts/getContactPhaseDataMock';
 import {
   getLocalizedNotificationTimeUnit,
   getLocalizedNotificationType,
@@ -175,9 +175,8 @@ const TaskModalForm = ({
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   // TODO replace with ResultEnum when available
-  const [resultSelected, setResultSelected] = useState<
-    ResultEnum | NewResultEnum | null
-  >(null);
+  const [resultSelected, setResultSelected] =
+    useState<DisplayResultEnum | null>(null);
 
   const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
     null,
@@ -296,7 +295,7 @@ const TaskModalForm = ({
   );
 
   const partnerStatus = useMemo(
-    () => possiblePartnerStatus(phaseData, resultSelected),
+    () => possiblePartnerStatus(phaseData, resultSelected, actionSelected),
     [phaseData, resultSelected],
   );
 
@@ -316,7 +315,7 @@ const TaskModalForm = ({
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={async (values) => {
-        await onSubmit(values, partnerStatus?.dbResult?.id);
+        await onSubmit(values, partnerStatus?.suggestedContactStatus);
       }}
       validateOnMount
       enableReinitialize
@@ -478,12 +477,12 @@ const TaskModalForm = ({
                       value={result}
                       onChange={(e) => {
                         setFieldValue('result', e.target.value);
-                        setResultSelected(e.target.value as NewResultEnum);
+                        setResultSelected(e.target.value as DisplayResultEnum);
                       }}
                     >
                       {availableResults.map((result) => (
-                        <MenuItem key={result.id} value={result.id}>
-                          {getLocalizedResultString(t, result.id)}
+                        <MenuItem key={result} value={result}>
+                          {getLocalizedResultString(t, result)}
                         </MenuItem>
                       ))}
                     </Select>

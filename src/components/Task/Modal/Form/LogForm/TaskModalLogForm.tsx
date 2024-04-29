@@ -33,6 +33,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import {
   ActivityTypeEnum,
+  DisplayResultEnum,
   PhaseEnum,
   ResultEnum,
   StatusEnum,
@@ -43,7 +44,6 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
-import { NewResultEnum } from 'src/utils/contacts/getContactPhaseDataMock';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
@@ -124,9 +124,8 @@ const TaskModalLogForm = ({
   const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
   // TODO replace with ResultEnum when available
-  const [resultSelected, setResultSelected] = useState<
-    ResultEnum | NewResultEnum | null
-  >(null);
+  const [resultSelected, setResultSelected] =
+    useState<DisplayResultEnum | null>(null);
 
   const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
     null,
@@ -248,7 +247,7 @@ const TaskModalLogForm = ({
     [phaseData],
   );
   const partnerStatus = useMemo(
-    () => possiblePartnerStatus(phaseData, resultSelected),
+    () => possiblePartnerStatus(phaseData, resultSelected, actionSelected),
     [phaseData, resultSelected],
   );
 
@@ -268,7 +267,7 @@ const TaskModalLogForm = ({
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={async (values) => {
-        await onSubmit(values, partnerStatus?.dbResult?.id);
+        await onSubmit(values, partnerStatus?.suggestedContactStatus);
       }}
       validateOnMount
       enableReinitialize
@@ -363,7 +362,7 @@ const TaskModalLogForm = ({
                       value={result}
                       onChange={(e) => {
                         setFieldValue('result', e.target.value);
-                        setResultSelected(e.target.value as NewResultEnum);
+                        setResultSelected(e.target.value as DisplayResultEnum);
                       }}
                     >
                       {availableResults.map((result) => (

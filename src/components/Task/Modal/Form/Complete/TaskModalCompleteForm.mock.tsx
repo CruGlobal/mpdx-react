@@ -27,7 +27,7 @@ export const getCompleteTaskForTaskModalMock = (
   const data: GetTaskForTaskModalQuery = {
     task: {
       id: taskId,
-      activityType: ActivityTypeEnum.NewsletterEmail,
+      activityType: ActivityTypeEnum.InitiationEmail,
       subject: 'On the Journey with the Johnson Family',
       startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
       completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
@@ -100,14 +100,14 @@ export const completeTaskMutationMock = (
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.Received,
-    nextAction: ActivityTypeEnum.Appointment,
+    nextAction: ActivityTypeEnum.AppointmentInPerson,
   };
   const attributes: TaskUpdateInput = {
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
     result: ResultEnum.Received,
-    nextAction: ActivityTypeEnum.Appointment,
+    nextAction: ActivityTypeEnum.AppointmentInPerson,
   };
   const data: CompleteTaskMutation = {
     updateTask: {

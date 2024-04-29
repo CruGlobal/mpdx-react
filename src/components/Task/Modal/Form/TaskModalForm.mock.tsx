@@ -3,9 +3,12 @@ import { DateTime } from 'luxon';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import {
   ActivityTypeEnum,
+  DisplayResultEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
   PhaseEnum,
+  ResultEnum,
+  StatusEnum,
   TaskCreateInput,
   TaskUpdateInput,
 } from 'src/graphql/types.generated';
@@ -125,26 +128,22 @@ export const LoadConstants: LoadConstantsQuery = {
   constant: {
     activities: [
       {
-        id: 'Appointment - In Person',
         value: 'Appointment - In Person',
-        __typename: 'IdValue',
+        id: ActivityTypeEnum.AppointmentInPerson,
       },
       {
-        id: 'Follow Up - Email',
         value: 'Follow Up - Email',
-        __typename: 'IdValue',
+        id: ActivityTypeEnum.FollowUpEmail,
       },
     ],
     statuses: [
       {
-        id: 'NEW_CONNECTION',
+        id: 'NEVER_CONTACTED',
         value: 'New Connection',
-        __typename: 'IdValue',
       },
       {
         id: 'APPOINTMENT_SCHEDULED',
         value: 'Appointment Scheduled',
-        __typename: 'IdValue',
       },
     ],
     phases: [
@@ -157,33 +156,14 @@ export const LoadConstants: LoadConstantsQuery = {
           __typename: 'Result',
         },
         name: 'Connection',
-        contactStatuses: [
-          {
-            value: 'New Connection',
-            id: 'New Connection',
-            __typename: 'IdValue',
-          },
-          {
-            value: 'Ask in Future',
-            id: 'Ask in Future',
-            __typename: 'IdValue',
-          },
-        ],
+        contactStatuses: [StatusEnum.NeverContacted, StatusEnum.AskInFuture],
         __typename: 'Phase',
       },
       {
         id: PhaseEnum.Appointment,
         tasks: [
-          {
-            id: 'Appointment - In Person',
-            value: 'In Person Appointment',
-            __typename: 'IdValue',
-          },
-          {
-            id: 'Appointment - Phone Call',
-            value: 'Phone Appointment',
-            __typename: 'IdValue',
-          },
+          ActivityTypeEnum.AppointmentInPerson,
+          ActivityTypeEnum.AppointmentPhoneCall,
         ],
         results: {
           tags: [
@@ -201,105 +181,55 @@ export const LoadConstants: LoadConstantsQuery = {
           resultOptions: [
             {
               suggestedNextActions: [
-                {
-                  value: 'Initiation - Phone Call',
-                  id: 'Initiation - Phone Call',
-                  __typename: 'IdValue',
-                },
-                {
-                  value: 'Initiation - Email',
-                  id: 'Initiation - Email',
-                  __typename: 'IdValue',
-                },
-                {
-                  value: 'Initiation - Text Message',
-                  id: 'Initiation - Text Message',
-                  __typename: 'IdValue',
-                },
+                ActivityTypeEnum.InitiationPhoneCall,
+                ActivityTypeEnum.InitiationEmail,
+                ActivityTypeEnum.InitiationTextMessage,
               ],
-              name: {
-                id: 'cancelled',
-                value: 'Cancelled',
-                __typename: 'IdValue',
-              },
-              suggestedContactStatus: 'Initiate for Appointment',
+              name: DisplayResultEnum.AppointmentResultCancelled,
+              suggestedContactStatus: StatusEnum.NotInterested,
               dbResult: [
                 {
-                  key: 'Appointment - In Person',
-                  value: 'Attempted',
-                  id: 'Attempted',
-                  __typename: 'IdKeyValue',
+                  task: ActivityTypeEnum.AppointmentInPerson,
+                  result: ResultEnum.Attempted,
                 },
                 {
-                  key: 'Appointment - Video Call',
-                  value: 'Attempted',
-                  id: 'Attempted',
-                  __typename: 'IdKeyValue',
+                  task: ActivityTypeEnum.AppointmentVideoCall,
+                  result: ResultEnum.Attempted,
                 },
               ],
               __typename: 'ResultOption',
             },
             {
               suggestedNextActions: [
-                {
-                  value: 'Follow Up - Phone Call',
-                  id: 'Follow Up - Phone Call',
-                  __typename: 'IdValue',
-                },
-                {
-                  value: 'Follow Up - Email',
-                  id: 'Follow Up - Email',
-                  __typename: 'IdValue',
-                },
+                ActivityTypeEnum.FollowUpPhoneCall,
+                ActivityTypeEnum.FollowUpEmail,
               ],
-              name: {
-                id: 'follow up',
-                value: 'Follow Up',
-                __typename: 'IdValue',
-              },
-              suggestedContactStatus: 'Follow Up for Decision',
+              name: DisplayResultEnum.FollowUpResultNotInterested,
+              suggestedContactStatus: StatusEnum.CultivateRelationship,
               dbResult: [
                 {
-                  key: 'Appointment - In Person',
-                  value: 'Completed',
-                  id: 'Completed',
-                  __typename: 'IdKeyValue',
+                  task: ActivityTypeEnum.AppointmentInPerson,
+                  result: ResultEnum.Completed,
                 },
                 {
-                  key: 'Appointment - Video Call',
-                  value: 'Completed',
-                  id: 'Completed',
-                  __typename: 'IdKeyValue',
+                  task: ActivityTypeEnum.AppointmentVideoCall,
+                  result: ResultEnum.Completed,
                 },
               ],
               __typename: 'ResultOption',
             },
             {
-              suggestedNextActions: [
-                {
-                  value: 'Partner Care - Thank',
-                  id: 'Partner Care - Thank',
-                  __typename: 'IdValue',
-                },
-              ],
-              name: {
-                id: 'Partner - Financial',
-                value: 'Partner - Financial',
-                __typename: 'IdValue',
-              },
-              suggestedContactStatus: 'Partner - Financial',
+              suggestedNextActions: [ActivityTypeEnum.FollowUpPhoneCall],
+              name: DisplayResultEnum.FollowUpResultPartnerFinancial,
+              suggestedContactStatus: StatusEnum.PartnerFinancial,
               dbResult: [
                 {
-                  key: 'Appointment - In Person',
-                  value: 'Completed',
-                  id: 'Completed',
-                  __typename: 'IdKeyValue',
+                  task: ActivityTypeEnum.AppointmentInPerson,
+                  result: ResultEnum.Completed,
                 },
                 {
-                  key: 'Appointment - Video Call',
-                  value: 'Completed',
-                  id: 'Completed',
-                  __typename: 'IdKeyValue',
+                  task: ActivityTypeEnum.AppointmentVideoCall,
+                  result: ResultEnum.Completed,
                 },
               ],
               __typename: 'ResultOption',
@@ -308,13 +238,7 @@ export const LoadConstants: LoadConstantsQuery = {
           __typename: 'Result',
         },
         name: 'Appointment',
-        contactStatuses: [
-          {
-            value: 'Appointment Scheduled',
-            id: 'Appointment Scheduled',
-            __typename: 'IdValue',
-          },
-        ],
+        contactStatuses: [StatusEnum.AppointmentScheduled],
         __typename: 'Phase',
       },
     ],

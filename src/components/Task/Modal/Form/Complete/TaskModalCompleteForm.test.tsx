@@ -42,7 +42,7 @@ const taskId = 'task-1';
 describe('TaskModalCompleteForm', () => {
   const task = {
     id: taskId,
-    activityType: ActivityTypeEnum.NewsletterEmail,
+    activityType: ActivityTypeEnum.PartnerCareEmail,
     subject: 'On the Journey with the Johnson Family',
     startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
     completedAt: null,
@@ -66,7 +66,7 @@ describe('TaskModalCompleteForm', () => {
           <TaskModalCompleteForm
             accountListId={accountListId}
             onClose={jest.fn()}
-            task={{ ...task, activityType: ActivityTypeEnum.Email }}
+            task={{ ...task, activityType: ActivityTypeEnum.InitiationEmail }}
           />
         </TestWrapper>,
       );
@@ -82,7 +82,10 @@ describe('TaskModalCompleteForm', () => {
           <TaskModalCompleteForm
             accountListId={accountListId}
             onClose={jest.fn()}
-            task={{ ...task, activityType: ActivityTypeEnum.Appointment }}
+            task={{
+              ...task,
+              activityType: ActivityTypeEnum.AppointmentInPerson,
+            }}
           />
         </TestWrapper>,
       );
@@ -144,7 +147,7 @@ describe('TaskModalCompleteForm', () => {
       id: task.id,
       completedAt,
       result: ResultEnum.Completed,
-      nextAction: ActivityTypeEnum.Appointment,
+      nextAction: ActivityTypeEnum.AppointmentInPerson,
       tagList: ['tag-1', 'tag-2'],
     };
     const { getByRole, getByText } = render(
@@ -175,7 +178,7 @@ describe('TaskModalCompleteForm', () => {
           onClose={onClose}
           task={{
             ...task,
-            activityType: ActivityTypeEnum.Call,
+            activityType: ActivityTypeEnum.FollowUpPhoneCall,
             completedAt,
             tagList: ['tag-1', 'tag-2'],
           }}
@@ -193,7 +196,7 @@ describe('TaskModalCompleteForm', () => {
         view: 'add',
         defaultValues: {
           subject: task.subject,
-          activityType: ActivityTypeEnum.Appointment,
+          activityType: ActivityTypeEnum.AppointmentInPerson,
           contactIds: ['contact-1', 'contact-2'],
           userId: 'user-1',
           tagList: ['tag-1', 'tag-2'],
@@ -241,7 +244,7 @@ describe('TaskModalCompleteForm', () => {
             onClose={onClose}
             task={{
               ...task,
-              activityType: ActivityTypeEnum.Appointment,
+              activityType: ActivityTypeEnum.AppointmentVideoCall,
               startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
             }}
           />
@@ -265,7 +268,7 @@ describe('TaskModalCompleteForm', () => {
             onClose={onClose}
             task={{
               ...task,
-              activityType: ActivityTypeEnum.Call,
+              activityType: ActivityTypeEnum.InitiationPhoneCall,
               startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
             }}
           />
@@ -319,7 +322,9 @@ describe('TaskModalCompleteForm', () => {
   };
 
   it('has correct options for APPOINTMENT', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Appointment);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.AppointmentInPerson,
+    );
     expect(results).toEqual(['Completed', 'Attempted']);
     expect(nextActions).toEqual([
       'None',
@@ -334,7 +339,9 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('has correct options for CALL', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Call);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.InitiationPhoneCall,
+    );
     expect(results).toEqual([
       'Completed',
       'Attempted',
@@ -355,7 +362,9 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('has correct options for EMAIL', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Email);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.InitiationEmail,
+    );
     expect(results).toEqual(['Completed', 'Received']);
     expect(nextActions).toEqual([
       'None',
@@ -372,7 +381,7 @@ describe('TaskModalCompleteForm', () => {
 
   it('has correct options for FACEBOOK_MESSAGE', () => {
     const { results, nextActions } = getOptions(
-      ActivityTypeEnum.FacebookMessage,
+      ActivityTypeEnum.FollowUpSocialMedia,
     );
     expect(results).toEqual(['Completed', 'Received']);
     expect(nextActions).toEqual([
@@ -389,7 +398,9 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('has correct options for LETTER', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Letter);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.InitiationLetter,
+    );
     expect(results).toEqual(['Completed', 'Received']);
     expect(nextActions).toEqual([
       'None',
@@ -403,7 +414,7 @@ describe('TaskModalCompleteForm', () => {
 
   it('has correct options for NEWSLETTER_EMAIL', () => {
     const { results, nextActions } = getOptions(
-      ActivityTypeEnum.NewsletterEmail,
+      ActivityTypeEnum.PartnerCareEmail,
     );
     expect(results).toEqual([]);
     expect(nextActions).toEqual([]);
@@ -411,7 +422,7 @@ describe('TaskModalCompleteForm', () => {
 
   it('has correct options for NEWSLETTER_PHYSICAL', () => {
     const { results, nextActions } = getOptions(
-      ActivityTypeEnum.NewsletterPhysical,
+      ActivityTypeEnum.PartnerCarePhysicalNewsletter,
     );
     expect(results).toEqual([]);
     expect(nextActions).toEqual([]);
@@ -424,7 +435,9 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('has correct options for PRAYER_REQUEST', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.PrayerRequest);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.PartnerCarePrayerRequest,
+    );
     expect(results).toEqual(['Completed']);
     expect(nextActions).toEqual([
       'None',
@@ -440,7 +453,9 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('has correct options for PRE_CALL_LETTER', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.PreCallLetter);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.PartnerCarePhoneCall,
+    );
     expect(results).toEqual(['Completed', 'Received']);
     expect(nextActions).toEqual([
       'None',
@@ -454,7 +469,7 @@ describe('TaskModalCompleteForm', () => {
 
   it('has correct options for REMINDER_LETTER', () => {
     const { results, nextActions } = getOptions(
-      ActivityTypeEnum.ReminderLetter,
+      ActivityTypeEnum.InitiationLetter,
     );
     expect(results).toEqual(['Completed', 'Received']);
     expect(nextActions).toEqual([
@@ -468,7 +483,9 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('has correct options for SUPPORT_LETTER', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.SupportLetter);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.InitiationLetter,
+    );
     expect(results).toEqual(['Completed', 'Received']);
     expect(nextActions).toEqual([
       'None',
@@ -482,7 +499,7 @@ describe('TaskModalCompleteForm', () => {
 
   it('has correct options for TALK_TO_IN_PERSON', () => {
     const { results, nextActions } = getOptions(
-      ActivityTypeEnum.TalkToInPerson,
+      ActivityTypeEnum.InitiationInPerson,
     );
     expect(results).toEqual(['Completed', 'Received']);
     expect(nextActions).toEqual([
@@ -499,7 +516,9 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('has correct options for TEXT_MESSAGE', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.TextMessage);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.FollowUpTextMessage,
+    );
     expect(results).toEqual(['Completed', 'Received']);
     expect(nextActions).toEqual([
       'None',
@@ -515,7 +534,9 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('has correct options for THANK', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Thank);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.PartnerCareThank,
+    );
     expect(results).toEqual(['Completed', 'Received']);
     expect(nextActions).toEqual([
       'None',
@@ -528,7 +549,9 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('has correct options for TO_DO', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.ToDo);
+    const { results, nextActions } = getOptions(
+      ActivityTypeEnum.PartnerCareToDo,
+    );
     expect(results).toEqual([]);
     expect(nextActions).toEqual([]);
   });

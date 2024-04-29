@@ -1,6 +1,8 @@
-import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
-import { TaskPhase } from 'src/hooks/useContactPhaseData';
-import { NewResultEnum } from 'src/utils/contacts/getContactPhaseDataMock';
+import {
+  ActivityTypeEnum,
+  DisplayResultEnum,
+  Phase,
+} from 'src/graphql/types.generated';
 
 // TODO need to add 'Update Information' & Video Call as type
 // Update Information
@@ -34,23 +36,17 @@ const defaultActivities: ActivityTypeEnum[] = [
   ActivityTypeEnum.PartnerCareUpdateInformation,
 ];
 export const possibleNextActions = (
-  phaseData: TaskPhase | null,
-  resultName: (ResultEnum | NewResultEnum) | null,
+  phaseData: Phase | null,
+  resultName: DisplayResultEnum | null,
   activity: ActivityTypeEnum | null,
 ): ActivityTypeEnum[] => {
   if (!phaseData || !resultName || !activity) return defaultActivities;
 
-  const result = phaseData?.results?.resultOptions
+  const result = phaseData.results?.resultOptions
     ? phaseData.results.resultOptions.find(
-        (result) => result.name.id?.toLowerCase() === resultName.toLowerCase(),
+        (result) => result.name?.toLowerCase() === resultName.toLowerCase(),
       )
     : null;
 
-  const nextActions = result
-    ? result.suggestedNextActions?.map(
-        (nextAction) => nextAction.id as ActivityTypeEnum,
-      ) ?? defaultActivities
-    : defaultActivities;
-
-  return nextActions;
+  return result?.suggestedNextActions || defaultActivities;
 };

@@ -25,6 +25,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import {
   ActivityTypeEnum,
+  DisplayResultEnum,
   ResultEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
@@ -87,10 +88,7 @@ const TaskModalCompleteForm = ({
         : DateTime.local(),
       result: ResultEnum.Completed,
       updateContactStatus: false,
-      nextAction:
-        activityType && possibleNextActions(activityType).includes(activityType)
-          ? activityType
-          : null,
+      nextAction: null,
       tagList: task.tagList,
       comment: '',
     }),
@@ -101,21 +99,22 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
-  // TODO - Change this to Task Type when Caleb Alldrin has created it.
   const { phaseData } = useGetPhaseData(task?.taskPhase);
 
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
   // TODO replace with ResultEnum when available
-  const [resultSelected, setResultSelected] = useState<ResultEnum | null>(null);
+  const [resultSelected, setResultSelected] =
+    useState<DisplayResultEnum | null>(null);
+
   const [updateContactStatus] = useUpdateContactStatusMutation();
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
   const onSubmit = async (
     { completedAt, comment, ...attributes }: Attributes,
-    suggestedPartnerStatus: StatusEnum | null,
+    suggestedPartnerStatus?: StatusEnum | null,
   ): Promise<void> => {
     if (selectedSuggestedTags.length) {
       attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
@@ -196,13 +195,19 @@ const TaskModalCompleteForm = ({
     () => possibleResults(phaseData),
     [phaseData],
   );
-  const suggestedPartnerStatus = useMemo(
-    () => possiblePartnerStatus(phaseData, resultSelected),
+  const partnerStatus = useMemo(
+    () =>
+      possiblePartnerStatus(
+        phaseData,
+        resultSelected,
+        task.activityType || null,
+      ),
     [phaseData, resultSelected],
   );
 
   const availableNextActions = useMemo(
-    () => possibleNextActions(phaseData, resultSelected),
+    () =>
+      possibleNextActions(phaseData, resultSelected, task.activityType || null),
     [phaseData, resultSelected],
   );
 
@@ -217,7 +222,7 @@ const TaskModalCompleteForm = ({
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={async (values) => {
-        await onSubmit(values, suggestedPartnerStatus);
+        await onSubmit(values, partnerStatus?.suggestedContactStatus);
       }}
       enableReinitialize
     >
@@ -284,7 +289,7 @@ const TaskModalCompleteForm = ({
                       value={result}
                       onChange={(e) => {
                         setFieldValue('result', e.target.value);
-                        setResultSelected(e.target.value as ResultEnum);
+                        setResultSelected(e.target.value as DisplayResultEnum);
                       }}
                     >
                       {availableResults.map((val) => (
@@ -296,7 +301,7 @@ const TaskModalCompleteForm = ({
                   </FormControl>
                 </Grid>
               )}
-              {suggestedPartnerStatus && (
+              {partnerStatus && (
                 <Grid item>
                   <FormControlLabel
                     control={
@@ -307,7 +312,7 @@ const TaskModalCompleteForm = ({
                       />
                     }
                     label={t("Change the contact's status to: {{status}}", {
-                      status: suggestedPartnerStatus,
+                      status: partnerStatus.suggestedContactStatus,
                     })}
                   />
                 </Grid>

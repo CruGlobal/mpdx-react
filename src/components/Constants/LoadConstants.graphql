@@ -60,37 +60,24 @@ query LoadConstants {
     }
     phases {
       id
-      tasks {
-        id
-        value
-      }
-      results {
-        tags {
-          id
-          value
-        }
-        resultOptions {
-          suggestedNextActions {
-            value
-            id
-          }
-          name {
-            id
-            value
-          }
-          suggestedContactStatus
-          dbResult {
-            key
-            value
-            id
-          }
-        }
-      }
       name
-      contactStatuses {
-        value
-        id
+      results {
+        resultOptions {
+          dbResult {
+            task
+            result
+          }
+          name
+          suggestedContactStatus
+          suggestedNextActions
+        }
+        tags {
+          value
+          id
+        }
       }
+      contactStatuses
+      tasks
     }
   }
 }

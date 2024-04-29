@@ -202,16 +202,16 @@ describe('EditGoogleAccountModal', () => {
               constant: {
                 activities: [
                   {
-                    id: 'Call',
-                    value: 'Call',
+                    value: Types.ActivityTypeEnum.AppointmentVideoCall,
+                    id: Types.ActivityTypeEnum.AppointmentVideoCall,
                   },
                   {
-                    id: 'Appointment',
-                    value: 'Appointment',
+                    value: Types.ActivityTypeEnum.AppointmentInPerson,
+                    id: Types.ActivityTypeEnum.AppointmentInPerson,
                   },
                   {
-                    id: 'Email',
-                    value: 'Email',
+                    value: Types.ActivityTypeEnum.FollowUpEmail,
+                    id: Types.ActivityTypeEnum.FollowUpEmail,
                   },
                 ],
               },
@@ -299,16 +299,16 @@ describe('EditGoogleAccountModal', () => {
               constant: {
                 activities: [
                   {
-                    id: 'Call',
-                    value: 'Call',
+                    value: Types.ActivityTypeEnum.AppointmentVideoCall,
+                    id: Types.ActivityTypeEnum.AppointmentVideoCall,
                   },
                   {
-                    id: 'Appointment',
-                    value: 'Appointment',
+                    value: Types.ActivityTypeEnum.AppointmentInPerson,
+                    id: Types.ActivityTypeEnum.AppointmentInPerson,
                   },
                   {
-                    id: 'Email',
-                    value: 'Email',
+                    value: Types.ActivityTypeEnum.FollowUpEmail,
+                    id: Types.ActivityTypeEnum.FollowUpEmail,
                   },
                 ],
               },
