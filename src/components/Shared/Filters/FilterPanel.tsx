@@ -36,6 +36,14 @@ import {
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { statusMapForFilters } from 'src/utils/contacts/contactPartnershipStatus';
 import {
+  appointmentActivityTypes,
+  callActivityTypes,
+  emailActivityTypes,
+  inPersonActivityTypes,
+  socialMediaActivityTypes,
+  textActivityTypes,
+} from 'src/utils/phases/taskActivityTypes';
+import {
   ContactsContext,
   ContactsType,
 } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
@@ -75,6 +83,12 @@ export const snakeToCamel = (inputKey: string): string => {
     return `${outputKey}${part.charAt(0).toUpperCase()}${part.slice(1)}`;
   }, '');
 };
+
+// This has to be used inside a component as it's a hook.
+// const { data } = useLoadConstantsQuery({
+//   fetchPolicy: 'cache-first',
+// });
+// const phases = data?.constant?.phases || [];
 
 const ReverseFiltersOptions = {
   alma_mater: 'reverseAlmaMater',
@@ -484,45 +498,66 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 }
                 return {
                   ...acc,
-                  [key]: value.split(',').map((enumValue) => {
-                    // --any--,none
-                    switch (enumValue) {
-                      case 'Appointment':
-                        return ActivityTypeEnum.Appointment;
-                      case 'Call':
-                        return ActivityTypeEnum.Call;
-                      case 'Email':
-                        return ActivityTypeEnum.Email;
-                      case 'Facebook Message':
-                        return ActivityTypeEnum.FacebookMessage;
-                      case 'Prayer Request':
-                        return ActivityTypeEnum.PrayerRequest;
-                      case 'Talk to In Person':
-                        return ActivityTypeEnum.TalkToInPerson;
-                      case 'Text Message':
-                        return ActivityTypeEnum.TextMessage;
-                      case 'Thank':
-                        return ActivityTypeEnum.Thank;
-                      case 'None':
-                        return ActivityTypeEnum.None;
-                      case 'Letter':
-                        return ActivityTypeEnum.Letter;
-                      case 'Newsletter - Physical':
-                        return ActivityTypeEnum.NewsletterPhysical;
-                      case 'Newsletter - Email':
-                        return ActivityTypeEnum.NewsletterEmail;
-                      case 'Pre Call Letter':
-                        return ActivityTypeEnum.PreCallLetter;
-                      case 'Reminder Letter':
-                        return ActivityTypeEnum.ReminderLetter;
-                      case 'Support Letter':
-                        return ActivityTypeEnum.SupportLetter;
-                      case 'To Do':
-                        return ActivityTypeEnum.ToDo;
-                      default:
-                        return ActivityTypeEnum.None;
-                    }
-                  }),
+                  [key]: value
+                    .split(',')
+                    .reduce((list: ActivityTypeEnum[], enumValue) => {
+                      // --any--,none
+
+                      // TODO: turn this into reduce?
+                      // const activityTypes = Object.entries(taskTypeNames).map(
+                      //   ([taskId, task]) => {
+                      //     if (enumValue === task?.oldName) {
+                      //       activityTypes.push(taskId?.name);
+                      //     }
+                      //     return activityTypes;
+                      //   },
+                      // );
+
+                      switch (enumValue) {
+                        case 'Appointment':
+                          return [...list, ...appointmentActivityTypes];
+                        case 'Call':
+                          return [...list, ...callActivityTypes];
+                        case 'Email':
+                          return [...list, ...emailActivityTypes];
+                        case 'Facebook Message':
+                          return [...list, ...socialMediaActivityTypes];
+                        case 'Prayer Request':
+                          return [
+                            ...list,
+                            ActivityTypeEnum.PartnerCarePrayerRequest,
+                          ];
+                        case 'Talk to In Person':
+                          return [...list, ...inPersonActivityTypes];
+                        case 'Text Message':
+                          return [...list, ...textActivityTypes];
+                        case 'Thank':
+                          return [...list, ActivityTypeEnum.PartnerCareThank];
+                        case 'None':
+                          return [...list, ActivityTypeEnum.None];
+                        case 'Letter':
+                          return [...list, ActivityTypeEnum.InitiationLetter];
+                        case 'Newsletter - Physical':
+                          return [
+                            ...list,
+                            ActivityTypeEnum.PartnerCarePhysicalNewsletter,
+                          ];
+                        case 'Newsletter - Email':
+                          return [
+                            ...list,
+                            ActivityTypeEnum.PartnerCareDigitalNewsletter,
+                          ];
+                        case 'Support Letter':
+                          return [
+                            ...list,
+                            ActivityTypeEnum.InitiationSpecialGiftAppeal,
+                          ];
+                        case 'To Do':
+                          return [...list, ActivityTypeEnum.PartnerCareToDo];
+                        default:
+                          return [...list, ActivityTypeEnum.None];
+                      }
+                    }, []),
                 };
 
               // Next Action
@@ -531,44 +566,49 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   return {
                     ...acc,
                     [key]: [
-                      ActivityTypeEnum.Appointment,
-                      ActivityTypeEnum.Call,
-                      ActivityTypeEnum.Email,
-                      ActivityTypeEnum.FacebookMessage,
-                      ActivityTypeEnum.PrayerRequest,
-                      ActivityTypeEnum.TalkToInPerson,
-                      ActivityTypeEnum.TextMessage,
-                      ActivityTypeEnum.Thank,
+                      ...appointmentActivityTypes,
+                      ...callActivityTypes,
+                      ...emailActivityTypes,
+                      ...socialMediaActivityTypes,
+                      ActivityTypeEnum.PartnerCarePrayerRequest,
+                      ...inPersonActivityTypes,
+                      ...textActivityTypes,
+                      ActivityTypeEnum.PartnerCareThank,
                       ActivityTypeEnum.None,
                     ],
                   };
                 }
                 return {
                   ...acc,
-                  [key]: value.split(',').map((enumValue) => {
-                    switch (enumValue) {
-                      case 'Appointment':
-                        return ActivityTypeEnum.Appointment;
-                      case 'Call':
-                        return ActivityTypeEnum.Call;
-                      case 'Email':
-                        return ActivityTypeEnum.Email;
-                      case 'Facebook Message':
-                        return ActivityTypeEnum.FacebookMessage;
-                      case 'Prayer Request':
-                        return ActivityTypeEnum.PrayerRequest;
-                      case 'Talk to In Person':
-                        return ActivityTypeEnum.TalkToInPerson;
-                      case 'Text Message':
-                        return ActivityTypeEnum.TextMessage;
-                      case 'Thank':
-                        return ActivityTypeEnum.Thank;
-                      case 'None':
-                        return ActivityTypeEnum.None;
-                      default:
-                        return ActivityTypeEnum.None;
-                    }
-                  }),
+                  [key]: value
+                    .split(',')
+                    .reduce((list: ActivityTypeEnum[], enumValue) => {
+                      switch (enumValue) {
+                        case 'Appointment':
+                          return [...list, ...appointmentActivityTypes];
+                        case 'Call':
+                          return [...list, ...callActivityTypes];
+                        case 'Email':
+                          return [...list, ...emailActivityTypes];
+                        case 'Facebook Message':
+                          return [...list, ...socialMediaActivityTypes];
+                        case 'Prayer Request':
+                          return [
+                            ...list,
+                            ActivityTypeEnum.PartnerCarePrayerRequest,
+                          ];
+                        case 'Talk to In Person':
+                          return [...list, ...inPersonActivityTypes];
+                        case 'Text Message':
+                          return [...list, ...textActivityTypes];
+                        case 'Thank':
+                          return [...list, ActivityTypeEnum.PartnerCareThank];
+                        case 'None':
+                          return [...list, ActivityTypeEnum.None];
+                        default:
+                          return [...list, ActivityTypeEnum.None];
+                      }
+                    }, []),
                 };
               // Result
               case 'result':
