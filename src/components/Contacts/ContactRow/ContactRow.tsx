@@ -14,10 +14,11 @@ import { styled } from '@mui/material/styles';
 import {
   ContactsContext,
   ContactsType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
+import { preloadContactsRightPanel } from '../ContactsRightPanel/DynamicContactsRightPanel';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 import { ContactRowFragment } from './ContactRow.generated';
 
@@ -75,7 +76,12 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   } = contact;
 
   return (
-    <ListItemButton focusRipple onClick={onClick} data-testid="rowButton">
+    <ListItemButton
+      focusRipple
+      onClick={onClick}
+      onMouseEnter={preloadContactsRightPanel}
+      data-testid="rowButton"
+    >
       <Hidden xsDown>
         <ListItemIcon>
           <StyledCheckbox

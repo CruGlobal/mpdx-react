@@ -4,10 +4,7 @@ import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
-import {
-  GqlMockedProvider,
-  gqlMock,
-} from '../../../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import {
   ContactMailingFragment,

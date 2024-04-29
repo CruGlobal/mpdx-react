@@ -13,7 +13,7 @@ import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
-import { LeafListItem, Title } from '../../NavItem/NavItem';
+import { LeafListItem, Title } from '../../StyledComponents';
 
 type ProfileMenuContent = {
   text: string;

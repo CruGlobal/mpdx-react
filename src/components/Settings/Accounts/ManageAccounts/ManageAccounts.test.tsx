@@ -6,10 +6,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { ManageAccounts } from './ManageAccounts';
 import {

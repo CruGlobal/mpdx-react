@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
-import { Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ContactHeaderSection } from './ContactHeaderSection';

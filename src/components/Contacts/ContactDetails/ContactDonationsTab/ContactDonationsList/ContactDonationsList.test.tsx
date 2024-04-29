@@ -121,13 +121,13 @@ describe('ContactDonationsList', () => {
   });
 
   it('edits donations', async () => {
-    const { findAllByRole, getByText } = render(<TestComponent />);
+    const { findAllByRole, findByText } = render(<TestComponent />);
 
     const rows = await findAllByRole('row');
     expect(rows).toHaveLength(6);
 
     const donationRow = rows[1];
     userEvent.click(within(donationRow).getByRole('button'));
-    expect(getByText('Edit Donation')).toBeInTheDocument();
+    expect(await findByText('Edit Donation')).toBeInTheDocument();
   });
 });

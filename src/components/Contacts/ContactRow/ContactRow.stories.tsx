@@ -2,8 +2,8 @@ import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import { DateTime } from 'luxon';
 import { withDesign } from 'storybook-addon-designs';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
+import { gqlMock } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { ContactRow } from './ContactRow';
 import {
   ContactRowFragment,
@@ -25,9 +25,9 @@ export const Default: Story = () => {
   });
 
   return (
-    <ContactsPage>
+    <ContactsWrapper>
       <ContactRow contact={contact} />
-    </ContactsPage>
+    </ContactsWrapper>
   );
 };
 

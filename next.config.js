@@ -100,6 +100,9 @@ const config = {
   },
   experimental: {
     modularizeImports: {
+      lodash: {
+        transform: 'lodash/{{member}}',
+      },
       '@mui/material': {
         transform: '@mui/material/{{member}}',
       },

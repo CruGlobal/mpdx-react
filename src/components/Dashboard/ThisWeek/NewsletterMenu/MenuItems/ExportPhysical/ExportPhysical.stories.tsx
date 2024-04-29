@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { SessionProvider } from 'next-auth/react';
-import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import ExportPhysical from './ExportPhysical';
 
 export default {

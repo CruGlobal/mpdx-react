@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Close from '@mui/icons-material/Close';
-import { Avatar, Box, IconButton, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Avatar, Box, IconButton, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -11,8 +10,8 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../ContactDetailContext';
-import { ContactDetailEditIcon } from '../ContactDetailsTab/ContactDetailsTab';
 import { EditContactDetailsModal } from '../ContactDetailsTab/People/Items/EditContactDetailsModal/EditContactDetailsModal';
+import { EditIcon } from '../ContactDetailsTab/StyledComponents';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
 import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
@@ -112,7 +111,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
                 onClick={() => setEditModalOpen(true)}
                 aria-label={t('Edit Icon')}
               >
-                <ContactDetailEditIcon />
+                <EditIcon />
               </IconButton>
             </>
           ) : null}

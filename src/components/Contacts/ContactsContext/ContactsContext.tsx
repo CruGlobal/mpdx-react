@@ -1,4 +1,4 @@
-import { NextRouter, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -8,34 +8,36 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import _, { debounce } from 'lodash';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
-import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useLocale } from 'src/hooks/useLocale';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { useUpdateUserOptionsMutation } from '../../../../src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import { useGetUserOptionsQuery } from '../../../../src/components/Contacts/ContactFlow/GetUserOptions.generated';
-import { UserOptionFragment } from '../../../../src/components/Shared/Filters/FilterPanel.generated';
-import {
-  ListHeaderCheckBoxState,
-  TableViewModeEnum,
-} from '../../../../src/components/Shared/Header/ListHeader';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
-import { useMassSelection } from '../../../../src/hooks/useMassSelection';
+import { type DebouncedFunc, debounce, omit } from 'lodash';
 import {
   ContactFiltersQuery,
   useContactFiltersQuery,
   useContactsQuery,
-} from './Contacts.generated';
-import { coordinatesFromContacts, getRedirectPathname } from './helpers';
-import { Coordinates } from './map/map';
+} from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  coordinatesFromContacts,
+  getRedirectPathname,
+} from 'pages/accountLists/[accountListId]/contacts/helpers';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
+import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { useAccountListId } from '../../../hooks/useAccountListId';
+import { useMassSelection } from '../../../hooks/useMassSelection';
+import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
+import {
+  ListHeaderCheckBoxState,
+  TableViewModeEnum,
+} from '../../Shared/Header/ListHeader';
+import { useUpdateUserOptionsMutation } from '../ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
+import { useGetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
+import { Coordinates } from '../ContactsMap/coordinates';
 
 export type ContactsType = {
   accountListId: string | undefined;
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
-  loading: boolean;
-  router: NextRouter;
+  contactsQueryResult: ReturnType<typeof useContactsQuery>;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
@@ -51,7 +53,7 @@ export type ContactsType = {
     flows?: boolean,
     map?: boolean,
   ) => void;
-  setSearchTerm: _.DebouncedFunc<(searchTerm: string) => void>;
+  setSearchTerm: DebouncedFunc<(searchTerm: string) => void>;
   handleViewModeChange: (
     event: React.MouseEvent<HTMLElement>,
     view: string,
@@ -176,7 +178,7 @@ export const ContactsProvider: React.FC<Props> = ({
     [sanitizedFilters, starredFilter, searchTerm],
   );
 
-  const { data, loading, fetchMore } = useContactsQuery({
+  const contactsQueryResult = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters,
@@ -184,6 +186,7 @@ export const ContactsProvider: React.FC<Props> = ({
     },
     skip: !accountListId,
   });
+  const { data, loading, fetchMore } = contactsQueryResult;
 
   //#region Mass Actions
 
@@ -209,7 +212,7 @@ export const ContactsProvider: React.FC<Props> = ({
     toggleSelectionById,
     deselectAll,
   } = useMassSelection(
-    data?.contacts?.totalCount ?? 0,
+    contactCount,
     allContactIds,
     activeFilters,
     searchTerm as string,
@@ -295,7 +298,7 @@ export const ContactsProvider: React.FC<Props> = ({
       filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
     }
     if (viewMode !== TableViewModeEnum.Map && urlFilters && urlFilters.ids) {
-      const newFilters = _.omit(activeFilters, 'ids');
+      const newFilters = omit(activeFilters, 'ids');
       if (Object.keys(newFilters).length > 0) {
         filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
       } else {
@@ -392,8 +395,7 @@ export const ContactsProvider: React.FC<Props> = ({
         accountListId: accountListId ?? '',
         contactId: contactId,
         searchTerm: searchTerm,
-        loading: loading,
-        router: router,
+        contactsQueryResult: contactsQueryResult,
         selectionType: selectionType,
         isRowChecked: isRowChecked,
         toggleSelectAll: toggleSelectAll,

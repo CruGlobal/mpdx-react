@@ -8,7 +8,7 @@ import { cloneDeep } from 'lodash';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { GetDonationsTableQuery } from '../GetDonationsTable.generated';
 import { DonationsReportTable } from './DonationsReportTable';
@@ -125,7 +125,7 @@ describe('DonationsReportTable', () => {
   });
 
   it('opens and closes the edit donation modal', async () => {
-    const { queryByRole, queryByText, getByText, getByTestId, getByRole } =
+    const { queryByRole, queryByText, findByText, getByTestId, getByRole } =
       render(
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -159,7 +159,7 @@ describe('DonationsReportTable', () => {
 
     userEvent.click(getByTestId('edit-abc'));
 
-    expect(getByText('Edit Donation')).toBeInTheDocument();
+    expect(await findByText('Edit Donation')).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Cancel' }));
 

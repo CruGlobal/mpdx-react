@@ -3,7 +3,7 @@ import { mdiDelete, mdiDotsVertical, mdiSquareEditOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import { Box, Grid, Typography } from '@mui/material';
-import { TestContact } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
+import { TestContact } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import theme from '../../../../theme';
 
 interface Props {

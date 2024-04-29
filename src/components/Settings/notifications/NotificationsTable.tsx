@@ -1,29 +1,37 @@
 import React, { ReactElement, useMemo, useState } from 'react';
-import { Email, Smartphone, Task } from '@mui/icons-material';
 import {
   Box,
   Checkbox,
   Paper,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
   TableRow,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { FieldArray, Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import * as Types from 'src/graphql/types.generated';
+import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
+  NotificationsPreferencesQuery,
   useNotificationTypesQuery,
   useNotificationsPreferencesQuery,
 } from './Notifications.generated';
 import { NotificationsTableSkeleton } from './NotificationsTableSkeleton';
+import {
+  SelectAllBox,
+  StyledEmail,
+  StyledSmartphone,
+  StyledTableCell,
+  StyledTableHeadCell,
+  StyledTableHeadSelectCell,
+  StyledTableRow,
+  StyledTask,
+} from './StyledComponents';
 import { useUpdateNotificationPreferencesMutation } from './UpdateNotifications.generated';
 
 export enum NotificationsEnum {
@@ -32,63 +40,38 @@ export enum NotificationsEnum {
   Task = 'task',
 }
 
+type NotificationPreferenceNode =
+  NotificationsPreferencesQuery['notificationPreferences']['nodes'][number];
+
 type NotificationPreference = Pick<
-  Types.NotificationPreference,
+  NotificationPreferenceNode,
   'app' | 'email' | 'task'
 > & {
-  notificationType: Pick<
-    Types.NotificationType,
-    'id' | 'descriptionTemplate' | 'type'
+  notificationType: Omit<
+    NotificationPreferenceNode['notificationType'],
+    '__typename'
   >;
 };
-type NotificationType = Pick<
-  Types.NotificationType,
-  'id' | 'type' | 'descriptionTemplate'
->;
 
-export const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.common.white,
-}));
-
-export const StyledTableHeadSelectCell = styled(TableCell)(() => ({
-  cursor: 'pointer',
-  fontSize: 14,
-  paddingTop: 8,
-  paddingBottom: 8,
-  top: 88,
-}));
-
-export const StyledTableCell = styled(TableCell)(() => ({
-  fontSize: 14,
-  paddingTop: 8,
-  paddingBottom: 8,
-}));
-
-export const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
-
-export const StyledSmartphone = styled(Smartphone)(() => ({
-  marginRight: '8px',
-}));
-export const StyledEmail = styled(Email)(() => ({
-  marginRight: '6px',
-}));
-export const StyledTask = styled(Task)(() => ({
-  marginRight: '3px',
-}));
-
-export const SelectAllBox = styled(Box)(() => ({
-  width: 120,
-  margin: '0 0 0 auto',
-}));
+const notificationSchema: yup.SchemaOf<{
+  notifications: NotificationPreference[];
+}> = yup.object({
+  notifications: yup.array(
+    yup.object({
+      app: yup.boolean().required(),
+      email: yup.boolean().required(),
+      task: yup.boolean().required(),
+      notificationType: yup.object({
+        id: yup.string().required(),
+        descriptionTemplate: yup.string().required(),
+        type: yup
+          .mixed<NotificationTypeTypeEnum>()
+          .oneOf(Object.values(NotificationTypeTypeEnum))
+          .required(),
+      }),
+    }),
+  ),
+});
 
 export const NotificationsTable: React.FC = () => {
   const { t } = useTranslation();
@@ -101,32 +84,11 @@ export const NotificationsTable: React.FC = () => {
 
   const [updateNotifications] = useUpdateNotificationPreferencesMutation();
 
-  const NotificationSchema: yup.SchemaOf<{
-    notifications: NotificationPreference[];
-  }> = yup.object({
-    notifications: yup.array(
-      yup.object({
-        app: yup.boolean().required(),
-        email: yup.boolean().required(),
-        task: yup.boolean().required(),
-        notificationType: yup.object({
-          id: yup.string().required(),
-          descriptionTemplate: yup.string().required(),
-          type: yup
-            .mixed<Types.NotificationTypeTypeEnum>()
-            .oneOf(Object.values(Types.NotificationTypeTypeEnum))
-            .required(),
-        }),
-      }),
-    ),
-  });
-
   const { data: notificationsPreferences, loading } =
     useNotificationsPreferencesQuery({
       variables: {
         accountListId: accountListId ?? '',
       },
-      fetchPolicy: 'cache-and-network',
     });
   const { data: notificationTypes } = useNotificationTypesQuery({
     fetchPolicy: 'cache-first',
@@ -142,12 +104,11 @@ export const NotificationsTable: React.FC = () => {
   };
 
   const notifications = useMemo(() => {
-    const notificationsPreferencesData: NotificationPreference[] =
+    const notificationsPreferencesData =
       notificationsPreferences?.notificationPreferences?.nodes || [];
-    const notificationTypesData: NotificationType[] =
-      notificationTypes?.notificationTypes || [];
+    const notificationTypesData = notificationTypes?.notificationTypes || [];
 
-    return notificationTypesData.map((notification) => {
+    return notificationTypesData.map((notification): NotificationPreference => {
       const notificationPreference = notificationsPreferencesData.find(
         (object) => object.notificationType.id === notification.id,
       );
@@ -156,7 +117,7 @@ export const NotificationsTable: React.FC = () => {
         app: defaultIfInSetup(notificationPreference, 'app'),
         email: defaultIfInSetup(notificationPreference, 'email'),
         task: defaultIfInSetup(notificationPreference, 'task'),
-      } as NotificationPreference;
+      };
     });
   }, [notificationsPreferences, notificationTypes]);
 
@@ -210,7 +171,7 @@ export const NotificationsTable: React.FC = () => {
           initialValues={{
             notifications: notifications,
           }}
-          validationSchema={NotificationSchema}
+          validationSchema={notificationSchema}
           onSubmit={onSubmit}
         >
           {({

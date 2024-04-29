@@ -5,10 +5,10 @@ import {
   Button,
   CardActions,
   CardContent,
+  Skeleton,
   Theme,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useAccountListId } from 'src/hooks/useAccountListId';

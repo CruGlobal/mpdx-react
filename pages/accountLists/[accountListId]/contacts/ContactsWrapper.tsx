@@ -1,15 +1,15 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
-import _ from 'lodash';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { ContactsProvider } from './ContactsContext';
 
 interface Props {
   children?: React.ReactNode;
 }
-export const ContactsPage: React.FC<Props> = ({ children }) => {
+
+export const ContactsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
   const { query, replace, pathname, isReady } = router;
 

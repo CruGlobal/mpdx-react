@@ -2,11 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import {
-  render,
-  waitFor,
-} from '../../../../../../__tests__/util/testingLibraryReactMock';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from '../../../../../theme';
 import { ContactTags } from './ContactTags';
 import { UpdateContactTagsMutation } from './ContactTags.generated';

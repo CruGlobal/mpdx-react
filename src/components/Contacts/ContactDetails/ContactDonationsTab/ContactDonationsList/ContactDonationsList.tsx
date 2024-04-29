@@ -3,24 +3,24 @@ import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   IconButton,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { EditDonationModal } from 'src/components/EditDonationModal/EditDonationModal';
+import {
+  DynamicEditDonationModal,
+  preloadEditDonationModal,
+} from 'src/components/EditDonationModal/DynamicEditDonationModal';
 import { EditDonationModalDonationFragment } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { useGetAccountListCurrencyQuery } from 'src/components/Reports/DonationsReport/GetDonationsTable.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import {
-  currencyFormat,
-  dateFormat,
-} from '../../../../../lib/intlFormat/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { useContactDonationsListQuery } from './ContactDonationsList.generated';
 
 interface ContactDonationsListProp {
@@ -123,6 +123,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
                       onClick={() => {
                         setEditingDonation(donation);
                       }}
+                      onMouseEnter={preloadEditDonationModal}
                     >
                       <EditIcon data-testid={`edit-${donation.id}`} />
                     </IconButton>
@@ -149,7 +150,7 @@ export const ContactDonationsList: React.FC<ContactDonationsListProp> = ({
         </>
       )}
       {editingDonation && (
-        <EditDonationModal
+        <DynamicEditDonationModal
           open
           donation={editingDonation}
           handleClose={() => setEditingDonation(null)}

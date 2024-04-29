@@ -24,7 +24,7 @@ export const ContactTasksTabNullState: React.FC<
   ContactTasksTabNullStateProps
 > = ({ contactId }) => {
   const { t } = useTranslation();
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   return (
     <NullStateBox>
@@ -43,6 +43,7 @@ export const ContactTasksTabNullState: React.FC<
             defaultValues: { contactIds: [contactId] },
           })
         }
+        onMouseEnter={() => preloadTaskModal('add')}
       >
         {t('Add New Task')}
       </AddTaskButton>

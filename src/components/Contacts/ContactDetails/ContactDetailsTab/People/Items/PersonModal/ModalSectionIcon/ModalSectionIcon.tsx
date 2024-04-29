@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 const IconContainer = styled(Box, {

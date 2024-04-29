@@ -1,7 +1,7 @@
 import { getToken } from 'next-auth/jwt';
 import { createMocks } from 'node-mocks-http';
+import handoff from 'pages/api/handoff.page';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
-import handoff from '../../../pages/api/handoff.page';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
 jest.mock('src/lib/apollo/ssrClient', () => jest.fn());

@@ -6,10 +6,10 @@ import {
   AccountListTypeEnum,
   CoachingDetail,
 } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
+import Loading from 'src/components/Loading';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
-import Loading from '../../../../src/components/Loading';
-import { useAccountListId } from '../../../../src/hooks/useAccountListId';
 
 const CoachingReportPage = (): ReactElement => {
   const { t } = useTranslation();

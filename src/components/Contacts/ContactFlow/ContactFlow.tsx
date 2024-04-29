@@ -1,7 +1,10 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   ActivityTypeEnum,
   ContactFilterSetInput,
@@ -10,11 +13,11 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { ContactsDocument } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from '../../../theme';
 import Loading from '../../Loading';
 import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
+import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 
 interface Props {
@@ -133,40 +136,43 @@ export const ContactFlow: React.FC<Props> = ({
     <Loading loading={loadingUserOptions} />
   ) : (
     flowOptions && (
-      <Box
-        display="grid"
-        minWidth="100%"
-        gridTemplateColumns={`repeat(${flowOptions.length}, minmax(300px, 1fr)); minmax(300px, 1fr)`}
-        gridAutoFlow="column"
-        gap={theme.spacing(1)}
-        overflow="auto"
-        style={{ overflowX: 'auto' }}
-        gridAutoColumns="300px"
-        data-testid="contactsFlow"
-      >
-        {flowOptions.map((column) => (
-          <Box
-            width={'100%'}
-            minWidth={300}
-            p={2}
-            key={column.name}
-            data-testid={`contactsFlow${column.name}`}
-          >
-            <ContactFlowColumn
-              accountListId={accountListId}
-              title={column.name}
-              selectedFilters={selectedFilters}
-              color={colorMap[column.color]}
-              onContactSelected={onContactSelected}
-              statuses={column.statuses.map(
-                (status) => statusMap[status] as ContactFilterStatusEnum,
-              )}
-              changeContactStatus={changeContactStatus}
-              searchTerm={searchTerm}
-            />
-          </Box>
-        ))}
-      </Box>
+      <DndProvider backend={HTML5Backend}>
+        <ContactFlowDragLayer />
+        <Box
+          display="grid"
+          minWidth="100%"
+          gridTemplateColumns={`repeat(${flowOptions.length}, minmax(300px, 1fr)); minmax(300px, 1fr)`}
+          gridAutoFlow="column"
+          gap={theme.spacing(1)}
+          overflow="auto"
+          style={{ overflowX: 'auto' }}
+          gridAutoColumns="300px"
+          data-testid="contactsFlow"
+        >
+          {flowOptions.map((column) => (
+            <Box
+              width={'100%'}
+              minWidth={300}
+              p={2}
+              key={column.name}
+              data-testid={`contactsFlow${column.name}`}
+            >
+              <ContactFlowColumn
+                accountListId={accountListId}
+                title={column.name}
+                selectedFilters={selectedFilters}
+                color={colorMap[column.color]}
+                onContactSelected={onContactSelected}
+                statuses={column.statuses.map(
+                  (status) => statusMap[status] as ContactFilterStatusEnum,
+                )}
+                changeContactStatus={changeContactStatus}
+                searchTerm={searchTerm}
+              />
+            </Box>
+          ))}
+        </Box>
+      </DndProvider>
     )
   );
 };

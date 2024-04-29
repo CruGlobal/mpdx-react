@@ -5,6 +5,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  ContactsContext,
+  ContactsType,
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import {
   filterPanelDefaultMock,
@@ -14,9 +19,7 @@ import {
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ContactsContext, ContactsType } from './ContactsContext';
-import { ContactsPage } from './ContactsPage';
+import { ContactsWrapper } from './ContactsWrapper';
 
 const onSelectedFiltersChanged = jest.fn();
 const onClose = jest.fn();
@@ -34,7 +37,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-describe('Contacts', () => {
+describe('ContactsWrapper', () => {
   it('opens and selects a saved filter X2', async () => {
     const routeReplace = jest.fn();
     const router = {
@@ -58,7 +61,7 @@ describe('Contacts', () => {
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
             <GqlMockedProvider>
-              <ContactsPage>
+              <ContactsWrapper>
                 <FilterPanel
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock]}
@@ -66,7 +69,7 @@ describe('Contacts', () => {
                   onClose={onClose}
                   onSelectedFiltersChanged={onSelectedFiltersChanged}
                 />
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </TestRouter>
         </ThemeProvider>
@@ -144,9 +147,9 @@ describe('Contacts', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPage>
+              <ContactsWrapper>
                 <ComponentWrapper />
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
