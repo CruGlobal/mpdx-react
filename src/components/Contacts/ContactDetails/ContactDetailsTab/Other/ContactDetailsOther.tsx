@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import { EditIcon } from '../StyledComponents';
 import { ContactOtherFragment } from './ContactOther.generated';
 
