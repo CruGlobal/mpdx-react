@@ -13,6 +13,7 @@ export type GetTaskForTaskModalQuery = { __typename?: 'Query' } & {
   task: { __typename?: 'Task' } & Pick<
     Types.Task,
     | 'id'
+    | 'taskPhase'
     | 'activityType'
     | 'subject'
     | 'location'
@@ -27,7 +28,10 @@ export type GetTaskForTaskModalQuery = { __typename?: 'Query' } & {
   > & {
       contacts: { __typename?: 'ContactConnection' } & {
         nodes: Array<
-          { __typename?: 'Contact' } & Pick<Types.Contact, 'id' | 'name'>
+          { __typename?: 'Contact' } & Pick<
+            Types.Contact,
+            'id' | 'name' | 'status'
+          >
         >;
       };
       comments?: { __typename?: 'CommentConnection' } & Pick<
@@ -51,6 +55,7 @@ export const GetTaskForTaskModalDocument = gql`
   ) {
     task(accountListId: $accountListId, id: $taskId) {
       id
+      taskPhase
       activityType
       subject
       location
@@ -63,6 +68,7 @@ export const GetTaskForTaskModalDocument = gql`
         nodes {
           id
           name
+          status
         }
       }
       comments @include(if: $includeComments) {

@@ -174,7 +174,10 @@ export const GetThisWeekDocument = gql`
     prayerRequestTasks: tasks(
       accountListId: $accountListId
       first: 2
-      tasksFilter: { activityType: PRAYER_REQUEST, completed: false }
+      tasksFilter: {
+        activityType: PARTNER_CARE_PRAYER_REQUEST
+        completed: false
+      }
     ) {
       nodes {
         id

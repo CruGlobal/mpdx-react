@@ -46,7 +46,13 @@ export const GetWeeklyActivityDocument = gql`
       accountListId: $accountListId
       tasksFilter: {
         completedAt: { min: $startOfWeek, max: $endOfWeek }
-        activityType: CALL
+        activityType: [
+          APPOINTMENT_PHONE_CALL
+          APPOINTMENT_VIDEO_CALL
+          FOLLOW_UP_PHONE_CALL
+          INITIATION_PHONE_CALL
+          PARTNER_CARE_PHONE_CALL
+        ]
         result: [COMPLETED, DONE]
       }
     ) {
@@ -56,9 +62,15 @@ export const GetWeeklyActivityDocument = gql`
       accountListId: $accountListId
       tasksFilter: {
         completedAt: { min: $startOfWeek, max: $endOfWeek }
-        activityType: CALL
+        activityType: [
+          APPOINTMENT_PHONE_CALL
+          APPOINTMENT_VIDEO_CALL
+          FOLLOW_UP_PHONE_CALL
+          INITIATION_PHONE_CALL
+          PARTNER_CARE_PHONE_CALL
+        ]
         result: [COMPLETED, DONE]
-        nextAction: APPOINTMENT
+        nextAction: APPOINTMENT_IN_PERSON
       }
     ) {
       totalCount
@@ -67,7 +79,14 @@ export const GetWeeklyActivityDocument = gql`
       accountListId: $accountListId
       tasksFilter: {
         completedAt: { min: $startOfWeek, max: $endOfWeek }
-        activityType: [EMAIL, FACEBOOK_MESSAGE, TEXT_MESSAGE]
+        activityType: [
+          INITIATION_SOCIAL_MEDIA
+          INITIATION_TEXT_MESSAGE
+          FOLLOW_UP_SOCIAL_MEDIA
+          FOLLOW_UP_TEXT_MESSAGE
+          PARTNER_CARE_SOCIAL_MEDIA
+          PARTNER_CARE_TEXT_MESSAGE
+        ]
         result: [COMPLETED, DONE]
       }
     ) {
@@ -77,9 +96,16 @@ export const GetWeeklyActivityDocument = gql`
       accountListId: $accountListId
       tasksFilter: {
         completedAt: { min: $startOfWeek, max: $endOfWeek }
-        activityType: [EMAIL, FACEBOOK_MESSAGE, TEXT_MESSAGE]
+        activityType: [
+          INITIATION_SOCIAL_MEDIA
+          INITIATION_TEXT_MESSAGE
+          FOLLOW_UP_SOCIAL_MEDIA
+          FOLLOW_UP_TEXT_MESSAGE
+          PARTNER_CARE_SOCIAL_MEDIA
+          PARTNER_CARE_TEXT_MESSAGE
+        ]
         result: [COMPLETED, DONE]
-        nextAction: APPOINTMENT
+        nextAction: APPOINTMENT_IN_PERSON
       }
     ) {
       totalCount
@@ -88,7 +114,12 @@ export const GetWeeklyActivityDocument = gql`
       accountListId: $accountListId
       tasksFilter: {
         completedAt: { min: $startOfWeek, max: $endOfWeek }
-        activityType: APPOINTMENT
+        activityType: [
+          APPOINTMENT_IN_PERSON
+          FOLLOW_UP_IN_PERSON
+          INITIATION_IN_PERSON
+          PARTNER_CARE_IN_PERSON
+        ]
         result: [COMPLETED, DONE]
       }
     ) {
@@ -98,7 +129,12 @@ export const GetWeeklyActivityDocument = gql`
       accountListId: $accountListId
       tasksFilter: {
         completedAt: { min: $startOfWeek, max: $endOfWeek }
-        activityType: [PRE_CALL_LETTER, REMINDER_LETTER, SUPPORT_LETTER, THANK]
+        activityType: [
+          PARTNER_CARE_EMAIL
+          PARTNER_CARE_DIGITAL_NEWSLETTER
+          PARTNER_CARE_PHYSICAL_NEWSLETTER
+          PARTNER_CARE_THANK
+        ]
         result: [COMPLETED, DONE]
       }
     ) {

@@ -500,24 +500,41 @@ export type ActivityResultsPeriod = {
 };
 
 export enum ActivityTypeEnum {
-  Appointment = 'APPOINTMENT',
-  Call = 'CALL',
-  Email = 'EMAIL',
-  FacebookMessage = 'FACEBOOK_MESSAGE',
-  Letter = 'LETTER',
-  NewsletterEmail = 'NEWSLETTER_EMAIL',
-  NewsletterPhysical = 'NEWSLETTER_PHYSICAL',
+  AppointmentInPerson = 'APPOINTMENT_IN_PERSON',
+  AppointmentPhoneCall = 'APPOINTMENT_PHONE_CALL',
+  AppointmentVideoCall = 'APPOINTMENT_VIDEO_CALL',
+  FollowUpEmail = 'FOLLOW_UP_EMAIL',
+  FollowUpInPerson = 'FOLLOW_UP_IN_PERSON',
+  FollowUpPhoneCall = 'FOLLOW_UP_PHONE_CALL',
+  FollowUpSocialMedia = 'FOLLOW_UP_SOCIAL_MEDIA',
+  FollowUpTextMessage = 'FOLLOW_UP_TEXT_MESSAGE',
+  InitiationEmail = 'INITIATION_EMAIL',
+  InitiationInPerson = 'INITIATION_IN_PERSON',
+  InitiationLetter = 'INITIATION_LETTER',
+  InitiationPhoneCall = 'INITIATION_PHONE_CALL',
+  InitiationSocialMedia = 'INITIATION_SOCIAL_MEDIA',
+  InitiationSpecialGiftAppeal = 'INITIATION_SPECIAL_GIFT_APPEAL',
+  InitiationTextMessage = 'INITIATION_TEXT_MESSAGE',
   /** special type when filtered by will return any task with no activityType */
   None = 'NONE',
-  PrayerRequest = 'PRAYER_REQUEST',
-  PreCallLetter = 'PRE_CALL_LETTER',
-  ReminderLetter = 'REMINDER_LETTER',
-  SupportLetter = 'SUPPORT_LETTER',
-  TalkToInPerson = 'TALK_TO_IN_PERSON',
-  TextMessage = 'TEXT_MESSAGE',
-  Thank = 'THANK',
-  ToDo = 'TO_DO',
+  PartnerCareDigitalNewsletter = 'PARTNER_CARE_DIGITAL_NEWSLETTER',
+  PartnerCareEmail = 'PARTNER_CARE_EMAIL',
+  PartnerCareInPerson = 'PARTNER_CARE_IN_PERSON',
+  PartnerCarePhoneCall = 'PARTNER_CARE_PHONE_CALL',
+  PartnerCarePhysicalNewsletter = 'PARTNER_CARE_PHYSICAL_NEWSLETTER',
+  PartnerCarePrayerRequest = 'PARTNER_CARE_PRAYER_REQUEST',
+  PartnerCareSocialMedia = 'PARTNER_CARE_SOCIAL_MEDIA',
+  PartnerCareTextMessage = 'PARTNER_CARE_TEXT_MESSAGE',
+  PartnerCareThank = 'PARTNER_CARE_THANK',
+  PartnerCareToDo = 'PARTNER_CARE_TO_DO',
+  PartnerCareUpdateInformation = 'PARTNER_CARE_UPDATE_INFORMATION',
 }
+
+export type ActivityTypeEnumValue = {
+  __typename?: 'ActivityTypeEnumValue';
+  id: ActivityTypeEnum;
+  value: Scalars['String']['output'];
+};
 
 export type Address = {
   __typename?: 'Address';
@@ -1049,7 +1066,7 @@ export type CoachingAppealPledgesArgs = {
 
 export type CoachingContact = {
   __typename?: 'CoachingContact';
-  contactPhase?: Maybe<ContactPhaseEnum>;
+  contactPhase?: Maybe<PhaseEnum>;
   createdAt: Scalars['ISO8601DateTime']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -1192,12 +1209,13 @@ export type CommentUpdateMutationPayload = {
 
 export type Constant = {
   __typename?: 'Constant';
-  activities?: Maybe<Array<IdValue>>;
+  activities?: Maybe<Array<ActivityTypeEnumValue>>;
   languages?: Maybe<Array<IdValue>>;
   likelyToGiveOptions?: Maybe<Array<IdValue>>;
   locales?: Maybe<Array<Locale>>;
   locations?: Maybe<Array<IdValue>>;
   notificationTranslatedHashes?: Maybe<Array<IdKeyValue>>;
+  phases?: Maybe<Array<Phase>>;
   pledgeCurrencies?: Maybe<Array<Currency>>;
   pledgeFrequencies?: Maybe<Array<IdKeyValue>>;
   pledgesReceived?: Maybe<Array<IdValue>>;
@@ -1214,7 +1232,7 @@ export type Contact = {
   avatar: Scalars['String']['output'];
   churchName?: Maybe<Scalars['String']['output']>;
   contactDonorAccounts: ContactDonorAccountConnection;
-  contactPhase?: Maybe<ContactPhaseEnum>;
+  contactPhase?: Maybe<PhaseEnum>;
   /** Contact Referrals referencing the Contacts that were referred by the current Contact (AKA "Referrals") */
   contactReferralsByMe: ReferralConnection;
   /** Contact Referrals referencing the Contacts that referred the current Contact (AKA "Referred By") */
@@ -1717,6 +1735,7 @@ export enum ContactFilterStatusEnum {
   PartnerPray = 'PARTNER_PRAY',
   PartnerSpecial = 'PARTNER_SPECIAL',
   ResearchAbandoned = 'RESEARCH_ABANDONED',
+  ResearchContactInfo = 'RESEARCH_CONTACT_INFO',
   Unresponsive = 'UNRESPONSIVE',
 }
 
@@ -1757,15 +1776,6 @@ export type ContactPeoplePhoneNumbers = {
   number?: Maybe<Scalars['String']['output']>;
   primary?: Maybe<Scalars['Boolean']['output']>;
 };
-
-export enum ContactPhaseEnum {
-  Appointment = 'APPOINTMENT',
-  Archive = 'ARCHIVE',
-  Connections = 'CONNECTIONS',
-  FollowUp = 'FOLLOW_UP',
-  Initiation = 'INITIATION',
-  PartnerCare = 'PARTNER_CARE',
-}
 
 export type ContactPrimaryAddress = {
   __typename?: 'ContactPrimaryAddress';
@@ -2049,6 +2059,24 @@ export enum DisplayMethodEnum {
   Banner = 'banner',
   /** announcement should be displayed as a popup modal */
   Modal = 'modal',
+}
+
+export enum DisplayResultEnum {
+  AppointmentResultCancelled = 'APPOINTMENT_RESULT_CANCELLED',
+  AppointmentResultFollowUp = 'APPOINTMENT_RESULT_FOLLOW_UP',
+  AppointmentResultNotInterested = 'APPOINTMENT_RESULT_NOT_INTERESTED',
+  AppointmentResultPartnerFinancial = 'APPOINTMENT_RESULT_PARTNER_FINANCIAL',
+  AppointmentResultPartnerPray = 'APPOINTMENT_RESULT_PARTNER_PRAY',
+  AppointmentResultPartnerSpecial = 'APPOINTMENT_RESULT_PARTNER_SPECIAL',
+  FollowUpResultNotInterested = 'FOLLOW_UP_RESULT_NOT_INTERESTED',
+  FollowUpResultNoResponse = 'FOLLOW_UP_RESULT_NO_RESPONSE',
+  FollowUpResultPartnerFinancial = 'FOLLOW_UP_RESULT_PARTNER_FINANCIAL',
+  FollowUpResultPartnerPray = 'FOLLOW_UP_RESULT_PARTNER_PRAY',
+  FollowUpResultPartnerSpecial = 'FOLLOW_UP_RESULT_PARTNER_SPECIAL',
+  InitiationResultAppointmentScheduled = 'INITIATION_RESULT_APPOINTMENT_SCHEDULED',
+  InitiationResultCircleBack = 'INITIATION_RESULT_CIRCLE_BACK',
+  InitiationResultNotInterested = 'INITIATION_RESULT_NOT_INTERESTED',
+  InitiationResultNoResponse = 'INITIATION_RESULT_NO_RESPONSE',
 }
 
 export type Donation = {
@@ -4008,6 +4036,24 @@ export type PersonWithParentContactWebsitesArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type Phase = {
+  __typename?: 'Phase';
+  contactStatuses: Array<StatusEnum>;
+  id: PhaseEnum;
+  name: Scalars['String']['output'];
+  results?: Maybe<Result>;
+  tasks?: Maybe<Array<ActivityTypeEnum>>;
+};
+
+export enum PhaseEnum {
+  Appointment = 'APPOINTMENT',
+  Archive = 'ARCHIVE',
+  Connection = 'CONNECTION',
+  FollowUp = 'FOLLOW_UP',
+  Initiation = 'INITIATION',
+  PartnerCare = 'PARTNER_CARE',
+}
+
 export type PhoneAccountListAnalytics = {
   __typename?: 'PhoneAccountListAnalytics';
   appointments: Scalars['Int']['output'];
@@ -4830,6 +4876,12 @@ export enum ReportsTagHistoriesAssociationEnum {
   Tasks = 'TASKS',
 }
 
+export type Result = {
+  __typename?: 'Result';
+  resultOptions?: Maybe<Array<ResultOption>>;
+  tags?: Maybe<Array<IdValue>>;
+};
+
 export enum ResultEnum {
   Attempted = 'ATTEMPTED',
   AttemptedLeftMessage = 'ATTEMPTED_LEFT_MESSAGE',
@@ -4839,6 +4891,14 @@ export enum ResultEnum {
   None = 'NONE',
   Received = 'RECEIVED',
 }
+
+export type ResultOption = {
+  __typename?: 'ResultOption';
+  dbResult?: Maybe<Array<TaskResultPair>>;
+  name: DisplayResultEnum;
+  suggestedContactStatus?: Maybe<StatusEnum>;
+  suggestedNextActions?: Maybe<Array<ActivityTypeEnum>>;
+};
 
 export type SaveCoachingAnswerInput = {
   answerId?: InputMaybe<Scalars['String']['input']>;
@@ -4919,6 +4979,7 @@ export enum StatusEnum {
   PartnerPray = 'PARTNER_PRAY',
   PartnerSpecial = 'PARTNER_SPECIAL',
   ResearchAbandoned = 'RESEARCH_ABANDONED',
+  ResearchContactInfo = 'RESEARCH_CONTACT_INFO',
   Unresponsive = 'UNRESPONSIVE',
 }
 
@@ -4976,6 +5037,7 @@ export type Task = {
   contactIds: Array<Scalars['String']['output']>;
   contacts: ContactConnection;
   createdAt: Scalars['ISO8601DateTime']['output'];
+  displayResult?: Maybe<DisplayResultEnum>;
   id: Scalars['ID']['output'];
   location?: Maybe<Scalars['String']['output']>;
   nextAction?: Maybe<ActivityTypeEnum>;
@@ -4988,7 +5050,7 @@ export type Task = {
   startAt?: Maybe<Scalars['ISO8601DateTime']['output']>;
   subject: Scalars['String']['output'];
   tagList: Array<Scalars['String']['output']>;
-  taskPhase?: Maybe<TaskPhaseEnum>;
+  taskPhase?: Maybe<PhaseEnum>;
   updatedAt: Scalars['ISO8601DateTime']['output'];
   user?: Maybe<UserScopedToAccountList>;
 };
@@ -5070,6 +5132,7 @@ export type TaskCreateInput = {
   comment?: InputMaybe<Scalars['String']['input']>;
   completedAt?: InputMaybe<Scalars['ISO8601DateTime']['input']>;
   contactIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  displayResult?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   nextAction?: InputMaybe<ActivityTypeEnum>;
   notificationTimeBefore?: InputMaybe<Scalars['Int']['input']>;
@@ -5226,11 +5289,11 @@ export type TaskFilterSetInput = {
   wildcardSearch?: InputMaybe<Scalars['String']['input']>;
 };
 
-export enum TaskPhaseEnum {
-  Appointment = 'APPOINTMENT',
-  Initiation = 'INITIATION',
-  PartnerCare = 'PARTNER_CARE',
-}
+export type TaskResultPair = {
+  __typename?: 'TaskResultPair';
+  result?: Maybe<ResultEnum>;
+  task?: Maybe<ActivityTypeEnum>;
+};
 
 export enum TaskSortEnum {
   /** sort by created_at ASC */
@@ -5249,6 +5312,7 @@ export type TaskUpdateInput = {
   activityType?: InputMaybe<ActivityTypeEnum>;
   completedAt?: InputMaybe<Scalars['ISO8601DateTime']['input']>;
   contactIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  displayResult?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   location?: InputMaybe<Scalars['String']['input']>;
   nextAction?: InputMaybe<ActivityTypeEnum>;
@@ -5897,6 +5961,7 @@ export type ResolversTypes = ResolversObject<{
   ActivityResults: ResolverTypeWrapper<ActivityResults>;
   ActivityResultsPeriod: ResolverTypeWrapper<ActivityResultsPeriod>;
   ActivityTypeEnum: ActivityTypeEnum;
+  ActivityTypeEnumValue: ResolverTypeWrapper<ActivityTypeEnumValue>;
   Address: ResolverTypeWrapper<Address>;
   AddressConnection: ResolverTypeWrapper<AddressConnection>;
   AddressCreateInput: AddressCreateInput;
@@ -5994,7 +6059,6 @@ export type ResolversTypes = ResolversObject<{
   ContactPeopleAccountListsUsers: ResolverTypeWrapper<ContactPeopleAccountListsUsers>;
   ContactPeopleEmailAddresses: ResolverTypeWrapper<ContactPeopleEmailAddresses>;
   ContactPeoplePhoneNumbers: ResolverTypeWrapper<ContactPeoplePhoneNumbers>;
-  ContactPhaseEnum: ContactPhaseEnum;
   ContactPrimaryAddress: ResolverTypeWrapper<ContactPrimaryAddress>;
   ContactPrimaryAddressInput: ContactPrimaryAddressInput;
   ContactReferralByMeInput: ContactReferralByMeInput;
@@ -6033,6 +6097,7 @@ export type ResolversTypes = ResolversObject<{
   DesignationAccountsGroup: ResolverTypeWrapper<DesignationAccountsGroup>;
   DesignationWithDisplayName: ResolverTypeWrapper<DesignationWithDisplayName>;
   DisplayMethodEnum: DisplayMethodEnum;
+  DisplayResultEnum: DisplayResultEnum;
   Donation: ResolverTypeWrapper<Donation>;
   DonationConnection: ResolverTypeWrapper<DonationConnection>;
   DonationCreateInput: DonationCreateInput;
@@ -6185,6 +6250,8 @@ export type ResolversTypes = ResolversObject<{
   PersonUpdateMutationPayload: ResolverTypeWrapper<PersonUpdateMutationPayload>;
   PersonWebsiteInput: PersonWebsiteInput;
   PersonWithParentContact: ResolverTypeWrapper<PersonWithParentContact>;
+  Phase: ResolverTypeWrapper<Phase>;
+  PhaseEnum: PhaseEnum;
   PhoneAccountListAnalytics: ResolverTypeWrapper<PhoneAccountListAnalytics>;
   PhoneNumber: ResolverTypeWrapper<PhoneNumber>;
   PhoneNumberConnection: ResolverTypeWrapper<PhoneNumberConnection>;
@@ -6207,7 +6274,9 @@ export type ResolversTypes = ResolversObject<{
   ReportsAppointmentResultsPeriod: ResolverTypeWrapper<ReportsAppointmentResultsPeriod>;
   ReportsPledgeHistories: ResolverTypeWrapper<ReportsPledgeHistories>;
   ReportsTagHistoriesAssociationEnum: ReportsTagHistoriesAssociationEnum;
+  Result: ResolverTypeWrapper<Result>;
   ResultEnum: ResultEnum;
+  ResultOption: ResolverTypeWrapper<ResultOption>;
   SaveCoachingAnswerInput: SaveCoachingAnswerInput;
   SearchOrganizationsAccountListsInput: SearchOrganizationsAccountListsInput;
   SearchOrganizationsAccountListsResponse: ResolverTypeWrapper<SearchOrganizationsAccountListsResponse>;
@@ -6241,7 +6310,7 @@ export type ResolversTypes = ResolversObject<{
   TaskDeleteMutationPayload: ResolverTypeWrapper<TaskDeleteMutationPayload>;
   TaskEdge: ResolverTypeWrapper<TaskEdge>;
   TaskFilterSetInput: TaskFilterSetInput;
-  TaskPhaseEnum: TaskPhaseEnum;
+  TaskResultPair: ResolverTypeWrapper<TaskResultPair>;
   TaskSortEnum: TaskSortEnum;
   TaskUpdateInput: TaskUpdateInput;
   TaskUpdateMutationInput: TaskUpdateMutationInput;
@@ -6328,6 +6397,7 @@ export type ResolversParentTypes = ResolversObject<{
   Action: Action;
   ActivityResults: ActivityResults;
   ActivityResultsPeriod: ActivityResultsPeriod;
+  ActivityTypeEnumValue: ActivityTypeEnumValue;
   Address: Address;
   AddressConnection: AddressConnection;
   AddressCreateInput: AddressCreateInput;
@@ -6598,6 +6668,7 @@ export type ResolversParentTypes = ResolversObject<{
   PersonUpdateMutationPayload: PersonUpdateMutationPayload;
   PersonWebsiteInput: PersonWebsiteInput;
   PersonWithParentContact: PersonWithParentContact;
+  Phase: Phase;
   PhoneAccountListAnalytics: PhoneAccountListAnalytics;
   PhoneNumber: PhoneNumber;
   PhoneNumberConnection: PhoneNumberConnection;
@@ -6616,6 +6687,8 @@ export type ResolversParentTypes = ResolversObject<{
   ReportContactFilterSetInput: ReportContactFilterSetInput;
   ReportsAppointmentResultsPeriod: ReportsAppointmentResultsPeriod;
   ReportsPledgeHistories: ReportsPledgeHistories;
+  Result: Result;
+  ResultOption: ResultOption;
   SaveCoachingAnswerInput: SaveCoachingAnswerInput;
   SearchOrganizationsAccountListsInput: SearchOrganizationsAccountListsInput;
   SearchOrganizationsAccountListsResponse: SearchOrganizationsAccountListsResponse;
@@ -6645,6 +6718,7 @@ export type ResolversParentTypes = ResolversObject<{
   TaskDeleteMutationPayload: TaskDeleteMutationPayload;
   TaskEdge: TaskEdge;
   TaskFilterSetInput: TaskFilterSetInput;
+  TaskResultPair: TaskResultPair;
   TaskUpdateInput: TaskUpdateInput;
   TaskUpdateMutationInput: TaskUpdateMutationInput;
   TaskUpdateMutationPayload: TaskUpdateMutationPayload;
@@ -7402,6 +7476,15 @@ export type ActivityResultsPeriodResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ActivityTypeEnumValueResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['ActivityTypeEnumValue'] = ResolversParentTypes['ActivityTypeEnumValue'],
+> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ActivityTypeEnum'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type AddressResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address'],
@@ -8068,7 +8151,7 @@ export type CoachingContactResolvers<
   ParentType extends ResolversParentTypes['CoachingContact'] = ResolversParentTypes['CoachingContact'],
 > = ResolversObject<{
   contactPhase?: Resolver<
-    Maybe<ResolversTypes['ContactPhaseEnum']>,
+    Maybe<ResolversTypes['PhaseEnum']>,
     ParentType,
     ContextType
   >;
@@ -8316,7 +8399,7 @@ export type ConstantResolvers<
   ParentType extends ResolversParentTypes['Constant'] = ResolversParentTypes['Constant'],
 > = ResolversObject<{
   activities?: Resolver<
-    Maybe<Array<ResolversTypes['IdValue']>>,
+    Maybe<Array<ResolversTypes['ActivityTypeEnumValue']>>,
     ParentType,
     ContextType
   >;
@@ -8342,6 +8425,11 @@ export type ConstantResolvers<
   >;
   notificationTranslatedHashes?: Resolver<
     Maybe<Array<ResolversTypes['IdKeyValue']>>,
+    ParentType,
+    ContextType
+  >;
+  phases?: Resolver<
+    Maybe<Array<ResolversTypes['Phase']>>,
     ParentType,
     ContextType
   >;
@@ -8411,7 +8499,7 @@ export type ContactResolvers<
     Partial<ContactContactDonorAccountsArgs>
   >;
   contactPhase?: Resolver<
-    Maybe<ResolversTypes['ContactPhaseEnum']>,
+    Maybe<ResolversTypes['PhaseEnum']>,
     ParentType,
     ContextType
   >;
@@ -11725,6 +11813,26 @@ export type PersonWithParentContactResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PhaseResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['Phase'] = ResolversParentTypes['Phase'],
+> = ResolversObject<{
+  contactStatuses?: Resolver<
+    Array<ResolversTypes['StatusEnum']>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['PhaseEnum'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  results?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType>;
+  tasks?: Resolver<
+    Maybe<Array<ResolversTypes['ActivityTypeEnum']>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PhoneAccountListAnalyticsResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['PhoneAccountListAnalytics'] = ResolversParentTypes['PhoneAccountListAnalytics'],
@@ -12417,6 +12525,46 @@ export type ReportsPledgeHistoriesResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ResultResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['Result'] = ResolversParentTypes['Result'],
+> = ResolversObject<{
+  resultOptions?: Resolver<
+    Maybe<Array<ResolversTypes['ResultOption']>>,
+    ParentType,
+    ContextType
+  >;
+  tags?: Resolver<
+    Maybe<Array<ResolversTypes['IdValue']>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ResultOptionResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['ResultOption'] = ResolversParentTypes['ResultOption'],
+> = ResolversObject<{
+  dbResult?: Resolver<
+    Maybe<Array<ResolversTypes['TaskResultPair']>>,
+    ParentType,
+    ContextType
+  >;
+  name?: Resolver<ResolversTypes['DisplayResultEnum'], ParentType, ContextType>;
+  suggestedContactStatus?: Resolver<
+    Maybe<ResolversTypes['StatusEnum']>,
+    ParentType,
+    ContextType
+  >;
+  suggestedNextActions?: Resolver<
+    Maybe<Array<ResolversTypes['ActivityTypeEnum']>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type SearchOrganizationsAccountListsResponseResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['SearchOrganizationsAccountListsResponse'] = ResolversParentTypes['SearchOrganizationsAccountListsResponse'],
@@ -12520,6 +12668,11 @@ export type TaskResolvers<
     ParentType,
     ContextType
   >;
+  displayResult?: Resolver<
+    Maybe<ResolversTypes['DisplayResultEnum']>,
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   nextAction?: Resolver<
@@ -12556,7 +12709,7 @@ export type TaskResolvers<
   subject?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tagList?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   taskPhase?: Resolver<
-    Maybe<ResolversTypes['TaskPhaseEnum']>,
+    Maybe<ResolversTypes['PhaseEnum']>,
     ParentType,
     ContextType
   >;
@@ -12670,6 +12823,23 @@ export type TaskEdgeResolvers<
 > = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TaskResultPairResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['TaskResultPair'] = ResolversParentTypes['TaskResultPair'],
+> = ResolversObject<{
+  result?: Resolver<
+    Maybe<ResolversTypes['ResultEnum']>,
+    ParentType,
+    ContextType
+  >;
+  task?: Resolver<
+    Maybe<ResolversTypes['ActivityTypeEnum']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -13227,6 +13397,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Action?: ActionResolvers<ContextType>;
   ActivityResults?: ActivityResultsResolvers<ContextType>;
   ActivityResultsPeriod?: ActivityResultsPeriodResolvers<ContextType>;
+  ActivityTypeEnumValue?: ActivityTypeEnumValueResolvers<ContextType>;
   Address?: AddressResolvers<ContextType>;
   AddressConnection?: AddressConnectionResolvers<ContextType>;
   AddressCreateMutationPayload?: AddressCreateMutationPayloadResolvers<ContextType>;
@@ -13406,6 +13577,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   PersonEdge?: PersonEdgeResolvers<ContextType>;
   PersonUpdateMutationPayload?: PersonUpdateMutationPayloadResolvers<ContextType>;
   PersonWithParentContact?: PersonWithParentContactResolvers<ContextType>;
+  Phase?: PhaseResolvers<ContextType>;
   PhoneAccountListAnalytics?: PhoneAccountListAnalyticsResolvers<ContextType>;
   PhoneNumber?: PhoneNumberResolvers<ContextType>;
   PhoneNumberConnection?: PhoneNumberConnectionResolvers<ContextType>;
@@ -13422,6 +13594,8 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   ReferralEdge?: ReferralEdgeResolvers<ContextType>;
   ReportsAppointmentResultsPeriod?: ReportsAppointmentResultsPeriodResolvers<ContextType>;
   ReportsPledgeHistories?: ReportsPledgeHistoriesResolvers<ContextType>;
+  Result?: ResultResolvers<ContextType>;
+  ResultOption?: ResultOptionResolvers<ContextType>;
   SearchOrganizationsAccountListsResponse?: SearchOrganizationsAccountListsResponseResolvers<ContextType>;
   SearchOrganizationsContactsResponse?: SearchOrganizationsContactsResponseResolvers<ContextType>;
   SetActiveFinancialAccountRest?: SetActiveFinancialAccountRestResolvers<ContextType>;
@@ -13435,6 +13609,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   TaskCreateMutationPayload?: TaskCreateMutationPayloadResolvers<ContextType>;
   TaskDeleteMutationPayload?: TaskDeleteMutationPayloadResolvers<ContextType>;
   TaskEdge?: TaskEdgeResolvers<ContextType>;
+  TaskResultPair?: TaskResultPairResolvers<ContextType>;
   TaskUpdateMutationPayload?: TaskUpdateMutationPayloadResolvers<ContextType>;
   TasksCreateMutationPayload?: TasksCreateMutationPayloadResolvers<ContextType>;
   TasksDeleteMutationPayload?: TasksDeleteMutationPayloadResolvers<ContextType>;

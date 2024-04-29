@@ -8,7 +8,12 @@ export type LoadConstantsQueryVariables = Types.Exact<{ [key: string]: never }>;
 export type LoadConstantsQuery = { __typename?: 'Query' } & {
   constant: { __typename?: 'Constant' } & {
     activities?: Types.Maybe<
-      Array<{ __typename?: 'IdValue' } & Pick<Types.IdValue, 'id' | 'value'>>
+      Array<
+        { __typename?: 'ActivityTypeEnumValue' } & Pick<
+          Types.ActivityTypeEnumValue,
+          'id' | 'value'
+        >
+      >
     >;
     languages?: Types.Maybe<
       Array<{ __typename?: 'IdValue' } & Pick<Types.IdValue, 'id' | 'value'>>
@@ -62,6 +67,44 @@ export type LoadConstantsQuery = { __typename?: 'Query' } & {
     >;
     times?: Types.Maybe<
       Array<{ __typename?: 'Time' } & Pick<Types.Time, 'key' | 'value'>>
+    >;
+    phases?: Types.Maybe<
+      Array<
+        { __typename?: 'Phase' } & Pick<
+          Types.Phase,
+          'id' | 'name' | 'contactStatuses' | 'tasks'
+        > & {
+            results?: Types.Maybe<
+              { __typename?: 'Result' } & {
+                resultOptions?: Types.Maybe<
+                  Array<
+                    { __typename?: 'ResultOption' } & Pick<
+                      Types.ResultOption,
+                      'name' | 'suggestedContactStatus' | 'suggestedNextActions'
+                    > & {
+                        dbResult?: Types.Maybe<
+                          Array<
+                            { __typename?: 'TaskResultPair' } & Pick<
+                              Types.TaskResultPair,
+                              'task' | 'result'
+                            >
+                          >
+                        >;
+                      }
+                  >
+                >;
+                tags?: Types.Maybe<
+                  Array<
+                    { __typename?: 'IdValue' } & Pick<
+                      Types.IdValue,
+                      'value' | 'id'
+                    >
+                  >
+                >;
+              }
+            >;
+          }
+      >
     >;
   };
 };
@@ -122,6 +165,27 @@ export const LoadConstantsDocument = gql`
       times {
         key
         value
+      }
+      phases {
+        id
+        name
+        results {
+          resultOptions {
+            dbResult {
+              task
+              result
+            }
+            name
+            suggestedContactStatus
+            suggestedNextActions
+          }
+          tags {
+            value
+            id
+          }
+        }
+        contactStatuses
+        tasks
       }
     }
   }

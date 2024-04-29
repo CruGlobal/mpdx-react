@@ -98,6 +98,22 @@ export type DeleteTaskMutation = { __typename?: 'Mutation' } & {
   >;
 };
 
+export type UpdateContactStatusMutationVariables = Types.Exact<{
+  accountListId: Types.Scalars['ID']['input'];
+  attributes: Types.ContactUpdateInput;
+}>;
+
+export type UpdateContactStatusMutation = { __typename?: 'Mutation' } & {
+  updateContact?: Types.Maybe<
+    { __typename?: 'ContactUpdateMutationPayload' } & {
+      contact: { __typename?: 'Contact' } & Pick<
+        Types.Contact,
+        'id' | 'status'
+      >;
+    }
+  >;
+};
+
 export const CreateTasksDocument = gql`
   mutation CreateTasks($accountListId: ID!, $attributes: TaskCreateInput!) {
     createTasks(
@@ -203,4 +219,44 @@ export type DeleteTaskMutationResult =
 export type DeleteTaskMutationOptions = Apollo.BaseMutationOptions<
   DeleteTaskMutation,
   DeleteTaskMutationVariables
+>;
+export const UpdateContactStatusDocument = gql`
+  mutation UpdateContactStatus(
+    $accountListId: ID!
+    $attributes: ContactUpdateInput!
+  ) {
+    updateContact(
+      input: { accountListId: $accountListId, attributes: $attributes }
+    ) {
+      contact {
+        id
+        status
+      }
+    }
+  }
+`;
+export type UpdateContactStatusMutationFn = Apollo.MutationFunction<
+  UpdateContactStatusMutation,
+  UpdateContactStatusMutationVariables
+>;
+export function useUpdateContactStatusMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateContactStatusMutation,
+    UpdateContactStatusMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateContactStatusMutation,
+    UpdateContactStatusMutationVariables
+  >(UpdateContactStatusDocument, options);
+}
+export type UpdateContactStatusMutationHookResult = ReturnType<
+  typeof useUpdateContactStatusMutation
+>;
+export type UpdateContactStatusMutationResult =
+  Apollo.MutationResult<UpdateContactStatusMutation>;
+export type UpdateContactStatusMutationOptions = Apollo.BaseMutationOptions<
+  UpdateContactStatusMutation,
+  UpdateContactStatusMutationVariables
 >;

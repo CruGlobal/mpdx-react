@@ -41,7 +41,12 @@ export type GetIntegrationActivitiesQueryVariables = Types.Exact<{
 export type GetIntegrationActivitiesQuery = { __typename?: 'Query' } & {
   constant: { __typename?: 'Constant' } & {
     activities?: Types.Maybe<
-      Array<{ __typename?: 'IdValue' } & Pick<Types.IdValue, 'id' | 'value'>>
+      Array<
+        { __typename?: 'ActivityTypeEnumValue' } & Pick<
+          Types.ActivityTypeEnumValue,
+          'id' | 'value'
+        >
+      >
     >;
   };
 };
