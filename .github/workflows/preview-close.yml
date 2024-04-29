@@ -18,11 +18,6 @@ jobs:
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE }}
           output-credentials: true
-      - name: set branchname env
-        id: setbranchname
-        run: |
-          # use GITHUB_HEAD_REF that is set to PR source branch
-          echo "branch=$GITHUB_HEAD_REF" >> "$GITHUB_OUTPUT"
       - name: cleanup PR preview branch
         uses: yinlinchen/amplify-preview-actions@v1.2
         with:
