@@ -1,10 +1,9 @@
 import { TFunction } from 'react-i18next';
-import { ResultEnum } from 'src/graphql/types.generated';
-import { NewResultEnum } from 'src/utils/contacts/getContactPhaseDataMock';
+import { DisplayResultEnum, ResultEnum } from 'src/graphql/types.generated';
 
 export const getLocalizedResultString = (
   t: TFunction,
-  resultType: ResultEnum | NewResultEnum | null | undefined,
+  resultType: ResultEnum | DisplayResultEnum | null | undefined,
 ): string => {
   if (!resultType) {
     return '';
@@ -33,34 +32,39 @@ export const getLocalizedResultString = (
       return t('Received');
 
     // TODO remove when new ResultEnum is added
-    case NewResultEnum.NoResponseYet:
+    case DisplayResultEnum.FollowUpResultNoResponse:
+    case DisplayResultEnum.InitiationResultNoResponse:
       return t('No Response Yet');
 
-    case NewResultEnum.DoesNotWantToMeet:
+    case DisplayResultEnum.AppointmentResultNotInterested:
       return t('Does not want to meet');
 
-    case NewResultEnum.CantMeetRightNowCircleBack:
+    case DisplayResultEnum.InitiationResultCircleBack:
       return t("Can't meet right now - circle back");
 
-    case NewResultEnum.AppointmentScheduled:
+    case DisplayResultEnum.InitiationResultAppointmentScheduled:
       return t('Appointment Scheduled');
 
-    case NewResultEnum.CancelledNeedToReschedule:
+    case DisplayResultEnum.AppointmentResultCancelled:
       return t('Cancelled-Need to reschedule');
 
-    case NewResultEnum.FollowUp:
-      return t('FollowUp');
+    case DisplayResultEnum.AppointmentResultFollowUp:
+      return t('Follow up');
 
-    case NewResultEnum.PartnerFinancial:
+    case DisplayResultEnum.FollowUpResultPartnerFinancial:
+    case DisplayResultEnum.AppointmentResultPartnerFinancial:
       return t('Partner-Financial');
 
-    case NewResultEnum.PartnerSpecial:
+    case DisplayResultEnum.FollowUpResultPartnerSpecial:
+    case DisplayResultEnum.AppointmentResultPartnerSpecial:
       return t('Partner-Special');
 
-    case NewResultEnum.PartnerPray:
+    case DisplayResultEnum.FollowUpResultPartnerPray:
+    case DisplayResultEnum.AppointmentResultPartnerPray:
       return t('Partner-Pray');
 
-    case NewResultEnum.NotInterested:
+    case DisplayResultEnum.FollowUpResultNotInterested:
+    case DisplayResultEnum.InitiationResultNotInterested:
       return t('Not Interested');
   }
 };

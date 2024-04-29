@@ -1,7 +1,7 @@
 import { TFunction } from 'i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 
-export const getLocalizedTaskType = (
+export const getLocalizedTaskPhase = (
   t: TFunction,
   taskPhase?: PhaseEnum | null,
 ): string => {
