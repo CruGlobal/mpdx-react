@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    if: contains(github.event.pull_request.labels.*.name, 'Preview Environment')
+    if: contains(github.event.label.name, 'Preview Environment')
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
