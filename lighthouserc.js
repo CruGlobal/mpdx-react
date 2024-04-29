@@ -18,7 +18,7 @@ module.exports = {
         `${serverUrl}/accountLists/5721eaaf-4596-4412-ae68-ccdd291b804d/reports/partnerGivingAnalysis`,
         `${serverUrl}/accountLists/5721eaaf-4596-4412-ae68-ccdd291b804d/reports/coaching`,
       ],
-      numberOfRuns: 3,
+      numberOfRuns: 7,
       startServerCommand:
         serverUrl === 'http://localhost:3000' ? 'yarn serve' : '',
       puppeteerScript: 'lighthouse/lighthouse-auth.js',
