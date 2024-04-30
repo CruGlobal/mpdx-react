@@ -1,14 +1,16 @@
-query GetDonationsTable(
+query DonationTable(
   $accountListId: ID!
   $pageSize: Int!
   $after: String
   $startDate: ISO8601Date
   $endDate: ISO8601Date
+  $donorAccountIds: [ID!]
   $designationAccountIds: [ID!]
 ) {
   donations(
     accountListId: $accountListId
     donationDate: { max: $endDate, min: $startDate }
+    donorAccountId: $donorAccountIds
     designationAccountId: $designationAccountIds
     first: $pageSize
     after: $after
@@ -54,7 +56,7 @@ fragment DonationTableRow on Donation {
   paymentMethod
 }
 
-query GetAccountListCurrency($accountListId: ID!) {
+query AccountListCurrency($accountListId: ID!) {
   accountList(id: $accountListId) {
     id
     currency

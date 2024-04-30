@@ -5,11 +5,12 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Box, Skeleton, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next/';
+import { DonationTable } from 'src/components/DonationTable/DonationTable';
+import { EmptyDonationsTable } from 'src/components/common/EmptyDonationsTable/EmptyDonationsTable';
 import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../ContactDetailContext';
-import { ContactDonationsList } from './ContactDonationsList/ContactDonationsList';
 import {
   GetContactDonationsQueryVariables,
   useGetContactDonationsQuery,
@@ -23,12 +24,9 @@ const ContactDonationsContainer = styled(Box)(({ theme }) => ({
 }));
 
 const DonationsTabContainer = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(1),
+  marginBottom: theme.spacing(2),
   background: theme.palette.background.paper,
-}));
-
-const DonationsGraphContainer = styled(Box)(({ theme }) => ({
-  margin: theme.spacing(1),
+  borderBottom: '1px solid #DCDCDC',
 }));
 
 const DonationsTabList = styled(TabList)(({}) => ({
@@ -45,11 +43,15 @@ const DonationsTab = styled(Tab)(({ theme }) => ({
   '&:hover': { opacity: 1 },
 }));
 
-const ContactDonationsLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
-  width: '100%',
+const PartnershipInfoLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
+  width: '20em',
   height: '24px',
   margin: theme.spacing(2, 0),
 }));
+
+const StyledTabPanel = styled(TabPanel)({
+  padding: 0,
+});
 
 interface ContactDonationsProp {
   accountListId: string;
@@ -71,6 +73,9 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
       contactId: contactId,
     },
   });
+  const donorAccountIds = data?.contact.contactDonorAccounts.nodes.map(
+    (donor) => donor.donorAccount.id,
+  );
 
   const { t } = useTranslation();
 
@@ -85,27 +90,11 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
   };
   return (
     <ContactDonationsContainer>
-      <DonationsGraphContainer>
-        {loading ? (
-          <>
-            <ContactDonationsLoadingPlaceHolder />
-            <ContactDonationsLoadingPlaceHolder />
-            <ContactDonationsLoadingPlaceHolder />
-          </>
-        ) : (
-          <DonationsGraph
-            accountListId={accountListId}
-            donorAccountIds={
-              data?.contact.contactDonorAccounts.nodes.map((donor) => {
-                return donor.donorAccount.id;
-              }) ?? []
-            }
-            convertedCurrency={
-              data?.contact.lastDonation?.amount.convertedCurrency ?? ''
-            }
-          />
-        )}
-      </DonationsGraphContainer>
+      <DonationsGraph
+        accountListId={accountListId}
+        donorAccountIds={donorAccountIds}
+        convertedCurrency={data?.contact.lastDonation?.amount.convertedCurrency}
+      />
       <TabContext value={selectedDonationTabKey}>
         <DonationsTabContainer role="region">
           <DonationsTabList
@@ -122,31 +111,32 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
             />
           </DonationsTabList>
         </DonationsTabContainer>
-        <TabPanel value={DonationTabKey.Donations}>
+        <StyledTabPanel value={DonationTabKey.Donations}>
+          <DonationTable
+            accountListId={accountListId}
+            filter={{ donorAccountIds }}
+            loading={!donorAccountIds}
+            emptyPlaceholder={
+              <EmptyDonationsTable
+                title={t('No donations received for {{name}}', {
+                  name: data?.contact.name,
+                })}
+              />
+            }
+            visibleColumnsStorageKey="contact-donations"
+          />
+        </StyledTabPanel>
+        <StyledTabPanel value={DonationTabKey.PartnershipInfo}>
           {loading ? (
-            <>
-              <ContactDonationsLoadingPlaceHolder />
-              <ContactDonationsLoadingPlaceHolder />
-              <ContactDonationsLoadingPlaceHolder />
-            </>
-          ) : (
-            <ContactDonationsList
-              accountListId={accountListId}
-              contactId={contactId}
-            />
-          )}
-        </TabPanel>
-        <TabPanel value={DonationTabKey.PartnershipInfo}>
-          {loading ? (
-            <>
-              <ContactDonationsLoadingPlaceHolder />
-              <ContactDonationsLoadingPlaceHolder />
-              <ContactDonationsLoadingPlaceHolder />
-            </>
+            new Array(10)
+              .fill(null)
+              .map((_, index) => (
+                <PartnershipInfoLoadingPlaceHolder key={index} />
+              ))
           ) : (
             <PartnershipInfo contact={data?.contact ?? null} />
           )}
-        </TabPanel>
+        </StyledTabPanel>
       </TabContext>
     </ContactDonationsContainer>
   );

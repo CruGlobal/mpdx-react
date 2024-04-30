@@ -5214,7 +5214,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^5.17.4":
+"@mui/x-data-grid@npm:5.17.4":
   version: 5.17.4
   resolution: "@mui/x-data-grid@npm:5.17.4"
   dependencies:
@@ -5229,6 +5229,24 @@ __metadata:
     react: ^17.0.2 || ^18.0.0
     react-dom: ^17.0.2 || ^18.0.0
   checksum: 9f88883fd9c99600ade8debc78d81ac4829690dede2c440f8feffae7832c3147c6e5d9e5a894b9fa36c043add4d2698496f82ab1988139f602375dbaed1f59a2
+  languageName: node
+  linkType: hard
+
+"@mui/x-data-grid@patch:@mui/x-data-grid@npm%3A5.17.4#./.yarn/patches/@mui-x-data-grid-npm-5.17.4-542730a19e.patch::locator=mpdx-react%40workspace%3A.":
+  version: 5.17.4
+  resolution: "@mui/x-data-grid@patch:@mui/x-data-grid@npm%3A5.17.4#./.yarn/patches/@mui-x-data-grid-npm-5.17.4-542730a19e.patch::version=5.17.4&hash=362dcd&locator=mpdx-react%40workspace%3A."
+  dependencies:
+    "@babel/runtime": ^7.18.9
+    "@mui/utils": ^5.10.3
+    clsx: ^1.2.1
+    prop-types: ^15.8.1
+    reselect: ^4.1.6
+  peerDependencies:
+    "@mui/material": ^5.4.1
+    "@mui/system": ^5.4.1
+    react: ^17.0.2 || ^18.0.0
+    react-dom: ^17.0.2 || ^18.0.0
+  checksum: 0c31923597e605528d3ce17e40eca4f97519af7174b768f5530d85fb7764194c75e22eb63252ddff5e455a236afc497a826de9b4eb722965519f2b1efaaef928
   languageName: node
   linkType: hard
 
@@ -7582,13 +7600,6 @@ __metadata:
   version: 0.16.2
   resolution: "@types/scheduler@npm:0.16.2"
   checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
-  languageName: node
-  linkType: hard
-
-"@types/seedrandom@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "@types/seedrandom@npm:3.0.5"
-  checksum: d63d56ebc609203cf8cbe2ab7e7934237446bc2463ade664be130dcd4a3d74915d529909de2e1b18141cfabc9e42784998b7e5ff30c016919ac5b83911a700f0
   languageName: node
   linkType: hard
 
@@ -18598,7 +18609,6 @@ __metadata:
     "@types/luxon": ^3.4.2
     "@types/node": ^18.7.18
     "@types/react": ^18.0.21
-    "@types/seedrandom": ^3.0.5
     "@types/testing-library__jest-dom": ^5.14.5
     "@types/uuid": ^9.0.1
     "@typescript-eslint/eslint-plugin": ^7.5.0
@@ -18664,7 +18674,6 @@ __metadata:
     react-virtuoso: 2.19.0
     recharts: 2.3.2
     rollbar: ^2.25.2
-    seedrandom: ^3.0.5
     storybook: ^6.5.16
     storybook-addon-designs: ^6.3.1
     storybook-react-i18next: ^1.1.2
