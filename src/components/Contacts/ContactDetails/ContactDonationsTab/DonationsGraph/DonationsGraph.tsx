@@ -39,13 +39,12 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const skipped = !donorAccountIds;
   const { data } = useGetDonationsGraphQuery({
     variables: {
       accountListId: accountListId,
       donorAccountIds: donorAccountIds,
     },
-    skip: skipped,
+    skip: !donorAccountIds,
   });
 
   const monthFormatter = useMemo(
@@ -101,7 +100,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
         </Typography>
       )}
       <GraphContainer>
-        {!data || skipped ? (
+        {!data ? (
           <Skeleton
             variant="rounded"
             width="100%"
