@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import {
   Autocomplete,
@@ -32,10 +32,13 @@ const AccountListsOrganizations = (): ReactElement => {
   const { t } = useTranslation();
   const [selectedOrganization, setSelectedOrganization] = useState<
     SettingsOrganizationFragment | null | undefined
-  >(() => {
-    const savedOrg = window?.localStorage?.getItem('admin-org');
-    return savedOrg ? setSelectedOrganization(JSON.parse(savedOrg)) : null;
-  });
+  >(null);
+
+  useEffect(() => {
+    if (!window?.localStorage) return;
+    const savedOrg = window.localStorage.getItem('admin-org');
+    savedOrg && setSelectedOrganization(JSON.parse(savedOrg));
+  }, []);
 
   const [search, setSearch] = useState('');
   const isNarrowScreen = useMediaQuery('(max-width:600px)');
