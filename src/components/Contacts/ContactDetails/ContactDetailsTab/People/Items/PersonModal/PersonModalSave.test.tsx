@@ -6,11 +6,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
-import {
-  GqlMockedProvider,
-  gqlMock,
-} from '../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../theme';
 import {
   ContactPeopleFragment,

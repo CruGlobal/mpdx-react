@@ -14,11 +14,7 @@ export interface SearchBoxProps {
   showContactSearchIcon: boolean;
 }
 
-export const AccountSearchIcon = styled(Icon)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-}));
-
-export const SearchInput = styled(TextField)(() => ({
+const SearchInput = styled(TextField)(() => ({
   '& .MuiInputBase-root': {
     height: 48,
   },

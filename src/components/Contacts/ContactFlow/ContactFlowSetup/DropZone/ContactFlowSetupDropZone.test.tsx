@@ -4,8 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import TestRouter from '__tests__/util/TestRouter';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
-import TestRouter from '../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../theme';
 import { ContactFlowSetupColumn } from '../Column/ContactFlowSetupColumn';
 

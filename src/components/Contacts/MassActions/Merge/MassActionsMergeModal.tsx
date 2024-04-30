@@ -17,14 +17,14 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import Modal from '../../../common/Modal/Modal';
 import {
   ContactsContext,
   ContactsType,
-} from '../../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
-import Modal from '../../../common/Modal/Modal';
+} from '../../ContactsContext/ContactsContext';
 import {
   useGetContactsForMergingQuery,
   useMassActionsMergeMutation,

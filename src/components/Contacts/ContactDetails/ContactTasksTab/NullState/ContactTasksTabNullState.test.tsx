@@ -2,11 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
-import {
-  render,
-  waitFor,
-} from '../../../../../../__tests__/util/testingLibraryReactMock';
+import TestWrapper from '__tests__/util/TestWrapper';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
 import { ContactTasksTabNullState } from './ContactTasksTabNullState';
@@ -14,12 +11,13 @@ import { ContactTasksTabNullState } from './ContactTasksTabNullState';
 const contactId = 'abc';
 const openTaskModal = jest.fn();
 
-jest.mock('../../../../../../src/hooks/useTaskModal');
+jest.mock('src/hooks/useTaskModal');
 
 describe('ContactTasksTabNullState', () => {
   beforeEach(() => {
     (useTaskModal as jest.Mock).mockReturnValue({
       openTaskModal,
+      preloadTaskModal: jest.fn(),
     });
   });
 

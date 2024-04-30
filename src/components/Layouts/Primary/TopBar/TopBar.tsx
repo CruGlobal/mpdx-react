@@ -40,7 +40,11 @@ const TopBar = ({
   return (
     <>
       <StyledAppBar elevation={trigger ? 3 : 0} data-testid="TopBar">
-        <Toolbar>
+        <Toolbar
+          sx={{
+            justifyContent: accountListId ? 'unset' : 'space-between',
+          }}
+        >
           {accountListId && (
             <Hidden mdUp>
               <IconButton color="inherit" onClick={onMobileNavOpen}>
@@ -58,12 +62,16 @@ const TopBar = ({
             />
           </NextLink>
           <Hidden mdDown>
-            <Box ml={10} flexGrow={1}>
-              <NavMenu />
-            </Box>
-            <SearchMenu />
-            <AddMenu />
-            <NotificationMenu />
+            {accountListId && (
+              <>
+                <Box ml={10} flexGrow={1}>
+                  <NavMenu />
+                </Box>
+                <SearchMenu />
+                <AddMenu />
+                <NotificationMenu />
+              </>
+            )}
             <Box ml={2}>
               <ProfileMenu />
             </Box>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import TestWrapper from '../../../../__tests__/util/TestWrapper';
+import TestWrapper from '__tests__/util/TestWrapper';
 import NoAppeals from './NoAppeals';
 
 describe('NoAppeals', () => {

@@ -5,14 +5,17 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAppSettingsContext } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import * as Types from 'src/graphql/types.generated';
+import {
+  AccountListInvites as AccountListInvitesType,
+  Maybe,
+} from 'src/graphql/types.generated';
 import { BorderBottomBox, HeaderBox } from '../accountListRowHelper';
 import { useAdminDeleteOrganizationInviteMutation } from './DeleteAccountListInvites.generated';
 
 interface Props {
   name: string;
   accountListId: string;
-  accountListInvites: Types.Maybe<Types.AccountListInvites>[];
+  accountListInvites: Maybe<AccountListInvitesType>[];
 }
 
 export const AccountListInvites: React.FC<Props> = ({

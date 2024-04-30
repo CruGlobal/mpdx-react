@@ -1,12 +1,10 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
-import { ContactDetailEditIcon } from '../ContactDetailsTab';
+import i18n from 'src/lib/i18n';
+import { EditIcon } from '../StyledComponents';
 import { ContactOtherFragment } from './ContactOther.generated';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
@@ -96,7 +94,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
             aria-label={t('Edit Other Icon')}
             style={{ marginLeft: 16 }}
           >
-            <ContactDetailEditIcon />
+            <EditIcon />
           </IconButton>
         </ContactOtherTextContainer>
 

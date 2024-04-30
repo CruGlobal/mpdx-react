@@ -1,10 +1,10 @@
 import React from 'react';
 import Icon from '@mui/icons-material/Twitter';
 import { IconButton } from '@mui/material';
-import * as Types from 'src/graphql/types.generated';
+import { TwitterAccount } from 'src/graphql/types.generated';
 
 interface Props {
-  screenName: Types.TwitterAccount['screenName'];
+  screenName: TwitterAccount['screenName'];
 }
 
 export const Twitter: React.FC<Props> = ({ screenName }) => {

@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import i18n from 'src/lib/i18n';
 
 export const contactPartnershipStatus = {
   NEVER_CONTACTED: i18n.t('Never Contacted'),

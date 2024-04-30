@@ -1,18 +1,17 @@
 /* eslint-disable */
-import * as Types from 'src/graphql/types.generated';
-
-import { gql } from '@apollo/client';
-import * as Apollo from '@apollo/client';
+import type * as Types from 'src/graphql/types.generated';
+import { gql, useMutation } from '@apollo/client';
+import type * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type ApiOauthSignInMutationVariables = Types.Exact<{
-  accessToken: Types.Scalars['String'];
+  accessToken: Types.Scalars['String']['input'];
 }>;
 
 type ApiOauthSignInMutationPayload = {
   __typename?: 'ApiOauthSignInMutationPayload';
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Types.Maybe<Types.Scalars['String']>;
-  token?: Types.Maybe<Types.Scalars['String']>;
+  clientMutationId?: Types.Maybe<Types.Scalars['String']['input']>;
+  token?: Types.Maybe<Types.Scalars['String']['input']>;
   user?: Types.Maybe<Types.User>;
 };
 
@@ -74,10 +73,10 @@ export function useApiOauthSignInMutation(
   >,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    ApiOauthSignInMutation,
-    ApiOauthSignInMutationVariables
-  >(ApiOauthSignInDocument, options);
+  return useMutation<ApiOauthSignInMutation, ApiOauthSignInMutationVariables>(
+    ApiOauthSignInDocument,
+    options,
+  );
 }
 export type ApiOauthSignInMutationHookResult = ReturnType<
   typeof useApiOauthSignInMutation

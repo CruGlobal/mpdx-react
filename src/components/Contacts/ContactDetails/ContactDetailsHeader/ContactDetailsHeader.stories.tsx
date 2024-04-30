@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader';
 import { GetContactDetailsHeaderDocument } from './ContactDetailsHeader.generated';
@@ -16,7 +16,7 @@ export default {
 
 export const Default = (): ReactElement => {
   return (
-    <ContactsPage>
+    <ContactsWrapper>
       <ContactDetailProvider>
         <GqlMockedProvider>
           <ContactDetailsHeader
@@ -28,13 +28,13 @@ export const Default = (): ReactElement => {
           />
         </GqlMockedProvider>
       </ContactDetailProvider>
-    </ContactsPage>
+    </ContactsWrapper>
   );
 };
 
 export const Loading = (): ReactElement => {
   return (
-    <ContactsPage>
+    <ContactsWrapper>
       <ContactDetailProvider>
         <MockedProvider
           mocks={[
@@ -60,6 +60,6 @@ export const Loading = (): ReactElement => {
           />
         </MockedProvider>
       </ContactDetailProvider>
-    </ContactsPage>
+    </ContactsWrapper>
   );
 };

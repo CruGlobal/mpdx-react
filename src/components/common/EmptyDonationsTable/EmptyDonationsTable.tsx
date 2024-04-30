@@ -3,7 +3,10 @@ import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { AddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
+import {
+  DynamicAddDonation,
+  preloadAddDonation,
+} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
 import { NextLinkComposed } from 'src/components/common/Links/NextLinkComposed';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import Modal from '../Modal/Modal';
@@ -58,6 +61,7 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
           variant="contained"
           color="primary"
           onClick={() => setAddDonationOpen(true)}
+          onMouseEnter={preloadAddDonation}
         >
           {t('Add New Donation')}
         </Button>
@@ -69,7 +73,7 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
         fullWidth
         size="sm"
       >
-        <AddDonation
+        <DynamicAddDonation
           accountListId={accountListId ?? ''}
           handleClose={handleCloseAddDonation}
         />

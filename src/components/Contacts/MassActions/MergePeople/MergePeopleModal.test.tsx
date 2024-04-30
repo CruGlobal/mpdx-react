@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { MergePeopleModal } from './MergePeopleModal';
 

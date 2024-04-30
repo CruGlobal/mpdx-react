@@ -143,7 +143,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     deselectAll,
   } = useMassSelection(data?.tasks?.totalCount ?? 0, allTaskIds);
 
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const { t } = useTranslation();
 
@@ -165,6 +165,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                   defaultValues: { contactIds: [contactId] },
                 })
               }
+              onMouseEnter={() => preloadTaskModal('add')}
             >
               <AddTaskButtonIcon />
               <TaskButtonText>{t('add task')}</TaskButtonText>
@@ -179,6 +180,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                   },
                 })
               }
+              onMouseEnter={() => preloadTaskModal('log')}
             >
               <LogTaskButtonIcon />
               <TaskButtonText>{t('log task')}</TaskButtonText>

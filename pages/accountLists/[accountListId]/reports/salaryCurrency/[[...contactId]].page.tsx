@@ -1,11 +1,11 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
@@ -18,7 +18,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
-import { ContactsPage } from '../../contacts/ContactsPage';
+import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 
 const SalaryCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -83,9 +83,11 @@ const SalaryCurrencyReportPage: React.FC = () => {
             }
             rightPanel={
               selectedContactId ? (
-                <ContactsPage>
-                  <ContactsRightPanel onClose={() => handleSelectContact('')} />
-                </ContactsPage>
+                <ContactsWrapper>
+                  <DynamicContactsRightPanel
+                    onClose={() => handleSelectContact('')}
+                  />
+                </ContactsWrapper>
               ) : undefined
             }
             rightOpen={typeof selectedContactId !== 'undefined'}

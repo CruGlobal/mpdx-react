@@ -15,6 +15,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
 import {
   CancelButton,
   SubmitButton,
@@ -22,10 +23,6 @@ import {
 import { ContactUpdateInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import Modal from '../../../common/Modal/Modal';
-import {
-  ContactTagIcon,
-  ContactTagInput,
-} from '../../ContactDetails/ContactDetailsTab/Tags/ContactTags';
 import { useGetContactTagListQuery } from '../../ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import {
   useContactsAddTagsMutation,

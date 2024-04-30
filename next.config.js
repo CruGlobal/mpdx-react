@@ -96,9 +96,13 @@ const config = {
       process.env.HS_SETTINGS_SERVICES_SUGGESTIONS,
     HS_SETUP_FIND_ORGANIZATION: process.env.HS_SETUP_FIND_ORGANIZATION,
     ALERT_MESSAGE: process.env.ALERT_MESSAGE,
+    DD_ENV: process.env.DD_ENV ?? 'development',
   },
   experimental: {
     modularizeImports: {
+      lodash: {
+        transform: 'lodash/{{member}}',
+      },
       '@mui/material': {
         transform: '@mui/material/{{member}}',
       },

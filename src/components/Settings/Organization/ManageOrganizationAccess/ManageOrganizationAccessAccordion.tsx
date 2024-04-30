@@ -27,7 +27,7 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { AccordionProps } from '../../accordionHelper';
 import {

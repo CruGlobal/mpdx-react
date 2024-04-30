@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
+import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 import AppealDetailsAsked from './AppealDetailsAsked';
 import AppealDetailsCommitted from './AppealDetailsCommitted';

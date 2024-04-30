@@ -9,19 +9,23 @@ import { Box, IconButton, Link, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import * as Types from 'src/graphql/types.generated';
+import {
+  AccountListUsers,
+  Maybe,
+  OrganizationAccountListCoaches,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateTimeFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateTimeFormat } from 'src/lib/intlFormat';
 import { BorderBottomBox, HeaderBox } from '../accountListRowHelper';
 
 interface Props {
   accountListItems: Array<
-    Types.Maybe<Types.AccountListUsers | Types.OrganizationAccountListCoaches>
+    Maybe<AccountListUsers | OrganizationAccountListCoaches>
   >;
-  setRemoveUser: Dispatch<SetStateAction<Types.AccountListUsers | null>>;
-  setDeleteUser: Dispatch<SetStateAction<Types.AccountListUsers | null>>;
+  setRemoveUser: Dispatch<SetStateAction<AccountListUsers | null>>;
+  setDeleteUser: Dispatch<SetStateAction<AccountListUsers | null>>;
   setRemoveCoach: Dispatch<
-    SetStateAction<Types.OrganizationAccountListCoaches | null>
+    SetStateAction<OrganizationAccountListCoaches | null>
   >;
 }
 

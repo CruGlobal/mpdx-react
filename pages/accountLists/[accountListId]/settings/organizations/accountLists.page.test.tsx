@@ -1,24 +1,15 @@
-import { GetServerSidePropsContext } from 'next';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
-import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { OrganizationsQuery } from '../organizations.generated';
-import AccountListsOrganizations, {
-  getServerSideProps,
-} from './accountLists.page';
+import AccountListsOrganizations from './accountLists.page';
 
 jest.useFakeTimers();
-interface GetServerSidePropsReturn {
-  props: unknown;
-  redirect: unknown;
-}
 
 const Components = ({ mutationSpy }: { mutationSpy?: () => void }) => (
   <ThemeProvider theme={theme}>
@@ -51,134 +42,81 @@ const Components = ({ mutationSpy }: { mutationSpy?: () => void }) => (
 );
 
 describe('AccountListsOrganizations', () => {
-  const context = {
-    query: {
-      accountListId: 'accountListId',
-    },
-  } as unknown as GetServerSidePropsContext;
+  it('should render skeletons while organizations are loading', async () => {
+    const { queryByRole, getByTestId, queryByTestId, getByRole } = render(
+      <Components />,
+    );
 
-  describe('No admin access', () => {
-    it('should redirect to dashboard', async () => {
-      (getSession as jest.MockedFn<typeof getSession>).mockResolvedValue({
-        ...session,
-        user: {
-          ...session.user,
-          admin: false,
-        },
-      });
+    expect(getByTestId('skeleton')).toBeInTheDocument();
+    expect(
+      queryByRole('combobox', {
+        name: /filter by organization/i,
+      }),
+    ).not.toBeInTheDocument();
 
-      const { props, redirect } = (await getServerSideProps(
-        context,
-      )) as GetServerSidePropsReturn;
-
-      expect(props).toBeUndefined();
-      expect(redirect).toEqual({
-        destination: '/accountLists/accountListId',
-        permanent: false,
-      });
+    await waitFor(() => {
+      expect(queryByTestId('skeleton')).not.toBeInTheDocument();
+      expect(
+        getByRole('combobox', {
+          name: /filter by organization/i,
+        }),
+      ).toBeInTheDocument();
     });
   });
 
-  describe('Has admin access', () => {
-    const adminSession = {
-      ...session,
-      user: {
-        ...session.user,
-        admin: true,
-      },
-    };
+  it('should call GraphQL on organization and account list search, debouncing requests every 1000ms', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole, queryByTestId } = render(
+      <Components mutationSpy={mutationSpy} />,
+    );
 
-    beforeEach(() => {
-      (getSession as jest.MockedFn<typeof getSession>).mockResolvedValue(
-        adminSession,
-      );
+    await waitFor(() => {
+      expect(queryByTestId('skeleton')).not.toBeInTheDocument();
     });
 
-    it('renders page without redirecting admin', async () => {
-      const { props, redirect } = (await getServerSideProps(
-        context as GetServerSidePropsContext,
-      )) as GetServerSidePropsReturn;
-
-      expect(redirect).toBeUndefined();
-      expect(props).toEqual({ session: adminSession });
+    const autoCompleteInput = getByRole('combobox', {
+      name: /filter by organization/i,
     });
 
-    it('should render skeletons while organizations are loading', async () => {
-      const { queryByRole, getByTestId, queryByTestId, getByRole } = render(
-        <Components />,
-      );
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('Organizations'),
+    );
 
-      expect(getByTestId('skeleton')).toBeInTheDocument();
-      expect(
-        queryByRole('combobox', {
-          name: /filter by organization/i,
-        }),
-      ).not.toBeInTheDocument();
+    userEvent.type(autoCompleteInput, 'Org');
+    expect(getByRole('option', { name: 'Org1' })).toBeInTheDocument();
+    userEvent.click(getByRole('option', { name: 'Org2' }));
 
-      await waitFor(() => {
-        expect(queryByTestId('skeleton')).not.toBeInTheDocument();
-        expect(
-          getByRole('combobox', {
-            name: /filter by organization/i,
-          }),
-        ).toBeInTheDocument();
-      });
+    const accountInput = getByRole('textbox', {
+      name: /search account lists/i,
     });
 
-    it('should call GraphQL on organization and account list search, debouncing requests every 1000ms', async () => {
-      const mutationSpy = jest.fn();
-      const { getByRole, queryByTestId } = render(
-        <Components mutationSpy={mutationSpy} />,
-      );
+    userEvent.type(accountInput, 'T');
+    jest.advanceTimersByTime(300);
+    userEvent.type(accountInput, 'e');
+    jest.advanceTimersByTime(300);
+    userEvent.type(accountInput, 'st');
+    jest.advanceTimersByTime(1000);
 
-      await waitFor(() => {
-        expect(queryByTestId('skeleton')).not.toBeInTheDocument();
-      });
-
-      const autoCompleteInput = getByRole('combobox', {
-        name: /filter by organization/i,
-      });
-
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation('Organizations'),
-      );
-
-      userEvent.type(autoCompleteInput, 'Org');
-      expect(getByRole('option', { name: 'Org1' })).toBeInTheDocument();
-      userEvent.click(getByRole('option', { name: 'Org2' }));
-
-      const accountInput = getByRole('textbox', {
-        name: /search account lists/i,
-      });
-
-      userEvent.type(accountInput, 'T');
-      jest.advanceTimersByTime(300);
-      userEvent.type(accountInput, 'e');
-      jest.advanceTimersByTime(300);
-      userEvent.type(accountInput, 'st');
-      jest.advanceTimersByTime(1000);
-
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation(
-          'SearchOrganizationsAccountLists',
-          {
-            input: {
-              organizationId: '222',
-              search: 'Test',
-            },
-          },
-        ),
-      );
-
-      // Ensure that debouncing worked and intermediate searches were not performed
-      expect(mutationSpy).not.toHaveGraphqlOperation(
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
         'SearchOrganizationsAccountLists',
         {
           input: {
-            search: 'T',
+            organizationId: '222',
+            search: 'Test',
           },
         },
-      );
-    });
+      ),
+    );
+
+    // Ensure that debouncing worked and intermediate searches were not performed
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'SearchOrganizationsAccountLists',
+      {
+        input: {
+          search: 'T',
+        },
+      },
+    );
   });
 });

@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import TestWrapper from '__tests__/util/TestWrapper';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -9,7 +10,6 @@ import {
   ResultEnum,
 } from 'src/graphql/types.generated';
 import { dispatch } from 'src/lib/analytics';
-import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
 import { CompleteTaskDocument } from './CompleteTask.generated';
@@ -27,6 +27,7 @@ const openTaskModal = jest.fn();
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+    preloadTaskModal: jest.fn(),
   });
 });
 

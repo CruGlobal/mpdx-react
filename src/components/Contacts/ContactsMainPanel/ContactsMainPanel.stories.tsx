@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { ContactsMainPanel } from './ContactsMainPanel';
 
 export default {
@@ -10,9 +10,9 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <GqlMockedProvider>
-      <ContactsPage>
+      <ContactsWrapper>
         <ContactsMainPanel />
-      </ContactsPage>
+      </ContactsWrapper>
     </GqlMockedProvider>
   );
 };

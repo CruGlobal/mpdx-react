@@ -1,8 +1,8 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { render } from '__tests__/util/testingLibraryReactMock';
 import { ContactReferralTab } from './ContactReferralTab';
 import {
   ContactReferralTabQuery,

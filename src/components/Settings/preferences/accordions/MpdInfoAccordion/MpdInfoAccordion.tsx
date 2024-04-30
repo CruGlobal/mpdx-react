@@ -12,7 +12,7 @@ import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { useLocale } from 'src/hooks/useLocale';
 import { nullableDateTime } from 'src/lib/formikHelpers';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const numberOrNullTransform = (_: unknown, val: unknown) =>

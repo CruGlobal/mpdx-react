@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Checkbox, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Box, Checkbox, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -101,7 +100,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const { t } = useTranslation();
   const [hasBeenDeleted, setHasBeenDeleted] = useState<boolean>(false);
 
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const handleCompleteButtonPressed = () => {
     openTaskModal({
@@ -167,9 +166,13 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         <TaskCompleteButton
           isComplete={isComplete}
           onClick={handleCompleteButtonPressed}
+          onMouseEnter={() => preloadTaskModal('complete')}
         />
       </TaskItemWrap>
-      <SubjectWrap onClick={handleSubjectPressed}>
+      <SubjectWrap
+        onClick={handleSubjectPressed}
+        onMouseEnter={() => preloadTaskModal('edit')}
+      >
         <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
         <TaskDescription>{subject}</TaskDescription>
       </SubjectWrap>
@@ -183,6 +186,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
           isComplete={isComplete}
           numberOfComments={comments?.totalCount}
           onClick={handleCommentButtonPressed}
+          onMouseEnter={() => preloadTaskModal('comments')}
           detailsPage
         />
 

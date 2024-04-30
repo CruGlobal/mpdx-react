@@ -1,13 +1,12 @@
 import React from 'react';
-import _ from 'lodash';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
+import { DynamicContactFlow } from '../ContactFlow/DynamicContactFlow';
 import {
   ContactsContext,
   ContactsType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
-import { ContactsMap } from '../../../../pages/accountLists/[accountListId]/contacts/map/map';
-import { ContactFlow } from '../ContactFlow/ContactFlow';
-import { ContactsList } from '../ContactsList/ContactsList';
+} from '../ContactsContext/ContactsContext';
+import { DynamicContactsList } from '../ContactsList/DynamicContactsList';
+import { DynamicContactsMap } from '../ContactsMap/DynamicContactsMap';
 import { ContactsMainPanelHeader } from './ContactsMainPanelHeader';
 
 export const ContactsMainPanel: React.FC = () => {
@@ -26,9 +25,9 @@ export const ContactsMainPanel: React.FC = () => {
       <ContactsMainPanelHeader />
       {!userOptionsLoading &&
         (viewMode === TableViewModeEnum.List ? (
-          <ContactsList />
+          <DynamicContactsList />
         ) : viewMode === TableViewModeEnum.Flows ? (
-          <ContactFlow
+          <DynamicContactFlow
             accountListId={accountListId ?? ''}
             selectedFilters={{
               ...activeFilters,
@@ -38,7 +37,7 @@ export const ContactsMainPanel: React.FC = () => {
             onContactSelected={setContactFocus}
           />
         ) : (
-          <ContactsMap />
+          <DynamicContactsMap />
         ))}
     </>
   );

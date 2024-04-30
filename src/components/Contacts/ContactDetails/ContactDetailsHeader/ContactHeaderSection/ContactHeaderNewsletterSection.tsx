@@ -1,8 +1,7 @@
 import React, { ReactElement } from 'react';
 import { mdiNewspaperVariantOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Skeleton from '@mui/material/Skeleton';
-import Typography from '@mui/material/Typography';
+import { Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';

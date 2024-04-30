@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Paper,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -12,15 +13,17 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { CreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/CreateMultipleContacts';
+import {
+  DynamicCreateMultipleContacts,
+  preloadCreateMultipleContacts,
+} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import Modal from 'src/components/common/Modal/Modal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateFormat } from 'src/lib/intlFormat';
 import { useContactReferralTabQuery } from './ContactReferralTab.generated';
 
 const ContactReferralContainer = styled(Box)(({ theme }) => ({
@@ -99,7 +102,10 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
       ) : (
         <>
           <Box width="100%" mb={2} justifyContent="end" display="flex">
-            <AddButton onClick={handleModalOpen}>
+            <AddButton
+              onClick={handleModalOpen}
+              onMouseEnter={preloadCreateMultipleContacts}
+            >
               <Add />
               {t('Add Referrals')}
             </AddButton>
@@ -149,7 +155,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
             fullWidth
             size={'xl'} // TODO: Expand logic as more menu modals are added
           >
-            <CreateMultipleContacts
+            <DynamicCreateMultipleContacts
               accountListId={accountListId ?? ''}
               handleClose={handleModalClose}
               referredById={contactId}

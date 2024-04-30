@@ -1,6 +1,6 @@
 import React from 'react';
 import Check from '@mui/icons-material/Check';
-import { Button } from '@mui/material';
+import { Button, ButtonProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
 
@@ -23,17 +23,16 @@ const ButtonWrap = styled(Button, {
   },
 }));
 
-interface TaskCompleteButtonProps {
+interface TaskCompleteButtonProps extends ButtonProps {
   isComplete: boolean;
-  onClick: () => void;
 }
 
 export const TaskCompleteButton: React.FC<TaskCompleteButtonProps> = ({
   isComplete,
-  onClick,
+  ...props
 }) => {
   return (
-    <ButtonWrap isComplete={isComplete} onClick={() => onClick()}>
+    <ButtonWrap isComplete={isComplete} {...props}>
       <Check titleAccess="Check Icon" />
     </ButtonWrap>
   );

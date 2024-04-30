@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DialogActions, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { DeletedItemIcon } from '../../../../common/DeleteItemIcon/DeleteItemIcon';
@@ -7,10 +7,6 @@ import { DeleteConfirmation } from '../../../../common/Modal/DeleteConfirmation/
 
 const DeleteButton = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(1),
-}));
-
-export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
-  padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
 }));
 
 interface DeleteTaskIconButtonProps {

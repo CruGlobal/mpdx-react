@@ -7,6 +7,7 @@ import {
   CardActions,
   CardHeader,
   IconButton,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -15,16 +16,19 @@ import {
   TableRow,
   Theme,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { makeStyles, withStyles } from 'tss-react/mui';
+import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
 import { numberFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
-import { WeeklyReportModal } from './WeeklyReportModal/WeeklyReportModal';
+import {
+  DynamicWeeklyReportModal,
+  preloadWeeklyReportModal,
+} from './WeeklyReportModal/DynamicWeeklyReportModal';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -58,12 +62,9 @@ interface Props {
   accountListId: string;
 }
 
-const StyledTableCell = withStyles(TableCell, () => ({
-  root: {
-    paddingLeft: 4,
-    paddingRight: 4,
-  },
-}));
+const StyledTableCell = styled(TableCell)({
+  paddingInline: 4,
+});
 
 const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   const { classes } = useStyles();
@@ -258,14 +259,21 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
               {t('View Activity Detail')}
             </Button>
           </Link>
-          <Button size="small" color="primary" onClick={onWeeklyReportOpen}>
+          <Button
+            size="small"
+            color="primary"
+            onClick={onWeeklyReportOpen}
+            onMouseEnter={preloadWeeklyReportModal}
+          >
             {t('Fill out weekly report')}
           </Button>
-          <WeeklyReportModal
-            accountListId={accountListId}
-            open={openWeeklyReportModal}
-            onClose={onWeeklyReportClose}
-          />
+          {openWeeklyReportModal && (
+            <DynamicWeeklyReportModal
+              accountListId={accountListId}
+              open
+              onClose={onWeeklyReportClose}
+            />
+          )}
         </CardActions>
       </motion.div>
     </AnimatedCard>

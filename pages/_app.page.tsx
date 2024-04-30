@@ -5,8 +5,7 @@ import React, { ReactElement, useMemo } from 'react';
 import { ApolloProvider as RawApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
-import { Box } from '@mui/material';
-import StyledEngineProvider from '@mui/material/StyledEngineProvider';
+import { Box, StyledEngineProvider } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import {
@@ -14,7 +13,6 @@ import {
   LocalizationProvider as RawLocalizationProvider,
 } from '@mui/x-date-pickers/LocalizationProvider';
 import { ErrorBoundary, Provider } from '@rollbar/react';
-import { AnimatePresence } from 'framer-motion';
 import { DateTime } from 'luxon';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
@@ -39,12 +37,6 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import './helpscout.css';
 import './print.css';
-
-const handleExitComplete = (): void => {
-  if (typeof window !== 'undefined') {
-    window.scrollTo({ top: 0 });
-  }
-};
 
 export type PageWithLayout = NextPage & {
   layout?: React.FC;
@@ -140,6 +132,11 @@ const App = ({
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <link rel="manifest" href="/manifest.json" />
         <link
+          rel="preconnect"
+          href={process.env.API_URL}
+          crossOrigin="anonymous"
+        />
+        <link
           href={process.env.NEXT_PUBLIC_MEDIA_FAVICON}
           rel="icon"
           type="image/png"
@@ -186,22 +183,15 @@ const App = ({
                       >
                         <SnackbarProvider maxSnack={3}>
                           <GlobalStyles />
-                          <AnimatePresence
-                            mode="wait"
-                            onExitComplete={handleExitComplete}
-                          >
-                            {/* On the login page and error pages, the user isn't not authenticated and doesn't have an API token,
-                                so don't include the session or Apollo providers because they require an API token */}
-                            {nonAuthenticatedPages.has(router.pathname) ? (
-                              pageContent
-                            ) : (
-                              <RouterGuard>
-                                <GraphQLProviders>
-                                  {pageContent}
-                                </GraphQLProviders>
-                              </RouterGuard>
-                            )}
-                          </AnimatePresence>
+                          {/* On the login page and error pages, the user isn't not authenticated and doesn't have an API token,
+                              so don't include the session or Apollo providers because they require an API token */}
+                          {nonAuthenticatedPages.has(router.pathname) ? (
+                            pageContent
+                          ) : (
+                            <RouterGuard>
+                              <GraphQLProviders>{pageContent}</GraphQLProviders>
+                            </RouterGuard>
+                          )}
                           <Loading />
                         </SnackbarProvider>
                       </LocalizationProvider>
