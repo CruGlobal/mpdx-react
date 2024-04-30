@@ -83,6 +83,14 @@ const GetOrganizationsMock: Pick<
     giftAidPercentage: 60,
     disableNewUsers: true,
   },
+  {
+    id: 'disableNewUserAsNull',
+    name: 'Org With DisableNewUsers As NULL',
+    apiClass: 'OfflineOrg',
+    oauth: false,
+    giftAidPercentage: 60,
+    disableNewUsers: null,
+  },
 ];
 
 const standardMocks = {
@@ -175,6 +183,46 @@ describe('OrganizationAddAccountModal', () => {
           organizationId: mocks.GetOrganizations.organizations[0].id,
         },
       });
+    });
+  });
+
+  it('allows offline Organization to be added if disableNewUsers is null', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByRole, findByRole } = render(
+      <Components>
+        <GqlMockedProvider<{
+          GetOrganizations: GetOrganizationsQuery;
+        }>
+          mocks={{
+            getOrganizations: {
+              organizations: GetOrganizationsMock,
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <OrganizationAddAccountModal
+            handleClose={handleClose}
+            refetchOrganizations={refetchOrganizations}
+            accountListId={accountListId}
+          />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    userEvent.click(getByRole('combobox'));
+    userEvent.click(
+      await findByRole('option', { name: 'Org With DisableNewUsers As NULL' }),
+    );
+
+    await waitFor(() => {
+      expect(getByText('Add Account')).not.toBeDisabled();
+      userEvent.click(getByText('Add Account'));
+    });
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        '{{appName}} added your organization account',
+        { variant: 'success' },
+      );
     });
   });
 
