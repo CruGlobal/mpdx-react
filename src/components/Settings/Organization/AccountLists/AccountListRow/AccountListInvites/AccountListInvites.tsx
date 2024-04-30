@@ -26,7 +26,7 @@ export const AccountListInvites: React.FC<Props> = ({
   const { t } = useTranslation();
   const { appName } = useAppSettingsContext();
   const [deleteInvite, setDeleteInvite] =
-    useState<Types.AccountListInvites | null>(null);
+    useState<AccountListInvitesType | null>(null);
   const [adminDeleteOrganizationInvite] =
     useAdminDeleteOrganizationInviteMutation();
 
