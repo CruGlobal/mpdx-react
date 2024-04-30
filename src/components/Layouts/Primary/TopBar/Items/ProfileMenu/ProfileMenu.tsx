@@ -256,7 +256,7 @@ const ProfileMenu = (): ReactElement => {
           </AccountListSelectorDetails>
         </Accordion>
         {accountListId && (
-          <>
+          <div>
             <Divider />
             <Link
               href={`/accountLists/${accountListId}/settings/preferences`}
@@ -329,7 +329,7 @@ const ProfileMenu = (): ReactElement => {
                 </MenuItem>
               </HandoffLink>
             )}
-          </>
+          </div>
         )}
         <MenuItem>
           {session.impersonating && (
