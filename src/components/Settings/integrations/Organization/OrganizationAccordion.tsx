@@ -24,6 +24,7 @@ import { OrganizationAddAccountModal } from './Modals/OrganizationAddAccountModa
 import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
 import { OrganizationImportDataSyncModal } from './Modals/OrganizationImportDataSyncModal';
 import {
+  GetUsersOrganizationsAccountsQuery,
   useDeleteOrganizationAccountMutation,
   useGetUsersOrganizationsAccountsQuery,
   useSyncOrganizationAccountMutation,
@@ -33,6 +34,9 @@ interface OrganizationAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
 }
+
+type OrganizationAccountPartial =
+  GetUsersOrganizationsAccountsQuery['userOrganizationAccounts'][0];
 
 const OrganizationDeleteIconButton = styled(IconButton)(() => ({
   color: theme.palette.cruGrayMedium.main,
@@ -83,16 +87,19 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
-  const { t } = useTranslation();
-  const accountListId = useAccountListId();
-  const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const [selectedOrganization, setSelectedOrganization] =
+    useState<OrganizationAccountPartial | null>(null);
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
   const [showImportDataSyncModal, setShowImportDataSyncModal] = useState(false);
   const [showDeleteOrganizationModal, setShowDeleteOrganizationModal] =
     useState(false);
   const [showEditOrganizationModal, setShowEditOrganizationModal] =
     useState(false);
+
+  const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
   const [deleteOrganizationAccount] = useDeleteOrganizationAccountMutation();
   const [syncOrganizationAccount] = useSyncOrganizationAccountMutation();
   const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
@@ -171,6 +178,27 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
     });
   };
 
+  const handleOpenEditOrganizationModal = (
+    organizationAccount: OrganizationAccountPartial,
+  ) => {
+    setShowEditOrganizationModal(true);
+    setSelectedOrganization(organizationAccount);
+  };
+
+  const handleOpenDeleteOrganizationModal = (
+    organizationAccount: OrganizationAccountPartial,
+  ) => {
+    setShowDeleteOrganizationModal(true);
+    setSelectedOrganization(organizationAccount);
+  };
+
+  const handleOpenImportDataSyncModal = (
+    organizationAccount: OrganizationAccountPartial,
+  ) => {
+    setShowImportDataSyncModal(true);
+    setSelectedOrganization(organizationAccount);
+  };
+
   return (
     <AccordionItem
       onAccordionChange={handleAccordionChange}
@@ -204,138 +232,121 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
 
       {!loading && !!organizations?.length && (
         <Box style={{ marginTop: '20px' }}>
-          {organizations.map(
-            ({ organization, lastDownloadedAt, latestDonationDate, id }) => {
-              const type = getOrganizationType(
-                organization.apiClass,
-                organization.oauth,
-              );
+          {organizations.map((organizationAccount) => {
+            const { organization, lastDownloadedAt, latestDonationDate, id } =
+              organizationAccount;
+            const type = getOrganizationType(
+              organization.apiClass,
+              organization.oauth,
+            );
 
-              return (
-                <Card key={organization.id} style={{ marginBottom: '20px' }}>
+            return (
+              <Card key={organization.id} style={{ marginBottom: '20px' }}>
+                <Box
+                  sx={{
+                    p: 1,
+                    pl: 2,
+                    background: theme.palette.cruGrayLight.main,
+                    justifyContent: 'space-between',
+                    display: 'flex',
+                  }}
+                >
                   <Box
                     sx={{
-                      p: 1,
-                      pl: 2,
-                      background: theme.palette.cruGrayLight.main,
-                      justifyContent: 'space-between',
                       display: 'flex',
+                      alignItems: 'center',
                     }}
                   >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Typography fontWeight={700}>
-                        {organization.name}
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      {type !== OrganizationTypesEnum.OFFLINE && (
-                        <StyledServicesButton
-                          variant="contained"
-                          size="small"
-                          sx={{ m: '0 0 0 10px' }}
-                          onClick={() => handleSync(id)}
-                        >
-                          {t('Sync')}
-                        </StyledServicesButton>
-                      )}
-
-                      {type === OrganizationTypesEnum.OFFLINE && (
-                        <StyledServicesButton
-                          variant="contained"
-                          size="small"
-                          sx={{ m: '0 0 0 10px' }}
-                          onClick={() => setShowImportDataSyncModal(true)}
-                        >
-                          {t('Import TntConnect DataSync file')}
-                        </StyledServicesButton>
-                      )}
-
-                      {type === OrganizationTypesEnum.OAUTH && (
-                        <StyledServicesButton
-                          variant="contained"
-                          size="small"
-                          sx={{ m: '0 0 0 10px' }}
-                          onClick={() => handleReconnect(organization.id)}
-                        >
-                          {t('Reconnect')}
-                        </StyledServicesButton>
-                      )}
-                      {type === OrganizationTypesEnum.LOGIN && (
-                        <OrganizationDeleteIconButton
-                          onClick={() => setShowEditOrganizationModal(true)}
-                        >
-                          <Edit />
-                        </OrganizationDeleteIconButton>
-                      )}
-                      <OrganizationDeleteIconButton
-                        onClick={() => setShowDeleteOrganizationModal(true)}
-                      >
-                        <DeleteIcon />
-                      </OrganizationDeleteIconButton>
-                    </Box>
+                    <Typography fontWeight={700}>
+                      {organization.name}
+                    </Typography>
                   </Box>
-                  <Divider />
-                  {lastDownloadedAt && (
-                    <Box sx={{ p: 2, display: 'flex' }}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                          {t('Last Updated')}
-                        </Grid>
-                        <Grid item xs={6}>
-                          {DateTime.fromISO(lastDownloadedAt).toRelative()}
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  )}
-                  {latestDonationDate && (
-                    <Box sx={{ p: 2, display: 'flex' }}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                          {t('Last Gift Date')}
-                        </Grid>
-                        <Grid item xs={6}>
-                          {DateTime.fromISO(latestDonationDate).toRelative()}
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  )}
-                  <Confirmation
-                    isOpen={showDeleteOrganizationModal}
-                    title={t('Confirm')}
-                    message={t(
-                      'Are you sure you wish to disconnect this organization?',
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {type !== OrganizationTypesEnum.OFFLINE && (
+                      <StyledServicesButton
+                        variant="contained"
+                        size="small"
+                        sx={{ m: '0 0 0 10px' }}
+                        onClick={() => handleSync(id)}
+                      >
+                        {t('Sync')}
+                      </StyledServicesButton>
                     )}
-                    handleClose={() => setShowDeleteOrganizationModal(false)}
-                    mutation={() => handleDelete(id)}
-                  />
-                  {showEditOrganizationModal && (
-                    <OrganizationEditAccountModal
-                      handleClose={() => setShowEditOrganizationModal(false)}
-                      organizationId={id}
-                    />
-                  )}
-                  {showImportDataSyncModal && (
-                    <OrganizationImportDataSyncModal
-                      handleClose={() => setShowImportDataSyncModal(false)}
-                      organizationId={id}
-                      organizationName={organization.name}
-                      accountListId={accountListId ?? ''}
-                    />
-                  )}
-                </Card>
-              );
-            },
-          )}
+
+                    {type === OrganizationTypesEnum.OFFLINE && (
+                      <StyledServicesButton
+                        variant="contained"
+                        size="small"
+                        sx={{ m: '0 0 0 10px' }}
+                        onClick={() =>
+                          handleOpenImportDataSyncModal(organizationAccount)
+                        }
+                      >
+                        {t('Import TntConnect DataSync file')}
+                      </StyledServicesButton>
+                    )}
+
+                    {type === OrganizationTypesEnum.OAUTH && (
+                      <StyledServicesButton
+                        variant="contained"
+                        size="small"
+                        sx={{ m: '0 0 0 10px' }}
+                        onClick={() => handleReconnect(organization.id)}
+                      >
+                        {t('Reconnect')}
+                      </StyledServicesButton>
+                    )}
+                    {type === OrganizationTypesEnum.LOGIN && (
+                      <OrganizationDeleteIconButton
+                        onClick={() =>
+                          handleOpenEditOrganizationModal(organizationAccount)
+                        }
+                      >
+                        <Edit />
+                      </OrganizationDeleteIconButton>
+                    )}
+                    <OrganizationDeleteIconButton
+                      onClick={() =>
+                        handleOpenDeleteOrganizationModal(organizationAccount)
+                      }
+                    >
+                      <DeleteIcon />
+                    </OrganizationDeleteIconButton>
+                  </Box>
+                </Box>
+                <Divider />
+                {lastDownloadedAt && (
+                  <Box sx={{ p: 2, display: 'flex' }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        {t('Last Updated')}
+                      </Grid>
+                      <Grid item xs={6}>
+                        {DateTime.fromISO(lastDownloadedAt).toRelative()}
+                      </Grid>
+                    </Grid>
+                  </Box>
+                )}
+                {latestDonationDate && (
+                  <Box sx={{ p: 2, display: 'flex' }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        {t('Last Gift Date')}
+                      </Grid>
+                      <Grid item xs={6}>
+                        {DateTime.fromISO(latestDonationDate).toRelative()}
+                      </Grid>
+                    </Grid>
+                  </Box>
+                )}
+              </Card>
+            );
+          })}
         </Box>
       )}
 
@@ -351,6 +362,34 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
           handleClose={() => setShowAddAccountModal(false)}
           accountListId={accountListId}
           refetchOrganizations={refetchOrganizations}
+        />
+      )}
+
+      {showImportDataSyncModal && selectedOrganization && (
+        <OrganizationImportDataSyncModal
+          handleClose={() => setShowImportDataSyncModal(false)}
+          organizationId={selectedOrganization.id}
+          organizationName={selectedOrganization.organization.name}
+          accountListId={accountListId ?? ''}
+        />
+      )}
+
+      {showEditOrganizationModal && selectedOrganization && (
+        <OrganizationEditAccountModal
+          handleClose={() => setShowEditOrganizationModal(false)}
+          organizationId={selectedOrganization.id}
+        />
+      )}
+
+      {showDeleteOrganizationModal && selectedOrganization && (
+        <Confirmation
+          isOpen={true}
+          title={t('Confirm')}
+          message={t(
+            `Are you sure you wish to disconnect the organization "${selectedOrganization.organization.name}"?`,
+          )}
+          handleClose={() => setShowDeleteOrganizationModal(false)}
+          mutation={() => handleDelete(selectedOrganization.id)}
         />
       )}
     </AccordionItem>
