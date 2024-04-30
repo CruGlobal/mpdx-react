@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    if: contains(github.event.pull_request.labels.*.name, 'Preview Environment')
+    if: contains(github.event.label.name, 'Preview Environment')
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
@@ -21,11 +21,6 @@ jobs:
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE }}
           output-credentials: true
-      - name: set branch name env
-        id: setbranchname
-        run: |
-          # use GITHUB_HEAD_REF that is set to PR source branch
-          echo "branch=$GITHUB_HEAD_REF" >> "$GITHUB_OUTPUT"
       - name: deploy PR preview
         uses: CruGlobal/amplify-preview-actions@handle-existing-branches
         with:
