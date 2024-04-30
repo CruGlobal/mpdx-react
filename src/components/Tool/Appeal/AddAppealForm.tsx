@@ -16,13 +16,13 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Field, Form, Formik } from 'formik';
-import i18n from 'i18next';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { MultiselectFilter } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import theme from '../../../theme';
 import AnimatedCard from '../../AnimatedCard';
