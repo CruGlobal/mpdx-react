@@ -262,7 +262,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       minWidth: 100,
     },
     {
-      field: 'appeal',
+      field: 'appealName',
       headerName: t('Appeal'),
       flex: 1,
       minWidth: 100,
