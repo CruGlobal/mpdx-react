@@ -3,13 +3,13 @@ import Head from 'next/head';
 import React, { ReactElement, useEffect } from 'react';
 import SubjectIcon from '@mui/icons-material/Subject';
 import { Button } from '@mui/material';
-import i18n from 'i18next';
 import { getSession, signIn } from 'next-auth/react';
 import BaseLayout from 'src/components/Layouts/Basic';
 import Loading from 'src/components/Loading';
 import Welcome from 'src/components/Welcome';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { extractCookie } from 'src/lib/extractCookie';
+import i18n from 'src/lib/i18n';
 
 export interface LoginProps {
   signInButtonText: string;
