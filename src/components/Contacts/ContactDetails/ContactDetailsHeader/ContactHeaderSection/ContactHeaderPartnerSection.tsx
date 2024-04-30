@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
@@ -28,30 +28,20 @@ export const ContactHeaderPartnerSection: React.FC<Props> = ({
         <TextSkeleton variant="text" />
       </ContactHeaderSection>
     );
-  } else {
-    if (
-      contact !== null &&
-      (contact?.contactDonorAccounts.nodes.length ?? 0) > 0
-    ) {
-      return (
-        <ContactHeaderSection>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            {t('Partner Account')}
+  } else if (contact && contact.contactDonorAccounts.nodes.length) {
+    return (
+      <ContactHeaderSection>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+          {t('Partner Account')}
+        </Typography>
+        {contact?.contactDonorAccounts.nodes.map((donorAccount) => (
+          <Typography key={donorAccount.id} variant="subtitle1">
+            {donorAccount.donorAccount.displayName}
           </Typography>
-          {contact?.contactDonorAccounts.nodes.map((donorAccount) => {
-            return (
-              <Fragment key={donorAccount.id}>
-                <span key={donorAccount.id} />
-                <Typography variant="subtitle1">
-                  {donorAccount.donorAccount.displayName}
-                </Typography>
-              </Fragment>
-            );
-          })}
-        </ContactHeaderSection>
-      );
-    } else {
-      return null;
-    }
+        ))}
+      </ContactHeaderSection>
+    );
+  } else {
+    return null;
   }
 };
