@@ -153,7 +153,7 @@ export const OrganizationAddAccountModal: React.FC<
           name: yup.string().required(),
           oauth: yup.boolean().required(),
           giftAidPercentage: yup.number().nullable(),
-          disableNewUsers: yup.boolean(),
+          disableNewUsers: yup.boolean().nullable(),
         })
         .required(),
       username: yup
@@ -239,13 +239,11 @@ export const OrganizationAddAccountModal: React.FC<
                 )}
               />
             </StyledBox>
-
             {!selectedOrganization && !!articles.HS_SETUP_FIND_ORGANIZATION && (
               <Button onClick={showOrganizationHelp}>
                 {t("Can't find your organization?")}
               </Button>
             )}
-
             {organizationType === OrganizationTypesEnum.MINISTRY && (
               <WarningBox>
                 <Typography
@@ -288,7 +286,9 @@ export const OrganizationAddAccountModal: React.FC<
                           });
                         }}
                       >
-                        {t('click here to log out of {{appName}}', { appName })}
+                        {t('click here to log out of {{appName}}', {
+                          appName,
+                        })}
                       </Link>
                       {t(
                         ' so you can log back in with your official key account.',
@@ -307,7 +307,6 @@ export const OrganizationAddAccountModal: React.FC<
                 </StyledTypography>
               </WarningBox>
             )}
-
             {organizationType === OrganizationTypesEnum.OAUTH && (
               <WarningBox>
                 <Typography color={theme.palette.mpdxYellow.contrastText}>
@@ -318,7 +317,6 @@ export const OrganizationAddAccountModal: React.FC<
                 </Typography>
               </WarningBox>
             )}
-
             {organizationType === OrganizationTypesEnum.LOGIN && (
               <>
                 <StyledBox marginTop={4}>
@@ -353,7 +351,6 @@ export const OrganizationAddAccountModal: React.FC<
                 </StyledBox>
               </>
             )}
-
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
 
