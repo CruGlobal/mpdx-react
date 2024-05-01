@@ -56,6 +56,41 @@ export type OrganizationFormikSchema = {
   password: string | undefined;
 };
 
+const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> = yup.object({
+  selectedOrganization: yup
+    .object({
+      id: yup.string().required(),
+      apiClass: yup.string().required(),
+      name: yup.string().required(),
+      oauth: yup.boolean().required(),
+      giftAidPercentage: yup.number().nullable(),
+      disableNewUsers: yup.boolean().nullable(),
+    })
+    .required(),
+  username: yup
+    .string()
+    .when('selectedOrganization', (organization, schema) => {
+      if (
+        getOrganizationType(organization?.apiClass, organization?.oauth) ===
+        OrganizationTypesEnum.LOGIN
+      ) {
+        return schema.required('Must enter username');
+      }
+      return schema;
+    }),
+  password: yup
+    .string()
+    .when('selectedOrganization', (organization, schema) => {
+      if (
+        getOrganizationType(organization?.apiClass, organization?.oauth) ===
+        OrganizationTypesEnum.LOGIN
+      ) {
+        return schema.required('Must enter password');
+      }
+      return schema;
+    }),
+});
+
 const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
 }));
@@ -143,43 +178,6 @@ export const OrganizationAddAccountModal: React.FC<
   const showOrganizationHelp = () => {
     showArticle('HS_SETUP_FIND_ORGANIZATION');
   };
-
-  const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> = yup.object(
-    {
-      selectedOrganization: yup
-        .object({
-          id: yup.string().required(),
-          apiClass: yup.string().required(),
-          name: yup.string().required(),
-          oauth: yup.boolean().required(),
-          giftAidPercentage: yup.number().nullable(),
-          disableNewUsers: yup.boolean().nullable(),
-        })
-        .required(),
-      username: yup
-        .string()
-        .when('selectedOrganization', (organization, schema) => {
-          if (
-            getOrganizationType(organization?.apiClass, organization?.oauth) ===
-            OrganizationTypesEnum.LOGIN
-          ) {
-            return schema.required('Must enter username');
-          }
-          return schema;
-        }),
-      password: yup
-        .string()
-        .when('selectedOrganization', (organization, schema) => {
-          if (
-            getOrganizationType(organization?.apiClass, organization?.oauth) ===
-            OrganizationTypesEnum.LOGIN
-          ) {
-            return schema.required('Must enter password');
-          }
-          return schema;
-        }),
-    },
-  );
 
   return (
     <Modal
