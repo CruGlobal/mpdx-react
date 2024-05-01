@@ -45,6 +45,9 @@ describe('TaskRow', () => {
       mocks: {
         startAt,
         result: ResultEnum.None,
+        contacts: {
+          nodes: [{}],
+        },
       },
     });
 
@@ -94,11 +97,15 @@ describe('TaskRow', () => {
 
     expect(await findByText(task.contacts.nodes[0].name)).toBeVisible();
   });
+
   it('should render late', async () => {
     const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
       mocks: {
         startAt: lateStartAt,
         result: ResultEnum.None,
+        contacts: {
+          nodes: [{}],
+        },
       },
     });
 
@@ -133,6 +140,9 @@ describe('TaskRow', () => {
         startAt,
         result: ResultEnum.None,
         user: assignee,
+        contacts: {
+          nodes: [{}],
+        },
       },
     });
 
@@ -185,6 +195,7 @@ describe('TaskRow', () => {
       userEvent.click(getByRole('checkbox', { hidden: true }));
       expect(onTaskCheckSelected).toHaveBeenCalledWith(task.id);
     });
+
     it('handles task row click', async () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
@@ -210,6 +221,7 @@ describe('TaskRow', () => {
       userEvent.click(getByTestId('task-row'));
       expect(onTaskCheckSelected).toHaveBeenCalledWith(task.id);
     });
+
     it('handles complete button click', async () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
@@ -245,6 +257,9 @@ describe('TaskRow', () => {
         mocks: {
           startAt,
           result: ResultEnum.None,
+          contacts: {
+            nodes: [{}],
+          },
         },
       });
 

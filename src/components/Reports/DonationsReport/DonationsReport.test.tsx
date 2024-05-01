@@ -9,10 +9,10 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
-import theme from '../../../theme';
+import { DonationTableQuery } from 'src/components/DonationTable/DonationTable.generated';
+import theme from 'src/theme';
 import { GetDonationsGraphQuery } from '../../Contacts/ContactDetails/ContactDonationsTab/DonationsGraph/DonationsGraph.generated';
 import { DonationsReport } from './DonationsReport';
-import { GetDonationsTableQuery } from './GetDonationsTable.generated';
 
 const title = 'test title';
 const onNavListToggle = jest.fn();
@@ -59,27 +59,17 @@ const mocks = {
       ],
     },
   },
-  GetDonationsTable: {
+  DonationTable: {
     donations: {
       nodes: [
         {
           amount: {
-            amount: 10,
-            convertedAmount: 10,
             convertedCurrency: 'CAD',
             currency: 'CAD',
           },
-          appeal: {
-            id: 'abc',
-            name: 'John',
-          },
-          donationDate: DateTime.now().minus({ minutes: 4 }).toISO(),
           donorAccount: {
             displayName: 'John',
-            id: 'abc',
           },
-          id: 'abc',
-          paymentMethod: 'pay',
         },
       ],
       pageInfo: {
@@ -90,7 +80,7 @@ const mocks = {
 };
 interface Mocks {
   GetDonationsGraph: GetDonationsGraphQuery;
-  GetDonationsTable: GetDonationsTableQuery;
+  DonationTable: DonationTableQuery;
 }
 
 describe('DonationsReport', () => {
@@ -148,7 +138,7 @@ describe('DonationsReport', () => {
   });
 
   it('renders with data', async () => {
-    const { getByTestId, queryByRole, queryByTestId } = render(
+    const { getByTestId, findByRole, queryByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider<Mocks> mocks={mocks}>
@@ -173,7 +163,7 @@ describe('DonationsReport', () => {
     expect(
       queryByTestId('DonationHistoriesGridLoading'),
     ).not.toBeInTheDocument();
-    expect(getByTestId('donationRow')).toBeInTheDocument();
+    expect(await findByRole('cell', { name: 'John' })).toBeInTheDocument();
   });
 
   it('initializes with month from query', () => {
@@ -261,6 +251,7 @@ describe('DonationsReport', () => {
       }),
     );
   });
+
   it('renders nav list icon and onclick triggers onNavListToggle', async () => {
     onNavListToggle.mockClear();
     const { getByTestId } = render(

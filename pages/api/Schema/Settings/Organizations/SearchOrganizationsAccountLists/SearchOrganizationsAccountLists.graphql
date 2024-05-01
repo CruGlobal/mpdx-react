@@ -5,7 +5,7 @@ extend type Query {
 }
 
 input SearchOrganizationsAccountListsInput {
-  organizationId: ID!
+  organizationId: ID
   search: String!
   pageNumber: Int
 }
