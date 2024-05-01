@@ -199,7 +199,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
             {t('Add Account')}
           </StyledServicesButton>
 
-          {googleAccounts?.length && (
+          {!!googleAccounts?.length && (
             <HandoffLink path="/tools/import/google">
               <StyledServicesButton
                 variant="outlined"
