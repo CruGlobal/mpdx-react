@@ -57,7 +57,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   contactId,
   onContactSelected,
 }) => {
-  const { data, loading } = useContactDetailsTabQuery({
+  const { data } = useContactDetailsTabQuery({
     variables: { accountListId, contactId },
   });
 
@@ -70,11 +70,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   return (
     <>
       <ContactDetailsTabContainer>
-        {
-          // Tag Section
-        }
+        {/* Tag Section */}
         <ContactDetailHeadingContainer mt={-3}>
-          {loading || !data ? (
+          {!data ? (
             <ContactDetailLoadingPlaceHolder variant="rectangular" />
           ) : (
             <ContactTags
@@ -85,11 +83,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailHeadingContainer>
         <Divider />
-        {
-          // People Section
-        }
+        {/* People Section */}
         <ContactDetailSectionContainer>
-          {loading || !data ? (
+          {!data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -97,22 +93,20 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             </>
           ) : (
             <ContactDetailsTabPeople
-              data={data?.contact}
+              data={data.contact}
               accountListId={accountListId}
             />
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        {
-          // Mailing Section
-        }
+        {/* Mailing Section */}
         <ContactDetailSectionContainer>
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
               {t('Mailing')}
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>
-          {loading || !data ? (
+          {!data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -126,16 +120,14 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        {
-          // other Section
-        }
+        {/* Other Section */}
         <ContactDetailSectionContainer>
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
               {t('Other')}
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>
-          {loading || !data ? (
+          {!data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -150,16 +142,14 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        {
-          // Patner Accounts Section
-        }
+        {/* Partner Accounts Section */}
         <ContactDetailSectionContainer>
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
               {t('Partner Accounts')}
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>
-          {loading || !data ? (
+          {!data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -171,12 +161,12 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         </ContactDetailSectionContainer>
         <Divider />
       </ContactDetailsTabContainer>
-      {loading || !data ? null : (
+      {data && (
         <EditContactOtherModal
           accountListId={accountListId}
           contact={data.contact}
           isOpen={editOtherModalOpen}
-          referral={data.contact.contactReferralsToMe?.nodes[0]}
+          referral={data.contact.contactReferralsToMe.nodes[0]}
           handleClose={() => setEditOtherModalOpen(false)}
         />
       )}
