@@ -364,7 +364,9 @@ describe('OrganizationAccordion', () => {
 
       await waitFor(() => {
         expect(
-          getByText('Are you sure you wish to disconnect this organization?'),
+          getByText(
+            'Are you sure you wish to disconnect the organization "organizationName"?',
+          ),
         ).toBeInTheDocument();
       });
       userEvent.click(getByText('Yes'));
