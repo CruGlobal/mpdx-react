@@ -30,7 +30,7 @@ export const AccountLists: React.FC = () => {
         search: search,
       },
     },
-    skip: !selectedOrganizationId,
+    skip: !selectedOrganizationId && !search,
   });
 
   const accountLists = data?.searchOrganizationsAccountLists.accountLists;
