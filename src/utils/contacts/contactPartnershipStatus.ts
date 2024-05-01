@@ -1,5 +1,5 @@
-import i18n from 'i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 
 function formatStatus(str) {
   const words = str.split('_');
