@@ -87,15 +87,6 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
 }) => {
-  const [selectedOrganization, setSelectedOrganization] =
-    useState<OrganizationAccountPartial | null>(null);
-  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
-  const [showImportDataSyncModal, setShowImportDataSyncModal] = useState(false);
-  const [showDeleteOrganizationModal, setShowDeleteOrganizationModal] =
-    useState(false);
-  const [showEditOrganizationModal, setShowEditOrganizationModal] =
-    useState(false);
-
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
@@ -103,6 +94,14 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
   const [deleteOrganizationAccount] = useDeleteOrganizationAccountMutation();
   const [syncOrganizationAccount] = useSyncOrganizationAccountMutation();
   const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
+
+  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+  const [importDataSyncModal, setImportDataSyncModal] =
+    useState<OrganizationAccountPartial | null>(null);
+  const [deleteOrganizationModal, setDeleteOrganizationModal] =
+    useState<OrganizationAccountPartial | null>(null);
+  const [editOrganizationModal, setEditOrganizationModal] =
+    useState<OrganizationAccountPartial | null>(null);
 
   const {
     data,
@@ -176,27 +175,6 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
         );
       },
     });
-  };
-
-  const handleOpenEditOrganizationModal = (
-    organizationAccount: OrganizationAccountPartial,
-  ) => {
-    setShowEditOrganizationModal(true);
-    setSelectedOrganization(organizationAccount);
-  };
-
-  const handleOpenDeleteOrganizationModal = (
-    organizationAccount: OrganizationAccountPartial,
-  ) => {
-    setShowDeleteOrganizationModal(true);
-    setSelectedOrganization(organizationAccount);
-  };
-
-  const handleOpenImportDataSyncModal = (
-    organizationAccount: OrganizationAccountPartial,
-  ) => {
-    setShowImportDataSyncModal(true);
-    setSelectedOrganization(organizationAccount);
   };
 
   return (
@@ -284,7 +262,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
                         size="small"
                         sx={{ m: '0 0 0 10px' }}
                         onClick={() =>
-                          handleOpenImportDataSyncModal(organizationAccount)
+                          setImportDataSyncModal(organizationAccount)
                         }
                       >
                         {t('Import TntConnect DataSync file')}
@@ -304,7 +282,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
                     {type === OrganizationTypesEnum.LOGIN && (
                       <OrganizationDeleteIconButton
                         onClick={() =>
-                          handleOpenEditOrganizationModal(organizationAccount)
+                          setEditOrganizationModal(organizationAccount)
                         }
                       >
                         <Edit />
@@ -312,7 +290,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
                     )}
                     <OrganizationDeleteIconButton
                       onClick={() =>
-                        handleOpenDeleteOrganizationModal(organizationAccount)
+                        setDeleteOrganizationModal(organizationAccount)
                       }
                     >
                       <DeleteIcon />
@@ -365,31 +343,31 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
         />
       )}
 
-      {showImportDataSyncModal && selectedOrganization && (
+      {importDataSyncModal && (
         <OrganizationImportDataSyncModal
-          handleClose={() => setShowImportDataSyncModal(false)}
-          organizationId={selectedOrganization.id}
-          organizationName={selectedOrganization.organization.name}
+          handleClose={() => setImportDataSyncModal(null)}
+          organizationId={importDataSyncModal.id}
+          organizationName={importDataSyncModal.organization.name}
           accountListId={accountListId ?? ''}
         />
       )}
 
-      {showEditOrganizationModal && selectedOrganization && (
+      {editOrganizationModal && (
         <OrganizationEditAccountModal
-          handleClose={() => setShowEditOrganizationModal(false)}
-          organizationId={selectedOrganization.id}
+          handleClose={() => setEditOrganizationModal(null)}
+          organizationId={editOrganizationModal.id}
         />
       )}
 
-      {showDeleteOrganizationModal && selectedOrganization && (
+      {deleteOrganizationModal && (
         <Confirmation
           isOpen={true}
           title={t('Confirm')}
           message={t(
-            `Are you sure you wish to disconnect the organization "${selectedOrganization.organization.name}"?`,
+            `Are you sure you wish to disconnect the organization "${deleteOrganizationModal.organization.name}"?`,
           )}
-          handleClose={() => setShowDeleteOrganizationModal(false)}
-          mutation={() => handleDelete(selectedOrganization.id)}
+          handleClose={() => setDeleteOrganizationModal(null)}
+          mutation={() => handleDelete(deleteOrganizationModal.id)}
         />
       )}
     </AccordionItem>
