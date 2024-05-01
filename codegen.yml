@@ -55,4 +55,4 @@ generates:
 hooks:
   afterAllFileWrite:
     - prettier --write
-    - ./delete-stale-files.sh
+    - node deleteStaleFiles.mjs
