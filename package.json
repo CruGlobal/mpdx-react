@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "next dev",
+    "start": "concurrently 'next dev' 'yarn gql:w' --kill-others",
     "build": "next build",
     "build:analyze": "ANALYZE=true yarn build",
     "build:amplify": "AMPLIFY_NEXTJS_EXPERIMENTAL_TRACE=true next build",
@@ -129,6 +129,7 @@
     "babel-loader": "^8.2.2",
     "babel-preset-react-app": "^10.0.0",
     "chromatic": "^6.9.0",
+    "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "css-mediaquery": "^0.1.2",
     "dnd-core": "^16.0.1",
