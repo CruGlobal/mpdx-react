@@ -6,9 +6,11 @@ import {
 
 const defaultResults: ResultEnum[] = [
   ResultEnum.Completed,
+  ResultEnum.Done,
   ResultEnum.Attempted,
   ResultEnum.AttemptedLeftMessage,
   ResultEnum.Received,
+  ResultEnum.None,
 ];
 
 export const possibleResults = (

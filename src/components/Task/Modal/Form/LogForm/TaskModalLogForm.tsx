@@ -34,6 +34,7 @@ import {
 import {
   ActivityTypeEnum,
   DisplayResultEnum,
+  Phase,
   PhaseEnum,
   ResultEnum,
   StatusEnum,
@@ -66,8 +67,9 @@ import {
   useUpdateContactStatusMutation,
 } from '../TaskModal.generated';
 import {
-  HandleTaskActionChangeProps,
-  HandleTaskPhaseChangeProps,
+  handleResultChange,
+  handleTaskActionChange,
+  handleTaskPhaseChange,
 } from '../TaskModalHelper';
 
 const taskSchema = yup.object({
@@ -79,7 +81,7 @@ const taskSchema = yup.object({
   userId: yup.string().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
   result: yup.mixed<ResultEnum>(),
-  updateContactStatus: yup.boolean().nullable(),
+  changeContactStatus: yup.boolean(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
   // when those fields fields are blank for some reason, and we need to allow blank values
@@ -93,6 +95,24 @@ interface Props {
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
 }
+
+const getResultDbValue = (
+  phaseData: Phase | null,
+  displayResult?: DisplayResultEnum | ResultEnum,
+  activityType?: ActivityTypeEnum | null,
+): ResultEnum => {
+  if (!displayResult || !phaseData || !activityType) {
+    return ResultEnum.None;
+  }
+  const resultOption = phaseData?.results?.resultOptions?.find(
+    (result) => result.name === displayResult,
+  );
+
+  const dbResult = resultOption?.dbResult?.find(
+    (item) => item.task === activityType,
+  );
+  return dbResult?.result || ResultEnum.None;
+};
 
 const TaskModalLogForm = ({
   accountListId,
@@ -110,7 +130,7 @@ const TaskModalLogForm = ({
       userId: defaultValues?.userId ?? session.data?.user.userID ?? null,
       tagList: defaultValues?.tagList ?? [],
       result: defaultValues?.result ?? undefined,
-      updateContactStatus: false,
+      changeContactStatus: false,
       nextAction: defaultValues?.nextAction ?? null,
       location: '',
       comment: '',
@@ -151,15 +171,24 @@ const TaskModalLogForm = ({
     if (selectedSuggestedTags.length) {
       attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
     }
+
+    if (attributes.result) {
+      attributes.result = getResultDbValue(
+        phaseData,
+        attributes.result,
+        attributes.activityType,
+      );
+    }
+
     // TODO - remove this when Caleb and the API has been
     delete attributes.taskPhase;
     // TODO - remove this when NewResultEnum are added
     attributes.result = ResultEnum.Completed;
 
     const updatingContactStatus =
-      attributes.updateContactStatus && !!suggestedPartnerStatus;
+      attributes.changeContactStatus && !!suggestedPartnerStatus;
 
-    delete attributes.updateContactStatus;
+    delete attributes.changeContactStatus;
 
     await createTasks({
       variables: {
@@ -226,38 +255,13 @@ const TaskModalLogForm = ({
     setShowMore((prevState) => !prevState);
   };
 
-  const handleTaskPhaseChange = ({
-    phase,
-    setFieldValue,
-  }: HandleTaskPhaseChangeProps): void => {
-    setFieldValue('taskPhase', phase);
-    setFieldValue('result', undefined);
-    setResultSelected(null);
-    setActionSelected(null);
-    setPhaseId(phase);
-    setSelectedSuggestedTags([]);
-  };
-
-  const handleTaskActionChange = ({
-    activityType,
-    setFieldValue,
-  }: HandleTaskActionChangeProps): void => {
-    setFieldValue('activityType', activityType);
-    setActionSelected(activityType);
-    const activity = constants?.activities?.find(
-      (activity) => activity.id === activityType,
-    );
-    if (activity) {
-      setFieldValue('subject', activity.value);
-    }
-  };
   const availableResults = useMemo(
     () => possibleResults(phaseData),
     [phaseData],
   );
   const partnerStatus = useMemo(
     () => possiblePartnerStatus(phaseData, resultSelected, actionSelected),
-    [phaseData, resultSelected],
+    [phaseData, resultSelected, actionSelected],
   );
 
   const nextActions = useMemo(
@@ -291,7 +295,7 @@ const TaskModalLogForm = ({
           tagList,
           contactIds,
           result,
-          updateContactStatus,
+          changeContactStatus,
           nextAction,
           location,
           comment,
@@ -314,7 +318,14 @@ const TaskModalLogForm = ({
                   label={t('Task Type *')}
                   value={taskPhase}
                   onChange={(phase) =>
-                    handleTaskPhaseChange({ phase, setFieldValue })
+                    handleTaskPhaseChange({
+                      phase,
+                      setFieldValue,
+                      setResultSelected,
+                      setActionSelected,
+                      setPhaseId,
+                      setSelectedSuggestedTags,
+                    })
                   }
                 />
               </Grid>
@@ -326,7 +337,12 @@ const TaskModalLogForm = ({
                   value={activityType}
                   phaseType={phaseData?.id}
                   onChange={(activityType) => {
-                    handleTaskActionChange({ activityType, setFieldValue });
+                    handleTaskActionChange({
+                      activityType,
+                      setFieldValue,
+                      setActionSelected,
+                      constants,
+                    });
                   }}
                 />
               </Grid>
@@ -371,27 +387,32 @@ const TaskModalLogForm = ({
                       label={t('Result')}
                       value={result}
                       onChange={(e) => {
-                        setFieldValue('result', e.target.value);
-                        setResultSelected(e.target.value as DisplayResultEnum);
+                        handleResultChange({
+                          result: e.target.value,
+                          setFieldValue,
+                          setResultSelected,
+                        });
                       }}
                     >
-                      {availableResults.map((result) => (
-                        <MenuItem key={result.id} value={result.id}>
-                          {getLocalizedResultString(t, result.id)}
-                        </MenuItem>
-                      ))}
+                      {availableResults.map((result) => {
+                        return (
+                          <MenuItem key={result} value={result}>
+                            {getLocalizedResultString(t, result)}
+                          </MenuItem>
+                        );
+                      })}
                     </Select>
                   </FormControl>
                 </Grid>
               )}
-              {partnerStatus && (
+              {partnerStatus?.suggestedContactStatus && (
                 <Grid item>
                   <FormControl fullWidth>
                     <FormControlLabel
                       control={
                         <Checkbox
-                          value={updateContactStatus}
-                          name="updateContactStatus"
+                          checked={changeContactStatus}
+                          name="changeContactStatus"
                           onChange={handleChange}
                         />
                       }

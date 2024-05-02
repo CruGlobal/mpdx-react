@@ -80,8 +80,9 @@ import {
   useUpdateTaskMutation,
 } from './TaskModal.generated';
 import {
-  HandleTaskActionChangeProps,
-  HandleTaskPhaseChangeProps,
+  handleResultChange,
+  handleTaskActionChange,
+  handleTaskPhaseChange,
 } from './TaskModalHelper';
 
 const taskSchema = yup.object({
@@ -91,7 +92,7 @@ const taskSchema = yup.object({
   startAt: nullableDateTime(),
   completedAt: nullableDateTime(),
   result: yup.mixed<ResultEnum>().nullable(),
-  updateContactStatus: yup.boolean().nullable(),
+  changeContactStatus: yup.boolean(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   tagList: yup.array().of(yup.string().required()).default([]),
   contactIds: yup.array().of(yup.string().required()).default([]),
@@ -135,7 +136,7 @@ const TaskModalForm = ({
               ? DateTime.fromISO(task.completedAt)
               : null,
             result: task.result ?? null,
-            updateContactStatus: false,
+            changeContactStatus: false,
             nextAction: task.nextAction ?? null,
             tagList: task.tagList ?? [],
             contactIds: task.contacts.nodes.map(({ id }) => id),
@@ -153,7 +154,7 @@ const TaskModalForm = ({
             startAt: DateTime.local(),
             completedAt: null,
             result: defaultValues?.result ?? null,
-            updateContactStatus: false,
+            changeContactStatus: false,
             nextAction: defaultValues?.nextAction ?? null,
             tagList: defaultValues?.tagList ?? [],
             contactIds: defaultValues?.contactIds ?? [],
@@ -171,10 +172,13 @@ const TaskModalForm = ({
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
   // TODO replace with ResultEnum when available
   const [resultSelected, setResultSelected] =
-    useState<DisplayResultEnum | null>(null);
+    useState<DisplayResultEnum | null>(
+      (task?.result as unknown as DisplayResultEnum) || null,
+    );
+  // TODO - Need to fix the above ^
 
   const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
-    null,
+    task?.activityType || null,
   );
 
   const { enqueueSnackbar } = useSnackbar();
@@ -201,10 +205,10 @@ const TaskModalForm = ({
     suggestedPartnerStatus?: StatusEnum | null,
   ): Promise<void> => {
     const updatingContactStatus =
-      attributes.updateContactStatus && !!suggestedPartnerStatus;
+      attributes.changeContactStatus && !!suggestedPartnerStatus;
     // TODO - remove this when Caleb and the API has been
     delete attributes.taskPhase;
-    delete attributes.updateContactStatus;
+    delete attributes.changeContactStatus;
 
     const sharedAttributes = {
       ...attributes,
@@ -270,32 +274,6 @@ const TaskModalForm = ({
     }
   };
 
-  const handleTaskTypeChange = ({
-    phase,
-    setFieldValue,
-  }: HandleTaskPhaseChangeProps): void => {
-    setFieldValue('taskPhase', phase);
-    setFieldValue('result', undefined);
-    setResultSelected(null);
-    setActionSelected(null);
-    setPhaseId(phase);
-    setSelectedSuggestedTags([]);
-  };
-
-  const handleTaskActionChange = ({
-    activityType,
-    setFieldValue,
-  }: HandleTaskActionChangeProps): void => {
-    setFieldValue('activityType', activityType);
-    setActionSelected(activityType);
-    const activity = constants?.activities?.find(
-      (activity) => activity.id === activityType,
-    );
-    if (activity) {
-      setFieldValue('subject', activity.value);
-    }
-  };
-
   const availableResults = useMemo(
     () => possibleResults(phaseData),
     [phaseData],
@@ -303,7 +281,7 @@ const TaskModalForm = ({
 
   const partnerStatus = useMemo(
     () => possiblePartnerStatus(phaseData, resultSelected, actionSelected),
-    [phaseData, resultSelected],
+    [phaseData, resultSelected, actionSelected],
   );
 
   const nextActions = useMemo(
@@ -334,7 +312,7 @@ const TaskModalForm = ({
           startAt,
           completedAt,
           result,
-          updateContactStatus,
+          changeContactStatus,
           nextAction,
           tagList,
           userId,
@@ -363,7 +341,14 @@ const TaskModalForm = ({
                   label={t('Task Type')}
                   value={taskPhase}
                   onChange={(phase) =>
-                    handleTaskTypeChange({ phase, setFieldValue })
+                    handleTaskPhaseChange({
+                      phase,
+                      setFieldValue,
+                      setResultSelected,
+                      setActionSelected,
+                      setPhaseId,
+                      setSelectedSuggestedTags,
+                    })
                   }
                 />
               </Grid>
@@ -375,7 +360,12 @@ const TaskModalForm = ({
                     value={activityType}
                     phaseType={phaseData?.id}
                     onChange={(activityType) => {
-                      handleTaskActionChange({ activityType, setFieldValue });
+                      handleTaskActionChange({
+                        activityType,
+                        setFieldValue,
+                        setActionSelected,
+                        constants,
+                      });
                     }}
                   />
                 </FormControl>
@@ -483,8 +473,11 @@ const TaskModalForm = ({
                       label={t('Result')}
                       value={result}
                       onChange={(e) => {
-                        setFieldValue('result', e.target.value);
-                        setResultSelected(e.target.value as DisplayResultEnum);
+                        handleResultChange({
+                          result: e.target.value,
+                          setFieldValue,
+                          setResultSelected,
+                        });
                       }}
                     >
                       {availableResults.map((result) => (
@@ -496,14 +489,14 @@ const TaskModalForm = ({
                   </FormControl>
                 </Grid>
               )}
-              {partnerStatus && (
+              {partnerStatus?.suggestedContactStatus && (
                 <Grid item>
                   <FormControl fullWidth>
                     <FormControlLabel
                       control={
                         <Checkbox
-                          value={updateContactStatus}
-                          name="updateContactStatus"
+                          checked={changeContactStatus}
+                          name="changeContactStatus"
                           onChange={handleChange}
                         />
                       }

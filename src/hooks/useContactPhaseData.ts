@@ -3,6 +3,9 @@ import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.gener
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { Phase, PhaseEnum } from 'src/graphql/types.generated';
 
+export type SetPhaseId = (activity: PhaseEnum | null) => void;
+export type Contstants = LoadConstantsQuery['constant'] | undefined;
+
 const phaseFromActivity = (
   activity: PhaseEnum | null,
   constants: LoadConstantsQuery['constant'] | undefined,
@@ -19,7 +22,7 @@ const phaseFromActivity = (
 
 type GetPhaseData = {
   phaseData: Phase | null;
-  setPhaseId: (activity: PhaseEnum | null) => void;
+  setPhaseId: SetPhaseId;
   constants: LoadConstantsQuery['constant'] | undefined;
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

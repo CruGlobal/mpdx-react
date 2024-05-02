@@ -23,7 +23,6 @@ export const possiblePartnerStatus = (
       (result) => result.name === resultName,
     ) ?? null;
 
-  activityType;
   const dbResult = contactStatus?.dbResult?.find(
     (result) => result.task?.toLowerCase() === activityType.toLowerCase(),
   );
