@@ -328,7 +328,7 @@ const SearchMenu = (): ReactElement => {
                       <Typography>{option.name}</Typography>
                       <Typography variant="subtitle2">
                         {option.status &&
-                          contactPartnershipStatus[option.status].translated}
+                          contactPartnershipStatus[option.status]?.translated}
                       </Typography>
                     </Box>
                   </ClickableBox>

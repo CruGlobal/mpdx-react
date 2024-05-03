@@ -580,7 +580,7 @@ class MpdxRestApi extends RESTDataSource {
         case 'status':
           filters[snakedKey] = (value as ContactFilterStatusEnum[])
             .map((status) => {
-              const translated = contactPartnershipStatus[status].name;
+              const translated = contactPartnershipStatus[status]?.name;
               if (!translated) {
                 throw new Error(
                   `Unrecognized ContactFilterStatusEnum value ${value}`,

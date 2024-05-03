@@ -137,7 +137,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
               <Typography variant="subtitle2">
                 {t('Status')}:{' '}
                 {contact.status &&
-                  contactPartnershipStatus[contact.status].translated}
+                  contactPartnershipStatus[contact.status]?.translated}
                 <br />
                 {contact.primaryAddress && (
                   <>

@@ -1,7 +1,9 @@
 import {
   ActivityTypeEnum,
   DisplayResultEnum,
+  Phase,
   PhaseEnum,
+  ResultEnum,
 } from 'src/graphql/types.generated';
 import { Contstants, SetPhaseId } from 'src/hooks/useContactPhaseData';
 
@@ -84,4 +86,22 @@ export const handleResultChange = ({
   setFieldValue('nextAction', '');
   setFieldValue('changeContactStatus', false);
   setResultSelected(result as DisplayResultEnum);
+};
+
+export const getDatabaseValueFromResult = (
+  phaseData: Phase | null,
+  displayResult?: DisplayResultEnum | ResultEnum,
+  activityType?: ActivityTypeEnum | null,
+): ResultEnum => {
+  if (!displayResult || !phaseData || !activityType) {
+    return ResultEnum.None;
+  }
+  const resultOption = phaseData?.results?.resultOptions?.find(
+    (result) => result.name === displayResult,
+  );
+
+  const dbResult = resultOption?.dbResult?.find(
+    (item) => item.task === activityType,
+  );
+  return dbResult?.result || ResultEnum.None;
 };

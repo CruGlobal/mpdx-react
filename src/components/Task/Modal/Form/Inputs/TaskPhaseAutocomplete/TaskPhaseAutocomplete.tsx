@@ -1,3 +1,4 @@
+import { Ref } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { PhaseEnum } from 'src/graphql/types.generated';
@@ -8,6 +9,8 @@ interface TaskPhaseProps {
   label: string;
   onChange: (value: PhaseEnum | null) => void;
   value?: PhaseEnum | null;
+  inputRef: Ref<HTMLElement>;
+  contactPhase?: PhaseEnum;
 }
 
 export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
@@ -15,18 +18,21 @@ export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
   label,
   value,
   onChange,
+  inputRef,
+  contactPhase,
 }) => {
   const { t } = useTranslation();
 
   return (
     <Autocomplete<PhaseEnum>
       openOnFocus
-      autoSelect
       autoHighlight
-      value={value === null || typeof value === 'undefined' ? null : value}
+      value={value || contactPhase}
       options={options}
       getOptionLabel={(activity) => getLocalizedTaskPhase(t, activity)}
-      renderInput={(params) => <TextField {...params} label={label} />}
+      renderInput={(params) => (
+        <TextField {...params} inputRef={inputRef} label={label} />
+      )}
       onChange={(_, value) => onChange(value)}
     />
   );

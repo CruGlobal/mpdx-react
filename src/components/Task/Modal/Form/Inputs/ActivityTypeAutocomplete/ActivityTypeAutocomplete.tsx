@@ -10,7 +10,7 @@ interface ActivityTypeProps {
   label: string;
   value: ActivityTypeEnum | null | undefined;
   onChange: (value: ActivityTypeEnum | null) => void;
-  phaseType?: PhaseEnum;
+  taskPhaseType?: PhaseEnum | null;
   // Set to true to make None an acceptable value. Otherwise, None will be converted to null.
   preserveNone?: boolean;
 }
@@ -20,25 +20,24 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
   label,
   value,
   onChange,
-  phaseType,
+  taskPhaseType,
   preserveNone = false,
 }) => {
   const { t } = useTranslation();
 
   const sortedOptions = useMemo(() => {
-    const activityOptions = phaseType
-      ? getActivitiesByPhaseType(phaseType)
+    const activityOptions = taskPhaseType
+      ? getActivitiesByPhaseType(taskPhaseType)
       : options;
     // Sort none to the top
     return activityOptions
       .slice()
       .sort((a) => (a === ActivityTypeEnum.None ? -1 : 0));
-  }, [phaseType, options]);
+  }, [taskPhaseType, options]);
 
   return (
     <Autocomplete<ActivityTypeEnum>
       openOnFocus
-      autoSelect
       autoHighlight
       value={value === null || typeof value === 'undefined' ? null : value}
       options={sortedOptions}

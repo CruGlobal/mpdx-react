@@ -500,7 +500,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   ...acc,
                   [key]: value
                     .split(',')
-                    .reduce((list: ActivityTypeEnum[], enumValue) => {
+                    .map((enumValue) => {
                       // --any--,none
 
                       // TODO: turn this into reduce?
@@ -515,49 +515,38 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
                       switch (enumValue) {
                         case 'Appointment':
-                          return [...list, ...appointmentActivityTypes];
+                          return appointmentActivityTypes;
                         case 'Call':
-                          return [...list, ...callActivityTypes];
+                          return callActivityTypes;
                         case 'Email':
-                          return [...list, ...emailActivityTypes];
+                          return emailActivityTypes;
                         case 'Facebook Message':
-                          return [...list, ...socialMediaActivityTypes];
+                          return socialMediaActivityTypes;
                         case 'Prayer Request':
-                          return [
-                            ...list,
-                            ActivityTypeEnum.PartnerCarePrayerRequest,
-                          ];
+                          return ActivityTypeEnum.PartnerCarePrayerRequest;
                         case 'Talk to In Person':
-                          return [...list, ...inPersonActivityTypes];
+                          return inPersonActivityTypes;
                         case 'Text Message':
-                          return [...list, ...textActivityTypes];
+                          return textActivityTypes;
                         case 'Thank':
-                          return [...list, ActivityTypeEnum.PartnerCareThank];
+                          return ActivityTypeEnum.PartnerCareThank;
                         case 'None':
-                          return [...list, ActivityTypeEnum.None];
+                          return ActivityTypeEnum.None;
                         case 'Letter':
-                          return [...list, ActivityTypeEnum.InitiationLetter];
+                          return ActivityTypeEnum.InitiationLetter;
                         case 'Newsletter - Physical':
-                          return [
-                            ...list,
-                            ActivityTypeEnum.PartnerCarePhysicalNewsletter,
-                          ];
+                          return ActivityTypeEnum.PartnerCarePhysicalNewsletter;
                         case 'Newsletter - Email':
-                          return [
-                            ...list,
-                            ActivityTypeEnum.PartnerCareDigitalNewsletter,
-                          ];
+                          return ActivityTypeEnum.PartnerCareDigitalNewsletter;
                         case 'Support Letter':
-                          return [
-                            ...list,
-                            ActivityTypeEnum.InitiationSpecialGiftAppeal,
-                          ];
+                          return ActivityTypeEnum.InitiationSpecialGiftAppeal;
                         case 'To Do':
-                          return [...list, ActivityTypeEnum.PartnerCareToDo];
+                          return ActivityTypeEnum.PartnerCareToDo;
                         default:
-                          return [...list, ActivityTypeEnum.None];
+                          return ActivityTypeEnum.None;
                       }
-                    }, []),
+                    })
+                    .flat(),
                 };
 
               // Next Action
@@ -566,7 +555,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   return {
                     ...acc,
                     [key]: [
-                      ...appointmentActivityTypes,
+                      ActivityTypeEnum.AppointmentInPerson,
                       ...callActivityTypes,
                       ...emailActivityTypes,
                       ...socialMediaActivityTypes,
@@ -582,33 +571,31 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   ...acc,
                   [key]: value
                     .split(',')
-                    .reduce((list: ActivityTypeEnum[], enumValue) => {
+                    .map((enumValue) => {
                       switch (enumValue) {
                         case 'Appointment':
-                          return [...list, ...appointmentActivityTypes];
+                          return appointmentActivityTypes;
                         case 'Call':
-                          return [...list, ...callActivityTypes];
+                          return callActivityTypes;
                         case 'Email':
-                          return [...list, ...emailActivityTypes];
+                          return emailActivityTypes;
                         case 'Facebook Message':
-                          return [...list, ...socialMediaActivityTypes];
+                          return socialMediaActivityTypes;
                         case 'Prayer Request':
-                          return [
-                            ...list,
-                            ActivityTypeEnum.PartnerCarePrayerRequest,
-                          ];
+                          return ActivityTypeEnum.PartnerCarePrayerRequest;
                         case 'Talk to In Person':
-                          return [...list, ...inPersonActivityTypes];
+                          return inPersonActivityTypes;
                         case 'Text Message':
-                          return [...list, ...textActivityTypes];
+                          return textActivityTypes;
                         case 'Thank':
-                          return [...list, ActivityTypeEnum.PartnerCareThank];
+                          return ActivityTypeEnum.PartnerCareThank;
                         case 'None':
-                          return [...list, ActivityTypeEnum.None];
+                          return ActivityTypeEnum.None;
                         default:
-                          return [...list, ActivityTypeEnum.None];
+                          return ActivityTypeEnum.None;
                       }
-                    }, []),
+                    })
+                    .flat(),
                 };
               // Result
               case 'result':

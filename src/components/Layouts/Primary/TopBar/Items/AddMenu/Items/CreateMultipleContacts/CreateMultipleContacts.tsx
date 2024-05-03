@@ -3,6 +3,10 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
+  FormControl,
+  ListSubheader,
+  MenuItem,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -17,6 +21,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useCreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
@@ -30,6 +35,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { PersonCreateInput, StatusEnum } from 'src/graphql/types.generated';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 
@@ -45,11 +51,12 @@ const InputRow = styled(TableRow)(() => ({
 
 const InputCell = styled(TableCell)(() => ({
   flex: 1,
+  width: '1%',
   [theme.breakpoints.down('lg')]: {
-    minWidth: '150px',
+    minWidth: '130px',
   },
   [theme.breakpoints.down('md')]: {
-    minWidth: '130px',
+    minWidth: '100px',
   },
 }));
 
@@ -72,6 +79,7 @@ interface ContactRow {
   address: AddressFields;
   phone: string;
   email: string;
+  status: StatusEnum | null;
 }
 
 interface ContactTable {
@@ -96,6 +104,10 @@ const contactsSchema = yup.object().shape({
       }),
       phone: yup.string(),
       email: yup.string(),
+      status: yup
+        .mixed<StatusEnum | null>()
+        .oneOf([...Object.values(StatusEnum), null])
+        .nullable(),
     }),
   ),
 });
@@ -109,6 +121,7 @@ const defaultContact: ContactRow = {
   },
   phone: '',
   email: '',
+  status: null,
 };
 
 export const CreateMultipleContacts = ({
@@ -122,7 +135,8 @@ export const CreateMultipleContacts = ({
   const initialContacts: ContactTable = {
     contacts: new Array(rows).fill(defaultContact),
   };
-
+  const constants = useApiConstants();
+  const phases = constants?.phases;
   const [createContact] = useCreateContactMutation();
   const [createPerson] = useCreatePersonMutation();
   const [createAddress] = useCreateContactAddressMutation();
@@ -135,8 +149,15 @@ export const CreateMultipleContacts = ({
     if (filteredContacts.length > 0) {
       const createdContacts = await Promise.all(
         filteredContacts.map(async (contact) => {
-          const { firstName, lastName, spouseName, address, phone, email } =
-            contact;
+          const {
+            firstName,
+            lastName,
+            spouseName,
+            address,
+            phone,
+            email,
+            status,
+          } = contact;
           const { data } = await createContact({
             variables: {
               accountListId,
@@ -151,7 +172,7 @@ export const CreateMultipleContacts = ({
                 contactReferralsToMe: referredById
                   ? [{ referredById }]
                   : undefined,
-                status: StatusEnum.NeverContacted,
+                status: status || StatusEnum.NeverContacted,
               },
             },
             refetchQueries: [
@@ -266,6 +287,7 @@ export const CreateMultipleContacts = ({
                     <InputCell align="left">{t('Street Address')}</InputCell>
                     <InputCell align="left">{t('Phone')}</InputCell>
                     <InputCell align="left">{t('Email')}</InputCell>
+                    <InputCell align="left">{t('Status')}</InputCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -415,6 +437,38 @@ export const CreateMultipleContacts = ({
                                 />
                               )}
                             </Field>
+                          </InputCell>
+                          <InputCell>
+                            <FormControl size="small" fullWidth>
+                              <Select
+                                value={contact.status}
+                                onChange={(e) =>
+                                  setFieldValue(
+                                    `contacts.${index}.status`,
+                                    e.target.value,
+                                  )
+                                }
+                              >
+                                <MenuItem>
+                                  <em>None</em>
+                                </MenuItem>
+                                {phases?.map((phase) => [
+                                  <ListSubheader key={phase?.name}>
+                                    {phase?.name}
+                                  </ListSubheader>,
+                                  phase?.contactStatuses.map(
+                                    (s: StatusEnum) => (
+                                      <MenuItem key={s} value={s}>
+                                        {
+                                          contactPartnershipStatus[s]
+                                            ?.translated
+                                        }
+                                      </MenuItem>
+                                    ),
+                                  ),
+                                ])}
+                              </Select>
+                            </FormControl>
                           </InputCell>
                         </InputRow>
                       ))

@@ -6,6 +6,7 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import {
+  ActivityTypeEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   ReportContactFilterSetInput,
@@ -13,6 +14,14 @@ import {
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import {
+  callActivityTypes,
+  emailActivityTypes,
+  getActivitiesByPhaseType,
+  inPersonActivityTypes,
+  socialMediaActivityTypes,
+  textActivityTypes,
+} from 'src/utils/phases/taskActivityTypes';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import { ContactsProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { FilterPanel, FilterPanelProps } from './FilterPanel';
@@ -410,32 +419,17 @@ describe('FilterPanel', () => {
         reverseAppeal: true,
         state: ['FL'],
         status: Object.keys(contactPartnershipStatus),
-        activityType: [
-          'APPOINTMENT',
-          'CALL',
-          'EMAIL',
-          'FACEBOOK_MESSAGE',
-          'PRAYER_REQUEST',
-          'TALK_TO_IN_PERSON',
-          'TEXT_MESSAGE',
-          'THANK',
-          'NONE',
-          'LETTER',
-          'NEWSLETTER_PHYSICAL',
-          'NEWSLETTER_EMAIL',
-          'SUPPORT_LETTER',
-          'TO_DO',
-        ],
+        activityType: getActivitiesByPhaseType('all'),
         nextAction: [
-          'APPOINTMENT',
-          'CALL',
-          'EMAIL',
-          'FACEBOOK_MESSAGE',
-          'PRAYER_REQUEST',
-          'TALK_TO_IN_PERSON',
-          'TEXT_MESSAGE',
-          'THANK',
-          'NONE',
+          ActivityTypeEnum.AppointmentInPerson,
+          ...callActivityTypes,
+          ...emailActivityTypes,
+          ...socialMediaActivityTypes,
+          ActivityTypeEnum.PartnerCarePrayerRequest,
+          ...inPersonActivityTypes,
+          ...textActivityTypes,
+          ActivityTypeEnum.PartnerCareThank,
+          ActivityTypeEnum.None,
         ],
         result: [
           'ATTEMPTED',

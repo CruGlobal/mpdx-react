@@ -34,7 +34,6 @@ import {
 import {
   ActivityTypeEnum,
   DisplayResultEnum,
-  Phase,
   PhaseEnum,
   ResultEnum,
   StatusEnum,
@@ -45,6 +44,7 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
+import theme from 'src/theme';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
@@ -67,6 +67,7 @@ import {
   useUpdateContactStatusMutation,
 } from '../TaskModal.generated';
 import {
+  getDatabaseValueFromResult,
   handleResultChange,
   handleTaskActionChange,
   handleTaskPhaseChange,
@@ -95,24 +96,6 @@ interface Props {
   onClose: () => void;
   defaultValues?: Partial<TaskCreateInput>;
 }
-
-const getResultDbValue = (
-  phaseData: Phase | null,
-  displayResult?: DisplayResultEnum | ResultEnum,
-  activityType?: ActivityTypeEnum | null,
-): ResultEnum => {
-  if (!displayResult || !phaseData || !activityType) {
-    return ResultEnum.None;
-  }
-  const resultOption = phaseData?.results?.resultOptions?.find(
-    (result) => result.name === displayResult,
-  );
-
-  const dbResult = resultOption?.dbResult?.find(
-    (item) => item.task === activityType,
-  );
-  return dbResult?.result || ResultEnum.None;
-};
 
 const TaskModalLogForm = ({
   accountListId,
@@ -173,7 +156,7 @@ const TaskModalLogForm = ({
     }
 
     if (attributes.result) {
-      attributes.result = getResultDbValue(
+      attributes.result = getDatabaseValueFromResult(
         phaseData,
         attributes.result,
         attributes.activityType,
@@ -315,8 +298,10 @@ const TaskModalLogForm = ({
               <Grid item>
                 <TaskPhaseAutocomplete
                   options={Object.values(PhaseEnum)}
-                  label={t('Task Type *')}
+                  label={t('Task Type/Phase')}
                   value={taskPhase}
+                  contactPhase={phaseData?.id}
+                  inputRef={inputRef}
                   onChange={(phase) =>
                     handleTaskPhaseChange({
                       phase,
@@ -333,9 +318,9 @@ const TaskModalLogForm = ({
               <Grid item>
                 <ActivityTypeAutocomplete
                   options={Object.values(ActivityTypeEnum)}
-                  label={t('Action *')}
+                  label={t('Action')}
                   value={activityType}
-                  phaseType={phaseData?.id}
+                  taskPhaseType={taskPhase}
                   onChange={(activityType) => {
                     handleTaskActionChange({
                       activityType,
@@ -346,7 +331,6 @@ const TaskModalLogForm = ({
                   }}
                 />
               </Grid>
-
               <Grid item>
                 <TextField
                   name="subject"
@@ -362,7 +346,6 @@ const TaskModalLogForm = ({
                     errors.subject && touched.subject && t('Field is required')
                   }
                   required
-                  inputRef={inputRef}
                 />
               </Grid>
 
@@ -463,6 +446,16 @@ const TaskModalLogForm = ({
                     }
                   />
                 </FormControl>
+
+                {!!phaseTags?.length && (
+                  <Grid item sx={{ marginTop: theme.spacing(2) }}>
+                    <PhaseTags
+                      tags={phaseTags}
+                      selectedTags={selectedSuggestedTags}
+                      setSelectedTags={setSelectedSuggestedTags}
+                    />
+                  </Grid>
+                )}
               </Grid>
               <Grid item>
                 <FormControlLabel
@@ -488,23 +481,6 @@ const TaskModalLogForm = ({
                         style={{ marginBottom: 16 }}
                       >
                         <Grid item xs={12}>
-                          <TextField
-                            label={t('Comment')}
-                            value={comment}
-                            onChange={handleChange('comment')}
-                            fullWidth
-                            multiline
-                            inputProps={{ 'aria-label': t('Comment') }}
-                          />
-                        </Grid>
-                        {!!phaseTags?.length && (
-                          <PhaseTags
-                            tags={phaseTags}
-                            selectedTags={selectedSuggestedTags}
-                            setSelectedTags={setSelectedSuggestedTags}
-                          />
-                        )}
-                        <Grid item xs={12}>
                           <TagsAutocomplete
                             accountListId={accountListId}
                             type={TagTypeEnum.Tag}
@@ -515,6 +491,17 @@ const TaskModalLogForm = ({
                             label={
                               phaseTags?.length ? t('Additional Tags') : ''
                             }
+                          />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                          <TextField
+                            label={t('Comment')}
+                            value={comment}
+                            onChange={handleChange('comment')}
+                            fullWidth
+                            multiline
+                            inputProps={{ 'aria-label': t('Comment') }}
                           />
                         </Grid>
                         <Grid item xs={12}>

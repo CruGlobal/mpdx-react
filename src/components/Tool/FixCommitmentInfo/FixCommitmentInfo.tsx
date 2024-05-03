@@ -201,7 +201,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                       key={contact.name}
                       statusTitle={
                         contact.status
-                          ? contactPartnershipStatus[contact.status].translated
+                          ? contactPartnershipStatus[contact.status]?.translated
                           : ''
                       }
                       statusValue={contact.status || ''}

@@ -10,6 +10,7 @@ import {
   FormControl,
   FormControlLabel,
   InputLabel,
+  ListSubheader,
   MenuItem,
   Select,
   TextField,
@@ -122,6 +123,7 @@ export const EditPartnershipInfoModal: React.FC<
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
+  const phases = constants?.phases;
   const [referredByName, setReferredByName] = useState('');
   const referredContactIds = contact.contactReferralsToMe.nodes.map(
     (referral) => referral.referredBy.id,
@@ -349,11 +351,16 @@ export const EditPartnershipInfoModal: React.FC<
                       },
                     }}
                   >
-                    {Object.values(StatusEnum).map((value) => (
-                      <MenuItem key={value} value={value}>
-                        {contactPartnershipStatus[value].translated}
-                      </MenuItem>
-                    ))}
+                    {phases?.map((phase) => [
+                      <ListSubheader key={phase?.name}>
+                        {phase?.name}
+                      </ListSubheader>,
+                      phase?.contactStatuses.map((s: StatusEnum) => (
+                        <MenuItem key={s} value={s}>
+                          {contactPartnershipStatus[s]?.translated}
+                        </MenuItem>
+                      )),
+                    ])}
                   </Select>
                 </FormControl>
               </ContactInputWrapper>

@@ -9,19 +9,21 @@ export const getLocalizedContactStatus = (
     case StatusEnum.AppointmentScheduled:
       return t('Appointment Scheduled');
     case StatusEnum.AskInFuture:
-      return t('Ask In Future');
+      return t('Ask in Future');
+    case StatusEnum.ResearchContactInfo:
+      return t('Research Contact Info');
     case StatusEnum.CallForDecision:
-      return t('Call For Decision');
+      return t('Follow up for Decision');
     case StatusEnum.ContactForAppointment:
-      return t('Contact For Appointment');
+      return t('Initiate for Appointment');
     case StatusEnum.CultivateRelationship:
       return t('Cultivate Relationship');
     case StatusEnum.ExpiredReferral:
-      return t('Expired Referral');
+      return t('Expired Connection');
     case StatusEnum.NeverAsk:
       return t('Never Ask');
     case StatusEnum.NeverContacted:
-      return t('Never Contacted');
+      return t('New Connection');
     case StatusEnum.NotInterested:
       return t('Not Interested');
     case StatusEnum.PartnerFinancial:

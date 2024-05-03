@@ -1,5 +1,5 @@
-import i18n from 'i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 
 function formatStatus(str) {
   const words = str.split('_');
@@ -16,12 +16,17 @@ function formatStatus(str) {
 export const contactPartnershipStatus = {
   [StatusEnum.NeverContacted]: {
     name: formatStatus(StatusEnum.NeverContacted),
-    translated: i18n.t('Never Contacted'),
+    translated: i18n.t('New Connection'),
     phase: PhaseEnum.Connection,
   },
   [StatusEnum.AskInFuture]: {
     name: formatStatus(StatusEnum.AskInFuture),
     translated: i18n.t('Ask in Future'),
+    phase: PhaseEnum.Connection,
+  },
+  [StatusEnum.ResearchContactInfo]: {
+    name: formatStatus(StatusEnum.ResearchContactInfo),
+    translated: i18n.t('Research Contact Info'),
     phase: PhaseEnum.Connection,
   },
   [StatusEnum.CultivateRelationship]: {
@@ -31,7 +36,7 @@ export const contactPartnershipStatus = {
   },
   [StatusEnum.ContactForAppointment]: {
     name: formatStatus(StatusEnum.ContactForAppointment),
-    translated: i18n.t('Contact for Appointment'),
+    translated: i18n.t('Initiate for Appointment'),
     phase: PhaseEnum.Initiation,
   },
   [StatusEnum.AppointmentScheduled]: {
@@ -41,7 +46,7 @@ export const contactPartnershipStatus = {
   },
   [StatusEnum.CallForDecision]: {
     name: formatStatus(StatusEnum.CallForDecision),
-    translated: i18n.t('Call for Decision'),
+    translated: i18n.t('Follow up for Decision'),
     phase: PhaseEnum.FollowUp,
   },
   [StatusEnum.PartnerFinancial]: {
@@ -81,7 +86,7 @@ export const contactPartnershipStatus = {
   },
   [StatusEnum.ExpiredReferral]: {
     name: formatStatus(StatusEnum.ExpiredReferral),
-    translated: i18n.t('Expired Referral'),
+    translated: i18n.t('Expired Connection'),
     phase: PhaseEnum.Archive,
   },
   NULL: {

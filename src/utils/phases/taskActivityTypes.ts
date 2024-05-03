@@ -61,7 +61,7 @@ export const appointmentActivityTypes = [
 ];
 
 export const getActivitiesByPhaseType = (
-  phase: PhaseEnum,
+  phase: PhaseEnum | string,
 ): ActivityTypeEnum[] => {
   switch (phase) {
     case PhaseEnum.Appointment:

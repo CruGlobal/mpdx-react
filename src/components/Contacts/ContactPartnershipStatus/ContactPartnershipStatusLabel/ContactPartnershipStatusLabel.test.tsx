@@ -22,7 +22,7 @@ describe('ContactPartnershipStatusLabel', () => {
     expect(
       getByText(
         contactPartnershipStatus[ContactPartnershipStatusEnum.PartnerPray]
-          .translated,
+          ?.translated,
       ),
     ).toBeInTheDocument();
   });

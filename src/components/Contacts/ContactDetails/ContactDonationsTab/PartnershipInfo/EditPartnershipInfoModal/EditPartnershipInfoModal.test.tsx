@@ -188,7 +188,7 @@ describe('EditPartnershipInfoModal', () => {
     const statusInput = getByLabelText('Status');
 
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(getByText('Ask in Future'));
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -225,12 +225,12 @@ describe('EditPartnershipInfoModal', () => {
     expect(amountInput).toHaveValue(50);
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(getByText('Ask in Future'));
 
     // Values get reset and inputs becomes disabled when status is not PARTNER_FINANCIAL
     expect(amountInput).toHaveValue(0);
     expect(amountInput).toBeDisabled();
-    expect(statusInput.textContent).toEqual('Ask In Future');
+    expect(statusInput.textContent).toEqual('Ask in Future');
 
     // these are flaky for some reason, disabling for now
     // await waitFor(() => expect(frequencyInput.textContent).toBe(''));

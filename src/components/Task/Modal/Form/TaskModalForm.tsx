@@ -80,6 +80,7 @@ import {
   useUpdateTaskMutation,
 } from './TaskModal.generated';
 import {
+  getDatabaseValueFromResult,
   handleResultChange,
   handleTaskActionChange,
   handleTaskPhaseChange,
@@ -195,7 +196,7 @@ const TaskModalForm = ({
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (inputRef.current) {
+    if (!task && inputRef.current) {
       inputRef.current.focus();
     }
   }, []);
@@ -215,6 +216,14 @@ const TaskModalForm = ({
       completedAt: completedAt?.toISO(),
       startAt: startAt?.toISO(),
     };
+
+    if (attributes.result) {
+      attributes.result = getDatabaseValueFromResult(
+        phaseData,
+        attributes.result,
+        attributes.activityType,
+      );
+    }
 
     if (task) {
       await updateTask({
@@ -294,6 +303,7 @@ const TaskModalForm = ({
       phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
     [phaseData],
   );
+
   return (
     <Formik
       initialValues={initialTask}
@@ -338,8 +348,10 @@ const TaskModalForm = ({
               <Grid item>
                 <TaskPhaseAutocomplete
                   options={Object.values(PhaseEnum)}
-                  label={t('Task Type')}
+                  label={t('Task Type/Phase')}
                   value={taskPhase}
+                  contactPhase={phaseData?.id}
+                  inputRef={inputRef}
                   onChange={(phase) =>
                     handleTaskPhaseChange({
                       phase,
@@ -352,13 +364,14 @@ const TaskModalForm = ({
                   }
                 />
               </Grid>
+
               <Grid item>
                 <FormControl fullWidth>
                   <ActivityTypeAutocomplete
                     options={Object.values(ActivityTypeEnum)}
                     label={t('Action')}
                     value={activityType}
-                    phaseType={phaseData?.id}
+                    taskPhaseType={taskPhase}
                     onChange={(activityType) => {
                       handleTaskActionChange({
                         activityType,
@@ -386,10 +399,8 @@ const TaskModalForm = ({
                     errors.subject && touched.subject && t('Field is required')
                   }
                   required
-                  inputRef={inputRef}
                 />
               </Grid>
-
               {isAppointmentActivityType(activityType) && (
                 <Grid item>
                   <TextField
@@ -409,6 +420,7 @@ const TaskModalForm = ({
                   onChange={(userId) => setFieldValue('userId', userId)}
                 />
               </Grid>
+
               {!initialTask.completedAt && (
                 <Grid item>
                   <FormControl fullWidth>
