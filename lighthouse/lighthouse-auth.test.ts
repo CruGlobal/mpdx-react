@@ -1,10 +1,7 @@
 import fs from 'fs';
-import { loadInitialPage, main } from './lighthouse-auth.mjs';
+import { checkForInitialLoad, main } from './lighthouse-auth.mjs';
 
 describe('Lighthouse Pre-Login Steps', () => {
-  const OLD_ENV = process.env;
-  const previewUrl = 'https://pr-908.d3dytjb8adxkk5.amplifyapp.com';
-
   const browser = {
     newPage: jest.fn(),
   };
@@ -60,7 +57,6 @@ describe('Lighthouse Pre-Login Steps', () => {
     jest.resetModules();
     jest.mock('fs', () => ({ appendFile: jest.fn() }));
     jest.spyOn(fs, 'appendFile').mockImplementation(() => {});
-    process.env = { ...OLD_ENV };
   });
 
   describe('main', () => {
@@ -197,33 +193,55 @@ describe('Lighthouse Pre-Login Steps', () => {
     });
   });
 
-  describe('loadInitialPage', () => {
+  describe('checkForInitialLoad', () => {
     it('should load the initial page right away', async () => {
-      process.env.PREVIEW_URL = previewUrl;
       successfulTestMock();
 
-      await loadInitialPage(initialPage, `${previewUrl}/accountLists`, 500);
-      expect(initialPage.goto).toHaveBeenCalledTimes(1);
-    });
+      await checkForInitialLoad(initialPage, 500);
+      expect(initialPage.waitForSelector).toHaveBeenCalledTimes(1);
+    }, 500);
 
     it('should wait until the page is available', async () => {
       successfulTestMock();
 
-      process.env.PREVIEW_URL = previewUrl;
-      const initialResponse = {
-        status: 404,
+      initialPage.waitForSelector
+        .mockImplementationOnce((selector) => {
+          if (selector === '#__next') {
+            return Promise.reject('Timed out waiting to find element');
+          }
+          return Promise.resolve({});
+        })
+        .mockResolvedValueOnce({});
+
+      await checkForInitialLoad(initialPage, 500);
+      expect(initialPage.waitForSelector).toHaveBeenCalledTimes(2);
+    });
+
+    it('should stop trying after max tries', async () => {
+      successfulTestMock();
+
+      const promiseWithTimeout = (timeout) => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            reject(new Error('Timed out waiting to find element'));
+          }, timeout);
+        });
       };
 
-      initialPage.goto
-        .mockImplementationOnce(() => {
-          return Promise.resolve(initialResponse);
-        })
-        .mockImplementationOnce(() => {
-          return Promise.resolve({ status: 200 });
-        });
+      const maxTries = 14;
+      const timeout = 100;
+      for (let i = 0; i < maxTries; i++) {
+        initialPage.waitForSelector.mockImplementationOnce(() =>
+          promiseWithTimeout(timeout),
+        );
+      }
 
-      await loadInitialPage(initialPage, `${previewUrl}/accountLists`, 500);
-      expect(initialPage.goto).toHaveBeenCalledTimes(2);
+      initialPage.waitForSelector.mockResolvedValueOnce({});
+
+      await expect(() =>
+        checkForInitialLoad(initialPage, timeout),
+      ).rejects.toEqual(`Failed to load page after ${maxTries - 1} retries`);
+      expect(initialPage.waitForSelector).toHaveBeenCalledTimes(maxTries);
     });
   });
 
@@ -246,7 +264,7 @@ describe('Lighthouse Pre-Login Steps', () => {
     });
 
     initialPage.waitForSelector.mockImplementation((selector) => {
-      let element;
+      let element = {};
       if (
         selector === '#okta-signin-username' ||
         selector === 'input[type="password"]'
@@ -267,8 +285,4 @@ describe('Lighthouse Pre-Login Steps', () => {
       return Promise.resolve(successResult);
     });
   };
-
-  afterAll(() => {
-    process.env = OLD_ENV;
-  });
 });

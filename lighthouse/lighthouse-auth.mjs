@@ -2,15 +2,19 @@
 
 import fs from 'fs';
 
+const MAX_TRIES = 13;
+
 /**
  * @param {puppeteer.Page} page
  * @param {string} origin
  */
 async function login(page, origin) {
-  if (process.env.PREVIEW_URL) {
-    await loadInitialPage(page, origin);
-  } else {
-    await page.goto(origin);
+  await page.goto(origin);
+  try {
+    await checkForInitialLoad(page);
+  } catch (error) {
+    console.log(error);
+    return;
   }
 
   let signInButton;
@@ -54,19 +58,15 @@ async function login(page, origin) {
   }
 }
 
-export async function loadInitialPage(page, origin, timeout = 60_000) {
-  let originResponse = await page.goto(origin);
-
-  return await new Promise((resolve) => {
-    const initialLoadId = setInterval(async () => {
-      if (originResponse.status && originResponse.status !== 404) {
-        resolve(originResponse);
-        clearInterval(initialLoadId);
-      } else {
-        originResponse = await page.goto(origin);
-      }
-    }, timeout);
-  });
+export async function checkForInitialLoad(page, timeout = 60_000, tries = 0) {
+  if (tries > MAX_TRIES) {
+    return Promise.reject(`Failed to load page after ${MAX_TRIES} retries`);
+  }
+  try {
+    await page.waitForSelector('#__next', { timeout: timeout });
+  } catch (error) {
+    return checkForInitialLoad(page, timeout, tries + 1);
+  }
 }
 
 async function loginToOkta(page) {
