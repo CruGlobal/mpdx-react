@@ -57,3 +57,7 @@ node_modules
 
 # Storybook
 build-storybook.log
+
+# Lighthouse
+.lighthouseci
+lighthouse-results.md
