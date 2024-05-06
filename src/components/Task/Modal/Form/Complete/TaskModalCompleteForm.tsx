@@ -29,7 +29,7 @@ import {
   ResultEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
@@ -99,7 +99,7 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { phaseData } = useGetPhaseData(task?.taskPhase);
+  const { phaseData } = usePhaseData(task?.taskPhase);
 
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],

@@ -5,7 +5,7 @@ import {
   PhaseEnum,
   ResultEnum,
 } from 'src/graphql/types.generated';
-import { Contstants, SetPhaseId } from 'src/hooks/useContactPhaseData';
+import { Contstants, SetPhaseId } from 'src/hooks/usePhaseData';
 
 type SetFieldValue = (
   field: string,

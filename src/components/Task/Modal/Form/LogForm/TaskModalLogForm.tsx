@@ -39,7 +39,7 @@ import {
   StatusEnum,
   TaskCreateInput,
 } from 'src/graphql/types.generated';
-import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
@@ -132,7 +132,7 @@ const TaskModalLogForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { phaseData, setPhaseId, constants, taskPhases } = useGetPhaseData();
+  const { phaseData, setPhaseId, constants, taskPhases } = usePhaseData();
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );

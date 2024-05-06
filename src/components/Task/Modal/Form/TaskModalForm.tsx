@@ -47,7 +47,7 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from 'src/graphql/types.generated';
-import { useGetPhaseData } from 'src/hooks/useContactPhaseData';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { nullableDateTime } from 'src/lib/formikHelpers';
@@ -184,7 +184,7 @@ const TaskModalForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { phaseData, setPhaseId, constants, taskPhases } = useGetPhaseData(
+  const { phaseData, setPhaseId, constants, taskPhases } = usePhaseData(
     task?.taskPhase,
   );
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(

@@ -27,7 +27,7 @@ const phaseFromActivity = (
   );
 };
 
-export const useGetPhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
+export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
   const constants = useApiConstants();
   const [phaseData, setPhaseData] = useState<Phase | null>(
     phaseFromActivity(phaseEnum ?? null, constants),
