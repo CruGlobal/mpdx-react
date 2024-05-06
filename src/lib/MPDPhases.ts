@@ -5,7 +5,7 @@ export const getLocalizedTaskPhase = (
   t: TFunction,
   taskPhase?: PhaseEnum | null,
 ): string => {
-  if (!taskPhase) {
+  if (taskPhase === undefined) {
     return '';
   }
 
@@ -27,6 +27,9 @@ export const getLocalizedTaskPhase = (
 
     case PhaseEnum.Archive:
       return t('Archive');
+
+    default:
+      return t('No Phase');
   }
 };
 
