@@ -213,12 +213,6 @@ const TaskModalForm = ({
     delete attributes.taskPhase;
     delete attributes.changeContactStatus;
 
-    const sharedAttributes = {
-      ...attributes,
-      completedAt: completedAt?.toISO(),
-      startAt: startAt?.toISO(),
-    };
-
     if (attributes.result) {
       attributes.result = getDatabaseValueFromResult(
         phaseData,
@@ -226,6 +220,12 @@ const TaskModalForm = ({
         attributes.activityType,
       );
     }
+
+    const sharedAttributes = {
+      ...attributes,
+      completedAt: completedAt?.toISO(),
+      startAt: startAt?.toISO(),
+    };
 
     if (task) {
       await updateTask({
@@ -531,7 +531,7 @@ const TaskModalForm = ({
                   </FormControl>
                 </Grid>
               )}
-              {initialTask.completedAt && nextActions.length > 0 && (
+              {initialTask.completedAt && nextActions.length && (
                 <Grid item>
                   <ActivityTypeAutocomplete
                     options={nextActions}
