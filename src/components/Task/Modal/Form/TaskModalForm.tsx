@@ -7,17 +7,13 @@ import React, {
 } from 'react';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
-  Checkbox,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
-  FormControlLabel,
-  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
-  Select,
   TextField,
   Tooltip,
   Typography,
@@ -55,7 +51,6 @@ import {
   getLocalizedNotificationTimeUnit,
   getLocalizedNotificationType,
 } from 'src/utils/functions/getLocalizedNotificationStrings';
-import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
 import theme from '../../../../theme';
@@ -66,6 +61,8 @@ import { ActivityTypeAutocomplete } from './Inputs/ActivityTypeAutocomplete/Acti
 import { AssigneeAutocomplete } from './Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import { ContactsAutocomplete } from './Inputs/ContactsAutocomplete/ContactsAutocomplete';
 import { PhaseTags } from './Inputs/PhaseTags/PhaseTags';
+import { ResultSelect } from './Inputs/ResultSelect/ResultSelect';
+import { SuggestedContactStatus } from './Inputs/SuggestedContactStatus/SuggestedContactStatus';
 import {
   TagTypeEnum,
   TagsAutocomplete,
@@ -81,7 +78,6 @@ import {
 } from './TaskModal.generated';
 import {
   getDatabaseValueFromResult,
-  handleResultChange,
   handleTaskActionChange,
   handleTaskPhaseChange,
 } from './TaskModalHelper';
@@ -478,59 +474,22 @@ const TaskModalForm = ({
                   }
                 />
               </Grid>
-              {initialTask.completedAt && !!availableResults.length && (
-                <Grid item>
-                  <FormControl fullWidth required>
-                    <InputLabel id="result">{t('Result')}</InputLabel>
-                    <Select
-                      labelId="result"
-                      label={t('Result')}
-                      value={result}
-                      onChange={(e) => {
-                        handleResultChange({
-                          result: e.target.value,
-                          setFieldValue,
-                          setResultSelected,
-                        });
-                      }}
-                    >
-                      {availableResults.map((result) => (
-                        <MenuItem key={result} value={result}>
-                          {getLocalizedResultString(t, result)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
+              {initialTask.completedAt && (
+                <ResultSelect
+                  availableResults={availableResults}
+                  result={result}
+                  setFieldValue={setFieldValue}
+                  setResultSelected={setResultSelected}
+                />
               )}
-              {partnerStatus?.suggestedContactStatus && (
-                <Grid item>
-                  <FormControl fullWidth>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={changeContactStatus}
-                          name="changeContactStatus"
-                          onChange={handleChange}
-                        />
-                      }
-                      label={t("Change the contact's status to: {{status}}", {
-                        status: partnerStatus.suggestedContactStatus,
-                      })}
-                    />
-                    {contactIds.length > 1 && (
-                      <FormHelperText>
-                        {t(
-                          'This will change the contact status for {{amount}} contacts',
-                          {
-                            amount: contactIds.length,
-                          },
-                        )}
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-              )}
+
+              <SuggestedContactStatus
+                partnerStatus={partnerStatus}
+                changeContactStatus={changeContactStatus}
+                handleChange={handleChange}
+                numOfContacts={contactIds.length}
+              />
+
               {initialTask.completedAt && nextActions.length && (
                 <Grid item>
                   <ActivityTypeAutocomplete

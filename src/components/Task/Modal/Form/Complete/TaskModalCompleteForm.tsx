@@ -1,16 +1,10 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import {
-  Checkbox,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
-  FormControlLabel,
-  FormHelperText,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';
@@ -36,7 +30,6 @@ import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { getLocalizedTaskPhase } from 'src/lib/MPDPhases';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
-import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
@@ -48,6 +41,8 @@ import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
 import { PhaseTags } from '../Inputs/PhaseTags/PhaseTags';
+import { ResultSelect } from '../Inputs/ResultSelect/ResultSelect';
+import { SuggestedContactStatus } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus';
 import {
   TagTypeEnum,
   TagsAutocomplete,
@@ -56,10 +51,7 @@ import { possibleNextActions } from '../PossibleNextActions';
 import { possiblePartnerStatus } from '../PossiblePartnerStatus';
 import { possibleResults } from '../PossibleResults';
 import { useUpdateContactStatusMutation } from '../TaskModal.generated';
-import {
-  getDatabaseValueFromResult,
-  handleResultChange,
-} from '../TaskModalHelper';
+import { getDatabaseValueFromResult } from '../TaskModalHelper';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const StyledGrid = styled(Grid)(() => ({
@@ -69,7 +61,7 @@ const StyledGrid = styled(Grid)(() => ({
 const taskSchema = yup.object({
   id: yup.string().required(),
   result: yup.mixed<ResultEnum>().required(),
-  changeContactStatus: yup.boolean().nullable(),
+  changeContactStatus: yup.boolean(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   tagList: yup.array().of(yup.string().required()).default([]),
   completedAt: nullableDateTime(),
@@ -321,57 +313,21 @@ const TaskModalCompleteForm = ({
                   />
                 </FormControl>
               </Grid>
-              {availableResults.length && (
-                <Grid item>
-                  <FormControl fullWidth required>
-                    <InputLabel id="result">{t('Result')}</InputLabel>
-                    <Select
-                      label={t('Result')}
-                      labelId="result"
-                      value={result}
-                      onChange={(e) => {
-                        handleResultChange({
-                          result: e.target.value,
-                          setFieldValue,
-                          setResultSelected,
-                        });
-                      }}
-                    >
-                      {availableResults.map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedResultString(t, val)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              )}
-              {partnerStatus?.suggestedContactStatus && (
-                <Grid item>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        value={changeContactStatus}
-                        name="changeContactStatus"
-                        onChange={handleChange}
-                      />
-                    }
-                    label={t("Change the contact's status to: {{status}}", {
-                      status: partnerStatus.suggestedContactStatus,
-                    })}
-                  />
-                  {task.contacts.nodes.length > 1 && (
-                    <FormHelperText>
-                      {t(
-                        'This will change the contact status for {{amount}} contacts',
-                        {
-                          amount: task.contacts.nodes.length,
-                        },
-                      )}
-                    </FormHelperText>
-                  )}
-                </Grid>
-              )}
+
+              <ResultSelect
+                availableResults={availableResults}
+                result={result}
+                setFieldValue={setFieldValue}
+                setResultSelected={setResultSelected}
+              />
+
+              <SuggestedContactStatus
+                partnerStatus={partnerStatus}
+                changeContactStatus={changeContactStatus}
+                handleChange={handleChange}
+                numOfContacts={task.contacts.nodes.length}
+              />
+
               {nextActions.length && (
                 <Grid item>
                   <ActivityTypeAutocomplete

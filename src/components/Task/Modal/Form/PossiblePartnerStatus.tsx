@@ -6,7 +6,7 @@ import {
   TaskResultPair,
 } from 'src/graphql/types.generated';
 
-type PossiblePartnerStatus = {
+export type PossiblePartnerStatus = {
   suggestedContactStatus: StatusEnum;
   dbResult?: TaskResultPair;
 };
