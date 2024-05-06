@@ -184,7 +184,9 @@ const TaskModalForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { phaseData, setPhaseId, constants } = useGetPhaseData(task?.taskPhase);
+  const { phaseData, setPhaseId, constants, taskPhases } = useGetPhaseData(
+    task?.taskPhase,
+  );
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -347,7 +349,7 @@ const TaskModalForm = ({
             <FormFieldsGridContainer>
               <Grid item>
                 <TaskPhaseAutocomplete
-                  options={Object.values(PhaseEnum)}
+                  options={taskPhases}
                   label={t('Task Type/Phase')}
                   value={taskPhase}
                   contactPhase={phaseData?.id}

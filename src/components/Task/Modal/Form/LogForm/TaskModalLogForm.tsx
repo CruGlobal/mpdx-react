@@ -132,7 +132,7 @@ const TaskModalLogForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { phaseData, setPhaseId, constants } = useGetPhaseData();
+  const { phaseData, setPhaseId, constants, taskPhases } = useGetPhaseData();
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -297,7 +297,7 @@ const TaskModalLogForm = ({
             <FormFieldsGridContainer>
               <Grid item>
                 <TaskPhaseAutocomplete
-                  options={Object.values(PhaseEnum)}
+                  options={taskPhases}
                   label={t('Task Type/Phase')}
                   value={taskPhase}
                   contactPhase={phaseData?.id}
