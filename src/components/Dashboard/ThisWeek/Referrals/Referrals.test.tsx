@@ -1,9 +1,6 @@
 import React from 'react';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
-import {
-  fireEvent,
-  render,
-} from '../../../../../__tests__/util/testingLibraryReactMock';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { fireEvent, render } from '__tests__/util/testingLibraryReactMock';
 import Referrals from '.';
 
 jest.mock('next/router', () => ({

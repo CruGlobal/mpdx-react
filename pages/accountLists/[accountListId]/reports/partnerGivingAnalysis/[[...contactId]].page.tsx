@@ -1,17 +1,20 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
-import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
   Panel,
   PartnerGivingAnalysisReport,
+  PartnerGivingAnalysisReportRef,
 } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
-import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
+import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -22,7 +25,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
-import { ContactsPage } from '../../contacts/ContactsPage';
+import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 
 // The order here is also the sort order and the display order
 const reportFilters = [
@@ -39,6 +42,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
   const [panelOpen, setPanelOpen] = useState<Panel | null>(null);
+  const reportRef = useRef<PartnerGivingAnalysisReportRef>(null);
 
   const router = useRouter();
   const selectedContactId = getQueryParam(router.query, 'contactId');
@@ -93,6 +97,10 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     );
   };
 
+  const handleClearSearch = () => {
+    reportRef.current?.clearSearchInput();
+  };
+
   return (
     <>
       <Head>
@@ -115,14 +123,27 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
               filtersLoading ? (
                 <Loading loading />
               ) : (
-                <FilterPanel
-                  filters={filterGroups}
-                  defaultExpandedFilterGroups={new Set(['Report Filters'])}
-                  savedFilters={[]}
-                  selectedFilters={activeFilters}
-                  onClose={() => setPanelOpen(null)}
-                  onSelectedFiltersChanged={setActiveFilters}
-                />
+                <ContactsProvider
+                  urlFilters={{}}
+                  activeFilters={{}}
+                  setActiveFilters={() => undefined}
+                  starredFilter={{}}
+                  setStarredFilter={() => undefined}
+                  filterPanelOpen={false}
+                  setFilterPanelOpen={() => undefined}
+                  contactId={[]}
+                  searchTerm={''}
+                >
+                  <DynamicFilterPanel
+                    filters={filterGroups}
+                    defaultExpandedFilterGroups={new Set(['Report Filters'])}
+                    savedFilters={[]}
+                    selectedFilters={activeFilters}
+                    onClose={() => setPanelOpen(null)}
+                    onSelectedFiltersChanged={setActiveFilters}
+                    onHandleClearSearch={handleClearSearch}
+                  />
+                </ContactsProvider>
               )
             ) : undefined
           }
@@ -130,6 +151,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           leftWidth="290px"
           mainContent={
             <PartnerGivingAnalysisReport
+              ref={reportRef}
               accountListId={accountListId}
               activeFilters={activeFilters}
               panelOpen={panelOpen}
@@ -143,9 +165,11 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           }
           rightPanel={
             selectedContactId ? (
-              <ContactsPage>
-                <ContactsRightPanel onClose={() => handleSelectContact('')} />
-              </ContactsPage>
+              <ContactsWrapper>
+                <DynamicContactsRightPanel
+                  onClose={() => handleSelectContact('')}
+                />
+              </ContactsWrapper>
             ) : undefined
           }
           rightOpen={typeof selectedContactId !== 'undefined'}
@@ -157,5 +181,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     </>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default PartnerGivingAnalysisReportPage;

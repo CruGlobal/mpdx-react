@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Alert,
   Avatar,
@@ -17,10 +17,14 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import Modal from '../../../common/Modal/Modal';
+import {
+  ContactsContext,
+  ContactsType,
+} from '../../ContactsContext/ContactsContext';
 import {
   useGetContactsForMergingQuery,
   useMassActionsMergeMutation,
@@ -41,6 +45,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
   accountListId,
   ids,
 }) => {
+  const { deselectAll } = useContext(ContactsContext) as ContactsType;
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
@@ -75,6 +80,8 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
     enqueueSnackbar(t('Contacts merged!'), {
       variant: 'success',
     });
+
+    deselectAll();
     handleClose();
   };
 

@@ -1221,18 +1221,19 @@ class MpdxRestApi extends RESTDataSource {
   //
 
   async searchOrganizationsAccountLists(
-    organizationId: string,
     search: string,
     pageNumber = 1,
+    organizationId?: string,
   ) {
     const include =
       'account_list_users,account_list_coaches,account_list_users.user_email_addresses,' +
       'account_list_coaches.coach_email_addresses,designation_accounts,' +
       'designation_accounts.organization,account_list_invites,' +
       'account_list_invites.invited_by_user';
-    const filters =
-      `filter[organization_id]=${organizationId}` +
-      `&filter[wildcard_search]=${search}`;
+    const organizationIdFilter = organizationId
+      ? `&filter[organization_id]=${organizationId}`
+      : '';
+    const filters = `filter[wildcard_search]=${search}` + organizationIdFilter;
     const fields =
       'fields[account_lists]=name,account_list_coaches,account_list_users,account_list_invites,designation_accounts' +
       '&fields[account_list_coaches]=coach_first_name,coach_last_name,coach_email_addresses' +

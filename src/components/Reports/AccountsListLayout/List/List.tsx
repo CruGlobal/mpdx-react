@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import List from '@mui/material/List';
+import { List } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Account, AccountListItem as ListItem } from './ListItem/ListItem';
 import { AccountListSubheader as ListSubheader } from './ListSubheader/ListSubheader';

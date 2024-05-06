@@ -13,7 +13,6 @@ export const createNewsletterTaskMutationMock = (
 ): MockedResponse => {
   const task: TaskCreateInput = {
     activityType,
-    completedAt: null,
     startAt: DateTime.local().toISO(),
     subject: 'abc',
     comment: 'comment',

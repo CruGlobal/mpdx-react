@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { AppBar, Box } from '@mui/material';
-import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
+import TestWrapper from '__tests__/util/TestWrapper';
 import NavMenu from './NavMenu';
 
 export default {

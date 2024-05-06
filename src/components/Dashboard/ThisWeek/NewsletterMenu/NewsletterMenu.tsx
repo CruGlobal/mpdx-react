@@ -1,15 +1,30 @@
 import React, { ReactElement, useState } from 'react';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
-import { Button, Dialog, ListItemText, Menu, MenuItem } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import {
+  Button,
+  Dialog,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Skeleton,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
-import ExportEmail from './MenuItems/ExportEmail/ExportEmail';
-import ExportPhysical from './MenuItems/ExportPhysical/ExportPhysical';
-import LogNewsletter from './MenuItems/LogNewsLetter/LogNewsletter';
+import { dateFormat } from 'src/lib/intlFormat';
+import {
+  DynamicExportEmail,
+  preloadExportEmail,
+} from './MenuItems/ExportEmail/DynamicExportEmail';
+import {
+  DynamicExportPhysical,
+  preloadExportPhysical,
+} from './MenuItems/ExportPhysical/DynamicExportPhysical';
+import {
+  DynamicLogNewsletter,
+  preloadLogNewsletter,
+} from './MenuItems/LogNewsLetter/DynamicLogNewsletter';
 import { useGetTaskAnalyticsQuery } from './NewsletterMenu.generated';
 
 interface Props {
@@ -85,21 +100,21 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
       switch (selectedMenuItem) {
         case 0:
           return (
-            <LogNewsletter
+            <DynamicLogNewsletter
               accountListId={accountListId}
               handleClose={handleDialogClose}
             />
           );
         case 1:
           return (
-            <ExportEmail
+            <DynamicExportEmail
               accountListId={accountListId}
               handleClose={handleDialogClose}
             />
           );
         case 2:
           return (
-            <ExportPhysical
+            <DynamicExportPhysical
               accountListId={accountListId}
               handleClose={handleDialogClose}
             />
@@ -153,13 +168,22 @@ const NewsletterMenu = ({ accountListId }: Props): ReactElement<Props> => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <MenuItem onClick={() => handleMenuItemClick(0)}>
+        <MenuItem
+          onClick={() => handleMenuItemClick(0)}
+          onMouseEnter={preloadLogNewsletter}
+        >
           <ListItemText primary={t('Log Newsletter')} />
         </MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick(1)}>
+        <MenuItem
+          onClick={() => handleMenuItemClick(1)}
+          onMouseEnter={preloadExportEmail}
+        >
           <ListItemText primary={t('Export Email')} />
         </MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick(2)}>
+        <MenuItem
+          onClick={() => handleMenuItemClick(2)}
+          onMouseEnter={preloadExportPhysical}
+        >
           <ListItemText primary={t('Export Physical')} />
         </MenuItem>
       </Menu>

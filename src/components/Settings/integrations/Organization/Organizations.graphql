@@ -5,6 +5,7 @@ query getOrganizations {
     apiClass
     oauth
     giftAidPercentage
+    disableNewUsers
   }
 }
 

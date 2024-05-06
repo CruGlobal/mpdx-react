@@ -3,8 +3,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { GetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetExpectedMonthlyTotalsQuery } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import theme from '../../../theme';
 import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 

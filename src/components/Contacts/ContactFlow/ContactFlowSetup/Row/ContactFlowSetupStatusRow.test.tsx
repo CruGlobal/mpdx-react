@@ -3,8 +3,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import TestWrapper from '__tests__/util/TestWrapper';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
-import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../../theme';
 import { ContactFlowSetupStatusRow } from './ContactFlowSetupStatusRow';
 

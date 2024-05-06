@@ -130,7 +130,7 @@ describe('EditDonationModal', () => {
     expect(getByText('Edit Donation')).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Appeal Amount' })).toHaveValue('50');
 
-    userEvent.click(getByRole('button', { name: 'Appeal' }));
+    userEvent.click(getByRole('combobox', { name: 'Appeal' }));
     await waitFor(() =>
       expect(
         getByRole('option', { name: 'End of Year Ask' }),
@@ -171,10 +171,10 @@ describe('EditDonationModal', () => {
     const dateButton = getByRole('textbox', {
       name: 'Choose date, selected date is Mar 25, 2021',
     });
-    expect(dateButton).toHaveValue('3/25/2021');
+    expect(dateButton).toHaveValue('03/25/2021');
     userEvent.click(dateButton);
     userEvent.click(getByRole('gridcell', { name: '27' }));
-    expect(dateButton).toHaveValue('3/27/2021');
+    expect(dateButton).toHaveValue('03/27/2021');
   });
 
   it('saves edits', async () => {

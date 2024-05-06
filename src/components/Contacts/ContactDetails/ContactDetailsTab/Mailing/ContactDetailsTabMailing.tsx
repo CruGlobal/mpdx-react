@@ -6,19 +6,14 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateFormat } from 'src/lib/intlFormat';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { sourceToStr } from 'src/utils/sourceToStr';
 import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../../ContactDetailContext';
-import { ContactDetailEditIcon } from '../ContactDetailsTab';
-import {
-  ContactDetailsAddButton,
-  ContactDetailsAddIcon,
-  ContactDetailsAddText,
-} from '../People/ContactDetailsTabPeople';
+import { AddButton, AddIcon, AddText, EditIcon } from '../StyledComponents';
 import { AddAddressModal } from './AddAddressModal/AddAddressModal';
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
@@ -230,7 +225,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 onClick={() => setEditMailingModalOpen(true)}
                 aria-label={t('Edit Mailing')}
               >
-                <ContactDetailEditIcon />
+                <EditIcon />
               </AddressEditIconContainer>
             </ContactDetailsMailingLabelTextContainer>
             {/* Envelope Name Section */}
@@ -252,12 +247,10 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
         <Grid container alignItems="center">
-          <ContactDetailsAddButton onClick={() => setAddAddressModalOpen(true)}>
-            <ContactDetailsAddIcon />
-            <ContactDetailsAddText variant="subtitle1">
-              {t('Add Address')}
-            </ContactDetailsAddText>
-          </ContactDetailsAddButton>
+          <AddButton onClick={() => setAddAddressModalOpen(true)}>
+            <AddIcon />
+            <AddText variant="subtitle1">{t('Add Address')}</AddText>
+          </AddButton>
         </Grid>
       </Box>
       {selectedAddress ? (

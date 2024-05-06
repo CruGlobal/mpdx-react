@@ -1,37 +1,57 @@
-overwrite: true
-schema:
-  - ${API_URL:https://api.stage.mpdx.org/graphql}
-  - ./pages/api/Schema/**/*.graphql
-documents: '**/*.graphql'
 generates:
   ./src/graphql/types.generated.ts:
+    schema:
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
+      - ./pages/api/Schema/**/*.graphql
     plugins:
-      - add:
-          content: '/* eslint-disable */'
       - typescript
     config:
       scalars:
         ISO8601Date: string
         ISO8601DateTime: string
   ./:
+    schema:
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
+      - ./pages/api/Schema/**/*.graphql
+    documents: '**/*.graphql'
     preset: near-operation-file
     presetConfig:
       baseTypesPath: src/graphql/types.generated.ts
     plugins:
-      - add:
-          content: '/* eslint-disable */'
       - typescript-operations
       - typescript-react-apollo
     config:
       preResolveTypes: false
   ./src/graphql/schema.graphql:
+    schema:
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
+      - ./pages/api/Schema/**/*.graphql
     plugins:
       - schema-ast
-    config:
-      federation: true
   ./src/graphql/possibleTypes.generated.ts:
+    schema:
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
+      - ./pages/api/Schema/**/*.graphql
     plugins:
       - fragment-matcher
+  ./pages/api/graphql-rest.page.generated.ts:
+    schema:
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
+      - ./pages/api/Schema/**/*.graphql
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      useIndexSignature: true
+      contextType: ./graphql-rest.page#Context
+      scalars:
+        ISO8601Date: string
+        ISO8601DateTime: string
+  ./src/graphql/rootFields.generated.ts:
+    schema: ${API_URL:https://api.stage.mpdx.org/graphql}
+    plugins:
+      - ./extractRootFields.js
 hooks:
   afterAllFileWrite:
     - prettier --write
+    - node deleteStaleFiles.mjs

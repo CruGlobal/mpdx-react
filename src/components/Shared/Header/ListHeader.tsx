@@ -73,9 +73,9 @@ export enum TableViewModeEnum {
 }
 
 export enum ListHeaderCheckBoxState {
-  'unchecked',
-  'checked',
-  'partial',
+  Unchecked = 'unchecked',
+  Checked = 'checked',
+  Partial = 'partial',
 }
 
 export enum PageEnum {
@@ -133,10 +133,10 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {contactsView !== TableViewModeEnum.Map && (
           <Hidden xsDown>
             <StyledCheckbox
-              checked={headerCheckboxState === ListHeaderCheckBoxState.checked}
+              checked={headerCheckboxState === ListHeaderCheckBoxState.Checked}
               color="secondary"
               indeterminate={
-                headerCheckboxState === ListHeaderCheckBoxState.partial
+                headerCheckboxState === ListHeaderCheckBoxState.Partial
               }
               onChange={onCheckAllItems}
               disabled={!totalItems}
@@ -197,7 +197,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             selectedIds={selectedIds}
             massDeselectAll={massDeselectAll}
             selectedIdCount={
-              headerCheckboxState === ListHeaderCheckBoxState.checked
+              headerCheckboxState === ListHeaderCheckBoxState.Checked
                 ? totalItems ?? 0
                 : selectedIds.length
             }

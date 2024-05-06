@@ -6,13 +6,10 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
-  FormControlLabel,
-  TextField,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
-import _ from 'lodash';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateUserMutation } from 'src/components/Settings/preferences/UpdateUser.generated';
@@ -51,18 +48,6 @@ import { PersonShowMore } from './PersonShowMore/PersonShowMore';
 import { formatSubmittedFields, getPersonSchema } from './personModalHelper';
 import { uploadAvatar, validateAvatar } from './uploadAvatar';
 
-export const ContactInputField = styled(TextField, {
-  shouldForwardProp: (prop) => prop !== 'destroyed',
-})(({ destroyed }: { destroyed: boolean }) => ({
-  textDecoration: destroyed ? 'line-through' : 'none',
-}));
-
-export const PrimaryControlLabel = styled(FormControlLabel, {
-  shouldForwardProp: (prop) => prop !== 'destroyed',
-})(({ destroyed }: { destroyed: boolean }) => ({
-  textDecoration: destroyed ? 'line-through' : 'none',
-}));
-
 const ContactPersonContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2, 0),
 }));
@@ -96,6 +81,14 @@ export type Person = Omit<
 > & {
   __typename?: 'Person' | 'User';
 };
+
+interface Attributes {
+  id: string;
+  greeting: any;
+  envelopeGreeting: any;
+  name: any;
+  primaryPersonId?: string;
+}
 
 interface PersonModalProps {
   contactId: string;
@@ -278,14 +271,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               removeNameFromGreetings(envelopeGreeting);
             const newName = removeNameFromGreetings(name, /,\s{1,}and /, ', ');
 
-            interface attributes {
-              id: string;
-              greeting: any;
-              envelopeGreeting: any;
-              name: any;
-              primaryPersonId?: string;
-            }
-            const attributes: attributes = {
+            const attributes: Attributes = {
               id: contactId,
               greeting: newGreeting,
               envelopeGreeting: newEnvelopeGreeting,

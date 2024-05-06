@@ -8,9 +8,15 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { Preference } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
+
+const preferencesSchema: yup.SchemaOf<
+  Pick<Preference, 'hourToSendNotifications'>
+> = yup.object({
+  hourToSendNotifications: yup.number().default(null).nullable(),
+});
 
 interface HourToSendNotificationsAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -39,14 +45,8 @@ export const HourToSendNotificationsAccordion: React.FC<
     [hours, hourToSendNotifications],
   );
 
-  const PreferencesSchema: yup.SchemaOf<
-    Pick<Types.Preference, 'hourToSendNotifications'>
-  > = yup.object({
-    hourToSendNotifications: yup.number().default(null).nullable(),
-  });
-
   const onSubmit = async (
-    attributes: Pick<Types.Preference, 'hourToSendNotifications'>,
+    attributes: Pick<Preference, 'hourToSendNotifications'>,
   ) => {
     await updatePersonalPreferences({
       variables: {
@@ -82,7 +82,7 @@ export const HourToSendNotificationsAccordion: React.FC<
         initialValues={{
           hourToSendNotifications: hourToSendNotifications,
         }}
-        validationSchema={PreferencesSchema}
+        validationSchema={preferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
       >

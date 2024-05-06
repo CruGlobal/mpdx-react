@@ -4,7 +4,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import TestRouter from '../../../../../__tests__/util/TestRouter';
+import TestRouter from '__tests__/util/TestRouter';
 import theme from '../../../../theme';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
 import TopBar from './TopBar';
@@ -17,21 +17,6 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
-const session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    email: 'Chair Library Bed',
-    image: null,
-    name: 'Dung Tapestry',
-    token: 'superLongJwtString',
-  },
-};
-
-jest.mock('next-auth/react', () => {
-  return {
-    useSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
-  };
-});
 
 const mockEnqueue = jest.fn();
 

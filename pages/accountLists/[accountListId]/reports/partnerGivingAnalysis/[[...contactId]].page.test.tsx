@@ -1,9 +1,11 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
 import theme from 'src/theme';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
@@ -51,8 +53,20 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
           {
             filters: [
               {
-                __typename: 'TextFilter' as const,
+                __typename: 'MultiselectFilter' as const,
                 filterKey: 'designation_account_id',
+                title: 'Designation Account',
+                defaultSelection: '',
+                options: [
+                  {
+                    name: 'Designation Account 1',
+                    __typename: 'FilterOption' as const,
+                  },
+                  {
+                    name: 'Designation Account 2',
+                    __typename: 'FilterOption' as const,
+                  },
+                ],
               },
             ],
           },
@@ -66,7 +80,18 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
       <TestRouter router={router}>
         <GqlMockedProvider<Mocks> mocks={mocks}>
           <SnackbarProvider>
-            <PartnerGivingAnalysisPage />
+            <ContactsProvider
+              activeFilters={{}}
+              setActiveFilters={() => {}}
+              starredFilter={{}}
+              setStarredFilter={() => {}}
+              filterPanelOpen={false}
+              setFilterPanelOpen={() => {}}
+              contactId={[]}
+              searchTerm={''}
+            >
+              <PartnerGivingAnalysisPage />
+            </ContactsProvider>
           </SnackbarProvider>
         </GqlMockedProvider>
       </TestRouter>
@@ -83,12 +108,12 @@ describe('partnerGivingAnalysis page', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders contact panel', () => {
-    const { getByRole } = render(
+  it('renders contact panel', async () => {
+    const { findByRole } = render(
       <TestingComponent routerContactId={'contact-1'} />,
     );
 
-    expect(getByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
+    expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
 
   it('renders navigation panel', () => {
@@ -138,5 +163,20 @@ describe('partnerGivingAnalysis page', () => {
     expect(push).toHaveBeenCalledWith(
       '/accountLists/account-list-1/reports/partnerGivingAnalysis/',
     );
+  });
+
+  it('calls clearSearchInput', async () => {
+    const { findByRole, getByRole, getByPlaceholderText } = render(
+      <TestingComponent routerContactId={'contact-1'} />,
+    );
+    const searchBar = getByPlaceholderText('Search Contacts');
+    userEvent.type(searchBar, 'John');
+    userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
+    userEvent.click(
+      await findByRole('combobox', { name: 'Designation Account' }),
+    );
+    userEvent.click(getByRole('option', { name: 'Designation Account 1' }));
+    userEvent.click(getByRole('button', { name: 'Clear All' }));
+    expect(searchBar).toHaveValue('');
   });
 });

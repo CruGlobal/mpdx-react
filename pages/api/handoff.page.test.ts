@@ -1,9 +1,9 @@
 import { getToken } from 'next-auth/jwt';
-import makeSsrClient from 'pages/api/utils/ssrClient';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
 import { returnRedirectUrl } from './handoff.page';
 
 jest.mock('next-auth/jwt', () => ({ getToken: jest.fn() }));
-jest.mock('pages/api/utils/ssrClient', () => jest.fn());
+jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
 const rewriteDomain = 'rewrite-domain.org';
 const queryPath = 'pathName';
@@ -115,6 +115,98 @@ describe('Handoff', () => {
 
         expect(redirectUrl).toEqual(
           `https://${rewriteDomain}/handoff?accessToken=${apiToken}&accountListId=${accountListId}&userId=${userID}&path=${queryPath}`,
+        );
+      });
+    });
+
+    describe('Redirect after impersonating', () => {
+      const impersonatorApiToken = 'impersonatorApiToken';
+      const apiToken = 'apiToken';
+      beforeEach(() => {
+        (makeSsrClient as jest.Mock).mockReturnValue({
+          query: jest.fn().mockReturnValue({
+            data: {
+              accountLists: {
+                nodes: [{ id: accountListId }],
+              },
+              user: {
+                defaultAccountList,
+              },
+            },
+          }),
+        });
+        nextApiRequest.query.auth = 'false';
+      });
+
+      describe('should redirect to old MPDx with normal ApiToken', () => {
+        it('returns correct URL when useImpersonatorToken is not passed', async () => {
+          (getToken as jest.Mock).mockReturnValue({
+            name: 'John Doe',
+            email: 'john.doe@cru.org',
+            sub: 'sub',
+            admin: true,
+            developer: true,
+            apiToken: 'apiToken',
+            userID: 'userID',
+            impersonating: true,
+            impersonatorApiToken,
+            iat: 1714059807,
+            exp: 1716651807,
+            jti: 'jti',
+          });
+
+          nextApiRequest.query.accountListId = `${accountListId}-1`;
+          const redirectUrl = await returnRedirectUrl(nextApiRequest);
+
+          expect(redirectUrl).toEqual(
+            `https://${rewriteDomain}/handoff?accessToken=${apiToken}&accountListId=${accountListId}-1&userId=${userID}&path=${queryPath}`,
+          );
+        });
+
+        it('returns correct URL when not impersonating but useImpersonatorToken is passed', async () => {
+          (getToken as jest.Mock).mockReturnValue({
+            name: 'John Doe',
+            email: 'john.doe@cru.org',
+            sub: 'sub',
+            admin: true,
+            developer: true,
+            apiToken: 'apiToken',
+            userID: 'userID',
+            iat: 1714059807,
+            exp: 1716651807,
+            jti: 'jti',
+          });
+
+          nextApiRequest.query.accountListId = `${accountListId}-1`;
+          const redirectUrl = await returnRedirectUrl(nextApiRequest, true);
+
+          expect(redirectUrl).toEqual(
+            `https://${rewriteDomain}/handoff?accessToken=${apiToken}&accountListId=${accountListId}-1&userId=${userID}&path=${queryPath}`,
+          );
+        });
+      });
+
+      it('should redirect to old MPDx with impersonators ApiToken', async () => {
+        (getToken as jest.Mock).mockReturnValue({
+          name: 'John Doe',
+          email: 'john.doe@cru.org',
+          sub: 'sub',
+          admin: true,
+          developer: true,
+          apiToken: 'apiToken',
+          userID: 'userID',
+          impersonating: true,
+          impersonatorApiToken,
+          iat: 1714059807,
+          exp: 1716651807,
+          jti: 'jti',
+        });
+
+        nextApiRequest.query.accountListId = `${accountListId}-1`;
+        const redirectUrl = await returnRedirectUrl(nextApiRequest, true);
+
+        expect(redirectUrl).toEqual(
+          `https://${rewriteDomain}/handoff?accessToken=${impersonatorApiToken}&accountListId=${defaultAccountList}&userId=${userID}&path=${queryPath}`,
         );
       });
     });

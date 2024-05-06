@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { PhoneNumberData } from './FixPhoneNumbers';
 

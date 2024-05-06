@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Box, Container, Grid } from '@mui/material';
 import { motion } from 'framer-motion';
-import { GetDashboardQuery } from '../../../pages/accountLists/GetDashboard.generated';
+import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
 import Balance from './Balance';
 import DonationHistories from './DonationHistories';
 import MonthlyGoal from './MonthlyGoal/MonthlyGoal';

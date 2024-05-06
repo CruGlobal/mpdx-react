@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react';
-import Box from '@mui/material/Box';
-import Skeleton from '@mui/material/Skeleton';
-import Typography from '@mui/material/Typography';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -10,36 +8,28 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  ResponsiveContainer,
+  Text,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import theme from '../../../../../theme';
+import theme from 'src/theme';
 import { useGetDonationsGraphQuery } from './DonationsGraph.generated';
 
-const LegendText = styled(Typography)(({ theme }) => ({
-  margin: theme.spacing(3, 0),
-  writingMode: 'vertical-rl',
-  textOrientation: 'mixed',
-}));
-
 const GraphContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  margin: theme.spacing(0, 2, 0, 0),
-}));
-
-const GraphLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
-  width: '400',
-  height: '24px',
-  margin: theme.spacing(2, 0),
+  height: 300,
+  marginBottom: theme.spacing(2),
+  padding: theme.spacing(1),
+  overflowX: 'scroll',
 }));
 
 interface DonationsGraphProps {
   accountListId: string;
-  donorAccountIds: string[];
-  convertedCurrency: string;
+  donorAccountIds: string[] | undefined;
+  convertedCurrency: string | undefined;
 }
 
 export const DonationsGraph: React.FC<DonationsGraphProps> = ({
@@ -49,11 +39,12 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { data, loading } = useGetDonationsGraphQuery({
+  const { data } = useGetDonationsGraphQuery({
     variables: {
       accountListId: accountListId,
       donorAccountIds: donorAccountIds,
     },
+    skip: !donorAccountIds,
   });
 
   const monthFormatter = useMemo(
@@ -108,22 +99,26 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
           })}
         </Typography>
       )}
-      <GraphContainer fontFamily={theme.typography.fontFamily}>
-        {loading ? (
-          <Box style={{ width: '100%' }} role="alert">
-            <GraphLoadingPlaceHolder />
-            <GraphLoadingPlaceHolder />
-            <GraphLoadingPlaceHolder />
-          </Box>
+      <GraphContainer>
+        {!data ? (
+          <Skeleton
+            variant="rounded"
+            width="100%"
+            height="100%"
+            aria-label={t('Loading donations graph')}
+          />
         ) : (
-          <>
-            <LegendText variant="body1" role="textbox">
-              {t('Amount ({{amount}})', { amount: convertedCurrency })}
-            </LegendText>
-            <BarChart width={600} height={300} data={months}>
+          <ResponsiveContainer minWidth={600}>
+            <BarChart margin={{ left: 30 }} data={months}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
-              <YAxis />
+              <YAxis
+                label={
+                  <Text dx={10} dy={80} angle={90}>
+                    {t('Amount ({{amount}})', { amount: convertedCurrency })}
+                  </Text>
+                }
+              />
               <Tooltip />
               <Legend />
               <Bar
@@ -137,7 +132,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
                 fill={theme.palette.secondary.main}
               />
             </BarChart>
-          </>
+          </ResponsiveContainer>
         )}
       </GraphContainer>
     </>

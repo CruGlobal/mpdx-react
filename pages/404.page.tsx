@@ -4,7 +4,8 @@ import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefault
 import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import useGetAppSettings from '../src/hooks/useGetAppSettings';
+import BaseLayout from 'src/components/Layouts/Basic';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
@@ -46,5 +47,7 @@ const Custom404 = (): ReactElement => {
     </>
   );
 };
+
+Custom404.layout = BaseLayout;
 
 export default Custom404;

@@ -56,7 +56,7 @@ interface SearchOrganizationsContactsReturned {
   };
 }
 
-type emailAddress = {
+type EmailAddress = {
   email: string;
   primary: boolean;
   historic: boolean;
@@ -70,7 +70,7 @@ type SearchOrganizationsContactsContact = {
   people: {
     firstName: string;
     lastName: string;
-    emailAddresses: emailAddress[];
+    emailAddresses: EmailAddress[];
     phoneNumbers: {
       number: string;
       primary: boolean;
@@ -84,7 +84,7 @@ type SearchOrganizationsContactsContact = {
       id: string;
       firstName: string;
       lastName: string;
-      emailAddresses: emailAddress[];
+      emailAddresses: EmailAddress[];
     }[];
   };
   addresses: {

@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@mui/material';
-import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import { FilterPanel } from './FilterPanel';
 import {
   FilterPanelGroupFragment,

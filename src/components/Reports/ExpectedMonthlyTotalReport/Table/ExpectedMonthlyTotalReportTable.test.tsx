@@ -8,7 +8,7 @@ import {
   GetExpectedMonthlyTotalsDocument,
   GetExpectedMonthlyTotalsQuery,
   GetExpectedMonthlyTotalsQueryVariables,
-} from '../../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+} from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import theme from '../../../../theme';
 import { ExpectedMonthlyTotalReportTable } from './ExpectedMonthlyTotalReportTable';
 

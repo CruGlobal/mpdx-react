@@ -2,6 +2,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import {
   AccountListTypeEnum,
   CoachingDetail,
@@ -35,5 +36,7 @@ const CoachingPage: React.FC = () => {
     </>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default CoachingPage;

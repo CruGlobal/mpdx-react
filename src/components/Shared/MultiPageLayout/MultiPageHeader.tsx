@@ -11,6 +11,8 @@ export enum HeaderTypeEnum {
   Settings = 'settings',
 }
 
+export const multiPageHeaderHeight = theme.spacing(10);
+
 interface MultiPageHeaderProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
@@ -24,6 +26,9 @@ const StickyHeader = styled(Box)(() => ({
   top: 0,
   borderBottom: '1px solid',
   borderBottomColor: theme.palette.grey[200],
+  height: multiPageHeaderHeight,
+  zIndex: '700',
+  background: theme.palette.common.white,
 }));
 
 const NavListButton = styled(IconButton, {

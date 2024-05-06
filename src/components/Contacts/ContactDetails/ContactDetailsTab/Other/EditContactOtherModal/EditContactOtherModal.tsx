@@ -15,12 +15,12 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
-import debounce from 'lodash/fp/debounce';
+import { debounce } from 'lodash';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
-import { useGetTaskModalContactsFilteredQuery } from 'src/components/Task/Modal/Form/TaskModal.generated';
+import { useContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import {
   CancelButton,
   SubmitButton,
@@ -109,9 +109,9 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const [searchTerm, setSearchTerm] = useState(referral?.referredBy.name ?? '');
 
   const handleSearchTermChange = useCallback(
-    debounce(500, (event) => {
+    debounce((event) => {
       setSearchTerm(event.target.value);
-    }),
+    }, 500),
     [],
   );
 
@@ -138,7 +138,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   );
 
   const { data: dataFilteredByName, loading: loadingFilteredByName } =
-    useGetTaskModalContactsFilteredQuery({
+    useContactOptionsQuery({
       variables: {
         accountListId,
         first: 10,
@@ -147,7 +147,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     });
 
   const { data: dataFilteredById, loading: loadingFilteredById } =
-    useGetTaskModalContactsFilteredQuery({
+    useContactOptionsQuery({
       variables: {
         accountListId,
         first: 1,

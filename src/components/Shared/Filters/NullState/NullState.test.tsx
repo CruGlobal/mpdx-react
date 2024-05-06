@@ -2,11 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import TestWrapper from '../../../../../__tests__/util/TestWrapper';
-import {
-  render,
-  waitFor,
-} from '../../../../../__tests__/util/testingLibraryReactMock';
+import TestWrapper from '__tests__/util/TestWrapper';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import NullState from './NullState';
@@ -14,17 +11,18 @@ import NullState from './NullState';
 const changeFilters = jest.fn();
 const openTaskModal = jest.fn();
 
-jest.mock('../../../../../src/hooks/useTaskModal');
+jest.mock('src/hooks/useTaskModal');
 
 describe('NullState', () => {
   beforeEach(() => {
     (useTaskModal as jest.Mock).mockReturnValue({
       openTaskModal,
+      preloadTaskModal: jest.fn(),
     });
   });
 
   it('render text for unfiltered null contact state', async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, findByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestWrapper>
@@ -51,7 +49,7 @@ describe('NullState', () => {
     ).toBeInTheDocument();
     expect(getByTestId('contact-null-state')).toBeInTheDocument();
     userEvent.click(getByText('Add new contact'));
-    expect(getByText('Save')).toBeInTheDocument();
+    expect(await findByText('Save')).toBeInTheDocument();
   });
 
   it('render text filtered contacts', async () => {

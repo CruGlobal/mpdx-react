@@ -1,4 +1,5 @@
 import Rollbar from 'rollbar';
+import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 
 const rollbarServerAccessToken = process.env.ROLLBAR_SERVER_ACCESS_TOKEN;
 export const isRollBarEnabled = !!rollbarServerAccessToken;
@@ -10,5 +11,13 @@ const rollbar = new Rollbar({
   captureUnhandledRejections: true,
   enabled: isRollBarEnabled,
 });
+
+export const logErrorOnRollbar = (error: unknown, page: string) => {
+  if (isRollBarEnabled) {
+    const errorMsg = getErrorMessage(error);
+    const errorMetaData = error ?? {};
+    rollbar.error(`${page} - ${errorMsg}`, errorMetaData);
+  }
+};
 
 export default rollbar;

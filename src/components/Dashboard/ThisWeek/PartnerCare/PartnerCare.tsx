@@ -17,11 +17,11 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
+  Skeleton,
   Tab,
   Tabs,
   Typography,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -129,8 +129,8 @@ interface Props {
 }
 
 enum CelebrationTypeEnum {
-  'birthday',
-  'anniversary',
+  Birthday = 'birthday',
+  Anniversary = 'anniversary',
 }
 
 const PartnerCare = ({
@@ -143,7 +143,7 @@ const PartnerCare = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const [value, setValue] = useState(0);
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const handleClick = ({
     id: taskId,
@@ -168,7 +168,7 @@ const PartnerCare = ({
       defaultValues: {
         contactIds: [person.parentContact.id],
         subject:
-          celebrationType === CelebrationTypeEnum.birthday
+          celebrationType === CelebrationTypeEnum.Birthday
             ? `${person.firstName} ${person.lastName}'s Birthday`
             : `${person.parentContact.name}'s Anniversary`,
       },
@@ -462,11 +462,12 @@ const PartnerCare = ({
                             onClick={() =>
                               handleCreateClick(
                                 person.birthdayDay
-                                  ? CelebrationTypeEnum.birthday
-                                  : CelebrationTypeEnum.anniversary,
+                                  ? CelebrationTypeEnum.Birthday
+                                  : CelebrationTypeEnum.Anniversary,
                                 person,
                               )
                             }
+                            onMouseEnter={() => preloadTaskModal('add')}
                           >
                             <Brightness1Outlined name="Circle Icon" />
                             <AddHoverIcon name="Add Icon" />

@@ -1,4 +1,4 @@
-import { snakeToCamel } from '../../../../../../../src/lib/snakeToCamel';
+import { snakeToCamel } from 'src/lib/snakeToCamel';
 
 export interface UpdateMailchimpAccountResponse {
   attributes: Omit<UpdateMailchimpAccount, 'id'>;

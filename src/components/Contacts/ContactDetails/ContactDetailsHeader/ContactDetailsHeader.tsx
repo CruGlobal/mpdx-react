@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Close from '@mui/icons-material/Close';
-import { Avatar, Box, IconButton, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Avatar, Box, IconButton, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -11,8 +10,8 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../ContactDetailContext';
-import { ContactDetailEditIcon } from '../ContactDetailsTab/ContactDetailsTab';
 import { EditContactDetailsModal } from '../ContactDetailsTab/People/Items/EditContactDetailsModal/EditContactDetailsModal';
+import { EditIcon } from '../ContactDetailsTab/StyledComponents';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
 import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
@@ -70,9 +69,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   setContactDetailsLoaded,
   contactDetailsLoaded,
 }: Props) => {
-  const { data, loading } = useGetContactDetailsHeaderQuery({
+  const { data } = useGetContactDetailsHeaderQuery({
     variables: { accountListId, contactId },
   });
+  const loading = !data;
   const { t } = useTranslation();
 
   const { editModalOpen, setEditModalOpen } = React.useContext(
@@ -91,7 +91,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
       <HeaderBar>
         <ContactAvatar alt={data?.contact.name} src={data?.contact.avatar} />
         <HeaderBarContactWrap>
-          {loading ? (
+          {!data ? (
             <Box data-testid="Skeleton">
               <Skeleton
                 variant="text"
@@ -103,7 +103,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
                 }}
               />
             </Box>
-          ) : data?.contact ? (
+          ) : data.contact ? (
             <>
               <PrimaryContactName data-testid="ContactName" variant="h5">
                 {data.contact.name}
@@ -112,7 +112,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
                 onClick={() => setEditModalOpen(true)}
                 aria-label={t('Edit Icon')}
               >
-                <ContactDetailEditIcon />
+                <EditIcon />
               </IconButton>
             </>
           ) : null}
@@ -166,10 +166,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           />
         </Box>
       </HeaderSectionWrap>
-      {loading || !data ? null : (
+      {data && (
         <EditContactDetailsModal
           accountListId={accountListId}
-          contact={data?.contact}
+          contact={data.contact}
           isOpen={editModalOpen}
           handleClose={() => setEditModalOpen(false)}
         />

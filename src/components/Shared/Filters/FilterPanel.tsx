@@ -34,6 +34,10 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import {
+  ContactsContext,
+  ContactsType,
+} from '../../Contacts/ContactsContext/ContactsContext';
 import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterListItem } from './FilterListItem';
 import { FilterListItemShowAll } from './FilterListItemShowAll';
@@ -41,23 +45,10 @@ import {
   FilterPanelGroupFragment,
   UserOptionFragment,
 } from './FilterPanel.generated';
+import { FilterKey, FilterValue } from './FilterPanelTypes';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
-
-type ContactFilterKey = keyof ContactFilterSetInput;
-type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
-type ReportContactFilterKey = keyof ReportContactFilterSetInput;
-type ReportContactFilterValue = ReportContactFilterSetInput[ContactFilterKey];
-type TaskFilterKey = keyof TaskFilterSetInput;
-type TaskFilterValue = TaskFilterSetInput[TaskFilterKey];
-export type FilterKey =
-  | ContactFilterKey
-  | TaskFilterKey
-  | ReportContactFilterKey;
-export type FilterValue =
-  | ContactFilterValue
-  | TaskFilterValue
-  | ReportContactFilterValue;
+import { reverseFiltersMap } from './helpers';
 
 export const snakeToCamel = (inputKey: string): string => {
   const stringParts = inputKey.split('_');
@@ -70,50 +61,6 @@ export const snakeToCamel = (inputKey: string): string => {
     return `${outputKey}${part.charAt(0).toUpperCase()}${part.slice(1)}`;
   }, '');
 };
-
-const ReverseFiltersOptions = {
-  alma_mater: 'reverseAlmaMater',
-  appeal: 'reverseAppeal',
-  church: 'reverseChurch',
-  city: 'reverseCity',
-  contact_type: 'reverseContactType',
-  country: 'reverseCountry',
-  designation_account_id: 'reverseDesignationAccountId',
-  donation: 'reverseDonation',
-  likely: 'reverseLikely',
-  locale: 'reverseLocale',
-  metro_area: 'reverseMetroArea',
-  pledge_amount: 'reversePledgeAmount',
-  pledge_currency: 'reversePledgeCurrency',
-  pledge_frequency: 'reversePledgeFrequency',
-  referrer: 'reverseReferrer',
-  region: 'reverseRegion',
-  related_task_action: 'reverseRelatedTaskAction',
-  source: 'reverseSource',
-  state: 'reverseState',
-  status: 'reverseStatus',
-  activity_type: 'reverseActivityType',
-  contact_appeal: 'reverseContactAppeal',
-  contact_church: 'reverseContactChurch',
-  contact_city: 'reverseContactCity',
-  contact_country: 'reverseContactCountry',
-  contact_designation_account_id: 'reverseContactDesignationAccountId',
-  contact_ids: 'reverseContactIds',
-  contact_likely: 'reverseContactLikely',
-  contact_metro_area: 'reverseContactMetroArea',
-  contact_pledge_frequency: 'reverseContactPledgeFrequency',
-  contact_referrer: 'reverseContactReferrer',
-  contact_region: 'reverseContactRegion',
-  contact_state: 'reverseContactState',
-  contact_status: 'reverseContactStatus',
-  contact_timezone: 'reverseContactTimezone',
-  next_action: 'reverseNextAction',
-  result: 'reverseResult',
-  timezone: 'reverseTimezone',
-  donation_amount: 'reverseDonationAmount',
-  user_ids: 'reverseUserIds',
-};
-export const ReverseFiltersMap = new Map(Object.entries(ReverseFiltersOptions));
 
 const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -160,6 +107,7 @@ export interface FilterPanelProps {
   selectedFilters: FilterInput;
   onClose: () => void;
   onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
+  onHandleClearSearch?: () => void;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
@@ -169,11 +117,12 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   onClose,
   selectedFilters,
   onSelectedFiltersChanged,
+  onHandleClearSearch,
   ...boxProps
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-
+  const { handleClearAll } = React.useContext(ContactsContext) as ContactsType;
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
@@ -694,6 +643,12 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     setDeleteFilterModalOpen(true);
   };
 
+  const handleClearAllClick = () => {
+    onHandleClearSearch && onHandleClearSearch();
+    handleClearAll();
+    clearSelectedFilter();
+  };
+
   const tagsFilters =
     (
       filters.find((filter) => filter?.filters[0]?.filterKey === 'tags')
@@ -738,7 +693,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               <LinkButton
                 style={{ marginInlineStart: theme.spacing(2) }}
                 disabled={noSelectedFilters}
-                onClick={clearSelectedFilter}
+                onClick={handleClearAllClick}
               >
                 {t('Clear All')}
               </LinkButton>
@@ -842,7 +797,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                   ) as FilterKey;
 
                                   const reverseFiltersKey =
-                                    ReverseFiltersMap.get(
+                                    reverseFiltersMap.get(
                                       filterKey,
                                     ) as FilterKey;
 

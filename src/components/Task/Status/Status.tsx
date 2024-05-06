@@ -1,8 +1,7 @@
 import React, { ReactElement } from 'react';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import Check from '@mui/icons-material/Check';
-import { Avatar, Theme, Tooltip } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import { Avatar, IconButton, Theme, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -103,7 +102,7 @@ const CompleteButton = ({
   taskId: string;
   title?: string;
 }): ReactElement => {
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -112,7 +111,10 @@ const CompleteButton = ({
     event.stopPropagation();
   };
   return (
-    <TaskCompleteButton onClick={handleClick}>
+    <TaskCompleteButton
+      onClick={handleClick}
+      onMouseEnter={() => preloadTaskModal('complete')}
+    >
       <Check titleAccess={title ?? 'Check Icon'} />
     </TaskCompleteButton>
   );

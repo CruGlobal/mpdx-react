@@ -3,6 +3,7 @@ import { Box, TextField } from '@mui/material';
 import { Formik, FormikHelpers } from 'formik';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
+import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
@@ -12,7 +13,6 @@ import {
 } from 'src/components/Task/TaskRow/TaskRow.generated';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { TaskCommentCreateInput } from 'src/graphql/types.generated';
-import { useUser } from 'src/hooks/useUser';
 import {
   GetCommentsForTaskModalCommentListDocument,
   GetCommentsForTaskModalCommentListQuery,
@@ -33,13 +33,14 @@ export const TaskModalCommentsListForm = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [createTaskComment] = useCreateTaskCommentMutation();
-  const user = useUser();
+  const session = useSession();
   const onSubmit = async (
     values: CommentSchemaAttributes,
     { resetForm }: FormikHelpers<TaskCommentCreateInput>,
   ): Promise<void> => {
     const id = uuidv4();
     const body = values.body.trim();
+    const user = session.data?.user;
     resetForm();
     createTaskComment({
       variables: { accountListId, taskId, attributes: { id, body } },
@@ -53,9 +54,9 @@ export const TaskModalCommentsListForm = ({
             me: true,
             person: user
               ? {
-                  id: user.id,
-                  firstName: user.firstName,
-                  lastName: user.lastName,
+                  id: user.userID,
+                  firstName: user.name,
+                  lastName: '',
                 }
               : null,
           },

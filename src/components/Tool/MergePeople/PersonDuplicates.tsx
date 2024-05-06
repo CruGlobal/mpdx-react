@@ -19,7 +19,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { PersonInfoFragment } from './GetPersonDuplicates.generated';
 
@@ -70,13 +70,6 @@ const useStyles = makeStyles()(() => ({
     scrollbarWidth: 'thin',
   },
 }));
-
-export interface address {
-  street: string;
-  city: string;
-  state?: string;
-  zip: string;
-}
 
 interface Props {
   person1: PersonInfoFragment;

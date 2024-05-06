@@ -1,6 +1,11 @@
 import React from 'react';
-import { Box, CardContent, CardHeader, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import {
+  Box,
+  CardContent,
+  CardHeader,
+  Skeleton,
+  Typography,
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {

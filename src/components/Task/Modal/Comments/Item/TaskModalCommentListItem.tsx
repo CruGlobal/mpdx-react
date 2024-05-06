@@ -15,7 +15,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat/intlFormat';
+import { dateFormat } from 'src/lib/intlFormat';
 import theme from '../../../../../theme';
 import { CommentSchemaAttributes, commentSchema } from '../Form/commentSchema';
 import {
@@ -38,7 +38,9 @@ const Details: React.FC<DetailsProps> = ({ comment }) => {
   return (
     <Box>
       <CommentInfoText display="inline">
-        {comment.person?.firstName} {comment.person?.lastName}
+        {[comment.person?.firstName, comment.person?.lastName]
+          .filter(Boolean)
+          .join(' ')}
       </CommentInfoText>{' '}
       <Tooltip placement="bottom" title={comment.updatedAt} arrow>
         <CommentInfoText display="inline">

@@ -8,9 +8,9 @@ import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import TestRouter from '../../../../../__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import theme from '../../../../theme';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsTab } from './ContactDetailsTab';
@@ -97,7 +97,7 @@ const TestComponent: React.FC<TestComponentProps> = (props) => (
           <GqlMockedProvider<Mocks>
             mocks={(props.mocks ?? mocks) as ApolloErgonoMockMap}
           >
-            <ContactsPage>
+            <ContactsWrapper>
               <ContactDetailProvider>
                 <ContactDetailsTab
                   accountListId={accountListId}
@@ -105,7 +105,7 @@ const TestComponent: React.FC<TestComponentProps> = (props) => (
                   onContactSelected={onContactSelected}
                 />
               </ContactDetailProvider>
-            </ContactsPage>
+            </ContactsWrapper>
           </GqlMockedProvider>
         </ThemeProvider>
       </LocalizationProvider>

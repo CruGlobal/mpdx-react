@@ -5,11 +5,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
-import {
-  GqlMockedProvider,
-  gqlMock,
-} from '../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../theme';
 import {
   ContactDetailsFragment,
@@ -156,7 +153,7 @@ describe('EditContactDetailsModal', () => {
       getByRole('textbox', { hidden: true, name: 'Contact' }),
       newContactName,
     );
-    userEvent.click(getByRole('button', { hidden: true, name: 'Primary' }));
+    userEvent.click(getByRole('combobox', { hidden: true, name: 'Primary' }));
     userEvent.click(
       getByRole('option', { hidden: true, name: newPrimaryContactName }),
     );

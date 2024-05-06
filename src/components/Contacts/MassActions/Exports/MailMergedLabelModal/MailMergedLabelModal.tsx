@@ -13,6 +13,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import theme from '../../../../../theme';
 import { ActionButton } from '../../../../common/Modal/ActionButtons/ActionButtons';
 import Modal from '../../../../common/Modal/Modal';
@@ -36,10 +37,19 @@ export const MailMergedLabelModal: React.FC<MailMergedLabelModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { apiToken } = useRequiredSession();
 
   const onSubmit = async ({ template, sort }) => {
     try {
-      await exportRest(accountListId, ids, 'pdf', true, template, sort);
+      await exportRest(
+        apiToken,
+        accountListId,
+        ids,
+        'pdf',
+        true,
+        template,
+        sort,
+      );
     } catch (err) {
       const error = (err as Error)?.message ?? JSON.stringify(err);
       enqueueSnackbar(error, {

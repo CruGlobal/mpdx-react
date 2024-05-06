@@ -107,7 +107,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       tasksFilter: {
         contactIds: [contactId],
         ...starredFilter,
-        wildcardSearch: searchTerm as string,
+        wildcardSearch: searchTerm,
       },
     },
   });
@@ -116,7 +116,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     () => ({
       contactIds: [contactId],
       ...starredFilter,
-      wildcardSearch: searchTerm as string,
+      wildcardSearch: searchTerm,
     }),
     [starredFilter, searchTerm],
   );
@@ -143,7 +143,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     deselectAll,
   } = useMassSelection(data?.tasks?.totalCount ?? 0, allTaskIds);
 
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const { t } = useTranslation();
 
@@ -165,6 +165,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                   defaultValues: { contactIds: [contactId] },
                 })
               }
+              onMouseEnter={() => preloadTaskModal('add')}
             >
               <AddTaskButtonIcon />
               <TaskButtonText>{t('add task')}</TaskButtonText>
@@ -179,6 +180,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                   },
                 })
               }
+              onMouseEnter={() => preloadTaskModal('log')}
             >
               <LogTaskButtonIcon />
               <TaskButtonText>{t('log task')}</TaskButtonText>
@@ -188,7 +190,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               selectedIds={ids}
               massDeselectAll={deselectAll}
               selectedIdCount={
-                selectionType === ListHeaderCheckBoxState.checked
+                selectionType === ListHeaderCheckBoxState.Checked
                   ? taskCount
                   : ids.length
               }
@@ -198,9 +200,9 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         <HeaderRow mb={2}>
           <HeaderItemsWrap>
             <Checkbox
-              checked={selectionType === ListHeaderCheckBoxState.checked}
+              checked={selectionType === ListHeaderCheckBoxState.Checked}
               color="secondary"
-              indeterminate={selectionType === ListHeaderCheckBoxState.partial}
+              indeterminate={selectionType === ListHeaderCheckBoxState.Partial}
               onChange={toggleSelectAll}
             />
             <SearchBox

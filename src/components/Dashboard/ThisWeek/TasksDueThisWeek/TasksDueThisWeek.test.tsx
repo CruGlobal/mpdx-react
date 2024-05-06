@@ -2,9 +2,9 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { render } from '__tests__/util/testingLibraryReactMock';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
-import { render } from '../../../../../__tests__/util/testingLibraryReactMock';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
@@ -17,6 +17,7 @@ const openTaskModal = jest.fn();
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+    preloadTaskModal: jest.fn(),
   });
 });
 

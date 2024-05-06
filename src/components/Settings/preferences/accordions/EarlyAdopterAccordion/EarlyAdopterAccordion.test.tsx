@@ -2,6 +2,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -119,6 +120,49 @@ describe('EarlyAdopterAccordion', () => {
           },
         },
       ]);
+    });
+  });
+
+  describe('onSubmit()', () => {
+    beforeEach(() => {
+      process.env.SITE_URL = 'https://next.mpdx.org';
+      window.location.href = process.env.SITE_URL;
+    });
+
+    it('sets early adopter to true and does not redirect user', async () => {
+      const { getByRole } = render(
+        <Components tester={false} expandedPanel={label} />,
+      );
+      const button = getByRole('button', { name: 'Save' });
+      userEvent.click(getByRole('checkbox'));
+      userEvent.click(button);
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith('Saved successfully.', {
+          variant: 'success',
+        }),
+      );
+
+      expect(window.location.href).toEqual(process.env.SITE_URL);
+    });
+
+    it('sets early adopter to false and redirects user to old MPDx', async () => {
+      const { getByRole } = render(
+        <Components tester={true} expandedPanel={label} />,
+      );
+      const button = getByRole('button', { name: 'Save' });
+      userEvent.click(getByRole('checkbox'));
+      userEvent.click(button);
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith('Saved successfully.', {
+          variant: 'success',
+        }),
+      );
+
+      expect(window.location.href).toEqual(
+        `${process.env.SITE_URL}/api/handoff?accountListId=${accountListId}&userId=${session.user.userID}&path=%2Fpreferences%2Fpersonal`,
+      );
     });
   });
 });

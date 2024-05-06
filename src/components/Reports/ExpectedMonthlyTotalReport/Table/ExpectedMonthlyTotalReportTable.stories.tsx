@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
-import { gqlMock } from '../../../../../__tests__/util/graphqlMocking';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   GetExpectedMonthlyTotalsDocument,
   GetExpectedMonthlyTotalsQuery,
   GetExpectedMonthlyTotalsQueryVariables,
-} from '../../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+} from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { ExpectedMonthlyTotalReportTable } from './ExpectedMonthlyTotalReportTable';
 
 export default {

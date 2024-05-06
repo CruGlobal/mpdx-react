@@ -3,11 +3,11 @@ import { Box, CircularProgress, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import {
   GetAppealsDocument,
   useGetAppealsQuery,
-} from '../../../../pages/accountLists/[accountListId]/tools/GetAppeals.generated';
+} from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import Appeal from './Appeal';
 import { useChangePrimaryAppealMutation } from './ChangePrimaryAppeal.generated';
 import NoAppeals from './NoAppeals';

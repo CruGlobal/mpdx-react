@@ -50,7 +50,7 @@ describe('MassActionsEditFieldsModal', () => {
       expect(queryByTestId('EditFieldsModal')).toBeInTheDocument(),
     );
     // Status
-    userEvent.click(getByRole('button', { name: /status/i }));
+    userEvent.click(getByRole('combobox', { name: /status/i }));
     await waitFor(() =>
       expect(
         getByRole('option', { name: /appointment scheduled/i }),
@@ -58,7 +58,7 @@ describe('MassActionsEditFieldsModal', () => {
     );
     userEvent.click(getByRole('option', { name: /appointment scheduled/i }));
     // Likey to Give
-    userEvent.click(getByRole('button', { name: /starred/i }));
+    userEvent.click(getByRole('combobox', { name: /starred/i }));
     await waitFor(() =>
       expect(getByRole('option', { name: /unstarred/i })).toBeInTheDocument(),
     );

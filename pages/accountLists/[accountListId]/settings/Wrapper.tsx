@@ -2,10 +2,12 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { Box, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
+  multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
@@ -15,7 +17,12 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const PageContentWrapper = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(10),
+  '&:after': {
+    content: '""',
+    width: '100%',
+    height: theme.spacing(10),
+    display: 'block',
+  },
 }));
 
 interface SettingsWrapperProps {
@@ -66,7 +73,14 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
                 rightExtra={null}
                 headerType={HeaderTypeEnum.Settings}
               />
-              <PageContentWrapper maxWidth="lg">{children}</PageContentWrapper>
+              <PageContentWrapper
+                maxWidth="lg"
+                style={{
+                  height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
+                }}
+              >
+                {children}
+              </PageContentWrapper>
             </>
           }
         />

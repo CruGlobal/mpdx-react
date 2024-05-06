@@ -1,0 +1,7 @@
+query TagOptions($accountListId: ID!, $contact: Boolean!) {
+  accountList(id: $accountListId) {
+    id
+    contactTagList @include(if: $contact)
+    taskTagList @skip(if: $contact)
+  }
+}

@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import Phone from '@mui/icons-material/Phone';
-import { Box, Link, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Box, Link, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from '../../../../../theme';
 import { ContactHeaderPhoneFragment } from './ContactHeaderPhone.generated';

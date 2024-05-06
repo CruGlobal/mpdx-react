@@ -1,6 +1,6 @@
 import React from 'react';
 import Cake from '@mui/icons-material/Cake';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';

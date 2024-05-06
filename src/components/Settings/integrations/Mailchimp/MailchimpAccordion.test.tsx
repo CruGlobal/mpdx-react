@@ -4,9 +4,8 @@ import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import * as Types from 'src/graphql/types.generated';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { MailchimpAccordion } from './MailchimpAccordion';
 import { MailchimpAccountQuery } from './MailchimpAccount.generated';
@@ -15,7 +14,6 @@ jest.mock('next-auth/react');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
-const apiToken = 'apiToken';
 const router = {
   query: { accountListId, contactId: [contactId] },
   isReady: true,
@@ -38,11 +36,7 @@ const handleAccordionChange = jest.fn();
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>
-        <IntegrationsContextProvider apiToken={apiToken}>
-          {children}
-        </IntegrationsContextProvider>
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </TestRouter>
   </SnackbarProvider>
 );
@@ -115,7 +109,6 @@ describe('MailchimpAccount', () => {
 
   describe('Not Connected', () => {
     it('should render Mailchimp Overview', async () => {
-      process.env.SITE_URL = 'https://next.mpdx.org';
       const mutationSpy = jest.fn();
       const { getByText } = render(
         <Components>
@@ -262,7 +255,7 @@ describe('MailchimpAccount', () => {
         ).toBeInTheDocument();
       });
 
-      userEvent.click(getByRole('button', { name: /Newsletter list 1/i }));
+      userEvent.click(getByRole('combobox'));
       await waitFor(() =>
         expect(
           getByRole('option', { name: /Newsletter list 2/i }),

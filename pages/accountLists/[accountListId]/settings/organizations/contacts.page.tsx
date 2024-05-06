@@ -10,9 +10,9 @@ import {
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { Contacts } from 'src/components/Settings/Organization/Contacts/Contacts';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
-import { enforceAdmin } from 'src/lib/enforceAdmin';
 import { SettingsWrapper } from '../Wrapper';
 import {
   SettingsOrganizationFragment,
@@ -124,6 +124,6 @@ const OrganizationsContacts = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = enforceAdmin;
+export const getServerSideProps = loadSession;
 
 export default OrganizationsContacts;

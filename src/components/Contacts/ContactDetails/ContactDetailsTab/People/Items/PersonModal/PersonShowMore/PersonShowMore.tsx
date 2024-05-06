@@ -12,16 +12,15 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DatePicker } from '@mui/x-date-pickers';
 import { FormikProps } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
   PersonCreateInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { RingIcon } from '../../../../../../RingIcon';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { NewSocial } from '../PersonModal';
@@ -41,7 +40,6 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
   showDeceased = true,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
 
   const {
     values: {
@@ -103,6 +101,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       </ModalSectionContainer>
       {/* Relationship and Anniversary Section */}
       <ModalSectionContainer>
+        <ModalSectionIcon icon={<RingIcon />} />
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
@@ -141,32 +140,18 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <DatePicker<Date, DateTime>
-              renderInput={(params) => (
-                <TextField
-                  fullWidth
-                  helperText={getDateFormatPattern(locale).toLowerCase()}
-                  inputProps={{ 'aria-label': t('Anniversary') }}
-                  {...params}
-                />
-              )}
-              onChange={(date) => handleDateChange(date)}
+            <CustomDateField
+              label={t('Anniversary')}
               value={
                 anniversaryMonth && anniversaryDay
-                  ? new Date(
+                  ? DateTime.local(
                       anniversaryYear ?? 1900,
-                      anniversaryMonth - 1,
+                      anniversaryMonth,
                       anniversaryDay,
                     )
                   : null
               }
-              inputFormat={getDateFormatPattern(locale)}
-              label={t('Anniversary')}
-              componentsProps={{
-                actionBar: {
-                  actions: ['cancel', 'clear'],
-                },
-              }}
+              onChange={(date) => date && handleDateChange(date)}
             />
           </Grid>
         </Grid>

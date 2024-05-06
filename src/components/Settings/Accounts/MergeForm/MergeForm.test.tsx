@@ -4,7 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { MergeForm } from './MergeForm';
 import {
@@ -115,7 +115,7 @@ describe('MergeAccountsAccordion', () => {
     expect(queryByTestId('KeyboardArrowRightIcon')).not.toBeInTheDocument();
 
     userEvent.click(
-      getByRole('button', {
+      getByRole('combobox', {
         name: /select an account/i,
       }),
     );
@@ -176,7 +176,7 @@ describe('MergeAccountsAccordion', () => {
     });
 
     userEvent.click(
-      getByRole('button', {
+      getByRole('combobox', {
         name: /select an account/i,
       }),
     );

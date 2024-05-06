@@ -2,12 +2,9 @@ import React from 'react';
 import { InMemoryCache } from '@apollo/client';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import TestWrapper from '__tests__/util/TestWrapper';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
-import TestWrapper from '../../../../../../../../__tests__/util/TestWrapper';
-import {
-  render,
-  waitFor,
-} from '../../../../../../../../__tests__/util/testingLibraryReactMock';
 import {
   GetNotificationsDocument,
   GetNotificationsQuery,

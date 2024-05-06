@@ -26,6 +26,7 @@ jest.mock('next/router', () => ({
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal: jest.fn(),
+    preloadTaskModal: jest.fn(),
   });
 });
 

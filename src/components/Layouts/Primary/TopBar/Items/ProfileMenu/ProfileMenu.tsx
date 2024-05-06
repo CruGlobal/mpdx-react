@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
@@ -9,18 +11,19 @@ import {
   Box,
   Button,
   Divider,
-  Link,
   ListItemAvatar,
   ListItemText,
   Menu,
   MenuItem,
+  Link as MuiLink,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
 import HandoffLink from '../../../../../HandoffLink';
@@ -111,7 +114,8 @@ const ImpersonatingMenuButton = styled(Button)(({ theme }) => ({
 const ProfileMenu = (): ReactElement => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { data: session } = useSession();
+  const session = useRequiredSession();
+  const client = useApolloClient();
   const { enqueueSnackbar } = useSnackbar();
   const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
@@ -154,7 +158,7 @@ const ProfileMenu = (): ReactElement => {
       }/api/stop-impersonating`,
     );
     url.searchParams.append('accountListId', accountListId ?? '');
-    url.searchParams.append('userId', data?.user?.id ?? '');
+    url.searchParams.append('userId', session.userID);
     url.searchParams.append('path', '/logout');
     window.location.href = url.href;
   };
@@ -162,14 +166,14 @@ const ProfileMenu = (): ReactElement => {
   return (
     <>
       <ProfileName
-        impersonating={!!session?.user?.impersonating}
+        impersonating={!!session.impersonating}
         onProfileMenuOpen={handleProfileMenuOpen}
         showSubAccount={hasSelectedAccount}
       >
         {data && (
           <Box display="block" textAlign="left">
             <AccountName>
-              {session?.user?.impersonating ? `Impersonating ` : ``}
+              {session.impersonating ? `Impersonating ` : ``}
               {[data.user.firstName, data.user.lastName]
                 .filter(Boolean)
                 .join(' ')}
@@ -181,7 +185,7 @@ const ProfileMenu = (): ReactElement => {
                 data-testid="accountListName"
               >
                 {
-                  data?.accountLists.nodes.find(
+                  data.accountLists.nodes.find(
                     (accountList) => accountList.id === accountListId,
                   )?.name
                 }
@@ -251,63 +255,84 @@ const ProfileMenu = (): ReactElement => {
             ))}
           </AccountListSelectorDetails>
         </Accordion>
-        <Divider />
-        <HandoffLink path="/preferences/personal">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Preferences')} />
-          </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/notifications">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Notifications')} />
-          </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/integrations">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Connect Services')} />
-          </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/accounts">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Manage Accounts')} />
-          </MenuItem>
-        </HandoffLink>
-        <HandoffLink path="/preferences/coaches">
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Manage Coaches')} />
-          </MenuItem>
-        </HandoffLink>
-        {(data?.user?.admin ||
-          !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-          <HandoffLink path="/preferences/organizations">
-            <MenuItem onClick={handleProfileMenuClose} component="a">
-              <ListItemText primary={t('Manage Organizations')} />
-            </MenuItem>
-          </HandoffLink>
-        )}
-        {(data?.user?.admin || data?.user?.developer) && (
-          <HandoffLink path="/preferences/admin">
-            <MenuItem onClick={handleProfileMenuClose} component="a">
-              <ListItemText primary={t('Admin Console')} />
-            </MenuItem>
-          </HandoffLink>
-        )}
-        {data?.user?.developer && (
-          <HandoffLink path="/auth/user/admin" auth>
-            <MenuItem onClick={handleProfileMenuClose} component="a">
-              <ListItemText primary={t('Backend Admin')} />
-            </MenuItem>
-          </HandoffLink>
-        )}
-        {data?.user?.developer && (
-          <HandoffLink path="/auth/user/sidekiq" auth>
-            <MenuItem onClick={handleProfileMenuClose} component="a">
-              <ListItemText primary={t('Sidekiq')} />
-            </MenuItem>
-          </HandoffLink>
+        {accountListId && (
+          <div>
+            <Divider />
+            <Link
+              href={`/accountLists/${accountListId}/settings/preferences`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Preferences')} />
+              </MenuItem>
+            </Link>
+            <Link
+              href={`/accountLists/${accountListId}/settings/notifications`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Notifications')} />
+              </MenuItem>
+            </Link>
+            <Link
+              href={`/accountLists/${accountListId}/settings/integrations`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Connect Services')} />
+              </MenuItem>
+            </Link>
+            <Link
+              href={`/accountLists/${accountListId}/settings/manageAccounts`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Manage Accounts')} />
+              </MenuItem>
+            </Link>
+            <Link
+              href={`/accountLists/${accountListId}/settings/manageCoaches`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Manage Coaches')} />
+              </MenuItem>
+            </Link>
+            {(data?.user?.admin ||
+              !!data?.user?.administrativeOrganizations?.nodes?.length) && (
+              <Link
+                href={`/accountLists/${accountListId}/settings/organizations`}
+              >
+                <MenuItem onClick={handleProfileMenuClose} component="a">
+                  <ListItemText primary={t('Manage Organizations')} />
+                </MenuItem>
+              </Link>
+            )}
+            {(data?.user?.admin || data?.user?.developer) && (
+              <Link href={`/accountLists/${accountListId}/settings/admin`}>
+                <MenuItem onClick={handleProfileMenuClose} component="a">
+                  <ListItemText primary={t('Admin Console')} />
+                </MenuItem>
+              </Link>
+            )}
+            {data?.user?.developer && (
+              <HandoffLink path="/auth/user/admin" auth>
+                <MenuItem onClick={handleProfileMenuClose} component="a">
+                  <ListItemText primary={t('Backend Admin')} />
+                </MenuItem>
+              </HandoffLink>
+            )}
+            {data?.user?.developer && (
+              <HandoffLink path="/auth/user/sidekiq" auth>
+                <MenuItem onClick={handleProfileMenuClose} component="a">
+                  <ListItemText primary={t('Sidekiq')} />
+                </MenuItem>
+              </HandoffLink>
+            )}
+          </div>
         )}
         <MenuItem>
-          {session?.user?.impersonating && (
+          {session.impersonating && (
             <ImpersonatingMenuButton
               variant="outlined"
               color="inherit"
@@ -316,13 +341,14 @@ const ProfileMenu = (): ReactElement => {
               {t('Stop Impersonating')}
             </ImpersonatingMenuButton>
           )}
-          {!session?.user?.impersonating && (
+          {!session.impersonating && (
             <MenuButton
               variant="outlined"
               color="inherit"
               onClick={() => {
                 signOut({ callbackUrl: 'signOut' }).then(() => {
                   clearDataDogUser();
+                  client.clearStore();
                 });
               }}
             >
@@ -331,21 +357,21 @@ const ProfileMenu = (): ReactElement => {
           )}
         </MenuItem>
         <MenuItemFooter>
-          <Link
+          <MuiLink
             href="https://get.mpdx.org/privacy-policy/"
             target="_blank"
             onClick={handleProfileMenuClose}
           >
             {t('Privacy Policy')}
-          </Link>
+          </MuiLink>
           &nbsp; • &nbsp;
-          <Link
+          <MuiLink
             href="https://get.mpdx.org/terms-of-use/"
             target="_blank"
             onClick={handleProfileMenuClose}
           >
             {t('Terms of Use')}
-          </Link>
+          </MuiLink>
         </MenuItemFooter>
       </MenuWrapper>
     </>

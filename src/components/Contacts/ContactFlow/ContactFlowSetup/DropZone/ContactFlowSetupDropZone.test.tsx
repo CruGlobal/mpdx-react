@@ -4,8 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import TestRouter from '__tests__/util/TestRouter';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
-import TestRouter from '../../../../../../__tests__/util/TestRouter';
 import theme from '../../../../../theme';
 import { ContactFlowSetupColumn } from '../Column/ContactFlowSetupColumn';
 
@@ -41,15 +41,14 @@ const setColumnWidth = jest.fn();
 const moveColumns = jest.fn();
 const updateColumns = jest.fn();
 
-interface flowOptionsArray {
+interface FlowOption {
   name: string;
   statuses: string[];
   color: string;
   id: string;
 }
-[];
 
-const flowOptions: flowOptionsArray[] = [
+const flowOptions: FlowOption[] = [
   {
     name: 'Untitled Two',
     id: '6ced166a-d570-4086-af56-e3eeed8a1f98',

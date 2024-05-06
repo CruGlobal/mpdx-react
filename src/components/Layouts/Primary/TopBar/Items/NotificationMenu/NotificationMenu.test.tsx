@@ -1,11 +1,8 @@
 import React from 'react';
 import { InMemoryCache } from '@apollo/client';
 import userEvent from '@testing-library/user-event';
-import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
-import {
-  render,
-  waitFor,
-} from '../../../../../../../__tests__/util/testingLibraryReactMock';
+import TestWrapper from '__tests__/util/TestWrapper';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { GetNotificationsDocument } from './GetNotificationsQuery.generated';
 import NotificationMenu from './NotificationMenu';
 import {

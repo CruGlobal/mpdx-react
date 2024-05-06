@@ -1,13 +1,10 @@
 import NextLink from 'next/link';
 import React, { useState } from 'react';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import { Box, Button, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useUser } from 'src/hooks/useUser';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { Confirmation } from '../../common/Modal/Confirmation/Confirmation';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { CoachedPersonFragment } from '../LoadCoachingList.generated';
@@ -35,7 +32,7 @@ export const CoachingRow: React.FC<Props> = ({
   coachingAccount,
   accountListId,
 }) => {
-  const user = useUser();
+  const session = useRequiredSession();
   const {
     id,
     monthlyGoal,
@@ -56,7 +53,7 @@ export const CoachingRow: React.FC<Props> = ({
   const [deleteCoachingAccountList] = useDeleteCoachingAccountListMutation({
     variables: {
       accountListId: id,
-      coachId: user?.id ?? '',
+      coachId: session.userID,
     },
     update: (cache) => {
       cache.evict({ id: cache.identify(coachingAccount) });

@@ -12,18 +12,19 @@ export const isDataDogConfigured = (): boolean => {
   );
 };
 
-export interface setUserProps {
+export interface SetDataDogUserProps {
   userId: string;
   name: string;
   email: string;
   accountListId: string;
 }
+
 export const setDataDogUser = ({
   userId,
   name,
   email,
   accountListId,
-}: setUserProps): void => {
+}: SetDataDogUserProps): void => {
   if (!isDataDogConfigured()) return;
   if (
     window.DD_RUM.getUser()?.accountListId &&

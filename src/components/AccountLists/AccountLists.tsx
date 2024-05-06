@@ -12,8 +12,8 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { GetAccountListsQuery } from 'pages/GetAccountLists.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { GetAccountListsQuery } from '../../../pages/GetAccountLists.generated';
 import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
 import AnimatedCard from '../AnimatedCard';
 import PageHeading from '../PageHeading';

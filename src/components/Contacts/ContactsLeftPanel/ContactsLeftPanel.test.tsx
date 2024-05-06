@@ -4,11 +4,11 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import {
   ContactsContext,
   ContactsType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import theme from 'src/theme';
 import { GetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
 import { ContactsLeftPanel } from './ContactsLeftPanel';
@@ -82,12 +82,12 @@ describe('ContactsLeftPanel', () => {
           <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
             mocks={mocks}
           >
-            <ContactsPage>
+            <ContactsWrapper>
               <>
                 <Component />
                 <ContactsLeftPanel />
               </>
-            </ContactsPage>
+            </ContactsWrapper>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,

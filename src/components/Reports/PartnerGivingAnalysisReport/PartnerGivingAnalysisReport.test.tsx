@@ -5,7 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import theme from 'src/theme';
-import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
+import {
+  PartnerGivingAnalysisReport,
+  PartnerGivingAnalysisReportRef,
+} from './PartnerGivingAnalysisReport';
 import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 
 const accountListId = '111';
@@ -589,5 +592,24 @@ describe('PartnerGivingAnalysisReport', () => {
 
     userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
     expect(onFilterListToggle).toHaveBeenCalled();
+  });
+
+  it('Clears search input when useImperativeHook is called', async () => {
+    const ref = React.createRef<PartnerGivingAnalysisReportRef>();
+    const { getByPlaceholderText } = render(
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{
+          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        }>
+          mocks={mocks}
+        >
+          <PartnerGivingAnalysisReport ref={ref} {...defaultProps} />
+        </GqlMockedProvider>
+      </ThemeProvider>,
+    );
+
+    expect(ref.current).not.toBeNull();
+    waitFor(() => ref?.current?.clearSearchInput());
+    expect(getByPlaceholderText('Search Contacts')).toHaveValue('');
   });
 });

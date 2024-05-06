@@ -71,6 +71,6 @@ describe('TaskCommentsButton', () => {
 
     userEvent.click(commentsButton);
 
-    expect(onClick).toHaveBeenCalledWith();
+    expect(onClick).toHaveBeenCalled();
   });
 });

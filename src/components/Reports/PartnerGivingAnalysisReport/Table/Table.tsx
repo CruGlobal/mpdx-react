@@ -11,8 +11,9 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
 import type { Order } from '../../Reports.type';
 import type { Contact } from '../PartnerGivingAnalysisReport';
@@ -125,7 +126,10 @@ export const PartnerGivingAnalysisReportTable: FC<
                   />
                 </TableCell>
                 <TableCell>
-                  <ContactName onClick={() => onClick(contact.id)}>
+                  <ContactName
+                    onClick={() => onClick(contact.id)}
+                    onMouseEnter={preloadContactsRightPanel}
+                  >
                     {contact.name}
                   </ContactName>
                 </TableCell>

@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
+import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 import { AppealDrawerItem } from './Item/AppealDrawerItem';
 import { AppealDrawerItemButton } from './Item/AppealDrawerItemButton';

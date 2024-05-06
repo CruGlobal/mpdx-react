@@ -19,11 +19,12 @@ import {
 } from 'src/graphql/types.generated';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
+import { NewSocial } from '../PersonModal';
 import {
   ContactInputField,
-  NewSocial,
   PrimaryControlLabel,
-} from '../PersonModal';
+  VerticallyCenteredGrid,
+} from '../StyledComponents';
 
 interface Props {
   emailAddress: PersonEmailAddressInput;
@@ -49,9 +50,6 @@ const EmailSelect = styled(Select, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
 })(({ destroyed }: { destroyed: boolean }) => ({
   textDecoration: destroyed ? 'line-through' : 'none',
-}));
-export const VerticallyCenteredGrid = styled(Grid)(() => ({
-  margin: 'auto',
 }));
 
 export const PersonEmailItem: React.FC<Props> = ({

@@ -1,8 +1,7 @@
-import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import React, { ReactElement, useEffect, useState } from 'react';
-import { getToken } from 'next-auth/jwt';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ChalklineAccordion } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordion';
 import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';
 import { TheKeyAccordion } from 'src/components/Settings/integrations/Key/TheKeyAccordion';
@@ -12,13 +11,8 @@ import { PrayerlettersAccordion } from 'src/components/Settings/integrations/Pra
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from '../Wrapper';
-import { IntegrationsContextProvider } from './IntegrationsContext';
 
-interface Props {
-  apiToken: string;
-}
-
-const Integrations = ({ apiToken }: Props): ReactElement => {
+const Integrations: React.FC = () => {
   const { t } = useTranslation();
   const { query } = useRouter();
   const [expandedPanel, setExpandedPanel] = useState(
@@ -40,52 +34,38 @@ const Integrations = ({ apiToken }: Props): ReactElement => {
       pageHeading={t('Connect Services')}
       selectedMenuId="integrations"
     >
-      <IntegrationsContextProvider apiToken={apiToken}>
-        <AccordionGroup title="">
-          <TheKeyAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
-          />
-          <OrganizationAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
-          />
-        </AccordionGroup>
-        <AccordionGroup title={t('External Services')}>
-          <GoogleAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
-          />
-          <MailchimpAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
-          />
-          <PrayerlettersAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
-          />
-          <ChalklineAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
-          />
-        </AccordionGroup>
-      </IntegrationsContextProvider>
+      <AccordionGroup title="">
+        <TheKeyAccordion
+          handleAccordionChange={handleAccordionChange}
+          expandedPanel={expandedPanel}
+        />
+        <OrganizationAccordion
+          handleAccordionChange={handleAccordionChange}
+          expandedPanel={expandedPanel}
+        />
+      </AccordionGroup>
+      <AccordionGroup title={t('External Services')}>
+        <GoogleAccordion
+          handleAccordionChange={handleAccordionChange}
+          expandedPanel={expandedPanel}
+        />
+        <MailchimpAccordion
+          handleAccordionChange={handleAccordionChange}
+          expandedPanel={expandedPanel}
+        />
+        <PrayerlettersAccordion
+          handleAccordionChange={handleAccordionChange}
+          expandedPanel={expandedPanel}
+        />
+        <ChalklineAccordion
+          handleAccordionChange={handleAccordionChange}
+          expandedPanel={expandedPanel}
+        />
+      </AccordionGroup>
     </SettingsWrapper>
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const jwtToken = (await getToken({
-    req,
-    secret: process.env.JWT_SECRET as string,
-  })) as { apiToken: string } | null;
-  const apiToken = jwtToken?.apiToken;
-
-  return {
-    props: {
-      apiToken,
-    },
-  };
-};
+export const getServerSideProps = loadSession;
 
 export default Integrations;

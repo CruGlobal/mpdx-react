@@ -73,6 +73,6 @@ describe('TaskCompleteButton', () => {
 
     userEvent.click(completeButton);
 
-    expect(onClick).toHaveBeenCalledWith();
+    expect(onClick).toHaveBeenCalled();
   });
 });

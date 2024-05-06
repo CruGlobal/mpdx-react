@@ -3,16 +3,16 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { VirtuosoMockContext } from 'react-virtuoso';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import {
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import TestRouter from '../../../../__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ListHeaderCheckBoxState } from '../../../../src/components/Shared/Header/ListHeader';
-import { useMassSelection } from '../../../../src/hooks/useMassSelection';
-import theme from '../../../../src/theme';
+import { useMassSelection } from 'src/hooks/useMassSelection';
+import theme from 'src/theme';
 import { ContactsQuery } from './Contacts.generated';
 import Contacts from './[[...contactId]].page';
 
@@ -51,11 +51,11 @@ const mockResponse = {
   },
 };
 
-jest.mock('../../../../src/hooks/useMassSelection');
+jest.mock('src/hooks/useMassSelection');
 
 (useMassSelection as jest.Mock).mockReturnValue({
   ids: [],
-  selectionType: ListHeaderCheckBoxState.unchecked,
+  selectionType: ListHeaderCheckBoxState.Unchecked,
   isRowChecked: jest.fn(),
   toggleSelectAll: jest.fn(),
   toggleSelectionById: jest.fn(),

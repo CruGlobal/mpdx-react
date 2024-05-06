@@ -7,10 +7,14 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { Preference } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { formatLanguage, languages } from 'src/lib/data/languages';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
+
+const preferencesSchema: yup.SchemaOf<Pick<Preference, 'locale'>> = yup.object({
+  locale: yup.string().required(),
+});
 
 interface LanguageAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -35,12 +39,7 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
     [languages, locale],
   );
 
-  const PreferencesSchema: yup.SchemaOf<Pick<Types.Preference, 'locale'>> =
-    yup.object({
-      locale: yup.string().required(),
-    });
-
-  const onSubmit = async (attributes: Pick<Types.Preference, 'locale'>) => {
+  const onSubmit = async (attributes: Pick<Preference, 'locale'>) => {
     await updatePersonalPreferences({
       variables: {
         input: {
@@ -75,7 +74,7 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
         initialValues={{
           locale: locale,
         }}
-        validationSchema={PreferencesSchema}
+        validationSchema={preferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
         validateOnMount

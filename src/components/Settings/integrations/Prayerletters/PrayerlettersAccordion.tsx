@@ -1,16 +1,13 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Box, Button, Skeleton, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import {
-  IntegrationsContext,
-  IntegrationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { AccordionProps, StyledServicesButton } from '../integrationsHelper';
+import { useOauthUrl } from '../useOauthUrl';
 import { DeletePrayerlettersAccountModal } from './Modals/DeletePrayerlettersModal';
 import {
   usePrayerlettersAccountQuery,
@@ -27,9 +24,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   showDeleteModal;
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const { apiToken } = useContext(
-    IntegrationsContext,
-  ) as IntegrationsContextType;
+  const { getPrayerlettersOauthUrl: getOauthUrl } = useOauthUrl();
   const accountListId = useAccountListId();
   const accordionName = t('prayerletters.com');
   const [syncPrayerlettersAccount] = useSyncPrayerlettersAccountMutation();
@@ -49,12 +44,6 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   const prayerlettersAccount = data?.prayerlettersAccount
     ? data?.prayerlettersAccount[0]
     : null;
-
-  const oAuth = `${
-    process.env.OAUTH_URL
-  }/auth/user/prayer_letters?account_list_id=${accountListId}&redirect_to=${window.encodeURIComponent(
-    `${process.env.SITE_URL}/accountLists/${accountListId}/settings/integrations?selectedTab=prayerletters.com`,
-  )}&access_token=${apiToken}`;
 
   const handleSync = async () => {
     setIsSaving(true);
@@ -132,7 +121,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
               { appName },
             )}
           </Alert>
-          <StyledServicesButton variant="contained" href={oAuth}>
+          <StyledServicesButton variant="contained" href={getOauthUrl()}>
             {t('Connect prayerletters.com Account')}
           </StyledServicesButton>
         </>
@@ -147,7 +136,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
           </Alert>
 
           <Box style={{ marginTop: '20px' }}>
-            <Button href={oAuth} variant="contained">
+            <Button href={getOauthUrl()} variant="contained">
               {t('Refresh prayerletters.com Account')}
             </Button>
 

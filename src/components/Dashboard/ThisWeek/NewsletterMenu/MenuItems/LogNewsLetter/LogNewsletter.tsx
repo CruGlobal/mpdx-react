@@ -1,6 +1,4 @@
 import React, { ReactElement, useState } from 'react';
-import ClockIcon from '@mui/icons-material/AccessTime';
-import CalendarIcon from '@mui/icons-material/CalendarToday';
 import CloseIcon from '@mui/icons-material/Close';
 import {
   CircularProgress,
@@ -12,25 +10,23 @@ import {
   FormLabel,
   Grid,
   IconButton,
-  InputAdornment,
   Radio,
   RadioGroup,
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { DateTimeFieldPair } from 'src/components/common/DateTimePickers/DateTimeFieldPair';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { nullableDateTime } from 'src/lib/formikHelpers';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 
 interface Props {
@@ -88,7 +84,7 @@ const taskSchema = yup.object({
     .mixed()
     .oneOf([...Object.values(ActivityTypeEnum), 'BOTH' as const])
     .defined(),
-  completedAt: yup.string().nullable(),
+  completedAt: nullableDateTime(),
   subject: yup.string().required(),
 });
 
@@ -99,7 +95,6 @@ const LogNewsletter = ({
   handleClose,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
-  const locale = useLocale();
 
   const [commentBody, changeCommentBody] = useState('');
 
@@ -130,6 +125,7 @@ const LogNewsletter = ({
             attributes: {
               ...attributes,
               activityType,
+              completedAt: attributes.completedAt?.toISO(),
               startAt: DateTime.local().toISO(),
               comment: body.length > 1 ? body : undefined,
             },
@@ -223,53 +219,22 @@ const LogNewsletter = ({
               <LogFormControl>
                 <LogFormLabel>{t('Completed On')}</LogFormLabel>
                 <Grid item xs={12}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
-                      <DatePicker
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        value={completedAt}
-                        onChange={(date): void =>
-                          setFieldValue('completedAt', date)
-                        }
-                        inputFormat={getDateFormatPattern(locale)}
-                        closeOnSelect
-                        label={t('Completed Date')}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <IconButton>
-                                <CalendarIcon />
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TimePicker
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        value={completedAt}
-                        onChange={(date): void =>
-                          setFieldValue('completedAt', date)
-                        }
-                        closeOnSelect
-                        label={t('Completed Time')}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <IconButton>
-                                <ClockIcon />
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
+                  <DateTimeFieldPair
+                    dateLabel={t('Completed Date')}
+                    timeLabel={t('Completed Time')}
+                    value={completedAt}
+                    onChange={(date) => setFieldValue('completedAt', date)}
+                    render={(dateField, timeField) => (
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={6}>
+                          {dateField}
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          {timeField}
+                        </Grid>
+                      </Grid>
+                    )}
+                  />
                 </Grid>
               </LogFormControl>
               <Grid item xs={12}>

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
-import React, { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CircularProgress, Fab, Theme } from '@mui/material';
-import { AnimatePresence, motion } from 'framer-motion';
+import clsx from 'clsx';
 import { makeStyles } from 'tss-react/mui';
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -11,6 +11,17 @@ const useStyles = makeStyles()((theme: Theme) => ({
     left: '50%',
     marginLeft: '-28px',
     marginTop: '-28px',
+    zIndex: 10,
+    opacity: 0,
+    transition: theme.transitions.create(['opacity', 'visibility'], {
+      duration: theme.transitions.duration.short,
+    }),
+    visibility: 'hidden',
+
+    '.visible': {
+      opacity: 1,
+      visibility: 'visible',
+    },
   },
   fab: {
     backgroundColor: theme.palette.common.white,
@@ -25,7 +36,7 @@ interface Props {
   loading?: boolean;
 }
 
-const Loading = ({ loading = false }: Props): ReactElement => {
+const Loading: React.FC<Props> = ({ loading = false }) => {
   const { classes } = useStyles();
   const router = useRouter();
 
@@ -49,24 +60,17 @@ const Loading = ({ loading = false }: Props): ReactElement => {
       router.events.off('routeChangeComplete', handleComplete);
       router.events.off('routeChangeError', handleComplete);
     };
-  });
+  }, []);
 
   return (
-    <AnimatePresence>
-      {currentlyLoading && (
-        <motion.div
-          initial={{ scale: 2, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className={classes.box}
-          data-testid="Loading"
-        >
-          <Fab color="default" disableRipple className={classes.fab}>
-            <CircularProgress size={30} />
-          </Fab>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div
+      className={clsx(classes.box, currentlyLoading && 'visible')}
+      data-testid="Loading"
+    >
+      <Fab color="default" disableRipple className={classes.fab}>
+        <CircularProgress size={30} />
+      </Fab>
+    </div>
   );
 };
 

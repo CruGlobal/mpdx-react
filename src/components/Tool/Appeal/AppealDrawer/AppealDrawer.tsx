@@ -1,11 +1,10 @@
 import React, { ReactElement } from 'react';
 import { Drawer } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
+import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import theme from '../../../../theme';
 import NavToolDrawerHandle from '../../NavToolList/NavToolDrawerHandle';
 import AppealDrawerList from './AppealDrawerList';
-//import { useAppealId } from '../../../../src/hooks/useAppealId';
 
 const useStyles = makeStyles()(() => ({
   drawer: {

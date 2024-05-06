@@ -11,9 +11,18 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import useTaskModal from '../../../../../../hooks/useTaskModal';
 import Modal from '../../../../../common/Modal/Modal';
-import { AddDonation } from './Items/AddDonation/AddDonation';
-import CreateContact from './Items/CreateContact/CreateContact';
-import { CreateMultipleContacts } from './Items/CreateMultipleContacts/CreateMultipleContacts';
+import {
+  DynamicAddDonation,
+  preloadAddDonation,
+} from './Items/AddDonation/DynamicAddDonation';
+import {
+  DynamicCreateContact,
+  preloadCreateContact,
+} from './Items/CreateContact/DynamicCreateContact';
+import {
+  DynamicCreateMultipleContacts,
+  preloadCreateMultipleContacts,
+} from './Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 
 interface AddMenuProps {
   isInDrawer?: boolean;
@@ -24,12 +33,13 @@ type AddMenuItem = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
   onClick: () => void;
+  onMouseEnter: () => void;
 };
 
 export enum AddMenuItemsEnum {
-  'NEW_CONTACT',
-  'MULTIPLE_CONTACTS',
-  'ADD_DONATION',
+  NewContact = 'NewContact',
+  MultipleContacts = 'MultipleContacts',
+  AddDonation = 'AddDonation',
 }
 
 const HoverAddIcon = styled(AddIcon)(({ theme }) => ({
@@ -74,7 +84,7 @@ const MenuItemText = styled(ListItemText)(({ theme }) => ({
 }));
 
 export const renderDialog = (
-  selectedMenuItem: number,
+  selectedMenuItem: AddMenuItemsEnum | null,
   dialogOpen: boolean,
   onDialogOpen: (status: boolean) => void,
 ): ReactElement => {
@@ -83,11 +93,11 @@ export const renderDialog = (
 
   const modalTitle = () => {
     switch (selectedMenuItem) {
-      case AddMenuItemsEnum.NEW_CONTACT:
+      case AddMenuItemsEnum.NewContact:
         return t('New Contact');
-      case AddMenuItemsEnum.MULTIPLE_CONTACTS:
+      case AddMenuItemsEnum.MultipleContacts:
         return t('Add Multiple Contacts');
-      case AddMenuItemsEnum.ADD_DONATION:
+      case AddMenuItemsEnum.AddDonation:
         return t('Add Donation');
       default:
         return t('Add Contact');
@@ -100,23 +110,23 @@ export const renderDialog = (
 
   const renderDialogContent = () => {
     switch (selectedMenuItem) {
-      case AddMenuItemsEnum.NEW_CONTACT:
+      case AddMenuItemsEnum.NewContact:
         return (
-          <CreateContact
+          <DynamicCreateContact
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />
         );
-      case AddMenuItemsEnum.MULTIPLE_CONTACTS:
+      case AddMenuItemsEnum.MultipleContacts:
         return (
-          <CreateMultipleContacts
+          <DynamicCreateMultipleContacts
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />
         );
-      case AddMenuItemsEnum.ADD_DONATION:
+      case AddMenuItemsEnum.AddDonation:
         return (
-          <AddDonation
+          <DynamicAddDonation
             accountListId={accountListId ?? ''}
             handleClose={handleDialogClose}
           />
@@ -125,10 +135,10 @@ export const renderDialog = (
   };
   const modalSize = () => {
     switch (selectedMenuItem) {
-      case AddMenuItemsEnum.NEW_CONTACT:
-      case AddMenuItemsEnum.ADD_DONATION:
+      case AddMenuItemsEnum.NewContact:
+      case AddMenuItemsEnum.AddDonation:
         return 'sm';
-      case AddMenuItemsEnum.MULTIPLE_CONTACTS:
+      case AddMenuItemsEnum.MultipleContacts:
         return 'xl';
       default:
         return 'md';
@@ -158,8 +168,13 @@ const AddMenuPanel = ({
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
-      {addMenuContent.map(({ text, icon, onClick }, index) => (
-        <RowContainer tabIndex={0} key={index} onClick={onClick}>
+      {addMenuContent.map(({ text, icon, onClick, onMouseEnter }, index) => (
+        <RowContainer
+          tabIndex={0}
+          key={index}
+          onClick={onClick}
+          onMouseEnter={onMouseEnter}
+        >
           {icon}
           <MenuItemText primary={t(`${text}`)} />
         </RowContainer>
@@ -169,8 +184,9 @@ const AddMenuPanel = ({
 };
 
 const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
-  const { openTaskModal } = useTaskModal();
-  const [selectedMenuItem, changeSelectedMenuItem] = useState(-1);
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
+  const [selectedMenuItem, changeSelectedMenuItem] =
+    useState<AddMenuItemsEnum | null>(null);
   const [dialogOpen, changeDialogOpen] = useState(false);
 
   const addMenuContent = [
@@ -178,28 +194,31 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       text: 'Add Contact',
       icon: <PersonIcon />,
       onClick: () => {
-        changeSelectedMenuItem(AddMenuItemsEnum.NEW_CONTACT);
+        changeSelectedMenuItem(AddMenuItemsEnum.NewContact);
         changeDialogOpen(true);
         setAnchorEl(undefined);
       },
+      onMouseEnter: preloadCreateContact,
     },
     {
       text: 'Add Multiple Contacts',
       icon: <PeopleIcon />,
       onClick: () => {
-        changeSelectedMenuItem(AddMenuItemsEnum.MULTIPLE_CONTACTS);
+        changeSelectedMenuItem(AddMenuItemsEnum.MultipleContacts);
         changeDialogOpen(true);
         setAnchorEl(undefined);
       },
+      onMouseEnter: preloadCreateMultipleContacts,
     },
     {
       text: 'Add Donation',
       icon: <CardGiftcardIcon />,
       onClick: () => {
-        changeSelectedMenuItem(AddMenuItemsEnum.ADD_DONATION);
+        changeSelectedMenuItem(AddMenuItemsEnum.AddDonation);
         changeDialogOpen(true);
         setAnchorEl(undefined);
       },
+      onMouseEnter: preloadAddDonation,
     },
     {
       text: 'Add Task',
@@ -208,6 +227,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
         openTaskModal({ view: 'add' });
         setAnchorEl(undefined);
       },
+      onMouseEnter: () => preloadTaskModal('add'),
     },
     {
       text: 'Log Task',
@@ -216,6 +236,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
         openTaskModal({ view: 'log' });
         setAnchorEl(undefined);
       },
+      onMouseEnter: () => preloadTaskModal('log'),
     },
   ];
 

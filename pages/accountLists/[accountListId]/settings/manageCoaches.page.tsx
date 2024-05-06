@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ManageCoachesAccessAccordion } from 'src/components/Settings/Coaches/ManageCoachesAccess/ManageCoachesAccessAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { suggestArticles } from 'src/lib/helpScout';
@@ -41,5 +42,7 @@ const ManageCoaching = (): ReactElement => {
     </SettingsWrapper>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default ManageCoaching;

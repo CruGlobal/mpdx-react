@@ -2,41 +2,21 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import fetchMock from 'jest-fetch-mock';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from 'src/graphql/types.generated';
-import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import ExportPhysical from './ExportPhysical';
 import { CreateExportedContactsMutation } from './ExportPhysical.generated';
 
 const accountListId = '111';
-const apiToken = 'someToken1234';
 const handleClose = jest.fn();
 jest.mock('next-auth/react');
-fetchMock.enableMocks();
-
-const mockEnqueue = jest.fn();
-jest.mock('notistack', () => ({
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  ...jest.requireActual('notistack'),
-  useSnackbar: () => {
-    return {
-      enqueueSnackbar: mockEnqueue,
-    };
-  },
-}));
 
 describe('ExportPhysical', () => {
-  beforeEach(() => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify({ apiToken }));
-    process.env.SITE_URL = 'http://localhost:3000';
-  });
   const mocks = {
     CreateExportedContacts: {
       exportContacts: 'someRandomUrlToFile/abc1234',
@@ -81,8 +61,6 @@ describe('ExportPhysical', () => {
   });
 
   describe('Exporting Contacts', () => {
-    const { location } = window;
-
     const url = 'someRandomUrlToFile/abc1234';
     const createMock = (format: ExportFormatEnum) => {
       return {
@@ -91,47 +69,6 @@ describe('ExportPhysical', () => {
         },
       };
     };
-
-    beforeAll(() => {
-      // Have to ignore TS complaining about deleting window.location because location is not optional
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      delete window.location;
-      window.location = { ...location, replace: jest.fn() };
-    });
-
-    afterAll(() => {
-      window.location = location;
-    });
-
-    it('Has NO apiToken', async () => {
-      fetchMock.resetMocks();
-      fetchMock.mockResponseOnce(JSON.stringify({ apiToken: null }));
-      const { getByText } = render(
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<{
-            CreateExportedContacts: CreateExportedContactsMutation;
-          }>
-            mocks={createMock(ExportFormatEnum.Csv)}
-          >
-            <ExportPhysical
-              accountListId={accountListId}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </ThemeProvider>,
-      );
-      userEvent.click(getByText('CSV for Mail Merge'));
-
-      await waitFor(() => {
-        expect(mockEnqueue).toHaveBeenCalledWith(
-          'Unable to make request due to lack of proof of authenication.',
-          {
-            variant: 'error',
-          },
-        );
-      });
-    });
 
     it('Exports Contacts and Downloads File - PDF of Mail Merged Labels | Avery5160 and Contact Name', async () => {
       const { getByText, getByTestId } = render(
@@ -160,7 +97,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('Export'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Pdf}?access_token=${apiToken}`,
+          `${url}.${ExportFormatEnum.Pdf}?access_token=apiToken`,
         ),
       );
     });
@@ -202,7 +139,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('Export'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Pdf}?access_token=${apiToken}`,
+          `${url}.${ExportFormatEnum.Pdf}?access_token=apiToken`,
         ),
       );
     });
@@ -225,7 +162,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('CSV for Mail Merge'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Csv}?access_token=${apiToken}`,
+          `${url}.${ExportFormatEnum.Csv}?access_token=apiToken`,
         ),
       );
     });
@@ -248,7 +185,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('Advanced CSV'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Csv}?access_token=${apiToken}`,
+          `${url}.${ExportFormatEnum.Csv}?access_token=apiToken`,
         ),
       );
     });
@@ -271,7 +208,7 @@ describe('ExportPhysical', () => {
       userEvent.click(getByText('Advanced Excel (XLSX)'));
       await waitFor(() =>
         expect(window.location.replace).toHaveBeenCalledWith(
-          `${url}.${ExportFormatEnum.Xlsx}?access_token=${apiToken}`,
+          `${url}.${ExportFormatEnum.Xlsx}?access_token=apiToken`,
         ),
       );
     });

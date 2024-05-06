@@ -4,10 +4,7 @@ import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
-import {
-  GqlMockedProvider,
-  gqlMock,
-} from '../../../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import {
   ContactMailingFragment,
@@ -309,7 +306,7 @@ describe('EditContactAddressModal', () => {
       getByText('This address is provided by Donation Services'),
     ).toBeInTheDocument();
     expect(getByRole('combobox', { name: 'Street' })).toBeDisabled();
-    expect(getByRole('button', { name: 'Location Home' })).not.toBeDisabled();
+    expect(getByRole('combobox', { name: 'Location' })).not.toBeDisabled();
     expect(getByRole('textbox', { name: 'City' })).toBeDisabled();
     expect(getByRole('textbox', { name: 'State' })).toBeDisabled();
     expect(getByRole('textbox', { name: 'Zip' })).toBeDisabled();

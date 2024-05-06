@@ -11,7 +11,7 @@ import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
 import Menu from '@mui/icons-material/Menu';
 import { Box, Card, CardContent, IconButton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import debounce from 'lodash/fp/debounce';
+import { debounce } from 'lodash';
 import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -117,9 +117,9 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
     onTitleChange(event, index);
   };
   const onTitleChange = useCallback(
-    debounce(200, (event, index) => {
+    debounce((event, index) => {
       changeTitle(event, index);
-    }),
+    }, 200),
     [flowOptions],
   );
 

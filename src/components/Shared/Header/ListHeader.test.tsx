@@ -1,12 +1,14 @@
 import React from 'react';
-import Button from '@mui/material/Button';
+import { Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
 import {
@@ -29,7 +31,7 @@ const mockedProps = {
 const push = jest.fn();
 const mockEnqueue = jest.fn();
 
-jest.mock('../../../../src/hooks/useAccountListId');
+jest.mock('src/hooks/useAccountListId');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -50,9 +52,11 @@ jest.mock('../../Shared/MassActions/TasksMassActionsDropdown', () => ({
 
 const MocksProviders = (props: { children: JSX.Element }) => (
   <ThemeProvider theme={theme}>
-    <GqlMockedProvider>
-      <SnackbarProvider>{props.children}</SnackbarProvider>
-    </GqlMockedProvider>
+    <I18nextProvider i18n={i18n}>
+      <GqlMockedProvider>
+        <SnackbarProvider>{props.children}</SnackbarProvider>
+      </GqlMockedProvider>
+    </I18nextProvider>
   </ThemeProvider>
 );
 
@@ -95,7 +99,7 @@ describe('ListHeader', () => {
             page="contact"
             activeFilters={false}
             starredFilter={{}}
-            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
             filterPanelOpen={false}
             contactDetailsOpen={false}
             {...mockedProps}
@@ -118,7 +122,7 @@ describe('ListHeader', () => {
             activeFilters={false}
             starredFilter={{}}
             contactsView={TableViewModeEnum.List}
-            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
             filterPanelOpen={true}
             contactDetailsOpen={true}
             {...mockedProps}
@@ -142,7 +146,7 @@ describe('ListHeader', () => {
               activeFilters={false}
               starredFilter={{}}
               contactsView={TableViewModeEnum.List}
-              headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+              headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
               filterPanelOpen={true}
               contactDetailsOpen={true}
               buttonGroup={<ButtonGroup />}
@@ -173,22 +177,27 @@ describe('ListHeader', () => {
     });
   });
 
-  it('opens the more actions menu and clicks the add tags action', () => {
-    const { getByPlaceholderText, getByTestId, getByText, queryByText } =
-      render(
-        <MocksProviders>
-          <ListHeader
-            selectedIds={selectedIds}
-            page="contact"
-            activeFilters={false}
-            starredFilter={{}}
-            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
-            filterPanelOpen={false}
-            contactDetailsOpen={false}
-            {...mockedProps}
-          />
-        </MocksProviders>,
-      );
+  it('opens the more actions menu and clicks the add tags action', async () => {
+    const {
+      findByText,
+      getByPlaceholderText,
+      getByTestId,
+      getByText,
+      queryByText,
+    } = render(
+      <MocksProviders>
+        <ListHeader
+          selectedIds={selectedIds}
+          page="contact"
+          activeFilters={false}
+          starredFilter={{}}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          {...mockedProps}
+        />
+      </MocksProviders>,
+    );
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     expect(queryByText('Add Tags')).not.toBeInTheDocument();
@@ -197,7 +206,9 @@ describe('ListHeader', () => {
     expect(getByText('Add Tags')).toBeInTheDocument();
     userEvent.click(getByText('Add Tags'));
     expect(
-      queryByText('Create New Tags (separate multiple tags with Enter key) *'),
+      await findByText(
+        'Create New Tags (separate multiple tags with Enter key) *',
+      ),
     ).toBeInTheDocument();
     expect(getByTestId('star-filter-button')).toBeInTheDocument();
     expect(getByTestId('showing-text')).toBeInTheDocument();
@@ -211,7 +222,7 @@ describe('ListHeader', () => {
             selectedIds={selectedIds}
             page="task"
             activeFilters={false}
-            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
             starredFilter={{}}
             filterPanelOpen={false}
             contactDetailsOpen={false}
@@ -231,7 +242,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           totalItems={50}
           starredFilter={{}}
           filterPanelOpen={false}
@@ -258,7 +269,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           totalItems={0}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -278,7 +289,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           totalItems={50}
           starredFilter={{}}
           filterPanelOpen={false}
@@ -302,7 +313,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -327,7 +338,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
           filterPanelOpen={true}
           contactDetailsOpen={false}
@@ -354,7 +365,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -381,7 +392,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
           filterPanelOpen={true}
           contactDetailsOpen={false}
@@ -408,7 +419,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -436,7 +447,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -462,7 +473,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -484,7 +495,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{ starred: true }}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -506,7 +517,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="contact"
           activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{ starred: true }}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -528,7 +539,7 @@ describe('ListHeader', () => {
           page="contact"
           activeFilters={true}
           contactsView={TableViewModeEnum.Flows}
-          headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{ starred: true }}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -547,7 +558,7 @@ describe('ListHeader', () => {
           selectedIds={selectedIds}
           page="task"
           activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.checked}
+          headerCheckboxState={ListHeaderCheckBoxState.Checked}
           starredFilter={{ starred: true }}
           filterPanelOpen={false}
           contactDetailsOpen={false}
@@ -574,7 +585,7 @@ describe('ListHeader', () => {
             selectedIds={[]}
             page="report"
             activeFilters={false}
-            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
             filterPanelOpen={false}
             contactDetailsOpen={false}
             totalItems={100}
@@ -596,7 +607,7 @@ describe('ListHeader', () => {
             selectedIds={selectedIds}
             page="report"
             activeFilters={false}
-            headerCheckboxState={ListHeaderCheckBoxState.unchecked}
+            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
             filterPanelOpen={false}
             contactDetailsOpen={false}
             totalItems={100}

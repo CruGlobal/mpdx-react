@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import TestWrapper from '__tests__/util/TestWrapper';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -9,10 +10,8 @@ import {
   ResultEnum,
 } from 'src/graphql/types.generated';
 import { dispatch } from 'src/lib/analytics';
-import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
-import { getDataForTaskModalMock } from '../TaskModalForm.mock';
 import { CompleteTaskDocument } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 import {
@@ -28,6 +27,7 @@ const openTaskModal = jest.fn();
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+    preloadTaskModal: jest.fn(),
   });
 });
 
@@ -60,11 +60,42 @@ describe('TaskModalCompleteForm', () => {
     notificationTimeUnit: NotificationTimeUnitEnum.Hours,
   };
 
+  describe('next action', () => {
+    it('defaults to the current activity type', () => {
+      const { getByRole } = render(
+        <TestWrapper>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={jest.fn()}
+            task={{ ...task, activityType: ActivityTypeEnum.Email }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(getByRole('combobox', { name: 'Next Action' })).toHaveValue(
+        'Email',
+      );
+    });
+
+    it('is blank for activity types without a matching next action', () => {
+      const { getByRole } = render(
+        <TestWrapper>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={jest.fn()}
+            task={{ ...task, activityType: ActivityTypeEnum.Appointment }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(getByRole('combobox', { name: 'Next Action' })).toHaveValue('');
+    });
+  });
+
   it('default', async () => {
-    const { getAllByRole } = render(
+    const { getByRole } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
@@ -76,9 +107,9 @@ describe('TaskModalCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    expect(
-      getAllByRole('textbox').find((item) => item.id === ':r0:'),
-    ).toHaveValue('1/1/2020');
+    expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
+      '01/01/2020',
+    );
   });
 
   it('saves simple', async () => {
@@ -86,7 +117,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByText } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeSimpleTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
@@ -121,7 +151,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByRole, getByText } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
           {
@@ -154,7 +183,7 @@ describe('TaskModalCompleteForm', () => {
         />
       </TestWrapper>,
     );
-    userEvent.click(getByRole('button', { name: 'Result' }));
+    userEvent.click(getByRole('combobox', { name: 'Result' }));
     userEvent.click(getByRole('option', { name: 'Received' }));
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
     userEvent.click(getByRole('option', { name: 'Appointment' }));
@@ -164,6 +193,7 @@ describe('TaskModalCompleteForm', () => {
       expect(openTaskModal).toHaveBeenCalledWith({
         view: 'add',
         defaultValues: {
+          subject: task.subject,
           activityType: ActivityTypeEnum.Appointment,
           contactIds: ['contact-1', 'contact-2'],
           userId: 'user-1',
@@ -178,7 +208,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByRole } = render(
       <TestWrapper
         mocks={[
-          getDataForTaskModalMock(accountListId),
           completeSimpleTaskMutationMock(accountListId, taskId),
           addTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
@@ -203,11 +232,61 @@ describe('TaskModalCompleteForm', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
+  describe('completed date', () => {
+    it('is the start date for appointments', () => {
+      const onClose = jest.fn();
+      const { getByRole } = render(
+        <TestWrapper>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={onClose}
+            task={{
+              ...task,
+              activityType: ActivityTypeEnum.Appointment,
+              startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+            }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
+        '01/05/2015',
+      );
+      expect(getByRole('textbox', { name: /^Choose time/ })).toHaveValue(
+        '01:02 AM',
+      );
+    });
+
+    it('is now for other tasks', () => {
+      const onClose = jest.fn();
+      const { getByRole } = render(
+        <TestWrapper>
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={onClose}
+            task={{
+              ...task,
+              activityType: ActivityTypeEnum.Call,
+              startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+            }}
+          />
+        </TestWrapper>,
+      );
+
+      expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
+        '01/01/2020',
+      );
+      expect(getByRole('textbox', { name: /^Choose time/ })).toHaveValue(
+        '12:00 AM',
+      );
+    });
+  });
+
   const getOptions = (
     activityType?: ActivityTypeEnum,
   ): { results: ResultEnum[]; nextActions: ActivityTypeEnum[] } => {
     const { getByRole, queryByRole } = render(
-      <TestWrapper mocks={[getDataForTaskModalMock(accountListId)]}>
+      <TestWrapper>
         <TaskModalCompleteForm
           accountListId={accountListId}
           onClose={jest.fn()}
@@ -219,7 +298,7 @@ describe('TaskModalCompleteForm', () => {
       </TestWrapper>,
     );
     let results: ResultEnum[] = [];
-    const resultButton = queryByRole('button', { name: 'Result' });
+    const resultButton = queryByRole('combobox', { name: 'Result' });
     if (resultButton) {
       userEvent.click(resultButton);
       results = within(getByRole('listbox', { name: 'Result' }))

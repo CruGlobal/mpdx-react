@@ -4,9 +4,9 @@ export interface GoogleAccountIntegrationsResponse {
   id: string;
   type: string;
   attributes: Omit<GoogleAccountIntegrationAttributes, 'id'>;
-  relationships: relationships;
+  relationships: Relationships;
 }
-type relationships = {
+type Relationships = {
   account_list: object[];
   google_account: object[];
 };
@@ -15,7 +15,7 @@ export interface GoogleAccountIntegrationAttributes {
   calendar_integration: boolean;
   calendar_integrations: string[];
   calendar_name: string;
-  calendars: calendars[];
+  calendars: Calendar[];
   created_at: string;
   updated_at: string;
   id: string;
@@ -26,13 +26,13 @@ interface GoogleAccountIntegrationAttributesCamel {
   calendarIntegration: boolean;
   calendarIntegrations: string[];
   calendarName: string;
-  calendars: calendars[];
+  calendars: Calendar[];
   createdAt: string;
   updatedAt: string;
   id: string;
   updatedInDbAt: string;
 }
-type calendars = {
+type Calendar = {
   id: string;
   name: string;
 };

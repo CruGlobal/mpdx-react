@@ -1,18 +1,15 @@
 import React, { ReactElement, useState } from 'react';
-import CalendarToday from '@mui/icons-material/CalendarToday';
 import {
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   Grid,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -29,10 +26,9 @@ import {
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
-import { useLocale } from 'src/hooks/useLocale';
+import { requiredDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
-import theme from 'src/theme';
+import { CustomDateField } from '../common/DateTimePickers/CustomDateField';
 import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
   EditDonationModalDonationFragment,
@@ -51,13 +47,15 @@ interface EditDonationModalProps {
 const donationSchema = yup.object({
   convertedAmount: yup.number().required(),
   currency: yup.string().required(),
-  date: yup.string().required(),
+  date: requiredDateTime(),
   donorAccountId: yup.string().required(),
   designationAccountId: yup.string().required(),
   appealId: yup.string().optional(),
   appealAmount: yup.number(),
   memo: yup.string().optional(),
 });
+
+type Attributes = yup.InferType<typeof donationSchema>;
 
 const LoadingSpinner: React.FC = () => (
   <CircularProgress color="primary" size={20} sx={{ marginRight: 3 }} />
@@ -69,7 +67,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   handleClose,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const accountListId = useAccountListId() ?? '';
   const constants = useApiConstants();
@@ -100,18 +97,18 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const onSubmit = async (fields) => {
+  const onSubmit = async (fields: Attributes) => {
     await updateDonation({
       variables: {
         accountListId,
         attributes: {
           id: donation.id,
           appealId: fields.appealId,
-          appealAmount: parseFloat(fields.appealAmount),
-          amount: parseFloat(fields.convertedAmount),
+          appealAmount: parseFloat(fields.appealAmount as unknown as string),
+          amount: parseFloat(fields.convertedAmount as unknown as string),
           currency: fields.currency,
           designationAccountId: fields.designationAccountId,
-          donationDate: fields.date,
+          donationDate: fields.date.toISODate(),
           donorAccountId: fields.donorAccountId,
           memo: fields.memo,
         },
@@ -237,27 +234,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
-                    <DatePicker
-                      renderInput={(params) => (
-                        <TextField fullWidth {...params} />
-                      )}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <CalendarToday
-                              style={{
-                                color: theme.palette.cruGrayMedium.main,
-                              }}
-                            />
-                          </InputAdornment>
-                        ),
-                        required: true,
-                      }}
-                      inputFormat={getDateFormatPattern(locale)}
-                      closeOnSelect
+                    <CustomDateField
                       label={t('Date')}
                       value={date}
                       onChange={(date) => setFieldValue('date', date)}
+                      required
                     />
                   </FormControl>
                 </Grid>

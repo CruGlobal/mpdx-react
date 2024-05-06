@@ -18,7 +18,7 @@ import { FilterListItemNumericRange } from './FilterListItemNumericRange';
 import { FilterListItemSelect } from './FilterListItemSelect';
 import { FilterListItemSlider } from './FilterListItemSlider';
 import { FilterListItemTextField } from './FilterListItemTextField';
-import { FilterValue } from './FilterPanel';
+import { FilterValue } from './FilterPanelTypes';
 
 type FilterItem =
   | CheckboxFilter

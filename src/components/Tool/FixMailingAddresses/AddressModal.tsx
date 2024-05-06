@@ -23,8 +23,8 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import theme from '../../../theme';
+import { StyledInput } from '../StyledInput';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
-import { StyledInput } from './StyledInput';
 
 const useStyles = makeStyles()(() => ({
   modal: {

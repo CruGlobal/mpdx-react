@@ -1,4 +1,5 @@
 import React, { ReactElement, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import {
   Autocomplete,
   Box,
@@ -25,11 +26,11 @@ import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { articles, showArticle } from 'src/lib/helpScout';
 import theme from 'src/theme';
+import { useOauthUrl } from '../../useOauthUrl';
 import {
   OrganizationTypesEnum,
   getOrganizationType,
 } from '../OrganizationAccordion';
-import { getOauthUrl } from '../OrganizationService';
 import {
   useCreateOrganizationAccountMutation,
   useGetOrganizationsQuery,
@@ -44,11 +45,51 @@ interface OrganizationAddAccountModalProps {
 export type OrganizationFormikSchema = {
   selectedOrganization: Pick<
     Organization,
-    'id' | 'name' | 'oauth' | 'apiClass' | 'giftAidPercentage'
+    | 'id'
+    | 'name'
+    | 'oauth'
+    | 'apiClass'
+    | 'giftAidPercentage'
+    | 'disableNewUsers'
   >;
   username: string | undefined;
   password: string | undefined;
 };
+
+const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> = yup.object({
+  selectedOrganization: yup
+    .object({
+      id: yup.string().required(),
+      apiClass: yup.string().required(),
+      name: yup.string().required(),
+      oauth: yup.boolean().required(),
+      giftAidPercentage: yup.number().nullable(),
+      disableNewUsers: yup.boolean().nullable(),
+    })
+    .required(),
+  username: yup
+    .string()
+    .when('selectedOrganization', (organization, schema) => {
+      if (
+        getOrganizationType(organization?.apiClass, organization?.oauth) ===
+        OrganizationTypesEnum.LOGIN
+      ) {
+        return schema.required('Must enter username');
+      }
+      return schema;
+    }),
+  password: yup
+    .string()
+    .when('selectedOrganization', (organization, schema) => {
+      if (
+        getOrganizationType(organization?.apiClass, organization?.oauth) ===
+        OrganizationTypesEnum.LOGIN
+      ) {
+        return schema.required('Must enter password');
+      }
+      return schema;
+    }),
+});
 
 const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
@@ -72,10 +113,12 @@ export const OrganizationAddAccountModal: React.FC<
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
+  const client = useApolloClient();
   const [organizationType, setOrganizationType] =
     useState<OrganizationTypesEnum>();
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
   const { data: organizations, loading } = useGetOrganizationsQuery();
+  const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
 
   const onSubmit = async (attributes: Partial<OrganizationFormikSchema>) => {
     if (!attributes?.selectedOrganization) return;
@@ -87,7 +130,7 @@ export const OrganizationAddAccountModal: React.FC<
         t('Redirecting you to complete authentication to connect.'),
         { variant: 'success' },
       );
-      window.location.href = await getOauthUrl(id);
+      window.location.href = getOauthUrl(id);
       return;
     }
 
@@ -136,42 +179,6 @@ export const OrganizationAddAccountModal: React.FC<
     showArticle('HS_SETUP_FIND_ORGANIZATION');
   };
 
-  const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> = yup.object(
-    {
-      selectedOrganization: yup
-        .object({
-          id: yup.string().required(),
-          apiClass: yup.string().required(),
-          name: yup.string().required(),
-          oauth: yup.boolean().required(),
-          giftAidPercentage: yup.number().nullable(),
-        })
-        .required(),
-      username: yup
-        .string()
-        .when('selectedOrganization', (organization, schema) => {
-          if (
-            getOrganizationType(organization?.apiClass, organization?.oauth) ===
-            OrganizationTypesEnum.LOGIN
-          ) {
-            return schema.required('Must enter username');
-          }
-          return schema;
-        }),
-      password: yup
-        .string()
-        .when('selectedOrganization', (organization, schema) => {
-          if (
-            getOrganizationType(organization?.apiClass, organization?.oauth) ===
-            OrganizationTypesEnum.LOGIN
-          ) {
-            return schema.required('Must enter password');
-          }
-          return schema;
-        }),
-    },
-  );
-
   return (
     <Modal
       isOpen={true}
@@ -200,7 +207,6 @@ export const OrganizationAddAccountModal: React.FC<
           <form onSubmit={handleSubmit}>
             <StyledBox>
               <Autocomplete
-                autoSelect
                 disabled={isSubmitting}
                 autoHighlight
                 loading={loading}
@@ -212,8 +218,8 @@ export const OrganizationAddAccountModal: React.FC<
                   setFieldValue('selectedOrganization', value);
                 }}
                 options={
-                  organizations?.organizations?.map(
-                    (organization) => organization,
+                  organizations?.organizations?.filter(
+                    (organization) => !organization?.disableNewUsers,
                   ) || []
                 }
                 getOptionLabel={(option) =>
@@ -231,13 +237,11 @@ export const OrganizationAddAccountModal: React.FC<
                 )}
               />
             </StyledBox>
-
             {!selectedOrganization && !!articles.HS_SETUP_FIND_ORGANIZATION && (
               <Button onClick={showOrganizationHelp}>
                 {t("Can't find your organization?")}
               </Button>
             )}
-
             {organizationType === OrganizationTypesEnum.MINISTRY && (
               <WarningBox>
                 <Typography
@@ -276,10 +280,13 @@ export const OrganizationAddAccountModal: React.FC<
                         onClick={() => {
                           signOut({ callbackUrl: 'signOut' }).then(() => {
                             clearDataDogUser();
+                            client.clearStore();
                           });
                         }}
                       >
-                        {t('click here to log out of {{appName}}', { appName })}
+                        {t('click here to log out of {{appName}}', {
+                          appName,
+                        })}
                       </Link>
                       {t(
                         ' so you can log back in with your official key account.',
@@ -298,7 +305,6 @@ export const OrganizationAddAccountModal: React.FC<
                 </StyledTypography>
               </WarningBox>
             )}
-
             {organizationType === OrganizationTypesEnum.OAUTH && (
               <WarningBox>
                 <Typography color={theme.palette.mpdxYellow.contrastText}>
@@ -309,7 +315,6 @@ export const OrganizationAddAccountModal: React.FC<
                 </Typography>
               </WarningBox>
             )}
-
             {organizationType === OrganizationTypesEnum.LOGIN && (
               <>
                 <StyledBox marginTop={4}>
@@ -344,7 +349,6 @@ export const OrganizationAddAccountModal: React.FC<
                 </StyledBox>
               </>
             )}
-
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
 

@@ -1,4 +1,4 @@
-import { ReactElement, useContext, useMemo, useState } from 'react';
+import { ReactElement, useMemo, useState } from 'react';
 import {
   Alert,
   Box,
@@ -19,14 +19,10 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import {
-  IntegrationsContext,
-  IntegrationsContextType,
-} from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import * as Types from 'src/graphql/types.generated';
+import { MailchimpAccount } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
@@ -34,6 +30,7 @@ import {
   StyledListItem,
   StyledServicesButton,
 } from '../integrationsHelper';
+import { useOauthUrl } from '../useOauthUrl';
 import {
   MailchimpAccountDocument,
   MailchimpAccountQuery,
@@ -42,6 +39,13 @@ import {
   useUpdateMailchimpAccountMutation,
 } from './MailchimpAccount.generated';
 import { DeleteMailchimpAccountModal } from './Modals/DeleteMailchimpModal';
+
+const mailchimpSchema: yup.SchemaOf<
+  Pick<MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
+> = yup.object({
+  autoLogCampaigns: yup.boolean().required(),
+  primaryListId: yup.string().required(),
+});
 
 interface MailchimpAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -66,9 +70,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const { apiToken } = useContext(
-    IntegrationsContext,
-  ) as IntegrationsContextType;
+  const { getMailChimpOauthUrl: getOauthUrl } = useOauthUrl();
   const accountListId = useAccountListId();
   const [updateMailchimpAccount] = useUpdateMailchimpAccountMutation();
   const [syncMailchimpAccount] = useSyncMailchimpAccountMutation();
@@ -89,24 +91,8 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
     ? data.mailchimpAccount[0]
     : null;
 
-  const oAuth = `${
-    process.env.OAUTH_URL
-  }/auth/user/mailchimp?account_list_id=${accountListId}&redirect_to=${window.encodeURIComponent(
-    `${process.env.SITE_URL}/accountLists/${accountListId}/settings/integrations?selectedTab=mailchimp`,
-  )}&access_token=${apiToken}`;
-
-  const MailchimpSchema: yup.SchemaOf<
-    Pick<Types.MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
-  > = yup.object({
-    autoLogCampaigns: yup.boolean().required(),
-    primaryListId: yup.string().required(),
-  });
-
   const onSubmit = async (
-    attributes: Pick<
-      Types.MailchimpAccount,
-      'autoLogCampaigns' | 'primaryListId'
-    >,
+    attributes: Pick<MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>,
   ) => {
     await updateMailchimpAccount({
       variables: {
@@ -231,7 +217,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
               },
             )}
           </Typography>
-          <StyledServicesButton variant="contained" href={oAuth}>
+          <StyledServicesButton variant="contained" href={getOauthUrl()}>
             {t('Connect MailChimp')}
           </StyledServicesButton>
         </>
@@ -250,7 +236,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
                   primaryListId: mailchimpAccount.primaryListId,
                   autoLogCampaigns: mailchimpAccount.autoLogCampaigns,
                 }}
-                validationSchema={MailchimpSchema}
+                validationSchema={mailchimpSchema}
                 onSubmit={onSubmit}
               >
                 {({

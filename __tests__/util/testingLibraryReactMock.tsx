@@ -2,8 +2,8 @@
 import React, { ReactElement } from 'react';
 import { RenderOptions, RenderResult, render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
+import i18n from 'src/lib/i18n';
 import translation from '../../public/locales/en/translation.json';
-import i18n from '../../src/lib/i18n';
 
 i18n.addResourceBundle('en', 'translation', translation);
 

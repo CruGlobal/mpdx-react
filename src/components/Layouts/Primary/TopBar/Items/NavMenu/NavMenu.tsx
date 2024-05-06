@@ -85,13 +85,13 @@ const useStyles = makeStyles()(() => ({
 }));
 
 enum ToolName {
-  fixCommitmentInfo = 'fixCommitmentInfo',
-  fixMailingAddresses = 'fixMailingAddresses',
-  fixSendNewsletter = 'fixSendNewsletter',
-  fixEmailAddresses = 'fixEmailAddresses',
-  fixPhoneNumbers = 'fixPhoneNumbers',
-  mergeContacts = 'mergeContacts',
-  mergePeople = 'mergePeople',
+  FixCommitmentInfo = 'fixCommitmentInfo',
+  FixMailingAddresses = 'fixMailingAddresses',
+  FixSendNewsletter = 'fixSendNewsletter',
+  FixEmailAddresses = 'fixEmailAddresses',
+  FixPhoneNumbers = 'fixPhoneNumbers',
+  MergeContacts = 'mergeContacts',
+  MergePeople = 'mergePeople',
 }
 
 export const toolsRedirectLinks: { [key: string]: string } = {
@@ -119,25 +119,25 @@ const NavMenu: React.FC = () => {
   });
 
   const toolData: { [key: string]: { totalCount: number } } = {
-    [ToolName.fixCommitmentInfo]: data?.[ToolName.fixCommitmentInfo] ?? {
+    [ToolName.FixCommitmentInfo]: data?.[ToolName.FixCommitmentInfo] ?? {
       totalCount: 0,
     },
-    [ToolName.fixMailingAddresses]: data?.[ToolName.fixMailingAddresses] ?? {
+    [ToolName.FixMailingAddresses]: data?.[ToolName.FixMailingAddresses] ?? {
       totalCount: 0,
     },
-    [ToolName.fixSendNewsletter]: data?.[ToolName.fixSendNewsletter] ?? {
+    [ToolName.FixSendNewsletter]: data?.[ToolName.FixSendNewsletter] ?? {
       totalCount: 0,
     },
-    [ToolName.fixEmailAddresses]: data?.[ToolName.fixEmailAddresses] ?? {
+    [ToolName.FixEmailAddresses]: data?.[ToolName.FixEmailAddresses] ?? {
       totalCount: 0,
     },
-    [ToolName.fixPhoneNumbers]: data?.[ToolName.fixPhoneNumbers] ?? {
+    [ToolName.FixPhoneNumbers]: data?.[ToolName.FixPhoneNumbers] ?? {
       totalCount: 0,
     },
-    [ToolName.mergeContacts]: data?.[ToolName.mergeContacts] ?? {
+    [ToolName.MergeContacts]: data?.[ToolName.MergeContacts] ?? {
       totalCount: 0,
     },
-    [ToolName.mergePeople]: data?.[ToolName.mergePeople] ?? { totalCount: 0 },
+    [ToolName.MergePeople]: data?.[ToolName.MergePeople] ?? { totalCount: 0 },
   };
 
   const sum = useMemo<number>(() => {

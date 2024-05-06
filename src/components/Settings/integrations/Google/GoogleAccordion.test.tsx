@@ -2,11 +2,9 @@ import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { IntegrationsContextProvider } from 'pages/accountLists/[accountListId]/settings/integrations/IntegrationsContext';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { GoogleAccordion } from './GoogleAccordion';
 import { GoogleAccountsQuery } from './GoogleAccounts.generated';
@@ -15,19 +13,9 @@ jest.mock('next-auth/react');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
-const apiToken = 'apiToken';
 const router = {
   query: { accountListId, contactId: [contactId] },
   isReady: true,
-};
-const session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    email: 'Chair Library Bed',
-    image: null,
-    name: 'Dung Tapestry',
-    token: 'superLongJwtString',
-  },
 };
 
 const mockEnqueue = jest.fn();
@@ -47,11 +35,7 @@ const handleAccordionChange = jest.fn();
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>
-        <IntegrationsContextProvider apiToken={apiToken}>
-          {children}
-        </IntegrationsContextProvider>
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </TestRouter>
   </SnackbarProvider>
 );
@@ -67,7 +51,6 @@ const standardGoogleAccount = {
 
 describe('GoogleAccordion', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  (getSession as jest.Mock).mockResolvedValue(session);
 
   it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
@@ -104,8 +87,7 @@ describe('GoogleAccordion', () => {
   });
 
   describe('Not Connected', () => {
-    process.env.SITE_URL = 'https://next.mpdx.org';
-    it('should render Mailchimp Overview', async () => {
+    it('should render Google Overview', async () => {
       const mutationSpy = jest.fn();
       const { getByText } = render(
         <Components>
@@ -202,7 +184,6 @@ describe('GoogleAccordion', () => {
     });
 
     it('shows account with expired token', async () => {
-      process.env.SITE_URL = 'https://next.mpdx.org';
       const mutationSpy = jest.fn();
       googleAccount.tokenExpired = true;
       const { getByText, getAllByText } = render(

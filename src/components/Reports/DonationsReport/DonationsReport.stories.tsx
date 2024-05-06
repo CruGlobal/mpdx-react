@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { DateTime } from 'luxon';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { DonationsReport } from './DonationsReport';
 
 export default {

@@ -4,9 +4,9 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import theme from 'src/theme';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader';
 import { GetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
@@ -37,7 +37,7 @@ describe('ContactDetails', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -47,7 +47,7 @@ describe('ContactDetails', () => {
                     contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -75,7 +75,7 @@ describe('ContactDetails', () => {
                 },
               }}
             >
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -85,7 +85,7 @@ describe('ContactDetails', () => {
                     contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -107,7 +107,7 @@ describe('ContactDetails', () => {
             }>
               mocks={mocks}
             >
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -117,7 +117,7 @@ describe('ContactDetails', () => {
                     contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -139,7 +139,7 @@ describe('ContactDetails', () => {
             }>
               mocks={mocks}
             >
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -149,7 +149,7 @@ describe('ContactDetails', () => {
                     contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -174,7 +174,7 @@ describe('ContactDetails', () => {
             }>
               mocks={mocks}
             >
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -184,7 +184,7 @@ describe('ContactDetails', () => {
                     contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -212,7 +212,7 @@ describe('ContactDetails', () => {
             }>
               mocks={mocks}
             >
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetailsHeader
                     accountListId={accountListId}
@@ -222,7 +222,7 @@ describe('ContactDetails', () => {
                     contactDetailsLoaded={false}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>

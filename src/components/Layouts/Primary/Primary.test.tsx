@@ -2,28 +2,12 @@ import * as nextRouter from 'next/router';
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import TestWrapper from '../../../../__tests__/util/TestWrapper';
-import matchMediaMock from '../../../../__tests__/util/matchMediaMock';
+import TestWrapper from '__tests__/util/TestWrapper';
+import matchMediaMock from '__tests__/util/matchMediaMock';
 import theme from '../../../theme';
 import { getNotificationsMocks } from './TopBar/Items/NotificationMenu/NotificationMenu.mock';
 import { getTopBarMock } from './TopBar/TopBar.mock';
 import Primary from '.';
-
-const session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    email: 'Chair Library Bed',
-    image: null,
-    name: 'Dung Tapestry',
-    token: 'superLongJwtString',
-  },
-};
-
-jest.mock('next-auth/react', () => {
-  return {
-    useSession: jest.fn().mockImplementation(() => Promise.resolve(session)),
-  };
-});
 
 describe('Primary', () => {
   const useRouter = jest.spyOn(nextRouter, 'useRouter');

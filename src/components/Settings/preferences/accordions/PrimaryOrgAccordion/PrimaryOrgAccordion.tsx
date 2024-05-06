@@ -8,8 +8,14 @@ import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/inte
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { AccountList } from 'src/graphql/types.generated';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
+
+const preferencesSchema: yup.SchemaOf<
+  Pick<AccountList, 'salaryOrganizationId'>
+> = yup.object({
+  salaryOrganizationId: yup.string().required(),
+});
 
 interface PrimaryOrgAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -39,14 +45,8 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
     );
   }, [orgs, salaryOrganizationId]);
 
-  const PreferencesSchema: yup.SchemaOf<
-    Pick<Types.AccountList, 'salaryOrganizationId'>
-  > = yup.object({
-    salaryOrganizationId: yup.string().required(),
-  });
-
   const onSubmit = async (
-    attributes: Pick<Types.AccountList, 'salaryOrganizationId'>,
+    attributes: Pick<AccountList, 'salaryOrganizationId'>,
   ) => {
     await updateAccountPreferences({
       variables: {
@@ -84,7 +84,7 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
         initialValues={{
           salaryOrganizationId: salaryOrganizationId,
         }}
-        validationSchema={PreferencesSchema}
+        validationSchema={preferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
         validateOnMount

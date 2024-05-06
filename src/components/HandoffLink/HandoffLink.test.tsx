@@ -2,7 +2,7 @@ import * as nextRouter from 'next/router';
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GqlMockedProvider } from '../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import HandoffLink from '.';
 
 describe('HandoffLink', () => {
@@ -45,9 +45,7 @@ describe('HandoffLink', () => {
     userEvent.click(linkElement);
     // TODO investigate why the user is undefined when click fires
     expect(open).toHaveBeenCalledWith(
-      `${
-        process.env.SITE_URL || window.location.origin
-      }/api/handoff?accountListId=accountListId&userId=&path=%2Fcontacts`,
+      `${process.env.SITE_URL}/api/handoff?accountListId=accountListId&userId=user-1&path=%2Fcontacts`,
       '_blank',
     );
   });
@@ -67,9 +65,7 @@ describe('HandoffLink', () => {
     );
     userEvent.click(linkElement);
     expect(open).toHaveBeenCalledWith(
-      `${
-        process.env.SITE_URL || window.location.origin
-      }/api/handoff?auth=true&path=%2Fcontacts`,
+      `${process.env.SITE_URL}/api/handoff?auth=true&path=%2Fcontacts`,
       '_blank',
     );
   });

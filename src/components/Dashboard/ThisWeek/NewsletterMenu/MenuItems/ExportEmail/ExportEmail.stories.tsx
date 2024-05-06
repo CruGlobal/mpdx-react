@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
-import { GqlMockedProvider } from '../../../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import ExportEmail from './ExportEmail';
 import {
   GetEmailNewsletterContactsDocument,

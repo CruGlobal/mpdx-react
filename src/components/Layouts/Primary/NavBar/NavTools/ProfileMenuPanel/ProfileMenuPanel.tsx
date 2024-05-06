@@ -1,17 +1,19 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChevronRight from '@mui/icons-material/ChevronRight';
-import { Box, Button, Drawer, Link, List } from '@mui/material';
+import { Box, Button, Drawer, List, Link as MuiLink } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
+import { NextLinkComposed } from 'src/components/common/Links/NextLinkComposed';
 import { clearDataDogUser } from 'src/hooks/useDataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
 import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
-import { LeafButton, LeafListItem, Title } from '../../NavItem/NavItem';
+import { LeafListItem, Title } from '../../StyledComponents';
 
 type ProfileMenuContent = {
   text: string;
@@ -33,11 +35,50 @@ const LeafListItemHover = styled(LeafListItem)(() => ({
   },
 }));
 
+const AccountListButton = styled(Button)(() => ({
+  paddingLeft: theme.spacing(2),
+  paddingTop: 11,
+  paddingBottom: 11,
+}));
+
+const StyledButton = styled(Button)(() => ({
+  color: theme.palette.text.secondary,
+  padding: '11px 8px 11px 40px',
+  justifyContent: 'flex-start',
+  textTransform: 'none' as any,
+  letterSpacing: 0,
+  width: '100%',
+})) as typeof Button;
+
+const addProfileContent: ProfileMenuContent[] = [
+  {
+    text: 'Preferences',
+    path: '/settings/preferences',
+  },
+  {
+    text: 'Notifications',
+    path: '/settings/notifications',
+  },
+  {
+    text: 'Connect Services',
+    path: '/settings/integrations',
+  },
+  {
+    text: 'Manage Accounts',
+    path: '/settings/manageAccounts',
+  },
+  {
+    text: 'Manage Coaches',
+    path: '/settings/manageCoaches',
+  },
+];
+
 export const ProfileMenuPanel: React.FC = () => {
   const { t } = useTranslation();
   const { data } = useGetTopBarQuery();
   const accountListId = useAccountListId();
   const { push, pathname } = useRouter();
+  const client = useApolloClient();
   const [accountsDrawerOpen, setAccountsDrawerOpen] = useState<boolean>(false);
 
   const toggleAccountsDrawer = (): void => {
@@ -52,36 +93,6 @@ export const ProfileMenuPanel: React.FC = () => {
     });
   };
 
-  const addProfileContent: ProfileMenuContent[] = [
-    {
-      text: 'Preferences',
-      path: '/preferences/personal',
-    },
-    {
-      text: 'Notifications',
-      path: '/preferences/notifications',
-    },
-    {
-      text: 'Connect Services',
-      path: '/preferences/integrations',
-    },
-    {
-      text: 'Manage Accounts',
-      path: '/preferences/accounts',
-    },
-    {
-      text: 'Manage Coaches',
-      path: '/preferences/coaches',
-    },
-  ];
-
-  const style = { paddingLeft: 40, paddingTop: 11, paddingBottom: 11 };
-  const accountListStyle = {
-    paddingLeft: theme.spacing(2),
-    paddingTop: 11,
-    paddingBottom: 11,
-  };
-
   return (
     <List disablePadding data-testid="ProfileMenuPanelForNavBar">
       {data && (
@@ -91,7 +102,7 @@ export const ProfileMenuPanel: React.FC = () => {
             disableGutters
             onClick={toggleAccountsDrawer}
           >
-            <LeafButton style={style}>
+            <StyledButton>
               <Title
                 style={{
                   whiteSpace: 'nowrap',
@@ -107,7 +118,7 @@ export const ProfileMenuPanel: React.FC = () => {
                 }
               </Title>
               <ChevronRight />
-            </LeafButton>
+            </StyledButton>
           </LeafListItem>
           <MobileDrawer
             anchor="left"
@@ -119,12 +130,12 @@ export const ProfileMenuPanel: React.FC = () => {
               disableGutters
               onClick={toggleAccountsDrawer}
             >
-              <LeafButton style={accountListStyle}>
+              <AccountListButton>
                 <ArrowBackIcon
                   style={{ color: 'white', marginRight: theme.spacing(2) }}
                 />
                 <Title>{t('Account List Selector')}</Title>
-              </LeafButton>
+              </AccountListButton>
             </LeafListItem>
             {data?.accountLists.nodes.map((accountList) => (
               <LeafListItemHover
@@ -139,9 +150,9 @@ export const ProfileMenuPanel: React.FC = () => {
                 }}
                 onClick={() => changeAccountListId(accountList.id)}
               >
-                <LeafButton style={accountListStyle}>
+                <AccountListButton>
                   <Title>{accountList.name}</Title>
-                </LeafButton>
+                </AccountListButton>
               </LeafListItemHover>
             ))}
           </MobileDrawer>
@@ -149,47 +160,50 @@ export const ProfileMenuPanel: React.FC = () => {
       )}
       {addProfileContent.map(({ text, path, onClick }, index) => (
         <LeafListItem key={index} disableGutters onClick={onClick}>
-          <HandoffLink path={path}>
-            <LeafButton style={style}>
-              <Title>{t(text)}</Title>
-            </LeafButton>
-          </HandoffLink>
+          <StyledButton
+            component={NextLinkComposed}
+            to={`/accountLists/${accountListId}${path}`}
+          >
+            <Title>{t(text)}</Title>
+          </StyledButton>
         </LeafListItem>
       ))}
       {(data?.user?.admin ||
         !!data?.user?.administrativeOrganizations?.nodes?.length) && (
         <LeafListItem disableGutters>
-          <HandoffLink path="/preferences/organizations">
-            <LeafButton style={style}>
-              <Title>{t('Manage Organizations')}</Title>
-            </LeafButton>
-          </HandoffLink>
+          <StyledButton
+            component={NextLinkComposed}
+            to={`/accountLists/${accountListId}/settings/organizations`}
+          >
+            <Title>{t('Manage Organizations')}</Title>
+          </StyledButton>
         </LeafListItem>
       )}
       {(data?.user?.admin || data?.user?.developer) && (
         <LeafListItem disableGutters>
-          <HandoffLink path="/preferences/admin">
-            <LeafButton style={style}>
-              <Title>{t('Admin Console')}</Title>
-            </LeafButton>
-          </HandoffLink>
+          <StyledButton
+            component={NextLinkComposed}
+            to={`/accountLists/${accountListId}/settings/admin`}
+          >
+            <Title>{t('Admin Console')}</Title>
+          </StyledButton>
         </LeafListItem>
       )}
       {data?.user?.developer && (
         <LeafListItem disableGutters>
-          <HandoffLink path="/auth/user/admin">
-            <LeafButton style={style}>
+          <HandoffLink path="/auth/user/admin" auth>
+            <StyledButton>
               <Title>{t('Backend Admin')}</Title>
-            </LeafButton>
+            </StyledButton>
           </HandoffLink>
         </LeafListItem>
       )}
       {data?.user?.developer && (
         <LeafListItem disableGutters>
-          <HandoffLink path="/auth/user/sidekiq">
-            <LeafButton style={style}>
+          <HandoffLink path="/auth/user/sidekiq" auth>
+            <StyledButton>
               <Title>{t('Sidekiq')}</Title>
-            </LeafButton>
+            </StyledButton>
           </HandoffLink>
         </LeafListItem>
       )}
@@ -201,29 +215,30 @@ export const ProfileMenuPanel: React.FC = () => {
             onClick={() =>
               signOut({ callbackUrl: 'signOut' }).then(() => {
                 clearDataDogUser();
+                client.clearStore();
               })
             }
           >
             {t('Sign Out')}
           </Button>
           <Box display="flex" justifyContent="center" py={1}>
-            <Link
+            <MuiLink
               href="https://get.mpdx.org/privacy-policy/"
               target="_blank"
               color="secondary"
               variant="caption"
             >
               {t('Privacy Policy')}
-            </Link>
+            </MuiLink>
             &nbsp; • &nbsp;
-            <Link
+            <MuiLink
               href="https://get.mpdx.org/terms-of-use/"
               target="_blank"
               color="secondary"
               variant="caption"
             >
               {t('Terms of Use')}
-            </Link>
+            </MuiLink>
           </Box>
         </Box>
       </LeafListItem>

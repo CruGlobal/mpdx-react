@@ -6,6 +6,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { Button, Collapse, ListItemButton } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import HandoffLink from 'src/components/HandoffLink';
+import { LeafButton, LeafListItem, Title } from '../StyledComponents';
 
 interface NavItemProps {
   children?: ReactNode;
@@ -18,19 +19,13 @@ interface NavItemProps {
   title: string;
 }
 
-export const StyledListItem = styled(ListItemButton)(() => ({
+const StyledListItem = styled(ListItemButton)(() => ({
   display: 'block',
   paddingTop: 0,
   paddingBottom: 0,
 }));
 
-export const LeafListItem = styled(ListItemButton)(() => ({
-  display: 'flex',
-  paddingTop: 0,
-  paddingBottom: 0,
-}));
-
-export const StyledButton = styled(Button)(({ theme }) => ({
+const StyledButton = styled(Button)(({ theme }) => ({
   color: theme.palette.common.white,
   padding: '10px 8px',
   justifyContent: 'flex-start',
@@ -40,29 +35,12 @@ export const StyledButton = styled(Button)(({ theme }) => ({
   width: '100%',
 }));
 
-export const LeafButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  padding: '10px 8px',
-  justifyContent: 'flex-start',
-  textTransform: 'none',
-  letterSpacing: 0,
-  width: '100%',
-}));
-
-export const ExpandItemIcon = styled(ExpandLessIcon)(({ theme }) => ({
+const ExpandItemIcon = styled(ExpandLessIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,
 }));
 
-export const CollapseItemIcon = styled(ChevronRightIcon)(({ theme }) => ({
+const CollapseItemIcon = styled(ChevronRightIcon)(({ theme }) => ({
   color: theme.palette.cruGrayMedium.main,
-}));
-
-export const Title = styled('span')(({ theme }) => ({
-  color: theme.palette.common.white,
-  fontSize: 16,
-  marginRight: 'auto',
-  textAlign: 'left',
-  lineHeight: 1.5,
 }));
 
 export const NavItem: FC<NavItemProps> = ({

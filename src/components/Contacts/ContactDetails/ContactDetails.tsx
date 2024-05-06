@@ -5,20 +5,32 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Box, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import theme from '../../../theme';
 import {
   ContactsContext,
   ContactsType,
-} from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
-import theme from '../../../theme';
+} from '../ContactsContext/ContactsContext';
 import {
   ContactDetailContext,
   ContactDetailsType,
 } from './ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
-import { ContactDetailsTab } from './ContactDetailsTab/ContactDetailsTab';
-import { ContactDonationsTab } from './ContactDonationsTab/ContactDonationsTab';
-import { ContactNotesTab } from './ContactNotesTab/ContactNotesTab';
-import { ContactReferralTab } from './ContactReferralTab/ContactReferralTab';
+import {
+  DynamicContactDetailsTab,
+  preloadContactDetailsTab,
+} from './ContactDetailsTab/DynamicContactDetailsTab';
+import {
+  DynamicContactDonationsTab,
+  preloadContactDonationsTab,
+} from './ContactDonationsTab/DynamicContactDonationsTab';
+import {
+  DynamicContactNotesTab,
+  preloadContactNotesTab,
+} from './ContactNotesTab/DynamicContactNotesTab';
+import {
+  DynamicContactReferralTab,
+  preloadContactReferralTab,
+} from './ContactReferralTab/DynamicContactReferralTab';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 
 interface Props {
@@ -103,13 +115,26 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
             TabIndicatorProps={{ children: <span /> }}
           >
             <ContactTab value={TabKey.Tasks} label={t('Tasks')} />
-            <ContactTab value={TabKey.Donations} label={t('Donations')} />
-            <ContactTab value={TabKey.Referrals} label={t('Referrals')} />
+            <ContactTab
+              value={TabKey.Donations}
+              label={t('Donations')}
+              onMouseEnter={preloadContactDonationsTab}
+            />
+            <ContactTab
+              value={TabKey.Referrals}
+              label={t('Referrals')}
+              onMouseEnter={preloadContactReferralTab}
+            />
             <ContactTab
               value={TabKey.ContactDetails}
               label={t('Contact Details')}
+              onMouseEnter={preloadContactDetailsTab}
             />
-            <ContactTab value={TabKey.Notes} label={t('Notes')} />
+            <ContactTab
+              value={TabKey.Notes}
+              label={t('Notes')}
+              onMouseEnter={preloadContactNotesTab}
+            />
           </ContactTabs>
         </ContactTabsWrapper>
         <TabPanelNoBottomPadding value={TabKey.Tasks}>
@@ -123,22 +148,24 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
         </TabPanelNoBottomPadding>
         <TabPanel value={TabKey.Donations}>
           {contactId && accountListId && (
-            <ContactDonationsTab
+            <DynamicContactDonationsTab
               accountListId={accountListId}
               contactId={contactId}
             />
           )}
         </TabPanel>
         <TabPanel value={TabKey.Referrals}>
-          <ContactReferralTab
-            accountListId={accountListId ?? ''}
-            contactId={contactId ?? ''}
-            onContactSelected={setContactFocus}
-          />
+          {contactId && accountListId && (
+            <DynamicContactReferralTab
+              accountListId={accountListId}
+              contactId={contactId}
+              onContactSelected={setContactFocus}
+            />
+          )}
         </TabPanel>
         <TabPanel value={TabKey.ContactDetails}>
           {contactId && accountListId && (
-            <ContactDetailsTab
+            <DynamicContactDetailsTab
               accountListId={accountListId}
               contactId={contactId}
               onContactSelected={setContactFocus}
@@ -147,7 +174,7 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
         </TabPanel>
         <TabPanel value={TabKey.Notes}>
           {contactId && accountListId && (
-            <ContactNotesTab
+            <DynamicContactNotesTab
               accountListId={accountListId}
               contactId={contactId}
             />

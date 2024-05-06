@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import SvgIcon from '@mui/material/SvgIcon';
+import { SvgIcon } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from '../../../../../theme';
 

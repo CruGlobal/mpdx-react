@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { GetExpectedMonthlyTotalsQuery } from '../../../../pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetExpectedMonthlyTotalsQuery } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
 import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 
 export default {

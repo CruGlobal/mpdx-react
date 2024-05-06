@@ -5,16 +5,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import {
-  GqlMockedProvider,
-  gqlMock,
-} from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import {
   ContactDonorAccountsFragment,
@@ -436,7 +433,7 @@ describe('EditPartnershipInfoModal', () => {
     );
     mutationSpy.mockClear();
 
-    userEvent.click(getByRole('button', { name: 'Likely' }));
+    userEvent.click(getByRole('combobox', { name: 'Likely To Give' }));
     userEvent.click(getByRole('option', { name: 'Most Likely' }));
     userEvent.click(getByRole('button', { name: 'Save' }));
 
@@ -500,7 +497,7 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const datePickerButton = getByLabelText('Change start date');
+    const datePickerButton = getByLabelText('Start Date');
     userEvent.click(datePickerButton);
 
     const day = await waitFor(async () => getAllByText('30')[0]);
@@ -537,7 +534,7 @@ describe('EditPartnershipInfoModal', () => {
     );
     mutationSpy.mockClear();
 
-    userEvent.click(getByRole('button', { name: 'Email' }));
+    userEvent.click(getByRole('combobox', { name: 'Newsletter' }));
     userEvent.click(getByRole('option', { name: 'Physical' }));
     userEvent.click(getByRole('button', { name: 'Save' }));
 
@@ -726,7 +723,7 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const datePickerButton = getByLabelText('Change next ask date');
+    const datePickerButton = getByLabelText('Next Increase Ask');
     userEvent.click(datePickerButton);
 
     const day = await waitFor(async () => getAllByText('30')[0]);

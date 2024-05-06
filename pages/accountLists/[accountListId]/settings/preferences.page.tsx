@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import {
   useCanUserExportDataQuery,
@@ -239,5 +240,7 @@ const Preferences: React.FC = () => {
     </SettingsWrapper>
   );
 };
+
+export const getServerSideProps = loadSession;
 
 export default Preferences;

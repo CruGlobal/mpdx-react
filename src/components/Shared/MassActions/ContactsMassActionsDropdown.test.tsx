@@ -4,9 +4,10 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -20,7 +21,7 @@ const mockEnqueue = jest.fn();
 const openTaskModal = jest.fn();
 
 jest.mock('../../../hooks/useTaskModal');
-jest.mock('../../../../src/hooks/useAccountListId');
+jest.mock('src/hooks/useAccountListId');
 jest.mock('next-auth/react');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -56,47 +57,48 @@ describe('ContactsMassActionsDropdown', () => {
   beforeEach(() => {
     (useTaskModal as jest.Mock).mockReturnValue({
       openTaskModal,
+      preloadTaskModal: jest.fn(),
     });
     (useAccountListId as jest.Mock).mockReturnValue('123456789');
-    (useSession as jest.Mock).mockReturnValue({
-      data: { user: { apiToken: 'someToken1234' } },
-      status: 'authenticated',
-    });
 
     massDeselectAll.mockClear();
   });
   it('opens the more actions menu and clicks the add tags action', async () => {
-    const { queryByText, getByTestId } = render(<ContactComponents />);
+    const { queryByText, getByTestId, findByText } = render(
+      <ContactComponents />,
+    );
     expect(queryByText('Add Tags')).not.toBeInTheDocument();
     const actionsButton = queryByText('Actions') as HTMLInputElement;
     userEvent.click(actionsButton);
     const button = queryByText('Add Tags') as HTMLInputElement;
     await waitFor(() => expect(button).toBeInTheDocument());
     userEvent.click(button);
-    const text = queryByText(
-      'Create New Tags (separate multiple tags with Enter key) *',
-    );
-    await waitFor(() => expect(text).toBeInTheDocument());
+    const text = 'Create New Tags (separate multiple tags with Enter key) *';
+    expect(await findByText(text)).toBeInTheDocument();
     userEvent.click(getByTestId('CloseIcon') as HTMLInputElement);
-    await waitFor(() => expect(text).not.toBeInTheDocument());
+    await waitFor(() => expect(queryByText(text)).not.toBeInTheDocument());
   });
 
   it('opens the more actions menu and clicks the edit fields action', async () => {
-    const { queryByTestId, queryByText } = render(<ContactComponents />);
+    const { getByRole, queryByTestId, findByTestId, queryByText } = render(
+      <ContactComponents />,
+    );
     expect(queryByText('Edit Fields')).not.toBeInTheDocument();
     const actionsButton = queryByText('Actions') as HTMLInputElement;
     userEvent.click(actionsButton);
     const button = queryByText('Edit Fields') as HTMLInputElement;
     await waitFor(() => expect(button).toBeInTheDocument());
     userEvent.click(button);
-    const modal = queryByTestId('EditFieldsModal') as HTMLInputElement;
-    await waitFor(() => expect(modal).toBeInTheDocument());
-    userEvent.click(queryByTestId('CloseIcon') as HTMLInputElement);
-    await waitFor(() => expect(modal).not.toBeInTheDocument());
+    const modalTestId = 'EditFieldsModal';
+    expect(await findByTestId(modalTestId)).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Close' }));
+    await waitFor(() =>
+      expect(queryByTestId(modalTestId)).not.toBeInTheDocument(),
+    );
   });
 
   it('opens the more actions menu and clicks the add to appeal action', async () => {
-    const { getAllByTestId, queryByTestId, queryByText } = render(
+    const { getAllByTestId, queryByTestId, findByTestId, queryByText } = render(
       <ContactComponents />,
     );
     expect(queryByText('Add to Appeal')).not.toBeInTheDocument();
@@ -104,15 +106,16 @@ describe('ContactsMassActionsDropdown', () => {
     const button = queryByText('Add to Appeal') as HTMLInputElement;
     await waitFor(() => expect(button).toBeInTheDocument());
     userEvent.click(button);
-    const modal = queryByTestId('AddToAppealModal') as HTMLInputElement;
-    await waitFor(() => expect(modal).toBeInTheDocument());
+    expect(await findByTestId('AddToAppealModal')).toBeInTheDocument();
 
     userEvent.click(getAllByTestId('CloseIcon')[0] as HTMLInputElement);
-    await waitFor(() => expect(modal).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(queryByTestId('AddToAppealModal')).not.toBeInTheDocument(),
+    );
   });
 
   it('opens the more actions menu and clicks the add to new appeal action', async () => {
-    const { queryByTestId, queryByText, getByRole } = render(
+    const { queryByTestId, queryByText, findByTestId, getByRole } = render(
       <ContactComponents />,
     );
     expect(queryByText('Add to New Appeal')).not.toBeInTheDocument();
@@ -120,8 +123,7 @@ describe('ContactsMassActionsDropdown', () => {
     const button = queryByText('Add to New Appeal') as HTMLInputElement;
     await waitFor(() => expect(button).toBeInTheDocument());
     userEvent.click(button);
-    const modal = queryByTestId('CreateAppealModal') as HTMLInputElement;
-    await waitFor(() => expect(modal).toBeInTheDocument());
+    expect(await findByTestId('CreateAppealModal')).toBeInTheDocument();
     // Create Appeal
     userEvent.type(getByRole('textbox', { name: /appeal/i }), 'NewAppeal');
     await waitFor(() => expect(queryByText('Save')).not.toBeDisabled());
@@ -131,7 +133,9 @@ describe('ContactsMassActionsDropdown', () => {
         variant: 'success',
       }),
     );
-    await waitFor(() => expect(modal).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(queryByTestId('CreateAppealModal')).not.toBeInTheDocument(),
+    );
   });
 
   it('opens the more actions menu and clicks the hide contacts action', async () => {
@@ -213,20 +217,15 @@ describe('ContactsMassActionsDropdown', () => {
   });
 
   it('opens export contacts modal, then open Mail Merged Label modal', async () => {
-    const { getByText, queryByText, getByTestId, queryByTestId } = render(
-      <ContactComponents />,
-    );
+    const { getByText, queryByText, getByTestId, queryByTestId, findByText } =
+      render(<ContactComponents />);
 
     expect(queryByText('Export')).not.toBeInTheDocument();
     const actionsButton = getByText('Actions') as HTMLInputElement;
     userEvent.click(actionsButton);
     expect(getByText('Export')).toBeInTheDocument();
     userEvent.click(getByText('Export'));
-    const pdfExport = getByText(
-      'PDF of Mail Merged Labels',
-    ) as HTMLInputElement;
-    await waitFor(() => expect(pdfExport).toBeInTheDocument());
-    userEvent.click(pdfExport);
+    userEvent.click(await findByText('PDF of Mail Merged Labels'));
     await waitFor(() =>
       expect(getByTestId('MailMergedLabel')).toBeInTheDocument(),
     );
@@ -254,30 +253,42 @@ describe('ContactsMassActionsDropdown', () => {
     );
   });
 
-  it('opens merge contacts modal with multiple id selected', () => {
+  it('opens merge contacts modal with multiple id selected', async () => {
     const selectedIdsMerge = ['abc', 'def'];
-    const { getByTestId, getByText, queryByText } = render(
+    const { getByTestId, getByText, findByTestId, queryByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <SnackbarProvider>
-              <ContactsMassActionsDropdown
-                filterPanelOpen={false}
-                contactDetailsOpen={false}
-                contactsView={TableViewModeEnum.List}
-                selectedIds={selectedIdsMerge}
-              />
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </GqlMockedProvider>
+        <TestRouter>
+          <GqlMockedProvider>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <SnackbarProvider>
+                <ContactsProvider
+                  activeFilters={{}}
+                  setActiveFilters={() => {}}
+                  starredFilter={{}}
+                  setStarredFilter={() => {}}
+                  filterPanelOpen={false}
+                  setFilterPanelOpen={() => {}}
+                  contactId={[]}
+                  searchTerm={''}
+                >
+                  <ContactsMassActionsDropdown
+                    filterPanelOpen={false}
+                    contactDetailsOpen={false}
+                    contactsView={TableViewModeEnum.List}
+                    selectedIds={selectedIdsMerge}
+                  />
+                </ContactsProvider>
+              </SnackbarProvider>
+            </LocalizationProvider>
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
     expect(queryByText('Merge')).not.toBeInTheDocument();
     const actionsButton = getByText('Actions') as HTMLInputElement;
     userEvent.click(actionsButton);
-    expect(getByText('Merge')).toBeInTheDocument();
     userEvent.click(getByText('Merge'));
-    expect(getByTestId('MergeModal')).toBeInTheDocument();
+    expect(await findByTestId('MergeModal')).toBeInTheDocument();
     userEvent.click(getByTestId('CloseIcon') as HTMLInputElement);
   });
 

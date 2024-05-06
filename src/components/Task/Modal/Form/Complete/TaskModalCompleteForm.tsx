@@ -1,22 +1,16 @@
-import React, { ReactElement, useState } from 'react';
-import CalendarToday from '@mui/icons-material/CalendarToday';
-import Schedule from '@mui/icons-material/Schedule';
+import React, { ReactElement, useMemo } from 'react';
 import {
-  Autocomplete,
-  Chip,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   Grid,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   TextField,
   Typography,
 } from '@mui/material';
-import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -27,39 +21,35 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import {
-  ActivityTypeEnum,
-  ResultEnum,
-  TaskUpdateInput,
-} from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
+import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
-import { getDateFormatPattern } from 'src/lib/intlFormat/intlFormat';
+import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import useTaskModal from '../../../../../hooks/useTaskModal';
-import theme from '../../../../../theme';
+import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
+import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
+import {
+  TagTypeEnum,
+  TagsAutocomplete,
+} from '../Inputs/TagsAutocomplete/TagsAutocomplete';
 import { possibleNextActions } from '../PossibleNextActions';
 import { possibleResults } from '../PossibleResults';
-import { useGetDataForTaskModalQuery } from '../TaskModal.generated';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
-const taskSchema: yup.SchemaOf<
-  Pick<
-    TaskUpdateInput,
-    'id' | 'result' | 'nextAction' | 'tagList' | 'completedAt'
-  >
-> = yup.object({
+const taskSchema = yup.object({
   id: yup.string().required(),
   result: yup.mixed<ResultEnum>().required(),
-  nextAction: yup.mixed<ActivityTypeEnum>(),
-  tagList: yup.array().of(yup.string()).default([]),
-  completedAt: yup.string(),
+  nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
+  tagList: yup.array().of(yup.string().required()).default([]),
+  completedAt: nullableDateTime(),
+  comment: yup.string().ensure(),
 });
+type Attributes = yup.InferType<typeof taskSchema>;
 
 interface Props {
   accountListId: string;
@@ -72,33 +62,50 @@ const TaskModalCompleteForm = ({
   task,
   onClose,
 }: Props): ReactElement => {
-  const initialTask: TaskUpdateInput = {
-    id: task.id,
-    completedAt: task.completedAt || DateTime.local().toISO(),
-    result: ResultEnum.Completed,
-    tagList: task.tagList,
-  };
+  const { activityType } = task;
+  const initialCompletedAt =
+    task.completedAt ||
+    (activityType === ActivityTypeEnum.Appointment ? task.startAt : null);
+  const initialTask = useMemo(
+    () => ({
+      id: task.id,
+      completedAt: initialCompletedAt
+        ? DateTime.fromISO(initialCompletedAt)
+        : DateTime.local(),
+      result: ResultEnum.Completed,
+      nextAction:
+        activityType && possibleNextActions(activityType).includes(activityType)
+          ? activityType
+          : null,
+      tagList: task.tagList,
+      comment: '',
+    }),
+    [task],
+  );
+
   const { t } = useTranslation();
-  const locale = useLocale();
-  const [commentBody, changeCommentBody] = useState('');
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data } = useGetDataForTaskModalQuery({
-    variables: { accountListId },
-  });
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
-  const onSubmit = async (attributes: TaskUpdateInput): Promise<void> => {
-    const body = commentBody.trim();
+  const onSubmit = async ({
+    completedAt,
+    comment,
+    ...attributes
+  }: Attributes): Promise<void> => {
     const mutations = [
       updateTask({
-        variables: { accountListId, attributes },
+        variables: {
+          accountListId,
+          attributes: { completedAt: completedAt?.toISO(), ...attributes },
+        },
         refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
       }),
     ];
-    if (body !== '') {
+    const body = comment.trim();
+    if (body) {
       mutations.push(
         createTaskComment({
           variables: {
@@ -115,13 +122,11 @@ const TaskModalCompleteForm = ({
     dispatch('mpdx-task-completed');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
     onClose();
-    if (
-      attributes.nextAction &&
-      attributes.nextAction !== ActivityTypeEnum.None
-    ) {
+    if (attributes.nextAction) {
       openTaskModal({
         view: 'add',
         defaultValues: {
+          subject: task.subject,
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: task.contacts.nodes.map((contact) => contact.id),
@@ -140,14 +145,16 @@ const TaskModalCompleteForm = ({
     : [];
 
   return (
-    <Formik
+    <Formik<Attributes>
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={onSubmit}
+      enableReinitialize
     >
       {({
-        values: { completedAt, tagList, result, nextAction },
+        values: { completedAt, tagList, result, nextAction, comment },
         setFieldValue,
+        handleChange,
         handleSubmit,
         isSubmitting,
         isValid,
@@ -170,57 +177,24 @@ const TaskModalCompleteForm = ({
               </Grid>
               <Grid item>
                 <FormControl fullWidth>
-                  <Grid container spacing={2}>
-                    <Grid xs={6} item>
-                      <DatePicker
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <CalendarToday
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }}
-                        inputFormat={getDateFormatPattern(locale)}
-                        closeOnSelect
-                        label={t('Completed Date')}
-                        value={completedAt}
-                        onChange={(date): void =>
-                          setFieldValue('completedAt', date)
-                        }
-                      />
-                    </Grid>
-                    <Grid xs={6} item>
-                      <TimePicker
-                        renderInput={(params) => (
-                          <TextField fullWidth {...params} />
-                        )}
-                        closeOnSelect
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Schedule
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
-                            </InputAdornment>
-                          ),
-                        }}
-                        label={t('Completed Time')}
-                        value={completedAt}
-                        onChange={(date): void =>
-                          setFieldValue('completedAt', date)
-                        }
-                      />
-                    </Grid>
-                  </Grid>
+                  <DateTimeFieldPair
+                    render={(dateField, timeField) => (
+                      <Grid container spacing={2}>
+                        <Grid xs={6} item>
+                          {dateField}
+                        </Grid>
+                        <Grid xs={6} item>
+                          {timeField}
+                        </Grid>
+                      </Grid>
+                    )}
+                    dateLabel={t('Completed Date')}
+                    timeLabel={t('Completed Time')}
+                    value={completedAt}
+                    onChange={(completedAt) =>
+                      setFieldValue('completedAt', completedAt)
+                    }
+                  />
                 </FormControl>
               </Grid>
               {availableResults.length > 0 && (
@@ -244,75 +218,31 @@ const TaskModalCompleteForm = ({
               )}
               {availableNextActions.length > 0 && (
                 <Grid item>
-                  <FormControl fullWidth>
-                    <Autocomplete
-                      openOnFocus
-                      autoHighlight
-                      value={
-                        nextAction === null || typeof nextAction === 'undefined'
-                          ? ''
-                          : nextAction
-                      }
-                      // Sort none to top
-                      options={availableNextActions.sort((a) =>
-                        a === ActivityTypeEnum.None ? -1 : 1,
-                      )}
-                      getOptionLabel={(activity) => {
-                        if (activity === ActivityTypeEnum.None) {
-                          return t('None');
-                        } else {
-                          return getLocalizedTaskType(
-                            t,
-                            activity as ActivityTypeEnum,
-                          );
-                        }
-                      }}
-                      renderInput={(params): ReactElement => (
-                        <TextField {...params} label={t('Next Action')} />
-                      )}
-                      onChange={(_, activity): void => {
-                        setFieldValue(
-                          'nextAction',
-                          activity === ActivityTypeEnum.None ? null : activity,
-                        );
-                      }}
-                    />
-                  </FormControl>
+                  <ActivityTypeAutocomplete
+                    options={availableNextActions}
+                    value={nextAction}
+                    label={t('Next Action')}
+                    onChange={(nextAction) =>
+                      setFieldValue('nextAction', nextAction)
+                    }
+                  />
                 </Grid>
               )}
               {/*Add field to change contact statuses */}
               <Grid item>
-                <Autocomplete
-                  multiple
-                  autoHighlight
-                  freeSolo
-                  renderTags={(value, getTagProps): ReactElement[] =>
-                    value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        color="default"
-                        size="small"
-                        key={index}
-                        label={option}
-                      />
-                    ))
-                  }
-                  renderInput={(params): ReactElement => (
-                    <TextField {...params} label={t('Tags')} />
-                  )}
-                  onChange={(_, tagList): void =>
-                    setFieldValue('tagList', tagList)
-                  }
-                  value={tagList ?? undefined}
-                  options={data?.accountList?.taskTagList || []}
+                <TagsAutocomplete
+                  accountListId={accountListId}
+                  type={TagTypeEnum.Tag}
+                  value={tagList ?? []}
+                  onChange={(tagList) => setFieldValue('tagList', tagList)}
                 />
               </Grid>
 
               <Grid item>
                 <TextField
                   label={t('Add New Comment')}
-                  value={commentBody}
-                  onChange={(event) => changeCommentBody(event.target.value)}
+                  value={comment}
+                  onChange={handleChange('comment')}
                   fullWidth
                   multiline
                   inputProps={{ 'aria-label': t('Add New Comment') }}

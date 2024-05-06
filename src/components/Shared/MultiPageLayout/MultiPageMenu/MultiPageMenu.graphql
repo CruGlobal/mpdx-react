@@ -1,0 +1,9 @@
+query ManageOrganizationsAccess {
+  user {
+    administrativeOrganizations(first: 1) {
+      nodes {
+        id
+      }
+    }
+  }
+}

@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
-import TagIcon from '@mui/icons-material/LocalOfferOutlined';
-import { Autocomplete, Box, Button, Chip, TextField } from '@mui/material';
+import { Autocomplete, Box, Button, Chip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik, FormikHelpers } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
 import {
   useGetContactTagListQuery,
   useUpdateContactTagsMutation,
@@ -20,36 +20,6 @@ const ContactTagsContainer = styled(Box)(({ theme }) => ({
 }));
 
 const ContactTagChip = styled(Chip)(({ theme }) => ({
-  margin: theme.spacing(1),
-  marginLeft: '0',
-}));
-
-export const ContactTagIcon = styled(TagIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayMedium.main,
-  marginRight: theme.spacing(1),
-}));
-
-export const ContactTagInput = styled(TextField)(({ theme }) => ({
-  '&& .MuiInput-underline:before ': {
-    borderBottom: `2px solid ${theme.palette.divider}`,
-  },
-  '&& .MuiInput-underline:after ': {
-    borderBottom: `2px solid ${theme.palette.divider}`,
-  },
-  '&& .MuiInputBase-input': {
-    minWidth: '200px',
-  },
-  '& ::placeholder': {
-    color: theme.palette.info.main,
-    opacity: 1,
-  },
-  '& :hover::placeholder': {
-    textDecoration: 'underline',
-  },
-  '& :focus::placeholder': {
-    textDecoration: 'none',
-    color: theme.palette.cruGrayMedium.main,
-  },
   margin: theme.spacing(1),
   marginLeft: '0',
 }));

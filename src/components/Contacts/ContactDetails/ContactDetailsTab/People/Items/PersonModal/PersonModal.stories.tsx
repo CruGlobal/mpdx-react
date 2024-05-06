@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import { gqlMock } from '../../../../../../../../__tests__/util/graphqlMocking';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import theme from '../../../../../../../theme';
 import { ContactDetailsTabQuery } from '../../../ContactDetailsTab.generated';
 import {

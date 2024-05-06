@@ -11,12 +11,6 @@ import {
 } from '../LoadCoachingList.generated';
 import { CoachingRow } from './CoachingRow';
 
-jest.mock('src/hooks/useUser.tsx', () => ({
-  useUser: jest.fn().mockReturnValue({
-    id: 'user-1',
-  }),
-}));
-
 const accountListId = 'account-list-1';
 
 const router = {
