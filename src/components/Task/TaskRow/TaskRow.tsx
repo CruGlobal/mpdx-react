@@ -76,8 +76,19 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   onTaskCheckToggle,
   useTopMargin,
 }) => {
+  const {
+    activityType,
+    comments,
+    contacts,
+    id: taskId,
+    starred,
+    startAt,
+    completedAt,
+    subject,
+  } = task;
   const { t } = useTranslation();
   const { activityTypes } = usePhaseData();
+  const activityData = activityType ? activityTypes.get(activityType) : null;
 
   const TaskRowWrapper = styled(Box)(({ theme }) => ({
     ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
@@ -107,18 +118,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     event.stopPropagation();
     onContactSelected(contactId);
   };
-
-  const {
-    activityType,
-    comments,
-    contacts,
-    id: taskId,
-
-    starred,
-    startAt,
-    completedAt,
-    subject,
-  } = task;
 
   const handleCompleteButtonPressed = () => {
     openTaskModal({ taskId: task?.id, view: 'complete' });
@@ -199,9 +198,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 }}
               >
                 <TaskType>
-                  {activityType && activityTypes
-                    ? activityTypes[activityType]?.phase + ' - '
-                    : ''}
+                  {activityData ? activityData.phase + ' - ' : ''}
                   {activityType ? getLocalizedTaskType(t, activityType) : ''}
                 </TaskType>
                 <Tooltip title={subject}>

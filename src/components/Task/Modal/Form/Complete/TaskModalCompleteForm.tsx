@@ -102,10 +102,7 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
-  const taskPhase = useMemo(
-    () => getPhaseByActivityType(task.activityType),
-    [task],
-  );
+  const taskPhase = useMemo(() => getPhaseByActivityType(activityType), [task]);
 
   // TODO replace with ResultEnum when available
   const [resultSelected, setResultSelected] =
@@ -115,6 +112,7 @@ const TaskModalCompleteForm = ({
   // TODO - Need to fix the above ^
 
   const { activityTypes } = usePhaseData();
+  const activityData = activityType ? activityTypes.get(activityType) : null;
   const { phaseData } = usePhaseData(taskPhase);
 
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
@@ -138,7 +136,7 @@ const TaskModalCompleteForm = ({
       attributes.result = getDatabaseValueFromResult(
         phaseData,
         attributes.result,
-        task.activityType,
+        activityType,
       );
     }
 
@@ -223,13 +221,13 @@ const TaskModalCompleteForm = ({
   );
 
   const partnerStatus = useMemo(
-    () => possiblePartnerStatus(phaseData, resultSelected, task.activityType),
-    [phaseData, resultSelected, task.activityType],
+    () => possiblePartnerStatus(phaseData, resultSelected, activityType),
+    [phaseData, resultSelected, activityType],
   );
 
   const nextActions = useMemo(
-    () => possibleNextActions(phaseData, resultSelected, task.activityType),
-    [phaseData, resultSelected, task.activityType],
+    () => possibleNextActions(phaseData, resultSelected, activityType),
+    [phaseData, resultSelected, activityType],
   );
 
   const phaseTags = useMemo(
@@ -267,10 +265,8 @@ const TaskModalCompleteForm = ({
             <FormFieldsGridContainer>
               <Grid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
-                  {activityType && activityTypes
-                    ? activityTypes[activityType]?.phase + ' - '
-                    : ''}
-                  {getLocalizedTaskType(t, task?.activityType)}
+                  {activityData ? activityData.phase + ' - ' : ''}
+                  {getLocalizedTaskType(t, activityType)}
                 </Typography>{' '}
               </Grid>
               <StyledGrid item>

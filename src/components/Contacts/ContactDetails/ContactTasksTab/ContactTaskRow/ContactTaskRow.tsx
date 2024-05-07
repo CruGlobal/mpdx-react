@@ -156,6 +156,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const dateToShow = completedAt ?? startAt;
   const taskDate = (dateToShow && DateTime.fromISO(dateToShow)) || null;
   const assigneeName = user ? `${user.firstName} ${user.lastName}` : '';
+  const activityData = activityType ? activityTypes.get(activityType) : null;
 
   return !hasBeenDeleted ? (
     <TaskRowWrap isChecked={isChecked}>
@@ -174,9 +175,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
       <SubjectWrap onClick={handleSubjectPressed}>
         <TaskType>
           {' '}
-          {activityType && activityTypes
-            ? activityTypes[activityType]?.phase + ' - '
-            : ''}
+          {activityData ? activityData.phase + ' - ' : ''}
           {getLocalizedTaskType(t, activityType)}
         </TaskType>
         <TaskDescription>{subject}</TaskDescription>

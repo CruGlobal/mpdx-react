@@ -1,8 +1,13 @@
 import { useCallback, useMemo, useState } from 'react';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { Phase, PhaseEnum } from 'src/graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  Phase,
+  PhaseEnum,
+} from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
+import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 export type SetPhaseId = (activity: PhaseEnum | null) => void;
@@ -17,7 +22,14 @@ type GetPhaseData = {
   setPhaseId: SetPhaseId;
   constants: LoadConstantsQuery['constant'] | undefined;
   taskPhases: PhaseEnum[];
-  activityTypes: object | undefined;
+  activityTypes: Map<ActivityTypeEnum, ActivityData>;
+};
+
+type ActivityData = {
+  name: string;
+  phaseId: PhaseEnum;
+  phase: string;
+  title?: string;
 };
 
 const phaseFromActivity = (
@@ -55,19 +67,22 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     );
   }, [constants]);
 
-  const activityTypes: object | undefined = useMemo(() => {
-    return constants?.phases?.reduce((acc, phase) => {
-      phase?.tasks?.map((task) => {
-        acc[task] = {
-          // name: activities?.find((activity) => activity.id === task)?.value,
+  const activityTypes: Map<ActivityTypeEnum, ActivityData> = useMemo(() => {
+    const activitiesMap = new Map();
+
+    constants?.phases?.forEach((phase) => {
+      phase?.tasks?.forEach((task) => {
+        activitiesMap.set(task, {
           name: getLocalizedTaskType(i18n.t, task),
-          phase: phase?.name,
+          phaseId: phase.id,
+          phase: getLocalizedPhase(i18n.t, phase.id),
           title: constants?.activities?.find((activity) => activity.id === task)
             ?.value,
-        };
+        });
       });
-      return acc;
-    }, {});
+    });
+
+    return activitiesMap;
   }, [constants]);
 
   return { phaseData, setPhaseId, constants, taskPhases, activityTypes };
