@@ -10,6 +10,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
@@ -76,6 +77,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   useTopMargin,
 }) => {
   const { t } = useTranslation();
+  const { activityTypes } = usePhaseData();
 
   const TaskRowWrapper = styled(Box)(({ theme }) => ({
     ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
@@ -197,6 +199,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 }}
               >
                 <TaskType>
+                  {activityType && activityTypes
+                    ? activityTypes[activityType]?.phase + ' - '
+                    : ''}
                   {activityType ? getLocalizedTaskType(t, activityType) : ''}
                 </TaskType>
                 <Tooltip title={subject}>

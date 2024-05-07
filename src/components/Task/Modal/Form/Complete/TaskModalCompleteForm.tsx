@@ -99,6 +99,7 @@ const TaskModalCompleteForm = ({
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { activityTypes } = usePhaseData();
   const { phaseData } = usePhaseData(task?.taskPhase);
 
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
@@ -246,6 +247,9 @@ const TaskModalCompleteForm = ({
             <FormFieldsGridContainer>
               <Grid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
+                  {activityType && activityTypes
+                    ? activityTypes[activityType]?.phase + ' - '
+                    : ''}
                   {getLocalizedTaskType(t, task?.activityType)}
                 </Typography>{' '}
                 <Typography display="inline">{task?.subject}</Typography>{' '}

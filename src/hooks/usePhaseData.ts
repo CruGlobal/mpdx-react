@@ -2,15 +2,22 @@ import { useCallback, useMemo, useState } from 'react';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { Phase, PhaseEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 export type SetPhaseId = (activity: PhaseEnum | null) => void;
-export type Contstants = LoadConstantsQuery['constant'] | undefined;
+export type Constants = LoadConstantsQuery['constant'] | undefined;
+// type ActivityTypes = Record<
+//   ActivityTypeEnum,
+//   { name: string; phase: string; title: string }
+// >;
 
 type GetPhaseData = {
   phaseData: Phase | null;
   setPhaseId: SetPhaseId;
   constants: LoadConstantsQuery['constant'] | undefined;
   taskPhases: PhaseEnum[];
+  activityTypes: object | undefined;
 };
 
 const phaseFromActivity = (
@@ -48,5 +55,20 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     );
   }, [constants]);
 
-  return { phaseData, setPhaseId, constants, taskPhases };
+  const activityTypes: object | undefined = useMemo(() => {
+    return constants?.phases?.reduce((acc, phase) => {
+      phase?.tasks?.map((task) => {
+        acc[task] = {
+          // name: activities?.find((activity) => activity.id === task)?.value,
+          name: getLocalizedTaskType(i18n.t, task),
+          phase: phase?.name,
+          title: constants?.activities?.find((activity) => activity.id === task)
+            ?.value,
+        };
+      });
+      return acc;
+    }, {});
+  }, [constants]);
+
+  return { phaseData, setPhaseId, constants, taskPhases, activityTypes };
 };

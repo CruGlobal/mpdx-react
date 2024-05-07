@@ -4,6 +4,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import theme from '../../../../../theme';
@@ -99,6 +100,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   onTaskCheckToggle,
 }) => {
   const { t } = useTranslation();
+  const { activityTypes } = usePhaseData();
   const [hasBeenDeleted, setHasBeenDeleted] = useState<boolean>(false);
 
   const { openTaskModal } = useTaskModal();
@@ -170,7 +172,13 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         />
       </TaskItemWrap>
       <SubjectWrap onClick={handleSubjectPressed}>
-        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+        <TaskType>
+          {' '}
+          {activityType && activityTypes
+            ? activityTypes[activityType]?.phase + ' - '
+            : ''}
+          {getLocalizedTaskType(t, activityType)}
+        </TaskType>
         <TaskDescription>{subject}</TaskDescription>
       </SubjectWrap>
 

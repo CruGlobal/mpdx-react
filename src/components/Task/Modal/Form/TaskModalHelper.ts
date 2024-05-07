@@ -5,7 +5,7 @@ import {
   PhaseEnum,
   ResultEnum,
 } from 'src/graphql/types.generated';
-import { Contstants, SetPhaseId } from 'src/hooks/usePhaseData';
+import { Constants, SetPhaseId } from 'src/hooks/usePhaseData';
 
 type SetFieldValue = (
   field: string,
@@ -34,7 +34,7 @@ export type HandleTaskActionChangeProps = {
   activityType: ActivityTypeEnum | null;
   setFieldValue: SetFieldValue;
   setActionSelected: SetActionSelected;
-  constants: Contstants;
+  constants: Constants;
 };
 
 export type HandleResultChangeProps = {
