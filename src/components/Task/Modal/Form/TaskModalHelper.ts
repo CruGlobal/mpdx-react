@@ -7,13 +7,13 @@ import {
 } from 'src/graphql/types.generated';
 import { Constants, SetPhaseId } from 'src/hooks/usePhaseData';
 
-type SetFieldValue = (
+export type SetFieldValue = (
   field: string,
   value: any,
   shouldValidate?: boolean | undefined,
 ) => void;
 
-type SetResultSelected = React.Dispatch<
+export type SetResultSelected = React.Dispatch<
   React.SetStateAction<DisplayResultEnum | null>
 >;
 

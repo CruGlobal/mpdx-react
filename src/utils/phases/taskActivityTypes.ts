@@ -133,3 +133,46 @@ export const getActivitiesByPhaseType = (
       ];
   }
 };
+
+export const getPhaseByActivityType = (
+  activity?: ActivityTypeEnum | null,
+): PhaseEnum | null => {
+  switch (activity) {
+    case (ActivityTypeEnum.AppointmentInPerson,
+    ActivityTypeEnum.AppointmentPhoneCall,
+    ActivityTypeEnum.AppointmentVideoCall):
+      return PhaseEnum.Appointment;
+
+    case (ActivityTypeEnum.FollowUpEmail,
+    ActivityTypeEnum.FollowUpInPerson,
+    ActivityTypeEnum.FollowUpPhoneCall,
+    ActivityTypeEnum.FollowUpSocialMedia,
+    ActivityTypeEnum.FollowUpTextMessage):
+      return PhaseEnum.FollowUp;
+
+    case (ActivityTypeEnum.InitiationEmail,
+    ActivityTypeEnum.InitiationInPerson,
+    ActivityTypeEnum.InitiationLetter,
+    ActivityTypeEnum.InitiationPhoneCall,
+    ActivityTypeEnum.InitiationSocialMedia,
+    ActivityTypeEnum.InitiationSpecialGiftAppeal,
+    ActivityTypeEnum.InitiationTextMessage):
+      return PhaseEnum.Initiation;
+
+    case (ActivityTypeEnum.PartnerCareDigitalNewsletter,
+    ActivityTypeEnum.PartnerCareEmail,
+    ActivityTypeEnum.PartnerCareInPerson,
+    ActivityTypeEnum.PartnerCarePhoneCall,
+    ActivityTypeEnum.PartnerCarePhysicalNewsletter,
+    ActivityTypeEnum.PartnerCarePrayerRequest,
+    ActivityTypeEnum.PartnerCareSocialMedia,
+    ActivityTypeEnum.PartnerCareTextMessage,
+    ActivityTypeEnum.PartnerCareThank,
+    ActivityTypeEnum.PartnerCareToDo,
+    ActivityTypeEnum.PartnerCareUpdateInformation):
+      return PhaseEnum.PartnerCare;
+
+    default:
+      return null;
+  }
+};

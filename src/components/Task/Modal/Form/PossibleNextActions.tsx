@@ -8,6 +8,7 @@ import {
 // Update Information
 // Video Call
 const defaultActivities: ActivityTypeEnum[] = [
+  ActivityTypeEnum.None,
   ActivityTypeEnum.AppointmentInPerson,
   ActivityTypeEnum.AppointmentPhoneCall,
   ActivityTypeEnum.AppointmentVideoCall,
@@ -38,7 +39,7 @@ const defaultActivities: ActivityTypeEnum[] = [
 export const possibleNextActions = (
   phaseData: Phase | null,
   resultName: DisplayResultEnum | null,
-  activity: ActivityTypeEnum | null,
+  activity?: ActivityTypeEnum | null,
 ): ActivityTypeEnum[] => {
   if (!phaseData || !resultName || !activity) return defaultActivities;
 
@@ -48,5 +49,7 @@ export const possibleNextActions = (
       )
     : null;
 
-  return result?.suggestedNextActions || defaultActivities;
+  return result?.suggestedNextActions
+    ? [ActivityTypeEnum.None, ...result.suggestedNextActions]
+    : defaultActivities;
 };
