@@ -75,7 +75,7 @@ export const getLocalizedTaskType = (
   t: TFunction,
   taskType: ActivityTypeEnum | null | undefined,
 ): string => {
-  if (taskType === undefined) {
+  if (!taskType) {
     return '';
   }
 
@@ -130,8 +130,5 @@ export const getLocalizedTaskType = (
       return t('Update Information');
     case ActivityTypeEnum.PartnerCareToDo:
       return t('To Do');
-
-    default:
-      return t('No Activity');
   }
 };

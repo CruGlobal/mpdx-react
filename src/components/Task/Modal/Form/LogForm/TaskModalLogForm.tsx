@@ -218,7 +218,6 @@ const TaskModalLogForm = ({
       openTaskModal({
         view: 'add',
         defaultValues: {
-          subject: attributes.subject,
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: attributes.contactIds,

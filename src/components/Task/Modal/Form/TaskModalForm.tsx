@@ -120,49 +120,6 @@ const TaskModalForm = ({
   view,
 }: Props): ReactElement => {
   const session = useSession();
-  const initialTask: Attributes = useMemo(
-    () =>
-      task
-        ? {
-            taskPhase: task.taskPhase ?? null,
-            activityType: task.activityType ?? null,
-            location: task.location ?? '',
-            subject: task.subject ?? '',
-            startAt: task.startAt ? DateTime.fromISO(task.startAt) : null,
-            completedAt: task.completedAt
-              ? DateTime.fromISO(task.completedAt)
-              : null,
-            result: task.result ?? null,
-            changeContactStatus: false,
-            nextAction: task.nextAction ?? null,
-            tagList: task.tagList ?? [],
-            contactIds: task.contacts.nodes.map(({ id }) => id),
-            userId: task.user?.id ?? session.data?.user.userID ?? null,
-            notificationTimeBefore: task.notificationTimeBefore,
-            notificationType: task.notificationType,
-            notificationTimeUnit: task.notificationTimeUnit,
-            comment: '',
-          }
-        : {
-            taskPhase: null,
-            activityType: defaultValues?.activityType ?? null,
-            location: '',
-            subject: defaultValues?.subject ?? '',
-            startAt: DateTime.local(),
-            completedAt: null,
-            result: defaultValues?.result ?? null,
-            changeContactStatus: false,
-            nextAction: defaultValues?.nextAction ?? null,
-            tagList: defaultValues?.tagList ?? [],
-            contactIds: defaultValues?.contactIds ?? [],
-            userId: defaultValues?.userId ?? session.data?.user.userID ?? null,
-            notificationTimeBefore: null,
-            notificationType: null,
-            notificationTimeUnit: null,
-            comment: '',
-          },
-    [],
-  );
 
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
@@ -170,19 +127,79 @@ const TaskModalForm = ({
   // TODO replace with ResultEnum when available
   const [resultSelected, setResultSelected] =
     useState<DisplayResultEnum | null>(
-      (task?.result as unknown as DisplayResultEnum) || null,
+      (task?.result as unknown as DisplayResultEnum) ||
+        defaultValues?.result ||
+        null,
     );
   // TODO - Need to fix the above ^
 
   const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
-    task?.activityType || null,
+    task?.activityType || defaultValues?.activityType || null,
   );
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { phaseData, setPhaseId, constants, taskPhases } = usePhaseData(
-    task?.taskPhase,
-  );
+  const { phaseData, setPhaseId, constants, taskPhases, activityTypes } =
+    usePhaseData(task?.taskPhase);
+
+  const initialTask: Attributes = useMemo(() => {
+    if (task) {
+      return {
+        taskPhase: null,
+        activityType: task.activityType ?? null,
+        location: task.location ?? '',
+        subject: task.subject ?? '',
+        startAt: task.startAt ? DateTime.fromISO(task.startAt) : null,
+        completedAt: task.completedAt
+          ? DateTime.fromISO(task.completedAt)
+          : null,
+        result: task.result ?? null,
+        changeContactStatus: false,
+        nextAction: task.nextAction ?? null,
+        tagList: task.tagList ?? [],
+        contactIds: task.contacts.nodes.map(({ id }) => id),
+        userId: task.user?.id ?? session.data?.user.userID ?? null,
+        notificationTimeBefore: task.notificationTimeBefore,
+        notificationType: task.notificationType,
+        notificationTimeUnit: task.notificationTimeUnit,
+        comment: '',
+      };
+    } else {
+      let taskPhase: PhaseEnum | null = null;
+      let taskSubject = defaultValues?.subject;
+
+      if (defaultValues?.activityType && activityTypes) {
+        const activityData = defaultValues.activityType
+          ? activityTypes.get(defaultValues.activityType)
+          : null;
+        if (activityData) {
+          setPhaseId(activityData.phaseId);
+          taskPhase = activityData.phaseId;
+          taskSubject = activityData.title;
+        }
+      }
+
+      return {
+        taskPhase: taskPhase,
+        activityType: defaultValues?.activityType ?? null,
+        location: '',
+        subject: taskSubject ?? '',
+        startAt: DateTime.local(),
+        completedAt: null,
+        result: defaultValues?.result ?? null,
+        changeContactStatus: false,
+        nextAction: defaultValues?.nextAction ?? null,
+        tagList: defaultValues?.tagList ?? [],
+        contactIds: defaultValues?.contactIds ?? [],
+        userId: defaultValues?.userId ?? session.data?.user.userID ?? null,
+        notificationTimeBefore: null,
+        notificationType: null,
+        notificationTimeUnit: null,
+        comment: '',
+      };
+    }
+  }, [activityTypes]);
+
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -271,7 +288,6 @@ const TaskModalForm = ({
       openTaskModal({
         view: 'add',
         defaultValues: {
-          subject: attributes.subject,
           activityType: attributes.nextAction,
           contactIds: attributes.contactIds,
           userId: task?.user?.id,
