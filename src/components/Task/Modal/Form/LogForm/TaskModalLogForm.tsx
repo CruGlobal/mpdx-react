@@ -89,7 +89,7 @@ type Attributes = yup.InferType<typeof taskSchema>;
 interface Props {
   accountListId: string;
   onClose: () => void;
-  defaultValues?: Partial<TaskCreateInput>;
+  defaultValues?: Partial<TaskCreateInput> & { taskPhase: PhaseEnum };
 }
 
 const TaskModalLogForm = ({
@@ -98,36 +98,22 @@ const TaskModalLogForm = ({
   defaultValues,
 }: Props): ReactElement => {
   const session = useSession();
-  const initialTask: Attributes = useMemo(
-    () => ({
-      taskPhase: null,
-      activityType: defaultValues?.activityType ?? null,
-      subject: defaultValues?.subject ?? '',
-      contactIds: defaultValues?.contactIds ?? [],
-      completedAt: DateTime.local(),
-      userId: defaultValues?.userId ?? session.data?.user.userID ?? null,
-      tagList: defaultValues?.tagList ?? [],
-      result: defaultValues?.result ?? undefined,
-      changeContactStatus: false,
-      nextAction: defaultValues?.nextAction ?? null,
-      location: '',
-      comment: '',
-    }),
-    [],
-  );
   const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
   // TODO replace with ResultEnum when available
   const [resultSelected, setResultSelected] =
-    useState<DisplayResultEnum | null>(null);
+    useState<DisplayResultEnum | null>(
+      (defaultValues?.result as unknown as DisplayResultEnum) || null,
+    );
 
   const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
-    null,
+    defaultValues?.activityType || null,
   );
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { phaseData, setPhaseId, constants, taskPhases } = usePhaseData();
+  const { phaseData, setPhaseId, constants, taskPhases, activityTypes } =
+    usePhaseData();
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -140,6 +126,37 @@ const TaskModalLogForm = ({
     if (inputRef.current) {
       inputRef.current.focus();
     }
+  }, []);
+
+  const initialTask: Attributes = useMemo(() => {
+    let taskPhase: PhaseEnum | null = defaultValues?.taskPhase ?? null;
+    let taskSubject = defaultValues?.subject;
+
+    if (defaultValues?.activityType && activityTypes) {
+      const activityData = defaultValues.activityType
+        ? activityTypes.get(defaultValues.activityType)
+        : null;
+      if (activityData) {
+        setPhaseId(activityData.phaseId);
+        taskPhase = activityData.phaseId;
+        taskSubject = activityData.title;
+      }
+    }
+
+    return {
+      taskPhase: taskPhase,
+      activityType: defaultValues?.activityType ?? null,
+      subject: taskSubject ?? '',
+      contactIds: defaultValues?.contactIds ?? [],
+      completedAt: DateTime.local(),
+      userId: defaultValues?.userId ?? session.data?.user.userID ?? null,
+      tagList: defaultValues?.tagList ?? [],
+      result: defaultValues?.result ?? undefined,
+      changeContactStatus: false,
+      nextAction: defaultValues?.nextAction ?? null,
+      location: '',
+      comment: '',
+    };
   }, []);
 
   const onSubmit = async (

@@ -108,7 +108,9 @@ interface Props {
   accountListId: string;
   task?: GetTaskForTaskModalQuery['task'] | null;
   onClose: () => void;
-  defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
+  defaultValues?: Partial<TaskCreateInput & TaskUpdateInput> & {
+    taskPhase?: PhaseEnum;
+  };
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
 }
 
@@ -165,7 +167,7 @@ const TaskModalForm = ({
         comment: '',
       };
     } else {
-      let taskPhase: PhaseEnum | null = null;
+      let taskPhase: PhaseEnum | null = defaultValues?.taskPhase || null;
       let taskSubject = defaultValues?.subject;
 
       if (defaultValues?.activityType && activityTypes) {

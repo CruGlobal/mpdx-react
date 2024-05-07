@@ -1,7 +1,11 @@
 import React, { ReactElement, useState } from 'react';
 import { DialogContent, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { TaskCreateInput, TaskUpdateInput } from 'src/graphql/types.generated';
+import {
+  PhaseEnum,
+  TaskCreateInput,
+  TaskUpdateInput,
+} from 'src/graphql/types.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import Loading from '../../Loading';
 import Modal from '../../common/Modal/Modal';
@@ -16,7 +20,9 @@ export interface TaskModalProps {
   onClose?: () => void;
   view: 'comments' | 'log' | 'add' | 'complete' | 'edit';
   showCompleteForm?: boolean;
-  defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
+  defaultValues?: Partial<TaskCreateInput & TaskUpdateInput> & {
+    taskPhase?: PhaseEnum;
+  };
 }
 
 const TaskModal = ({

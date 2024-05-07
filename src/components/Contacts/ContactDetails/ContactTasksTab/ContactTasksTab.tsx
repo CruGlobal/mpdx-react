@@ -15,7 +15,10 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { useMassSelection } from '../../../../hooks/useMassSelection';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
-import { useContactTasksTabQuery } from './ContactTasksTab.generated';
+import {
+  useContactPhaseQuery,
+  useContactTasksTabQuery,
+} from './ContactTasksTab.generated';
 import { ContactTasksTabNullState } from './NullState/ContactTasksTabNullState';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
@@ -112,6 +115,14 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     },
   });
 
+  const { data: phaseData } = useContactPhaseQuery({
+    variables: {
+      accountListId,
+      contactId,
+    },
+  });
+  const contactPhase = phaseData?.contact?.contactPhase;
+
   const tasksFilter = useMemo(
     () => ({
       contactIds: [contactId],
@@ -162,7 +173,10 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               onClick={() =>
                 openTaskModal({
                   view: 'add',
-                  defaultValues: { contactIds: [contactId] },
+                  defaultValues: {
+                    contactIds: [contactId],
+                    taskPhase: contactPhase || undefined,
+                  },
                 })
               }
             >
@@ -176,6 +190,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                   defaultValues: {
                     completedAt: DateTime.local().toISO(),
                     contactIds: [contactId],
+                    taskPhase: contactPhase || undefined,
                   },
                 })
               }
