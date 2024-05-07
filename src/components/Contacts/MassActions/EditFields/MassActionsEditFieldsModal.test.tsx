@@ -31,7 +31,7 @@ describe('MassActionsEditFieldsModal', () => {
   });
   it('Select status and starred, the save action', async () => {
     const mutationSpy = jest.fn();
-    const { getByRole, queryByTestId, queryByText } = render(
+    const { getByRole, queryByTestId, queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -52,9 +52,7 @@ describe('MassActionsEditFieldsModal', () => {
     // Status
     userEvent.click(getByRole('combobox', { name: /status/i }));
     await waitFor(() =>
-      expect(
-        getByRole('option', { name: /appointment scheduled/i }),
-      ).toBeInTheDocument(),
+      expect(getByText('Appointment Scheduled')).toBeInTheDocument(),
     );
     userEvent.click(getByRole('option', { name: /appointment scheduled/i }));
     // Likey to Give

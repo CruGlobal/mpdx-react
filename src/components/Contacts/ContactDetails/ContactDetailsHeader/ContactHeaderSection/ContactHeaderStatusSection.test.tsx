@@ -89,7 +89,7 @@ describe('ContactHeaderStatusSection', () => {
   const statuses = Object.entries(contactPartnershipStatus)
     .filter(([_, status]) => status.phase)
     .map(([statusKey, status]) => {
-      return [statusKey, status.name];
+      return [statusKey, status.translated];
     });
 
   it.each([...statuses])('should render status | %s', (status, expected) => {

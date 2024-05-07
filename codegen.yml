@@ -2,7 +2,7 @@ overwrite: true
 generates:
   ./src/graphql/types.generated.ts:
     schema:
-      - ${API_URL:http://localhost:3001/graphql}
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
       - ./pages/api/Schema/**/*.graphql
     plugins:
       - add:
@@ -14,7 +14,7 @@ generates:
         ISO8601DateTime: string
   ./:
     schema:
-      - ${API_URL:http://localhost:3001/graphql}
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
       - ./pages/api/Schema/**/*.graphql
     documents: '**/*.graphql'
     preset: near-operation-file
@@ -29,19 +29,19 @@ generates:
       preResolveTypes: false
   ./src/graphql/schema.graphql:
     schema:
-      - ${API_URL:http://localhost:3001/graphql}
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
       - ./pages/api/Schema/**/*.graphql
     plugins:
       - schema-ast
   ./src/graphql/possibleTypes.generated.ts:
     schema:
-      - ${API_URL:http://localhost:3001/graphql}
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
       - ./pages/api/Schema/**/*.graphql
     plugins:
       - fragment-matcher
   ./pages/api/graphql-rest.page.generated.ts:
     schema:
-      - ${API_URL:http://localhost:3001/graphql}
+      - ${API_URL:https://api.stage.mpdx.org/graphql}
       - ./pages/api/Schema/**/*.graphql
     plugins:
       - add:
@@ -55,7 +55,7 @@ generates:
         ISO8601Date: string
         ISO8601DateTime: string
   ./src/graphql/rootFields.generated.ts:
-    schema: ${API_URL:http://localhost:3001/graphql}
+    schema: ${API_URL:https://api.stage.mpdx.org/graphql}
     plugins:
       - ./extractRootFields.js
 hooks:

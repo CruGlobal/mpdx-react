@@ -259,7 +259,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('In Person Appointment')).toBeVisible();
+      expect(getByText('In Person')).toBeVisible();
     });
 
     it('displays Call', () => {
@@ -282,7 +282,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Phone Call To Initiate Appointment')).toBeVisible();
+      expect(getByText('Phone Call')).toBeVisible();
     });
 
     it('displays Email', () => {
@@ -305,7 +305,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Email To Initiate')).toBeVisible();
+      expect(getByText('Email')).toBeVisible();
     });
 
     it('displays Social Media Message', () => {
@@ -328,7 +328,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Social Media Message To Initiate')).toBeVisible();
+      expect(getByText('Social Media')).toBeVisible();
     });
 
     it('displays Letter', () => {
@@ -351,7 +351,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Letter To Initiate')).toBeVisible();
+      expect(getByText('Letter')).toBeVisible();
     });
 
     it('displays Newsletter - Email', () => {
@@ -374,7 +374,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Send Digital Newsletter')).toBeVisible();
+      expect(getByText('Digital Newsletter')).toBeVisible();
     });
 
     it('displays Newsletter - Physical', () => {
@@ -397,7 +397,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Send Physical Newsletter')).toBeVisible();
+      expect(getByText('Physical Newsletter')).toBeVisible();
     });
 
     it('displays Prayer Request', () => {
@@ -420,7 +420,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Ask For Or Receive Prayer Request')).toBeVisible();
+      expect(getByText('Prayer Request')).toBeVisible();
     });
 
     it('displays Initation Letter', () => {
@@ -443,7 +443,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Letter To Initiate')).toBeVisible();
+      expect(getByText('Letter')).toBeVisible();
     });
 
     it('displays Special Gift Appeal', () => {
@@ -489,7 +489,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Connect In Person For Cultivation')).toBeVisible();
+      expect(getByText('In Person')).toBeVisible();
     });
 
     it('displays Text Message', () => {
@@ -512,7 +512,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Text To Follow Up')).toBeVisible();
+      expect(getByText('Text Message')).toBeVisible();
     });
 
     it('displays Thank', () => {
@@ -535,7 +535,7 @@ describe('ContactTaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText('Send Thank You Note')).toBeVisible();
+      expect(getByText('Thank You Note')).toBeVisible();
     });
 
     it('displays To Do', () => {

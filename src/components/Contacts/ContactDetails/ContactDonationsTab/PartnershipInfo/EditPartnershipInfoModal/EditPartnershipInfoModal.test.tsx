@@ -188,7 +188,7 @@ describe('EditPartnershipInfoModal', () => {
     const statusInput = getByLabelText('Status');
 
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask in Future'));
+    await waitFor(() => userEvent.click(getByText('Ask in Future')));
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -220,7 +220,9 @@ describe('EditPartnershipInfoModal', () => {
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByLabelText('Frequency');
-    expect(statusInput.textContent).toEqual('Partner - Financial');
+    await waitFor(() =>
+      expect(statusInput.textContent).toEqual('Partner - Financial'),
+    );
 
     expect(amountInput).toHaveValue(50);
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
@@ -266,7 +268,10 @@ describe('EditPartnershipInfoModal', () => {
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByLabelText('Frequency');
-    expect(statusInput.textContent).toEqual('Partner - Financial');
+
+    await waitFor(() =>
+      expect(statusInput.textContent).toEqual('Partner - Financial'),
+    );
 
     expect(amountInput).toHaveValue(50);
 
