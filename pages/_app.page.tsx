@@ -21,7 +21,7 @@ import { I18nextProvider, useTranslation } from 'react-i18next';
 import Rollbar from 'rollbar';
 import DataDog from 'src/components/DataDog/DataDog';
 import { GlobalStyles } from 'src/components/GlobalStyles/GlobalStyles';
-import HelpscoutBeacon from 'src/components/Helpscout/HelpscoutBeacon';
+import { HelpBeacon } from 'src/components/HelpBeacon/HelpBeacon';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
@@ -35,7 +35,6 @@ import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import makeClient from 'src/lib/apollo/client';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import './helpscout.css';
 import './print.css';
 
 export type PageWithLayout = NextPage & {
@@ -167,11 +166,13 @@ const App = ({
         <ErrorBoundary>
           <AppSettingsProvider>
             <SessionProvider session={session}>
-              <HelpscoutBeacon />
               <I18nextProvider i18n={i18n}>
                 <StyledEngineProvider injectFirst>
                   <CacheProvider value={emotionCache}>
                     <ThemeProvider theme={theme}>
+                      {process.env.HELP_URL && (
+                        <HelpBeacon helpUrl={process.env.HELP_URL} />
+                      )}
                       <LocalizationProvider
                         dateAdapter={AdapterLuxon}
                         localeText={{

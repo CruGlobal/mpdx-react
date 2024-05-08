@@ -25,7 +25,7 @@ export const initBeacon = () => {
 
 export const callBeacon = (name: string, options?: unknown) => {
   if (!window.Beacon) {
-    throw new Error('HelpScout beacon has not been initialized yet');
+    return;
   }
 
   window.Beacon(name, options);
