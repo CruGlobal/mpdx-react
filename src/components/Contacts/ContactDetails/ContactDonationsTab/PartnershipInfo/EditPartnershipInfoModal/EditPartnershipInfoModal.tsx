@@ -328,6 +328,8 @@ export const EditPartnershipInfoModal: React.FC<
                     {t('Status')}
                   </InputLabel>
                   <Select
+                    role="listbox"
+                    aria-label={t('Status')}
                     label={t('Status')}
                     labelId="status-select-label"
                     value={status}

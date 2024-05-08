@@ -171,11 +171,38 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should save when only status is inputted', async () => {
-    const { getByLabelText, getByText } = render(
+    const { getByText, getByRole } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider
+              mocks={{
+                LoadConstants: {
+                  phases: [
+                    {
+                      contactStatuses: [
+                        'NEVER_CONTACTED',
+                        'ASK_IN_FUTURE',
+                        'RESEARCH_CONTACT_INFO',
+                        'CULTIVATE_RELATIONSHIP',
+                      ],
+                      name: 'Connection',
+                      id: 'CONNECTION',
+                    },
+                    {
+                      contactStatuses: ['CONTACT_FOR_APPOINTMENT'],
+                      name: 'Initiation',
+                      id: 'INITIATION',
+                    },
+                    {
+                      contactStatuses: ['APPOINTMENT_SCHEDULED'],
+                      name: 'Treffen',
+                      id: 'APPOINTMENT',
+                    },
+                  ],
+                },
+              }}
+            >
               <EditPartnershipInfoModal
                 contact={newContactMock}
                 handleClose={handleClose}
@@ -185,7 +212,8 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const statusInput = getByLabelText('Status');
+    //const statusInput = getByLabelText('Status');
+    const statusInput = getByRole('listbox', { name: 'Status' });
 
     userEvent.click(statusInput);
     await waitFor(() => userEvent.click(getByText('Ask in Future')));
