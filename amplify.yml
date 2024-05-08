@@ -22,7 +22,7 @@ frontend:
         - yarn -v
         - yarn
         - yarn disable-telemetry
-        - yarn gql
+        - API_URL=https://api.mpdx.org/graphql yarn gql
     build:
       commands:
         - yarn build:amplify
