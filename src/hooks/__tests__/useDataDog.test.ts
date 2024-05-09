@@ -1,4 +1,3 @@
-import { renderHook } from '@testing-library/react-hooks';
 import {
   clearDataDogUser,
   isDataDogConfigured,
@@ -23,12 +22,11 @@ describe('useDataDog', () => {
 
   describe('DataDog not configured', () => {
     it('should return isDataDogConfigured as false', () => {
-      const { result } = renderHook(() => isDataDogConfigured(), {});
-      expect(result.current).toEqual(false);
+      expect(isDataDogConfigured()).toEqual(false);
     });
 
     it('should NOT run setDataDogUser', () => {
-      renderHook(() => setDataDogUser(setDataDogUserMock), {});
+      setDataDogUser(setDataDogUserMock);
       expect(window.DD_RUM.getUser).not.toHaveBeenCalled();
       expect(window.DD_RUM.clearUser).not.toHaveBeenCalled();
       expect(window.DD_RUM.setUser).not.toHaveBeenCalled();
@@ -42,17 +40,16 @@ describe('useDataDog', () => {
 
     //#region Default Tests
     it('should return isDataDogConfigured as true', () => {
-      const { result } = renderHook(() => isDataDogConfigured(), {});
-      expect(result.current).toEqual(true);
+      expect(isDataDogConfigured()).toEqual(true);
     });
 
     it('should run clearDataDogUser', () => {
-      renderHook(() => clearDataDogUser(), {});
+      clearDataDogUser();
       expect(window.DD_RUM.clearUser).toHaveBeenCalled();
     });
 
     it('New User', () => {
-      renderHook(() => setDataDogUser(setDataDogUserMock), {});
+      setDataDogUser(setDataDogUserMock);
       expect(window.DD_RUM.getUser).toHaveBeenCalledTimes(2);
       expect(window.DD_RUM.clearUser).toHaveBeenCalled();
       expect(window.DD_RUM.setUser).toHaveBeenCalled();
