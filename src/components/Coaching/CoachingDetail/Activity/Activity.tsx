@@ -34,6 +34,10 @@ import {
   dateFormat,
   dateFormatWithoutYear,
 } from 'src/lib/intlFormat';
+import {
+  callActivityTypes,
+  electronicActivityTypes,
+} from 'src/utils/phases/taskActivityTypes';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum, CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
@@ -228,25 +232,11 @@ export const Activity: React.FC<ActivityProps> = ({
   };
   const taskCallFilter: TaskFilterSetInput = {
     ...taskBaseFilter,
-    activityType: [
-      ActivityTypeEnum.InitiationPhoneCall,
-      ActivityTypeEnum.FollowUpPhoneCall,
-      ActivityTypeEnum.PartnerCarePhoneCall,
-    ],
+    activityType: callActivityTypes,
   };
   const taskElectronicFilter: TaskFilterSetInput = {
     ...taskBaseFilter,
-    activityType: [
-      ActivityTypeEnum.InitiationEmail,
-      ActivityTypeEnum.FollowUpEmail,
-      ActivityTypeEnum.PartnerCareEmail,
-      ActivityTypeEnum.InitiationSocialMedia,
-      ActivityTypeEnum.FollowUpSocialMedia,
-      ActivityTypeEnum.PartnerCareSocialMedia,
-      ActivityTypeEnum.InitiationTextMessage,
-      ActivityTypeEnum.FollowUpTextMessage,
-      ActivityTypeEnum.PartnerCareTextMessage,
-    ],
+    activityType: electronicActivityTypes,
   };
 
   return (

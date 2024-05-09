@@ -83,7 +83,7 @@ export const handleResultChange = ({
   setResultSelected,
 }: HandleResultChangeProps): void => {
   setFieldValue('result', result);
-  setFieldValue('nextAction', '');
+  setFieldValue('nextAction', ActivityTypeEnum.None);
   setFieldValue('changeContactStatus', false);
   setResultSelected(result as DisplayResultEnum);
 };

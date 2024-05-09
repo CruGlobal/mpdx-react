@@ -114,8 +114,7 @@ export const MassActionsEditFieldsModal: React.FC<
   const { data: constants, loading: loadingConstants } =
     useLoadConstantsQuery();
 
-  const c = useApiConstants();
-  const phases = c?.phases;
+  const phases = useApiConstants()?.phases;
 
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>

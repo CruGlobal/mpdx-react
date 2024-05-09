@@ -174,8 +174,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
       </TaskItemWrap>
       <SubjectWrap onClick={handleSubjectPressed}>
         <TaskType>
-          {' '}
-          {activityData ? activityData.phase + ' - ' : ''}
+          {activityData && `${activityData.phase} - `}
           {getLocalizedTaskType(t, activityType)}
         </TaskType>
         <TaskDescription>{subject}</TaskDescription>
