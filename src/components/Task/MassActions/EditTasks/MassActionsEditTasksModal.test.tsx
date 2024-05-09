@@ -38,7 +38,7 @@ describe('MassActionsEditTasksModal', () => {
     );
     userEvent.click(getByRole('button', { name: 'Save' }));
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[2][0]).toMatchObject({
+      expect(mutationSpy.mock.calls[3][0]).toMatchObject({
         operation: {
           operationName: 'CreateTaskComment',
           variables: {
@@ -50,7 +50,7 @@ describe('MassActionsEditTasksModal', () => {
           },
         },
       });
-      expect(mutationSpy.mock.calls[3][0]).toMatchObject({
+      expect(mutationSpy.mock.calls[4][0]).toMatchObject({
         operation: {
           operationName: 'CreateTaskComment',
           variables: {
