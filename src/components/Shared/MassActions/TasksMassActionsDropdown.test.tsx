@@ -6,6 +6,7 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GetTasksForAddingTagsQuery } from 'src/components/Task/MassActions/AddTags/TasksAddTags.generated';
+import { phasesMock } from 'src/components/Task/Modal/Form/TaskModalHelper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
@@ -50,7 +51,7 @@ jest.mock('notistack', () => ({
 
 const TaskComponents = () => (
   <ThemeProvider theme={theme}>
-    <GqlMockedProvider>
+    <GqlMockedProvider mocks={phasesMock}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TasksMassActionsDropdown
@@ -102,10 +103,16 @@ describe('TasksMassActionsDropdown', () => {
     await waitFor(() =>
       expect(queryByTestId('EditTasksModal')).toBeInTheDocument(),
     );
+    userEvent.click(getByLabelText('Task Type/Phase'));
+    userEvent.click(
+      within(getByRole('listbox', { name: 'Task Type/Phase' })).getByText(
+        'Appointment',
+      ),
+    );
     userEvent.click(getByLabelText('Action'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
-        'Appointment',
+        'In Person',
       ),
     );
     userEvent.click(getByText('Save'));

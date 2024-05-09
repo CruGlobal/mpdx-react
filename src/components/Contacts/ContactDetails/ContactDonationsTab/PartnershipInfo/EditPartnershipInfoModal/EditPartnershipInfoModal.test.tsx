@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { phasesMock } from 'src/components/Task/Modal/Form/TaskModalHelper';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
@@ -171,11 +172,11 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should save when only status is inputted', async () => {
-    const { getByLabelText, getByText } = render(
+    const { getByText, getByRole, findByRole } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider mocks={phasesMock}>
               <EditPartnershipInfoModal
                 contact={newContactMock}
                 handleClose={handleClose}
@@ -185,10 +186,12 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const statusInput = getByLabelText('Status');
+    const statusInput = getByRole('combobox', { name: 'Status' });
 
     userEvent.click(statusInput);
-    await waitFor(() => userEvent.click(getByText('Ask in Future')));
+    userEvent.click(
+      await findByRole('option', { name: 'Appointment Scheduled' }),
+    );
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -207,7 +210,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider mocks={phasesMock}>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -255,7 +258,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider mocks={phasesMock}>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}

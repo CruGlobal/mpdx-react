@@ -6,10 +6,10 @@ import { getLocalizedTaskPhase } from 'src/lib/MPDPhases';
 
 interface TaskPhaseProps {
   options: PhaseEnum[];
-  label: string;
+  label?: string;
   onChange: (value: PhaseEnum | null) => void;
   value?: PhaseEnum | null;
-  inputRef: Ref<HTMLElement>;
+  inputRef?: Ref<HTMLElement>;
   contactPhase?: PhaseEnum;
 }
 
@@ -31,7 +31,11 @@ export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
       options={options}
       getOptionLabel={(activity) => getLocalizedTaskPhase(t, activity)}
       renderInput={(params) => (
-        <TextField {...params} inputRef={inputRef} label={label} />
+        <TextField
+          {...params}
+          inputRef={inputRef}
+          label={label || t('Task Type/Phase')}
+        />
       )}
       onChange={(_, value) => onChange(value)}
     />

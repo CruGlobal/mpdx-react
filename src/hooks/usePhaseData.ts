@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
@@ -6,16 +7,11 @@ import {
   Phase,
   PhaseEnum,
 } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 export type SetPhaseId = (activity: PhaseEnum | null) => void;
 export type Constants = LoadConstantsQuery['constant'] | undefined;
-// type ActivityTypes = Record<
-//   ActivityTypeEnum,
-//   { name: string; phase: string; title: string }
-// >;
 
 type GetPhaseData = {
   phaseData: Phase | null;
@@ -23,6 +19,7 @@ type GetPhaseData = {
   constants: LoadConstantsQuery['constant'] | undefined;
   taskPhases: PhaseEnum[];
   activityTypes: Map<ActivityTypeEnum, ActivityData>;
+  activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]>;
 };
 
 type ActivityData = {
@@ -48,6 +45,7 @@ const phaseFromActivity = (
 
 export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
   const constants = useApiConstants();
+  const { t } = useTranslation();
   const [phaseData, setPhaseData] = useState<Phase | null>(
     phaseFromActivity(phaseEnum ?? null, constants),
   );
@@ -73,9 +71,9 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     constants?.phases?.forEach((phase) => {
       phase?.tasks?.forEach((task) => {
         activitiesMap.set(task, {
-          name: getLocalizedTaskType(i18n.t, task),
+          name: getLocalizedTaskType(t, task),
           phaseId: phase.id,
-          phase: getLocalizedPhase(i18n.t, phase.id),
+          phase: getLocalizedPhase(t, phase.id),
           title: constants?.activities?.find((activity) => activity.id === task)
             ?.value,
         });
@@ -85,5 +83,22 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     return activitiesMap;
   }, [constants]);
 
-  return { phaseData, setPhaseId, constants, taskPhases, activityTypes };
+  const activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]> = useMemo(() => {
+    const phasesMap = new Map();
+
+    constants?.phases?.forEach((phase) => {
+      phasesMap.set(phase.id, phase.tasks);
+    });
+
+    return phasesMap;
+  }, [constants]);
+
+  return {
+    phaseData,
+    setPhaseId,
+    constants,
+    taskPhases,
+    activityTypes,
+    activitiesByPhase,
+  };
 };

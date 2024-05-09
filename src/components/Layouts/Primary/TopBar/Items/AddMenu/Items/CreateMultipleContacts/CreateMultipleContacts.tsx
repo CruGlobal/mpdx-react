@@ -441,6 +441,8 @@ export const CreateMultipleContacts = ({
                           <InputCell>
                             <FormControl size="small" fullWidth>
                               <Select
+                                aria-label={t('Status')}
+                                role="listbox"
                                 value={contact.status}
                                 onChange={(e) =>
                                   setFieldValue(

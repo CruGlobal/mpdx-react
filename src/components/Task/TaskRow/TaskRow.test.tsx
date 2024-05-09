@@ -170,7 +170,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { findByText, getByRole } = render(
+      const { getByText, getByRole } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -183,7 +183,7 @@ describe('TaskRow', () => {
           </ThemeProvider>
         </GqlMockedProvider>,
       );
-      expect(await findByText(task.subject)).toBeVisible();
+      expect(getByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('checkbox', { hidden: true }));
       expect(onTaskCheckSelected).toHaveBeenCalledWith(task.id);
     });
@@ -220,7 +220,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { findByText, getByRole } = render(
+      const { getByText, getByRole } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -234,7 +234,7 @@ describe('TaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(await findByText(task.subject)).toBeVisible();
+      expect(getByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
@@ -277,7 +277,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { findByText, getByRole } = render(
+      const { getByText, getByRole } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -291,7 +291,7 @@ describe('TaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(await findByText(task.subject)).toBeVisible();
+      expect(getByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,

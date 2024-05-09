@@ -1,6 +1,8 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ActivityTypeEnum } from 'src/graphql/types.generated';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
+import { phasesMock } from '../../TaskModalHelper';
 import { ActivityTypeAutocomplete } from './ActivityTypeAutocomplete';
 
 describe('ActivityTypeAutocomplete', () => {
@@ -9,6 +11,7 @@ describe('ActivityTypeAutocomplete', () => {
     ActivityTypeEnum.FollowUpTextMessage,
     ActivityTypeEnum.None,
   ];
+  const phase = PhaseEnum.Appointment;
 
   it('puts the none option first', () => {
     const onChange = jest.fn();
@@ -16,6 +19,7 @@ describe('ActivityTypeAutocomplete', () => {
     const { getByRole, getAllByRole } = render(
       <ActivityTypeAutocomplete
         options={options}
+        taskPhaseType={phase}
         label="Type"
         value={ActivityTypeEnum.AppointmentPhoneCall}
         onChange={onChange}
@@ -26,21 +30,24 @@ describe('ActivityTypeAutocomplete', () => {
     expect(getAllByRole('option')[0]).toHaveTextContent('None');
   });
 
-  it('converts none values to null', () => {
+  it('converts none values to null', async () => {
     const onChange = jest.fn();
 
     const { getByRole } = render(
-      <ActivityTypeAutocomplete
-        options={options}
-        label="Type"
-        value={ActivityTypeEnum.AppointmentPhoneCall}
-        onChange={onChange}
-      />,
+      <GqlMockedProvider mocks={phasesMock}>
+        <ActivityTypeAutocomplete
+          options={options}
+          taskPhaseType={phase}
+          label="Type"
+          value={ActivityTypeEnum.AppointmentPhoneCall}
+          onChange={onChange}
+        />
+      </GqlMockedProvider>,
     );
 
     const input = getByRole('combobox', { name: 'Type' });
     userEvent.click(input);
-    userEvent.click(getByRole('option', { name: 'None' }));
+    await waitFor(() => userEvent.click(getByRole('option', { name: 'None' })));
     expect(onChange).toHaveBeenCalledWith(null);
   });
 
@@ -50,6 +57,7 @@ describe('ActivityTypeAutocomplete', () => {
     const { getByRole } = render(
       <ActivityTypeAutocomplete
         options={options}
+        taskPhaseType={phase}
         label="Type"
         value={ActivityTypeEnum.AppointmentPhoneCall}
         onChange={onChange}

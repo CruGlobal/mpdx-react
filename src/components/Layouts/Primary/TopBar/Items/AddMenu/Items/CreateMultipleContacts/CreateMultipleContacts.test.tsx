@@ -5,6 +5,8 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import TestRouter from '../../../../../../../../../__tests__/util/TestRouter';
 import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../../../theme';
@@ -83,6 +85,7 @@ describe('CreateMultipleContacts', () => {
     const address = '123 Main Street';
     const phone = '+1 (111) 222-3344';
     const email = 'christian.huffman@cru.org';
+    const status = StatusEnum.PartnerFinancial;
 
     const first2 = 'Robert';
     const last2 = 'Eldredge';
@@ -102,6 +105,7 @@ describe('CreateMultipleContacts', () => {
                     createContact: {
                       contact: {
                         id: 'contact-1',
+                        status: status,
                       },
                     },
                   },
@@ -131,6 +135,10 @@ describe('CreateMultipleContacts', () => {
       userEvent.type(getAllByRole('combobox')[0], address);
       userEvent.type(getAllByRole('textbox', { name: 'Phone' })[0], phone);
       userEvent.type(getAllByRole('textbox', { name: 'Email' })[0], email);
+      userEvent.type(
+        getAllByRole('listbox', { name: 'Status' })[0],
+        contactPartnershipStatus[status].translated,
+      );
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
@@ -141,10 +149,11 @@ describe('CreateMultipleContacts', () => {
         attributes: {
           name: `${last}, ${first} and ${spouse}`,
           contactReferralsToMe: undefined,
+          status: StatusEnum.NeverContacted,
         },
       });
 
-      const { operation: personOperation } = mutationSpy.mock.calls[2][0];
+      const { operation: personOperation } = mutationSpy.mock.calls[3][0];
       expect(personOperation.variables.accountListId).toEqual(accountListId);
       expect(personOperation.variables.attributes.firstName).toEqual(first);
       expect(personOperation.variables.attributes.lastName).toEqual(last);
@@ -161,7 +170,7 @@ describe('CreateMultipleContacts', () => {
         },
       ]);
 
-      expect(mutationSpy.mock.calls[4][0].operation).toMatchObject({
+      expect(mutationSpy.mock.calls[5][0].operation).toMatchObject({
         operationName: 'CreateContactAddress',
         variables: {
           accountListId,
@@ -171,7 +180,7 @@ describe('CreateMultipleContacts', () => {
           },
         },
       });
-      expect(mutationSpy.mock.calls[5][0].operation).toMatchObject({
+      expect(mutationSpy.mock.calls[6][0].operation).toMatchObject({
         operationName: 'SetContactPrimaryAddress',
         variables: {
           contactId: 'contact-1',

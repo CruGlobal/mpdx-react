@@ -301,7 +301,7 @@ describe('ContactTasksTab', () => {
 
     // Wait for the fetchMore to be called
     await waitFor(() => {
-      const { operation } = querySpy.mock.calls[2][0];
+      const { operation } = querySpy.mock.calls[4][0];
       expect(operation.operationName).toBe('ContactTasksTab');
       expect(operation.variables.after).toBe('MjU');
     });
