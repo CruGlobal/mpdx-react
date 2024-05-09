@@ -1,6 +1,10 @@
 declare global {
   interface Window {
-    DD_RUM: any;
+    DD_RUM: {
+      getUser: () => Record<string, string> | undefined;
+      setUser: (user: Record<string, string>) => void;
+      clearUser: () => void;
+    };
   }
 }
 
