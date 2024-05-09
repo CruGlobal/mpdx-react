@@ -19,6 +19,7 @@ type GetPhaseData = {
   constants: LoadConstantsQuery['constant'] | undefined;
   taskPhases: PhaseEnum[];
   activityTypes: Map<ActivityTypeEnum, ActivityData>;
+  activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]>;
 };
 
 type ActivityData = {
@@ -82,5 +83,22 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     return activitiesMap;
   }, [constants]);
 
-  return { phaseData, setPhaseId, constants, taskPhases, activityTypes };
+  const activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]> = useMemo(() => {
+    const phasesMap = new Map();
+
+    constants?.phases?.forEach((phase) => {
+      phasesMap.set(phase.id, phase.tasks);
+    });
+
+    return phasesMap;
+  }, [constants]);
+
+  return {
+    phaseData,
+    setPhaseId,
+    constants,
+    taskPhases,
+    activityTypes,
+    activitiesByPhase,
+  };
 };
