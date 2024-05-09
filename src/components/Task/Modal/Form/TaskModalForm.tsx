@@ -147,7 +147,9 @@ const TaskModalForm = ({
   const initialTask: Attributes = useMemo(() => {
     if (task) {
       return {
-        taskPhase: null,
+        taskPhase: task?.activityType
+          ? activityTypes.get(task?.activityType)?.phaseId
+          : null,
         activityType: task.activityType ?? null,
         location: task.location ?? '',
         subject: task.subject ?? '',
