@@ -17,12 +17,10 @@ const StyledLink = styled('a')(({ theme }) => ({
   '@media (max-width: 900px)': {
     right: 40,
     bottom: 25,
-    backgroundColor: 'green',
   },
   '@media (max-width: 600px)': {
     right: 30,
     bottom: 30,
-    backgroundColor: 'red',
   },
   width: 60,
   height: 60,
