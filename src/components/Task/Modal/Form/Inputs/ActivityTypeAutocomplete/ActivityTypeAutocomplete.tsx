@@ -54,7 +54,6 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
           !preserveNone && value === ActivityTypeEnum.None ? null : value,
         )
       }
-      disabled={!taskPhaseType}
     />
   );
 };
