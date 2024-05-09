@@ -69,7 +69,10 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `DATADOG_APP_ID` - Datadog tracking application ID.
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
 - `DD_ENV` - Datadog environment.
-- `HELP_URL` - URL that the floating help button will redirect to
+- `HELP_URLS` - JSON object that maps language codes to the URL that the floating help button will redirect to
+  - Example: `{"en-us":"https://docs.com/en/","fr-fr":"https://docs.com/fr/","default":"https://docs.com/en/"}`
+  - The keys should match the language ids defined in `src/lib/data/languages.ts`
+  - You can also set a `default` key that will be used if there isn't a help URL for the user's language preference
 - `BEACON_TOKEN` - HelpScout beacon token
 - `HS_CONTACTS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contacts page
 - `HS_CONTACTS_CONTACT_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contact page

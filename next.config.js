@@ -76,7 +76,7 @@ const config = {
         process.env.DATADOG_APP_ID &&
         process.env.DATADOG_CLIENT_TOKEN,
     ).toString(),
-    HELP_URL: process.env.HELP_URL,
+    HELP_URLS: process.env.HELP_URLS,
     HS_COACHING_ACTIVITY_SUMMARY: process.env.HS_COACHING_ACTIVITY_SUMMARY,
     HS_COACHING_ACTIVITY: process.env.HS_COACHING_ACTIVITY,
     HS_COACHING_APPOINTMENTS_AND_RESULTS:

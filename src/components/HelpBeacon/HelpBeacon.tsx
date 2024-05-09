@@ -28,15 +28,20 @@ const StyledLink = styled('a')(({ theme }) => ({
 }));
 
 interface HelpBeaconProps {
-  helpUrl: string;
+  helpUrls: Record<string, string> | null;
 }
 
-export const HelpBeacon: React.FC<HelpBeaconProps> = ({ helpUrl }) => {
-  const { t } = useTranslation();
+export const HelpBeacon: React.FC<HelpBeaconProps> = ({ helpUrls }) => {
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
 
-  return (
+  const helpUrl = helpUrls?.[language] ?? helpUrls?.default;
+
+  return helpUrl ? (
     <StyledLink aria-label={t('Help')} href={helpUrl} target="_blank">
       <QuestionMark sx={{ color: 'white' }} />
     </StyledLink>
-  );
+  ) : null;
 };

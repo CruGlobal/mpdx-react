@@ -37,6 +37,18 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import './print.css';
 
+export const parseHelpUrls = (
+  helpUrlsEnv: string | null,
+): Record<string, string> => {
+  try {
+    const helpUrls = helpUrlsEnv && JSON.parse(helpUrlsEnv);
+    if (helpUrls && typeof helpUrls === 'object') {
+      return helpUrls;
+    }
+  } catch {}
+  return {};
+};
+
 export type PageWithLayout = NextPage & {
   layout?: React.FC;
 };
@@ -101,6 +113,11 @@ const App = ({
       'A session was not provided via page props. Make sure that getServerSideProps for this page returns the session in its props.',
     );
   }
+
+  const helpUrls = useMemo(
+    () => parseHelpUrls(process.env.HELP_URLS ?? null),
+    [],
+  );
 
   const pageContent = (
     <TaskModalProvider>
@@ -170,9 +187,7 @@ const App = ({
                 <StyledEngineProvider injectFirst>
                   <CacheProvider value={emotionCache}>
                     <ThemeProvider theme={theme}>
-                      {process.env.HELP_URL && (
-                        <HelpBeacon helpUrl={process.env.HELP_URL} />
-                      )}
+                      <HelpBeacon helpUrls={helpUrls} />
                       <LocalizationProvider
                         dateAdapter={AdapterLuxon}
                         localeText={{
