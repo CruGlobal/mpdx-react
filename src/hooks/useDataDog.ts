@@ -14,7 +14,7 @@ export const isDataDogConfigured = (): boolean => {
   }
   return !!(
     process.env.DATADOG_CONFIGURED === 'true' &&
-    (window?.DD_RUM ?? {}).hasOwnProperty('getUser')
+    window.DD_RUM?.hasOwnProperty('getUser')
   );
 };
 
