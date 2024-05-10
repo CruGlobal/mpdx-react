@@ -23,6 +23,8 @@ export interface SetDataDogUserProps {
   language: string;
 }
 
+export const accountListIdsStorageKey = 'accountListIds';
+
 export const setDataDogUser = ({
   userId,
   name,
@@ -31,11 +33,16 @@ export const setDataDogUser = ({
   language,
 }: SetDataDogUserProps): void => {
   if (!isDataDogConfigured()) return;
-  const rawAccountListIds = window.sessionStorage.getItem('accountListIds');
+  const rawAccountListIds = window.localStorage.getItem(
+    accountListIdsStorageKey,
+  );
   const accountListIds = rawAccountListIds ? rawAccountListIds.split(',') : [];
   if (accountListId && !accountListIds.includes(accountListId)) {
     accountListIds.push(accountListId);
-    window.sessionStorage.setItem('accountListIds', accountListIds.join(','));
+    window.localStorage.setItem(
+      accountListIdsStorageKey,
+      accountListIds.join(','),
+    );
   }
   window.DD_RUM.setUser({
     id: userId,
@@ -49,4 +56,5 @@ export const setDataDogUser = ({
 export const clearDataDogUser = (): void => {
   if (!isDataDogConfigured()) return;
   window.DD_RUM.clearUser();
+  window.localStorage.removeItem(accountListIdsStorageKey);
 };
