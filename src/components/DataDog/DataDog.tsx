@@ -11,11 +11,11 @@ const DataDog: React.FC = () => {
     ? Array.isArray(query.accountListId)
       ? query.accountListId[0]
       : query.accountListId
-    : '';
+    : null;
 
   const user = session?.user;
   useEffect(() => {
-    if (user) {
+    if (user && accountListId) {
       setDataDogUser({
         userId: user.userID,
         accountListId,

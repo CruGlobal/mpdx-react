@@ -35,7 +35,7 @@ export const setDataDogUser = ({
     accountListIdsStorageKey,
   );
   const accountListIds = rawAccountListIds ? rawAccountListIds.split(',') : [];
-  if (accountListId && !accountListIds.includes(accountListId)) {
+  if (!accountListIds.includes(accountListId)) {
     accountListIds.push(accountListId);
     window.localStorage.setItem(
       accountListIdsStorageKey,

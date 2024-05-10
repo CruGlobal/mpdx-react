@@ -72,16 +72,6 @@ describe('dataDog', () => {
       );
     });
 
-    it('does not add blank account list ids to the list', () => {
-      window.localStorage.removeItem(accountListIdsStorageKey);
-
-      setDataDogUser({ ...setDataDogUserMock, accountListId: '' });
-      expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
-        expect.objectContaining({ accountListIds: [] }),
-      );
-      expect(window.localStorage.getItem(accountListIdsStorageKey)).toBeNull();
-    });
-
     it('does not add duplicate account list ids to the list', () => {
       window.localStorage.setItem(
         accountListIdsStorageKey,
