@@ -450,13 +450,6 @@ const TaskModalForm = ({
                   />
                 </Grid>
               )}
-              <Grid item>
-                <AssigneeAutocomplete
-                  accountListId={accountListId}
-                  value={userId}
-                  onChange={(userId) => setFieldValue('userId', userId)}
-                />
-              </Grid>
 
               {!initialTask.completedAt && (
                 <Grid item>
@@ -504,6 +497,13 @@ const TaskModalForm = ({
                   </FormControl>
                 </Grid>
               )}
+              <Grid item>
+                <AssigneeAutocomplete
+                  accountListId={accountListId}
+                  value={userId}
+                  onChange={(userId) => setFieldValue('userId', userId)}
+                />
+              </Grid>
               <Grid item>
                 <ContactsAutocomplete
                   accountListId={accountListId}
