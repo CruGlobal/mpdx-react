@@ -77,6 +77,7 @@ import {
   useUpdateTaskMutation,
 } from './TaskModal.generated';
 import {
+  filterTags,
   getDatabaseValueFromResult,
   handleTaskActionChange,
   handleTaskPhaseChange,
@@ -141,8 +142,14 @@ const TaskModalForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { phaseData, setPhaseId, constants, taskPhases, activityTypes } =
-    usePhaseData(task?.taskPhase);
+  const {
+    phaseData,
+    setPhaseId,
+    constants,
+    taskPhases,
+    activityTypes,
+    activitiesByPhase,
+  } = usePhaseData(task?.taskPhase);
 
   const phaseTags = useMemo(
     () =>
@@ -164,15 +171,13 @@ const TaskModalForm = ({
       }
 
       //go through tags and move some to selectedSuggestedTags and others to additionalTags
-      const additionalTags = task.tagList
-        ? task.tagList.reduce((acc: string[], tag) => {
-            if (phaseTags.includes(tag)) {
-              setSelectedSuggestedTags((prevValues) => [...prevValues, tag]);
-              return acc;
-            }
-            return [...acc, tag];
-          }, [])
-        : [];
+      const filteredTags = filterTags(task.tagList, phaseTags);
+      const additionalTags = filteredTags?.additionalTags;
+      setSelectedSuggestedTags((prevValues) => [
+        ...prevValues,
+        ...filteredTags?.suggestedTags,
+      ]);
+
       return {
         taskPhase,
         activityType: task.activityType ?? null,
@@ -236,7 +241,7 @@ const TaskModalForm = ({
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (!task && inputRef.current) {
+    if (!task && inputRef.current && !defaultValues?.activityType) {
       inputRef.current.focus();
     }
   }, []);
@@ -320,7 +325,7 @@ const TaskModalForm = ({
           activityType: attributes.nextAction,
           contactIds: attributes.contactIds,
           userId: task?.user?.id,
-          tagList: task?.tagList,
+          tagList: filterTags(task?.tagList, phaseTags)?.additionalTags,
         },
       });
     }
@@ -405,10 +410,11 @@ const TaskModalForm = ({
               <Grid item>
                 <FormControl fullWidth>
                   <ActivityTypeAutocomplete
-                    options={Object.values(ActivityTypeEnum)}
+                    options={
+                      (taskPhase && activitiesByPhase.get(taskPhase)) || []
+                    }
                     label={t('Action')}
                     value={activityType}
-                    taskPhaseType={taskPhase}
                     onChange={(activityType) => {
                       handleTaskActionChange({
                         activityType,

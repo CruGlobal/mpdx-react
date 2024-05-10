@@ -63,6 +63,7 @@ import {
   useUpdateContactStatusMutation,
 } from '../TaskModal.generated';
 import {
+  filterTags,
   getDatabaseValueFromResult,
   handleTaskActionChange,
   handleTaskPhaseChange,
@@ -112,8 +113,14 @@ const TaskModalLogForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { phaseData, setPhaseId, constants, taskPhases, activityTypes } =
-    usePhaseData();
+  const {
+    phaseData,
+    setPhaseId,
+    constants,
+    taskPhases,
+    activityTypes,
+    activitiesByPhase,
+  } = usePhaseData();
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -239,7 +246,7 @@ const TaskModalLogForm = ({
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: attributes.contactIds,
           userId: attributes.userId ?? undefined,
-          tagList: attributes.tagList,
+          tagList: filterTags(attributes?.tagList, phaseTags)?.additionalTags,
         },
       });
     }
@@ -328,10 +335,11 @@ const TaskModalLogForm = ({
 
               <Grid item>
                 <ActivityTypeAutocomplete
-                  options={Object.values(ActivityTypeEnum)}
+                  options={
+                    (taskPhase && activitiesByPhase.get(taskPhase)) || []
+                  }
                   label={t('Action')}
                   value={activityType}
-                  taskPhaseType={taskPhase}
                   onChange={(activityType) => {
                     handleTaskActionChange({
                       activityType,

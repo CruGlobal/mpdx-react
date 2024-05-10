@@ -83,7 +83,6 @@ export const handleResultChange = ({
   setResultSelected,
 }: HandleResultChangeProps): void => {
   setFieldValue('result', result);
-  setFieldValue('nextAction', ActivityTypeEnum.None);
   setFieldValue('changeContactStatus', false);
   setResultSelected(result as DisplayResultEnum);
 };
@@ -104,6 +103,19 @@ export const getDatabaseValueFromResult = (
     (item) => item.task === activityType,
   );
   return dbResult?.result || ResultEnum.None;
+};
+
+export const filterTags = (tagList, phaseTags) => {
+  const additionalTags: string[] = [];
+  const suggestedTags: string[] = [];
+  tagList.forEach((tag) => {
+    if (phaseTags.includes(tag)) {
+      suggestedTags.push(tag);
+    } else {
+      additionalTags.push(tag);
+    }
+  });
+  return { additionalTags, suggestedTags };
 };
 
 export const phasesMock = {
