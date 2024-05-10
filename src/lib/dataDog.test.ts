@@ -10,6 +10,7 @@ const setDataDogUserMock = {
   accountListId: '1234-4567-8910-1112-1314',
   name: 'Roger',
   email: 'roger@cru.org',
+  language: 'en-us',
 };
 
 describe('dataDog', () => {
