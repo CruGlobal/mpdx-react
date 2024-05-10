@@ -106,7 +106,9 @@ export const FourteenMonthReportTable: React.FC<
                 return contact.months.reduce((partialSum, month) => {
                   return partialSum + month.salaryCurrencyTotal;
                 }, 0);
-              } else return 0;
+              } else {
+                return 0;
+              }
             }, [contact]);
             return (
               <TableRow

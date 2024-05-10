@@ -110,7 +110,9 @@ export const FourteenMonthReport: React.FC<Props> = ({
     });
 
   const csvData = useMemo(() => {
-    if (!contacts) return [];
+    if (!contacts) {
+      return [];
+    }
 
     const months =
       data?.fourteenMonthReport.currencyGroups[0]?.totals.months ?? [];

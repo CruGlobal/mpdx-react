@@ -8,7 +8,9 @@ interface Props {
 }
 
 export const Twitter: React.FC<Props> = ({ screenName }) => {
-  if (!screenName) return null;
+  if (!screenName) {
+    return null;
+  }
 
   return (
     <IconButton

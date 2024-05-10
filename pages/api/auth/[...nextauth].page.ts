@@ -175,7 +175,9 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           user.userID = userInfo.userID;
           user.impersonating = userInfo.impersonating;
           user.impersonatorApiToken = userInfo.impersonatorApiToken;
-          if (cookies) res.setHeader('Set-Cookie', cookies);
+          if (cookies) {
+            res.setHeader('Set-Cookie', cookies);
+          }
         };
 
         // An API token is not required for the apiOauthSignIn or oktaSignIn mutations
@@ -266,13 +268,17 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         };
       },
       redirect({ url, baseUrl }) {
-        if (url.startsWith(baseUrl)) return url;
+        if (url.startsWith(baseUrl)) {
+          return url;
+        }
         if (url === 'signOut' && AUTH_PROVIDER === 'OKTA') {
           return `https://signon.okta.com/login/signout?fromURI=${encodeURIComponent(
             process.env.OKTA_SIGNOUT_REDIRECT_URL ?? '',
           )}`;
         }
-        if (url.startsWith('/')) return new URL(url, baseUrl).toString();
+        if (url.startsWith('/')) {
+          return new URL(url, baseUrl).toString();
+        }
         return baseUrl;
       },
     },

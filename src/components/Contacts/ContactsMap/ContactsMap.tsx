@@ -96,7 +96,9 @@ export const ContactsMap: React.FC = ({}) => {
     const beacon = document.querySelector(
       '#beacon-container .BeaconFabButtonFrame',
     ) as HTMLElement;
-    if (!beacon) return;
+    if (!beacon) {
+      return;
+    }
     beacon.style.setProperty('right', '60px', 'important');
     return () => beacon.style.setProperty('right', '20px');
   }, []);
@@ -109,8 +111,9 @@ export const ContactsMap: React.FC = ({}) => {
     // Update the map to contain all of the contacts' locations
     const bounds = new window.google.maps.LatLngBounds();
     data.forEach((contact) => {
-      if (typeof contact.lat === 'number' && typeof contact.lng === 'number')
+      if (typeof contact.lat === 'number' && typeof contact.lng === 'number') {
         bounds.extend({ lat: contact.lat, lng: contact.lng });
+      }
     });
     mapRef.current.fitBounds(bounds);
   }, [data, isLoaded, mapRef.current]);

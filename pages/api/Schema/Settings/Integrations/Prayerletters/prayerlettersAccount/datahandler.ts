@@ -22,7 +22,9 @@ export const PrayerlettersAccount = (
 ): PrayerlettersAccountCamel[] => {
   // Returning inside an array so I can mock an empty response from GraphQL
   // without the test thinking I want it to create custom random test data.
-  if (!data) return [];
+  if (!data) {
+    return [];
+  }
   return [
     {
       id: data.id,

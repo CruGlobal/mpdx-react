@@ -8,7 +8,9 @@ interface Props {
 }
 
 export const LinkedIn: React.FC<Props> = ({ publicUrl }) => {
-  if (!publicUrl) return null;
+  if (!publicUrl) {
+    return null;
+  }
 
   return (
     <IconButton target="_blank" href={publicUrl} rel="noreferrer">

@@ -8,7 +8,9 @@ interface Props {
 }
 
 export const Facebook: React.FC<Props> = ({ username }) => {
-  if (!username) return null;
+  if (!username) {
+    return null;
+  }
 
   return (
     <IconButton

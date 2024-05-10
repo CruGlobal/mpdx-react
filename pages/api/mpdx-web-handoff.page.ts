@@ -18,10 +18,14 @@ const defineRedirectUrl = ({
   rest,
 }: DefineRedirectUrlProps): string => {
   let redirectUrl = `${process.env.SITE_URL}/accountLists/${accountListId}`;
-  if (path) redirectUrl += path;
+  if (path) {
+    redirectUrl += path;
+  }
   if (rest) {
     for (const [key, value] of Object.entries(rest)) {
-      if (typeof value !== 'string') continue;
+      if (typeof value !== 'string') {
+        continue;
+      }
       const contactsAndReportsRegex = new RegExp('/contacts|/reports');
       if (contactsAndReportsRegex.test(path) && key === 'contactId') {
         if (redirectUrl.includes('?')) {
@@ -30,21 +34,27 @@ const defineRedirectUrl = ({
             `/${value}`,
             `?${redirectUrl.split('?')[1]}`,
           ].join('');
-        } else redirectUrl += `/${value}`;
+        } else {
+          redirectUrl += `/${value}`;
+        }
         continue;
       } else if (path.includes('/tasks') && key === 'group') {
         const typeDetails = taskFiltersTabs.find(
           (item) => item.name.toLowerCase() === value.toLowerCase(),
         );
         if (typeDetails) {
-          if (!redirectUrl.includes('?')) redirectUrl += '?';
+          if (!redirectUrl.includes('?')) {
+            redirectUrl += '?';
+          }
           redirectUrl += `filters=${encodeURIComponent(
             JSON.stringify(typeDetails.activeFiltersOptions),
           )}`;
           continue;
         }
       }
-      if (!redirectUrl.includes('?')) redirectUrl += '?';
+      if (!redirectUrl.includes('?')) {
+        redirectUrl += '?';
+      }
       redirectUrl += `${key}=${value}&`;
     }
   }
@@ -110,7 +120,9 @@ const mpdxWebHandoff = async (
       );
     }
     // Removes duplicates and set cookies
-    if (cookies) res.setHeader('Set-Cookie', [...new Set(cookies)]);
+    if (cookies) {
+      res.setHeader('Set-Cookie', [...new Set(cookies)]);
+    }
     res.redirect(jwtToken ? redirectUrl : `${process.env.SITE_URL}/login`);
   } catch (err) {
     res.redirect(`${process.env.SITE_URL}/`);

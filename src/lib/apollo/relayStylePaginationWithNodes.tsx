@@ -34,7 +34,9 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
     keyArgs,
 
     read(existing, { canRead, readField }) {
-      if (!existing) return;
+      if (!existing) {
+        return;
+      }
 
       const edges: TRelayEdge<TNode>[] = [];
       let firstEdgeCursor = '';
@@ -192,13 +194,20 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
         // coincides with the beginning or end of the existing data, as
         // determined using prefix.length and suffix.length.
         if (!prefix.length) {
-          if (void 0 !== hasPreviousPage)
+          if (void 0 !== hasPreviousPage) {
             pageInfo.hasPreviousPage = hasPreviousPage;
-          if (void 0 !== startCursor) pageInfo.startCursor = startCursor;
+          }
+          if (void 0 !== startCursor) {
+            pageInfo.startCursor = startCursor;
+          }
         }
         if (!suffix.length) {
-          if (void 0 !== hasNextPage) pageInfo.hasNextPage = hasNextPage;
-          if (void 0 !== endCursor) pageInfo.endCursor = endCursor;
+          if (void 0 !== hasNextPage) {
+            pageInfo.hasNextPage = hasNextPage;
+          }
+          if (void 0 !== endCursor) {
+            pageInfo.endCursor = endCursor;
+          }
         }
       }
 

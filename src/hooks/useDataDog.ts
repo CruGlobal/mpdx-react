@@ -5,7 +5,9 @@ declare global {
 }
 
 export const isDataDogConfigured = (): boolean => {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') {
+    return false;
+  }
   return !!(
     process.env.DATADOG_CONFIGURED === 'true' &&
     (window?.DD_RUM ?? {}).hasOwnProperty('getUser')
@@ -25,14 +27,18 @@ export const setDataDogUser = ({
   email,
   accountListId,
 }: SetDataDogUserProps): void => {
-  if (!isDataDogConfigured()) return;
+  if (!isDataDogConfigured()) {
+    return;
+  }
   if (
     window.DD_RUM.getUser()?.accountListId &&
     window.DD_RUM.getUser()?.accountListId === accountListId
-  )
+  ) {
     return;
-  if (window.DD_RUM.getUser()?.accountListId !== accountListId)
+  }
+  if (window.DD_RUM.getUser()?.accountListId !== accountListId) {
     clearDataDogUser();
+  }
   window.DD_RUM.setUser({
     id: accountListId,
     name,
@@ -42,6 +48,8 @@ export const setDataDogUser = ({
 };
 
 export const clearDataDogUser = (): void => {
-  if (!isDataDogConfigured()) return;
+  if (!isDataDogConfigured()) {
+    return;
+  }
   window.DD_RUM.clearUser();
 };

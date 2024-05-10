@@ -25,7 +25,9 @@ const Login = ({
   const { appName } = useGetAppSettings();
 
   useEffect(() => {
-    if (immediateSignIn) signIn(signInAuthProviderId);
+    if (immediateSignIn) {
+      signIn(signInAuthProviderId);
+    }
   }, []);
 
   return (
