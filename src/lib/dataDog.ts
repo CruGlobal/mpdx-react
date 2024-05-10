@@ -20,6 +20,7 @@ export interface SetDataDogUserProps {
   name: string;
   email: string;
   accountListId: string;
+  language: string;
 }
 
 export const setDataDogUser = ({
@@ -27,6 +28,7 @@ export const setDataDogUser = ({
   name,
   email,
   accountListId,
+  language,
 }: SetDataDogUserProps): void => {
   if (!isDataDogConfigured()) return;
   window.DD_RUM.setUser({
@@ -34,6 +36,7 @@ export const setDataDogUser = ({
     name,
     email,
     userId,
+    language,
   });
 };
 
