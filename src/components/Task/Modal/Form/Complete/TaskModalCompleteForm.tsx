@@ -111,10 +111,8 @@ const TaskModalCompleteForm = ({
     );
   // TODO - Need to fix the above ^
 
-  const { activityTypes } = usePhaseData();
+  const { phaseData, setPhaseId, activityTypes } = usePhaseData(taskPhase);
   const activityData = activityType ? activityTypes.get(activityType) : null;
-  const { phaseData } = usePhaseData(taskPhase);
-
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -123,6 +121,18 @@ const TaskModalCompleteForm = ({
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
+
+  useEffect(() => {
+    if (activityType && activityTypes) {
+      const activityData = activityType
+        ? activityTypes.get(activityType)
+        : null;
+      if (activityData) {
+        setPhaseId(activityData.phaseId);
+      }
+    }
+  }, [activityTypes]);
+
   const onSubmit = async (
     { completedAt, comment, ...attributes }: Attributes,
     suggestedPartnerStatus?: StatusEnum | null,
@@ -204,7 +214,6 @@ const TaskModalCompleteForm = ({
       openTaskModal({
         view: 'add',
         defaultValues: {
-          subject: task.subject,
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: task.contacts.nodes.map((contact) => contact.id),

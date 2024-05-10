@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
-import { usePhaseData } from 'src/hooks/usePhaseData';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getActivitiesByPhaseType } from 'src/utils/phases/taskActivityTypes';
 
 interface ActivityTypeProps {
-  options?: ActivityTypeEnum[];
+  options: ActivityTypeEnum[];
   label: string;
   value: ActivityTypeEnum | null | undefined;
   onChange: (value: ActivityTypeEnum | null) => void;
@@ -24,15 +24,16 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
   preserveNone = false,
 }) => {
   const { t } = useTranslation();
-  const { activitiesByPhase } = usePhaseData();
 
   const sortedOptions = useMemo(() => {
     const activityOptions = taskPhaseType
-      ? activitiesByPhase.get(taskPhaseType)
-      : [];
+      ? getActivitiesByPhaseType(taskPhaseType)
+      : options;
 
-    // Add none to the top
-    return activityOptions ? [ActivityTypeEnum.None, ...activityOptions] : [];
+    // Sort none to the top
+    return activityOptions
+      .slice()
+      .sort((a) => (a === ActivityTypeEnum.None ? -1 : 0));
   }, [taskPhaseType, options]);
 
   return (
