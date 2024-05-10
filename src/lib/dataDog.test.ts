@@ -1,4 +1,5 @@
 import {
+  accountListIdsStorageKey,
   clearDataDogUser,
   isDataDogConfigured,
   setDataDogUser,
@@ -49,6 +50,68 @@ describe('dataDog', () => {
     it('setDataDogUser should set the new user', () => {
       setDataDogUser(setDataDogUserMock);
       expect(window.DD_RUM.setUser).toHaveBeenCalled();
+    });
+  });
+
+  describe('setDataDogUser', () => {
+    beforeEach(() => {
+      process.env.DATADOG_CONFIGURED = 'true';
+    });
+
+    it('adds new account list ids to the list', () => {
+      window.localStorage.setItem(accountListIdsStorageKey, 'previous');
+
+      setDataDogUser(setDataDogUserMock);
+      expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountListIds: ['previous', setDataDogUserMock.accountListId],
+        }),
+      );
+      expect(window.localStorage.getItem(accountListIdsStorageKey)).toBe(
+        `previous,${setDataDogUserMock.accountListId}`,
+      );
+    });
+
+    it('does not add blank account list ids to the list', () => {
+      window.localStorage.removeItem(accountListIdsStorageKey);
+
+      setDataDogUser({ ...setDataDogUserMock, accountListId: '' });
+      expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
+        expect.objectContaining({ accountListIds: [] }),
+      );
+      expect(window.localStorage.getItem(accountListIdsStorageKey)).toBeNull();
+    });
+
+    it('does not add duplicate account list ids to the list', () => {
+      window.localStorage.setItem(
+        accountListIdsStorageKey,
+        setDataDogUserMock.accountListId,
+      );
+
+      setDataDogUser(setDataDogUserMock);
+      expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountListIds: [setDataDogUserMock.accountListId],
+        }),
+      );
+      expect(window.localStorage.getItem(accountListIdsStorageKey)).toBe(
+        setDataDogUserMock.accountListId,
+      );
+    });
+
+    it('resets the account list ids list after calling clearDataDogUser', () => {
+      window.localStorage.setItem(accountListIdsStorageKey, 'previous');
+      clearDataDogUser();
+
+      setDataDogUser(setDataDogUserMock);
+      expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountListIds: [setDataDogUserMock.accountListId],
+        }),
+      );
+      expect(window.localStorage.getItem(accountListIdsStorageKey)).toBe(
+        setDataDogUserMock.accountListId,
+      );
     });
   });
 });
