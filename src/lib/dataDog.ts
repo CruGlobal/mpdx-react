@@ -1,7 +1,7 @@
 declare global {
   interface Window {
     DD_RUM: {
-      setUser: (user: Record<string, string>) => void;
+      setUser: (user: Record<string, unknown>) => void;
       clearUser: () => void;
     };
   }
@@ -31,11 +31,17 @@ export const setDataDogUser = ({
   language,
 }: SetDataDogUserProps): void => {
   if (!isDataDogConfigured()) return;
+  const rawAccountListIds = window.sessionStorage.getItem('accountListIds');
+  const accountListIds = rawAccountListIds ? rawAccountListIds.split(',') : [];
+  if (accountListId && !accountListIds.includes(accountListId)) {
+    accountListIds.push(accountListId);
+    window.sessionStorage.setItem('accountListIds', accountListIds.join(','));
+  }
   window.DD_RUM.setUser({
-    id: accountListId,
+    id: userId,
     name,
     email,
-    userId,
+    accountListIds,
     language,
   });
 };

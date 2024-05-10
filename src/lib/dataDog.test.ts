@@ -52,4 +52,52 @@ describe('dataDog', () => {
       expect(window.DD_RUM.setUser).toHaveBeenCalled();
     });
   });
+
+  describe('setDataDogUser', () => {
+    const getItem = jest.fn();
+    const setItem = jest.fn();
+    beforeEach(() => {
+      Object.defineProperty(window, 'sessionStorage', {
+        value: { ...window.sessionStorage, getItem, setItem },
+      });
+      process.env.DATADOG_CONFIGURED = 'true';
+    });
+
+    it('adds new account list ids to the list', () => {
+      getItem.mockReturnValue('previous');
+
+      setDataDogUser(setDataDogUserMock);
+      expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountListIds: ['previous', setDataDogUserMock.accountListId],
+        }),
+      );
+      expect(setItem).toHaveBeenCalledWith(
+        'accountListIds',
+        `previous,${setDataDogUserMock.accountListId}`,
+      );
+    });
+
+    it('does not add blank account list ids to the list', () => {
+      getItem.mockReturnValue(null);
+
+      setDataDogUser({ ...setDataDogUserMock, accountListId: '' });
+      expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
+        expect.objectContaining({ accountListIds: [] }),
+      );
+      expect(setItem).not.toHaveBeenCalled();
+    });
+
+    it('does not add duplicate account list ids to the list', () => {
+      getItem.mockReturnValue(setDataDogUserMock.accountListId);
+
+      setDataDogUser(setDataDogUserMock);
+      expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountListIds: [setDataDogUserMock.accountListId],
+        }),
+      );
+      expect(setItem).not.toHaveBeenCalled();
+    });
+  });
 });
