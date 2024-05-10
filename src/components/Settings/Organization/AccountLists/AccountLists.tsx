@@ -37,10 +37,7 @@ export const AccountLists: React.FC = () => {
   const pagination = data?.searchOrganizationsAccountLists.pagination;
 
   useEffect(() => {
-    if (!accountListsRef.current) {
-      return;
-    }
-    if (!window.visualViewport?.height) {
+    if (!accountListsRef.current || !window.visualViewport?.height) {
       return;
     }
     // 24px for the padding which the parent page has added.

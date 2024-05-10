@@ -40,9 +40,6 @@ export const Contacts: React.FC = () => {
     if (!contactsRef.current || !window.visualViewport?.height) {
       return;
     }
-    if (!window.visualViewport?.height) {
-      return;
-    }
     // 24px for the padding which the parent page has added.
     setInfiniteListHeight(
       window.visualViewport.height -

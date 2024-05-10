@@ -1,5 +1,4 @@
 import React from 'react';
-import { DonationTableQuery } from 'src/components/DonationTable/DonationTable.generated';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -10,6 +9,7 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
+import { DonationTableQuery } from 'src/components/DonationTable/DonationTable.generated';
 import theme from 'src/theme';
 import { GetDonationsGraphQuery } from '../../Contacts/ContactDetails/ContactDonationsTab/DonationsGraph/DonationsGraph.generated';
 import { DonationsReport } from './DonationsReport';
