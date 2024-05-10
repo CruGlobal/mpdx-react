@@ -5,13 +5,16 @@ import theme from 'src/theme';
 import { HelpBeacon } from './HelpBeacon';
 
 const helpUrls = {
-  'en-us': 'https://google.us',
-  'es-419': 'https://google.es',
-  'fr-fr': 'https://google.fr',
-  default: 'https://google.com',
+  'en-us': 'https://google.us/',
+  'es-419': 'https://google.es/',
+  'fr-fr': 'https://google.fr/',
+  default: 'https://google.com/',
 };
 
 describe('HelpBeacon', () => {
+  const attributes =
+    '?mpdxName=First+Last&mpdxEmail=first.last%40cru.org&mpdxUrl=http%3A%2F%2Flocalhost%2F';
+
   it('uses the current language', () => {
     i18n.changeLanguage('en-us');
 
@@ -20,7 +23,10 @@ describe('HelpBeacon', () => {
         <HelpBeacon helpUrls={helpUrls} />
       </ThemeProvider>,
     );
-    expect(getByRole('link')).toHaveAttribute('href', 'https://google.us');
+    expect(getByRole('link')).toHaveAttribute(
+      'href',
+      `https://google.us/${attributes}`,
+    );
   });
 
   it('falls back to the default language', async () => {
@@ -31,7 +37,10 @@ describe('HelpBeacon', () => {
         <HelpBeacon helpUrls={helpUrls} />
       </ThemeProvider>,
     );
-    expect(getByRole('link')).toHaveAttribute('href', 'https://google.com');
+    expect(getByRole('link')).toHaveAttribute(
+      'href',
+      `https://google.com/${attributes}`,
+    );
   });
 
   it('renders nothing if there is no fallback', () => {

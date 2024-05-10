@@ -1,5 +1,6 @@
 import QuestionMark from '@mui/icons-material/QuestionMark';
 import { styled } from '@mui/material/styles';
+import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 
 const StyledLink = styled('a')(({ theme }) => ({
@@ -36,12 +37,27 @@ export const HelpBeacon: React.FC<HelpBeaconProps> = ({ helpUrls }) => {
     t,
     i18n: { language },
   } = useTranslation();
+  const { data: session } = useSession();
 
   const helpUrl = helpUrls?.[language] ?? helpUrls?.default;
+  if (!helpUrl) {
+    return null;
+  }
 
-  return helpUrl ? (
-    <StyledLink aria-label={t('Help')} href={helpUrl} target="_blank">
+  const url = new URL(helpUrl);
+  if (session?.user.name) {
+    url.searchParams.set('mpdxName', session.user.name);
+  }
+  if (session?.user.email) {
+    url.searchParams.set('mpdxEmail', session.user.email);
+  }
+  if (typeof window !== 'undefined') {
+    url.searchParams.set('mpdxUrl', window.location.href);
+  }
+
+  return (
+    <StyledLink aria-label={t('Help')} href={url.href} target="_blank">
       <QuestionMark sx={{ color: 'white' }} />
     </StyledLink>
-  ) : null;
+  );
 };
