@@ -7,8 +7,8 @@ import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { clearDataDogUser } from 'src/lib/dataDog';
 import { loadSession } from './api/utils/pagePropsHelpers';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({

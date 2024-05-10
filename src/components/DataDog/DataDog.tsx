@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { setDataDogUser } from 'src/hooks/useDataDog';
+import { setDataDogUser } from 'src/lib/dataDog';
 
 const DataDog: React.FC = () => {
   const { query } = useRouter();
