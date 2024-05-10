@@ -2,7 +2,7 @@ import {
   clearDataDogUser,
   isDataDogConfigured,
   setDataDogUser,
-} from '../useDataDog';
+} from './dataDog';
 
 const setDataDogUserMock = {
   userId: '123456',

@@ -2,7 +2,7 @@ import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import { signOut } from 'next-auth/react';
-import { clearDataDogUser } from 'src/hooks/useDataDog';
+import { clearDataDogUser } from 'src/lib/dataDog';
 import snackNotifications from '../../components/Snackbar/Snackbar';
 import { dispatch } from '../analytics';
 import { createCache } from './cache';
