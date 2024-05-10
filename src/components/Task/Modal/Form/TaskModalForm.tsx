@@ -144,6 +144,16 @@ const TaskModalForm = ({
   const { phaseData, setPhaseId, constants, taskPhases, activityTypes } =
     usePhaseData(task?.taskPhase);
 
+  const phaseTags = useMemo(
+    () =>
+      phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
+    [phaseData],
+  );
+
+  const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
+    [],
+  );
+
   const initialTask: Attributes = useMemo(() => {
     if (task) {
       const taskPhase: PhaseEnum | null = task?.activityType
@@ -152,6 +162,17 @@ const TaskModalForm = ({
       if (taskPhase) {
         setPhaseId(taskPhase);
       }
+
+      //go through tags and move some to selectedSuggestedTags and others to additionalTags
+      const additionalTags = task.tagList
+        ? task.tagList.reduce((acc: string[], tag) => {
+            if (phaseTags.includes(tag)) {
+              setSelectedSuggestedTags((prevValues) => [...prevValues, tag]);
+              return acc;
+            }
+            return [...acc, tag];
+          }, [])
+        : [];
       return {
         taskPhase,
         activityType: task.activityType ?? null,
@@ -164,7 +185,7 @@ const TaskModalForm = ({
         result: task.result ?? null,
         changeContactStatus: false,
         nextAction: task.nextAction ?? null,
-        tagList: task.tagList ?? [],
+        tagList: additionalTags ?? [],
         contactIds: task.contacts.nodes.map(({ id }) => id),
         userId: task.user?.id ?? session.data?.user.userID ?? null,
         notificationTimeBefore: task.notificationTimeBefore,
@@ -208,10 +229,6 @@ const TaskModalForm = ({
     }
   }, [activityTypes]);
 
-  const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
-    [],
-  );
-
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
   const [updateContactStatus] = useUpdateContactStatusMutation();
@@ -233,6 +250,10 @@ const TaskModalForm = ({
     // TODO - remove this when Caleb and the API has been
     delete attributes.taskPhase;
     delete attributes.changeContactStatus;
+
+    if (selectedSuggestedTags.length) {
+      attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
+    }
 
     if (attributes.result) {
       attributes.result = getDatabaseValueFromResult(
@@ -318,12 +339,6 @@ const TaskModalForm = ({
   const nextActions = useMemo(
     () => possibleNextActions(phaseData, resultSelected, actionSelected),
     [phaseData, resultSelected, actionSelected],
-  );
-
-  const phaseTags = useMemo(
-    () =>
-      phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
-    [phaseData],
   );
 
   return (
@@ -435,13 +450,6 @@ const TaskModalForm = ({
                   />
                 </Grid>
               )}
-              <Grid item>
-                <AssigneeAutocomplete
-                  accountListId={accountListId}
-                  value={userId}
-                  onChange={(userId) => setFieldValue('userId', userId)}
-                />
-              </Grid>
 
               {!initialTask.completedAt && (
                 <Grid item>
@@ -490,6 +498,13 @@ const TaskModalForm = ({
                 </Grid>
               )}
               <Grid item>
+                <AssigneeAutocomplete
+                  accountListId={accountListId}
+                  value={userId}
+                  onChange={(userId) => setFieldValue('userId', userId)}
+                />
+              </Grid>
+              <Grid item>
                 <ContactsAutocomplete
                   accountListId={accountListId}
                   value={contactIds}
@@ -526,7 +541,7 @@ const TaskModalForm = ({
                   />
                 </Grid>
               )}
-              {!!phaseTags?.length && (
+              {!!phaseTags?.length && initialTask.completedAt && (
                 <PhaseTags
                   tags={phaseTags}
                   selectedTags={selectedSuggestedTags}
