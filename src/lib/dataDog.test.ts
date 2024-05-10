@@ -11,7 +11,7 @@ const setDataDogUserMock = {
   email: 'roger@cru.org',
 };
 
-describe('useDataDog', () => {
+describe('dataDog', () => {
   beforeEach(() => {
     window.DD_RUM = {
       getUser: jest.fn(),
@@ -20,12 +20,12 @@ describe('useDataDog', () => {
     };
   });
 
-  describe('DataDog not configured', () => {
-    it('should return isDataDogConfigured as false', () => {
+  describe('when DataDog is not configured', () => {
+    it('isDataDogConfigured should return false', () => {
       expect(isDataDogConfigured()).toEqual(false);
     });
 
-    it('should NOT run setDataDogUser', () => {
+    it('setDataDogUser should not call DD_RUM methods', () => {
       setDataDogUser(setDataDogUserMock);
       expect(window.DD_RUM.getUser).not.toHaveBeenCalled();
       expect(window.DD_RUM.clearUser).not.toHaveBeenCalled();
@@ -33,22 +33,22 @@ describe('useDataDog', () => {
     });
   });
 
-  describe('DataDog configured', () => {
+  describe('when DataDog is configured', () => {
     beforeEach(() => {
       process.env.DATADOG_CONFIGURED = 'true';
     });
 
     //#region Default Tests
-    it('should return isDataDogConfigured as true', () => {
+    it('isDataDogConfigured should return true', () => {
       expect(isDataDogConfigured()).toEqual(true);
     });
 
-    it('should run clearDataDogUser', () => {
+    it('clearDataDogUser should clear the user', () => {
       clearDataDogUser();
       expect(window.DD_RUM.clearUser).toHaveBeenCalled();
     });
 
-    it('New User', () => {
+    it('setDataDogUser should clear the previous user and set the new user', () => {
       setDataDogUser(setDataDogUserMock);
       expect(window.DD_RUM.getUser).toHaveBeenCalledTimes(2);
       expect(window.DD_RUM.clearUser).toHaveBeenCalled();
