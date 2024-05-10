@@ -11,7 +11,7 @@ const DataDog: React.FC = () => {
     ? Array.isArray(query.accountListId)
       ? query.accountListId[0]
       : query.accountListId
-    : '';
+    : null;
 
   const user = session?.user;
   useEffect(() => {

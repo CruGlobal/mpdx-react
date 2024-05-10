@@ -21,7 +21,7 @@ export interface SetDataDogUserProps {
   userId: string;
   name: string;
   email: string;
-  accountListId: string;
+  accountListId: string | null;
 }
 
 export const accountListIdsStorageKey = 'accountListIds';

@@ -72,10 +72,10 @@ describe('dataDog', () => {
       );
     });
 
-    it('does not add blank account list ids to the list', () => {
+    it('does not add null account list ids to the list', () => {
       window.localStorage.removeItem(accountListIdsStorageKey);
 
-      setDataDogUser({ ...setDataDogUserMock, accountListId: '' });
+      setDataDogUser({ ...setDataDogUserMock, accountListId: null });
       expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
         expect.objectContaining({ accountListIds: [] }),
       );
