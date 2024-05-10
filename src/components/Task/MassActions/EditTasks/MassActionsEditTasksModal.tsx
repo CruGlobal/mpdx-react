@@ -60,7 +60,7 @@ export const MassActionsEditTasksModal: React.FC<
   const [updateTasks] = useMassActionsUpdateTasksMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
-  const { taskPhases } = usePhaseData();
+  const { taskPhases, activitiesByPhase } = usePhaseData();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -171,9 +171,11 @@ export const MassActionsEditTasksModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <ActivityTypeAutocomplete
+                    options={
+                      (taskPhase && activitiesByPhase.get(taskPhase)) || []
+                    }
                     label={t('Action')}
                     value={activityType}
-                    taskPhaseType={taskPhase}
                     onChange={(activityType) =>
                       setFieldValue('activityType', activityType)
                     }
