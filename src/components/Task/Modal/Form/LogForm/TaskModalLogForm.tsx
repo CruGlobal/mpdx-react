@@ -128,10 +128,10 @@ const TaskModalLogForm = ({
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const [updateContactStatus] = useUpdateContactStatusMutation();
   const { update } = useUpdateTasksQueries();
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const firstFocusRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
+    if (firstFocusRef.current) {
+      firstFocusRef.current.focus();
     }
   }, []);
 
@@ -314,41 +314,44 @@ const TaskModalLogForm = ({
           <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
-                <TaskPhaseAutocomplete
-                  options={taskPhases}
-                  label={t('Task Type/Phase')}
-                  value={taskPhase}
-                  contactPhase={phaseData?.id}
-                  inputRef={inputRef}
-                  onChange={(phase) =>
-                    handleTaskPhaseChange({
-                      phase,
-                      setFieldValue,
-                      setResultSelected,
-                      setActionSelected,
-                      setPhaseId,
-                      setSelectedSuggestedTags,
-                    })
-                  }
-                />
-              </Grid>
-
-              <Grid item>
-                <ActivityTypeAutocomplete
-                  options={
-                    (taskPhase && activitiesByPhase.get(taskPhase)) || []
-                  }
-                  label={t('Action')}
-                  value={activityType}
-                  onChange={(activityType) => {
-                    handleTaskActionChange({
-                      activityType,
-                      setFieldValue,
-                      setActionSelected,
-                      constants,
-                    });
-                  }}
-                />
+                <Grid container spacing={2}>
+                  <Grid xs={12} sm={6} item>
+                    <TaskPhaseAutocomplete
+                      options={taskPhases}
+                      label={t('Task Type/Phase')}
+                      value={taskPhase}
+                      contactPhase={phaseData?.id}
+                      inputRef={firstFocusRef}
+                      onChange={(phase) =>
+                        handleTaskPhaseChange({
+                          phase,
+                          setFieldValue,
+                          setResultSelected,
+                          setActionSelected,
+                          setPhaseId,
+                          setSelectedSuggestedTags,
+                        })
+                      }
+                    />
+                  </Grid>
+                  <Grid xs={12} sm={6} item>
+                    <ActivityTypeAutocomplete
+                      options={
+                        (taskPhase && activitiesByPhase.get(taskPhase)) || []
+                      }
+                      label={t('Action')}
+                      value={activityType}
+                      onChange={(activityType) => {
+                        handleTaskActionChange({
+                          activityType,
+                          setFieldValue,
+                          setActionSelected,
+                          constants,
+                        });
+                      }}
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
               <Grid item>
                 <TextField
@@ -426,17 +429,30 @@ const TaskModalLogForm = ({
                     }
                   />
                 </FormControl>
-
-                {!!phaseTags?.length && (
-                  <Grid item sx={{ marginTop: theme.spacing(2) }}>
-                    <PhaseTags
-                      tags={phaseTags}
-                      selectedTags={selectedSuggestedTags}
-                      setSelectedTags={setSelectedSuggestedTags}
-                    />
-                  </Grid>
-                )}
               </Grid>
+              {activityType && (
+                <Grid item xs={12}>
+                  <ActivityTypeAutocomplete
+                    options={nextActions}
+                    label={t('Next Action')}
+                    value={nextAction}
+                    onChange={(nextAction) =>
+                      setFieldValue('nextAction', nextAction)
+                    }
+                    activityTypes={activityTypes}
+                  />
+                </Grid>
+              )}
+              {!!phaseTags?.length && (
+                <Grid item sx={{ marginTop: theme.spacing(2) }}>
+                  <PhaseTags
+                    tags={phaseTags}
+                    selectedTags={selectedSuggestedTags}
+                    setSelectedTags={setSelectedSuggestedTags}
+                  />
+                </Grid>
+              )}
+
               <Grid item>
                 <FormControlLabel
                   control={
@@ -493,19 +509,6 @@ const TaskModalLogForm = ({
                             }
                           />
                         </Grid>
-                        {activityType && (
-                          <Grid item xs={12}>
-                            <ActivityTypeAutocomplete
-                              options={nextActions}
-                              label={t('Next Action')}
-                              value={nextAction}
-                              onChange={(nextAction) =>
-                                setFieldValue('nextAction', nextAction)
-                              }
-                              activityTypes={activityTypes}
-                            />
-                          </Grid>
-                        )}
                       </Grid>
                     </motion.div>
                   )}

@@ -396,43 +396,47 @@ const TaskModalForm = ({
           <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
-                <TaskPhaseAutocomplete
-                  options={taskPhases}
-                  label={t('Task Type/Phase')}
-                  value={taskPhase}
-                  contactPhase={phaseData?.id}
-                  inputRef={inputRef}
-                  onChange={(phase) =>
-                    handleTaskPhaseChange({
-                      phase,
-                      setFieldValue,
-                      setResultSelected,
-                      setActionSelected,
-                      setPhaseId,
-                      setSelectedSuggestedTags,
-                    })
-                  }
-                />
-              </Grid>
+                <Grid container spacing={2}>
+                  <Grid xs={12} sm={6} item>
+                    <TaskPhaseAutocomplete
+                      options={taskPhases}
+                      label={t('Task Type/Phase')}
+                      value={taskPhase}
+                      contactPhase={phaseData?.id}
+                      inputRef={inputRef}
+                      onChange={(phase) =>
+                        handleTaskPhaseChange({
+                          phase,
+                          setFieldValue,
+                          setResultSelected,
+                          setActionSelected,
+                          setPhaseId,
+                          setSelectedSuggestedTags,
+                        })
+                      }
+                    />
+                  </Grid>
 
-              <Grid item>
-                <FormControl fullWidth>
-                  <ActivityTypeAutocomplete
-                    options={
-                      (taskPhase && activitiesByPhase.get(taskPhase)) || []
-                    }
-                    label={t('Action')}
-                    value={activityType}
-                    onChange={(activityType) => {
-                      handleTaskActionChange({
-                        activityType,
-                        setFieldValue,
-                        setActionSelected,
-                        constants,
-                      });
-                    }}
-                  />
-                </FormControl>
+                  <Grid xs={12} sm={6} item>
+                    <FormControl fullWidth>
+                      <ActivityTypeAutocomplete
+                        options={
+                          (taskPhase && activitiesByPhase.get(taskPhase)) || []
+                        }
+                        label={t('Action')}
+                        value={activityType}
+                        onChange={(activityType) => {
+                          handleTaskActionChange({
+                            activityType,
+                            setFieldValue,
+                            setActionSelected,
+                            constants,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
               </Grid>
 
               <Grid item>

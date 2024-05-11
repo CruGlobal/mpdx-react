@@ -159,7 +159,7 @@ export const MassActionsEditTasksModal: React.FC<
                     inputProps={{ 'aria-label': t('Task Name') }}
                   />
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6}>
                   <TaskPhaseAutocomplete
                     options={taskPhases}
                     value={taskPhase}
@@ -169,7 +169,7 @@ export const MassActionsEditTasksModal: React.FC<
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6}>
                   <ActivityTypeAutocomplete
                     options={
                       (taskPhase && activitiesByPhase.get(taskPhase)) || []
@@ -183,7 +183,7 @@ export const MassActionsEditTasksModal: React.FC<
                     preserveNone
                   />
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6}>
                   <AssigneeAutocomplete
                     accountListId={accountListId}
                     value={userId}
@@ -198,17 +198,17 @@ export const MassActionsEditTasksModal: React.FC<
                     onChange={(date) => setFieldValue('startAt', date)}
                     render={(dateField, timeField) => (
                       <>
-                        <Grid item xs={12} lg={6}>
+                        <Grid item xs={12} sm={6}>
                           {dateField}
                         </Grid>
-                        <Grid item xs={12} lg={6}>
+                        <Grid item xs={12} sm={6}>
                           {timeField}
                         </Grid>
                       </>
                     )}
                   />
                 )}
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6}>
                   <FormControlLabel
                     control={<Checkbox checked={noDueDate} color="secondary" />}
                     label={t('No Due Date')}
