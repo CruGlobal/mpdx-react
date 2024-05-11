@@ -5,7 +5,8 @@ import {
   FormHelperText,
   Grid,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { PossiblePartnerStatus } from '../../PossiblePartnerStatus';
 
 type FormikHandleChange = {
@@ -43,9 +44,17 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
               onChange={handleChange}
             />
           }
-          label={t("Change the contact's status to: {{status}}", {
-            status: partnerStatus.suggestedContactStatus,
-          })}
+          label={
+            <Trans
+              defaults="Change the contact's status to: <bold>{{status}}</bold>" // optional defaultValue
+              values={{
+                status:
+                  contactPartnershipStatus[partnerStatus.suggestedContactStatus]
+                    ?.translated,
+              }}
+              components={{ italic: <i />, bold: <strong /> }}
+            />
+          }
         />
         {numOfContacts > 1 && (
           <FormHelperText>
