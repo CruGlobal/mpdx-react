@@ -123,7 +123,7 @@ const TaskModalForm = ({
   view,
 }: Props): ReactElement => {
   const session = useSession();
-
+  // const formikRef = useRef<any>(null);
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
@@ -345,9 +345,17 @@ const TaskModalForm = ({
     () => possibleNextActions(phaseData, resultSelected, actionSelected),
     [phaseData, resultSelected, actionSelected],
   );
+  // useEffect(() => {
+  //   formikRef?.current?.setFieldValue(
+  //     'nextAction',
+  //     nextActions.length === 2 ? nextActions[1] : null,
+  //   );
+  //   console.log('settting nextAction');
+  // }, [nextActions]);
 
   return (
     <Formik
+      // innerRef={formikRef}
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={async (values) => {
@@ -525,6 +533,7 @@ const TaskModalForm = ({
                   result={result}
                   setFieldValue={setFieldValue}
                   setResultSelected={setResultSelected}
+                  phaseData={phaseData}
                 />
               )}
 

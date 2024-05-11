@@ -386,6 +386,7 @@ const TaskModalLogForm = ({
                 result={result}
                 setFieldValue={setFieldValue}
                 setResultSelected={setResultSelected}
+                phaseData={phaseData}
               />
 
               <SuggestedContactStatus
@@ -501,6 +502,7 @@ const TaskModalLogForm = ({
                               onChange={(nextAction) =>
                                 setFieldValue('nextAction', nextAction)
                               }
+                              activityTypes={activityTypes}
                             />
                           </Grid>
                         )}

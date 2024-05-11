@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
+import { ActivityData } from 'src/hooks/usePhaseData';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 interface ActivityTypeProps {
@@ -11,6 +12,7 @@ interface ActivityTypeProps {
   onChange: (value: ActivityTypeEnum | null) => void;
   // Set to true to make None an acceptable value. Otherwise, None will be converted to null.
   preserveNone?: boolean;
+  activityTypes?: Map<ActivityTypeEnum, ActivityData>;
 }
 
 export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
@@ -19,6 +21,7 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
   value,
   onChange,
   preserveNone = false,
+  activityTypes,
 }) => {
   const { t } = useTranslation();
 
@@ -38,6 +41,12 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
       getOptionLabel={(activity) => {
         if (activity === ActivityTypeEnum.None) {
           return t('None');
+        } else if (activityTypes && sortedOptions.length > 15) {
+          return (
+            activityTypes.get(activity)?.phase +
+            ' - ' +
+            getLocalizedTaskType(t, activity)
+          );
         } else {
           return getLocalizedTaskType(t, activity);
         }

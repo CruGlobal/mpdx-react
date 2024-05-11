@@ -324,6 +324,7 @@ const TaskModalCompleteForm = ({
                 result={result}
                 setFieldValue={setFieldValue}
                 setResultSelected={setResultSelected}
+                phaseData={phaseData}
               />
 
               <SuggestedContactStatus
@@ -342,6 +343,7 @@ const TaskModalCompleteForm = ({
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }
+                    activityTypes={activityTypes}
                   />
                 </Grid>
               )}

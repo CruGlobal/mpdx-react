@@ -1,6 +1,10 @@
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { DisplayResultEnum, ResultEnum } from 'src/graphql/types.generated';
+import {
+  DisplayResultEnum,
+  Phase,
+  ResultEnum,
+} from 'src/graphql/types.generated';
 import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import {
   SetFieldValue,
@@ -13,6 +17,7 @@ interface ResultSelectProps {
   setFieldValue: SetFieldValue;
   setResultSelected: SetResultSelected;
   result?: ResultEnum | null;
+  phaseData: Phase | null;
 }
 
 export const ResultSelect: React.FC<ResultSelectProps> = ({
@@ -20,6 +25,7 @@ export const ResultSelect: React.FC<ResultSelectProps> = ({
   setFieldValue,
   setResultSelected,
   result,
+  phaseData,
 }) => {
   const { t } = useTranslation();
 
@@ -36,6 +42,7 @@ export const ResultSelect: React.FC<ResultSelectProps> = ({
               result: e.target.value,
               setFieldValue,
               setResultSelected,
+              phaseData,
             });
           }}
         >

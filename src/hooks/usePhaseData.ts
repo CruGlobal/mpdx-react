@@ -22,7 +22,7 @@ type GetPhaseData = {
   activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]>;
 };
 
-type ActivityData = {
+export type ActivityData = {
   name: string;
   phaseId: PhaseEnum;
   phase: string;
