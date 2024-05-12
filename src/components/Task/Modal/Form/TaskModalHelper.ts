@@ -75,7 +75,15 @@ export const handleTaskActionChange = ({
     (activity) => activity.id === activityType,
   );
   if (activity) {
-    setFieldValue('subject', activity.value);
+    setFieldValue(
+      'subject',
+      activity?.name
+        .split(' ')
+        .map((word) => {
+          return word[0].toUpperCase() + word.substring(1);
+        })
+        .join(' '),
+    );
   }
 };
 

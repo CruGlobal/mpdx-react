@@ -34,17 +34,17 @@ export const getLocalizedTaskTitle = (
     case ActivityTypeEnum.InitiationPhoneCall:
       return t('Phone Call To Initiate Appointment');
     case ActivityTypeEnum.InitiationEmail:
-      return t('Email To Initiate');
+      return t('Email To Initiate Appointment');
     case ActivityTypeEnum.InitiationTextMessage:
-      return t('Text To Initiate');
+      return t('Text To Initiate Appointment');
     case ActivityTypeEnum.InitiationSocialMedia:
-      return t('Social Media Message To Initiate');
+      return t('Social Media Message To Initiate Appointment');
     case ActivityTypeEnum.InitiationLetter:
-      return t('Letter To Initiate');
+      return t('Letter To Initiate Appointment');
     case ActivityTypeEnum.InitiationSpecialGiftAppeal:
       return t('Special Gift Appeal');
     case ActivityTypeEnum.InitiationInPerson:
-      return t('Initiate in Person');
+      return t('Initiate in Person for an Appointment');
 
     case ActivityTypeEnum.PartnerCarePhysicalNewsletter:
       return t('Send Physical Newsletter');
