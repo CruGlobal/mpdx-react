@@ -1,5 +1,8 @@
 import React, { ReactElement, useState } from 'react';
-import { DialogContent, Typography } from '@mui/material';
+import { CheckCircle } from '@mui/icons-material';
+import { DialogContent, Slide, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { TransitionProps } from '@mui/material/transitions';
 import { useTranslation } from 'react-i18next';
 import {
   PhaseEnum,
@@ -24,6 +27,19 @@ export interface TaskModalProps {
     taskPhase?: PhaseEnum;
   };
 }
+
+const StyledCheckIcon = styled(CheckCircle)(({ theme }) => ({
+  color: theme.palette.mpdxGreen.main,
+}));
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const TaskModal = ({
   taskId,
@@ -51,14 +67,24 @@ const TaskModal = ({
 
   const task = data?.task;
 
-  const renderTitle = (): string => {
+  const renderTitle = (): string | ReactElement => {
     switch (view) {
       case 'complete':
-        return t('Complete Task');
+        return (
+          <>
+            <StyledCheckIcon />
+            {t('Complete Task')}
+          </>
+        );
       case 'comments':
         return t('Task Comments');
       case 'log':
-        return t('Log Task');
+        return (
+          <>
+            <StyledCheckIcon />
+            {t('Log Task')}
+          </>
+        );
       case 'edit':
         return t('Edit Task');
       default:
@@ -111,7 +137,13 @@ const TaskModal = ({
   return loading ? (
     <Loading loading />
   ) : (
-    <Modal isOpen={open} title={renderTitle()} handleClose={onModalClose}>
+    <Modal
+      isOpen={open}
+      title={renderTitle()}
+      handleClose={onModalClose}
+      transition={Transition}
+      altColors={view === 'log' || view === 'complete'}
+    >
       {accountListId ? (
         renderView()
       ) : (
