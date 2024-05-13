@@ -19,7 +19,7 @@ import { LinkedIn } from 'src/components/common/Links/LinkedIn';
 import { Twitter } from 'src/components/common/Links/Twitter';
 import { Website } from 'src/components/common/Links/Website';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFromParts } from 'src/lib/intlFormat/intlFormat';
+import { dateFromParts } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 
 const ProfileInfoWrapper = styled(Box)(({ theme }) => ({

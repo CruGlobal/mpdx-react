@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { SetContactStarredMutation } from './SetContactStarred.generated';
 import { StarContactIconButton } from './StarContactIconButton';
 

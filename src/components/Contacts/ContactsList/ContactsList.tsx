@@ -3,46 +3,20 @@ import { Box } from '@mui/material';
 import {
   ContactsContext,
   ContactsType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
-import {
-  TableViewModeEnum,
-  headerHeight,
-} from 'src/components/Shared/Header/ListHeader';
-import { useContactsQuery } from '../../../../pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { ContactRow } from '../ContactRow/ContactRow';
 
 export const ContactsList: React.FC = () => {
   const {
-    contactId,
-    accountListId,
-    sanitizedFilters,
+    contactsQueryResult: { data, loading, fetchMore },
     searchTerm,
-    starredFilter,
-    viewMode,
-    urlFilters,
     isFiltered,
     setActiveFilters,
   } = React.useContext(ContactsContext) as ContactsType;
-
-  const { data, loading, fetchMore } = useContactsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-      contactsFilters: {
-        ...sanitizedFilters,
-        wildcardSearch: searchTerm as string,
-        ...starredFilter,
-        ids:
-          viewMode === TableViewModeEnum.Map && urlFilters
-            ? urlFilters.ids
-            : [],
-      },
-      first: contactId?.includes('map') ? 20000 : 25,
-    },
-    skip: !accountListId,
-  });
 
   return (
     <InfiniteList

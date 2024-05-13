@@ -1,6 +1,6 @@
 import React from 'react';
 import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
-import { Button, Typography } from '@mui/material';
+import { Button, ButtonProps, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
 
@@ -34,10 +34,9 @@ const TaskCommentNumber = styled(Typography, {
   margin: theme.spacing(0.5),
 }));
 
-interface TaskCommentsButtonProps {
+interface TaskCommentsButtonProps extends ButtonProps {
   isComplete: boolean;
   numberOfComments: number;
-  onClick: () => void;
   small?: boolean;
   detailsPage?: boolean;
 }
@@ -45,15 +44,15 @@ interface TaskCommentsButtonProps {
 export const TaskCommentsButton: React.FC<TaskCommentsButtonProps> = ({
   isComplete,
   numberOfComments = 0,
-  onClick,
   small,
   detailsPage,
+  ...props
 }) => {
   return (
     <TaskRowWrap
-      onClick={() => onClick()}
       small={small || false}
       detailsPage={detailsPage || false}
+      {...props}
     >
       <TaskCommentIcon titleAccess="Comment Icon" small={small || false} />
       <TaskCommentNumber isComplete={isComplete}>

@@ -8,8 +8,13 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { Preference } from 'src/graphql/types.generated';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
+
+const preferencesSchema: yup.SchemaOf<Pick<Preference, 'localeDisplay'>> =
+  yup.object({
+    localeDisplay: yup.string().required(),
+  });
 
 interface LocaleAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -29,12 +34,6 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
   const locales = constants?.locales ?? [];
   const label = t('Locale');
 
-  const PreferencesSchema: yup.SchemaOf<
-    Pick<Types.Preference, 'localeDisplay'>
-  > = yup.object({
-    localeDisplay: yup.string().required(),
-  });
-
   const formatLocale = (locale) => {
     const thisLocale = locales
       ? locales.find(({ shortName }) => shortName === locale)
@@ -51,9 +50,7 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
     [localeDisplay, locales],
   );
 
-  const onSubmit = async (
-    attributes: Pick<Types.Preference, 'localeDisplay'>,
-  ) => {
+  const onSubmit = async (attributes: Pick<Preference, 'localeDisplay'>) => {
     await updatePersonalPreferences({
       variables: {
         input: {
@@ -88,7 +85,7 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
         initialValues={{
           localeDisplay: localeDisplay,
         }}
-        validationSchema={PreferencesSchema}
+        validationSchema={preferencesSchema}
         onSubmit={onSubmit}
         enableReinitialize
         validateOnMount

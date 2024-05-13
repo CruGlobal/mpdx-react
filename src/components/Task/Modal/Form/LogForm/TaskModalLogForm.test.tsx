@@ -32,6 +32,7 @@ const router = {
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+    preloadTaskModal: jest.fn(),
   });
 });
 

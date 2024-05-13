@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
@@ -8,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 
-export const StatusRow = styled(Box)(() => ({
+const StatusRow = styled(Box)(() => ({
   padding: theme.spacing(1.5),
   borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
   '&:hover': {

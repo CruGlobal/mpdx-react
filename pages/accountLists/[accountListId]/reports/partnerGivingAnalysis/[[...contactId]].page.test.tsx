@@ -5,10 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
 import theme from 'src/theme';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
-import { ContactsProvider } from '../../contacts/ContactsContext';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
 
 const push = jest.fn();
@@ -108,12 +108,12 @@ describe('partnerGivingAnalysis page', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders contact panel', () => {
-    const { getByRole } = render(
+  it('renders contact panel', async () => {
+    const { findByRole } = render(
       <TestingComponent routerContactId={'contact-1'} />,
     );
 
-    expect(getByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
+    expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
 
   it('renders navigation panel', () => {

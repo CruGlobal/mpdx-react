@@ -4,6 +4,7 @@ import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import TestWrapper from '__tests__/util/TestWrapper';
 import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
 import {
   ActivityTypeEnum,
@@ -14,7 +15,6 @@ import {
 } from 'src/graphql/types.generated';
 import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
-import TestWrapper from '../../../../../../__tests__/util/TestWrapper';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
 import { updateContactStatusMutationMock } from '../TaskModalMocks';
@@ -36,6 +36,7 @@ const onErrorFunction = jest.fn();
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+    preloadTaskModal: jest.fn(),
   });
   onClose.mockClear();
   onErrorFunction.mockClear();

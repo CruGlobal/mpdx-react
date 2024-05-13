@@ -2,13 +2,10 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import theme from 'src/theme';
-import TestRouter from '../../../../__tests__/util/TestRouter';
-import {
-  GqlMockedProvider,
-  gqlMock,
-} from '../../../../__tests__/util/graphqlMocking';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { ContactRow } from './ContactRow';
 import {
@@ -64,6 +61,7 @@ const openTaskModal = jest.fn();
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+    preloadTaskModal: jest.fn(),
   });
 });
 
@@ -73,9 +71,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
-            <ContactsPage>
+            <ContactsWrapper>
               <ContactRow contact={contact} />
-            </ContactsPage>
+            </ContactsWrapper>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -98,9 +96,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
-            <ContactsPage>
+            <ContactsWrapper>
               <ContactRow contact={contact} />
-            </ContactsPage>
+            </ContactsWrapper>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -117,9 +115,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
-            <ContactsPage>
+            <ContactsWrapper>
               <ContactRow contact={contact} />
-            </ContactsPage>
+            </ContactsWrapper>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,
@@ -141,9 +139,9 @@ describe('ContactsRow', () => {
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
-            <ContactsPage>
+            <ContactsWrapper>
               <ContactRow contact={contact} />
-            </ContactsPage>
+            </ContactsWrapper>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>,

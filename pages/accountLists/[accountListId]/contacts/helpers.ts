@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon';
+import { Coordinates } from 'src/components/Contacts/ContactsMap/coordinates';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import { ContactsQuery } from './Contacts.generated';
-import { Coordinates } from './map/map';
 
 export const getRedirectPathname = ({
   routerPathname,
@@ -63,7 +63,7 @@ export const coordinatesFromContacts = (
   contacts: ContactsQuery['contacts'],
   locale: string,
 ): Coordinates[] =>
-  contacts.nodes.map((contact): Coordinates => {
+  contacts.nodes.map((contact) => {
     const address = contact.primaryAddress;
     if (!address?.geo) {
       return {

@@ -1,12 +1,9 @@
-overwrite: true
 generates:
   ./src/graphql/types.generated.ts:
     schema:
       - ${API_URL:https://api.stage.mpdx.org/graphql}
       - ./pages/api/Schema/**/*.graphql
     plugins:
-      - add:
-          content: '/* eslint-disable */'
       - typescript
     config:
       scalars:
@@ -21,8 +18,6 @@ generates:
     presetConfig:
       baseTypesPath: src/graphql/types.generated.ts
     plugins:
-      - add:
-          content: '/* eslint-disable */'
       - typescript-operations
       - typescript-react-apollo
     config:
@@ -44,8 +39,6 @@ generates:
       - ${API_URL:https://api.stage.mpdx.org/graphql}
       - ./pages/api/Schema/**/*.graphql
     plugins:
-      - add:
-          content: '/* eslint-disable */'
       - typescript
       - typescript-resolvers
     config:
@@ -61,3 +54,4 @@ generates:
 hooks:
   afterAllFileWrite:
     - prettier --write
+    - node deleteStaleFiles.mjs

@@ -2,12 +2,12 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   StatusEnum as ContactPartnershipStatusEnum,
   PledgeFrequencyEnum,
 } from 'src/graphql/types.generated';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
-import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
 import i18n from '../../../../../lib/i18n';
 import theme from '../../../../../theme';
 import {

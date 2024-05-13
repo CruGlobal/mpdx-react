@@ -1,12 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import {
-  mdiCheckboxMarkedCircle,
-  mdiDelete,
-  mdiLock,
-  mdiPlus,
-  mdiStar,
-  mdiStarOutline,
-} from '@mdi/js';
+import { mdiDelete, mdiLock, mdiPlus, mdiStar, mdiStarOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
   Avatar,
@@ -24,9 +17,10 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat/intlFormat';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
-import { ConfirmButtonIcon, EmailAddressData } from './FixEmailAddresses';
+import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
+import { EmailAddressData } from './FixEmailAddresses';
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -308,7 +302,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
           >
             <ConfirmButtonWrapper>
               <Button variant="contained" style={{ width: '100%' }}>
-                <ConfirmButtonIcon path={mdiCheckboxMarkedCircle} size={0.8} />
+                <ConfirmButtonIcon />
                 {t('Confirm')}
               </Button>
             </ConfirmButtonWrapper>

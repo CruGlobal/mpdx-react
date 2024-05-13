@@ -4,9 +4,9 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import * as Types from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { GetOrganizationsQuery } from '../Organizations.generated';
 import { OrganizationAddAccountModal } from './OrganizationAddAccountModal';
 
@@ -82,6 +82,14 @@ const GetOrganizationsMock: Pick<
     oauth: false,
     giftAidPercentage: 60,
     disableNewUsers: true,
+  },
+  {
+    id: 'disableNewUserAsNull',
+    name: 'Org With DisableNewUsers As NULL',
+    apiClass: 'OfflineOrg',
+    oauth: false,
+    giftAidPercentage: 60,
+    disableNewUsers: null,
   },
 ];
 
@@ -175,6 +183,46 @@ describe('OrganizationAddAccountModal', () => {
           organizationId: mocks.GetOrganizations.organizations[0].id,
         },
       });
+    });
+  });
+
+  it('allows offline Organization to be added if disableNewUsers is null', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, getByRole, findByRole } = render(
+      <Components>
+        <GqlMockedProvider<{
+          GetOrganizations: GetOrganizationsQuery;
+        }>
+          mocks={{
+            getOrganizations: {
+              organizations: GetOrganizationsMock,
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <OrganizationAddAccountModal
+            handleClose={handleClose}
+            refetchOrganizations={refetchOrganizations}
+            accountListId={accountListId}
+          />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    userEvent.click(getByRole('combobox'));
+    userEvent.click(
+      await findByRole('option', { name: 'Org With DisableNewUsers As NULL' }),
+    );
+
+    await waitFor(() => {
+      expect(getByText('Add Account')).not.toBeDisabled();
+      userEvent.click(getByText('Add Account'));
+    });
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        '{{appName}} added your organization account',
+        { variant: 'success' },
+      );
     });
   });
 

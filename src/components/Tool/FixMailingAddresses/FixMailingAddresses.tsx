@@ -13,8 +13,8 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import theme from '../../../theme';
-import { StyledInput } from '../FixCommitmentInfo/StyledInput';
 import NoData from '../NoData';
+import { StyledInput } from '../StyledInput';
 import AddressModal from './AddressModal';
 import Contact from './Contact';
 import {

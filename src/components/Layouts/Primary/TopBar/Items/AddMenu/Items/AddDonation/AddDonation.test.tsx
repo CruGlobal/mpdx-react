@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { GqlMockedProvider } from '../../../../../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../../../../../theme';
 import { AddDonation } from './AddDonation';
 import { AddDonationMutation } from './AddDonation.generated';

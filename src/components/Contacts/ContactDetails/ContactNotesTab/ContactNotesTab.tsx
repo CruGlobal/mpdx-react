@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { TextField } from '@mui/material';
-import debounce from 'lodash/debounce';
+import { debounce } from 'lodash';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';

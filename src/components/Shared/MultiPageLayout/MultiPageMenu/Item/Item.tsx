@@ -1,10 +1,9 @@
 import NextLink from 'next/link';
 import React, { useMemo, useState } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
-import Collapse from '@mui/material/Collapse';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+import { Collapse, ListItem, ListItemText } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import HandoffLink from 'src/components/HandoffLink';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { NavTypeEnum } from '../MultiPageMenu';
@@ -27,14 +26,22 @@ export const Item: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const isSelected = useMemo(() => {
-    if (item.id === selectedId) return true;
-    if (!item?.subItems?.length) return false;
+    if (item.id === selectedId) {
+      return true;
+    }
+    if (!item?.subItems?.length) {
+      return false;
+    }
     return !!item.subItems.find((item) => item.id === selectedId)?.id;
   }, [item]);
 
   const handleClick = () => {
-    if (isSelected) return;
-    if (!item?.subItems?.length) return;
+    if (isSelected) {
+      return;
+    }
+    if (!item?.subItems?.length) {
+      return;
+    }
     setOpenSubMenu(!openSubMenu);
   };
 
@@ -65,12 +72,19 @@ export const Item: React.FC<Props> = ({
 
   return (
     <>
-      <NextLink
-        href={`/accountLists/${accountListId}/${navType}/${item.id}`}
-        scroll={false}
-      >
-        {children}
-      </NextLink>
+      {item.handoff && (
+        <HandoffLink path={item.id} auth={item.handoffAuth}>
+          {children}
+        </HandoffLink>
+      )}
+      {!item.handoff && (
+        <NextLink
+          href={`/accountLists/${accountListId}/${navType}/${item.id}`}
+          scroll={false}
+        >
+          {children}
+        </NextLink>
+      )}
       {item?.subItems?.length && (
         <Collapse
           in={openSubMenu || isSelected}

@@ -8,7 +8,7 @@ import { Box, Button, ButtonGroup, Grid, TextField } from '@mui/material';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { TestAppeal } from '../../../../../pages/accountLists/[accountListId]/tools/appeals/testAppeal';
+import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
 import theme from '../../../../theme';
 import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';

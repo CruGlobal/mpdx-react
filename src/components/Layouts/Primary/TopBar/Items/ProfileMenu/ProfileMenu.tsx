@@ -255,75 +255,81 @@ const ProfileMenu = (): ReactElement => {
             ))}
           </AccountListSelectorDetails>
         </Accordion>
-        <Divider />
-        <Link
-          href={`/accountLists/${accountListId}/settings/preferences`}
-          shallow
-        >
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Preferences')} />
-          </MenuItem>
-        </Link>
-        <Link
-          href={`/accountLists/${accountListId}/settings/notifications`}
-          shallow
-        >
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Notifications')} />
-          </MenuItem>
-        </Link>
-        <Link
-          href={`/accountLists/${accountListId}/settings/integrations`}
-          shallow
-        >
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Connect Services')} />
-          </MenuItem>
-        </Link>
-        <Link
-          href={`/accountLists/${accountListId}/settings/manageAccounts`}
-          shallow
-        >
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Manage Accounts')} />
-          </MenuItem>
-        </Link>
-        <Link
-          href={`/accountLists/${accountListId}/settings/manageCoaches`}
-          shallow
-        >
-          <MenuItem onClick={handleProfileMenuClose} component="a">
-            <ListItemText primary={t('Manage Coaches')} />
-          </MenuItem>
-        </Link>
-        {(data?.user?.admin ||
-          !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-          <Link href={`/accountLists/${accountListId}/settings/organizations`}>
-            <MenuItem onClick={handleProfileMenuClose} component="a">
-              <ListItemText primary={t('Manage Organizations')} />
-            </MenuItem>
-          </Link>
-        )}
-        {(data?.user?.admin || data?.user?.developer) && (
-          <Link href={`/accountLists/${accountListId}/settings/admin`}>
-            <MenuItem onClick={handleProfileMenuClose} component="a">
-              <ListItemText primary={t('Admin Console')} />
-            </MenuItem>
-          </Link>
-        )}
-        {data?.user?.developer && (
-          <HandoffLink path="/auth/user/admin" auth>
-            <MenuItem onClick={handleProfileMenuClose} component="a">
-              <ListItemText primary={t('Backend Admin')} />
-            </MenuItem>
-          </HandoffLink>
-        )}
-        {data?.user?.developer && (
-          <HandoffLink path="/auth/user/sidekiq" auth>
-            <MenuItem onClick={handleProfileMenuClose} component="a">
-              <ListItemText primary={t('Sidekiq')} />
-            </MenuItem>
-          </HandoffLink>
+        {accountListId && (
+          <div>
+            <Divider />
+            <Link
+              href={`/accountLists/${accountListId}/settings/preferences`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Preferences')} />
+              </MenuItem>
+            </Link>
+            <Link
+              href={`/accountLists/${accountListId}/settings/notifications`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Notifications')} />
+              </MenuItem>
+            </Link>
+            <Link
+              href={`/accountLists/${accountListId}/settings/integrations`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Connect Services')} />
+              </MenuItem>
+            </Link>
+            <Link
+              href={`/accountLists/${accountListId}/settings/manageAccounts`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Manage Accounts')} />
+              </MenuItem>
+            </Link>
+            <Link
+              href={`/accountLists/${accountListId}/settings/manageCoaches`}
+              shallow
+            >
+              <MenuItem onClick={handleProfileMenuClose} component="a">
+                <ListItemText primary={t('Manage Coaches')} />
+              </MenuItem>
+            </Link>
+            {(data?.user?.admin ||
+              !!data?.user?.administrativeOrganizations?.nodes?.length) && (
+              <Link
+                href={`/accountLists/${accountListId}/settings/organizations`}
+              >
+                <MenuItem onClick={handleProfileMenuClose} component="a">
+                  <ListItemText primary={t('Manage Organizations')} />
+                </MenuItem>
+              </Link>
+            )}
+            {(data?.user?.admin || data?.user?.developer) && (
+              <Link href={`/accountLists/${accountListId}/settings/admin`}>
+                <MenuItem onClick={handleProfileMenuClose} component="a">
+                  <ListItemText primary={t('Admin Console')} />
+                </MenuItem>
+              </Link>
+            )}
+            {data?.user?.developer && (
+              <HandoffLink path="/auth/user/admin" auth>
+                <MenuItem onClick={handleProfileMenuClose} component="a">
+                  <ListItemText primary={t('Backend Admin')} />
+                </MenuItem>
+              </HandoffLink>
+            )}
+            {data?.user?.developer && (
+              <HandoffLink path="/auth/user/sidekiq" auth>
+                <MenuItem onClick={handleProfileMenuClose} component="a">
+                  <ListItemText primary={t('Sidekiq')} />
+                </MenuItem>
+              </HandoffLink>
+            )}
+          </div>
         )}
         <MenuItem>
           {session.impersonating && (

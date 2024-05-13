@@ -1,8 +1,14 @@
 import { useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { Alert, Box, Card, IconButton, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import {
+  Alert,
+  Box,
+  Card,
+  IconButton,
+  Skeleton,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import HandoffLink from 'src/components/HandoffLink';
@@ -193,7 +199,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
             {t('Add Account')}
           </StyledServicesButton>
 
-          {googleAccounts?.length && (
+          {!!googleAccounts?.length && (
             <HandoffLink path="/tools/import/google">
               <StyledServicesButton
                 variant="outlined"

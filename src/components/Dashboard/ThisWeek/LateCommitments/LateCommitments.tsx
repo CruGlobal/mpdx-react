@@ -8,8 +8,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Skeleton,
 } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
@@ -18,12 +18,11 @@ import {
   Contact,
   ContactConnection,
   ContactFilterPledgeReceivedEnum,
-  Scalars,
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
-import { numberFormat } from 'src/lib/intlFormat/intlFormat';
+import { numberFormat } from 'src/lib/intlFormat';
 import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
 import AnimatedCard from '../../../AnimatedCard';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
@@ -92,7 +91,7 @@ const LateCommitments = ({
     return filteredLatePledges.length > 0;
   };
 
-  const determineDaysLate = (lateAt: Scalars['ISO8601Date']) => {
+  const determineDaysLate = (lateAt: string) => {
     return Math.round(
       DateTime.local().diff(DateTime.fromISO(lateAt), 'days').days,
     );

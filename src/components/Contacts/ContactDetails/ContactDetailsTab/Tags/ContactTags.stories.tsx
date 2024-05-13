@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Box } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
 import { ContactTags } from './ContactTags';
 

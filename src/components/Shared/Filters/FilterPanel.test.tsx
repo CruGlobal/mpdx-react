@@ -5,6 +5,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import {
   ActivityTypeEnum,
   ContactFilterSetInput,
@@ -22,8 +24,6 @@ import {
   socialMediaActivityTypes,
   textActivityTypes,
 } from 'src/utils/phases/taskActivityTypes';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
-import { ContactsProvider } from '../../../../pages/accountLists/[accountListId]/contacts/ContactsContext';
 import { FilterPanel, FilterPanelProps } from './FilterPanel';
 import {
   FilterPanelGroupFragment,

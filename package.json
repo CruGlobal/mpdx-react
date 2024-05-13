@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "next dev",
+    "start": "concurrently 'next dev' 'yarn gql:w' --kill-others",
     "build": "next build",
     "build:analyze": "ANALYZE=true yarn build",
     "build:amplify": "AMPLIFY_NEXTJS_EXPERIMENTAL_TRACE=true next build",
@@ -28,7 +28,8 @@
     "gql:w": "yarn gql --watch",
     "postinstall": "husky install",
     "onesky:upload": "cross-env babel-node ./onesky/upload.js",
-    "onesky:download": "cross-env babel-node ./onesky/download.js"
+    "onesky:download": "cross-env babel-node ./onesky/download.js",
+    "lighthouse": "lhci autorun"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
@@ -49,7 +50,6 @@
     "@mui/x-date-pickers": "^7.0.0-beta.7",
     "@react-google-maps/api": "^2.13.1",
     "@rollbar/react": "^0.11.1",
-    "@types/seedrandom": "^3.0.5",
     "apollo-datasource-rest": "^3.7.0",
     "apollo-server-micro": "^3.11.0",
     "apollo3-cache-persist": "^0.14.1",
@@ -84,7 +84,6 @@
     "react-virtuoso": "2.19.0",
     "recharts": "2.3.2",
     "rollbar": "^2.25.2",
-    "seedrandom": "^3.0.5",
     "storybook": "^6.5.16",
     "tslib": "^2.4.0",
     "tss-react": "^4.1.3",
@@ -93,19 +92,21 @@
   },
   "devDependencies": {
     "@brainly/onesky-utils": "1.4.2",
-    "@graphql-codegen/add": "^3.2.1",
-    "@graphql-codegen/cli": "^2.16.4",
-    "@graphql-codegen/fragment-matcher": "^3.3.1",
-    "@graphql-codegen/near-operation-file-preset": "^2.4.3",
-    "@graphql-codegen/schema-ast": "^2.5.1",
-    "@graphql-codegen/typescript": "^2.8.0",
-    "@graphql-codegen/typescript-operations": "^2.5.5",
-    "@graphql-codegen/typescript-react-apollo": "^3.3.5",
-    "@graphql-codegen/typescript-resolvers": "^2.7.5",
+    "@graphql-codegen/add": "^5.0.2",
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/fragment-matcher": "^5.0.2",
+    "@graphql-codegen/near-operation-file-preset": "^3.0.0",
+    "@graphql-codegen/schema-ast": "^4.0.2",
+    "@graphql-codegen/typescript": "^4.0.6",
+    "@graphql-codegen/typescript-operations": "^4.2.0",
+    "@graphql-codegen/typescript-react-apollo": "^3.3.7",
+    "@graphql-codegen/typescript-resolvers": "^4.0.6",
     "@graphql-tools/jest-transform": "^1.2.2",
     "@graphql-tools/schema": "^9.0.4",
+    "@lhci/cli": "^0.13.0",
     "@next/bundle-analyzer": "^12.3.1",
     "@next/eslint-plugin-next": "^12.3.1",
+    "@parcel/watcher": "^2.4.1",
     "@react-dnd/invariant": "^2.0.0",
     "@storybook/addon-actions": "^6.5.16",
     "@storybook/addon-controls": "^6.5.16",
@@ -130,6 +131,7 @@
     "babel-loader": "^8.2.2",
     "babel-preset-react-app": "^10.0.0",
     "chromatic": "^6.9.0",
+    "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "css-mediaquery": "^0.1.2",
     "dnd-core": "^16.0.1",
@@ -149,11 +151,13 @@
     "jest-environment-jsdom": "^29.0.3",
     "jest-fetch-mock": "^3.0.3",
     "jest-transform-graphql": "^2.1.0",
+    "lighthouse": "^11.7.0",
     "lint-staged": "^13.0.3",
     "next-compose-plugins": "^2.2.1",
     "node-mocks-http": "^1.11.0",
     "prettier": "^2.7.1",
     "prop-types": "^15.8.1",
+    "puppeteer": "^22.6.3",
     "storybook-addon-designs": "^6.3.1",
     "storybook-react-i18next": "^1.1.2",
     "ts-essentials": "^9.3.0",
@@ -179,10 +183,11 @@
     "package-json/got": "^11.8.5",
     "http-cache-semantics": "~4.1.1",
     "cacheable-request": "^10.2.7",
-    "@mui/base@5.0.0-alpha.98": "patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch"
+    "@mui/base@5.0.0-alpha.98": "patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch",
+    "@mui/x-data-grid@^5.17.4": "patch:@mui/x-data-grid@npm%3A5.17.4#./.yarn/patches/@mui-x-data-grid-npm-5.17.4-542730a19e.patch"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix"
   },
-  "packageManager": "yarn@3.2.3"
+  "packageManager": "yarn@3.3.0"
 }

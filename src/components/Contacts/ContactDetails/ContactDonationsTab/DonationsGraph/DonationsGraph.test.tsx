@@ -1,21 +1,45 @@
 import React from 'react';
-import { MockedProvider } from '@apollo/client/testing';
 import { renderHook } from '@testing-library/react-hooks';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
-import { render } from '../../../../../../__tests__/util/testingLibraryReactMock';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { render } from '__tests__/util/testingLibraryReactMock';
+import {
+  afterTestResizeObserver,
+  beforeTestResizeObserver,
+} from '__tests__/util/windowResizeObserver';
 import { DonationsGraph } from './DonationsGraph';
 import {
-  GetDonationsGraphDocument,
   GetDonationsGraphQuery,
   useGetDonationsGraphQuery,
 } from './DonationsGraph.generated';
 
+// ResponsiveContainer isn't rendering its children in tests, so override it to render its children with static dimensions
+jest.mock('recharts', () => ({
+  ...jest.requireActual('recharts'),
+  ResponsiveContainer: ({ children }) => ({
+    ...children,
+    props: {
+      ...children.props,
+      height: 600,
+      width: 300,
+    },
+  }),
+}));
+
 const accountListId = 'account-list-id';
 const donorAccountIds = ['donor-Account-Id'];
 const currency = 'USD';
+
 describe('Donations Graph', () => {
+  beforeEach(() => {
+    beforeTestResizeObserver();
+  });
+
+  afterEach(() => {
+    afterTestResizeObserver();
+  });
+
   it('test renderer', async () => {
-    const { findByRole } = render(
+    const { findByText } = render(
       <GqlMockedProvider<{ GetDonationsGraph: GetDonationsGraphQuery }>
         mocks={{
           GetDonationsGraph: {
@@ -43,35 +67,33 @@ describe('Donations Graph', () => {
         />
       </GqlMockedProvider>,
     );
-    expect(await findByRole('textbox')).toBeVisible();
+    expect(await findByText('Amount (USD)')).toBeInTheDocument();
   });
 
-  it('test loading renderer', async () => {
-    const { findByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GetDonationsGraphDocument,
-              variables: {
-                accountListId: accountListId,
-                donorAccountIds: donorAccountIds,
-                convertCurrency: currency,
-              },
-            },
-            result: {},
-            delay: 8640000000,
-          },
-        ]}
-      >
+  it('renders loading placeholders while loading data', () => {
+    const { getByLabelText } = render(
+      <GqlMockedProvider>
         <DonationsGraph
           accountListId="accountListID"
           donorAccountIds={['donorAccountId']}
           convertedCurrency="USD"
         />
-      </MockedProvider>,
+      </GqlMockedProvider>,
     );
-    expect(await findByRole('alert')).toBeVisible();
+    expect(getByLabelText('Loading donations graph')).toBeInTheDocument();
+  });
+
+  it('renders loading placeholders while waiting for donorAccountIds', async () => {
+    const { getByLabelText } = render(
+      <GqlMockedProvider>
+        <DonationsGraph
+          accountListId="accountListID"
+          donorAccountIds={undefined}
+          convertedCurrency="USD"
+        />
+      </GqlMockedProvider>,
+    );
+    expect(getByLabelText('Loading donations graph')).toBeInTheDocument();
   });
 
   it('test query', async () => {

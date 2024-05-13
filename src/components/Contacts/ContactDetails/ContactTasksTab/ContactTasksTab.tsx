@@ -110,7 +110,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       tasksFilter: {
         contactIds: [contactId],
         ...starredFilter,
-        wildcardSearch: searchTerm as string,
+        wildcardSearch: searchTerm,
       },
     },
   });
@@ -127,7 +127,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     () => ({
       contactIds: [contactId],
       ...starredFilter,
-      wildcardSearch: searchTerm as string,
+      wildcardSearch: searchTerm,
     }),
     [starredFilter, searchTerm],
   );
@@ -154,12 +154,14 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     deselectAll,
   } = useMassSelection(data?.tasks?.totalCount ?? 0, allTaskIds);
 
-  const { openTaskModal } = useTaskModal();
+  const { openTaskModal, preloadTaskModal } = useTaskModal();
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!infiniteListRef.current) return;
+    if (!infiniteListRef.current) {
+      return;
+    }
     setInfiniteListRectTop(infiniteListRef.current.getBoundingClientRect().top);
   }, [contactId, contactDetailsLoaded]);
 
@@ -179,6 +181,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                   },
                 })
               }
+              onMouseEnter={() => preloadTaskModal('add')}
             >
               <AddTaskButtonIcon />
               <TaskButtonText>{t('add task')}</TaskButtonText>
@@ -194,6 +197,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                   },
                 })
               }
+              onMouseEnter={() => preloadTaskModal('log')}
             >
               <LogTaskButtonIcon />
               <TaskButtonText>{t('log task')}</TaskButtonText>

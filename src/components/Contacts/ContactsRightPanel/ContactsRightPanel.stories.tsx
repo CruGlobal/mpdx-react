@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { ContactDetailProvider } from '../ContactDetails/ContactDetailContext';
 import { ContactsRightPanel } from './ContactsRightPanel';
 
@@ -9,10 +9,10 @@ export default {
 
 export const Default = (): React.ReactElement => {
   return (
-    <ContactsPage>
+    <ContactsWrapper>
       <ContactDetailProvider>
         <ContactsRightPanel onClose={() => {}} />
       </ContactDetailProvider>
-    </ContactsPage>
+    </ContactsWrapper>
   );
 };

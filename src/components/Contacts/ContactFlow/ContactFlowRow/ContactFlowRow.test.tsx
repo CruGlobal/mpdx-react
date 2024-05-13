@@ -4,8 +4,8 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import TestWrapper from '__tests__/util/TestWrapper';
 import { StatusEnum } from 'src/graphql/types.generated';
-import TestWrapper from '../../../../../__tests__/util/TestWrapper';
 import theme from '../../../../theme';
 import { ContactFlowRow } from './ContactFlowRow';
 

@@ -4,13 +4,13 @@ import { queryByText, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   ContactsContext,
   ContactsProvider,
   ContactsType,
-} from 'pages/accountLists/[accountListId]/contacts/ContactsContext';
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { GetContactsForMergingQuery } from './MassActionsMerge.generated';
 import { MassActionsMergeModal } from './MassActionsMergeModal';

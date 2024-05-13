@@ -8,7 +8,11 @@ import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import * as Types from 'src/graphql/types.generated';
+import {
+  AccountListUsers,
+  Maybe,
+  OrganizationAccountListCoaches,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 
 export enum AccountListItemType {
@@ -16,13 +20,11 @@ export enum AccountListItemType {
   USER = 'user',
 }
 
-type UserOrCoach =
-  | Types.AccountListUsers
-  | Types.OrganizationAccountListCoaches;
+type UserOrCoach = AccountListUsers | OrganizationAccountListCoaches;
 
 interface Props {
   name: string;
-  accountListItems: Array<Types.Maybe<UserOrCoach>>;
+  accountListItems: Array<Maybe<UserOrCoach>>;
   type: AccountListItemType;
   handleDelete: (item: UserOrCoach, type: AccountListItemType) => Promise<void>;
 }
@@ -81,7 +83,9 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                 <Box>
                   {emails &&
                     emails.map((email, idx) => {
-                      if (!email?.id) return null;
+                      if (!email?.id) {
+                        return null;
+                      }
 
                       return (
                         <Box

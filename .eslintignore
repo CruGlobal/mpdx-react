@@ -4,6 +4,7 @@ node_modules
 .now
 public
 dist
+*.generated.ts
 
 # Storybook cache
 /node_modules/.cache

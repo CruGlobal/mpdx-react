@@ -4,12 +4,9 @@ import userEvent from '@testing-library/user-event';
 import fetchMock from 'jest-fetch-mock';
 import { signOut, useSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
-import TestRouter from '../../../../../../../__tests__/util/TestRouter';
-import TestWrapper from '../../../../../../../__tests__/util/TestWrapper';
-import {
-  render,
-  waitFor,
-} from '../../../../../../../__tests__/util/testingLibraryReactMock';
+import TestRouter from '__tests__/util/TestRouter';
+import TestWrapper from '__tests__/util/TestWrapper';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from '../../../../../../theme';
 import {
   getTopBarMock,
@@ -48,7 +45,9 @@ describe('ProfileMenu', () => {
     const { getByTestId, queryByText, getByText } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper mocks={[getTopBarMock()]}>
-          <ProfileMenu />
+          <TestRouter router={router}>
+            <ProfileMenu />
+          </TestRouter>
         </TestWrapper>
       </ThemeProvider>,
     );
@@ -58,6 +57,24 @@ describe('ProfileMenu', () => {
     expect(queryByText('Admin Console')).toBeInTheDocument();
     expect(queryByText('Backend Admin')).toBeInTheDocument();
     expect(queryByText('Sidekiq')).toBeInTheDocument();
+  });
+
+  it('should not show setting links when no accountListId selected', async () => {
+    const { getByTestId, queryByText, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestWrapper mocks={[getTopBarMock()]}>
+          <TestRouter router={routerNoAccountListId}>
+            <ProfileMenu />
+          </TestRouter>
+        </TestWrapper>
+      </ThemeProvider>,
+    );
+    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    userEvent.click(getByTestId('profileMenuButton'));
+    expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
+    expect(queryByText('Admin Console')).not.toBeInTheDocument();
+    expect(queryByText('Backend Admin')).not.toBeInTheDocument();
+    expect(queryByText('Sidekiq')).not.toBeInTheDocument();
   });
 
   it('should change account list in the router', async () => {

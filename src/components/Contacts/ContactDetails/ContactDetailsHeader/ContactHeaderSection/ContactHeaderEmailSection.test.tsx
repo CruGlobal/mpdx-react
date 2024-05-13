@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { gqlMock } from '../../../../../../__tests__/util/graphqlMocking';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   ContactDetailsHeaderFragment,
   ContactDetailsHeaderFragmentDoc,

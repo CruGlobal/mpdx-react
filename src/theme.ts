@@ -172,6 +172,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          cursor: 'pointer',
+        },
+      },
+    },
     MuiTableCell: {
       styleOverrides: {
         head: {

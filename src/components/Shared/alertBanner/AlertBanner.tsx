@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Alert from '@mui/material/Alert';
+import { Alert } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
@@ -33,11 +33,15 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-    if (!window?.localStorage) return;
+    if (!window?.localStorage) {
+      return;
+    }
     const isClosed = window.localStorage.getItem(
       `alert-${localStorageName}-closed`,
     );
-    if (!isClosed && isClosed !== 'true') setShowAlert(true);
+    if (!isClosed && isClosed !== 'true') {
+      setShowAlert(true);
+    }
   }, []);
 
   const closeAlert = () => {

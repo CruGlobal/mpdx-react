@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { MergeSpouseAccountsAccordion } from './MergeSpouseAccountsAccordion';
 
