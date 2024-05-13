@@ -334,7 +334,7 @@ const TaskModalCompleteForm = ({
                 numOfContacts={task.contacts.nodes.length}
               />
 
-              {nextActions.length && (
+              {nextActions.length > 0 && (
                 <Grid item>
                   <ActivityTypeAutocomplete
                     options={nextActions}

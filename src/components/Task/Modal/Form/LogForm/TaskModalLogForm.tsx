@@ -430,7 +430,7 @@ const TaskModalLogForm = ({
                   />
                 </FormControl>
               </Grid>
-              {activityType && (
+              {activityType && nextActions.length > 0 && (
                 <Grid item xs={12}>
                   <ActivityTypeAutocomplete
                     options={nextActions}
