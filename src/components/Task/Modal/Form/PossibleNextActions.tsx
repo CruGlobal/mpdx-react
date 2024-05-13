@@ -40,7 +40,9 @@ export const possibleNextActions = (
   resultName: DisplayResultEnum | null,
   activity: ActivityTypeEnum | null,
 ): ActivityTypeEnum[] => {
-  if (!phaseData || !resultName || !activity) return defaultActivities;
+  if (!phaseData || !resultName || !activity) {
+    return defaultActivities;
+  }
 
   const result = phaseData.results?.resultOptions
     ? phaseData.results.resultOptions.find(

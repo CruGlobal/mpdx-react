@@ -7,8 +7,12 @@ function formatStatus(str) {
   for (let i = 0; i < words.length; i++) {
     words[i] = words[i][0].toUpperCase() + words[i].slice(1).toLowerCase();
   }
-  if (words.length === 3) words[1] = words[1].toLowerCase();
-  if (words[0] === 'Partner') words[0] = 'Partner -';
+  if (words.length === 3) {
+    words[1] = words[1].toLowerCase();
+  }
+  if (words[0] === 'Partner') {
+    words[0] = 'Partner -';
+  }
 
   return words.join(' ');
 }
