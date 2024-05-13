@@ -81,7 +81,9 @@ const showMenuItem = ({
     if (item.grantedAccess.indexOf('developer') !== -1 && user.developer) {
       return true;
     }
-  } else return true;
+  } else {
+    return true;
+  }
   return false;
 };
 

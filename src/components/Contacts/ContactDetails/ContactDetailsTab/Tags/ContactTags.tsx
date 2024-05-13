@@ -89,7 +89,9 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     { resetForm }: FormikHelpers<{ tagList: string[] & never[] }>,
   ): Promise<void> => {
     resetForm();
-    if (tagList.length === 0) return;
+    if (tagList.length === 0) {
+      return;
+    }
 
     const { data } = await updateContactTags({
       variables: {

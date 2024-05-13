@@ -50,7 +50,9 @@ export const MailchimpAccount = (
 ): MailchimpAccountCamel[] => {
   // Returning inside an array so I can mock an empty response from GraphQL
   // without the test thinking I want it to create custom random test data.
-  if (!data) return [];
+  if (!data) {
+    return [];
+  }
   const attributes = {} as Omit<MailchimpAccountCamel, 'id'>;
   Object.keys(data.attributes).forEach((key) => {
     attributes[snakeToCamel(key)] = data.attributes[key];

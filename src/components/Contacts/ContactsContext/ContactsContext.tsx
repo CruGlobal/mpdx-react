@@ -237,7 +237,9 @@ export const ContactsProvider: React.FC<Props> = ({
   }, [isReady, contactId]);
 
   useEffect(() => {
-    if (userOptionsLoading) return;
+    if (userOptionsLoading) {
+      return;
+    }
 
     setContactFocus(
       contactId &&

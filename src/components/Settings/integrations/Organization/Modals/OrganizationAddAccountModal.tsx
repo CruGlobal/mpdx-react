@@ -121,7 +121,9 @@ export const OrganizationAddAccountModal: React.FC<
   const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
 
   const onSubmit = async (attributes: Partial<OrganizationFormikSchema>) => {
-    if (!attributes?.selectedOrganization) return;
+    if (!attributes?.selectedOrganization) {
+      return;
+    }
     const { apiClass, oauth, id } = attributes.selectedOrganization;
     const type = getOrganizationType(apiClass, oauth);
 
@@ -134,7 +136,9 @@ export const OrganizationAddAccountModal: React.FC<
       return;
     }
 
-    if (!accountListId) return;
+    if (!accountListId) {
+      return;
+    }
 
     const createAccountAttributes: {
       organizationId: string;

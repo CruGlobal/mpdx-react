@@ -40,7 +40,9 @@ const AccountListIdPage = ({
   }, []);
 
   useEffect(() => {
-    if (!modal || dialogOpen) return;
+    if (!modal || dialogOpen) {
+      return;
+    }
     switch (modal) {
       case 'AddContact':
         setSelectedMenuItem(AddMenuItemsEnum.NewContact);

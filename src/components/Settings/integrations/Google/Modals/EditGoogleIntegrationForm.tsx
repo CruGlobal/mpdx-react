@@ -201,7 +201,9 @@ export const EditGoogleIntegrationForm: React.FC<
 
                 <StyledBox>
                   {actvities?.map((activity) => {
-                    if (!activity?.id || !activity?.value) return null;
+                    if (!activity?.id || !activity?.value) {
+                      return null;
+                    }
                     const activityId = `${activity.value}-Checkbox`;
                     const isChecked = calendarIntegrations.includes(
                       activity?.id ?? '',

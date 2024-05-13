@@ -84,7 +84,9 @@ export const TasksMassActionsDropdown: React.FC<
       variant: 'success',
     });
     setCompleteTasksModalOpen(false);
-    if (massDeselectAll) massDeselectAll();
+    if (massDeselectAll) {
+      massDeselectAll();
+    }
   };
 
   const deleteTasks = async () => {
@@ -105,7 +107,9 @@ export const TasksMassActionsDropdown: React.FC<
       variant: 'success',
     });
     setDeleteTasksModalOpen(false);
-    if (massDeselectAll) massDeselectAll();
+    if (massDeselectAll) {
+      massDeselectAll();
+    }
   };
 
   return (

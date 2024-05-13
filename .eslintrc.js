@@ -63,6 +63,7 @@ module.exports = {
         ignoreMemberSort: false,
       },
     ],
+    curly: 'error',
     eqeqeq: 'error',
     'no-console': 'error',
     '@typescript-eslint/no-loss-of-precision': 'warn',

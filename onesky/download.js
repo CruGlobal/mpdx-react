@@ -24,8 +24,9 @@ onesky
             fileName: 'translation.json',
           })
           .then(function (langContent) {
-            if (!fs.existsSync('public/locales/' + lang.code))
+            if (!fs.existsSync('public/locales/' + lang.code)) {
               fs.promises.mkdir('public/locales/' + lang.code);
+            }
             fs.promises.writeFile(
               'public/locales/' + lang.code + '/translation.json',
               langContent,

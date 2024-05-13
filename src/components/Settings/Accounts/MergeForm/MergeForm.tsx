@@ -76,7 +76,9 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
 
   const onSubmit = async (attributes: FormikSchema) => {
     const { selectedAccountId, accept } = attributes;
-    if (!currentAccount?.id || !accept) return;
+    if (!currentAccount?.id || !accept) {
+      return;
+    }
 
     await mergeAccountList({
       variables: {

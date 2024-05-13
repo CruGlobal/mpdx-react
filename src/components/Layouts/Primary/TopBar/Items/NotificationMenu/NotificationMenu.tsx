@@ -169,7 +169,9 @@ const NotificationMenu = ({
         },
       },
       update: (cache) => {
-        if (!optimisticResponse) return;
+        if (!optimisticResponse) {
+          return;
+        }
 
         const query = {
           query: GetNotificationsDocument,
