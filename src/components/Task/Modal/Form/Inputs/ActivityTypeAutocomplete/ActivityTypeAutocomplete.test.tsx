@@ -1,8 +1,9 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData as LoadConstants } from 'src/components/Constants/LoadConstantsMock';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
-import { phasesMock } from '../../TaskModalHelper';
 import { ActivityTypeAutocomplete } from './ActivityTypeAutocomplete';
 
 describe('ActivityTypeAutocomplete', () => {
@@ -32,7 +33,11 @@ describe('ActivityTypeAutocomplete', () => {
     const onChange = jest.fn();
 
     const { getByRole } = render(
-      <GqlMockedProvider mocks={phasesMock}>
+      <GqlMockedProvider<{
+        LoadConstants: LoadConstantsQuery;
+      }>
+        mocks={{ LoadConstants }}
+      >
         <ActivityTypeAutocomplete
           options={options}
           label="Type"

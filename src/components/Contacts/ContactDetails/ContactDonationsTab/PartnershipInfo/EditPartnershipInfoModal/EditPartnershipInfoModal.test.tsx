@@ -5,7 +5,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { phasesMock } from 'src/components/Task/Modal/Form/TaskModalHelper';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData as LoadConstants } from 'src/components/Constants/LoadConstantsMock';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
@@ -176,7 +177,11 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider mocks={phasesMock}>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{ LoadConstants }}
+            >
               <EditPartnershipInfoModal
                 contact={newContactMock}
                 handleClose={handleClose}
@@ -210,7 +215,11 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider mocks={phasesMock}>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{ LoadConstants }}
+            >
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -258,7 +267,11 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider mocks={phasesMock}>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{ LoadConstants }}
+            >
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}

@@ -5,8 +5,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData as LoadConstants } from 'src/components/Constants/LoadConstantsMock';
 import { GetTasksForAddingTagsQuery } from 'src/components/Task/MassActions/AddTags/TasksAddTags.generated';
-import { phasesMock } from 'src/components/Task/Modal/Form/TaskModalHelper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
 import theme from '../../../theme';
@@ -51,7 +52,11 @@ jest.mock('notistack', () => ({
 
 const TaskComponents = () => (
   <ThemeProvider theme={theme}>
-    <GqlMockedProvider mocks={phasesMock}>
+    <GqlMockedProvider<{
+      LoadConstants: LoadConstantsQuery;
+    }>
+      mocks={{ LoadConstants }}
+    >
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TasksMassActionsDropdown
