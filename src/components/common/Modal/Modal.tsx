@@ -1,17 +1,28 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { JSXElementConstructor, ReactElement, ReactNode } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import { Dialog, DialogProps, DialogTitle, IconButton } from '@mui/material';
+import {
+  Dialog,
+  DialogProps,
+  DialogTitle,
+  IconButton,
+  Stack,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { TransitionProps } from '@mui/material/transitions';
 import { useTranslation } from 'react-i18next';
 
-const ModalTitle = styled(DialogTitle)(({ theme }) => ({
-  textTransform: 'uppercase',
-  paddingRight: theme.spacing(8),
-  [theme.breakpoints.up('sm')]: {
-    paddingLeft: theme.spacing(8),
-    textAlign: 'center',
-  },
-}));
+const ModalTitle = styled(DialogTitle)<{ altColors: boolean }>(
+  ({ theme, altColors }) => ({
+    textTransform: 'uppercase',
+    paddingRight: theme.spacing(8),
+    [theme.breakpoints.up('sm')]: {
+      paddingLeft: theme.spacing(8),
+      textAlign: 'center',
+    },
+    backgroundColor: altColors ? theme.palette.cruGrayDark.main : 'white',
+    color: altColors ? 'white' : 'auto',
+  }),
+);
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
@@ -31,11 +42,15 @@ interface Props {
   /** determines the size of the modal, default is 'sm' */
   size?: DialogProps['maxWidth'];
   /** title to be rendered in modal header */
-  title: string;
+  title: string | ReactElement;
   /** function to be fired when close button is pressed */
   handleClose: () => void;
   /** content to be rendered inside of modal */
   children: ReactNode;
+  transition?:
+    | JSXElementConstructor<TransitionProps & { children: ReactElement }>
+    | undefined;
+  altColors?: boolean;
 }
 
 const Modal = ({
@@ -45,6 +60,9 @@ const Modal = ({
   size = 'sm',
   fullWidth = true,
   children,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  transition,
+  altColors = false,
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
   return (
@@ -54,8 +72,19 @@ const Modal = ({
       maxWidth={size}
       disableRestoreFocus={true}
       onClose={handleClose}
+      // keepMounted
+      // TransitionComponent={transition}
     >
-      <ModalTitle>{title}</ModalTitle>
+      <ModalTitle altColors={altColors}>
+        <Stack
+          alignItems="center"
+          direction="row"
+          gap={1}
+          justifyContent="center"
+        >
+          {title}
+        </Stack>
+      </ModalTitle>
       <CloseButton onClick={handleClose} aria-label={t('Close')}>
         <CloseIcon />
       </CloseButton>

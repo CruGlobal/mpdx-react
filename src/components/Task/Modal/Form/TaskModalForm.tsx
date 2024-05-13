@@ -77,6 +77,7 @@ import {
   useUpdateTaskMutation,
 } from './TaskModal.generated';
 import {
+  filterTags,
   getDatabaseValueFromResult,
   handleTaskActionChange,
   handleTaskPhaseChange,
@@ -122,7 +123,7 @@ const TaskModalForm = ({
   view,
 }: Props): ReactElement => {
   const session = useSession();
-
+  // const formikRef = useRef<any>(null);
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
@@ -141,8 +142,14 @@ const TaskModalForm = ({
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { phaseData, setPhaseId, constants, taskPhases, activityTypes } =
-    usePhaseData(task?.taskPhase);
+  const {
+    phaseData,
+    setPhaseId,
+    constants,
+    taskPhases,
+    activityTypes,
+    activitiesByPhase,
+  } = usePhaseData(task?.taskPhase);
 
   const phaseTags = useMemo(
     () =>
@@ -164,15 +171,13 @@ const TaskModalForm = ({
       }
 
       //go through tags and move some to selectedSuggestedTags and others to additionalTags
-      const additionalTags = task.tagList
-        ? task.tagList.reduce((acc: string[], tag) => {
-            if (phaseTags.includes(tag)) {
-              setSelectedSuggestedTags((prevValues) => [...prevValues, tag]);
-              return acc;
-            }
-            return [...acc, tag];
-          }, [])
-        : [];
+      const filteredTags = filterTags(task.tagList, phaseTags);
+      const additionalTags = filteredTags?.additionalTags;
+      setSelectedSuggestedTags((prevValues) => [
+        ...prevValues,
+        ...filteredTags?.suggestedTags,
+      ]);
+
       return {
         taskPhase,
         activityType: task.activityType ?? null,
@@ -236,7 +241,7 @@ const TaskModalForm = ({
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (!task && inputRef.current) {
+    if (!task && inputRef.current && !defaultValues?.activityType) {
       inputRef.current.focus();
     }
   }, []);
@@ -320,7 +325,7 @@ const TaskModalForm = ({
           activityType: attributes.nextAction,
           contactIds: attributes.contactIds,
           userId: task?.user?.id,
-          tagList: task?.tagList,
+          tagList: filterTags(task?.tagList, phaseTags)?.additionalTags,
         },
       });
     }
@@ -340,9 +345,17 @@ const TaskModalForm = ({
     () => possibleNextActions(phaseData, resultSelected, actionSelected),
     [phaseData, resultSelected, actionSelected],
   );
+  // useEffect(() => {
+  //   formikRef?.current?.setFieldValue(
+  //     'nextAction',
+  //     nextActions.length === 2 ? nextActions[1] : null,
+  //   );
+  //   console.log('settting nextAction');
+  // }, [nextActions]);
 
   return (
     <Formik
+      // innerRef={formikRef}
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={async (values) => {
@@ -383,42 +396,47 @@ const TaskModalForm = ({
           <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <FormFieldsGridContainer>
               <Grid item>
-                <TaskPhaseAutocomplete
-                  options={taskPhases}
-                  label={t('Task Type/Phase')}
-                  value={taskPhase}
-                  contactPhase={phaseData?.id}
-                  inputRef={inputRef}
-                  onChange={(phase) =>
-                    handleTaskPhaseChange({
-                      phase,
-                      setFieldValue,
-                      setResultSelected,
-                      setActionSelected,
-                      setPhaseId,
-                      setSelectedSuggestedTags,
-                    })
-                  }
-                />
-              </Grid>
+                <Grid container spacing={2}>
+                  <Grid xs={12} sm={6} item>
+                    <TaskPhaseAutocomplete
+                      options={taskPhases}
+                      label={t('Task Type/Phase')}
+                      value={taskPhase}
+                      contactPhase={phaseData?.id}
+                      inputRef={inputRef}
+                      onChange={(phase) =>
+                        handleTaskPhaseChange({
+                          phase,
+                          setFieldValue,
+                          setResultSelected,
+                          setActionSelected,
+                          setPhaseId,
+                          setSelectedSuggestedTags,
+                        })
+                      }
+                    />
+                  </Grid>
 
-              <Grid item>
-                <FormControl fullWidth>
-                  <ActivityTypeAutocomplete
-                    options={Object.values(ActivityTypeEnum)}
-                    label={t('Action')}
-                    value={activityType}
-                    taskPhaseType={taskPhase}
-                    onChange={(activityType) => {
-                      handleTaskActionChange({
-                        activityType,
-                        setFieldValue,
-                        setActionSelected,
-                        constants,
-                      });
-                    }}
-                  />
-                </FormControl>
+                  <Grid xs={12} sm={6} item>
+                    <FormControl fullWidth>
+                      <ActivityTypeAutocomplete
+                        options={
+                          (taskPhase && activitiesByPhase.get(taskPhase)) || []
+                        }
+                        label={t('Action')}
+                        value={activityType}
+                        onChange={(activityType) => {
+                          handleTaskActionChange({
+                            activityType,
+                            setFieldValue,
+                            setActionSelected,
+                            constants,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
               </Grid>
 
               <Grid item>
@@ -519,6 +537,7 @@ const TaskModalForm = ({
                   result={result}
                   setFieldValue={setFieldValue}
                   setResultSelected={setResultSelected}
+                  phaseData={phaseData}
                 />
               )}
 

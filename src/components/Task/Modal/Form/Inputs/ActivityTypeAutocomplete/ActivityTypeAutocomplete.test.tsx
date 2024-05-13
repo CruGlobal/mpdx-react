@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { phasesMock } from '../../TaskModalHelper';
 import { ActivityTypeAutocomplete } from './ActivityTypeAutocomplete';
 
@@ -11,7 +11,6 @@ describe('ActivityTypeAutocomplete', () => {
     ActivityTypeEnum.FollowUpTextMessage,
     ActivityTypeEnum.None,
   ];
-  const phase = PhaseEnum.Appointment;
 
   it('puts the none option first', () => {
     const onChange = jest.fn();
@@ -19,7 +18,6 @@ describe('ActivityTypeAutocomplete', () => {
     const { getByRole, getAllByRole } = render(
       <ActivityTypeAutocomplete
         options={options}
-        taskPhaseType={phase}
         label="Type"
         value={ActivityTypeEnum.AppointmentPhoneCall}
         onChange={onChange}
@@ -37,7 +35,6 @@ describe('ActivityTypeAutocomplete', () => {
       <GqlMockedProvider mocks={phasesMock}>
         <ActivityTypeAutocomplete
           options={options}
-          taskPhaseType={phase}
           label="Type"
           value={ActivityTypeEnum.AppointmentPhoneCall}
           onChange={onChange}
@@ -57,7 +54,6 @@ describe('ActivityTypeAutocomplete', () => {
     const { getByRole } = render(
       <ActivityTypeAutocomplete
         options={options}
-        taskPhaseType={phase}
         label="Type"
         value={ActivityTypeEnum.AppointmentPhoneCall}
         onChange={onChange}

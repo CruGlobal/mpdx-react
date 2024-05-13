@@ -6,6 +6,7 @@ import {
   ResultEnum,
 } from 'src/graphql/types.generated';
 import { Constants, SetPhaseId } from 'src/hooks/usePhaseData';
+import { possibleNextActions } from './PossibleNextActions';
 
 export type SetFieldValue = (
   field: string,
@@ -41,6 +42,7 @@ export type HandleResultChangeProps = {
   result: string | null;
   setFieldValue: SetFieldValue;
   setResultSelected: SetResultSelected;
+  phaseData: Phase | null;
 };
 
 export const handleTaskPhaseChange = ({
@@ -73,7 +75,15 @@ export const handleTaskActionChange = ({
     (activity) => activity.id === activityType,
   );
   if (activity) {
-    setFieldValue('subject', activity.value);
+    setFieldValue(
+      'subject',
+      activity?.name
+        .split(' ')
+        .map((word) => {
+          return word[0].toUpperCase() + word.substring(1);
+        })
+        .join(' '),
+    );
   }
 };
 
@@ -81,11 +91,23 @@ export const handleResultChange = ({
   result,
   setFieldValue,
   setResultSelected,
+  phaseData,
 }: HandleResultChangeProps): void => {
   setFieldValue('result', result);
-  setFieldValue('nextAction', ActivityTypeEnum.None);
   setFieldValue('changeContactStatus', false);
   setResultSelected(result as DisplayResultEnum);
+  const nextActions = possibleNextActions(
+    phaseData,
+    result as DisplayResultEnum,
+    ActivityTypeEnum.None,
+  );
+  const actionsWithoutNone = nextActions.filter(
+    (action) => action !== ActivityTypeEnum.None,
+  );
+  setFieldValue(
+    'nextAction',
+    actionsWithoutNone.length === 1 ? actionsWithoutNone[0] : null,
+  );
 };
 
 export const getDatabaseValueFromResult = (
@@ -117,6 +139,19 @@ export const getDatabaseValueFromResult = (
     (item) => item.task === activityType,
   );
   return dbResult?.result || ResultEnum.None;
+};
+
+export const filterTags = (tagList, phaseTags) => {
+  const additionalTags: string[] = [];
+  const suggestedTags: string[] = [];
+  tagList.forEach((tag) => {
+    if (phaseTags.includes(tag)) {
+      suggestedTags.push(tag);
+    } else {
+      additionalTags.push(tag);
+    }
+  });
+  return { additionalTags, suggestedTags };
 };
 
 export const phasesMock = {

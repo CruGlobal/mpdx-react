@@ -50,7 +50,7 @@ import { possibleNextActions } from '../PossibleNextActions';
 import { possiblePartnerStatus } from '../PossiblePartnerStatus';
 import { possibleResults } from '../PossibleResults';
 import { useUpdateContactStatusMutation } from '../TaskModal.generated';
-import { getDatabaseValueFromResult } from '../TaskModalHelper';
+import { filterTags, getDatabaseValueFromResult } from '../TaskModalHelper';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const StyledGrid = styled(Grid)(() => ({
@@ -218,7 +218,7 @@ const TaskModalCompleteForm = ({
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: task.contacts.nodes.map((contact) => contact.id),
           userId: task.user?.id,
-          tagList: task.tagList,
+          tagList: filterTags(task?.tagList, phaseTags)?.additionalTags,
         },
       });
     }
@@ -324,6 +324,7 @@ const TaskModalCompleteForm = ({
                 result={result}
                 setFieldValue={setFieldValue}
                 setResultSelected={setResultSelected}
+                phaseData={phaseData}
               />
 
               <SuggestedContactStatus
@@ -342,6 +343,7 @@ const TaskModalCompleteForm = ({
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }
+                    activityTypes={activityTypes}
                   />
                 </Grid>
               )}
