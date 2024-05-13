@@ -72,8 +72,8 @@ const Modal = ({
       maxWidth={size}
       disableRestoreFocus={true}
       onClose={handleClose}
-      // keepMounted
-      // TransitionComponent={transition}
+      keepMounted
+      TransitionComponent={transition}
     >
       <ModalTitle altColors={altColors}>
         <Stack
