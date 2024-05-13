@@ -8,7 +8,9 @@ interface Props {
 }
 
 export const Website: React.FC<Props> = ({ url }) => {
-  if (!url) return null;
+  if (!url) {
+    return null;
+  }
   return (
     <IconButton target="_blank" href={url} rel="noreferrer">
       <Icon color="primary" />

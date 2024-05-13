@@ -38,7 +38,9 @@ export const AccountListInvites: React.FC<Props> = ({
   const { enqueueSnackbar } = useSnackbar();
 
   const haneleInviteDelete = async (invite) => {
-    if (!invite?.id) return;
+    if (!invite?.id) {
+      return;
+    }
 
     await adminDeleteOrganizationInvite({
       variables: {

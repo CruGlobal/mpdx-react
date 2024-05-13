@@ -148,7 +148,9 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!infiniteListRef.current) return;
+    if (!infiniteListRef.current) {
+      return;
+    }
     setInfiniteListRectTop(infiniteListRef.current.getBoundingClientRect().top);
   }, [contactId, contactDetailsLoaded]);
 

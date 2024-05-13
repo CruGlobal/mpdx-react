@@ -26,14 +26,22 @@ export const Item: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const isSelected = useMemo(() => {
-    if (item.id === selectedId) return true;
-    if (!item?.subItems?.length) return false;
+    if (item.id === selectedId) {
+      return true;
+    }
+    if (!item?.subItems?.length) {
+      return false;
+    }
     return !!item.subItems.find((item) => item.id === selectedId)?.id;
   }, [item]);
 
   const handleClick = () => {
-    if (isSelected) return;
-    if (!item?.subItems?.length) return;
+    if (isSelected) {
+      return;
+    }
+    if (!item?.subItems?.length) {
+      return;
+    }
     setOpenSubMenu(!openSubMenu);
   };
 
