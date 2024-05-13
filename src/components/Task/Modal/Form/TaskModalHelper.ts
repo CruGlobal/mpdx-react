@@ -94,7 +94,20 @@ export const getDatabaseValueFromResult = (
   activityType?: ActivityTypeEnum | null,
 ): ResultEnum => {
   if (!displayResult || !phaseData || !activityType) {
-    return ResultEnum.None;
+    switch (displayResult) {
+      case ResultEnum.Attempted:
+        return ResultEnum.Attempted;
+      case ResultEnum.AttemptedLeftMessage:
+        return ResultEnum.AttemptedLeftMessage;
+      case ResultEnum.Completed:
+        return ResultEnum.Completed;
+      case ResultEnum.Done:
+        return ResultEnum.Done;
+      case ResultEnum.Received:
+        return ResultEnum.Received;
+      default:
+        return ResultEnum.None;
+    }
   }
   const resultOption = phaseData?.results?.resultOptions?.find(
     (result) => result.name === displayResult,

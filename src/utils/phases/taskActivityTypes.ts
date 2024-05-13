@@ -40,7 +40,6 @@ export const inPersonActivityTypes = [
 ];
 
 export const electronicActivityTypes = [
-  ActivityTypeEnum.AppointmentVideoCall,
   ActivityTypeEnum.FollowUpEmail,
   ActivityTypeEnum.FollowUpSocialMedia,
   ActivityTypeEnum.FollowUpTextMessage,
@@ -138,38 +137,38 @@ export const getPhaseByActivityType = (
   activity?: ActivityTypeEnum | null,
 ): PhaseEnum | null => {
   switch (activity) {
-    case (ActivityTypeEnum.AppointmentInPerson,
-    ActivityTypeEnum.AppointmentPhoneCall,
-    ActivityTypeEnum.AppointmentVideoCall):
+    case ActivityTypeEnum.AppointmentInPerson:
+    case ActivityTypeEnum.AppointmentPhoneCall:
+    case ActivityTypeEnum.AppointmentVideoCall:
       return PhaseEnum.Appointment;
 
-    case (ActivityTypeEnum.FollowUpEmail,
-    ActivityTypeEnum.FollowUpInPerson,
-    ActivityTypeEnum.FollowUpPhoneCall,
-    ActivityTypeEnum.FollowUpSocialMedia,
-    ActivityTypeEnum.FollowUpTextMessage):
+    case ActivityTypeEnum.FollowUpEmail:
+    case ActivityTypeEnum.FollowUpInPerson:
+    case ActivityTypeEnum.FollowUpPhoneCall:
+    case ActivityTypeEnum.FollowUpSocialMedia:
+    case ActivityTypeEnum.FollowUpTextMessage:
       return PhaseEnum.FollowUp;
 
-    case (ActivityTypeEnum.InitiationEmail,
-    ActivityTypeEnum.InitiationInPerson,
-    ActivityTypeEnum.InitiationLetter,
-    ActivityTypeEnum.InitiationPhoneCall,
-    ActivityTypeEnum.InitiationSocialMedia,
-    ActivityTypeEnum.InitiationSpecialGiftAppeal,
-    ActivityTypeEnum.InitiationTextMessage):
+    case ActivityTypeEnum.InitiationEmail:
+    case ActivityTypeEnum.InitiationInPerson:
+    case ActivityTypeEnum.InitiationLetter:
+    case ActivityTypeEnum.InitiationPhoneCall:
+    case ActivityTypeEnum.InitiationSocialMedia:
+    case ActivityTypeEnum.InitiationSpecialGiftAppeal:
+    case ActivityTypeEnum.InitiationTextMessage:
       return PhaseEnum.Initiation;
 
-    case (ActivityTypeEnum.PartnerCareDigitalNewsletter,
-    ActivityTypeEnum.PartnerCareEmail,
-    ActivityTypeEnum.PartnerCareInPerson,
-    ActivityTypeEnum.PartnerCarePhoneCall,
-    ActivityTypeEnum.PartnerCarePhysicalNewsletter,
-    ActivityTypeEnum.PartnerCarePrayerRequest,
-    ActivityTypeEnum.PartnerCareSocialMedia,
-    ActivityTypeEnum.PartnerCareTextMessage,
-    ActivityTypeEnum.PartnerCareThank,
-    ActivityTypeEnum.PartnerCareToDo,
-    ActivityTypeEnum.PartnerCareUpdateInformation):
+    case ActivityTypeEnum.PartnerCareDigitalNewsletter:
+    case ActivityTypeEnum.PartnerCareEmail:
+    case ActivityTypeEnum.PartnerCareInPerson:
+    case ActivityTypeEnum.PartnerCarePhoneCall:
+    case ActivityTypeEnum.PartnerCarePhysicalNewsletter:
+    case ActivityTypeEnum.PartnerCarePrayerRequest:
+    case ActivityTypeEnum.PartnerCareSocialMedia:
+    case ActivityTypeEnum.PartnerCareTextMessage:
+    case ActivityTypeEnum.PartnerCareThank:
+    case ActivityTypeEnum.PartnerCareToDo:
+    case ActivityTypeEnum.PartnerCareUpdateInformation:
       return PhaseEnum.PartnerCare;
 
     default:

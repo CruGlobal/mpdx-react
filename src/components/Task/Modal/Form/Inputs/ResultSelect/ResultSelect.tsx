@@ -8,7 +8,7 @@ import {
   handleResultChange,
 } from '../../TaskModalHelper';
 
-interface ResultSelectProps {
+export interface ResultSelectProps {
   availableResults: ResultEnum[] | DisplayResultEnum[];
   setFieldValue: SetFieldValue;
   setResultSelected: SetResultSelected;

@@ -9,6 +9,8 @@ export const isAppointmentActivityType = (
   return (
     [
       ActivityTypeEnum.AppointmentInPerson,
+      ActivityTypeEnum.AppointmentVideoCall,
+      ActivityTypeEnum.AppointmentPhoneCall,
       ActivityTypeEnum.FollowUpInPerson,
       ActivityTypeEnum.InitiationInPerson,
       ActivityTypeEnum.PartnerCareInPerson,

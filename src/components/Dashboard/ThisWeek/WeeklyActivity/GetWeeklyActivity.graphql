@@ -41,10 +41,13 @@ query GetWeeklyActivity(
     tasksFilter: {
       completedAt: { min: $startOfWeek, max: $endOfWeek }
       activityType: [
-        INITIATION_SOCIAL_MEDIA
-        INITIATION_TEXT_MESSAGE
+        FOLLOW_UP_EMAIL
         FOLLOW_UP_SOCIAL_MEDIA
         FOLLOW_UP_TEXT_MESSAGE
+        INITIATION_EMAIL
+        INITIATION_SOCIAL_MEDIA
+        INITIATION_TEXT_MESSAGE
+        PARTNER_CARE_EMAIL
         PARTNER_CARE_SOCIAL_MEDIA
         PARTNER_CARE_TEXT_MESSAGE
       ]
@@ -58,10 +61,11 @@ query GetWeeklyActivity(
     tasksFilter: {
       completedAt: { min: $startOfWeek, max: $endOfWeek }
       activityType: [
-        INITIATION_SOCIAL_MEDIA
-        INITIATION_TEXT_MESSAGE
         FOLLOW_UP_SOCIAL_MEDIA
         FOLLOW_UP_TEXT_MESSAGE
+        INITIATION_SOCIAL_MEDIA
+        INITIATION_TEXT_MESSAGE
+        PARTNER_CARE_EMAIL
         PARTNER_CARE_SOCIAL_MEDIA
         PARTNER_CARE_TEXT_MESSAGE
       ]
@@ -91,6 +95,8 @@ query GetWeeklyActivity(
     tasksFilter: {
       completedAt: { min: $startOfWeek, max: $endOfWeek }
       activityType: [
+        FOLLOW_UP_EMAIL
+        INITIATION_EMAIL
         PARTNER_CARE_EMAIL
         PARTNER_CARE_DIGITAL_NEWSLETTER
         PARTNER_CARE_PHYSICAL_NEWSLETTER

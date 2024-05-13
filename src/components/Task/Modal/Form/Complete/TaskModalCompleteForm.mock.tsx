@@ -27,7 +27,7 @@ export const getCompleteTaskForTaskModalMock = (
   const data: GetTaskForTaskModalQuery = {
     task: {
       id: taskId,
-      activityType: ActivityTypeEnum.InitiationEmail,
+      activityType: ActivityTypeEnum.PartnerCareDigitalNewsletter,
       subject: 'On the Journey with the Johnson Family',
       startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
       completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
@@ -91,6 +91,7 @@ export const completeSimpleTaskMutationMock = (
     result: { data },
   };
 };
+
 export const completeTaskMutationMock = (
   accountListId: string,
   taskId: string,
@@ -125,7 +126,7 @@ export const completeTaskMutationMock = (
     result: { data },
   };
 };
-export const addTaskMutationMock = (
+export const createTaskCommentMutation = (
   accountListId: string,
   taskId: string,
 ): MockedResponse => {
