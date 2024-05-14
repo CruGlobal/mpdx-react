@@ -245,6 +245,8 @@ const TaskModalCompleteForm = ({
     [phaseData],
   );
 
+  const numberOfContacts = task?.contacts.nodes.length;
+
   return (
     <Formik<Attributes>
       initialValues={initialTask}
@@ -286,11 +288,18 @@ const TaskModalCompleteForm = ({
               </StyledGrid>
               <StyledGrid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
-                  {t('Contact(s):')}
+                  {numberOfContacts > 1
+                    ? t('Contacts:')
+                    : numberOfContacts > 0
+                    ? t('Contact:')
+                    : null}
                 </Typography>{' '}
                 {task?.contacts.nodes.map((contact, index) => (
-                  <Typography key={contact.id}>
-                    {index !== task.contacts.nodes.length - 1
+                  <Typography
+                    display={numberOfContacts === 1 ? 'inline' : 'block'}
+                    key={contact.id}
+                  >
+                    {index !== numberOfContacts - 1
                       ? `${contact.name},`
                       : contact.name}
                   </Typography>
@@ -331,7 +340,7 @@ const TaskModalCompleteForm = ({
                 partnerStatus={partnerStatus}
                 changeContactStatus={changeContactStatus}
                 handleChange={handleChange}
-                numOfContacts={task.contacts.nodes.length}
+                numOfContacts={numberOfContacts}
               />
 
               {nextActions.length > 0 && (
