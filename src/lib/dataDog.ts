@@ -22,6 +22,7 @@ export interface SetDataDogUserProps {
   name: string;
   email: string;
   accountListId: string | null;
+  language: string;
 }
 
 export const accountListIdsStorageKey = 'accountListIds';
@@ -31,6 +32,7 @@ export const setDataDogUser = ({
   name,
   email,
   accountListId,
+  language,
 }: SetDataDogUserProps): void => {
   if (!isDataDogConfigured()) {
     return;
@@ -51,6 +53,7 @@ export const setDataDogUser = ({
     name,
     email,
     accountListIds,
+    language,
   });
 };
 
