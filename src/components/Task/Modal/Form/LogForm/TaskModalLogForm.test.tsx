@@ -11,6 +11,7 @@ import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { dispatch } from 'src/lib/analytics';
+import { TaskModalEnum } from '../../TaskModal';
 import { ContactOptionsQuery } from '../Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from '../Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalLogForm from './TaskModalLogForm';
@@ -353,7 +354,7 @@ describe('TaskModalLogForm', () => {
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'add',
+      view: TaskModalEnum.Add,
       defaultValues: {
         subject: 'Subject',
         activityType: ActivityTypeEnum.Call,

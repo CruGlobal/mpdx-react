@@ -7,6 +7,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { TaskModalEnum } from '../Modal/TaskModal';
 
 const TaskCompleteButton = styled(IconButton)(({ theme }) => ({
   border: `2px solid ${theme.palette.mpdxGreen.main}`,
@@ -107,13 +108,13 @@ const CompleteButton = ({
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ): void => {
-    taskId && openTaskModal({ taskId, view: 'complete' });
+    taskId && openTaskModal({ taskId, view: TaskModalEnum.Complete });
     event.stopPropagation();
   };
   return (
     <TaskCompleteButton
       onClick={handleClick}
-      onMouseEnter={() => preloadTaskModal('complete')}
+      onMouseEnter={() => preloadTaskModal(TaskModalEnum.Complete)}
     >
       <Check titleAccess={title ?? 'Check Icon'} />
     </TaskCompleteButton>

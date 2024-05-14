@@ -17,6 +17,7 @@ import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTa
 import { TaskDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskDate/TaskDate';
 import { DeleteTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/DeleteTaskIconButton/DeleteTaskIconButton';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
+import { TaskModalEnum } from '../Modal/TaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
 
 const SubjectWrapOuter = styled(Box)(({ theme }) => ({
@@ -119,20 +120,20 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   } = task;
 
   const handleCompleteButtonPressed = () => {
-    openTaskModal({ taskId: task?.id, view: 'complete' });
+    openTaskModal({ taskId: task?.id, view: TaskModalEnum.Complete });
   };
 
   const handleCommentButtonPressed = () => {
     openTaskModal({
       taskId,
-      view: 'comments',
+      view: TaskModalEnum.Comments,
     });
   };
 
   const handleSubjectPressed = () => {
     openTaskModal({
       taskId,
-      view: 'edit',
+      view: TaskModalEnum.Edit,
     });
   };
 
@@ -176,7 +177,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             <TaskCompleteButton
               isComplete={isComplete}
               onClick={handleCompleteButtonPressed}
-              onMouseEnter={() => preloadTaskModal('complete')}
+              onMouseEnter={() => preloadTaskModal(TaskModalEnum.Complete)}
             />
           </Box>
 
@@ -196,7 +197,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                   handleSubjectPressed();
                   e.stopPropagation();
                 }}
-                onMouseEnter={() => preloadTaskModal('edit')}
+                onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
               >
                 <TaskType>
                   {activityType ? getLocalizedTaskType(t, activityType) : ''}
@@ -245,7 +246,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 isComplete={isComplete}
                 numberOfComments={comments?.totalCount}
                 onClick={handleCommentButtonPressed}
-                onMouseEnter={() => preloadTaskModal('comments')}
+                onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
               />
             </Box>
           </Hidden>
@@ -257,7 +258,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                   isComplete={isComplete}
                   numberOfComments={comments?.totalCount}
                   onClick={handleCommentButtonPressed}
-                  onMouseEnter={() => preloadTaskModal('comments')}
+                  onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
                   small
                 />
               </Box>

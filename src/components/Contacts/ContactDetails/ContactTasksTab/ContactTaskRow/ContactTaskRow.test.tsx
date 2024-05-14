@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
@@ -139,7 +140,7 @@ describe('ContactTaskRow', () => {
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
       expect(openTaskModal).toHaveBeenCalledWith({
-        view: 'complete',
+        view: TaskModalEnum.Complete,
         taskId: task.id,
         showCompleteForm: true,
       });
@@ -169,7 +170,7 @@ describe('ContactTaskRow', () => {
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByText(task.subject));
       expect(openTaskModal).toHaveBeenCalledWith({
-        view: 'edit',
+        view: TaskModalEnum.Edit,
         taskId: task.id,
       });
     });
@@ -199,7 +200,7 @@ describe('ContactTaskRow', () => {
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        view: 'comments',
+        view: TaskModalEnum.Comments,
       });
     });
 

@@ -12,6 +12,7 @@ import {
 import { dispatch } from 'src/lib/analytics';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
+import { TaskModalEnum } from '../../TaskModal';
 import { CompleteTaskDocument } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 import {
@@ -191,7 +192,7 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({
-        view: 'add',
+        view: TaskModalEnum.Add,
         defaultValues: {
           subject: task.subject,
           activityType: ActivityTypeEnum.Appointment,

@@ -8,6 +8,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -197,7 +198,7 @@ describe('ContactsMassActionsDropdown', () => {
     expect(getByText('Add Task')).toBeInTheDocument();
     userEvent.click(getByText('Add Task'));
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'add',
+      view: TaskModalEnum.Add,
       defaultValues: { contactIds: selectedIds },
     });
   });
@@ -211,7 +212,7 @@ describe('ContactsMassActionsDropdown', () => {
     expect(getByText('Log Task')).toBeInTheDocument();
     userEvent.click(getByText('Log Task'));
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'log',
+      view: TaskModalEnum.Log,
       defaultValues: { contactIds: selectedIds },
     });
   });

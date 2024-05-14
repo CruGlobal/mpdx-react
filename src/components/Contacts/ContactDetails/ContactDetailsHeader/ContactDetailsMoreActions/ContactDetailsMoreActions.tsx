@@ -22,9 +22,10 @@ import {
   DynamicCreateMultipleContacts,
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import Modal from 'src/components/common/Modal/Modal';
 import { StatusEnum } from 'src/graphql/types.generated';
-import useTaskModal from '../../../../../hooks/useTaskModal';
-import Modal from '../../../../common/Modal/Modal';
+import useTaskModal from 'src/hooks/useTaskModal';
 import {
   ContactDetailContext,
   ContactDetailsType,
@@ -230,12 +231,12 @@ export const ContactDetailsMoreAcitions: React.FC<
       icon: <ListIcon />,
       onClick: () => {
         openTaskModal({
-          view: 'add',
+          view: TaskModalEnum.Add,
           defaultValues: { contactIds: [contactId] },
         });
         setAnchorEl(undefined);
       },
-      onMouseEnter: () => preloadTaskModal('add'),
+      onMouseEnter: () => preloadTaskModal(TaskModalEnum.Add),
     },
     {
       visibility: true,
@@ -243,12 +244,12 @@ export const ContactDetailsMoreAcitions: React.FC<
       icon: <EditIcon />,
       onClick: () => {
         openTaskModal({
-          view: 'log',
+          view: TaskModalEnum.Log,
           defaultValues: { contactIds: [contactId] },
         });
         setAnchorEl(undefined);
       },
-      onMouseEnter: () => preloadTaskModal('log'),
+      onMouseEnter: () => preloadTaskModal(TaskModalEnum.Log),
     },
     {
       visibility: status !== StatusEnum.NeverAsk,
