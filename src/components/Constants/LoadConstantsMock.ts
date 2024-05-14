@@ -19,6 +19,68 @@ const LoadConstantsMock = (): MockedResponse => {
 export const loadConstantsMockData = {
   constant: {
     __typename: 'Constant',
+    statuses: [
+      {
+        id: 'NEVER_CONTACTED',
+        value: 'New Connection',
+      },
+      {
+        id: 'ASK_IN_FUTURE',
+        value: 'Ask in Future',
+      },
+      {
+        id: 'CULTIVATE_RELATIONSHIP',
+        value: 'Cultivate Relationship',
+      },
+      {
+        id: 'CONTACT_FOR_APPOINTMENT',
+        value: 'Initiate for Appointment',
+      },
+      {
+        id: 'APPOINTMENT_SCHEDULED',
+        value: 'Appointment Scheduled',
+      },
+      {
+        id: 'CALL_FOR_DECISION',
+        value: 'Follow Up for Decision',
+      },
+      {
+        id: 'PARTNER_FINANCIAL',
+        value: 'Partner - Financial',
+      },
+      {
+        id: 'PARTNER_SPECIAL',
+        value: 'Partner - Special',
+      },
+      {
+        id: 'PARTNER_PRAY',
+        value: 'Partner - Pray',
+      },
+      {
+        id: 'NOT_INTERESTED',
+        value: 'Not Interested',
+      },
+      {
+        id: 'UNRESPONSIVE',
+        value: 'Unresponsive',
+      },
+      {
+        id: 'NEVER_ASK',
+        value: 'Never Ask',
+      },
+      {
+        id: 'RESEARCH_ABANDONED',
+        value: 'Research Abandoned',
+      },
+      {
+        id: 'EXPIRED_REFERRAL',
+        value: 'Expired Connection',
+      },
+      {
+        id: 'RESEARCH_CONTACT_INFO',
+        value: 'Research Contact Info',
+      },
+    ],
     activities: [
       {
         __typename: 'ActivitiesConstant',

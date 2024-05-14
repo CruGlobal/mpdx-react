@@ -1,9 +1,12 @@
 import { TFunction } from 'react-i18next';
-import { StatusEnum } from 'src/graphql/types.generated';
+import {
+  ContactFilterStatusEnum,
+  StatusEnum,
+} from 'src/graphql/types.generated';
 
 export const getLocalizedContactStatus = (
   t: TFunction,
-  contactStatus: StatusEnum | null | undefined,
+  contactStatus: StatusEnum | ContactFilterStatusEnum | null | undefined,
 ): string => {
   switch (contactStatus) {
     case StatusEnum.AppointmentScheduled:
@@ -13,7 +16,7 @@ export const getLocalizedContactStatus = (
     case StatusEnum.ResearchContactInfo:
       return t('Research Contact Info');
     case StatusEnum.CallForDecision:
-      return t('Follow up for Decision');
+      return t('Follow Up for Decision');
     case StatusEnum.ContactForAppointment:
       return t('Initiate for Appointment');
     case StatusEnum.CultivateRelationship:
@@ -38,6 +41,6 @@ export const getLocalizedContactStatus = (
       return t('Unresponsive');
 
     default:
-      return '';
+      return contactStatus?.toLowerCase() || '';
   }
 };

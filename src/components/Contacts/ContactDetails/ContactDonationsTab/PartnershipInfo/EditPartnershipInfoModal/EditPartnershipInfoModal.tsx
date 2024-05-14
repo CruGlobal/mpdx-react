@@ -35,9 +35,9 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
@@ -123,6 +123,8 @@ export const EditPartnershipInfoModal: React.FC<
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
+  const { contactPartnershipStatus } = useContactPartnershipStatuses();
+
   const phases = constants?.phases;
   const [referredByName, setReferredByName] = useState('');
   const referredContactIds = contact.contactReferralsToMe.nodes.map(

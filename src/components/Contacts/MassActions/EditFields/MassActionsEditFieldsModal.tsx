@@ -28,8 +28,8 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import Modal from '../../../common/Modal/Modal';
@@ -115,6 +115,7 @@ export const MassActionsEditFieldsModal: React.FC<
     useLoadConstantsQuery();
 
   const phases = useApiConstants()?.phases;
+  const { contactPartnershipStatus } = useContactPartnershipStatuses();
 
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>

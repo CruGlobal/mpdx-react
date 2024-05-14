@@ -10,8 +10,8 @@ import {
 } from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import theme from 'src/theme';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { sourceToStr } from 'src/utils/sourceToStr';
 import {
   ContactsContext,
@@ -48,12 +48,6 @@ const defaultCenter = {
   lng: -95,
 };
 
-const getStatusPin = (status: StatusEnum | null | undefined): string => {
-  return status && contactPartnershipStatus[status]
-    ? status.toLowerCase()
-    : 'grey';
-};
-
 export const ContactsMap: React.FC = ({}) => {
   const { t } = useTranslation();
   const {
@@ -63,6 +57,7 @@ export const ContactsMap: React.FC = ({}) => {
     setSelected,
     setContactFocus: onContactSelected,
   } = React.useContext(ContactsContext) as ContactsType;
+  const { contactPartnershipStatus } = useContactPartnershipStatuses();
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -99,6 +94,12 @@ export const ContactsMap: React.FC = ({}) => {
     });
     mapRef.current.fitBounds(bounds);
   }, [data, isLoaded, mapRef.current]);
+
+  const getStatusPin = (status: StatusEnum | null | undefined): string => {
+    return status && contactPartnershipStatus[status]
+      ? status.toLowerCase()
+      : 'grey';
+  };
 
   return !loadError && isLoaded ? (
     // Important! Always set the container height explicitly

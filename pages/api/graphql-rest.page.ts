@@ -12,7 +12,8 @@ import {
   ExportLabelTypeEnum,
   ExportSortEnum,
 } from 'src/graphql/types.generated';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import i18n from 'src/lib/i18n';
+import { getLocalizedContactStatus } from "../../src/utils/functions/getLocalizedContactStatus";
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
@@ -580,7 +581,7 @@ class MpdxRestApi extends RESTDataSource {
         case 'status':
           filters[snakedKey] = (value as ContactFilterStatusEnum[])
             .map((status) => {
-              const translated = contactPartnershipStatus[status]?.name;
+              const translated = getLocalizedContactStatus(i18n.t, status);
               if (!translated) {
                 throw new Error(
                   `Unrecognized ContactFilterStatusEnum value ${value}`,

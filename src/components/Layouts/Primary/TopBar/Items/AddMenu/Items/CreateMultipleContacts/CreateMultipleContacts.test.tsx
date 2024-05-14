@@ -6,9 +6,9 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../../../../../../theme';
 import { CreateContactMutation } from '../CreateContact/CreateContact.generated';
 import { CreateMultipleContacts } from './CreateMultipleContacts';
@@ -86,6 +86,9 @@ describe('CreateMultipleContacts', () => {
     const phone = '+1 (111) 222-3344';
     const email = 'christian.huffman@cru.org';
     const status = StatusEnum.PartnerFinancial;
+    const statusTextName =
+      loadConstantsMockData.constant.statuses?.find((s) => s.id === status)
+        ?.value || '';
 
     const first2 = 'Robert';
     const last2 = 'Eldredge';
@@ -137,7 +140,7 @@ describe('CreateMultipleContacts', () => {
       userEvent.type(getAllByRole('textbox', { name: 'Email' })[0], email);
       userEvent.type(
         getAllByRole('listbox', { name: 'Status' })[0],
-        contactPartnershipStatus[status].translated,
+        statusTextName,
       );
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
       userEvent.click(getByText('Save'));
@@ -406,22 +409,24 @@ describe('CreateMultipleContacts', () => {
 
       await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
 
-      const { operation } = mutationSpy.mock.calls[3][0];
-      expect(operation).toMatchObject({
-        operationName: 'CreateContactAddress',
-        variables: {
-          accountListId,
-          attributes: {
-            street: 'A/100 Lake Hart Drive',
-            city: 'Orlando',
-            region: 'Orange County',
-            metroArea: 'Orlando',
-            state: 'FL',
-            country: 'United States',
-            postalCode: '32832',
+      const { operation } = await waitFor(() => mutationSpy.mock.calls[4][0]);
+      await waitFor(() =>
+        expect(operation).toMatchObject({
+          operationName: 'CreateContactAddress',
+          variables: {
+            accountListId,
+            attributes: {
+              street: 'A/100 Lake Hart Drive',
+              city: 'Orlando',
+              region: 'Orange County',
+              metroArea: 'Orlando',
+              state: 'FL',
+              country: 'United States',
+              postalCode: '32832',
+            },
           },
-        },
-      });
+        }),
+      );
     }, 20000);
   });
 });

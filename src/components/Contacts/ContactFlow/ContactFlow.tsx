@@ -12,8 +12,8 @@ import {
   IdValue,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { statusMap } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
 import Loading from '../../Loading';
 import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
@@ -65,6 +65,7 @@ export const ContactFlow: React.FC<Props> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
+  const { statusMap } = useContactPartnershipStatuses();
 
   const flowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
