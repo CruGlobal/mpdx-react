@@ -67,6 +67,7 @@ import {
   getDatabaseValueFromResult,
   handleTaskActionChange,
   handleTaskPhaseChange,
+  showContactSuggestedStatus,
 } from '../TaskModalHelper';
 
 const taskSchema = yup.object({
@@ -90,7 +91,10 @@ type Attributes = yup.InferType<typeof taskSchema>;
 interface Props {
   accountListId: string;
   onClose: () => void;
-  defaultValues?: Partial<TaskCreateInput> & { taskPhase: PhaseEnum };
+  defaultValues?: Partial<TaskCreateInput> & {
+    taskPhase?: PhaseEnum;
+    contactNodes?: [{ id: string; status: StatusEnum | undefined }];
+  };
 }
 
 const TaskModalLogForm = ({
@@ -148,6 +152,9 @@ const TaskModalLogForm = ({
         taskPhase = activityData.phaseId;
         taskSubject = activityData.title;
       }
+    }
+    if (defaultValues?.taskPhase) {
+      setPhaseId(defaultValues?.taskPhase);
     }
 
     return {
@@ -391,13 +398,14 @@ const TaskModalLogForm = ({
                 setResultSelected={setResultSelected}
                 phaseData={phaseData}
               />
-
-              <SuggestedContactStatus
-                partnerStatus={partnerStatus}
-                changeContactStatus={changeContactStatus}
-                handleChange={handleChange}
-                numOfContacts={contactIds.length}
-              />
+              {showContactSuggestedStatus(defaultValues?.contactNodes) && (
+                <SuggestedContactStatus
+                  partnerStatus={partnerStatus}
+                  changeContactStatus={changeContactStatus}
+                  handleChange={handleChange}
+                  numOfContacts={contactIds.length}
+                />
+              )}
 
               <Grid item>
                 <ContactsAutocomplete

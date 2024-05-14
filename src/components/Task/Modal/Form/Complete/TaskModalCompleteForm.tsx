@@ -50,7 +50,11 @@ import { possibleNextActions } from '../PossibleNextActions';
 import { possiblePartnerStatus } from '../PossiblePartnerStatus';
 import { possibleResults } from '../PossibleResults';
 import { useUpdateContactStatusMutation } from '../TaskModal.generated';
-import { filterTags, getDatabaseValueFromResult } from '../TaskModalHelper';
+import {
+  filterTags,
+  getDatabaseValueFromResult,
+  showContactSuggestedStatus,
+} from '../TaskModalHelper';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const StyledGrid = styled(Grid)(() => ({
@@ -336,12 +340,14 @@ const TaskModalCompleteForm = ({
                 phaseData={phaseData}
               />
 
-              <SuggestedContactStatus
-                partnerStatus={partnerStatus}
-                changeContactStatus={changeContactStatus}
-                handleChange={handleChange}
-                numOfContacts={numberOfContacts}
-              />
+              {showContactSuggestedStatus(task.contacts.nodes) && (
+                <SuggestedContactStatus
+                  partnerStatus={partnerStatus}
+                  changeContactStatus={changeContactStatus}
+                  handleChange={handleChange}
+                  numOfContacts={task.contacts.nodes.length}
+                />
+              )}
 
               {nextActions.length > 0 && (
                 <Grid item>
@@ -363,7 +369,6 @@ const TaskModalCompleteForm = ({
                   setSelectedTags={setSelectedSuggestedTags}
                 />
               )}
-              {/*Add field to change contact statuses */}
               <Grid item>
                 <TagsAutocomplete
                   accountListId={accountListId}
