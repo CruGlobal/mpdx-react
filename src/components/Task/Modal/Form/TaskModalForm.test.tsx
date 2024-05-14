@@ -1,22 +1,26 @@
 import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
+import { ThemeProvider } from '@emotion/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime, Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import LoadConstantsMock, {
+  loadConstantsMockData as LoadConstants,
+} from 'src/components/Constants/LoadConstantsMock';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import theme from 'src/theme';
 import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalForm from './TaskModalForm';
 import {
-  LoadConstants,
   createTasksMutationMock,
   deleteTaskMutationMock,
   updateTaskMutationMock,
@@ -64,7 +68,9 @@ describe('TaskModalForm', () => {
     completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
     subject: 'Subject',
     tagList: [],
-    user: null,
+    user: {
+      id: 'userId',
+    },
   };
 
   beforeEach(() => {
@@ -148,17 +154,19 @@ describe('TaskModalForm', () => {
 
     userEvent.type(getByRole('textbox', { name: 'Subject' }), 'Do something');
 
-    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
-    userEvent.click(getByRole('option', { name: 'Appointment' }));
+    userEvent.click(getByRole('combobox', { name: 'Task Type/Phase' }));
+    userEvent.click(await findByRole('option', { name: 'Appointment' }));
 
     userEvent.click(getByRole('combobox', { name: 'Action' }));
-    userEvent.click(getByRole('option', { name: 'In Person Appointment' }));
+    userEvent.click(await findByRole('option', { name: 'In Person' }));
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
     userEvent.click(await findByRole('option', { name: 'Contact 2' }));
 
     userEvent.click(getByRole('combobox', { name: 'Assignee' }));
     userEvent.click(await findByRole('option', { name: 'User 2' }));
+
+    expect(getByRole('combobox', { name: 'Tags' })).toBeInTheDocument();
 
     userEvent.click(getByRole('combobox', { name: 'Tags' }));
     userEvent.click(await findByRole('option', { name: 'tag-2' }));
@@ -174,7 +182,7 @@ describe('TaskModalForm', () => {
       variables: {
         accountListId,
         attributes: {
-          subject: 'Do something',
+          subject: 'In Person Appointment',
           userId: 'user-2',
           contactIds: ['contact-2'],
           tagList: ['tag-2'],
@@ -186,8 +194,10 @@ describe('TaskModalForm', () => {
 
   it('persisted', async () => {
     const onClose = jest.fn();
+    const mutationSpy = jest.fn();
     const {
       getByRole,
+      findByRole,
       getByLabelText,
       queryByLabelText,
       getByText,
@@ -196,42 +206,65 @@ describe('TaskModalForm', () => {
     } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
-          <MockedProvider
-            mocks={[updateTaskMutationMock()]}
-            addTypename={false}
+          <GqlMockedProvider<{
+            AssigneeOptions: AssigneeOptionsQuery;
+            ContactOptions: ContactOptionsQuery;
+            TagOptions: TagOptionsQuery;
+            LoadConstants: LoadConstantsQuery;
+          }>
+            mocks={{
+              AssigneeOptions: {
+                accountListUsers: {
+                  nodes: [
+                    {
+                      user: { id: 'user-1', firstName: 'User', lastName: '1' },
+                    },
+                    {
+                      user: { id: 'user-2', firstName: 'User', lastName: '2' },
+                    },
+                  ],
+                },
+              },
+              ContactOptions: {
+                contacts: {
+                  nodes: [
+                    { id: 'contact-1', name: 'Contact 1' },
+                    { id: 'contact-2', name: 'Contact 2' },
+                  ],
+                },
+              },
+              TagOptions: {
+                accountList: {
+                  taskTagList: ['tag-1', 'tag-2'],
+                },
+              },
+              LoadConstants,
+            }}
+            onCall={mutationSpy}
           >
             <TaskModalForm
               accountListId={accountListId}
               onClose={onClose}
               task={mockTask}
             />
-          </MockedProvider>
+          </GqlMockedProvider>
         </SnackbarProvider>
       </LocalizationProvider>,
     );
 
-    userEvent.click(getByLabelText('Task Type'));
-    userEvent.click(
-      within(
-        getByRole('listbox', { hidden: true, name: 'Task Type' }),
-      ).getByText('Partner Care'),
-    );
+    userEvent.click(getByLabelText('Task Type/Phase'));
+    userEvent.click(await findByRole('option', { name: 'Partner Care' }));
 
     userEvent.click(getByLabelText('Action'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
-        'Send Digital Newsletter',
+        'Digital Newsletter',
       ),
     );
 
-    // TODO Fix this test
-    // await waitFor(() => {
-    //   expect(
-    //     getByRole('textbox', {
-    //       name: /subject/i,
-    //     }),
-    //   ).toHaveValue('Partner Care - Digital Newsletter');
-    // });
+    expect(await findByRole('textbox', { name: 'Subject' })).toHaveValue(
+      'Send Digital Newsletter',
+    );
 
     expect(queryByLabelText('Result')).not.toBeInTheDocument();
 
@@ -271,11 +304,11 @@ describe('TaskModalForm', () => {
 
   it('show the location field appropriately', async () => {
     const onClose = jest.fn();
-    const { getByRole, queryByRole } = render(
+    const { getByRole, findByRole, queryByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
-            mocks={[updateTaskMutationMock()]}
+            mocks={[updateTaskMutationMock(), LoadConstantsMock()]}
             addTypename={false}
           >
             <TaskModalForm
@@ -292,13 +325,16 @@ describe('TaskModalForm', () => {
       queryByRole('textbox', { name: 'Location' }),
     ).not.toBeInTheDocument();
 
+    userEvent.click(getByRole('combobox', { name: 'Task Type/Phase' }));
+    userEvent.click(await findByRole('option', { name: 'Follow Up' }));
+
     const action = getByRole('combobox', { name: 'Action' });
     userEvent.click(action);
-    userEvent.click(getByRole('option', { name: 'In Person Appointment' }));
+    userEvent.click(await findByRole('option', { name: 'In Person' }));
     expect(getByRole('textbox', { name: 'Location' })).toBeInTheDocument();
 
     userEvent.click(action);
-    userEvent.click(getByRole('option', { name: 'Video Appointment' }));
+    userEvent.click(getByRole('option', { name: 'Social Media' }));
     expect(
       queryByRole('textbox', { name: 'Location' }),
     ).not.toBeInTheDocument();
@@ -350,57 +386,56 @@ describe('TaskModalForm', () => {
 
   it('renders fields for completed task', async () => {
     const onClose = jest.fn();
-    const { getByRole, queryByText } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <GqlMockedProvider<{
-            LoadConstants: LoadConstantsQuery;
-          }>
-            mocks={{
-              LoadConstants,
-            }}
-          >
-            <MockedProvider
-              mocks={[updateTaskMutationMock()]}
-              addTypename={false}
+    const mutationSpy = jest.fn();
+
+    const { getByRole, findByRole, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{
+                LoadConstants,
+              }}
+              onCall={mutationSpy}
             >
               <TaskModalForm
                 accountListId={accountListId}
                 onClose={onClose}
                 task={mockCompletedTask}
               />
-            </MockedProvider>
-          </GqlMockedProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>,
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </LocalizationProvider>
+      </ThemeProvider>,
     );
+
+    userEvent.click(getByRole('combobox', { name: 'Task Type/Phase' }));
+    expect(
+      await findByRole('option', { name: 'Partner Care' }),
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(getByRole('option', { name: 'Appointment' })).toBeInTheDocument();
+    });
 
     expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
       '01/05/2016',
     );
     expect(queryByText('Notifications')).not.toBeInTheDocument();
 
-    expect(
-      getByRole('combobox', {
-        name: 'Task Type',
-      }),
-    ).toHaveValue('Appointment');
+    expect(getByRole('combobox', { name: 'Action' })).toHaveValue('In Person');
 
-    expect(
-      getByRole('combobox', {
-        name: 'Action',
-      }),
-    ).toHaveValue('In Person Appointment');
-
-    // TODO - Fix Tests
     userEvent.click(getByRole('combobox', { name: 'Result' }));
     userEvent.click(
       getByRole('option', { name: 'Cancelled-Need to reschedule' }),
     );
 
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
-    userEvent.click(getByRole('option', { name: 'Email To Follow Up' })); //
-  }, 2500);
+    screen.logTestingPlaygroundURL();
+    userEvent.click(getByRole('option', { name: 'Email' }));
+  });
 
   it('deletes a task', async () => {
     const onClose = jest.fn();
@@ -428,33 +463,43 @@ describe('TaskModalForm', () => {
 
   it('opens new task modal when activity type changes', async () => {
     const onClose = jest.fn();
-    const { getByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <GqlMockedProvider>
-            <TaskModalForm
-              accountListId={accountListId}
-              onClose={onClose}
-              task={mockCompletedTask}
-            />
-          </GqlMockedProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>,
+    const { getByRole, findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{
+                LoadConstants,
+              }}
+            >
+              <TaskModalForm
+                accountListId={accountListId}
+                onClose={onClose}
+                task={mockCompletedTask}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </LocalizationProvider>
+      </ThemeProvider>,
     );
 
-    // TODO - Fix test
+    userEvent.click(getByRole('combobox', { name: 'Result' }));
+    userEvent.click(await findByRole('option', { name: 'Follow up' }));
+
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
-    userEvent.click(getByRole('option', { name: 'Appointment' }));
+    userEvent.click(await findByRole('option', { name: 'In Person' }));
     userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({
         view: 'add',
         defaultValues: {
-          subject: mockCompletedTask.subject,
-          activityType: ActivityTypeEnum.AppointmentInPerson,
+          activityType: ActivityTypeEnum.FollowUpInPerson,
           contactIds: [],
           tagList: [],
+          userId: mockCompletedTask.user.id,
         },
       }),
     );

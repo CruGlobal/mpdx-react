@@ -1,9 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing';
-import {
-  ActivityTypeEnum,
-  PhaseEnum,
-  StatusEnum,
-} from 'src/graphql/types.generated';
+import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import {
   LoadConstantsDocument,
   LoadConstantsQuery,
@@ -28,137 +24,164 @@ export const loadConstantsMockData = {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.InitiationPhoneCall,
         value: 'Initiation - Phone Call',
+        name: 'phone call to initiate appointment',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.InitiationPhoneCall,
         value: 'Initiation - Email',
+        name: 'email to initiate',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.InitiationTextMessage,
         value: 'Initiation - Text Message',
+        name: 'text message to initiate',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.InitiationSocialMedia,
         value: 'Initiation - Social Media',
+        name: 'social media message to initiate',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.InitiationLetter,
         value: 'Initiation - Letter',
+        name: 'letter to initiate',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.InitiationSpecialGiftAppeal,
         value: 'Initiation - Special Gift Appeal',
+        name: 'special gift appeal',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.InitiationInPerson,
         value: 'Initiation - In Person',
+        name: 'initiate in person',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.AppointmentInPerson,
         value: 'Appointment - In Person',
+        name: 'in person appointment',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.AppointmentPhoneCall,
         value: 'Appointment - Phone Call',
+        name: 'video appointment',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.AppointmentVideoCall,
         value: 'Appointment - Video Call',
+        name: 'phone appointment',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.FollowUpPhoneCall,
         value: 'Follow Up - Phone Call',
+        name: 'phone call to follow up',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.FollowUpEmail,
         value: 'Follow Up - Email',
+        name: 'email to follow up',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.FollowUpTextMessage,
         value: 'Follow Up - Text Message',
+        name: 'text message to follow up',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.FollowUpSocialMedia,
         value: 'Follow Up - Social Media',
+        name: 'social media message to follow up',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.FollowUpInPerson,
         value: 'Follow Up - In Person',
+        name: 'follow up in person',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCarePhoneCall,
         value: 'Partner Care - Phone Call',
+        name: 'call partner for cultivation',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCareEmail,
         value: 'Partner Care - Email',
+        name: 'email partner for cultivation',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCareTextMessage,
         value: 'Partner Care - Text Message',
+        name: 'text message partner for cultivation',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCareSocialMedia,
         value: 'Partner Care - Social Media',
+        name: 'social media message for cultivation',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCareInPerson,
         value: 'Partner Care - In Person',
+        name: 'connect in person for cultivation',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCareThank,
         value: 'Partner Care - Thank',
+        name: 'send thank you note',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCareDigitalNewsletter,
         value: 'Partner Care - Digital Newsletter',
+        name: 'send digital newsletter',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCarePhysicalNewsletter,
         value: 'Partner Care - Physical Newsletter',
+        name: 'send physical newsletter',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCarePrayerRequest,
         value: 'Partner Care - Prayer Request',
+        name: 'ask for or receive prayer request',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCareUpdateInformation,
         value: 'Partner Care - Update Information',
+        name: 'update partner information',
       },
       {
         __typename: 'ActivitiesConstant',
         id: ActivityTypeEnum.PartnerCareToDo,
         value: 'Partner Care - To Do',
+        name: 'to do',
       },
     ],
+
     phases: [
       {
         __typename: 'Phase',
-        id: PhaseEnum.Connection,
+        id: 'CONNECTION',
         name: 'Connection',
         results: {
           __typename: 'Result',
@@ -166,16 +189,16 @@ export const loadConstantsMockData = {
           tags: null,
         },
         contactStatuses: [
-          StatusEnum.NeverContacted,
-          StatusEnum.AskInFuture,
-          StatusEnum.ResearchContactInfo,
-          StatusEnum.CultivateRelationship,
+          'NEVER_CONTACTED',
+          'ASK_IN_FUTURE',
+          'RESEARCH_CONTACT_INFO',
+          'CULTIVATE_RELATIONSHIP',
         ],
         tasks: [],
       },
       {
         __typename: 'Phase',
-        id: PhaseEnum.Initiation,
+        id: 'INITIATION',
         name: 'Initiation',
         results: {
           __typename: 'Result',

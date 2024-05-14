@@ -162,9 +162,12 @@ const TaskModalForm = ({
 
   const initialTask: Attributes = useMemo(() => {
     if (task) {
-      const taskPhase: PhaseEnum | null = task?.activityType
-        ? activityTypes.get(task?.activityType)?.phaseId || null
-        : null;
+      let taskPhase = task?.taskPhase;
+      if (!taskPhase) {
+        taskPhase = task?.activityType
+          ? activityTypes.get(task.activityType)?.phaseId || undefined
+          : undefined;
+      }
       if (taskPhase) {
         setPhaseId(taskPhase);
       }
@@ -572,7 +575,11 @@ const TaskModalForm = ({
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
-                  label={phaseTags?.length ? t('Additional Tags') : ''}
+                  label={
+                    phaseTags?.length && initialTask.completedAt
+                      ? t('Additional Tags')
+                      : ''
+                  }
                 />
               </Grid>
               {!initialTask.completedAt && (
