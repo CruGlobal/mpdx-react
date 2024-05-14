@@ -56,6 +56,7 @@ export const handleTaskPhaseChange = ({
   setFieldValue('taskPhase', phase);
   setFieldValue('activityType', '');
   setFieldValue('subject', '');
+  setFieldValue('displayResult', undefined);
   setFieldValue('result', undefined);
   setFieldValue('nextAction', undefined);
   setResultSelected(null);
@@ -94,6 +95,7 @@ export const handleResultChange = ({
   setResultSelected,
   phaseData,
 }: HandleResultChangeProps): void => {
+  setFieldValue('displayResult', result);
   setFieldValue('result', result);
   setFieldValue('changeContactStatus', false);
   setResultSelected(result as DisplayResultEnum);

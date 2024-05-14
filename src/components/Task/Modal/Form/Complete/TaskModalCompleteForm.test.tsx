@@ -1,13 +1,14 @@
 import React from 'react';
 import { MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@emotion/react';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import TestWrapper from '__tests__/util/TestWrapper';
 import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
 import {
   ActivityTypeEnum,
+  DisplayResultEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
   ResultEnum,
@@ -18,6 +19,7 @@ import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
 import { updateContactStatusMutationMock } from '../TaskModalMocks';
+import { taskModalTests } from '../TaskModalTests.test';
 import { CompleteTaskDocument } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 import {
@@ -25,7 +27,6 @@ import {
   completeTaskMutationMock,
   createTaskCommentMutation,
 } from './TaskModalCompleteForm.mock';
-import { taskModalTests } from './TaskModalTests.test';
 
 jest.mock('../../../../../hooks/useTaskModal');
 
@@ -119,8 +120,8 @@ describe('TaskModalCompleteForm', () => {
       });
     });
 
-    it('renders multiple contact message warning', async () => {
-      const { getByRole, getByText } = render(
+    it("doesn't not render suggested contact status when multiple contact", async () => {
+      const { getByRole, queryByText } = render(
         <Components
           taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
         />,
@@ -136,17 +137,15 @@ describe('TaskModalCompleteForm', () => {
 
       await waitFor(() => {
         expect(
-          getByText('This will change the contact status for 2 contacts'),
-        ).toBeInTheDocument();
-
-        expect(
-          getByText("Change the contact's status to: CONTACT_FOR_APPOINTMENT"),
-        ).toBeInTheDocument();
+          queryByText(
+            "Change the contact's status to: CONTACT_FOR_APPOINTMENT",
+          ),
+        ).not.toBeInTheDocument();
       });
     });
 
-    it('does not renders multiple contact message warning', async () => {
-      const { getByRole, getByText, queryByText } = render(
+    it('renders suggested status when single contact', async () => {
+      const { getByRole, getByText } = render(
         <Components
           taskOverrides={{
             activityType: ActivityTypeEnum.AppointmentInPerson,
@@ -167,28 +166,20 @@ describe('TaskModalCompleteForm', () => {
 
       await waitFor(() => {
         expect(
-          queryByText('This will change the contact status for 2 contacts'),
-        ).not.toBeInTheDocument();
-
-        expect(
-          getByText("Change the contact's status to: CONTACT_FOR_APPOINTMENT"),
+          getByText("Change the contact's status to:"),
         ).toBeInTheDocument();
+        expect(getByText('Initiate for Appointment')).toBeInTheDocument();
       });
     });
 
     it('should not render <Result> if no result to select', async () => {
-      const { findByRole, queryByRole } = render(
+      const { queryByRole } = render(
         <Components
           taskOverrides={{
             activityType: ActivityTypeEnum.PartnerCareEmail,
           }}
         />,
       );
-
-      const nextActionDropdown = await findByRole('combobox', {
-        name: 'Next Action',
-      });
-      expect(nextActionDropdown).toBeInTheDocument();
 
       await waitFor(() => {
         expect(
@@ -206,25 +197,13 @@ describe('TaskModalCompleteForm', () => {
         />,
       );
 
-      const nextActionDropdown = getByRole('combobox', { name: 'Next Action' });
-      userEvent.click(nextActionDropdown);
-
-      await waitFor(() => {
-        expect(
-          getAllByRole('option', { name: 'Social Media' })[0],
-        ).toBeInTheDocument();
-
-        expect(
-          getByRole('option', { name: 'Digital Newsletter' }),
-        ).toBeInTheDocument();
-      });
-
       const resultDropdown = getByRole('combobox', { name: 'Result' });
       userEvent.click(resultDropdown);
       await waitFor(() => {
         userEvent.click(getByRole('option', { name: 'Partner-Financial' }));
       });
 
+      const nextActionDropdown = getByRole('combobox', { name: 'Next Action' });
       userEvent.click(nextActionDropdown);
 
       await waitFor(() => {
@@ -237,8 +216,27 @@ describe('TaskModalCompleteForm', () => {
           queryByRole('option', { name: 'In Person' }),
         ).not.toBeInTheDocument();
         expect(
-          queryByRole('option', { name: 'Digital Newsletter' }),
+          queryByRole('option', { name: 'Phone Call' }),
         ).not.toBeInTheDocument();
+      });
+
+      userEvent.click(resultDropdown);
+      await waitFor(() => {
+        userEvent.click(getByRole('option', { name: 'Follow up' }));
+      });
+
+      userEvent.click(nextActionDropdown);
+
+      await waitFor(() => {
+        expect(
+          queryByRole('option', { name: 'Thank You Note' }),
+        ).not.toBeInTheDocument();
+
+        expect(
+          getAllByRole('option', { name: 'Social Media' })[0],
+        ).toBeInTheDocument();
+
+        expect(getByRole('option', { name: 'Phone Call' })).toBeInTheDocument();
       });
     });
 
@@ -249,14 +247,16 @@ describe('TaskModalCompleteForm', () => {
         />,
       );
 
-      const nextActionDropdown = getByRole('combobox', { name: 'Next Action' });
       const resultDropdown = getByRole('combobox', { name: 'Result' });
 
       userEvent.click(resultDropdown);
       await waitFor(() => {
-        userEvent.click(getByRole('option', { name: 'Not Interested' }));
+        userEvent.click(
+          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
+        );
       });
 
+      const nextActionDropdown = getByRole('combobox', { name: 'Next Action' });
       userEvent.click(nextActionDropdown);
 
       await waitFor(() => {
@@ -264,18 +264,43 @@ describe('TaskModalCompleteForm', () => {
           getAllByRole('option', { name: 'Social Media' })[0],
         ).toBeInTheDocument();
 
-        expect(
-          getByRole('option', { name: 'Digital Newsletter' }),
-        ).toBeInTheDocument();
+        expect(getByRole('option', { name: 'Email' })).toBeInTheDocument();
       });
     });
 
-    it('is blank for activity types without a matching next action', () => {
-      const { getByRole } = render(
+    it('does not render the Next Actions when Result "not Interested" is selected', async () => {
+      const { getByRole, queryByRole } = render(
         <Components
           taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
         />,
       );
+      userEvent.click(getByRole('combobox', { name: 'Result' }));
+      await waitFor(() => {
+        userEvent.click(getByRole('option', { name: 'Not Interested' }));
+      });
+
+      expect(
+        queryByRole('combobox', { name: 'Next Action' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('next action does not show until result is selected', async () => {
+      const { getByRole, findByRole, queryByRole } = render(
+        <Components
+          taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
+        />,
+      );
+
+      expect(
+        queryByRole('combobox', { name: 'Next Action' }),
+      ).not.toBeInTheDocument();
+
+      userEvent.click(getByRole('combobox', { name: 'Result' }));
+      userEvent.click(await findByRole('option', { name: 'Follow up' }));
+
+      expect(
+        getByRole('combobox', { name: 'Next Action' }),
+      ).toBeInTheDocument();
 
       expect(getByRole('combobox', { name: 'Next Action' })).toHaveValue('');
     });
@@ -308,6 +333,7 @@ describe('TaskModalCompleteForm', () => {
         }}
       />,
     );
+    screen.logTestingPlaygroundURL();
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
     expect(dispatch).toHaveBeenCalledWith('mpdx-task-completed');
@@ -319,8 +345,9 @@ describe('TaskModalCompleteForm', () => {
     const taskAttributes = {
       id: task.id,
       completedAt,
+      displayResult: DisplayResultEnum.FollowUpResultPartnerSpecial,
       result: ResultEnum.Completed,
-      nextAction: ActivityTypeEnum.AppointmentInPerson,
+      nextAction: ActivityTypeEnum.PartnerCareThank,
       tagList: ['tag-1', 'tag-2'],
     };
     const { getByRole, findByRole, getByText } = render(
@@ -376,8 +403,9 @@ describe('TaskModalCompleteForm', () => {
     const taskAttributes = {
       id: task.id,
       completedAt,
+      displayResult: DisplayResultEnum.FollowUpResultPartnerSpecial,
       result: ResultEnum.Completed,
-      nextAction: ActivityTypeEnum.AppointmentInPerson,
+      nextAction: ActivityTypeEnum.PartnerCareThank,
       tagList: ['tag-1', 'tag-2'],
     };
     const { getByRole, findByRole, getByText } = render(
@@ -390,21 +418,13 @@ describe('TaskModalCompleteForm', () => {
               query: CompleteTaskDocument,
               variables: {
                 accountListId,
-                attributes: {
-                  ...taskAttributes,
-                  result: ResultEnum.Completed,
-                  nextAction: ActivityTypeEnum.PartnerCareThank,
-                },
+                attributes: taskAttributes,
               },
             },
             result: {
               data: {
                 updateTask: {
-                  task: {
-                    ...taskAttributes,
-                    result: ResultEnum.Completed,
-                    nextAction: ActivityTypeEnum.PartnerCareThank,
-                  },
+                  task: taskAttributes,
                 },
               },
             },
@@ -432,9 +452,9 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
     userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
 
-    userEvent.click(
-      getByText("Change the contact's status to: PARTNER_SPECIAL"),
-    );
+    screen.logTestingPlaygroundURL();
+    userEvent.click(getByText("Change the contact's status to:"));
+    expect(getByText('Partner - Special')).toBeInTheDocument();
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>

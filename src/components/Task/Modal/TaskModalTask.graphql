@@ -11,6 +11,7 @@ query GetTaskForTaskModal(
     location
     startAt
     completedAt
+    displayResult
     result
     nextAction
     tagList

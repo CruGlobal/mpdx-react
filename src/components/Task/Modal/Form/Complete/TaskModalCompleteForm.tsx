@@ -50,11 +50,7 @@ import { possibleNextActions } from '../PossibleNextActions';
 import { possiblePartnerStatus } from '../PossiblePartnerStatus';
 import { possibleResults } from '../PossibleResults';
 import { useUpdateContactStatusMutation } from '../TaskModal.generated';
-import {
-  filterTags,
-  getDatabaseValueFromResult,
-  showContactSuggestedStatus,
-} from '../TaskModalHelper';
+import { filterTags, getDatabaseValueFromResult } from '../TaskModalHelper';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const StyledGrid = styled(Grid)(() => ({
@@ -63,6 +59,7 @@ const StyledGrid = styled(Grid)(() => ({
 
 const taskSchema = yup.object({
   id: yup.string().required(),
+  displayResult: yup.mixed<DisplayResultEnum>().nullable(),
   result: yup.mixed<ResultEnum>().required(),
   changeContactStatus: yup.boolean(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
@@ -93,6 +90,7 @@ const TaskModalCompleteForm = ({
       completedAt: initialCompletedAt
         ? DateTime.fromISO(initialCompletedAt)
         : DateTime.local(),
+      displayResult: null,
       result: ResultEnum.Completed,
       changeContactStatus: false,
       nextAction: null,
@@ -146,10 +144,10 @@ const TaskModalCompleteForm = ({
 
     delete attributes.changeContactStatus;
 
-    if (attributes.result) {
+    if (attributes.displayResult) {
       attributes.result = getDatabaseValueFromResult(
         phaseData,
-        attributes.result,
+        attributes.displayResult,
         activityType,
       );
     }
@@ -264,7 +262,7 @@ const TaskModalCompleteForm = ({
         values: {
           completedAt,
           tagList,
-          result,
+          displayResult,
           changeContactStatus,
           nextAction,
           comment,
@@ -334,20 +332,18 @@ const TaskModalCompleteForm = ({
 
               <ResultSelect
                 availableResults={availableResults}
-                result={result}
+                result={displayResult}
                 setFieldValue={setFieldValue}
                 setResultSelected={setResultSelected}
                 phaseData={phaseData}
               />
 
-              {showContactSuggestedStatus(task.contacts.nodes) && (
-                <SuggestedContactStatus
-                  partnerStatus={partnerStatus}
-                  changeContactStatus={changeContactStatus}
-                  handleChange={handleChange}
-                  numOfContacts={task.contacts.nodes.length}
-                />
-              )}
+              <SuggestedContactStatus
+                partnerStatus={partnerStatus}
+                changeContactStatus={changeContactStatus}
+                handleChange={handleChange}
+                numOfContacts={task.contacts.nodes.length}
+              />
 
               {nextActions.length > 0 && (
                 <Grid item>

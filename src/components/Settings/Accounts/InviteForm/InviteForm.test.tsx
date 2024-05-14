@@ -41,14 +41,7 @@ const Components = ({ children }: PropsWithChildren) => (
 describe('InviteForm', () => {
   it('should invite a user', async () => {
     const mutationSpy = jest.fn();
-    const {
-      getByText,
-      getByTestId,
-      getByRole,
-      queryByText,
-      findByRole,
-      queryByTestId,
-    } = render(
+    const { getByText, getByRole, queryByText, findByRole } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <InviteForm type={InviteTypeEnum.User} />
@@ -59,7 +52,8 @@ describe('InviteForm', () => {
     expect(
       getByText('Invite someone to share this account'),
     ).toBeInTheDocument();
-    expect(getByTestId('action-button')).toBeDisabled();
+    const shareAccountButton = getByRole('button', { name: 'Share Account' });
+    expect(shareAccountButton).toBeDisabled();
 
     userEvent.type(getByRole('textbox'), 'test@');
     await waitFor(() => {
@@ -70,10 +64,10 @@ describe('InviteForm', () => {
       expect(
         queryByText(/email must be a valid email/i),
       ).not.toBeInTheDocument();
-      expect(queryByTestId('action-button')).not.toBeDisabled();
+      expect(shareAccountButton).not.toBeDisabled();
     });
 
-    userEvent.click(getByTestId('action-button'));
+    userEvent.click(shareAccountButton);
     await waitFor(() => {
       expect(getByText('Confirm')).toBeInTheDocument();
       expect(
@@ -107,21 +101,20 @@ describe('InviteForm', () => {
 
   it('should invite a coach', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByTestId, getByRole, findByRole, queryByText } =
-      render(
-        <Components>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <InviteForm type={InviteTypeEnum.Coach} />
-          </GqlMockedProvider>
-        </Components>,
-      );
+    const { getByText, getByRole, findByRole, queryByText } = render(
+      <Components>
+        <GqlMockedProvider onCall={mutationSpy}>
+          <InviteForm type={InviteTypeEnum.Coach} />
+        </GqlMockedProvider>
+      </Components>,
+    );
 
     expect(
       getByText('Invite someone to share this account'),
     ).toBeInTheDocument();
 
     userEvent.type(getByRole('textbox'), 'test@test.org');
-    userEvent.click(getByTestId('action-button'));
+    userEvent.click(getByRole('button', { name: 'Share Account' }));
 
     await waitFor(() => {
       expect(getByText('Confirm')).toBeInTheDocument();

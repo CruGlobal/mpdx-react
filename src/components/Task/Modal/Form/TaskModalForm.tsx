@@ -88,6 +88,7 @@ const taskSchema = yup.object({
   subject: yup.string().required(),
   startAt: nullableDateTime(),
   completedAt: nullableDateTime(),
+  displayResult: yup.mixed<DisplayResultEnum>().nullable(),
   result: yup.mixed<ResultEnum>().nullable(),
   changeContactStatus: yup.boolean(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
@@ -189,6 +190,7 @@ const TaskModalForm = ({
         completedAt: task.completedAt
           ? DateTime.fromISO(task.completedAt)
           : null,
+        displayResult: task.displayResult ?? null,
         result: task.result ?? null,
         changeContactStatus: false,
         nextAction: task.nextAction ?? null,
@@ -222,6 +224,7 @@ const TaskModalForm = ({
         subject: taskSubject ?? '',
         startAt: DateTime.local(),
         completedAt: null,
+        displayResult: null,
         result: defaultValues?.result ?? null,
         changeContactStatus: false,
         nextAction: defaultValues?.nextAction ?? null,
@@ -262,10 +265,10 @@ const TaskModalForm = ({
       attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
     }
 
-    if (attributes.result) {
+    if (attributes.displayResult) {
       attributes.result = getDatabaseValueFromResult(
         phaseData,
-        attributes.result,
+        attributes.displayResult,
         attributes.activityType,
       );
     }
@@ -347,13 +350,6 @@ const TaskModalForm = ({
     () => possibleNextActions(phaseData, resultSelected, actionSelected),
     [phaseData, resultSelected, actionSelected],
   );
-  // useEffect(() => {
-  //   formikRef?.current?.setFieldValue(
-  //     'nextAction',
-  //     nextActions.length === 2 ? nextActions[1] : null,
-  //   );
-  //   console.log('settting nextAction');
-  // }, [nextActions]);
 
   return (
     <Formik
@@ -373,7 +369,7 @@ const TaskModalForm = ({
           subject,
           startAt,
           completedAt,
-          result,
+          displayResult,
           changeContactStatus,
           nextAction,
           tagList,
@@ -529,7 +525,7 @@ const TaskModalForm = ({
               {initialTask.completedAt && (
                 <ResultSelect
                   availableResults={availableResults}
-                  result={result}
+                  result={displayResult}
                   setFieldValue={setFieldValue}
                   setResultSelected={setResultSelected}
                   phaseData={phaseData}
@@ -543,7 +539,7 @@ const TaskModalForm = ({
                 numOfContacts={contactIds.length}
               />
 
-              {initialTask.completedAt && nextActions.length && (
+              {initialTask.completedAt && !!nextActions.length && (
                 <Grid item>
                   <ActivityTypeAutocomplete
                     options={nextActions}
