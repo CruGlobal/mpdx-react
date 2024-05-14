@@ -3,8 +3,8 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { VirtuosoMockContext } from 'react-virtuoso';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import { TasksMassActionsDropdown } from '../../../Shared/MassActions/TasksMassActionsDropdown';
@@ -31,6 +31,7 @@ const router = {
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
+    preloadTaskModal: jest.fn(),
   });
   (useAccountListId as jest.Mock).mockReturnValue(router);
 });

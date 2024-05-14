@@ -1,7 +1,5 @@
 import React from 'react';
-import CreateIcon from '@mui/icons-material/Create';
-import { Box, Divider, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { Box, Divider, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
@@ -33,13 +31,6 @@ const ContactDetailHeadingContainer = styled(Box)(() => ({
   alignItems: 'center',
 }));
 
-export const ContactDetailEditIcon = styled(CreateIcon)(({ theme }) => ({
-  width: '18px',
-  height: '18px',
-  margin: theme.spacing(0),
-  color: theme.palette.cruGrayMedium.main,
-}));
-
 const ContactDetailHeadingText = styled(Typography)(() => ({
   flexGrow: 5,
   fontWeight: 'bold',
@@ -66,7 +57,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   contactId,
   onContactSelected,
 }) => {
-  const { data, loading } = useContactDetailsTabQuery({
+  const { data } = useContactDetailsTabQuery({
     variables: { accountListId, contactId },
   });
 
@@ -79,11 +70,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   return (
     <>
       <ContactDetailsTabContainer>
-        {
-          // Tag Section
-        }
+        {/* Tag Section */}
         <ContactDetailHeadingContainer mt={-3}>
-          {loading || !data ? (
+          {!data ? (
             <ContactDetailLoadingPlaceHolder variant="rectangular" />
           ) : (
             <ContactTags
@@ -94,11 +83,9 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailHeadingContainer>
         <Divider />
-        {
-          // People Section
-        }
+        {/* People Section */}
         <ContactDetailSectionContainer>
-          {loading || !data ? (
+          {!data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -106,22 +93,20 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             </>
           ) : (
             <ContactDetailsTabPeople
-              data={data?.contact}
+              data={data.contact}
               accountListId={accountListId}
             />
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        {
-          // Mailing Section
-        }
+        {/* Mailing Section */}
         <ContactDetailSectionContainer>
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
               {t('Mailing')}
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>
-          {loading || !data ? (
+          {!data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -135,16 +120,14 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        {
-          // other Section
-        }
+        {/* Other Section */}
         <ContactDetailSectionContainer>
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
               {t('Other')}
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>
-          {loading || !data ? (
+          {!data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -159,16 +142,14 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        {
-          // Patner Accounts Section
-        }
+        {/* Partner Accounts Section */}
         <ContactDetailSectionContainer>
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
               {t('Partner Accounts')}
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>
-          {loading || !data ? (
+          {!data ? (
             <>
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
@@ -180,12 +161,12 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
         </ContactDetailSectionContainer>
         <Divider />
       </ContactDetailsTabContainer>
-      {loading || !data ? null : (
+      {data && (
         <EditContactOtherModal
           accountListId={accountListId}
           contact={data.contact}
           isOpen={editOtherModalOpen}
-          referral={data.contact.contactReferralsToMe?.nodes[0]}
+          referral={data.contact.contactReferralsToMe.nodes[0]}
           handleClose={() => setEditOtherModalOpen(false)}
         />
       )}

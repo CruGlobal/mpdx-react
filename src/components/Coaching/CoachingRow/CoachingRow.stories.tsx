@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { gqlMock } from '../../../../__tests__/util/graphqlMocking';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   CoachedPersonFragment,
   CoachedPersonFragmentDoc,

@@ -19,8 +19,8 @@ import { makeStyles } from 'tss-react/mui';
 import { FilterOption } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
+import { StyledInput } from '../StyledInput';
 import { frequencies } from './InputOptions/Frequencies';
-import { StyledInput } from './StyledInput';
 
 const useStyles = makeStyles()(() => ({
   right: {

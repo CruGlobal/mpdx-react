@@ -4,13 +4,10 @@ import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { ContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
-import {
-  GqlMockedProvider,
-  gqlMock,
-} from '../../../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
 import { ContactDetailProvider } from '../../../ContactDetailContext';
 import {
@@ -67,7 +64,7 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -77,7 +74,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -112,7 +109,7 @@ describe('EditContactOtherModal', () => {
                 },
               }}
             >
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -122,7 +119,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -157,7 +154,7 @@ describe('EditContactOtherModal', () => {
                 },
               }}
             >
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -167,7 +164,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -192,7 +189,7 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -202,7 +199,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -220,7 +217,7 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -230,7 +227,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -250,7 +247,7 @@ describe('EditContactOtherModal', () => {
           <TestRouter router={router}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider onCall={mutationSpy}>
-                <ContactsPage>
+                <ContactsWrapper>
                   <ContactDetailProvider>
                     <EditContactOtherModal
                       accountListId={accountListId}
@@ -260,7 +257,7 @@ describe('EditContactOtherModal', () => {
                       referral={undefined}
                     />
                   </ContactDetailProvider>
-                </ContactsPage>
+                </ContactsWrapper>
               </GqlMockedProvider>
             </ThemeProvider>
           </TestRouter>
@@ -286,7 +283,7 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider onCall={mutationSpy}>
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -296,7 +293,7 @@ describe('EditContactOtherModal', () => {
                     referral={undefined}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -379,7 +376,7 @@ describe('EditContactOtherModal', () => {
                 },
               }}
             >
-              <ContactsPage>
+              <ContactsWrapper>
                 <ContactDetailProvider>
                   <EditContactOtherModal
                     accountListId={accountListId}
@@ -389,7 +386,7 @@ describe('EditContactOtherModal', () => {
                     referral={referral}
                   />
                 </ContactDetailProvider>
-              </ContactsPage>
+              </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>

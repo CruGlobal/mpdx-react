@@ -56,6 +56,41 @@ export type OrganizationFormikSchema = {
   password: string | undefined;
 };
 
+const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> = yup.object({
+  selectedOrganization: yup
+    .object({
+      id: yup.string().required(),
+      apiClass: yup.string().required(),
+      name: yup.string().required(),
+      oauth: yup.boolean().required(),
+      giftAidPercentage: yup.number().nullable(),
+      disableNewUsers: yup.boolean().nullable(),
+    })
+    .required(),
+  username: yup
+    .string()
+    .when('selectedOrganization', (organization, schema) => {
+      if (
+        getOrganizationType(organization?.apiClass, organization?.oauth) ===
+        OrganizationTypesEnum.LOGIN
+      ) {
+        return schema.required('Must enter username');
+      }
+      return schema;
+    }),
+  password: yup
+    .string()
+    .when('selectedOrganization', (organization, schema) => {
+      if (
+        getOrganizationType(organization?.apiClass, organization?.oauth) ===
+        OrganizationTypesEnum.LOGIN
+      ) {
+        return schema.required('Must enter password');
+      }
+      return schema;
+    }),
+});
+
 const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
 }));
@@ -86,7 +121,9 @@ export const OrganizationAddAccountModal: React.FC<
   const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
 
   const onSubmit = async (attributes: Partial<OrganizationFormikSchema>) => {
-    if (!attributes?.selectedOrganization) return;
+    if (!attributes?.selectedOrganization) {
+      return;
+    }
     const { apiClass, oauth, id } = attributes.selectedOrganization;
     const type = getOrganizationType(apiClass, oauth);
 
@@ -99,7 +136,9 @@ export const OrganizationAddAccountModal: React.FC<
       return;
     }
 
-    if (!accountListId) return;
+    if (!accountListId) {
+      return;
+    }
 
     const createAccountAttributes: {
       organizationId: string;
@@ -143,43 +182,6 @@ export const OrganizationAddAccountModal: React.FC<
   const showOrganizationHelp = () => {
     showArticle('HS_SETUP_FIND_ORGANIZATION');
   };
-
-  const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> = yup.object(
-    {
-      selectedOrganization: yup
-        .object({
-          id: yup.string().required(),
-          apiClass: yup.string().required(),
-          name: yup.string().required(),
-          oauth: yup.boolean().required(),
-          giftAidPercentage: yup.number().nullable(),
-          disableNewUsers: yup.boolean(),
-        })
-        .required(),
-      username: yup
-        .string()
-        .when('selectedOrganization', (organization, schema) => {
-          if (
-            getOrganizationType(organization?.apiClass, organization?.oauth) ===
-            OrganizationTypesEnum.LOGIN
-          ) {
-            return schema.required('Must enter username');
-          }
-          return schema;
-        }),
-      password: yup
-        .string()
-        .when('selectedOrganization', (organization, schema) => {
-          if (
-            getOrganizationType(organization?.apiClass, organization?.oauth) ===
-            OrganizationTypesEnum.LOGIN
-          ) {
-            return schema.required('Must enter password');
-          }
-          return schema;
-        }),
-    },
-  );
 
   return (
     <Modal
@@ -239,13 +241,11 @@ export const OrganizationAddAccountModal: React.FC<
                 )}
               />
             </StyledBox>
-
             {!selectedOrganization && !!articles.HS_SETUP_FIND_ORGANIZATION && (
               <Button onClick={showOrganizationHelp}>
                 {t("Can't find your organization?")}
               </Button>
             )}
-
             {organizationType === OrganizationTypesEnum.MINISTRY && (
               <WarningBox>
                 <Typography
@@ -288,7 +288,9 @@ export const OrganizationAddAccountModal: React.FC<
                           });
                         }}
                       >
-                        {t('click here to log out of {{appName}}', { appName })}
+                        {t('click here to log out of {{appName}}', {
+                          appName,
+                        })}
                       </Link>
                       {t(
                         ' so you can log back in with your official key account.',
@@ -307,7 +309,6 @@ export const OrganizationAddAccountModal: React.FC<
                 </StyledTypography>
               </WarningBox>
             )}
-
             {organizationType === OrganizationTypesEnum.OAUTH && (
               <WarningBox>
                 <Typography color={theme.palette.mpdxYellow.contrastText}>
@@ -318,7 +319,6 @@ export const OrganizationAddAccountModal: React.FC<
                 </Typography>
               </WarningBox>
             )}
-
             {organizationType === OrganizationTypesEnum.LOGIN && (
               <>
                 <StyledBox marginTop={4}>
@@ -353,7 +353,6 @@ export const OrganizationAddAccountModal: React.FC<
                 </StyledBox>
               </>
             )}
-
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
 

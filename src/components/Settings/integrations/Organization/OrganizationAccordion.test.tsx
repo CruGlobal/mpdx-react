@@ -5,8 +5,8 @@ import userEvent from '@testing-library/user-event';
 import { cloneDeep } from 'lodash';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import * as Types from 'src/graphql/types.generated';
-import { GqlMockedProvider } from '../../../../../__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { OrganizationAccordion } from './OrganizationAccordion';
 import {
@@ -364,7 +364,9 @@ describe('OrganizationAccordion', () => {
 
       await waitFor(() => {
         expect(
-          getByText('Are you sure you wish to disconnect this organization?'),
+          getByText(
+            'Are you sure you wish to disconnect the organization "organizationName"?',
+          ),
         ).toBeInTheDocument();
       });
       userEvent.click(getByText('Yes'));

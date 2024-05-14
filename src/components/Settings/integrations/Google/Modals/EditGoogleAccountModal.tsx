@@ -85,7 +85,9 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
   const handleToggleCalendarIntegration = async (
     enableIntegration: boolean,
   ) => {
-    if (!tabSelected) return;
+    if (!tabSelected) {
+      return;
+    }
     setIsSubmitting(true);
 
     if (!googleAccountDetails && enableIntegration) {

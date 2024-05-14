@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactsPage } from 'pages/accountLists/[accountListId]/contacts/ContactsPage';
-import { GqlMockedProvider } from '../../../../__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { ContactDetailProvider } from './ContactDetailContext';
 import { ContactDetails } from './ContactDetails';
 import { GetContactDetailsHeaderDocument } from './ContactDetailsHeader/ContactDetailsHeader.generated';
@@ -23,11 +23,11 @@ export const Default = (): ReactElement => {
   return (
     <TestRouter router={router}>
       <GqlMockedProvider>
-        <ContactsPage>
+        <ContactsWrapper>
           <ContactDetailProvider>
             <ContactDetails onClose={() => {}} />
           </ContactDetailProvider>
-        </ContactsPage>
+        </ContactsWrapper>
       </GqlMockedProvider>
     </TestRouter>
   );
@@ -51,11 +51,11 @@ export const Loading = (): ReactElement => {
           },
         ]}
       >
-        <ContactsPage>
+        <ContactsWrapper>
           <ContactDetailProvider>
             <ContactDetails onClose={() => {}} />
           </ContactDetailProvider>
-        </ContactsPage>
+        </ContactsWrapper>
       </MockedProvider>
     </TestRouter>
   );

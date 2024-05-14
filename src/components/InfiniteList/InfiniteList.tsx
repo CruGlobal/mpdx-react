@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo } from 'react';
-import { List, ListItem, Typography } from '@mui/material';
-import Skeleton from '@mui/material/Skeleton';
+import { List, ListItem, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   GroupedVirtuoso,

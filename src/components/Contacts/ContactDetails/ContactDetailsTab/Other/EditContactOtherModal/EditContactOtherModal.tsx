@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
-import debounce from 'lodash/fp/debounce';
+import { debounce } from 'lodash';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -109,9 +109,9 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const [searchTerm, setSearchTerm] = useState(referral?.referredBy.name ?? '');
 
   const handleSearchTermChange = useCallback(
-    debounce(500, (event) => {
+    debounce((event) => {
       setSearchTerm(event.target.value);
-    }),
+    }, 500),
     [],
   );
 

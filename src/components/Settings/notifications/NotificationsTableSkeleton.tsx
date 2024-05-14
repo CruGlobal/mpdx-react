@@ -19,7 +19,7 @@ import {
   StyledTableHeadSelectCell,
   StyledTableRow,
   StyledTask,
-} from './NotificationsTable';
+} from './StyledComponents';
 
 export const NotificationsTableSkeleton: React.FC = () => {
   const { t } = useTranslation();

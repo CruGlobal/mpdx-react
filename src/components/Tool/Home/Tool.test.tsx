@@ -2,7 +2,7 @@ import React from 'react';
 import { mdiAlert } from '@mdi/js';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import TestRouter from '../../../../__tests__/util/TestRouter';
+import TestRouter from '__tests__/util/TestRouter';
 import theme from '../../../theme';
 import Tool from './Tool';
 

@@ -2,8 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { GqlMockedProvider } from '../../../../../../__tests__/util/graphqlMocking';
 import { FourteenMonthReportTable } from './Table';
 
 const onRequestSort = jest.fn();

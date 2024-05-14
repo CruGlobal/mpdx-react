@@ -5,10 +5,10 @@ import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { logErrorOnRollbar } from 'pages/api/utils/rollBar';
+import AccountLists from 'src/components/AccountLists';
+import BaseLayout from 'src/components/Layouts/Primary';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
-import AccountLists from '../src/components/AccountLists';
-import BaseLayout from '../src/components/Layouts/Primary';
 import {
   GetAccountListsDocument,
   GetAccountListsQuery,

@@ -10,7 +10,7 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Typography } from '@mui/material';
-import i18n from 'i18next';
+import i18n from 'src/lib/i18n';
 import { NullStateBox } from '../Shared/Filters/NullState/NullStateBox';
 
 interface Props {

@@ -6,14 +6,17 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useAppSettingsContext } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import * as Types from 'src/graphql/types.generated';
+import {
+  AccountListInvites as AccountListInvitesType,
+  Maybe,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { useAdminDeleteOrganizationInviteMutation } from './DeleteAccountListInvites.generated';
 
 interface Props {
   name: string;
   accountListId: string;
-  accountListInvites: Types.Maybe<Types.AccountListInvites>[];
+  accountListInvites: Maybe<AccountListInvitesType>[];
 }
 
 const BorderBottomBox = styled(Box)(() => ({
@@ -35,7 +38,9 @@ export const AccountListInvites: React.FC<Props> = ({
   const { enqueueSnackbar } = useSnackbar();
 
   const haneleInviteDelete = async (invite) => {
-    if (!invite?.id) return;
+    if (!invite?.id) {
+      return;
+    }
 
     await adminDeleteOrganizationInvite({
       variables: {

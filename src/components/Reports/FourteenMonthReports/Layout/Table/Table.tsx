@@ -5,18 +5,19 @@ import {
   Link,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableRow,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
 import { Totals } from '../../FourteenMonthReport';
+import { StyledTableCell } from './StyledComponents';
 import {
   FourteenMonthReportTableHead as TableHead,
   FourteenMonthReportTableHeadProps as TableHeadProps,
@@ -67,12 +68,6 @@ const StyledInfoIcon = styled(InfoIcon)(({}) => ({
   },
 }));
 
-export const StyledTableCell = styled(TableCell)(({}) => ({
-  '@media print': {
-    padding: '8px',
-  },
-}));
-
 export const FourteenMonthReportTable: React.FC<
   FourteenMonthReportTableProps
 > = ({
@@ -111,7 +106,9 @@ export const FourteenMonthReportTable: React.FC<
                 return contact.months.reduce((partialSum, month) => {
                   return partialSum + month.salaryCurrencyTotal;
                 }, 0);
-              } else return 0;
+              } else {
+                return 0;
+              }
             }, [contact]);
             return (
               <TableRow
@@ -126,6 +123,7 @@ export const FourteenMonthReportTable: React.FC<
                       <NameTypography variant="body1" expanded={isExpanded}>
                         <Link
                           onClick={() => onSelectContact(contact.id)}
+                          onMouseEnter={preloadContactsRightPanel}
                           underline="hover"
                         >
                           {contact.name}

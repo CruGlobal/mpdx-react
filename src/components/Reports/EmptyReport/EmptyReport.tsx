@@ -3,12 +3,12 @@ import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import { Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { AddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
-import { NextLinkComposed } from 'src/components/common/Links/NextLinkComposed';
 import {
-  DynamicModal,
-  preloadModal,
-} from 'src/components/common/Modal/DynamicModal';
+  DynamicAddDonation,
+  preloadAddDonation,
+} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
+import { NextLinkComposed } from 'src/components/common/Links/NextLinkComposed';
+import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
 interface Props {
@@ -59,7 +59,7 @@ export const EmptyReport: React.FC<Props> = ({
           <Button
             variant="contained"
             color="primary"
-            onMouseEnter={preloadModal}
+            onMouseEnter={preloadAddDonation}
             onClick={() => setAddDonationOpen(true)}
           >
             {t('Add New Donation')}
@@ -67,18 +67,18 @@ export const EmptyReport: React.FC<Props> = ({
         )}
       </Box>
 
-      <DynamicModal
+      <Modal
         isOpen={addDonationOpen}
         handleClose={handleCloseAddDonation}
         title={t('Add Donation')}
         fullWidth
         size="sm"
       >
-        <AddDonation
+        <DynamicAddDonation
           accountListId={accountListId ?? ''}
           handleClose={handleCloseAddDonation}
         />
-      </DynamicModal>
+      </Modal>
     </BoxWrapper>
   );
 };

@@ -13,10 +13,10 @@ import {
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import Loading from '../../Loading';
 import Modal from '../../common/Modal/Modal';
-import { TaskModalCommentsList } from './Comments/TaskModalCommentsList';
-import TaskModalCompleteForm from './Form/Complete/TaskModalCompleteForm';
-import TaskModalLogForm from './Form/LogForm/TaskModalLogForm';
-import TaskModalForm from './Form/TaskModalForm';
+import { DynamicTaskModalCommentsList } from './Comments/DynamicTaskModalCommentsList';
+import { DynamicTaskModalCompleteForm } from './Form/Complete/DynamicTaskModalCompleteForm';
+import { DynamicTaskModalForm } from './Form/DynamicTaskModalForm';
+import { DynamicTaskModalLogForm } from './Form/LogForm/DynamicTaskModalLogForm';
 import { useGetTaskForTaskModalQuery } from './TaskModalTask.generated';
 
 export interface TaskModalProps {
@@ -104,7 +104,7 @@ const TaskModal = ({
       case 'complete':
         if (task) {
           return (
-            <TaskModalCompleteForm
+            <DynamicTaskModalCompleteForm
               accountListId={accountListId || ''}
               task={task}
               onClose={onModalClose}
@@ -113,7 +113,7 @@ const TaskModal = ({
         }
       case 'comments':
         return (
-          <TaskModalCommentsList
+          <DynamicTaskModalCommentsList
             accountListId={accountListId || ''}
             taskId={task?.id || ''}
             commentCount={task?.comments?.totalCount}
@@ -122,7 +122,7 @@ const TaskModal = ({
         );
       case 'log':
         return (
-          <TaskModalLogForm
+          <DynamicTaskModalLogForm
             accountListId={accountListId || ''}
             onClose={onModalClose}
             defaultValues={defaultValues}
@@ -130,7 +130,7 @@ const TaskModal = ({
         );
       default:
         return (
-          <TaskModalForm
+          <DynamicTaskModalForm
             accountListId={accountListId || ''}
             task={task}
             onClose={onModalClose}

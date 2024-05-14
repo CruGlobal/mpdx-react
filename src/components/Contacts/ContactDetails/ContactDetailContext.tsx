@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { TabKey } from './ContactDetails';
-import { DonationTabKey } from './ContactDonationsTab/ContactDonationsTab';
+import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 
 export type ContactDetailsType = {
   selectedTabKey: TabKey;

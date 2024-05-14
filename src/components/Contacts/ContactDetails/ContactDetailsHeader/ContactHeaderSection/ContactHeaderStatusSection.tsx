@@ -1,9 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import CreateIcon from '@mui/icons-material/Create';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Skeleton from '@mui/material/Skeleton';
-import Typography from '@mui/material/Typography';
+import { Box, IconButton, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';

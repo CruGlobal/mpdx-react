@@ -1,6 +1,10 @@
 import { ReactElement, ReactNode, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import theme from 'src/theme';
+import { preloadTaskModalCommentsList } from './Comments/DynamicTaskModalCommentsList';
+import { preloadTaskModalCompleteForm } from './Form/Complete/DynamicTaskModalCompleteForm';
+import { preloadTaskModalForm } from './Form/DynamicTaskModalForm';
+import { preloadTaskModalLogForm } from './Form/LogForm/DynamicTaskModalLogForm';
 import TaskModal, { TaskModalProps } from './TaskModal';
 import TaskModalContext from './TaskModalContext';
 
@@ -10,6 +14,7 @@ interface Props {
 
 export interface TaskModalProviderContext {
   openTaskModal: (props: TaskModalProps) => void;
+  preloadTaskModal: (view: TaskModalProps['view']) => void;
   taskModals: TaskModalPropsWithId[];
 }
 
@@ -48,8 +53,20 @@ const TaskModalProvider = ({ children }: Props): ReactElement => {
       ]);
     }
   };
+  const preloadTaskModal = (view: TaskModalProps['view']) => {
+    if (view === 'complete') {
+      preloadTaskModalCompleteForm();
+    } else if (view === 'comments') {
+      preloadTaskModalCommentsList();
+    } else if (view === 'log') {
+      preloadTaskModalLogForm();
+    } else {
+      preloadTaskModalForm();
+    }
+  };
   const value: TaskModalProviderContext = {
     openTaskModal,
+    preloadTaskModal,
     taskModals,
   };
 

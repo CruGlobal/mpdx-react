@@ -18,11 +18,11 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { Coordinates } from 'pages/accountLists/[accountListId]/contacts/map/map';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { sourceToStr } from 'src/utils/sourceToStr';
+import { Coordinates } from './coordinates';
 
 interface ContactMapsPanelProps {
   data: Coordinates[] | undefined;

@@ -8,9 +8,8 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { TFunction } from 'i18next';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import {
   CancelButton,
   SubmitButton,
@@ -65,7 +64,9 @@ export const OrganizationImportDataSyncModal: React.FC<
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      if (!importFile) throw new Error('Please select a file to upload.');
+      if (!importFile) {
+        throw new Error('Please select a file to upload.');
+      }
       setIsSubmitting(true);
 
       const form = new FormData();
@@ -116,10 +117,14 @@ export const OrganizationImportDataSyncModal: React.FC<
   ) => {
     try {
       const file = event.target.files?.[0];
-      if (!file) return;
+      if (!file) {
+        return;
+      }
 
       const validationResult = validateFile({ file, t });
-      if (!validationResult.success) throw new Error(validationResult.message);
+      if (!validationResult.success) {
+        throw new Error(validationResult.message);
+      }
       setImportFile(file);
       setIsValid(true);
     } catch (err) {

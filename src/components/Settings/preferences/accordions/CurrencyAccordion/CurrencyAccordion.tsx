@@ -8,8 +8,14 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import * as Types from 'src/graphql/types.generated';
+import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
+
+const preferencesSchema: yup.SchemaOf<
+  Pick<AccountListSettingsInput, 'currency'>
+> = yup.object({
+  currency: yup.string().required(),
+});
 
 interface CurrencyAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -31,14 +37,8 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
   const currencies = constants?.pledgeCurrencies ?? [];
   const label = t('Default Currency');
 
-  const PreferencesSchema: yup.SchemaOf<
-    Pick<Types.AccountListSettingsInput, 'currency'>
-  > = yup.object({
-    currency: yup.string().required(),
-  });
-
   const onSubmit = async (
-    attributes: Pick<Types.AccountListSettingsInput, 'currency'>,
+    attributes: Pick<AccountListSettingsInput, 'currency'>,
   ) => {
     await updateAccountPreferences({
       variables: {
@@ -78,7 +78,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
         initialValues={{
           currency: currency,
         }}
-        validationSchema={PreferencesSchema}
+        validationSchema={preferencesSchema}
         onSubmit={onSubmit}
         validateOnMount
       >
@@ -111,7 +111,9 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
                   const selectedCurrency = currencies.find(
                     ({ code }) => code === currency,
                   );
-                  if (!selectedCurrency) return '';
+                  if (!selectedCurrency) {
+                    return '';
+                  }
                   return `${selectedCurrency.name} - ${selectedCurrency.codeSymbolString}`;
                 }}
                 fullWidth

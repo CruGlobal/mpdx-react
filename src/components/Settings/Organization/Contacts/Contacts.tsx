@@ -37,8 +37,9 @@ export const Contacts: React.FC = () => {
   const pagination = data?.searchOrganizationsContacts.pagination;
 
   useEffect(() => {
-    if (!contactsRef.current) return;
-    if (!window.visualViewport?.height) return;
+    if (!contactsRef.current || !window.visualViewport?.height) {
+      return;
+    }
     // 24px for the padding which the parent page has added.
     setInfiniteListHeight(
       window.visualViewport.height -

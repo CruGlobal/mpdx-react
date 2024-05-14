@@ -68,6 +68,7 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `REWRITE_DOMAIN` - The domain which where new & old MPDX applications live. Set to `mpdx.org` for next.mpdx.org & `stage.mpdx.org` for staging.
 - `DATADOG_APP_ID` - Datadog tracking application ID.
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
+- `DD_ENV` - Datadog environment.
 - `BEACON_TOKEN` - HelpScout beacon token
 - `HS_CONTACTS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contacts page
 - `HS_CONTACTS_CONTACT_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contact page
@@ -688,11 +689,3 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Troubleshooting
-
-If you run into issues with the Typescript linter saying that `types.generated` cannot be found, try running this command to clear out stale generated files:
-
-```bash
-find . -type f -name "*.generated.ts" -delete && yarn gql
-```

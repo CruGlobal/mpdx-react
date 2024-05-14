@@ -22,7 +22,7 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import * as Types from 'src/graphql/types.generated';
+import { MailchimpAccount } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
@@ -39,6 +39,13 @@ import {
   useUpdateMailchimpAccountMutation,
 } from './MailchimpAccount.generated';
 import { DeleteMailchimpAccountModal } from './Modals/DeleteMailchimpModal';
+
+const mailchimpSchema: yup.SchemaOf<
+  Pick<MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
+> = yup.object({
+  autoLogCampaigns: yup.boolean().required(),
+  primaryListId: yup.string().required(),
+});
 
 interface MailchimpAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -84,18 +91,8 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
     ? data.mailchimpAccount[0]
     : null;
 
-  const MailchimpSchema: yup.SchemaOf<
-    Pick<Types.MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
-  > = yup.object({
-    autoLogCampaigns: yup.boolean().required(),
-    primaryListId: yup.string().required(),
-  });
-
   const onSubmit = async (
-    attributes: Pick<
-      Types.MailchimpAccount,
-      'autoLogCampaigns' | 'primaryListId'
-    >,
+    attributes: Pick<MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>,
   ) => {
     await updateMailchimpAccount({
       variables: {
@@ -239,7 +236,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
                   primaryListId: mailchimpAccount.primaryListId,
                   autoLogCampaigns: mailchimpAccount.autoLogCampaigns,
                 }}
-                validationSchema={MailchimpSchema}
+                validationSchema={mailchimpSchema}
                 onSubmit={onSubmit}
               >
                 {({

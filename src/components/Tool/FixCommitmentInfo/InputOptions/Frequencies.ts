@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import i18n from 'src/lib/i18n';
 
 export const frequencies: { [key: string]: string } = {
   WEEKLY: i18n.t('Weekly'),

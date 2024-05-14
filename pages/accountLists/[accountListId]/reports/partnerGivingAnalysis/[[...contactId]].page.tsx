@@ -5,7 +5,8 @@ import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import { ContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/ContactsRightPanel';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
@@ -13,7 +14,7 @@ import {
   PartnerGivingAnalysisReport,
   PartnerGivingAnalysisReportRef,
 } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
-import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
+import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -24,8 +25,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
-import { ContactsProvider } from '../../contacts/ContactsContext';
-import { ContactsPage } from '../../contacts/ContactsPage';
+import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 
 // The order here is also the sort order and the display order
 const reportFilters = [
@@ -134,7 +134,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
                   contactId={[]}
                   searchTerm={''}
                 >
-                  <FilterPanel
+                  <DynamicFilterPanel
                     filters={filterGroups}
                     defaultExpandedFilterGroups={new Set(['Report Filters'])}
                     savedFilters={[]}
@@ -165,9 +165,11 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           }
           rightPanel={
             selectedContactId ? (
-              <ContactsPage>
-                <ContactsRightPanel onClose={() => handleSelectContact('')} />
-              </ContactsPage>
+              <ContactsWrapper>
+                <DynamicContactsRightPanel
+                  onClose={() => handleSelectContact('')}
+                />
+              </ContactsWrapper>
             ) : undefined
           }
           rightOpen={typeof selectedContactId !== 'undefined'}
