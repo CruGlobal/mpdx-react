@@ -516,13 +516,6 @@ const TaskModalForm = ({
                 </Grid>
               )}
               <Grid item>
-                <AssigneeAutocomplete
-                  accountListId={accountListId}
-                  value={userId}
-                  onChange={(userId) => setFieldValue('userId', userId)}
-                />
-              </Grid>
-              <Grid item>
                 <ContactsAutocomplete
                   accountListId={accountListId}
                   value={contactIds}
@@ -573,7 +566,18 @@ const TaskModalForm = ({
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
-                  label={phaseTags?.length ? t('Additional Tags') : ''}
+                  label={
+                    phaseTags?.length && initialTask.completedAt
+                      ? t('Additional Tags')
+                      : ''
+                  }
+                />
+              </Grid>
+              <Grid item>
+                <AssigneeAutocomplete
+                  accountListId={accountListId}
+                  value={userId}
+                  onChange={(userId) => setFieldValue('userId', userId)}
                 />
               </Grid>
               {!initialTask.completedAt && (

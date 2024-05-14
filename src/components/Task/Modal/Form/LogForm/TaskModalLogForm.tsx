@@ -39,7 +39,6 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
-import theme from 'src/theme';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
@@ -406,7 +405,28 @@ const TaskModalLogForm = ({
                   numOfContacts={contactIds.length}
                 />
               )}
-
+              {!!phaseTags?.length && (
+                <Grid item>
+                  <PhaseTags
+                    tags={phaseTags}
+                    selectedTags={selectedSuggestedTags}
+                    setSelectedTags={setSelectedSuggestedTags}
+                  />
+                </Grid>
+              )}
+              {activityType && nextActions.length > 0 && (
+                <Grid item xs={12}>
+                  <ActivityTypeAutocomplete
+                    options={nextActions}
+                    label={t('Next Action')}
+                    value={nextAction}
+                    onChange={(nextAction) =>
+                      setFieldValue('nextAction', nextAction)
+                    }
+                    activityTypes={activityTypes}
+                  />
+                </Grid>
+              )}
               <Grid item>
                 <ContactsAutocomplete
                   accountListId={accountListId}
@@ -438,29 +458,6 @@ const TaskModalLogForm = ({
                   />
                 </FormControl>
               </Grid>
-              {activityType && nextActions.length > 0 && (
-                <Grid item xs={12}>
-                  <ActivityTypeAutocomplete
-                    options={nextActions}
-                    label={t('Next Action')}
-                    value={nextAction}
-                    onChange={(nextAction) =>
-                      setFieldValue('nextAction', nextAction)
-                    }
-                    activityTypes={activityTypes}
-                  />
-                </Grid>
-              )}
-              {!!phaseTags?.length && (
-                <Grid item sx={{ marginTop: theme.spacing(2) }}>
-                  <PhaseTags
-                    tags={phaseTags}
-                    selectedTags={selectedSuggestedTags}
-                    setSelectedTags={setSelectedSuggestedTags}
-                  />
-                </Grid>
-              )}
-
               <Grid item>
                 <FormControlLabel
                   control={
