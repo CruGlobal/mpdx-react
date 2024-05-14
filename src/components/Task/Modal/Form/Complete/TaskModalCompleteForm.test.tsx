@@ -434,16 +434,14 @@ describe('TaskModalCompleteForm', () => {
             'contact-1',
             StatusEnum.PartnerSpecial,
           ),
-          updateContactStatusMutationMock(
-            accountListId,
-            'contact-2',
-            StatusEnum.PartnerSpecial,
-          ),
         ]}
         taskOverrides={{
           activityType: ActivityTypeEnum.FollowUpPhoneCall,
           completedAt,
           tagList: ['tag-1', 'tag-2'],
+          contacts: {
+            nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
+          },
         }}
       />,
     );
@@ -462,7 +460,7 @@ describe('TaskModalCompleteForm', () => {
         view: 'add',
         defaultValues: {
           activityType: ActivityTypeEnum.PartnerCareThank,
-          contactIds: ['contact-1', 'contact-2'],
+          contactIds: ['contact-1'],
           userId: 'user-1',
           tagList: ['tag-1', 'tag-2'],
         },
