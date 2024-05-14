@@ -134,7 +134,10 @@ const TaskModalLogForm = ({
   const firstFocusRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (firstFocusRef.current) {
-      firstFocusRef.current.focus();
+      setTimeout(
+        () => firstFocusRef?.current && firstFocusRef?.current.focus(),
+        500,
+      );
     }
   }, []);
 

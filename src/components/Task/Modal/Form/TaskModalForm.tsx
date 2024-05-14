@@ -242,7 +242,7 @@ const TaskModalForm = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (!task && inputRef.current && !defaultValues?.activityType) {
-      inputRef.current.focus();
+      setTimeout(() => inputRef?.current && inputRef?.current.focus(), 500);
     }
   }, []);
 
