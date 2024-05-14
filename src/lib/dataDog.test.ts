@@ -10,7 +10,6 @@ const setDataDogUserMock = {
   accountListId: '1234-4567-8910-1112-1314',
   name: 'Roger',
   email: 'roger@cru.org',
-  language: 'en-us',
 };
 
 describe('dataDog', () => {
@@ -39,7 +38,7 @@ describe('dataDog', () => {
     });
 
     //#region Default Tests
-    it('isDataDogConfigured should return false', () => {
+    it('isDataDogConfigured should return true', () => {
       expect(isDataDogConfigured()).toEqual(true);
     });
 
@@ -71,6 +70,16 @@ describe('dataDog', () => {
       expect(window.localStorage.getItem(accountListIdsStorageKey)).toBe(
         `previous,${setDataDogUserMock.accountListId}`,
       );
+    });
+
+    it('does not add null account list ids to the list', () => {
+      window.localStorage.removeItem(accountListIdsStorageKey);
+
+      setDataDogUser({ ...setDataDogUserMock, accountListId: null });
+      expect(window.DD_RUM.setUser).toHaveBeenCalledWith(
+        expect.objectContaining({ accountListIds: [] }),
+      );
+      expect(window.localStorage.getItem(accountListIdsStorageKey)).toBeNull();
     });
 
     it('does not add duplicate account list ids to the list', () => {

@@ -21,8 +21,7 @@ export interface SetDataDogUserProps {
   userId: string;
   name: string;
   email: string;
-  accountListId: string;
-  language: string;
+  accountListId: string | null;
 }
 
 export const accountListIdsStorageKey = 'accountListIds';
@@ -32,7 +31,6 @@ export const setDataDogUser = ({
   name,
   email,
   accountListId,
-  language,
 }: SetDataDogUserProps): void => {
   if (!isDataDogConfigured()) {
     return;
@@ -41,7 +39,7 @@ export const setDataDogUser = ({
     accountListIdsStorageKey,
   );
   const accountListIds = rawAccountListIds ? rawAccountListIds.split(',') : [];
-  if (!accountListIds.includes(accountListId)) {
+  if (accountListId && !accountListIds.includes(accountListId)) {
     accountListIds.push(accountListId);
     window.localStorage.setItem(
       accountListIdsStorageKey,
@@ -53,7 +51,6 @@ export const setDataDogUser = ({
     name,
     email,
     accountListIds,
-    language,
   });
 };
 
