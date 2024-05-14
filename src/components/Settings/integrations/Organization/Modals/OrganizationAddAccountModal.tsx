@@ -22,8 +22,8 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { Organization } from 'src/graphql/types.generated';
-import { clearDataDogUser } from 'src/hooks/useDataDog';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { clearDataDogUser } from 'src/lib/dataDog';
 import { articles, showArticle } from 'src/lib/helpScout';
 import theme from 'src/theme';
 import { useOauthUrl } from '../../useOauthUrl';
