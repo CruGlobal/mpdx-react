@@ -3,7 +3,7 @@ import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { ResultEnum } from 'src/graphql/types.generated';
+import { Phase, ResultEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { SetResultSelected, handleResultChange } from '../../TaskModalHelper';
 import { ResultSelect, ResultSelectProps } from './ResultSelect';
@@ -21,6 +21,11 @@ beforeEach(() => {
 
 beforeEach(() => {});
 
+const phaseData = {
+  id: 'CONNECTION',
+  name: 'Connection',
+} as Phase;
+
 type ComponentsProps = {
   availableResults: ResultSelectProps['availableResults'];
 };
@@ -32,6 +37,7 @@ const Components = ({ availableResults }: ComponentsProps) => (
         availableResults={availableResults}
         setFieldValue={setFieldValue}
         setResultSelected={setResultSelected as unknown as SetResultSelected}
+        phaseData={phaseData}
       />
     </TestWrapper>
   </ThemeProvider>
@@ -72,6 +78,7 @@ describe('ResultSelect', () => {
       result: ResultEnum.Completed,
       setFieldValue,
       setResultSelected,
+      phaseData,
     });
   });
 });

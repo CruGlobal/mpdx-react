@@ -16,7 +16,7 @@ export interface ResultSelectProps {
   availableResults: ResultEnum[] | DisplayResultEnum[];
   setFieldValue: SetFieldValue;
   setResultSelected: SetResultSelected;
-  result?: ResultEnum | null;
+  result?: ResultEnum | DisplayResultEnum | null;
   phaseData: Phase | null;
 }
 
