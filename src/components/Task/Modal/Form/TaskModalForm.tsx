@@ -244,7 +244,7 @@ const TaskModalForm = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (!task && inputRef.current && !defaultValues?.activityType) {
-      inputRef.current.focus();
+      setTimeout(() => inputRef?.current && inputRef?.current.focus(), 500);
     }
   }, []);
 
@@ -518,13 +518,6 @@ const TaskModalForm = ({
                 </Grid>
               )}
               <Grid item>
-                <AssigneeAutocomplete
-                  accountListId={accountListId}
-                  value={userId}
-                  onChange={(userId) => setFieldValue('userId', userId)}
-                />
-              </Grid>
-              <Grid item>
                 <ContactsAutocomplete
                   accountListId={accountListId}
                   value={contactIds}
@@ -580,6 +573,13 @@ const TaskModalForm = ({
                       ? t('Additional Tags')
                       : ''
                   }
+                />
+              </Grid>
+              <Grid item>
+                <AssigneeAutocomplete
+                  accountListId={accountListId}
+                  value={userId}
+                  onChange={(userId) => setFieldValue('userId', userId)}
                 />
               </Grid>
               {!initialTask.completedAt && (

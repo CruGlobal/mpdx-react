@@ -4,8 +4,10 @@ import {
   Phase,
   PhaseEnum,
   ResultEnum,
+  StatusEnum,
 } from 'src/graphql/types.generated';
 import { Constants, SetPhaseId } from 'src/hooks/usePhaseData';
+import { statusArray } from 'src/utils/contacts/contactPartnershipStatus';
 import { possibleNextActions } from './PossibleNextActions';
 
 export type SetFieldValue = (
@@ -153,4 +155,17 @@ export const filterTags = (tagList, phaseTags) => {
     }
   });
   return { additionalTags, suggestedTags };
+};
+
+export const showContactSuggestedStatus = (contacts): boolean => {
+  // disabled Statuses are currently set to Partner Statuses in the Partner Care phase: Financial, Special and Prayer Partners.
+  const disabledStatus = statusArray
+    .filter((status) => status.phase === PhaseEnum.PartnerCare)
+    .map((s) => s.id);
+  return (
+    contacts &&
+    contacts.filter((contact) =>
+      disabledStatus.includes(contact?.status as StatusEnum),
+    ).length === 0
+  );
 };

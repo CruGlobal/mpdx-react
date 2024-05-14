@@ -123,3 +123,9 @@ export const statusMapForFilters: { [statusKey: string]: string } =
       statusKey,
     ]),
   );
+
+export const statusArray = Object.entries(contactPartnershipStatus)
+  .filter(([_, status]) => status.phase)
+  .map(([statusKey, s]) => {
+    return { id: statusKey, ...s };
+  });

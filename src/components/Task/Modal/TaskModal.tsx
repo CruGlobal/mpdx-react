@@ -6,6 +6,7 @@ import { TransitionProps } from '@mui/material/transitions';
 import { useTranslation } from 'react-i18next';
 import {
   PhaseEnum,
+  StatusEnum,
   TaskCreateInput,
   TaskUpdateInput,
 } from 'src/graphql/types.generated';
@@ -25,6 +26,12 @@ export interface TaskModalProps {
   showCompleteForm?: boolean;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput> & {
     taskPhase?: PhaseEnum;
+    contactNodes?: [
+      {
+        id: string;
+        status: StatusEnum | undefined;
+      },
+    ];
   };
 }
 
@@ -38,7 +45,7 @@ const Transition = React.forwardRef(function Transition(
   },
   ref: React.Ref<unknown>,
 ) {
-  return <Slide direction="up" ref={ref} {...props} />;
+  return <Slide direction="up" unmountOnExit ref={ref} {...props} />;
 });
 
 const TaskModal = ({

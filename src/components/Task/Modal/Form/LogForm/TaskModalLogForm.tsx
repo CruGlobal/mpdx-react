@@ -39,7 +39,6 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
-import theme from 'src/theme';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
@@ -67,6 +66,7 @@ import {
   getDatabaseValueFromResult,
   handleTaskActionChange,
   handleTaskPhaseChange,
+  showContactSuggestedStatus,
 } from '../TaskModalHelper';
 
 const taskSchema = yup.object({
@@ -90,7 +90,10 @@ type Attributes = yup.InferType<typeof taskSchema>;
 interface Props {
   accountListId: string;
   onClose: () => void;
-  defaultValues?: Partial<TaskCreateInput> & { taskPhase: PhaseEnum };
+  defaultValues?: Partial<TaskCreateInput> & {
+    taskPhase?: PhaseEnum;
+    contactNodes?: [{ id: string; status: StatusEnum | undefined }];
+  };
 }
 
 const TaskModalLogForm = ({
@@ -131,7 +134,10 @@ const TaskModalLogForm = ({
   const firstFocusRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (firstFocusRef.current) {
-      firstFocusRef.current.focus();
+      setTimeout(
+        () => firstFocusRef?.current && firstFocusRef?.current.focus(),
+        500,
+      );
     }
   }, []);
 
@@ -148,6 +154,9 @@ const TaskModalLogForm = ({
         taskPhase = activityData.phaseId;
         taskSubject = activityData.title;
       }
+    }
+    if (defaultValues?.taskPhase) {
+      setPhaseId(defaultValues?.taskPhase);
     }
 
     return {
@@ -391,14 +400,36 @@ const TaskModalLogForm = ({
                 setResultSelected={setResultSelected}
                 phaseData={phaseData}
               />
-
-              <SuggestedContactStatus
-                partnerStatus={partnerStatus}
-                changeContactStatus={changeContactStatus}
-                handleChange={handleChange}
-                numOfContacts={contactIds.length}
-              />
-
+              {showContactSuggestedStatus(defaultValues?.contactNodes) && (
+                <SuggestedContactStatus
+                  partnerStatus={partnerStatus}
+                  changeContactStatus={changeContactStatus}
+                  handleChange={handleChange}
+                  numOfContacts={contactIds.length}
+                />
+              )}
+              {!!phaseTags?.length && (
+                <Grid item>
+                  <PhaseTags
+                    tags={phaseTags}
+                    selectedTags={selectedSuggestedTags}
+                    setSelectedTags={setSelectedSuggestedTags}
+                  />
+                </Grid>
+              )}
+              {activityType && nextActions.length > 0 && (
+                <Grid item xs={12}>
+                  <ActivityTypeAutocomplete
+                    options={nextActions}
+                    label={t('Next Action')}
+                    value={nextAction}
+                    onChange={(nextAction) =>
+                      setFieldValue('nextAction', nextAction)
+                    }
+                    activityTypes={activityTypes}
+                  />
+                </Grid>
+              )}
               <Grid item>
                 <ContactsAutocomplete
                   accountListId={accountListId}
@@ -430,29 +461,6 @@ const TaskModalLogForm = ({
                   />
                 </FormControl>
               </Grid>
-              {activityType && (
-                <Grid item xs={12}>
-                  <ActivityTypeAutocomplete
-                    options={nextActions}
-                    label={t('Next Action')}
-                    value={nextAction}
-                    onChange={(nextAction) =>
-                      setFieldValue('nextAction', nextAction)
-                    }
-                    activityTypes={activityTypes}
-                  />
-                </Grid>
-              )}
-              {!!phaseTags?.length && (
-                <Grid item sx={{ marginTop: theme.spacing(2) }}>
-                  <PhaseTags
-                    tags={phaseTags}
-                    selectedTags={selectedSuggestedTags}
-                    setSelectedTags={setSelectedSuggestedTags}
-                  />
-                </Grid>
-              )}
-
               <Grid item>
                 <FormControlLabel
                   control={

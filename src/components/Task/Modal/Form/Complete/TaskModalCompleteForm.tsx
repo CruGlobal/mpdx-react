@@ -50,7 +50,11 @@ import { possibleNextActions } from '../PossibleNextActions';
 import { possiblePartnerStatus } from '../PossiblePartnerStatus';
 import { possibleResults } from '../PossibleResults';
 import { useUpdateContactStatusMutation } from '../TaskModal.generated';
-import { filterTags, getDatabaseValueFromResult } from '../TaskModalHelper';
+import {
+  filterTags,
+  getDatabaseValueFromResult,
+  showContactSuggestedStatus,
+} from '../TaskModalHelper';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const StyledGrid = styled(Grid)(() => ({
@@ -245,6 +249,8 @@ const TaskModalCompleteForm = ({
     [phaseData],
   );
 
+  const numberOfContacts = task?.contacts.nodes.length;
+
   return (
     <Formik<Attributes>
       initialValues={initialTask}
@@ -286,11 +292,18 @@ const TaskModalCompleteForm = ({
               </StyledGrid>
               <StyledGrid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
-                  {t('Contact(s):')}
+                  {numberOfContacts > 1
+                    ? t('Contacts:')
+                    : numberOfContacts > 0
+                    ? t('Contact:')
+                    : null}
                 </Typography>{' '}
                 {task?.contacts.nodes.map((contact, index) => (
-                  <Typography key={contact.id}>
-                    {index !== task.contacts.nodes.length - 1
+                  <Typography
+                    display={numberOfContacts === 1 ? 'inline' : 'block'}
+                    key={contact.id}
+                  >
+                    {index !== numberOfContacts - 1
                       ? `${contact.name},`
                       : contact.name}
                   </Typography>
@@ -327,14 +340,16 @@ const TaskModalCompleteForm = ({
                 phaseData={phaseData}
               />
 
-              <SuggestedContactStatus
-                partnerStatus={partnerStatus}
-                changeContactStatus={changeContactStatus}
-                handleChange={handleChange}
-                numOfContacts={task.contacts.nodes.length}
-              />
+              {showContactSuggestedStatus(task.contacts.nodes) && (
+                <SuggestedContactStatus
+                  partnerStatus={partnerStatus}
+                  changeContactStatus={changeContactStatus}
+                  handleChange={handleChange}
+                  numOfContacts={task.contacts.nodes.length}
+                />
+              )}
 
-              {nextActions.length && (
+              {nextActions.length > 0 && (
                 <Grid item>
                   <ActivityTypeAutocomplete
                     options={nextActions}
@@ -354,7 +369,6 @@ const TaskModalCompleteForm = ({
                   setSelectedTags={setSelectedSuggestedTags}
                 />
               )}
-              {/*Add field to change contact statuses */}
               <Grid item>
                 <TagsAutocomplete
                   accountListId={accountListId}
