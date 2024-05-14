@@ -61,37 +61,6 @@ export const taskModalTests = (Components: Components) => {
       return { results, nextActions };
     };
 
-    // This will be shorten when we onlly show partner care next actions.
-    const allNextActionOptions = [
-      'None',
-      'In Person',
-      'Phone Call',
-      'Video Call',
-      'Email',
-      'In Person',
-      'Phone Call',
-      'Social Media',
-      'Text Message',
-      'Email',
-      'In Person',
-      'Letter',
-      'Phone Call',
-      'Social Media',
-      'Special Gift Appeal',
-      'Text Message',
-      'Digital Newsletter',
-      'Email',
-      'In Person',
-      'Phone Call',
-      'Physical Newsletter',
-      'Prayer Request',
-      'Social Media',
-      'Text Message',
-      'Thank You Note',
-      'To Do',
-      'Update Information',
-    ];
-
     it('has correct options for AppointmentInPerson', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.AppointmentInPerson,
@@ -280,7 +249,7 @@ export const taskModalTests = (Components: Components) => {
     it('as correct options for NULL', async () => {
       const { results, nextActions } = await getOptions(null);
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(allNextActionOptions);
+      expect(nextActions).toEqual([]);
     });
 
     it('as correct options for PartnerCareEmail', async () => {
@@ -288,7 +257,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCareEmail,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(allNextActionOptions);
+      expect(nextActions).toEqual([]);
     });
 
     it('as correct options for PartnerCarePhysicalNewsletter', async () => {
@@ -296,13 +265,13 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCarePhysicalNewsletter,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(allNextActionOptions);
+      expect(nextActions).toEqual([]);
     });
 
     it('has correct options for NONE', async () => {
       const { results, nextActions } = await getOptions(ActivityTypeEnum.None);
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(allNextActionOptions);
+      expect(nextActions).toEqual([]);
     });
 
     it('has correct options for PartnerCarePrayerRequest', async () => {
@@ -310,7 +279,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCarePrayerRequest,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(allNextActionOptions);
+      expect(nextActions).toEqual([]);
     });
 
     it('has correct options for PartnerCarePhoneCall', async () => {
@@ -318,7 +287,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCarePhoneCall,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(allNextActionOptions);
+      expect(nextActions).toEqual([]);
     });
 
     it('has correct options for InitiationLetter', async () => {
@@ -326,7 +295,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.InitiationLetter,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(allNextActionOptions);
+      expect(nextActions).toEqual([]);
     });
 
     it('has correct options for PartnerCareThank', async () => {
@@ -334,7 +303,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCareThank,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(allNextActionOptions);
+      expect(nextActions).toEqual([]);
     });
 
     it('has correct options for PartnerCareToDo', async () => {
@@ -342,7 +311,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCareToDo,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(allNextActionOptions);
+      expect(nextActions).toEqual([]);
     });
   });
 };

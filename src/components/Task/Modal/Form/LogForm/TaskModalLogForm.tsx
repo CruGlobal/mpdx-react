@@ -77,6 +77,7 @@ const taskSchema = yup.object({
   completedAt: nullableDateTime(),
   userId: yup.string().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
+  displayResult: yup.mixed<DisplayResultEnum>(),
   result: yup.mixed<ResultEnum>(),
   changeContactStatus: yup.boolean(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
@@ -167,6 +168,7 @@ const TaskModalLogForm = ({
       completedAt: DateTime.local(),
       userId: defaultValues?.userId ?? session.data?.user.userID ?? null,
       tagList: defaultValues?.tagList ?? [],
+      displayResult: defaultValues?.displayResult ?? undefined,
       result: defaultValues?.result ?? undefined,
       changeContactStatus: false,
       nextAction: defaultValues?.nextAction ?? null,
@@ -183,10 +185,10 @@ const TaskModalLogForm = ({
       attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
     }
 
-    if (attributes.result) {
+    if (attributes.displayResult) {
       attributes.result = getDatabaseValueFromResult(
         phaseData,
-        attributes.result,
+        attributes.displayResult,
         attributes.activityType,
       );
     }
@@ -304,7 +306,7 @@ const TaskModalLogForm = ({
           completedAt,
           tagList,
           contactIds,
-          result,
+          displayResult,
           changeContactStatus,
           nextAction,
           location,
@@ -395,7 +397,7 @@ const TaskModalLogForm = ({
 
               <ResultSelect
                 availableResults={availableResults}
-                result={result}
+                result={displayResult}
                 setFieldValue={setFieldValue}
                 setResultSelected={setResultSelected}
                 phaseData={phaseData}
