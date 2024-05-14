@@ -1,11 +1,5 @@
-import {
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  Grid,
-} from '@mui/material';
-import { Trans, useTranslation } from 'react-i18next';
+import { Checkbox, FormControl, FormControlLabel, Grid } from '@mui/material';
+import { Trans } from 'react-i18next';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { PossiblePartnerStatus } from '../../PossiblePartnerStatus';
 
@@ -31,7 +25,9 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
   numOfContacts,
   changeContactStatus,
 }) => {
-  const { t } = useTranslation();
+  if (numOfContacts > 1) {
+    return null;
+  }
 
   return partnerStatus?.suggestedContactStatus ? (
     <Grid item>
@@ -56,13 +52,6 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
             />
           }
         />
-        {numOfContacts > 1 && (
-          <FormHelperText>
-            {t('This will change the contact status for {{amount}} contacts', {
-              amount: numOfContacts,
-            })}
-          </FormHelperText>
-        )}
       </FormControl>
     </Grid>
   ) : null;
