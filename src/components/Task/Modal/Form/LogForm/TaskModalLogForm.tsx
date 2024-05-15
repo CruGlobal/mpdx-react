@@ -49,7 +49,6 @@ import { ContactsAutocomplete } from '../Inputs/ContactsAutocomplete/ContactsAut
 import { PhaseTags } from '../Inputs/PhaseTags/PhaseTags';
 import { ResultSelect } from '../Inputs/ResultSelect/ResultSelect';
 import { SuggestedContactStatus } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus';
-import { useContactQuery } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus.generated';
 import {
   TagTypeEnum,
   TagsAutocomplete,
@@ -287,26 +286,6 @@ const TaskModalLogForm = ({
     [phaseData],
   );
 
-  const [contact, setContact] = useState(undefined);
-  const [contactIdsForStatusSuggestion, setContactIdsForStatusSuggestion] =
-    useState(initialTask.contactIds);
-
-  useEffect(() => {
-    if (contactIdsForStatusSuggestion?.length === 1) {
-      const contactId = contactIdsForStatusSuggestion[0];
-      const { data } = useContactQuery({
-        variables: {
-          accountListId,
-          contactId,
-        },
-      });
-      // @ts-expect-error can't figure out what type this should be
-      setContact([data?.contact] || undefined);
-    } else {
-      setContact(undefined);
-    }
-  }, [contactIdsForStatusSuggestion]);
-
   return (
     <Formik
       initialValues={initialTask}
@@ -426,7 +405,8 @@ const TaskModalLogForm = ({
                 partnerStatus={partnerStatus}
                 changeContactStatus={changeContactStatus}
                 handleChange={handleChange}
-                contacts={contact}
+                accountListId={accountListId}
+                contactIds={contactIds}
               />
               {!!phaseTags?.length && (
                 <Grid item>
@@ -456,7 +436,6 @@ const TaskModalLogForm = ({
                   value={contactIds}
                   onChange={(contactIds) => {
                     setFieldValue('contactIds', contactIds);
-                    setContactIdsForStatusSuggestion(contactIds);
                   }}
                 />
               </Grid>

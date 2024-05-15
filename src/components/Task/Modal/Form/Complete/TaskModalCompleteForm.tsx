@@ -247,7 +247,12 @@ const TaskModalCompleteForm = ({
     [phaseData],
   );
 
-  const numberOfContacts = task?.contacts.nodes.length;
+  const contactIds = useMemo(
+    () => task.contacts.nodes.map((contact) => contact.id) || [],
+    [task],
+  );
+
+  const numberOfContacts = contactIds.length;
 
   return (
     <Formik<Attributes>
@@ -342,7 +347,8 @@ const TaskModalCompleteForm = ({
                 partnerStatus={partnerStatus}
                 changeContactStatus={changeContactStatus}
                 handleChange={handleChange}
-                contacts={task.contacts.nodes}
+                accountListId={accountListId}
+                contactIds={contactIds}
               />
 
               {nextActions.length > 0 && (

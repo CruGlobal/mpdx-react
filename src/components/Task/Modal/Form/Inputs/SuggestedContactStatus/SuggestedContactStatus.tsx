@@ -1,8 +1,10 @@
+import { useMemo } from 'react';
 import { Checkbox, FormControl, FormControlLabel, Grid } from '@mui/material';
 import { Trans } from 'react-i18next';
-import { Contact, PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import { PhaseEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { PossiblePartnerStatus } from '../../PossiblePartnerStatus';
+import { useContactQuery } from './SuggestedContactStatus.generated';
 
 type FormikHandleChange = {
   (e: React.ChangeEvent<unknown>): void;
@@ -16,35 +18,47 @@ type FormikHandleChange = {
 interface SuggestedContactStatusProps {
   partnerStatus: PossiblePartnerStatus | null;
   handleChange: FormikHandleChange;
-  contacts: Pick<Contact, 'id' | 'status' | 'name'>[] | undefined;
+  contactIds: string[] | undefined;
+  accountListId: string;
   changeContactStatus?: boolean;
 }
 
 export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
   partnerStatus,
   handleChange,
-  contacts,
+  contactIds,
+  accountListId,
   changeContactStatus,
 }) => {
-  if (contacts && contacts?.length > 1) {
+  if (!contactIds || contactIds.length !== 1) {
     return null;
   }
+
+  const contactId = contactIds[0];
+  const { data } = useContactQuery({
+    variables: {
+      accountListId,
+      contactId,
+    },
+    skip: contactIds.length !== 1,
+  });
 
   const { statusArray, contactPartnershipStatus } =
     useContactPartnershipStatuses();
 
-  const showContactSuggestedStatus = (contact): boolean => {
-    const singleContact = contact[0] || contact;
-    // disabled Statuses are currently set to Partner Statuses in the Partner Care phase: Financial, Special and Prayer Partners.
+  const shouldRenderContactSuggestion = useMemo(() => {
+    if (!data?.contact.status) {
+      return false;
+    }
     const disabledStatus = statusArray
       .filter((status) => status.phase === PhaseEnum.PartnerCare)
       .map((s) => s.id);
-    return !disabledStatus.includes(singleContact?.status as StatusEnum);
-  };
+
+    return !disabledStatus.includes(data.contact.status);
+  }, [statusArray, data]);
 
   return partnerStatus?.suggestedContactStatus &&
-    contacts &&
-    showContactSuggestedStatus(contacts) ? (
+    shouldRenderContactSuggestion ? (
     <Grid item>
       <FormControl fullWidth>
         <FormControlLabel
