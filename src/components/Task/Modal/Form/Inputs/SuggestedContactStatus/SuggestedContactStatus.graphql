@@ -1,4 +1,4 @@
-query Contact($accountListId: ID!, $contactId: ID!) {
+query ContactStatus($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     status
   }

@@ -18,7 +18,10 @@ import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
-import { updateContactStatusMutationMock } from '../TaskModalMocks';
+import {
+  ContactStatusQueryMock,
+  updateContactStatusMutationMock,
+} from '../TaskModalMocks';
 import { taskModalTests } from '../TaskModalTests';
 import { CompleteTaskDocument } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
@@ -153,6 +156,13 @@ describe('TaskModalCompleteForm', () => {
               nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
             },
           }}
+          mocks={[
+            ContactStatusQueryMock(
+              accountListId,
+              'contact-1',
+              StatusEnum.ContactForAppointment,
+            ),
+          ]}
         />,
       );
 
@@ -165,8 +175,9 @@ describe('TaskModalCompleteForm', () => {
       });
 
       await waitFor(() => {
+        screen.logTestingPlaygroundURL();
         expect(
-          getByText("Change the contact's status to: "),
+          getByText("Change the contact's status to:"),
         ).toBeInTheDocument();
         expect(getByText('Initiate for Appointment')).toBeInTheDocument();
       });
@@ -408,9 +419,14 @@ describe('TaskModalCompleteForm', () => {
       nextAction: ActivityTypeEnum.PartnerCareThank,
       tagList: ['tag-1', 'tag-2'],
     };
-    const { getByRole, findByRole, getByText } = render(
+    const { getByRole, findByRole, getByText, findByText } = render(
       <Components
         mocks={[
+          ContactStatusQueryMock(
+            accountListId,
+            'contact-1',
+            StatusEnum.ContactForAppointment,
+          ),
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
           {
@@ -436,7 +452,7 @@ describe('TaskModalCompleteForm', () => {
           ),
         ]}
         taskOverrides={{
-          activityType: ActivityTypeEnum.FollowUpPhoneCall,
+          activityType: ActivityTypeEnum.AppointmentInPerson,
           completedAt,
           tagList: ['tag-1', 'tag-2'],
           contacts: {
@@ -450,8 +466,7 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
     userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
 
-    screen.logTestingPlaygroundURL();
-    userEvent.click(getByText("Change the contact's status to:"));
+    userEvent.click(await findByText("Change the contact's status to:"));
     expect(getByText('Partner - Special')).toBeInTheDocument();
 
     userEvent.click(getByText('Save'));

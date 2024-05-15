@@ -4,7 +4,7 @@ import { Trans } from 'react-i18next';
 import { PhaseEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { PossiblePartnerStatus } from '../../PossiblePartnerStatus';
-import { useContactQuery } from './SuggestedContactStatus.generated';
+import { useContactStatusQuery } from './SuggestedContactStatus.generated';
 
 type FormikHandleChange = {
   (e: React.ChangeEvent<unknown>): void;
@@ -35,7 +35,7 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
   }
 
   const contactId = contactIds[0];
-  const { data } = useContactQuery({
+  const { data } = useContactStatusQuery({
     variables: {
       accountListId,
       contactId,
