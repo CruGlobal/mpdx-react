@@ -24,15 +24,19 @@ const ModalTitle = styled(DialogTitle)<{ altColors: boolean }>(
   }),
 );
 
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  top: theme.spacing(1),
-  right: theme.spacing(1),
-  color: theme.palette.text.primary,
-  '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-  },
-}));
+const CloseButton = styled(IconButton)<{ altColors: boolean }>(
+  ({ theme, altColors }) => ({
+    position: 'absolute',
+    top: theme.spacing(1),
+    right: theme.spacing(1),
+    color: altColors ? 'white' : theme.palette.text.primary,
+    '&:hover': {
+      backgroundColor: altColors
+        ? theme.palette.cruGrayMedium.main
+        : theme.palette.cruGrayLight.main,
+    },
+  }),
+);
 
 interface Props {
   /** determines whether the modal is currently open or not */
@@ -84,7 +88,11 @@ const Modal = ({
           {title}
         </Stack>
       </ModalTitle>
-      <CloseButton onClick={handleClose} aria-label={t('Close')}>
+      <CloseButton
+        altColors={altColors}
+        onClick={handleClose}
+        aria-label={t('Close')}
+      >
         <CloseIcon />
       </CloseButton>
       {children}
