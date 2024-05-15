@@ -536,7 +536,7 @@ const TaskModalForm = ({
                 partnerStatus={partnerStatus}
                 changeContactStatus={changeContactStatus}
                 handleChange={handleChange}
-                numOfContacts={contactIds.length}
+                contacts={contactIds}
               />
 
               {initialTask.completedAt && !!nextActions.length && (
