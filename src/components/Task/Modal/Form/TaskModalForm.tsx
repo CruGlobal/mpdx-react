@@ -244,10 +244,14 @@ const TaskModalForm = ({
   const [updateContactStatus] = useUpdateContactStatusMutation();
   const { update } = useUpdateTasksQueries();
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const activityRef = useRef<HTMLInputElement | null>(null);
+  const firstFocusRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (!task && inputRef.current && !defaultValues?.activityType) {
-      setTimeout(() => inputRef?.current && inputRef?.current.focus(), 500);
+    if (!task && firstFocusRef.current && !defaultValues?.activityType) {
+      setTimeout(
+        () => firstFocusRef?.current && firstFocusRef?.current.focus(),
+        500,
+      );
     }
   }, []);
 
@@ -401,8 +405,8 @@ const TaskModalForm = ({
                       label={t('Task Type/Phase')}
                       value={taskPhase}
                       contactPhase={phaseData?.id}
-                      inputRef={inputRef}
-                      onChange={(phase) =>
+                      inputRef={firstFocusRef}
+                      onChange={(phase) => {
                         handleTaskPhaseChange({
                           phase,
                           setFieldValue,
@@ -410,8 +414,9 @@ const TaskModalForm = ({
                           setActionSelected,
                           setPhaseId,
                           setSelectedSuggestedTags,
-                        })
-                      }
+                        }),
+                          setTimeout(() => activityRef?.current?.focus(), 50);
+                      }}
                     />
                   </Grid>
 
@@ -431,6 +436,7 @@ const TaskModalForm = ({
                             constants,
                           });
                         }}
+                        inputRef={activityRef}
                       />
                     </FormControl>
                   </Grid>
