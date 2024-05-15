@@ -43,7 +43,7 @@ export const useContactPartnershipStatuses = () => {
           acc[status] = {
             name: statusName,
             translated: getLocalizedContactStatus(t, status),
-            phase: phase,
+            phase: phase.id,
           };
         });
         return acc;
