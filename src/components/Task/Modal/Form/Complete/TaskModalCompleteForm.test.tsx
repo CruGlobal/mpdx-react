@@ -19,7 +19,7 @@ import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
 import { updateContactStatusMutationMock } from '../TaskModalMocks';
-import { taskModalTests } from '../TaskModalTests.test';
+import { taskModalTests } from '../TaskModalTests';
 import { CompleteTaskDocument } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 import {
