@@ -16,7 +16,7 @@ export const possiblePartnerStatus = (
   resultName: DisplayResultEnum | null,
   activityType?: ActivityTypeEnum | null,
 ): PossiblePartnerStatus | null => {
-  if (!phaseData || !resultName || !activityType) return null;
+  if (!phaseData || !resultName || !activityType) {return null;}
 
   const contactStatus =
     phaseData.results?.resultOptions?.find(
