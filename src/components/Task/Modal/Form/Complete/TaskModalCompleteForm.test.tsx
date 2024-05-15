@@ -166,7 +166,7 @@ describe('TaskModalCompleteForm', () => {
 
       await waitFor(() => {
         expect(
-          getByText("Change the contact's status to:"),
+          getByText("Change the contact's status to: "),
         ).toBeInTheDocument();
         expect(getByText('Initiate for Appointment')).toBeInTheDocument();
       });

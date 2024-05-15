@@ -26,9 +26,9 @@ import {
 import Loading from 'src/components/Loading';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
-import { statusMap } from 'src/utils/contacts/contactPartnershipStatus';
 
 const StickyBox = styled(Box)(() => ({
   ['@media (min-width:900px)']: {
@@ -41,6 +41,7 @@ const StickyBox = styled(Box)(() => ({
 const ContactFlowSetupPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { statusMap } = useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
   const [flowOptions, setFlowOptions] = useState<
     {

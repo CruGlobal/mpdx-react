@@ -19,8 +19,8 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import theme from 'src/theme';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import { sourceToStr } from 'src/utils/sourceToStr';
 import { Coordinates } from './coordinates';
 
@@ -85,12 +85,6 @@ const CruFocus = styled(Typography)(({ theme }) => ({
   display: 'inline',
 }));
 
-const inactiveStatuses: (StatusEnum | null | undefined)[] = Object.entries(
-  contactPartnershipStatus,
-)
-  .filter(([_, status]) => status.phase === PhaseEnum.Archive)
-  .map(([statusKey]) => statusKey as StatusEnum);
-
 export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   data,
   panTo,
@@ -99,6 +93,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
+  const { contactPartnershipStatus } = useContactPartnershipStatuses();
 
   const [statusContactsMapOpen, setStatusContactsMapOpen] = useState(-1);
 
@@ -107,6 +102,12 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
     (_event: React.SyntheticEvent, newExpanded: boolean) => {
       setStatusContactsMapOpen(newExpanded ? panel : -1);
     };
+
+  const inactiveStatuses: (StatusEnum | null | undefined)[] = Object.entries(
+    contactPartnershipStatus,
+  )
+    .filter(([_, status]) => status.phase === PhaseEnum.Archive)
+    .map(([statusKey]) => statusKey as StatusEnum);
   const statusesForMap: PanelItem[] = Object.entries(contactPartnershipStatus)
     .filter(
       ([_, status]) =>

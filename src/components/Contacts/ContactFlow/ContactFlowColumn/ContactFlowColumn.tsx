@@ -79,7 +79,9 @@ export const ContactFlowColumn: React.FC<Props> = ({
   const { data: constants } = useLoadConstantsQuery({});
   const statusesStructured =
     statuses.map((status) =>
-      constants?.constant.statuses?.find((constant) => constant.id === status),
+      constants?.constant.statuses?.find(
+        (constant) => String(constant.id) === String(status),
+      ),
     ) || [];
 
   const cardContentRef = useRef<HTMLDivElement>();

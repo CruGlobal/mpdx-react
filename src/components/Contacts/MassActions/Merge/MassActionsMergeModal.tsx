@@ -16,10 +16,10 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import Modal from '../../../common/Modal/Modal';
 import {
   ContactsContext,
@@ -49,6 +49,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
+  const { contactPartnershipStatus } = useContactPartnershipStatuses();
 
   const [primaryContactId, setPrimaryContactId] = useState(ids[0]);
 

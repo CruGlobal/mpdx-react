@@ -33,8 +33,8 @@ import {
   ResultEnum,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { statusMapForFilters } from 'src/utils/contacts/contactPartnershipStatus';
 import {
   appointmentActivityTypes,
   callActivityTypes,
@@ -131,6 +131,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { statusMapForFilters } = useContactPartnershipStatuses();
   const { handleClearAll } = React.useContext(ContactsContext) as ContactsType;
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);

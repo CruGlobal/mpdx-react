@@ -9,12 +9,11 @@ import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
-import { StatusEnum, TaskFilterSetInput } from 'src/graphql/types.generated';
+import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useMassSelection } from '../../../../hooks/useMassSelection';
 import { SearchBox } from '../../../common/SearchBox/SearchBox';
-import { useGetContactDetailsHeaderQuery } from '../ContactDetailsHeader/ContactDetailsHeader.generated';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import {
   useContactPhaseQuery,
@@ -116,10 +115,6 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     },
   });
 
-  const { data: contactDetailsData } = useGetContactDetailsHeaderQuery({
-    variables: { accountListId, contactId },
-  });
-
   const { data: phaseData } = useContactPhaseQuery({
     variables: {
       accountListId,
@@ -198,13 +193,6 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                   defaultValues: {
                     completedAt: DateTime.local().toISO(),
                     contactIds: [contactId],
-                    contactNodes: [
-                      {
-                        id: contactId,
-                        status: contactDetailsData?.contact
-                          .status as StatusEnum,
-                      },
-                    ],
                     taskPhase: contactPhase || undefined,
                   },
                 })

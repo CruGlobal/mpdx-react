@@ -15,7 +15,6 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import {
   callActivityTypes,
   emailActivityTypes,
@@ -418,7 +417,7 @@ describe('FilterPanel', () => {
         reverseAlmaMater: false,
         reverseAppeal: true,
         state: ['FL'],
-        status: Object.keys(contactPartnershipStatus),
+        status: Object.values(ContactFilterStatusEnum),
         activityType: getActivitiesByPhaseType('all'),
         nextAction: [
           ActivityTypeEnum.AppointmentInPerson,
@@ -483,7 +482,7 @@ describe('FilterPanel', () => {
         almaMater: ['test1', 'test2'],
         newsletter: 'EMAIL',
         contactNewsletter: 'EMAIL_ONLY',
-        status: Object.keys(contactPartnershipStatus),
+        status: Object.values(ContactFilterStatusEnum),
         activityType: [
           'APPOINTMENT',
           'CALL',

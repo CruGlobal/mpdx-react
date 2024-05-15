@@ -17,8 +17,8 @@ import {
   PledgeFrequencyEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
@@ -88,6 +88,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
     });
   const [updateInvalidStatus, { loading: updating }] =
     useUpdateInvalidStatusMutation();
+  const { contactPartnershipStatus } = useContactPartnershipStatuses();
 
   const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
     ? (

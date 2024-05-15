@@ -35,7 +35,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { PersonCreateInput, StatusEnum } from 'src/graphql/types.generated';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 
@@ -137,6 +137,7 @@ export const CreateMultipleContacts = ({
   };
   const constants = useApiConstants();
   const phases = constants?.phases;
+  const { contactPartnershipStatus } = useContactPartnershipStatuses();
   const [createContact] = useCreateContactMutation();
   const [createPerson] = useCreatePersonMutation();
   const [createAddress] = useCreateContactAddressMutation();

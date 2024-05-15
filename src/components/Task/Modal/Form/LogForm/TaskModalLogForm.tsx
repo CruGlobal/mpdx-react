@@ -49,6 +49,7 @@ import { ContactsAutocomplete } from '../Inputs/ContactsAutocomplete/ContactsAut
 import { PhaseTags } from '../Inputs/PhaseTags/PhaseTags';
 import { ResultSelect } from '../Inputs/ResultSelect/ResultSelect';
 import { SuggestedContactStatus } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus';
+import { useContactQuery } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus.generated';
 import {
   TagTypeEnum,
   TagsAutocomplete,
@@ -66,7 +67,6 @@ import {
   getDatabaseValueFromResult,
   handleTaskActionChange,
   handleTaskPhaseChange,
-  showContactSuggestedStatus,
 } from '../TaskModalHelper';
 
 const taskSchema = yup.object({
@@ -287,6 +287,26 @@ const TaskModalLogForm = ({
     [phaseData],
   );
 
+  const [contact, setContact] = useState(undefined);
+  const [contactIdsForStatusSuggestion, setContactIdsForStatusSuggestion] =
+    useState(initialTask.contactIds);
+
+  useEffect(() => {
+    if (contactIdsForStatusSuggestion?.length === 1) {
+      const contactId = contactIdsForStatusSuggestion[0];
+      const { data } = useContactQuery({
+        variables: {
+          accountListId,
+          contactId,
+        },
+      });
+      // @ts-expect-error can't figure out what type this should be
+      setContact([data?.contact] || undefined);
+    } else {
+      setContact(undefined);
+    }
+  }, [contactIdsForStatusSuggestion]);
+
   return (
     <Formik
       initialValues={initialTask}
@@ -402,14 +422,12 @@ const TaskModalLogForm = ({
                 setResultSelected={setResultSelected}
                 phaseData={phaseData}
               />
-              {showContactSuggestedStatus(defaultValues?.contactNodes) && (
-                <SuggestedContactStatus
-                  partnerStatus={partnerStatus}
-                  changeContactStatus={changeContactStatus}
-                  handleChange={handleChange}
-                  numOfContacts={contactIds.length}
-                />
-              )}
+              <SuggestedContactStatus
+                partnerStatus={partnerStatus}
+                changeContactStatus={changeContactStatus}
+                handleChange={handleChange}
+                contacts={contact}
+              />
               {!!phaseTags?.length && (
                 <Grid item>
                   <PhaseTags
@@ -436,9 +454,10 @@ const TaskModalLogForm = ({
                 <ContactsAutocomplete
                   accountListId={accountListId}
                   value={contactIds}
-                  onChange={(contactIds) =>
-                    setFieldValue('contactIds', contactIds)
-                  }
+                  onChange={(contactIds) => {
+                    setFieldValue('contactIds', contactIds);
+                    setContactIdsForStatusSuggestion(contactIds);
+                  }}
                 />
               </Grid>
               <Grid item>
