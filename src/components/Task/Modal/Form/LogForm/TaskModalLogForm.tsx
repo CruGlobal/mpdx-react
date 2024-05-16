@@ -131,6 +131,7 @@ const TaskModalLogForm = ({
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const [updateContactStatus] = useUpdateContactStatusMutation();
   const { update } = useUpdateTasksQueries();
+  const activityRef = useRef<HTMLInputElement | null>(null);
   const firstFocusRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (firstFocusRef.current) {
@@ -332,7 +333,7 @@ const TaskModalLogForm = ({
                       value={taskPhase}
                       contactPhase={phaseData?.id}
                       inputRef={firstFocusRef}
-                      onChange={(phase) =>
+                      onChange={(phase) => {
                         handleTaskPhaseChange({
                           phase,
                           setFieldValue,
@@ -340,8 +341,9 @@ const TaskModalLogForm = ({
                           setActionSelected,
                           setPhaseId,
                           setSelectedSuggestedTags,
-                        })
-                      }
+                        });
+                        setTimeout(() => activityRef?.current?.focus(), 50);
+                      }}
                     />
                   </Grid>
                   <Grid xs={12} sm={6} item>
@@ -359,6 +361,7 @@ const TaskModalLogForm = ({
                           constants,
                         });
                       }}
+                      inputRef={activityRef}
                     />
                   </Grid>
                 </Grid>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { Ref, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
@@ -13,6 +13,7 @@ interface ActivityTypeProps {
   // Set to true to make None an acceptable value. Otherwise, None will be converted to null.
   preserveNone?: boolean;
   activityTypes?: Map<ActivityTypeEnum, ActivityData>;
+  inputRef?: Ref<HTMLElement>;
 }
 
 export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
@@ -22,6 +23,7 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
   onChange,
   preserveNone = false,
   activityTypes,
+  inputRef,
 }) => {
   const { t } = useTranslation();
 
@@ -51,7 +53,9 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
           return getLocalizedTaskType(t, activity);
         }
       }}
-      renderInput={(params) => <TextField {...params} label={label} />}
+      renderInput={(params) => (
+        <TextField inputRef={inputRef} {...params} label={label} />
+      )}
       onChange={(_, value) =>
         onChange(
           !preserveNone && value === ActivityTypeEnum.None ? null : value,

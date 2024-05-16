@@ -50,11 +50,12 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
     if (!data?.contact.status) {
       return false;
     }
-    const disabledStatus = statusArray
-      .filter((status) => status.phase === PhaseEnum.PartnerCare)
+    if (partnerStatus?.suggestedContactStatus === data?.contact.status)
+      {return false;}
+    const disabledStatuses = statusArray
+      .filter((status) => status?.phase === PhaseEnum.PartnerCare)
       .map((s) => s.id);
-
-    return !disabledStatus.includes(data.contact.status);
+    return !disabledStatuses.includes(data.contact.status);
   }, [statusArray, data]);
 
   return partnerStatus?.suggestedContactStatus &&
