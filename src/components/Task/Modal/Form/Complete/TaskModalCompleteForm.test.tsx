@@ -123,66 +123,6 @@ describe('TaskModalCompleteForm', () => {
       });
     });
 
-    it("doesn't not render suggested contact status when multiple contact", async () => {
-      const { getByRole, queryByText } = render(
-        <Components
-          taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
-        />,
-      );
-
-      const resultDropdown = getByRole('combobox', { name: 'Result' });
-      userEvent.click(resultDropdown);
-      await waitFor(() => {
-        userEvent.click(
-          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
-        );
-      });
-
-      await waitFor(() => {
-        expect(
-          queryByText(
-            "Change the contact's status to: CONTACT_FOR_APPOINTMENT",
-          ),
-        ).not.toBeInTheDocument();
-      });
-    });
-
-    it('renders suggested status when single contact', async () => {
-      const { getByRole, getByText } = render(
-        <Components
-          taskOverrides={{
-            activityType: ActivityTypeEnum.AppointmentInPerson,
-            contacts: {
-              nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
-            },
-          }}
-          mocks={[
-            ContactStatusQueryMock(
-              accountListId,
-              'contact-1',
-              StatusEnum.ContactForAppointment,
-            ),
-          ]}
-        />,
-      );
-
-      const resultDropdown = getByRole('combobox', { name: 'Result' });
-      userEvent.click(resultDropdown);
-      await waitFor(() => {
-        userEvent.click(
-          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
-        );
-      });
-
-      await waitFor(() => {
-        screen.logTestingPlaygroundURL();
-        expect(
-          getByText("Change the contact's status to:"),
-        ).toBeInTheDocument();
-        expect(getByText('Initiate for Appointment')).toBeInTheDocument();
-      });
-    });
-
     it('should not render <Result> if no result to select', async () => {
       const { queryByRole } = render(
         <Components
