@@ -199,4 +199,87 @@ describe('MassActionsMergeModal', () => {
       expect(deselectAll).toHaveBeenCalled();
     });
   });
+
+  it('should show contact error message if 9 contacts or over', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider<{
+            GetContactsForMerging: GetContactsForMergingQuery;
+          }>
+            mocks={mocks}
+          >
+            <ContactsContext.Provider
+              value={{ deselectAll: jest.fn() } as unknown as ContactsType}
+            >
+              <MassActionsMergeModal
+                accountListId={accountListId}
+                ids={[
+                  'contact-1',
+                  'contact-2',
+                  'contact-3',
+                  'contact-4',
+                  'contact-5',
+                  'contact-6',
+                  'contact-7',
+                  'contact-8',
+                  'contact-9',
+                ]}
+                handleClose={handleClose}
+              />
+            </ContactsContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    await waitFor(() => {
+      expect(
+        getByText('You can only merge up to 8 contacts at a time.'),
+      ).toBeInTheDocument();
+
+      expect(
+        queryByText('This action cannot be undone!'),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('should not show contact error message if 8 contacts', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider<{
+            GetContactsForMerging: GetContactsForMergingQuery;
+          }>
+            mocks={mocks}
+          >
+            <ContactsContext.Provider
+              value={{ deselectAll: jest.fn() } as unknown as ContactsType}
+            >
+              <MassActionsMergeModal
+                accountListId={accountListId}
+                ids={[
+                  'contact-1',
+                  'contact-2',
+                  'contact-3',
+                  'contact-4',
+                  'contact-5',
+                  'contact-6',
+                  'contact-7',
+                  'contact-8',
+                ]}
+                handleClose={handleClose}
+              />
+            </ContactsContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    await waitFor(() => {
+      expect(
+        queryByText('You can only merge up to 8 contacts at a time.'),
+      ).not.toBeInTheDocument();
+
+      expect(getByText('This action cannot be undone!')).toBeInTheDocument();
+    });
+  });
 });
