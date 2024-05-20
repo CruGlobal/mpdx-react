@@ -344,11 +344,14 @@ const TaskModalCompleteForm = ({
               />
 
               <SuggestedContactStatus
-                partnerStatus={partnerStatus}
+                suggestedContactStatus={partnerStatus?.suggestedContactStatus}
                 changeContactStatus={changeContactStatus}
                 handleChange={handleChange}
                 accountListId={accountListId}
                 contactIds={contactIds}
+                contactStatus={
+                  numberOfContacts === 1 ? task.contacts.nodes[0]?.status : null
+                }
               />
 
               {nextActions.length > 0 && (

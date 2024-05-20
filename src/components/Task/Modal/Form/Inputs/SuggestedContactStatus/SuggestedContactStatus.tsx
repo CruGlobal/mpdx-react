@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 import { Checkbox, FormControl, FormControlLabel, Grid } from '@mui/material';
 import { Trans } from 'react-i18next';
-import { PhaseEnum } from 'src/graphql/types.generated';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
-import { PossiblePartnerStatus } from '../../PossiblePartnerStatus';
 import { useContactStatusQuery } from './SuggestedContactStatus.generated';
 
-type FormikHandleChange = {
+export type FormikHandleChange = {
   (e: React.ChangeEvent<unknown>): void;
   <T = string | React.ChangeEvent<unknown>>(
     field: T,
@@ -16,50 +15,55 @@ type FormikHandleChange = {
 };
 
 interface SuggestedContactStatusProps {
-  partnerStatus: PossiblePartnerStatus | null;
+  suggestedContactStatus: StatusEnum | undefined;
   handleChange: FormikHandleChange;
   contactIds: string[] | undefined;
   accountListId: string;
   changeContactStatus?: boolean;
+  contactStatus?: StatusEnum | null;
 }
 
 export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
-  partnerStatus,
+  suggestedContactStatus,
   handleChange,
   contactIds,
   accountListId,
   changeContactStatus,
+  contactStatus,
 }) => {
   if (!contactIds || contactIds.length !== 1) {
     return null;
   }
-
   const contactId = contactIds[0];
   const { data } = useContactStatusQuery({
     variables: {
       accountListId,
       contactId,
     },
-    skip: contactIds.length !== 1,
+    skip: !!contactStatus || contactIds.length !== 1,
   });
 
   const { statusArray, contactPartnershipStatus } =
     useContactPartnershipStatuses();
 
+  const currentContactStatus = useMemo(() => {
+    return contactStatus || data?.contact.status;
+  }, [data, contactStatus]);
+
   const shouldRenderContactSuggestion = useMemo(() => {
-    if (!data?.contact.status) {
+    if (!currentContactStatus) {
       return false;
     }
-    if (partnerStatus?.suggestedContactStatus === data?.contact.status)
-      {return false;}
+    if (suggestedContactStatus === currentContactStatus) {
+      return false;
+    }
     const disabledStatuses = statusArray
       .filter((status) => status?.phase === PhaseEnum.PartnerCare)
       .map((s) => s.id);
-    return !disabledStatuses.includes(data.contact.status);
-  }, [statusArray, data]);
+    return !disabledStatuses.includes(currentContactStatus);
+  }, [statusArray, currentContactStatus]);
 
-  return partnerStatus?.suggestedContactStatus &&
-    shouldRenderContactSuggestion ? (
+  return suggestedContactStatus && shouldRenderContactSuggestion ? (
     <Grid item>
       <FormControl fullWidth>
         <FormControlLabel
@@ -75,8 +79,7 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
               defaults="Change the contact's status to: <bold>{{status}}</bold>" // optional defaultValue
               values={{
                 status:
-                  contactPartnershipStatus[partnerStatus.suggestedContactStatus]
-                    ?.translated,
+                  contactPartnershipStatus[suggestedContactStatus]?.translated,
               }}
               components={{ italic: <i />, bold: <strong /> }}
             />

@@ -405,7 +405,7 @@ const TaskModalLogForm = ({
                 phaseData={phaseData}
               />
               <SuggestedContactStatus
-                partnerStatus={partnerStatus}
+                suggestedContactStatus={partnerStatus?.suggestedContactStatus}
                 changeContactStatus={changeContactStatus}
                 handleChange={handleChange}
                 accountListId={accountListId}
