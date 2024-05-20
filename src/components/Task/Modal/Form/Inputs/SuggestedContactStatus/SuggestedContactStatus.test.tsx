@@ -1,14 +1,12 @@
 import React from 'react';
-import { MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
-import TestWrapper from '__tests__/util/TestWrapper';
-import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { StatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { ContactStatusQueryMock } from '../../TaskModalMocks';
 import {
   FormikHandleChange,
   SuggestedContactStatus,
@@ -16,23 +14,36 @@ import {
 
 const handleChange: FormikHandleChange = jest.fn();
 const accountListId = 'abc';
+const mutationSpy = jest.fn();
 
 type ComponentsProps = {
   suggestedContactStatus: StatusEnum;
   contactIds: string[] | undefined;
   contactStatus?: StatusEnum | null;
-  mocks?: MockedResponse[];
+  contactStatusQueryMock?: StatusEnum | null;
 };
 
 const Components = ({
   suggestedContactStatus,
   contactIds,
   contactStatus,
-  mocks = [],
+  contactStatusQueryMock,
 }: ComponentsProps) => (
   <ThemeProvider theme={theme}>
     <I18nextProvider i18n={i18n}>
-      <TestWrapper mocks={[LoadConstantsMock(), ...mocks]}>
+      <GqlMockedProvider
+        mocks={{
+          LoadConstants: loadConstantsMockData,
+          ContactStatus: {
+            data: {
+              contact: {
+                status: contactStatusQueryMock || StatusEnum.NeverContacted,
+              },
+            },
+          },
+        }}
+        onCall={mutationSpy}
+      >
         <SuggestedContactStatus
           suggestedContactStatus={suggestedContactStatus}
           changeContactStatus={false}
@@ -41,7 +52,7 @@ const Components = ({
           contactIds={contactIds}
           contactStatus={contactStatus}
         />
-      </TestWrapper>
+      </GqlMockedProvider>
     </I18nextProvider>
   </ThemeProvider>
 );
@@ -52,13 +63,7 @@ describe('SuggestedContactStatus', () => {
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1', 'contact-2']}
-        mocks={[
-          ContactStatusQueryMock(
-            accountListId,
-            'contact-1',
-            StatusEnum.NeverContacted,
-          ),
-        ]}
+        contactStatus={StatusEnum.NeverContacted}
       />,
     );
     await waitFor(() => {
@@ -74,14 +79,13 @@ describe('SuggestedContactStatus', () => {
       <Components
         suggestedContactStatus={sameStatus}
         contactIds={['contact-1']}
-        mocks={[ContactStatusQueryMock(accountListId, 'contact-1', sameStatus)]}
+        contactStatus={sameStatus}
       />,
     );
     await waitFor(() => {
       expect(
         queryByText("Change the contact's status to:"),
       ).not.toBeInTheDocument();
-      expect(queryByText('Initiate for Appointment')).not.toBeInTheDocument();
     });
   });
 
@@ -90,39 +94,56 @@ describe('SuggestedContactStatus', () => {
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
-        mocks={[
-          ContactStatusQueryMock(
-            accountListId,
-            'contact-1',
-            StatusEnum.PartnerFinancial,
-          ),
-        ]}
+        contactStatus={StatusEnum.PartnerFinancial}
       />,
     );
     await waitFor(() => {
       expect(
         queryByText("Change the contact's status to:"),
       ).not.toBeInTheDocument();
-      expect(queryByText('Initiate for Appointment')).not.toBeInTheDocument();
     });
   });
 
-  it('renders suggested status when single contact', async () => {
+  it('renders suggested status when single contact and checks contact status with gql call', async () => {
     const { getByText } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
-        mocks={[
-          ContactStatusQueryMock(
-            accountListId,
-            'contact-1',
-            StatusEnum.NeverContacted,
-          ),
-        ]}
+        contactStatusQueryMock={StatusEnum.NeverContacted}
+      />,
+    );
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledTimes(2);
+      expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
+        operationName: 'ContactStatus',
+        variables: {
+          accountListId: accountListId,
+          contactId: 'contact-1',
+        },
+      });
+    });
+    await waitFor(() => {
+      expect(getByText("Change the contact's status to:")).toBeInTheDocument();
+      expect(getByText('Initiate for Appointment')).toBeInTheDocument();
+    });
+  });
+
+  it('does not send a ContactStatus graphql request when the current contacts status is provided', async () => {
+    const { getByText } = render(
+      <Components
+        suggestedContactStatus={StatusEnum.ContactForAppointment}
+        contactIds={['contact-1']}
+        contactStatus={StatusEnum.NeverContacted}
+        contactStatusQueryMock={StatusEnum.NeverContacted}
       />,
     );
 
     await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledTimes(1);
+      expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
+        operationName: 'LoadConstants',
+        variables: {},
+      });
       expect(getByText("Change the contact's status to:")).toBeInTheDocument();
       expect(getByText('Initiate for Appointment')).toBeInTheDocument();
     });
