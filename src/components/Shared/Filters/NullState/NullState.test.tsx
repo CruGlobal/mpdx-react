@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import NullState from './NullState';
@@ -109,7 +110,7 @@ describe('NullState', () => {
     expect(getByTestId('task-null-state')).toBeInTheDocument();
     userEvent.click(getByText('Add new task'));
     await waitFor(() =>
-      expect(openTaskModal).toHaveBeenCalledWith({ view: 'add' }),
+      expect(openTaskModal).toHaveBeenCalledWith({ view: TaskModalEnum.Add }),
     );
   });
 
@@ -141,7 +142,7 @@ describe('NullState', () => {
     expect(changeFilters).toHaveBeenCalled();
     userEvent.click(getByText('Add new task'));
     await waitFor(() =>
-      expect(openTaskModal).toHaveBeenCalledWith({ view: 'add' }),
+      expect(openTaskModal).toHaveBeenCalledWith({ view: TaskModalEnum.Add }),
     );
   });
 });

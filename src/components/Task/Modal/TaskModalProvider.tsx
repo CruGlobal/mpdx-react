@@ -5,7 +5,7 @@ import { preloadTaskModalCommentsList } from './Comments/DynamicTaskModalComment
 import { preloadTaskModalCompleteForm } from './Form/Complete/DynamicTaskModalCompleteForm';
 import { preloadTaskModalForm } from './Form/DynamicTaskModalForm';
 import { preloadTaskModalLogForm } from './Form/LogForm/DynamicTaskModalLogForm';
-import TaskModal, { TaskModalProps } from './TaskModal';
+import TaskModal, { TaskModalEnum, TaskModalProps } from './TaskModal';
 import TaskModalContext from './TaskModalContext';
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 
 export interface TaskModalProviderContext {
   openTaskModal: (props: TaskModalProps) => void;
-  preloadTaskModal: (view: TaskModalProps['view']) => void;
+  preloadTaskModal: (view: TaskModalEnum) => void;
   taskModals: TaskModalPropsWithId[];
 }
 
@@ -53,12 +53,12 @@ const TaskModalProvider = ({ children }: Props): ReactElement => {
       ]);
     }
   };
-  const preloadTaskModal = (view: TaskModalProps['view']) => {
-    if (view === 'complete') {
+  const preloadTaskModal = (view: TaskModalEnum) => {
+    if (view === TaskModalEnum.Complete) {
       preloadTaskModalCompleteForm();
-    } else if (view === 'comments') {
+    } else if (view === TaskModalEnum.Comments) {
       preloadTaskModalCommentsList();
-    } else if (view === 'log') {
+    } else if (view === TaskModalEnum.Log) {
       preloadTaskModalLogForm();
     } else {
       preloadTaskModalForm();

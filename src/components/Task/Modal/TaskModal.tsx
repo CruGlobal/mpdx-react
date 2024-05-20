@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import { CheckCircle } from '@mui/icons-material';
 import { DialogContent, Slide, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -19,10 +19,17 @@ import { DynamicTaskModalForm } from './Form/DynamicTaskModalForm';
 import { DynamicTaskModalLogForm } from './Form/LogForm/DynamicTaskModalLogForm';
 import { useGetTaskForTaskModalQuery } from './TaskModalTask.generated';
 
+export enum TaskModalEnum {
+  Comments = 'comments',
+  Log = 'log',
+  Add = 'add',
+  Complete = 'complete',
+  Edit = 'edit',
+}
 export interface TaskModalProps {
   taskId?: string;
   onClose?: () => void;
-  view: 'comments' | 'log' | 'add' | 'complete' | 'edit';
+  view: TaskModalEnum;
   showCompleteForm?: boolean;
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput> & {
     taskPhase?: PhaseEnum;
@@ -61,7 +68,7 @@ const TaskModal = ({
     variables: {
       accountListId: accountListId ?? '',
       taskId: taskId ?? '',
-      includeComments: view === 'comments',
+      includeComments: view === TaskModalEnum.Comments,
     },
     skip: !taskId,
     onCompleted: () => setOpen(true),
@@ -74,16 +81,16 @@ const TaskModal = ({
 
   const task = data?.task;
 
-  const renderTitle = (): string | ReactElement => {
+  const renderTitle = useMemo((): string | ReactElement => {
     switch (view) {
-      case 'complete':
+      case TaskModalEnum.Complete:
         return (
           <>
             <StyledCheckIcon />
             {t('Complete Task')}
           </>
         );
-      case 'comments':
+      case TaskModalEnum.Comments:
         return t('Task Comments');
       case 'log':
         return (
@@ -92,67 +99,61 @@ const TaskModal = ({
             {t('Log Task')}
           </>
         );
-      case 'edit':
+      case TaskModalEnum.Edit:
         return t('Edit Task');
       default:
         return t('Add Task');
     }
-  };
-
-  const renderView = (): ReactElement => {
-    switch (view) {
-      case 'complete':
-        if (task) {
-          return (
-            <DynamicTaskModalCompleteForm
-              accountListId={accountListId || ''}
-              task={task}
-              onClose={onModalClose}
-            />
-          );
-        }
-      case 'comments':
-        return (
-          <DynamicTaskModalCommentsList
-            accountListId={accountListId || ''}
-            taskId={task?.id || ''}
-            commentCount={task?.comments?.totalCount}
-            onClose={onModalClose}
-          />
-        );
-      case 'log':
-        return (
-          <DynamicTaskModalLogForm
-            accountListId={accountListId || ''}
-            onClose={onModalClose}
-            defaultValues={defaultValues}
-          />
-        );
-      default:
-        return (
-          <DynamicTaskModalForm
-            accountListId={accountListId || ''}
-            task={task}
-            onClose={onModalClose}
-            defaultValues={defaultValues}
-            view={view}
-          />
-        );
-    }
-  };
+  }, [view]);
 
   return loading ? (
     <Loading loading />
   ) : (
     <Modal
       isOpen={open}
-      title={renderTitle()}
+      title={renderTitle}
       handleClose={onModalClose}
       transition={Transition}
       altColors={view === 'log' || view === 'complete'}
     >
       {accountListId ? (
-        renderView()
+        <>
+          {view === TaskModalEnum.Complete && task && (
+            <DynamicTaskModalCompleteForm
+              accountListId={accountListId}
+              task={task}
+              onClose={onModalClose}
+            />
+          )}
+          {view === TaskModalEnum.Comments && (
+            <DynamicTaskModalCommentsList
+              accountListId={accountListId}
+              taskId={task?.id || ''}
+              commentCount={task?.comments?.totalCount}
+              onClose={onModalClose}
+            />
+          )}
+          {view === TaskModalEnum.Log && (
+            <DynamicTaskModalLogForm
+              accountListId={accountListId}
+              onClose={onModalClose}
+              defaultValues={defaultValues}
+            />
+          )}
+          {[
+            TaskModalEnum.Complete,
+            TaskModalEnum.Comments,
+            TaskModalEnum.Log,
+          ].indexOf(view) === -1 && (
+            <DynamicTaskModalForm
+              accountListId={accountListId}
+              task={task}
+              onClose={onModalClose}
+              defaultValues={defaultValues}
+              view={view}
+            />
+          )}
+        </>
       ) : (
         <DialogContent dividers>
           <Typography color="error" align="center">

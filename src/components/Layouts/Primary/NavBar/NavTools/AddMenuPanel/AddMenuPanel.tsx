@@ -11,10 +11,11 @@ import {
   AddMenuItemsEnum,
   renderDialog,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import { preloadAddDonation } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
+import { preloadCreateContact } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
+import { preloadCreateMultipleContacts } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { preloadAddDonation } from '../../../TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
-import { preloadCreateContact } from '../../../TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
-import { preloadCreateMultipleContacts } from '../../../TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { LeafButton, LeafListItem, Title } from '../../StyledComponents';
 
 type MenuContent = {
@@ -65,17 +66,17 @@ export const AddMenuPanel = (): ReactElement => {
       text: 'Add Task',
       icon: ListIcon,
       onClick: () => {
-        openTaskModal({ view: 'add' });
+        openTaskModal({ view: TaskModalEnum.Add });
       },
-      onMouseEnter: () => preloadTaskModal('add'),
+      onMouseEnter: () => preloadTaskModal(TaskModalEnum.Add),
     },
     {
       text: 'Log Task',
       icon: EditIcon,
       onClick: () => {
-        openTaskModal({ view: 'log' });
+        openTaskModal({ view: TaskModalEnum.Log });
       },
-      onMouseEnter: () => preloadTaskModal('log'),
+      onMouseEnter: () => preloadTaskModal(TaskModalEnum.Log),
     },
   ];
 

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { PhaseEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useTaskModal from '../../../../hooks/useTaskModal';
@@ -152,7 +153,7 @@ describe('ContactTasksTab', () => {
 
     userEvent.click(getByText('add task'));
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'add',
+      view: TaskModalEnum.Add,
       defaultValues: {
         contactIds: [contactId],
         taskPhase: phase,
@@ -197,7 +198,7 @@ describe('ContactTasksTab', () => {
     );
     userEvent.click(getByText('log task'));
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'log',
+      view: TaskModalEnum.Log,
       defaultValues: {
         completedAt: DateTime.local().toISO(),
         contactIds: [contactId],

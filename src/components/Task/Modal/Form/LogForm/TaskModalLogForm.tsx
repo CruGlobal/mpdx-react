@@ -42,6 +42,7 @@ import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
+import { TaskModalEnum } from '../../TaskModal';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
 import { AssigneeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
@@ -251,7 +252,7 @@ const TaskModalLogForm = ({
     onClose();
     if (attributes.nextAction) {
       openTaskModal({
-        view: 'add',
+        view: TaskModalEnum.Add,
         defaultValues: {
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded

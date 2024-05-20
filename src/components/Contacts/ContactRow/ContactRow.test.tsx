@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { ContactRow } from './ContactRow';
@@ -127,7 +128,7 @@ describe('ContactsRow', () => {
     userEvent.click(taskButton);
     // TODO: Find a way to check that click event was pressed.
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'log',
+      view: TaskModalEnum.Log,
       defaultValues: {
         contactIds: ['test-id'],
       },

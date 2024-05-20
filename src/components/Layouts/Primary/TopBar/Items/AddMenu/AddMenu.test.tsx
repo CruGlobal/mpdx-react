@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useTaskModal from '../../../../../../hooks/useTaskModal';
 import theme from '../../../../../../theme';
 import AddMenu from './AddMenu';
@@ -101,7 +102,7 @@ describe('AddMenu', () => {
     await waitFor(() => expect(getByText('Add Task')).toBeInTheDocument());
     userEvent.click(getByText('Add Task'));
     await waitFor(() =>
-      expect(openTaskModal).toHaveBeenCalledWith({ view: 'add' }),
+      expect(openTaskModal).toHaveBeenCalledWith({ view: TaskModalEnum.Add }),
     );
   });
 });

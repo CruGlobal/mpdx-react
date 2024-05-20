@@ -18,6 +18,7 @@ import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
+import { TaskModalEnum } from '../../TaskModal';
 import {
   ContactStatusQueryMock,
   updateContactStatusMutationMock,
@@ -396,7 +397,7 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({
-        view: 'add',
+        view: TaskModalEnum.Add,
         defaultValues: {
           activityType: ActivityTypeEnum.PartnerCareThank,
           contactIds: ['contact-1', 'contact-2'],

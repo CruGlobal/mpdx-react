@@ -5,6 +5,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import {
   ActivityTypeEnum,
   ContactFilterSetInput,
@@ -117,7 +118,7 @@ export const ContactFlow: React.FC<Props> = ({
     });
     if (status.id && taskStatuses[status.id]) {
       openTaskModal({
-        view: 'add',
+        view: TaskModalEnum.Add,
         defaultValues: {
           activityType: taskStatuses[status.id],
           contactIds: [id],
