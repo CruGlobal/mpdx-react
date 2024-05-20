@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
@@ -20,6 +20,7 @@ import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsT
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
+import { getDefaultFlowOptions } from './contactFlowDefaultOptions';
 
 interface Props {
   accountListId: string;
@@ -67,10 +68,18 @@ export const ContactFlow: React.FC<Props> = ({
   const { openTaskModal } = useTaskModal();
   const { statusMap } = useContactPartnershipStatuses();
 
-  const flowOptions: ContactFlowOption[] = JSON.parse(
+  const userFlowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
       '[]',
   );
+
+  const flowOptions = useMemo(() => {
+    if (userFlowOptions.length) {
+      return userFlowOptions;
+    }
+
+    return getDefaultFlowOptions(t);
+  }, [userFlowOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();
 

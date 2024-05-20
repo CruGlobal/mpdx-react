@@ -1,7 +1,7 @@
 import React from 'react';
 import { MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@emotion/react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import TestWrapper from '__tests__/util/TestWrapper';
@@ -160,7 +160,7 @@ describe('TaskModalCompleteForm', () => {
             ContactStatusQueryMock(
               accountListId,
               'contact-1',
-              StatusEnum.ContactForAppointment,
+              StatusEnum.NeverContacted,
             ),
           ]}
         />,
@@ -175,7 +175,6 @@ describe('TaskModalCompleteForm', () => {
       });
 
       await waitFor(() => {
-        screen.logTestingPlaygroundURL();
         expect(
           getByText("Change the contact's status to:"),
         ).toBeInTheDocument();
@@ -344,7 +343,6 @@ describe('TaskModalCompleteForm', () => {
         }}
       />,
     );
-    screen.logTestingPlaygroundURL();
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
     expect(dispatch).toHaveBeenCalledWith('mpdx-task-completed');
