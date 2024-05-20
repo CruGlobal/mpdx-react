@@ -1,7 +1,7 @@
 import React from 'react';
 import { MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@emotion/react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import TestWrapper from '__tests__/util/TestWrapper';
@@ -18,6 +18,7 @@ import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
+import { TaskModalEnum } from '../../TaskModal';
 import {
   ContactStatusQueryMock,
   updateContactStatusMutationMock,
@@ -120,6 +121,65 @@ describe('TaskModalCompleteForm', () => {
         expect(
           getByRole('option', { name: 'Partner-Financial' }),
         ).toBeInTheDocument();
+      });
+    });
+
+    it("doesn't not render suggested contact status when multiple contact", async () => {
+      const { getByRole, queryByText } = render(
+        <Components
+          taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
+        />,
+      );
+
+      const resultDropdown = getByRole('combobox', { name: 'Result' });
+      userEvent.click(resultDropdown);
+      await waitFor(() => {
+        userEvent.click(
+          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
+        );
+      });
+
+      await waitFor(() => {
+        expect(
+          queryByText(
+            "Change the contact's status to: CONTACT_FOR_APPOINTMENT",
+          ),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it('renders suggested status when single contact', async () => {
+      const { getByRole, getByText } = render(
+        <Components
+          taskOverrides={{
+            activityType: ActivityTypeEnum.AppointmentInPerson,
+            contacts: {
+              nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
+            },
+          }}
+          mocks={[
+            ContactStatusQueryMock(
+              accountListId,
+              'contact-1',
+              StatusEnum.NeverContacted,
+            ),
+          ]}
+        />,
+      );
+
+      const resultDropdown = getByRole('combobox', { name: 'Result' });
+      userEvent.click(resultDropdown);
+      await waitFor(() => {
+        userEvent.click(
+          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
+        );
+      });
+
+      await waitFor(() => {
+        expect(
+          getByText("Change the contact's status to:"),
+        ).toBeInTheDocument();
+        expect(getByText('Initiate for Appointment')).toBeInTheDocument();
       });
     });
 
@@ -284,7 +344,6 @@ describe('TaskModalCompleteForm', () => {
         }}
       />,
     );
-    screen.logTestingPlaygroundURL();
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
     expect(dispatch).toHaveBeenCalledWith('mpdx-task-completed');
@@ -338,7 +397,7 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({
-        view: 'add',
+        view: TaskModalEnum.Add,
         defaultValues: {
           activityType: ActivityTypeEnum.PartnerCareThank,
           contactIds: ['contact-1', 'contact-2'],

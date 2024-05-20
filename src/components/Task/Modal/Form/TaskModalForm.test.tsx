@@ -17,6 +17,7 @@ import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import theme from 'src/theme';
+import { TaskModalEnum } from '../TaskModal';
 import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalForm from './TaskModalForm';
@@ -494,7 +495,7 @@ describe('TaskModalForm', () => {
 
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({
-        view: 'add',
+        view: TaskModalEnum.Add,
         defaultValues: {
           activityType: ActivityTypeEnum.FollowUpInPerson,
           contactIds: [],

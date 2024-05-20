@@ -15,6 +15,7 @@ import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
+import { TaskModalEnum } from '../../TaskModal';
 import { ContactOptionsQuery } from '../Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from '../Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalLogForm from './TaskModalLogForm';
@@ -422,7 +423,7 @@ describe('TaskModalLogForm', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled());
 
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'add',
+      view: TaskModalEnum.Add,
       defaultValues: {
         activityType: ActivityTypeEnum.FollowUpPhoneCall,
         contactIds: [],

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
@@ -136,7 +137,7 @@ describe('TasksDueThisWeek', () => {
       );
       userEvent.click(task1Element);
       expect(openTaskModal).toHaveBeenCalledWith({
-        view: 'edit',
+        view: TaskModalEnum.Edit,
         taskId: 'task_1',
       });
       expect(

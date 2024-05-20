@@ -3,12 +3,13 @@ import { Box, Checkbox, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { TaskRowFragment } from 'src/components/Task/TaskRow/TaskRow.generated';
+import { StarredItemIcon } from 'src/components/common/StarredItemIcon/StarredItemIcon';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
+import theme from 'src/theme';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
-import theme from '../../../../../theme';
-import { TaskRowFragment } from '../../../../Task/TaskRow/TaskRow.generated';
-import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
 import { DeleteTaskIconButton } from '../DeleteTaskIconButton/DeleteTaskIconButton';
 import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
@@ -108,21 +109,21 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
     openTaskModal({
       taskId: task?.id,
       showCompleteForm: true,
-      view: 'complete',
+      view: TaskModalEnum.Complete,
     });
   };
 
   const handleCommentButtonPressed = () => {
     openTaskModal({
       taskId: task?.id,
-      view: 'comments',
+      view: TaskModalEnum.Comments,
     });
   };
 
   const handleSubjectPressed = () => {
     openTaskModal({
       taskId: task?.id,
-      view: 'edit',
+      view: TaskModalEnum.Edit,
     });
   };
 
@@ -169,12 +170,12 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         <TaskCompleteButton
           isComplete={isComplete}
           onClick={handleCompleteButtonPressed}
-          onMouseEnter={() => preloadTaskModal('complete')}
+          onMouseEnter={() => preloadTaskModal(TaskModalEnum.Complete)}
         />
       </TaskItemWrap>
       <SubjectWrap
         onClick={handleSubjectPressed}
-        onMouseEnter={() => preloadTaskModal('edit')}
+        onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
       >
         <TaskType>
           {activityData && `${activityData.phase} - `}
@@ -192,7 +193,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
           isComplete={isComplete}
           numberOfComments={comments?.totalCount}
           onClick={handleCommentButtonPressed}
-          onMouseEnter={() => preloadTaskModal('comments')}
+          onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
           detailsPage
         />
 

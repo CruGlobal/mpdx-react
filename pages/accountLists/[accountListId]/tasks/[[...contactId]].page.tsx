@@ -22,6 +22,7 @@ import {
   ListHeader,
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
@@ -346,8 +347,12 @@ const TasksPage: React.FC = () => {
                     buttonGroup={
                       <Hidden xsDown>
                         <TaskHeaderButton
-                          onClick={() => openTaskModal({ view: 'add' })}
-                          onMouseEnter={() => preloadTaskModal('add')}
+                          onClick={() =>
+                            openTaskModal({ view: TaskModalEnum.Add })
+                          }
+                          onMouseEnter={() =>
+                            preloadTaskModal(TaskModalEnum.Add)
+                          }
                           variant="text"
                           startIcon={<TaskAddIcon />}
                         >
@@ -355,8 +360,12 @@ const TasksPage: React.FC = () => {
                           <Hidden smDown>{t('Add Task')}</Hidden>
                         </TaskHeaderButton>
                         <TaskHeaderButton
-                          onClick={() => openTaskModal({ view: 'log' })}
-                          onMouseEnter={() => preloadTaskModal('log')}
+                          onClick={() =>
+                            openTaskModal({ view: TaskModalEnum.Log })
+                          }
+                          onMouseEnter={() =>
+                            preloadTaskModal(TaskModalEnum.Log)
+                          }
                           variant="text"
                           startIcon={<TaskCheckIcon />}
                         >

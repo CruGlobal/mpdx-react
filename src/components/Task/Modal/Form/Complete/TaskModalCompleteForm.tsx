@@ -36,6 +36,7 @@ import { getPhaseByActivityType } from 'src/utils/phases/taskActivityTypes';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';
+import { TaskModalEnum } from '../../TaskModal';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
@@ -214,7 +215,7 @@ const TaskModalCompleteForm = ({
     onClose();
     if (attributes.nextAction) {
       openTaskModal({
-        view: 'add',
+        view: TaskModalEnum.Add,
         defaultValues: {
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded

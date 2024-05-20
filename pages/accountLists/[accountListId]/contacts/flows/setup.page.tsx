@@ -23,6 +23,7 @@ import {
   GetUserOptionsQuery,
   useGetUserOptionsQuery,
 } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { getDefaultFlowOptions } from 'src/components/Contacts/ContactFlow/contactFlowDefaultOptions';
 import Loading from 'src/components/Loading';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -58,7 +59,11 @@ const ContactFlowSetupPage: React.FC = () => {
       userOptions?.userOptions.find((option) => option.key === 'flows')
         ?.value || '[]',
     );
-    setFlowOptions(newOptions);
+    if (!newOptions.length) {
+      setFlowOptions(getDefaultFlowOptions(t));
+    } else {
+      setFlowOptions(newOptions);
+    }
   }, [userOptions]);
 
   const [updateUserOptions] = useUpdateUserOptionsMutation();
@@ -88,17 +93,17 @@ const ContactFlowSetupPage: React.FC = () => {
           const filteredOld = dataFromCache.userOptions.filter(
             (option) => option.key !== 'flows',
           );
-          const userOptions = [
-            ...filteredOld,
-            {
-              __typename: 'Option',
-              id: updatedUserOption?.createOrUpdateUserOption?.option.id,
-              key: 'flows',
-              value: stringified,
-            },
-          ];
+
           const data = {
-            userOptions,
+            userOptions: [
+              ...filteredOld,
+              {
+                __typename: 'Option',
+                id: updatedUserOption?.createOrUpdateUserOption?.option.id,
+                key: 'flows',
+                value: stringified,
+              },
+            ],
           };
           cache.writeQuery({ ...query, data });
         }
@@ -124,6 +129,17 @@ const ContactFlowSetupPage: React.FC = () => {
   const deleteColumn = (index: number): void => {
     const temp = [...flowOptions];
     temp.splice(index, 1);
+
+    if (!temp.length) {
+      enqueueSnackbar(
+        t(
+          'Since all columns have been removed, resetting columns to their default values',
+        ),
+        {
+          variant: 'warning',
+        },
+      );
+    }
     updateOptions(temp);
   };
 
