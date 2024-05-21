@@ -18,6 +18,7 @@ import {
   ContactPeopleAccountListsUsers,
   OrganizationsContact,
 } from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useAnonymizeContactMutation } from '../Contact.generated';
 
 interface Props {
@@ -75,6 +76,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
   const [anonymizeDialogOpen, setAnonymizeDialogOpen] = useState(false);
   const [anonymizeContact] = useAnonymizeContactMutation();
   const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
 
   const handleAnonymizeContact = async () => {
     await anonymizeContact({
@@ -200,9 +202,16 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             shouldUnescape={true}
           />
         }
-        message={t(
-          "This is permanent and can't be recovered. This person will be removed only in your MPDx organization. You can request removal across all other systems at dsar@cru.org. Only anonymize a contact if you need to fulfill a legal requirement or the person has made this request, AND you are 100% confident that you are looking at the correct contact.",
-        )}
+        message={
+          <Trans
+            t={t}
+            defaults="<p>This contact will be anonymized in your {{appName}} organization. This is permanent and can't be recovered. Only anonymize if you are 100% confident that you are looking at the correct contact.</p><p>A contact placeholder will remain with a name like “DataPrivacy, Deleted”. Gift data will remain. Other data such as notes and tasks will be removed. Status will be set as “Never Ask”. Newsletter set to 'N/A'. You can request removal across all other systems at dsar@cru.org.</p>"
+            values={{
+              appName,
+            }}
+            shouldUnescape={true}
+          />
+        }
         handleClose={() => setAnonymizeDialogOpen(false)}
         mutation={handleAnonymizeContact}
       />
