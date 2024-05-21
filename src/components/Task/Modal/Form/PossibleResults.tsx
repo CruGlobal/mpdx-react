@@ -16,7 +16,9 @@ const defaultResults: ResultEnum[] = [
 export const possibleResults = (
   phaseData: Phase | null,
 ): ResultEnum[] | DisplayResultEnum[] => {
-  if (!phaseData) {return defaultResults;}
+  if (!phaseData) {
+    return defaultResults;
+  }
 
   return (
     phaseData?.results?.resultOptions?.map((result) => result.name) ||

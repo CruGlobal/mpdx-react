@@ -13,7 +13,7 @@ import {
   ExportSortEnum,
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { getLocalizedContactStatus } from "../../src/utils/functions/getLocalizedContactStatus";
+import { getLocalizedContactStatus } from '../../src/utils/functions/getLocalizedContactStatus';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';

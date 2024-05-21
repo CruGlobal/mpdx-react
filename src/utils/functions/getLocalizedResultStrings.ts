@@ -65,5 +65,8 @@ export const getLocalizedResultString = (
     case DisplayResultEnum.FollowUpResultNotInterested:
     case DisplayResultEnum.InitiationResultNotInterested:
       return t('Not Interested');
+
+    default:
+      return '';
   }
 };
