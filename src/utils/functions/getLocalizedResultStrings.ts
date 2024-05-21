@@ -17,6 +17,7 @@ export const getLocalizedResultString = (
       return t('Attempted - Left Message');
 
     case ResultEnum.Completed:
+    case DisplayResultEnum.PartnerCareCompleted:
       return t('Completed');
 
     // The Done and None branches should never be hit but are left for completeness
