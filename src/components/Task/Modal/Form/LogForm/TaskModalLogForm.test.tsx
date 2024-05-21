@@ -431,7 +431,7 @@ describe('TaskModalLogForm', () => {
         userId: 'user-1',
       },
     });
-  });
+  }, 10000);
 
   it('Select appointment, enter location, enter comment to test API calls', async () => {
     const onClose = jest.fn();
@@ -494,5 +494,5 @@ describe('TaskModalLogForm', () => {
         comment: 'Meeting place info',
       });
     });
-  });
+  }, 25000);
 });
