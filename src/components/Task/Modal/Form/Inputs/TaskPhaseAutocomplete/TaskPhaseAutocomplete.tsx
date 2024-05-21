@@ -34,7 +34,7 @@ export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
         <TextField
           {...params}
           inputRef={inputRef}
-          label={label || t('Task Type/Phase')}
+          label={label || t('Task Type')}
         />
       )}
       onChange={(_, value) => onChange(value)}

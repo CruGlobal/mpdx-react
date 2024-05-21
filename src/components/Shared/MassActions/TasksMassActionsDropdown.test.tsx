@@ -114,9 +114,9 @@ describe('TasksMassActionsDropdown', () => {
     await waitFor(() =>
       expect(queryByTestId('EditTasksModal')).toBeInTheDocument(),
     );
-    userEvent.click(getByLabelText('Task Type/Phase'));
+    userEvent.click(getByLabelText('Task Type'));
     userEvent.click(
-      within(getByRole('listbox', { name: 'Task Type/Phase' })).getByText(
+      within(getByRole('listbox', { name: 'Task Type' })).getByText(
         'Appointment',
       ),
     );

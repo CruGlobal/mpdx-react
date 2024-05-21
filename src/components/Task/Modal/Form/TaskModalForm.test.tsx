@@ -155,7 +155,7 @@ describe('TaskModalForm', () => {
 
     userEvent.type(getByRole('textbox', { name: 'Subject' }), 'Do something');
 
-    userEvent.click(getByRole('combobox', { name: 'Task Type/Phase' }));
+    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
     userEvent.click(await findByRole('option', { name: 'Appointment' }));
 
     userEvent.click(getByRole('combobox', { name: 'Action' }));
@@ -253,7 +253,7 @@ describe('TaskModalForm', () => {
       </LocalizationProvider>,
     );
 
-    userEvent.click(getByLabelText('Task Type/Phase'));
+    userEvent.click(getByLabelText('Task Type'));
     userEvent.click(await findByRole('option', { name: 'Partner Care' }));
 
     userEvent.click(getByLabelText('Action'));
@@ -326,7 +326,7 @@ describe('TaskModalForm', () => {
       queryByRole('textbox', { name: 'Location' }),
     ).not.toBeInTheDocument();
 
-    userEvent.click(getByRole('combobox', { name: 'Task Type/Phase' }));
+    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
     userEvent.click(await findByRole('option', { name: 'Follow-Up' }));
 
     const action = getByRole('combobox', { name: 'Action' });
@@ -412,7 +412,7 @@ describe('TaskModalForm', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(getByRole('combobox', { name: 'Task Type/Phase' }));
+    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
     expect(
       await findByRole('option', { name: 'Partner Care' }),
     ).toBeInTheDocument();

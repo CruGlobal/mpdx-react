@@ -330,7 +330,6 @@ const TaskModalLogForm = ({
                   <Grid xs={12} sm={6} item>
                     <TaskPhaseAutocomplete
                       options={taskPhases}
-                      label={t('Task Type/Phase')}
                       value={taskPhase}
                       contactPhase={phaseData?.id}
                       inputRef={firstFocusRef}
