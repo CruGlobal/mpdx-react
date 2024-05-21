@@ -20,6 +20,7 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { filter } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   ActivityTypeEnum,
   ContactFilterNewsletterEnum,
@@ -35,14 +36,6 @@ import {
 } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import {
-  appointmentActivityTypes,
-  callActivityTypes,
-  emailActivityTypes,
-  inPersonActivityTypes,
-  socialMediaActivityTypes,
-  textActivityTypes,
-} from 'src/utils/phases/taskActivityTypes';
 import {
   ContactsContext,
   ContactsType,
@@ -132,6 +125,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const theme = useTheme();
   const { t } = useTranslation();
   const { statusMapForFilters } = useContactPartnershipStatuses();
+  const activities = useApiConstants()?.activities;
   const { handleClearAll } = React.useContext(ContactsContext) as ContactsType;
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);
@@ -423,8 +417,14 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   ...acc,
                   [key]: value.split(',').map((enumValue) => {
                     // Status
+                    // Check if saved filter (enumValue) is either the status in all caps (PARTNER_FINANCIAL) or (Partner - Financial)
+                    const s = Object.entries(statusMapForFilters)?.find(
+                      ([statusKey, status]) => {
+                        return statusKey === enumValue || status === enumValue;
+                      },
+                    );
                     return (
-                      statusMapForFilters[enumValue] ||
+                      (s && (s[1] as ContactFilterStatusEnum)) ||
                       ContactFilterStatusEnum.Null
                     );
                   }),
@@ -440,49 +440,14 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                     .split(',')
                     .map((enumValue) => {
                       // --any--,none
-
-                      // TODO: turn this into reduce?
-                      // const activityTypes = Object.entries(taskTypeNames).map(
-                      //   ([taskId, task]) => {
-                      //     if (enumValue === task?.oldName) {
-                      //       activityTypes.push(taskId?.name);
-                      //     }
-                      //     return activityTypes;
-                      //   },
-                      // );
-
-                      switch (enumValue) {
-                        case 'Appointment':
-                          return appointmentActivityTypes;
-                        case 'Call':
-                          return callActivityTypes;
-                        case 'Email':
-                          return emailActivityTypes;
-                        case 'Facebook Message':
-                          return socialMediaActivityTypes;
-                        case 'Prayer Request':
-                          return ActivityTypeEnum.PartnerCarePrayerRequest;
-                        case 'Talk to In Person':
-                          return inPersonActivityTypes;
-                        case 'Text Message':
-                          return textActivityTypes;
-                        case 'Thank':
-                          return ActivityTypeEnum.PartnerCareThank;
-                        case 'None':
-                          return ActivityTypeEnum.None;
-                        case 'Letter':
-                          return ActivityTypeEnum.InitiationLetter;
-                        case 'Newsletter - Physical':
-                          return ActivityTypeEnum.PartnerCarePhysicalNewsletter;
-                        case 'Newsletter - Email':
-                          return ActivityTypeEnum.PartnerCareDigitalNewsletter;
-                        case 'Support Letter':
-                          return ActivityTypeEnum.InitiationSpecialGiftAppeal;
-                        case 'To Do':
-                          return ActivityTypeEnum.PartnerCareToDo;
-                        default:
-                          return ActivityTypeEnum.None;
-                      }
+                      return (
+                        (activities?.find((activity) => {
+                          return (
+                            activity.id === enumValue ||
+                            activity.value === enumValue
+                          );
+                        })?.id as ActivityTypeEnum) || ActivityTypeEnum.None
+                      );
                     })
                     .flat(),
                 };
@@ -492,17 +457,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 if (value.includes('--any--')) {
                   return {
                     ...acc,
-                    [key]: [
-                      ActivityTypeEnum.AppointmentInPerson,
-                      ...callActivityTypes,
-                      ...emailActivityTypes,
-                      ...socialMediaActivityTypes,
-                      ActivityTypeEnum.PartnerCarePrayerRequest,
-                      ...inPersonActivityTypes,
-                      ...textActivityTypes,
-                      ActivityTypeEnum.PartnerCareThank,
-                      ActivityTypeEnum.None,
-                    ],
+                    [key]: [...Object.values(ActivityTypeEnum)],
                   };
                 }
                 return {
@@ -510,28 +465,15 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   [key]: value
                     .split(',')
                     .map((enumValue) => {
-                      switch (enumValue) {
-                        case 'Appointment':
-                          return appointmentActivityTypes;
-                        case 'Call':
-                          return callActivityTypes;
-                        case 'Email':
-                          return emailActivityTypes;
-                        case 'Facebook Message':
-                          return socialMediaActivityTypes;
-                        case 'Prayer Request':
-                          return ActivityTypeEnum.PartnerCarePrayerRequest;
-                        case 'Talk to In Person':
-                          return inPersonActivityTypes;
-                        case 'Text Message':
-                          return textActivityTypes;
-                        case 'Thank':
-                          return ActivityTypeEnum.PartnerCareThank;
-                        case 'None':
-                          return ActivityTypeEnum.None;
-                        default:
-                          return ActivityTypeEnum.None;
-                      }
+                      // --any--,none
+                      return (
+                        (activities?.find((activity) => {
+                          return (
+                            activity.id === enumValue ||
+                            activity.value === enumValue
+                          );
+                        })?.id as ActivityTypeEnum) || ActivityTypeEnum.None
+                      );
                     })
                     .flat(),
                 };
