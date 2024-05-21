@@ -1,5 +1,6 @@
 import { TFunction } from 'react-i18next';
-import { PhaseEnum } from 'src/graphql/types.generated';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import { ContactPartnershipStatus } from 'src/hooks/useContactPartnershipStatuses';
 
 export const getLocalizedPhase = (
   t: TFunction,
@@ -17,10 +18,10 @@ export const getLocalizedPhase = (
       return t('Archive');
 
     case PhaseEnum.Connection:
-      return t('Connection');
+      return t('Connections');
 
     case PhaseEnum.FollowUp:
-      return t('Follow Up');
+      return t('Follow-Up');
 
     case PhaseEnum.Initiation:
       return t('Initiation');
@@ -29,6 +30,17 @@ export const getLocalizedPhase = (
       return t('Partner Care');
 
     default:
-      return t('No Phase');
+      return '';
   }
+};
+
+export const getContactStatusesByPhase = (
+  phase: PhaseEnum | null,
+  contactPartnershipStatus: ContactPartnershipStatus,
+): { id: StatusEnum; translated: string }[] => {
+  return Object.entries(contactPartnershipStatus)
+    .filter(([_, status]) => status.phase === phase)
+    .map(([id, status]) => {
+      return { id: id as StatusEnum, translated: status.translated };
+    });
 };

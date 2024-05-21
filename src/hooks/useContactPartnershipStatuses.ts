@@ -3,7 +3,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PhaseEnum } from 'src/graphql/types.generated';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 
-type ContactPartnershipStatus = Record<
+export type ContactPartnershipStatus = Record<
   string,
   {
     name: string;
@@ -11,6 +11,13 @@ type ContactPartnershipStatus = Record<
     phase: PhaseEnum | null;
   }
 >;
+
+export type StatusArray = {
+  name: string;
+  translated: string;
+  phase: PhaseEnum | null;
+  id: string;
+}[];
 
 export const useContactPartnershipStatuses = () => {
   const constants = useApiConstants();

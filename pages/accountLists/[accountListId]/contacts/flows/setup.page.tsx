@@ -42,7 +42,8 @@ const StickyBox = styled(Box)(() => ({
 const ContactFlowSetupPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { statusMap } = useContactPartnershipStatuses();
+  const { statusMap, contactPartnershipStatus } =
+    useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
   const [flowOptions, setFlowOptions] = useState<
     {
@@ -60,7 +61,7 @@ const ContactFlowSetupPage: React.FC = () => {
         ?.value || '[]',
     );
     if (!newOptions.length) {
-      setFlowOptions(getDefaultFlowOptions(t));
+      setFlowOptions(getDefaultFlowOptions(t, contactPartnershipStatus));
     } else {
       setFlowOptions(newOptions);
     }
