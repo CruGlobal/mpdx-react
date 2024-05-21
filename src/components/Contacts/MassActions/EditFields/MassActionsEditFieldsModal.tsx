@@ -115,7 +115,7 @@ export const MassActionsEditFieldsModal: React.FC<
     useLoadConstantsQuery();
 
   const phases = useApiConstants()?.phases;
-  const { contactPartnershipStatus } = useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
@@ -181,7 +181,7 @@ export const MassActionsEditFieldsModal: React.FC<
                         </ListSubheader>,
                         phase?.contactStatuses.map((s: StatusEnum) => (
                           <MenuItem key={s} value={s}>
-                            {contactPartnershipStatus[s]?.translated}
+                            {contactStatuses[s]?.translated}
                           </MenuItem>
                         )),
                       ])}

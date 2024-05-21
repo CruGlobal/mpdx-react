@@ -1,6 +1,6 @@
 import { TFunction } from 'react-i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
-import { ContactPartnershipStatus } from 'src/hooks/useContactPartnershipStatuses';
+import { ContactStatuses } from 'src/hooks/useContactPartnershipStatuses';
 
 export const getLocalizedPhase = (
   t: TFunction,
@@ -36,9 +36,9 @@ export const getLocalizedPhase = (
 
 export const getContactStatusesByPhase = (
   phase: PhaseEnum | null,
-  contactPartnershipStatus: ContactPartnershipStatus,
+  contactStatuses: ContactStatuses,
 ): { id: StatusEnum; translated: string }[] => {
-  return Object.entries(contactPartnershipStatus)
+  return Object.entries(contactStatuses)
     .filter(([_, status]) => status.phase === phase)
     .map(([id, status]) => {
       return { id: id as StatusEnum, translated: status.translated };

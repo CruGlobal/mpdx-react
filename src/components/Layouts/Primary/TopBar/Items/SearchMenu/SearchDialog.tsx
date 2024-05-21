@@ -64,7 +64,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter();
-  const { contactPartnershipStatus } = useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   //#region Search
   const [wildcardSearch, setWildcardSearch] = useState('');
@@ -307,7 +307,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
                     <Typography>{option.name}</Typography>
                     <Typography variant="subtitle2">
                       {option.status &&
-                        contactPartnershipStatus[option.status].translated}
+                        contactStatuses[option.status].translated}
                     </Typography>
                   </Box>
                 </ClickableBox>

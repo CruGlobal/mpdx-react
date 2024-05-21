@@ -123,7 +123,7 @@ export const EditPartnershipInfoModal: React.FC<
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
-  const { contactPartnershipStatus } = useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const phases = constants?.phases;
   const [referredByName, setReferredByName] = useState('');
@@ -359,7 +359,7 @@ export const EditPartnershipInfoModal: React.FC<
                       </ListSubheader>,
                       phase?.contactStatuses.map((s: StatusEnum) => (
                         <MenuItem key={s} value={s}>
-                          {contactPartnershipStatus[s]?.translated}
+                          {contactStatuses[s]?.translated}
                         </MenuItem>
                       )),
                     ])}

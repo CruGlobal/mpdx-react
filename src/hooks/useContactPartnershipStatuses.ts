@@ -3,7 +3,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PhaseEnum } from 'src/graphql/types.generated';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 
-export type ContactPartnershipStatus = Record<
+export type ContactStatuses = Record<
   string,
   {
     name: string;
@@ -43,7 +43,7 @@ export const useContactPartnershipStatuses = () => {
     },
   };
 
-  const contactPartnershipStatus: ContactPartnershipStatus = phases
+  const contactStatuses: ContactStatuses = phases
     ? phases?.reduce((acc, phase) => {
         phase?.contactStatuses?.map((status) => {
           const statusName = statuses?.find(({ id }) => status === id)?.value;
@@ -58,29 +58,29 @@ export const useContactPartnershipStatuses = () => {
     : otherStatuses;
 
   const statusMap: { [statusKey: string]: string } =
-    contactPartnershipStatus &&
+    contactStatuses &&
     Object.fromEntries(
-      Object.entries(contactPartnershipStatus)
+      Object.entries(contactStatuses)
         .filter(([_, status]) => status?.phase)
         .map(([statusKey, status]) => [status?.name, statusKey]),
     );
 
   const statusMapForFilters: { [statusKey: string]: string } =
     Object.fromEntries(
-      Object.entries(contactPartnershipStatus).map(([statusKey, status]) => [
+      Object.entries(contactStatuses).map(([statusKey, status]) => [
         status.name,
         statusKey,
       ]),
     );
 
-  const statusArray = Object.entries(contactPartnershipStatus)
+  const statusArray = Object.entries(contactStatuses)
     .filter(([_, status]) => status.phase)
     .map(([statusKey, s]) => {
       return { id: statusKey, ...s };
     });
 
   return {
-    contactPartnershipStatus,
+    contactStatuses,
     statusMap,
     statusMapForFilters,
     statusArray,

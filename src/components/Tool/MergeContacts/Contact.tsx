@@ -83,7 +83,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
-  const { contactPartnershipStatus } = useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
   //TODO: Add button functionality
   //TODO: Make contact title a link to contact page
 
@@ -153,9 +153,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact1.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status:
-                            contactPartnershipStatus[contact1.status]
-                              ?.translated,
+                          status: contactStatuses[contact1.status]?.translated,
                         })}
                       </Typography>
                     )}
@@ -297,9 +295,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact2.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status:
-                            contactPartnershipStatus[contact2.status]
-                              ?.translated,
+                          status: contactStatuses[contact2.status]?.translated,
                         })}
                       </Typography>
                     )}

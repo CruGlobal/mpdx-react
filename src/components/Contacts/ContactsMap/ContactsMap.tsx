@@ -57,7 +57,7 @@ export const ContactsMap: React.FC = ({}) => {
     setSelected,
     setContactFocus: onContactSelected,
   } = React.useContext(ContactsContext) as ContactsType;
-  const { contactPartnershipStatus } = useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -96,9 +96,7 @@ export const ContactsMap: React.FC = ({}) => {
   }, [data, isLoaded, mapRef.current]);
 
   const getStatusPin = (status: StatusEnum | null | undefined): string => {
-    return status && contactPartnershipStatus[status]
-      ? status.toLowerCase()
-      : 'grey';
+    return status && contactStatuses[status] ? status.toLowerCase() : 'grey';
   };
 
   return !loadError && isLoaded ? (

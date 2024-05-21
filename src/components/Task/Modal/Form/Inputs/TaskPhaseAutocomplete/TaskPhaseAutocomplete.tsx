@@ -2,7 +2,7 @@ import { Ref } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { PhaseEnum } from 'src/graphql/types.generated';
-import { getLocalizedTaskPhase } from 'src/lib/MPDPhases';
+import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 
 interface TaskPhaseProps {
   options: PhaseEnum[];
@@ -29,7 +29,7 @@ export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
       autoHighlight
       value={value || contactPhase}
       options={options}
-      getOptionLabel={(activity) => getLocalizedTaskPhase(t, activity)}
+      getOptionLabel={(phase) => getLocalizedPhase(t, phase)}
       renderInput={(params) => (
         <TextField
           {...params}

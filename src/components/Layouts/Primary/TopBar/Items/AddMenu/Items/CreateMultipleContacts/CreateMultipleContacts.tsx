@@ -137,7 +137,7 @@ export const CreateMultipleContacts = ({
   };
   const constants = useApiConstants();
   const phases = constants?.phases;
-  const { contactPartnershipStatus } = useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
   const [createContact] = useCreateContactMutation();
   const [createPerson] = useCreatePersonMutation();
   const [createAddress] = useCreateContactAddressMutation();
@@ -462,10 +462,7 @@ export const CreateMultipleContacts = ({
                                   phase?.contactStatuses.map(
                                     (s: StatusEnum) => (
                                       <MenuItem key={s} value={s}>
-                                        {
-                                          contactPartnershipStatus[s]
-                                            ?.translated
-                                        }
+                                        {contactStatuses[s]?.translated}
                                       </MenuItem>
                                     ),
                                   ),

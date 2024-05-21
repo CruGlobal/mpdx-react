@@ -67,8 +67,7 @@ export const ContactFlow: React.FC<Props> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { statusMap, contactPartnershipStatus } =
-    useContactPartnershipStatuses();
+  const { statusMap, contactStatuses } = useContactPartnershipStatuses();
 
   const userFlowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
@@ -80,7 +79,7 @@ export const ContactFlow: React.FC<Props> = ({
       return userFlowOptions;
     }
 
-    return getDefaultFlowOptions(t, contactPartnershipStatus);
+    return getDefaultFlowOptions(t, contactStatuses);
   }, [userFlowOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();

@@ -390,7 +390,7 @@ describe('TaskModalLogForm', () => {
         </ThemeProvider>,
       );
     userEvent.click(getByRole('combobox', { name: 'Task Type/Phase' }));
-    userEvent.click(await findByRole('option', { name: 'Follow Up' }));
+    userEvent.click(await findByRole('option', { name: 'Follow-Up' }));
 
     expect(getByRole('textbox', { name: 'Subject' })).toHaveValue('');
 

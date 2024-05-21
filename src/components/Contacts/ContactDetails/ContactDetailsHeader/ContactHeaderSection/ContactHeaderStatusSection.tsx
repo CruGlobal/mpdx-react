@@ -36,7 +36,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { contactPartnershipStatus } = useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
   const status = contact?.status;
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
@@ -66,7 +66,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
       </ContactHeaderSection>
     );
   } else {
-    const statusText = status && contactPartnershipStatus[status]?.translated;
+    const statusText = status && contactStatuses[status]?.translated;
     return (
       <>
         {status ? (

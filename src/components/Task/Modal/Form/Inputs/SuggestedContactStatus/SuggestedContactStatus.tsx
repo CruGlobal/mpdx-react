@@ -3,6 +3,7 @@ import { Checkbox, FormControl, FormControlLabel, Grid } from '@mui/material';
 import { Trans } from 'react-i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { getContactStatusesByPhase } from 'src/utils/functions/getLocalizedPhase';
 import { useContactStatusQuery } from './SuggestedContactStatus.generated';
 
 export type FormikHandleChange = {
@@ -43,25 +44,25 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
     skip: !!contactStatus || contactIds.length !== 1,
   });
 
-  const { statusArray, contactPartnershipStatus } =
-    useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
-  const currentContactStatus = useMemo(() => {
+  const currentContactStatus: StatusEnum | null | undefined = useMemo(() => {
     return contactStatus || data?.contact.status;
   }, [data, contactStatus]);
 
-  const shouldRenderContactSuggestion = useMemo(() => {
+  const shouldRenderContactSuggestion: boolean = useMemo(() => {
     if (!currentContactStatus) {
       return false;
     }
     if (suggestedContactStatus === currentContactStatus) {
       return false;
     }
-    const disabledStatuses = statusArray
-      .filter((status) => status?.phase === PhaseEnum.PartnerCare)
-      .map((s) => s.id);
+    const disabledStatuses: StatusEnum[] = getContactStatusesByPhase(
+      PhaseEnum.PartnerCare,
+      contactStatuses,
+    ).map((s) => s.id);
     return !disabledStatuses.includes(currentContactStatus);
-  }, [statusArray, currentContactStatus]);
+  }, [contactStatuses, currentContactStatus]);
 
   return suggestedContactStatus && shouldRenderContactSuggestion ? (
     <Grid item>
@@ -78,8 +79,7 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
             <Trans
               defaults="Change the contact's status to: <bold>{{status}}</bold>" // optional defaultValue
               values={{
-                status:
-                  contactPartnershipStatus[suggestedContactStatus]?.translated,
+                status: contactStatuses[suggestedContactStatus]?.translated,
               }}
               components={{ italic: <i />, bold: <strong /> }}
             />

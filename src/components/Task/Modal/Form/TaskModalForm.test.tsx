@@ -327,7 +327,7 @@ describe('TaskModalForm', () => {
     ).not.toBeInTheDocument();
 
     userEvent.click(getByRole('combobox', { name: 'Task Type/Phase' }));
-    userEvent.click(await findByRole('option', { name: 'Follow Up' }));
+    userEvent.click(await findByRole('option', { name: 'Follow-Up' }));
 
     const action = getByRole('combobox', { name: 'Action' });
     userEvent.click(action);

@@ -10,8 +10,6 @@ interface ContactPartnershipStatusLabelProps {
 export const ContactPartnershipStatusLabel: React.FC<
   ContactPartnershipStatusLabelProps
 > = ({ status }) => {
-  const { contactPartnershipStatus } = useContactPartnershipStatuses();
-  return (
-    <Typography>{contactPartnershipStatus[status]?.translated}</Typography>
-  );
+  const { contactStatuses } = useContactPartnershipStatuses();
+  return <Typography>{contactStatuses[status]?.translated}</Typography>;
 };

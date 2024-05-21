@@ -93,7 +93,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const { contactPartnershipStatus } = useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const [statusContactsMapOpen, setStatusContactsMapOpen] = useState(-1);
 
@@ -104,11 +104,11 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
     };
 
   const inactiveStatuses: (StatusEnum | null | undefined)[] = Object.entries(
-    contactPartnershipStatus,
+    contactStatuses,
   )
     .filter(([_, status]) => status.phase === PhaseEnum.Archive)
     .map(([statusKey]) => statusKey as StatusEnum);
-  const statusesForMap: PanelItem[] = Object.entries(contactPartnershipStatus)
+  const statusesForMap: PanelItem[] = Object.entries(contactStatuses)
     .filter(
       ([_, status]) =>
         status.phase &&
