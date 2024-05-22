@@ -486,7 +486,7 @@ describe('TaskModalForm', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(getByRole('combobox', { name: 'Result' }));
+    userEvent.click(await findByRole('combobox', { name: 'Result' }));
     userEvent.click(await findByRole('option', { name: 'Follow up' }));
 
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));

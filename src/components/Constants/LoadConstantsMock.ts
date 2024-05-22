@@ -1,5 +1,4 @@
 import { MockedResponse } from '@apollo/client/testing';
-import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import {
   LoadConstantsDocument,
   LoadConstantsQuery,
@@ -83,225 +82,188 @@ export const loadConstantsMockData = {
     ],
     activities: [
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.InitiationPhoneCall,
+        id: 'INITIATION_PHONE_CALL',
+        name: 'Phone call to initiate appointment',
         value: 'Initiation - Phone Call',
-        name: 'phone call to initiate appointment',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.InitiationPhoneCall,
+        id: 'INITIATION_EMAIL',
+        name: 'Email to initiate',
         value: 'Initiation - Email',
-        name: 'email to initiate',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.InitiationTextMessage,
+        id: 'INITIATION_TEXT_MESSAGE',
+        name: 'Text message to initiate',
         value: 'Initiation - Text Message',
-        name: 'text message to initiate',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.InitiationSocialMedia,
+        id: 'INITIATION_SOCIAL_MEDIA',
+        name: 'Social media message to initiate',
         value: 'Initiation - Social Media',
-        name: 'social media message to initiate',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.InitiationLetter,
+        id: 'INITIATION_LETTER',
+        name: 'Letter to initiate',
         value: 'Initiation - Letter',
-        name: 'letter to initiate',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.InitiationSpecialGiftAppeal,
+        id: 'INITIATION_SPECIAL_GIFT_APPEAL',
+        name: 'Special gift appeal',
         value: 'Initiation - Special Gift Appeal',
-        name: 'special gift appeal',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.InitiationInPerson,
+        id: 'INITIATION_IN_PERSON',
+        name: 'Initiate in person',
         value: 'Initiation - In Person',
-        name: 'initiate in person',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.AppointmentInPerson,
+        id: 'APPOINTMENT_IN_PERSON',
+        name: 'In person appointment',
         value: 'Appointment - In Person',
-        name: 'in person appointment',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.AppointmentPhoneCall,
-        value: 'Appointment - Phone Call',
-        name: 'video appointment',
-      },
-      {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.AppointmentVideoCall,
-        value: 'Appointment - Video Call',
+        id: 'APPOINTMENT_PHONE_CALL',
         name: 'phone appointment',
+        value: 'Appointment - Phone Call',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.FollowUpPhoneCall,
-        value: 'Follow Up - Phone Call',
+        id: 'APPOINTMENT_VIDEO_CALL',
+        name: 'video appointment',
+        value: 'Appointment - Video Call',
+      },
+      {
+        id: 'FOLLOW_UP_PHONE_CALL',
         name: 'phone call to follow up',
+        value: 'Follow Up - Phone Call',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.FollowUpEmail,
-        value: 'Follow Up - Email',
+        id: 'FOLLOW_UP_EMAIL',
         name: 'email to follow up',
+        value: 'Follow Up - Email',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.FollowUpTextMessage,
-        value: 'Follow Up - Text Message',
+        id: 'FOLLOW_UP_TEXT_MESSAGE',
         name: 'text message to follow up',
+        value: 'Follow Up - Text Message',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.FollowUpSocialMedia,
-        value: 'Follow Up - Social Media',
+        id: 'FOLLOW_UP_SOCIAL_MEDIA',
         name: 'social media message to follow up',
+        value: 'Follow Up - Social Media',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.FollowUpInPerson,
-        value: 'Follow Up - In Person',
+        id: 'FOLLOW_UP_IN_PERSON',
         name: 'follow up in person',
+        value: 'Follow Up - In Person',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCarePhoneCall,
-        value: 'Partner Care - Phone Call',
+        id: 'PARTNER_CARE_PHONE_CALL',
         name: 'call partner for cultivation',
+        value: 'Partner Care - Phone Call',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCareEmail,
-        value: 'Partner Care - Email',
+        id: 'PARTNER_CARE_EMAIL',
         name: 'email partner for cultivation',
+        value: 'Partner Care - Email',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCareTextMessage,
-        value: 'Partner Care - Text Message',
+        id: 'PARTNER_CARE_TEXT_MESSAGE',
         name: 'text message partner for cultivation',
+        value: 'Partner Care - Text Message',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCareSocialMedia,
-        value: 'Partner Care - Social Media',
+        id: 'PARTNER_CARE_SOCIAL_MEDIA',
         name: 'social media message for cultivation',
+        value: 'Partner Care - Social Media',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCareInPerson,
-        value: 'Partner Care - In Person',
+        id: 'PARTNER_CARE_IN_PERSON',
         name: 'connect in person for cultivation',
+        value: 'Partner Care - In Person',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCareThank,
-        value: 'Partner Care - Thank',
+        id: 'PARTNER_CARE_THANK',
         name: 'send thank you note',
+        value: 'Partner Care - Thank',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCareDigitalNewsletter,
-        value: 'Partner Care - Digital Newsletter',
+        id: 'PARTNER_CARE_DIGITAL_NEWSLETTER',
         name: 'send digital newsletter',
+        value: 'Partner Care - Digital Newsletter',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCarePhysicalNewsletter,
-        value: 'Partner Care - Physical Newsletter',
+        id: 'PARTNER_CARE_PHYSICAL_NEWSLETTER',
         name: 'send physical newsletter',
+        value: 'Partner Care - Physical Newsletter',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCarePrayerRequest,
-        value: 'Partner Care - Prayer Request',
+        id: 'PARTNER_CARE_PRAYER_REQUEST',
         name: 'ask for or receive prayer request',
+        value: 'Partner Care - Prayer Request',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCareUpdateInformation,
-        value: 'Partner Care - Update Information',
+        id: 'PARTNER_CARE_UPDATE_INFORMATION',
         name: 'update partner information',
+        value: 'Partner Care - Update Information',
       },
       {
-        __typename: 'ActivitiesConstant',
-        id: ActivityTypeEnum.PartnerCareToDo,
+        id: 'PARTNER_CARE_TO_DO',
+        name: '',
         value: 'Partner Care - To Do',
-        name: 'to do',
       },
     ],
 
     phases: [
       {
-        __typename: 'Phase',
-        id: 'CONNECTION',
-        name: 'Connection',
-        results: {
-          __typename: 'Result',
-          resultOptions: [],
-          tags: null,
-        },
         contactStatuses: [
           'NEVER_CONTACTED',
           'ASK_IN_FUTURE',
           'RESEARCH_CONTACT_INFO',
           'CULTIVATE_RELATIONSHIP',
         ],
+        id: 'CONNECTION',
+        name: 'Connection',
+        results: {
+          resultOptions: [],
+          tags: null,
+        },
         tasks: [],
       },
       {
-        __typename: 'Phase',
+        contactStatuses: ['CONTACT_FOR_APPOINTMENT'],
         id: 'INITIATION',
         name: 'Initiation',
         results: {
-          __typename: 'Result',
           resultOptions: [
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'INITIATION_PHONE_CALL',
                   result: 'ATTEMPTED',
+                  task: 'INITIATION_PHONE_CALL',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_EMAIL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_TEXT_MESSAGE',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_SOCIAL_MEDIA',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_LETTER',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_SPECIAL_GIFT_APPEAL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'INITIATION_IN_PERSON',
                   result: 'COMPLETED',
+                  task: 'INITIATION_IN_PERSON',
                 },
               ],
               name: 'INITIATION_RESULT_NO_RESPONSE',
@@ -317,42 +279,34 @@ export const loadConstantsMockData = {
               ],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_PHONE_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_EMAIL',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_TEXT_MESSAGE',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_SOCIAL_MEDIA',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_LETTER',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_SPECIAL_GIFT_APPEAL',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'INITIATION_IN_PERSON',
                   result: 'COMPLETED',
+                  task: 'INITIATION_IN_PERSON',
                 },
               ],
               name: 'INITIATION_RESULT_CIRCLE_BACK',
@@ -368,42 +322,34 @@ export const loadConstantsMockData = {
               ],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_PHONE_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_EMAIL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_TEXT_MESSAGE',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_SOCIAL_MEDIA',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_LETTER',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_SPECIAL_GIFT_APPEAL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'INITIATION_IN_PERSON',
                   result: 'COMPLETED',
+                  task: 'INITIATION_IN_PERSON',
                 },
               ],
               name: 'INITIATION_RESULT_APPOINTMENT_SCHEDULED',
@@ -415,42 +361,34 @@ export const loadConstantsMockData = {
               ],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'INITIATION_PHONE_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_EMAIL',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_TEXT_MESSAGE',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_SOCIAL_MEDIA',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_LETTER',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'RECEIVED',
                   task: 'INITIATION_SPECIAL_GIFT_APPEAL',
-                  result: 'RECEIVED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'INITIATION_IN_PERSON',
                   result: 'COMPLETED',
+                  task: 'INITIATION_IN_PERSON',
                 },
               ],
               name: 'INITIATION_RESULT_NOT_INTERESTED',
@@ -460,7 +398,6 @@ export const loadConstantsMockData = {
           ],
           tags: null,
         },
-        contactStatuses: ['CONTACT_FOR_APPOINTMENT'],
         tasks: [
           'INITIATION_PHONE_CALL',
           'INITIATION_EMAIL',
@@ -472,29 +409,24 @@ export const loadConstantsMockData = {
         ],
       },
       {
-        __typename: 'Phase',
+        contactStatuses: ['APPOINTMENT_SCHEDULED'],
         id: 'APPOINTMENT',
         name: 'Appointment',
         results: {
-          __typename: 'Result',
           resultOptions: [
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'ATTEMPTED',
                   task: 'APPOINTMENT_IN_PERSON',
-                  result: 'ATTEMPTED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'ATTEMPTED',
                   task: 'APPOINTMENT_VIDEO_CALL',
-                  result: 'ATTEMPTED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'APPOINTMENT_PHONE_CALL',
                   result: 'ATTEMPTED',
+                  task: 'APPOINTMENT_PHONE_CALL',
                 },
               ],
               name: 'APPOINTMENT_RESULT_CANCELLED',
@@ -510,22 +442,18 @@ export const loadConstantsMockData = {
               ],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_IN_PERSON',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_VIDEO_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'APPOINTMENT_PHONE_CALL',
                   result: 'COMPLETED',
+                  task: 'APPOINTMENT_PHONE_CALL',
                 },
               ],
               name: 'APPOINTMENT_RESULT_FOLLOW_UP',
@@ -539,22 +467,18 @@ export const loadConstantsMockData = {
               ],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_IN_PERSON',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_VIDEO_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'APPOINTMENT_PHONE_CALL',
                   result: 'COMPLETED',
+                  task: 'APPOINTMENT_PHONE_CALL',
                 },
               ],
               name: 'FOLLOW_UP_RESULT_PARTNER_FINANCIAL',
@@ -562,22 +486,18 @@ export const loadConstantsMockData = {
               suggestedNextActions: ['PARTNER_CARE_THANK'],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_IN_PERSON',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_VIDEO_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'APPOINTMENT_PHONE_CALL',
                   result: 'COMPLETED',
+                  task: 'APPOINTMENT_PHONE_CALL',
                 },
               ],
               name: 'FOLLOW_UP_RESULT_PARTNER_SPECIAL',
@@ -585,22 +505,18 @@ export const loadConstantsMockData = {
               suggestedNextActions: ['PARTNER_CARE_THANK'],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_IN_PERSON',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_VIDEO_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'APPOINTMENT_PHONE_CALL',
                   result: 'COMPLETED',
+                  task: 'APPOINTMENT_PHONE_CALL',
                 },
               ],
               name: 'FOLLOW_UP_RESULT_PARTNER_PRAY',
@@ -608,22 +524,18 @@ export const loadConstantsMockData = {
               suggestedNextActions: ['PARTNER_CARE_THANK'],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_IN_PERSON',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'APPOINTMENT_VIDEO_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'APPOINTMENT_PHONE_CALL',
                   result: 'COMPLETED',
+                  task: 'APPOINTMENT_PHONE_CALL',
                 },
               ],
               name: 'FOLLOW_UP_RESULT_NOT_INTERESTED',
@@ -633,28 +545,23 @@ export const loadConstantsMockData = {
           ],
           tags: [
             {
-              __typename: 'IdValue',
-              value: 'asked for support',
               id: 'asked for support',
+              value: 'asked for support',
             },
             {
-              __typename: 'IdValue',
-              value: 'asked for connections',
               id: 'asked for connections',
+              value: 'asked for connections',
             },
             {
-              __typename: 'IdValue',
-              value: 'asked for advocacy',
               id: 'asked for advocacy',
+              value: 'asked for advocacy',
             },
             {
-              __typename: 'IdValue',
-              value: 'asked for increase',
               id: 'asked for increase',
+              value: 'asked for increase',
             },
           ],
         },
-        contactStatuses: ['APPOINTMENT_SCHEDULED'],
         tasks: [
           'APPOINTMENT_IN_PERSON',
           'APPOINTMENT_PHONE_CALL',
@@ -662,39 +569,32 @@ export const loadConstantsMockData = {
         ],
       },
       {
-        __typename: 'Phase',
+        contactStatuses: ['CALL_FOR_DECISION'],
         id: 'FOLLOW_UP',
         name: 'Follow Up',
         results: {
-          __typename: 'Result',
           resultOptions: [
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'FOLLOW_UP_PHONE_CALL',
                   result: 'ATTEMPTED',
+                  task: 'FOLLOW_UP_PHONE_CALL',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_EMAIL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_TEXT_MESSAGE',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_SOCIAL_MEDIA',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'FOLLOW_UP_IN_PERSON',
                   result: 'COMPLETED',
+                  task: 'FOLLOW_UP_IN_PERSON',
                 },
               ],
               name: 'INITIATION_RESULT_NO_RESPONSE',
@@ -708,32 +608,26 @@ export const loadConstantsMockData = {
               ],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_PHONE_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_EMAIL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_TEXT_MESSAGE',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_SOCIAL_MEDIA',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'FOLLOW_UP_IN_PERSON',
                   result: 'COMPLETED',
+                  task: 'FOLLOW_UP_IN_PERSON',
                 },
               ],
               name: 'FOLLOW_UP_RESULT_PARTNER_FINANCIAL',
@@ -741,32 +635,26 @@ export const loadConstantsMockData = {
               suggestedNextActions: ['PARTNER_CARE_THANK'],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_PHONE_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_EMAIL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_TEXT_MESSAGE',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_SOCIAL_MEDIA',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'FOLLOW_UP_IN_PERSON',
                   result: 'COMPLETED',
+                  task: 'FOLLOW_UP_IN_PERSON',
                 },
               ],
               name: 'FOLLOW_UP_RESULT_PARTNER_SPECIAL',
@@ -774,32 +662,26 @@ export const loadConstantsMockData = {
               suggestedNextActions: ['PARTNER_CARE_THANK'],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_PHONE_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_EMAIL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_TEXT_MESSAGE',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_SOCIAL_MEDIA',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'FOLLOW_UP_IN_PERSON',
                   result: 'COMPLETED',
+                  task: 'FOLLOW_UP_IN_PERSON',
                 },
               ],
               name: 'FOLLOW_UP_RESULT_PARTNER_PRAY',
@@ -807,32 +689,26 @@ export const loadConstantsMockData = {
               suggestedNextActions: ['PARTNER_CARE_THANK'],
             },
             {
-              __typename: 'ResultOption',
               dbResult: [
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_PHONE_CALL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_EMAIL',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_TEXT_MESSAGE',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
+                  result: 'COMPLETED',
                   task: 'FOLLOW_UP_SOCIAL_MEDIA',
-                  result: 'COMPLETED',
                 },
                 {
-                  __typename: 'TaskResultPair',
-                  task: 'FOLLOW_UP_IN_PERSON',
                   result: 'COMPLETED',
+                  task: 'FOLLOW_UP_IN_PERSON',
                 },
               ],
               name: 'FOLLOW_UP_RESULT_NOT_INTERESTED',
@@ -842,33 +718,27 @@ export const loadConstantsMockData = {
           ],
           tags: [
             {
-              __typename: 'IdValue',
-              value: 'Financial Support',
               id: 'Financial Support',
+              value: 'Financial Support',
             },
             {
-              __typename: 'IdValue',
-              value: 'Gift not Started',
               id: 'Gift not Started',
+              value: 'Gift not Started',
             },
             {
-              __typename: 'IdValue',
-              value: 'Special Gift',
               id: 'Special Gift',
+              value: 'Special Gift',
             },
             {
-              __typename: 'IdValue',
-              value: 'Connections',
               id: 'Connections',
+              value: 'Connections',
             },
             {
-              __typename: 'IdValue',
-              value: 'Increase',
               id: 'Increase',
+              value: 'Increase',
             },
           ],
         },
-        contactStatuses: ['CALL_FOR_DECISION'],
         tasks: [
           'FOLLOW_UP_PHONE_CALL',
           'FOLLOW_UP_EMAIL',
@@ -878,19 +748,81 @@ export const loadConstantsMockData = {
         ],
       },
       {
-        __typename: 'Phase',
-        id: 'PARTNER_CARE',
-        name: 'Partner Care',
-        results: {
-          __typename: 'Result',
-          resultOptions: [],
-          tags: null,
-        },
         contactStatuses: [
           'PARTNER_FINANCIAL',
           'PARTNER_SPECIAL',
           'PARTNER_PRAY',
         ],
+        id: 'PARTNER_CARE',
+        name: 'Partner Care',
+        results: {
+          resultOptions: [
+            {
+              dbResult: [
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_PHONE_CALL',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_EMAIL',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_TEXT_MESSAGE',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_SOCIAL_MEDIA',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_IN_PERSON',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_THANK',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_DIGITAL_NEWSLETTER',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_PHYSICAL_NEWSLETTER',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_PRAYER_REQUEST',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_UPDATE_INFORMATION',
+                },
+                {
+                  result: 'COMPLETED',
+                  task: 'PARTNER_CARE_TO_DO',
+                },
+              ],
+              name: 'PARTNER_CARE_COMPLETED',
+              suggestedContactStatus: null,
+              suggestedNextActions: [
+                'PARTNER_CARE_PHONE_CALL',
+                'PARTNER_CARE_EMAIL',
+                'PARTNER_CARE_TEXT_MESSAGE',
+                'PARTNER_CARE_SOCIAL_MEDIA',
+                'PARTNER_CARE_IN_PERSON',
+                'PARTNER_CARE_THANK',
+                'PARTNER_CARE_DIGITAL_NEWSLETTER',
+                'PARTNER_CARE_PHYSICAL_NEWSLETTER',
+                'PARTNER_CARE_PRAYER_REQUEST',
+                'PARTNER_CARE_UPDATE_INFORMATION',
+                'PARTNER_CARE_TO_DO',
+              ],
+            },
+          ],
+          tags: null,
+        },
         tasks: [
           'PARTNER_CARE_PHONE_CALL',
           'PARTNER_CARE_EMAIL',
@@ -906,14 +838,6 @@ export const loadConstantsMockData = {
         ],
       },
       {
-        __typename: 'Phase',
-        id: 'ARCHIVE',
-        name: 'Archive',
-        results: {
-          __typename: 'Result',
-          resultOptions: [],
-          tags: null,
-        },
         contactStatuses: [
           'NOT_INTERESTED',
           'UNRESPONSIVE',
@@ -921,6 +845,12 @@ export const loadConstantsMockData = {
           'RESEARCH_ABANDONED',
           'EXPIRED_REFERRAL',
         ],
+        id: 'ARCHIVE',
+        name: 'Archive',
+        results: {
+          resultOptions: [],
+          tags: null,
+        },
         tasks: [],
       },
     ],

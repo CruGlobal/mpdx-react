@@ -107,7 +107,9 @@ describe('TaskModalCompleteForm', () => {
         />,
       );
 
-      const resultDropdown = getByRole('combobox', { name: 'Result' });
+      const resultDropdown = await waitFor(() =>
+        getByRole('combobox', { name: 'Result' }),
+      );
 
       userEvent.click(resultDropdown);
 
@@ -125,13 +127,13 @@ describe('TaskModalCompleteForm', () => {
     });
 
     it("doesn't not render suggested contact status when multiple contact", async () => {
-      const { getByRole, queryByText } = render(
+      const { getByRole, queryByText, findByRole } = render(
         <Components
           taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
         />,
       );
 
-      const resultDropdown = getByRole('combobox', { name: 'Result' });
+      const resultDropdown = await findByRole('combobox', { name: 'Result' });
       userEvent.click(resultDropdown);
       await waitFor(() => {
         userEvent.click(
@@ -149,7 +151,7 @@ describe('TaskModalCompleteForm', () => {
     });
 
     it('renders suggested status when single contact', async () => {
-      const { getByRole, getByText } = render(
+      const { getByRole, getByText, findByRole } = render(
         <Components
           taskOverrides={{
             activityType: ActivityTypeEnum.AppointmentInPerson,
@@ -167,7 +169,7 @@ describe('TaskModalCompleteForm', () => {
         />,
       );
 
-      const resultDropdown = getByRole('combobox', { name: 'Result' });
+      const resultDropdown = await findByRole('combobox', { name: 'Result' });
       userEvent.click(resultDropdown);
       await waitFor(() => {
         userEvent.click(
@@ -183,11 +185,45 @@ describe('TaskModalCompleteForm', () => {
       });
     });
 
+    it('does not render suggested status when the Phase Constant does not provide a suggested status', async () => {
+      const { getByRole, queryByText, findByRole } = render(
+        <Components
+          taskOverrides={{
+            activityType: ActivityTypeEnum.InitiationEmail,
+            contacts: {
+              nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
+            },
+          }}
+          mocks={[
+            ContactStatusQueryMock(
+              accountListId,
+              'contact-1',
+              StatusEnum.NeverContacted,
+            ),
+          ]}
+        />,
+      );
+
+      const resultDropdown = await findByRole('combobox', { name: 'Result' });
+      userEvent.click(resultDropdown);
+      await waitFor(() => {
+        userEvent.click(
+          getByRole('option', { name: "Can't meet right now - circle back" }),
+        );
+      });
+
+      await waitFor(() => {
+        expect(
+          queryByText("Change the contact's status to:"),
+        ).not.toBeInTheDocument();
+      });
+    });
+
     it('should not render <Result> if no result to select', async () => {
       const { queryByRole } = render(
         <Components
           taskOverrides={{
-            activityType: ActivityTypeEnum.PartnerCareEmail,
+            activityType: '',
           }}
         />,
       );
@@ -202,13 +238,13 @@ describe('TaskModalCompleteForm', () => {
 
   describe('next action', () => {
     it('narrows down next actions on result', async () => {
-      const { getByRole, getAllByRole, queryByRole } = render(
+      const { getByRole, getAllByRole, queryByRole, findByRole } = render(
         <Components
           taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
         />,
       );
 
-      const resultDropdown = getByRole('combobox', { name: 'Result' });
+      const resultDropdown = await findByRole('combobox', { name: 'Result' });
       userEvent.click(resultDropdown);
       await waitFor(() => {
         userEvent.click(getByRole('option', { name: 'Partner-Financial' }));
@@ -251,41 +287,13 @@ describe('TaskModalCompleteForm', () => {
       });
     });
 
-    it('renders all options if suggested next actions is null', async () => {
-      const { getByRole, getAllByRole } = render(
+    it('does not render the Next Actions when Result "Not Interested" is selected and next actions is null', async () => {
+      const { getByRole, queryByRole, findByRole } = render(
         <Components
           taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
         />,
       );
-
-      const resultDropdown = getByRole('combobox', { name: 'Result' });
-
-      userEvent.click(resultDropdown);
-      await waitFor(() => {
-        userEvent.click(
-          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
-        );
-      });
-
-      const nextActionDropdown = getByRole('combobox', { name: 'Next Action' });
-      userEvent.click(nextActionDropdown);
-
-      await waitFor(() => {
-        expect(
-          getAllByRole('option', { name: 'Social Media' })[0],
-        ).toBeInTheDocument();
-
-        expect(getByRole('option', { name: 'Email' })).toBeInTheDocument();
-      });
-    });
-
-    it('does not render the Next Actions when Result "not Interested" is selected', async () => {
-      const { getByRole, queryByRole } = render(
-        <Components
-          taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
-        />,
-      );
-      userEvent.click(getByRole('combobox', { name: 'Result' }));
+      userEvent.click(await findByRole('combobox', { name: 'Result' }));
       await waitFor(() => {
         userEvent.click(getByRole('option', { name: 'Not Interested' }));
       });
@@ -306,7 +314,7 @@ describe('TaskModalCompleteForm', () => {
         queryByRole('combobox', { name: 'Next Action' }),
       ).not.toBeInTheDocument();
 
-      userEvent.click(getByRole('combobox', { name: 'Result' }));
+      userEvent.click(await findByRole('combobox', { name: 'Result' }));
       userEvent.click(await findByRole('option', { name: 'Follow up' }));
 
       expect(
@@ -360,7 +368,7 @@ describe('TaskModalCompleteForm', () => {
       nextAction: ActivityTypeEnum.PartnerCareThank,
       tagList: ['tag-1', 'tag-2'],
     };
-    const { getByRole, findByRole, getByText } = render(
+    const { findByRole, getByText } = render(
       <Components
         mocks={[
           completeTaskMutationMock(accountListId, taskId),
@@ -389,9 +397,9 @@ describe('TaskModalCompleteForm', () => {
         }}
       />,
     );
-    userEvent.click(getByRole('combobox', { name: 'Result' }));
+    userEvent.click(await findByRole('combobox', { name: 'Result' }));
     userEvent.click(await findByRole('option', { name: 'Partner-Special' }));
-    userEvent.click(getByRole('combobox', { name: 'Next Action' }));
+    userEvent.click(await findByRole('combobox', { name: 'Next Action' }));
     userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
 
     userEvent.click(getByText('Save'));
@@ -418,7 +426,7 @@ describe('TaskModalCompleteForm', () => {
       nextAction: ActivityTypeEnum.PartnerCareThank,
       tagList: ['tag-1', 'tag-2'],
     };
-    const { getByRole, findByRole, getByText, findByText } = render(
+    const { findByRole, getByText, findByText } = render(
       <Components
         mocks={[
           ContactStatusQueryMock(
@@ -460,9 +468,9 @@ describe('TaskModalCompleteForm', () => {
         }}
       />,
     );
-    userEvent.click(getByRole('combobox', { name: 'Result' }));
+    userEvent.click(await findByRole('combobox', { name: 'Result' }));
     userEvent.click(await findByRole('option', { name: 'Partner-Special' }));
-    userEvent.click(getByRole('combobox', { name: 'Next Action' }));
+    userEvent.click(await findByRole('combobox', { name: 'Next Action' }));
     userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
 
     userEvent.click(await findByText("Change the contact's status to:"));

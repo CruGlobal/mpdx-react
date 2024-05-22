@@ -31,9 +31,13 @@ export const taskModalTests = (Components: Components) => {
         />,
       );
       let results: ResultEnum[] = [];
-      const resultButton = queryByRole('combobox', { name: 'Result' });
-      if (resultButton && resultToSelected) {
-        userEvent.click(resultButton);
+      const resultCombobox =
+        activityType && activityType !== 'NONE'
+          ? await waitFor(() => getByRole('combobox', { name: 'Result' }))
+          : null;
+
+      if (resultCombobox && resultToSelected) {
+        userEvent.click(resultCombobox);
 
         await waitFor(() => {
           expect(
