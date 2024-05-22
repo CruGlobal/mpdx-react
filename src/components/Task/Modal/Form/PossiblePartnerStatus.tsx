@@ -31,6 +31,7 @@ export const possiblePartnerStatus = (
 
   return {
     dbResult,
-    suggestedContactStatus: contactStatus?.suggestedContactStatus as StatusEnum,
+    suggestedContactStatus:
+      (contactStatus?.suggestedContactStatus as StatusEnum) || null,
   };
 };
