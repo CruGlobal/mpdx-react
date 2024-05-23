@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { useDrop } from 'react-dnd';
 import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   ContactsContext,
   ContactsType,
@@ -16,9 +17,9 @@ import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   IdValue,
+  PhaseEnum,
 } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
-import { useLoadConstantsQuery } from '../../../Constants/LoadConstants.generated';
 import { InfiniteList } from '../../../InfiniteList/InfiniteList';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
@@ -42,6 +43,7 @@ interface Props {
     status: {
       __typename?: 'IdValue' | undefined;
     } & Pick<IdValue, 'id' | 'value'>,
+    contactPhase?: PhaseEnum | null,
   ) => Promise<void>;
 }
 
@@ -76,10 +78,11 @@ export const ContactFlowColumn: React.FC<Props> = ({
     },
     skip: !accountListId || statuses.length === 0,
   });
-  const { data: constants } = useLoadConstantsQuery({});
+
+  const constants = useApiConstants();
   const statusesStructured =
     statuses.map((status) =>
-      constants?.constant.statuses?.find(
+      constants?.statuses?.find(
         (constant) => String(constant.id) === String(status),
       ),
     ) || [];
@@ -157,9 +160,10 @@ export const ContactFlowColumn: React.FC<Props> = ({
               <ContactFlowRow
                 accountListId={accountListId}
                 id={contact.id}
+                contactPhase={contact.contactPhase}
                 name={contact.name}
                 status={
-                  constants?.constant.statuses?.find(
+                  constants?.statuses?.find(
                     (constant) => constant.id === contact.status,
                   ) || nullStatus
                 }

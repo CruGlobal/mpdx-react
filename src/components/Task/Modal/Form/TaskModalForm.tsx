@@ -212,10 +212,13 @@ const TaskModalForm = ({
           ? activityTypes.get(defaultValues.activityType)
           : null;
         if (activityData) {
-          setPhaseId(activityData.phaseId);
           taskPhase = activityData.phaseId;
           taskSubject = activityData.title;
         }
+      }
+
+      if (taskPhase) {
+        setPhaseId(taskPhase);
       }
 
       return {
