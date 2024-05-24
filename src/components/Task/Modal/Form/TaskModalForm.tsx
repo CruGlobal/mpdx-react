@@ -85,7 +85,7 @@ import {
 
 const taskSchema = yup.object({
   taskPhase: yup.mixed<PhaseEnum>().nullable(),
-  activityType: yup.mixed<ActivityTypeEnum>().nullable(),
+  activityType: yup.mixed<ActivityTypeEnum>().required().default(undefined),
   subject: yup.string().required(),
   startAt: nullableDateTime(),
   completedAt: nullableDateTime(),
@@ -137,9 +137,9 @@ const TaskModalForm = ({
     );
   // TODO - Need to fix the above ^
 
-  const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
-    task?.activityType || defaultValues?.activityType || null,
-  );
+  const [actionSelected, setActionSelected] = useState<
+    ActivityTypeEnum | undefined
+  >(task?.activityType || defaultValues?.activityType || undefined);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -184,7 +184,7 @@ const TaskModalForm = ({
 
       return {
         taskPhase,
-        activityType: task.activityType ?? null,
+        activityType: task.activityType ?? undefined,
         location: task.location ?? '',
         subject: task.subject ?? '',
         startAt: task.startAt ? DateTime.fromISO(task.startAt) : null,
@@ -210,7 +210,7 @@ const TaskModalForm = ({
       if (defaultValues?.activityType && activityTypes) {
         const activityData = defaultValues.activityType
           ? activityTypes.get(defaultValues.activityType)
-          : null;
+          : undefined;
         if (activityData) {
           taskPhase = activityData.phaseId;
           taskSubject = activityData.title;
@@ -223,7 +223,7 @@ const TaskModalForm = ({
 
       return {
         taskPhase: taskPhase,
-        activityType: defaultValues?.activityType ?? null,
+        activityType: defaultValues?.activityType ?? undefined,
         location: '',
         subject: taskSubject ?? '',
         startAt: DateTime.local(),
@@ -390,6 +390,7 @@ const TaskModalForm = ({
           comment,
         },
         setFieldValue,
+        setFieldTouched,
         handleChange,
         handleBlur,
         handleSubmit,
@@ -424,7 +425,7 @@ const TaskModalForm = ({
                   </Grid>
 
                   <Grid xs={12} sm={6} item>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth required>
                       <ActivityTypeAutocomplete
                         options={
                           (taskPhase && activitiesByPhase.get(taskPhase)) || []
@@ -435,11 +436,16 @@ const TaskModalForm = ({
                           handleTaskActionChange({
                             activityType,
                             setFieldValue,
+                            setFieldTouched,
                             setActionSelected,
                             constants,
                           });
                         }}
                         inputRef={activityRef}
+                        required
+                        onBlur={handleBlur('activityType')}
+                        touched={touched}
+                        errors={errors}
                       />
                     </FormControl>
                   </Grid>
@@ -554,7 +560,7 @@ const TaskModalForm = ({
                   <ActivityTypeAutocomplete
                     options={nextActions}
                     label={t('Next Action')}
-                    value={nextAction}
+                    value={nextAction || undefined}
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }

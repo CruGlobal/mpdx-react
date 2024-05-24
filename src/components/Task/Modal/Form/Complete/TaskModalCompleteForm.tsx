@@ -87,7 +87,7 @@ const TaskModalCompleteForm = ({
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
-  const { activityType } = task;
+  const activityType = task.activityType || undefined;
   const taskPhase = useMemo(() => getPhaseByActivityType(activityType), [task]);
   const { phaseData, setPhaseId, activityTypes } = usePhaseData(taskPhase);
 
@@ -120,7 +120,9 @@ const TaskModalCompleteForm = ({
     );
   // TODO - Need to fix the above ^
 
-  const activityData = activityType ? activityTypes.get(activityType) : null;
+  const activityData = activityType
+    ? activityTypes.get(activityType)
+    : undefined;
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -134,7 +136,7 @@ const TaskModalCompleteForm = ({
     if (activityType && activityTypes) {
       const activityData = activityType
         ? activityTypes.get(activityType)
-        : null;
+        : undefined;
       if (activityData) {
         setPhaseId(activityData.phaseId);
       }
@@ -364,7 +366,7 @@ const TaskModalCompleteForm = ({
                 <Grid item>
                   <ActivityTypeAutocomplete
                     options={nextActions}
-                    value={nextAction}
+                    value={nextAction || undefined}
                     label={t('Next Action')}
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)

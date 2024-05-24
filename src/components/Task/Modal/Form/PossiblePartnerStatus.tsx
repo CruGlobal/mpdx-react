@@ -14,7 +14,7 @@ export type PossiblePartnerStatus = {
 export const possiblePartnerStatus = (
   phaseData: Phase | null,
   resultName: DisplayResultEnum | null,
-  activityType?: ActivityTypeEnum | null,
+  activityType?: ActivityTypeEnum | undefined,
 ): PossiblePartnerStatus | null => {
   if (!phaseData || !resultName || !activityType) {
     return null;

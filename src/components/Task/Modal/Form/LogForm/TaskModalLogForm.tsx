@@ -71,7 +71,7 @@ import {
 
 const taskSchema = yup.object({
   taskPhase: yup.mixed<PhaseEnum>().nullable(),
-  activityType: yup.mixed<ActivityTypeEnum>().nullable(),
+  activityType: yup.mixed<ActivityTypeEnum>().required().default(undefined),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
   completedAt: nullableDateTime(),
@@ -111,9 +111,9 @@ const TaskModalLogForm = ({
       (defaultValues?.result as unknown as DisplayResultEnum) || null,
     );
 
-  const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
-    defaultValues?.activityType || null,
-  );
+  const [actionSelected, setActionSelected] = useState<
+    ActivityTypeEnum | undefined
+  >(defaultValues?.activityType || undefined);
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
@@ -150,7 +150,7 @@ const TaskModalLogForm = ({
     if (defaultValues?.activityType && activityTypes) {
       const activityData = defaultValues.activityType
         ? activityTypes.get(defaultValues.activityType)
-        : null;
+        : undefined;
       if (activityData) {
         setPhaseId(activityData.phaseId);
         taskPhase = activityData.phaseId;
@@ -163,7 +163,7 @@ const TaskModalLogForm = ({
 
     return {
       taskPhase: taskPhase,
-      activityType: defaultValues?.activityType ?? null,
+      activityType: defaultValues?.activityType ?? undefined,
       subject: taskSubject ?? '',
       contactIds: defaultValues?.contactIds ?? [],
       completedAt: DateTime.local(),
@@ -172,7 +172,7 @@ const TaskModalLogForm = ({
       displayResult: defaultValues?.displayResult ?? undefined,
       result: defaultValues?.result ?? undefined,
       changeContactStatus: false,
-      nextAction: defaultValues?.nextAction ?? null,
+      nextAction: defaultValues?.nextAction ?? undefined,
       location: '',
       comment: '',
     };
@@ -190,7 +190,7 @@ const TaskModalLogForm = ({
       attributes.result = getDatabaseValueFromResult(
         phaseData,
         attributes.displayResult,
-        attributes.activityType,
+        attributes.activityType || undefined,
       );
     }
 
@@ -273,12 +273,22 @@ const TaskModalLogForm = ({
     [phaseData],
   );
   const partnerStatus = useMemo(
-    () => possiblePartnerStatus(phaseData, resultSelected, actionSelected),
+    () =>
+      possiblePartnerStatus(
+        phaseData,
+        resultSelected,
+        actionSelected || undefined,
+      ),
     [phaseData, resultSelected, actionSelected],
   );
 
   const nextActions = useMemo(
-    () => possibleNextActions(phaseData, resultSelected, actionSelected),
+    () =>
+      possibleNextActions(
+        phaseData,
+        resultSelected,
+        actionSelected || undefined,
+      ),
     [phaseData, resultSelected, actionSelected],
   );
 
@@ -287,7 +297,6 @@ const TaskModalLogForm = ({
       phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
     [phaseData],
   );
-
   return (
     <Formik
       initialValues={initialTask}
@@ -297,6 +306,7 @@ const TaskModalLogForm = ({
       }}
       validateOnMount
       enableReinitialize
+      validateOnChange
     >
       {({
         values: {
@@ -314,6 +324,7 @@ const TaskModalLogForm = ({
           comment,
         },
         setFieldValue,
+        setFieldTouched,
         handleChange,
         handleBlur,
         handleSubmit,
@@ -352,16 +363,23 @@ const TaskModalLogForm = ({
                         (taskPhase && activitiesByPhase.get(taskPhase)) || []
                       }
                       label={t('Action')}
-                      value={activityType}
-                      onChange={(activityType) => {
+                      value={activityType || undefined}
+                      onChange={(
+                        activityType: ActivityTypeEnum | undefined,
+                      ) => {
                         handleTaskActionChange({
                           activityType,
                           setFieldValue,
+                          setFieldTouched,
                           setActionSelected,
                           constants,
                         });
                       }}
                       inputRef={activityRef}
+                      required
+                      onBlur={handleBlur('activityType')}
+                      touched={touched}
+                      errors={errors}
                     />
                   </Grid>
                 </Grid>
@@ -425,7 +443,7 @@ const TaskModalLogForm = ({
                   <ActivityTypeAutocomplete
                     options={nextActions}
                     label={t('Next Action')}
-                    value={nextAction}
+                    value={nextAction || undefined}
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }
