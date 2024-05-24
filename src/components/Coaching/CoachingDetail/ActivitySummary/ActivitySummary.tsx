@@ -11,36 +11,21 @@ import {
   TableRow,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { toLower } from 'lodash';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
+import { PhaseEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatWithoutYear } from 'src/lib/intlFormat';
+import { usePhaseData } from 'src/hooks/usePhaseData';
+import { dateFormatMonthOnly } from 'src/lib/intlFormat';
+import { snakeToCamel } from 'src/lib/snakeToCamel';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
 import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
-import { getResultColor } from '../helpers';
 import { useActivitySummaryQuery } from './ActivitySummary.generated';
-
-const DialsLabel = styled('span')(({ theme }) => ({
-  padding: `${theme.spacing(0.375)} ${theme.spacing(0.75)}`,
-  borderRadius: theme.spacing(0.5),
-  color: theme.palette.primary.contrastText,
-  fontSize: '80%',
-  fontWeight: 'bold',
-}));
-
-interface DialCountProps {
-  dials: number;
-  goal: number;
-}
-
-const DialCount: React.FC<DialCountProps> = ({ dials, goal }) => (
-  <DialsLabel sx={{ backgroundColor: getResultColor(dials, goal) }}>
-    {dials}
-  </DialsLabel>
-);
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -58,6 +43,7 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { activitiesByPhase } = usePhaseData();
 
   const { data, loading } = useActivitySummaryQuery({
     variables: {
@@ -70,15 +56,29 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
   const averages = useMemo(
     () =>
       [
-        'callsWithAppointmentNext',
-        'completedCall',
-        'completedPreCallLetter',
-        'completedReminderLetter',
-        'completedSupportLetter',
-        'completedThank',
-        'dials',
-        'electronicMessageSent',
-        'electronicMessageWithAppointmentNext',
+        'appointmentInPerson',
+        'appointmentPhoneCall',
+        'appointmentVideoCall',
+        'contactsAdded',
+        'contactsReferred',
+        'followUpEmail',
+        'followUpInPerson',
+        'followUpPhoneCall',
+        'followUpSocialMedia',
+        'followUpTextMessage',
+        'initiationEmail',
+        'initiationInPerson',
+        'partnerCareUpdateInformation',
+        'partnerCareToDo',
+        'partnerCareThank',
+        'partnerCarePrayerRequest',
+        'partnerCarePhysicalNewsletter',
+        'partnerCareDigitalNewsletter',
+        'initiationSpecialGiftAppeal',
+        'initiationSocialMedia',
+        'initiationTextMessage',
+        'initiationPhoneCall',
+        'initiationLetter',
       ].reduce<Record<string, number>>(
         (averages, field) => ({
           ...averages,
@@ -92,14 +92,12 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
     [data],
   );
 
-  const dialGoal = period === CoachingPeriodEnum.Weekly ? 100 : 400;
-
   return (
     <AnimatedCard>
       <CardHeader
         title={
           <Box display="flex" alignItems="center">
-            <Box flex={1}>{t('Activity Summary')}</Box>
+            <Box flex={1}>{t('Level of Effort - My Part')}</Box>
             <HelpButton articleVar="HS_COACHING_ACTIVITY_SUMMARY" />
           </Box>
         }
@@ -112,61 +110,54 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
             <Table size="small" aria-label={t('activity summary table')}>
               <TableBody>
                 <HeaderRow role="rowheader">
-                  <AlignedTableCell>{t('Phone Dials')}</AlignedTableCell>
-                  {periods.map(({ startDate }) => (
+                  <AlignedTableCell></AlignedTableCell>
+                  {periods.map(({ startDate, endDate }) => (
                     <AlignedTableCell key={startDate}>
-                      {dateFormatWithoutYear(
-                        DateTime.fromISO(startDate),
-                        locale,
-                      )}
+                      {startDate &&
+                        endDate &&
+                        (period === CoachingPeriodEnum.Weekly
+                          ? new Intl.DateTimeFormat(locale, {
+                              month: 'short',
+                              day: 'numeric',
+                            }).formatRange(
+                              new Date(startDate),
+                              new Date(endDate),
+                            )
+                          : dateFormatMonthOnly(
+                              DateTime.fromISO(startDate),
+                              locale,
+                            ))}
                     </AlignedTableCell>
                   ))}
                   <AlignedTableCell>{t('Average')}</AlignedTableCell>
                 </HeaderRow>
-                <TableRow>
+                <HeaderRow role="rowheader">
                   <AlignedTableCell>
-                    {t('Dials ({{goalText}}: {{goal}})', {
-                      goalText:
-                        period === CoachingPeriodEnum.Weekly
-                          ? t('Weekly Goal')
-                          : t('Monthly Goal'),
-                      goal: dialGoal,
-                    })}
+                    {t('New Connections Added')}
                   </AlignedTableCell>
-                  {periods.map(({ startDate, dials }) => (
-                    <AlignedTableCell key={startDate}>
-                      <DialCount dials={dials} goal={dialGoal} />
+                </HeaderRow>
+                <TableRow>
+                  <AlignedTableCell>{t('Namestormed')}</AlignedTableCell>
+                  {periods.map((period) => (
+                    <AlignedTableCell key={period?.startDate}>
+                      {period?.contactsAdded}
                     </AlignedTableCell>
                   ))}
                   <AlignedTableCell>
-                    <DialCount
-                      dials={Math.round(averages.dials)}
-                      goal={dialGoal}
-                    />
-                  </AlignedTableCell>
-                </TableRow>
-                <TableRow>
-                  <AlignedTableCell>{t('Completed')}</AlignedTableCell>
-                  {periods.map(({ startDate, completedCall }) => (
-                    <AlignedTableCell key={startDate}>
-                      {completedCall}
-                    </AlignedTableCell>
-                  ))}
-                  <AlignedTableCell>
-                    {Math.round(averages.completedCall)}
+                    {Math.round(averages?.contactsAdded)}
                   </AlignedTableCell>
                 </TableRow>
                 <TableRow>
                   <AlignedTableCell>
-                    {t('Resulting Appointments')}
+                    {t('Connected by Others')}
                   </AlignedTableCell>
-                  {periods.map(({ startDate, callsWithAppointmentNext }) => (
-                    <AlignedTableCell key={startDate}>
-                      {callsWithAppointmentNext}
+                  {periods.map((period) => (
+                    <AlignedTableCell key={period?.startDate}>
+                      {period?.contactsReferred}
                     </AlignedTableCell>
                   ))}
                   <AlignedTableCell>
-                    {Math.round(averages.callsWithAppointmentNext)}
+                    {Math.round(averages?.contactsReferred)}
                   </AlignedTableCell>
                 </TableRow>
                 <DividerRow>
@@ -176,35 +167,88 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
                 </DividerRow>
                 <HeaderRow role="rowheader">
                   <AlignedTableCell colSpan={periods.length + 2}>
-                    {t('Electronic Messages')}
+                    {t('Initiations')}
                   </AlignedTableCell>
                 </HeaderRow>
-                <TableRow>
-                  <AlignedTableCell>{t('Sent')}</AlignedTableCell>
-                  {periods.map(({ startDate, electronicMessageSent }) => (
-                    <AlignedTableCell key={startDate}>
-                      {electronicMessageSent}
-                    </AlignedTableCell>
-                  ))}
-                  <AlignedTableCell>
-                    {Math.round(averages.electronicMessageSent)}
+                {activitiesByPhase
+                  .get(PhaseEnum.Initiation)
+                  ?.map((activity) => {
+                    const activityVariableName = snakeToCamel(toLower(activity));
+                    return !isNaN(averages[activityVariableName]) &&
+                      averages[activityVariableName] !== null ? (
+                      <TableRow>
+                        <AlignedTableCell>
+                          {getLocalizedTaskType(t, activity)}
+                        </AlignedTableCell>
+                        {periods.map((period) => (
+                          <AlignedTableCell key={period?.startDate}>
+                            {period[activityVariableName]}
+                          </AlignedTableCell>
+                        ))}
+                        <AlignedTableCell>
+                          {Math.round(averages[activityVariableName])}
+                        </AlignedTableCell>
+                      </TableRow>
+                    ) : null;
+                  })}
+                <DividerRow>
+                  <TableCell colSpan={periods.length + 2}>
+                    <Divider />
+                  </TableCell>
+                </DividerRow>
+                <HeaderRow role="rowheader">
+                  <AlignedTableCell>{t('Appointments')}</AlignedTableCell>
+                </HeaderRow>
+                {activitiesByPhase
+                  .get(PhaseEnum.Appointment)
+                  ?.map((activity) => {
+                    const activityVariableName = snakeToCamel(toLower(activity));
+                    return !isNaN(averages[activityVariableName]) &&
+                      averages[activityVariableName] !== null ? (
+                      <TableRow>
+                        <AlignedTableCell>
+                          {getLocalizedTaskType(t, activity)}
+                        </AlignedTableCell>
+                        {periods.map((period) => (
+                          <AlignedTableCell key={period?.startDate}>
+                            {period[activityVariableName]}
+                          </AlignedTableCell>
+                        ))}
+                        <AlignedTableCell>
+                          {Math.round(averages[activityVariableName])}
+                        </AlignedTableCell>
+                      </TableRow>
+                    ) : null;
+                  })}
+                <DividerRow>
+                  <TableCell colSpan={periods.length + 2}>
+                    <Divider />
+                  </TableCell>
+                </DividerRow>
+                <HeaderRow role="rowheader">
+                  <AlignedTableCell colSpan={periods.length + 2}>
+                    {t('Follow-Up')}
                   </AlignedTableCell>
-                </TableRow>
-                <TableRow>
-                  <AlignedTableCell>
-                    {t('Resulting Appointments')}
-                  </AlignedTableCell>
-                  {periods.map(
-                    ({ startDate, electronicMessageWithAppointmentNext }) => (
-                      <AlignedTableCell key={startDate}>
-                        {electronicMessageWithAppointmentNext}
+                </HeaderRow>
+                {activitiesByPhase.get(PhaseEnum.FollowUp)?.map((activity) => {
+                  const activityVariableName = snakeToCamel(toLower(activity));
+                  return !isNaN(averages[activityVariableName]) &&
+                    averages[activityVariableName] !== null ? (
+                    <TableRow>
+                      <AlignedTableCell>
+                        {getLocalizedTaskType(t, activity)}
                       </AlignedTableCell>
-                    ),
-                  )}
-                  <AlignedTableCell>
-                    {Math.round(averages.electronicMessageWithAppointmentNext)}
-                  </AlignedTableCell>
-                </TableRow>
+                      {periods.map((period) => (
+                        <AlignedTableCell key={period?.startDate}>
+                          {period[activityVariableName]}
+                        </AlignedTableCell>
+                      ))}
+                      <AlignedTableCell>
+                        {Math.round(averages[activityVariableName])}
+                      </AlignedTableCell>
+                    </TableRow>
+                  ) : null;
+                })}
                 <DividerRow>
                   <TableCell colSpan={periods.length + 2}>
                     <Divider />
@@ -212,42 +256,30 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
                 </DividerRow>
                 <HeaderRow role="rowheader">
                   <AlignedTableCell colSpan={periods.length + 2}>
-                    {t('Correspondence')}
+                    {t('Partner Care')}
                   </AlignedTableCell>
                 </HeaderRow>
-                <TableRow>
-                  <AlignedTableCell>{t('Pre-Call Letters')}</AlignedTableCell>
-                  {periods.map(({ startDate, completedPreCallLetter }) => (
-                    <AlignedTableCell key={startDate}>
-                      {completedPreCallLetter}
-                    </AlignedTableCell>
-                  ))}
-                  <AlignedTableCell>
-                    {Math.round(averages.completedPreCallLetter)}
-                  </AlignedTableCell>
-                </TableRow>
-                <TableRow>
-                  <AlignedTableCell>{t('Support Letters')}</AlignedTableCell>
-                  {periods.map(({ startDate, completedSupportLetter }) => (
-                    <AlignedTableCell key={startDate}>
-                      {completedSupportLetter}
-                    </AlignedTableCell>
-                  ))}
-                  <AlignedTableCell>
-                    {Math.round(averages.completedSupportLetter)}
-                  </AlignedTableCell>
-                </TableRow>
-                <TableRow>
-                  <AlignedTableCell>{t('Thank Yous')}</AlignedTableCell>
-                  {periods.map(({ startDate, completedThank }) => (
-                    <AlignedTableCell key={startDate}>
-                      {completedThank}
-                    </AlignedTableCell>
-                  ))}
-                  <AlignedTableCell>
-                    {Math.round(averages.completedThank)}
-                  </AlignedTableCell>
-                </TableRow>
+                {activitiesByPhase
+                  .get(PhaseEnum.PartnerCare)
+                  ?.map((activity) => {
+                    const activityVariableName = snakeToCamel(toLower(activity));
+                    return !isNaN(averages[activityVariableName]) &&
+                      averages[activityVariableName] !== null ? (
+                      <TableRow>
+                        <AlignedTableCell>
+                          {getLocalizedTaskType(t, activity)}
+                        </AlignedTableCell>
+                        {periods.map((period) => (
+                          <AlignedTableCell key={period?.startDate}>
+                            {period[activityVariableName]}
+                          </AlignedTableCell>
+                        ))}
+                        <AlignedTableCell>
+                          {Math.round(averages[activityVariableName])}
+                        </AlignedTableCell>
+                      </TableRow>
+                    ) : null;
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
