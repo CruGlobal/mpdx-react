@@ -51,7 +51,7 @@ import {
   getLocalizedNotificationType,
 } from 'src/utils/functions/getLocalizedNotificationStrings';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
-import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
+import { inPersonActivityTypes } from 'src/utils/phases/taskActivityTypes';
 import theme from '../../../../theme';
 import { DateTimeFieldPair } from '../../../common/DateTimePickers/DateTimeFieldPair';
 import { TaskModalEnum } from '../TaskModal';
@@ -460,7 +460,7 @@ const TaskModalForm = ({
                   required
                 />
               </Grid>
-              {isAppointmentActivityType(activityType) && (
+              {activityType && inPersonActivityTypes.includes(activityType) && (
                 <Grid item>
                   <TextField
                     label={t('Location')}

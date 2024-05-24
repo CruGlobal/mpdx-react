@@ -40,7 +40,7 @@ import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
-import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
+import { inPersonActivityTypes } from 'src/utils/phases/taskActivityTypes';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { TaskModalEnum } from '../../TaskModal';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
@@ -384,7 +384,7 @@ const TaskModalLogForm = ({
                 />
               </Grid>
 
-              {isAppointmentActivityType(activityType) && (
+              {activityType && inPersonActivityTypes.includes(activityType) && (
                 <Grid item>
                   <TextField
                     label={t('Location')}
