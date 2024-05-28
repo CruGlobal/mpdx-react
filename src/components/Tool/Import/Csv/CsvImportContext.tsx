@@ -35,11 +35,14 @@ export type CsvImportType = {
   inPreview: boolean;
   sampleContacts: CsvContact[];
   tagList: string[] | string;
+  valuesToConstantsMappings: object;
 };
 
 export interface CsvImportValue {
   uploadData: CsvImportType | null;
   setUploadData: React.Dispatch<React.SetStateAction<CsvImportType | null>>;
+  initialData: CsvImportType | null;
+  setInitialData: React.Dispatch<React.SetStateAction<CsvImportType | null>>;
 }
 
 export const CsvImportContext = React.createContext<CsvImportValue | null>(
@@ -57,8 +60,14 @@ export const CsvImportProvider: React.FC<CsvImportProviderProps> = ({
     {} as CsvImportType,
   );
 
+  const [initialData, setInitialData] = useState<CsvImportType | null>(
+    {} as CsvImportType,
+  );
+
   return (
-    <CsvImportContext.Provider value={{ uploadData, setUploadData }}>
+    <CsvImportContext.Provider
+      value={{ uploadData, setUploadData, initialData, setInitialData }}
+    >
       {children}
     </CsvImportContext.Provider>
   );
