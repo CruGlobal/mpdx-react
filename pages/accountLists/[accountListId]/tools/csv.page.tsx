@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import Loading from 'src/components/Loading';
+import CsvHeaders from 'src/components/Tool/Import/Csv/CsvHeaders';
 import { CsvImportProvider } from 'src/components/Tool/Import/Csv/CsvImportContext';
 import CsvUpload from 'src/components/Tool/Import/Csv/CsvUpload';
 import { HeaderBox } from 'src/components/Tool/Import/Csv/HeaderBox';
@@ -61,6 +62,13 @@ const CsvHome: React.FC = () => {
       case 'tools.import.csv.upload':
         return (
           <CsvUpload
+            accountListId={accountListId}
+            setCurrentTab={setCurrentTab}
+          />
+        );
+      case 'tools.import.csv.headers':
+        return (
+          <CsvHeaders
             accountListId={accountListId}
             setCurrentTab={setCurrentTab}
           />
