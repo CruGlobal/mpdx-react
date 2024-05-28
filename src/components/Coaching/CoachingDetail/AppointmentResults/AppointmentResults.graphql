@@ -10,6 +10,7 @@ query AppointmentResults(
   ) {
     id
     startDate
+    endDate
     appointmentsScheduled
     individualAppointments
     monthlyDecrease

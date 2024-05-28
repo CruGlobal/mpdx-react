@@ -117,7 +117,7 @@ export const MassActionsEditTasksModal: React.FC<
         initialValues={{
           subject: '',
           taskPhase: null,
-          activityType: null,
+          activityType: undefined,
           userId: null,
           startAt: null,
           noDueDate: false,
@@ -175,7 +175,7 @@ export const MassActionsEditTasksModal: React.FC<
                       (taskPhase && activitiesByPhase.get(taskPhase)) || []
                     }
                     label={t('Action')}
-                    value={activityType}
+                    value={activityType || undefined}
                     onChange={(activityType) =>
                       setFieldValue('activityType', activityType)
                     }

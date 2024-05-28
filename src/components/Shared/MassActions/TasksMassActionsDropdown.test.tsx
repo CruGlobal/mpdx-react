@@ -103,8 +103,14 @@ describe('TasksMassActionsDropdown', () => {
   });
 
   it('opens the more actions menu and clicks the edit tasks action', async () => {
-    const { queryByTestId, getByText, queryByText, getByLabelText, getByRole } =
-      render(<TaskComponents />);
+    const {
+      queryByTestId,
+      getByText,
+      queryByText,
+      getByLabelText,
+      getByRole,
+      findByLabelText,
+    } = render(<TaskComponents />);
 
     expect(queryByText('Edit Tasks')).not.toBeInTheDocument();
     const actionsButton = getByText('Actions') as HTMLInputElement;
@@ -120,7 +126,7 @@ describe('TasksMassActionsDropdown', () => {
         'Appointment',
       ),
     );
-    userEvent.click(getByLabelText('Action'));
+    userEvent.click(await findByLabelText('Action'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
         'In Person',

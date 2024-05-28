@@ -8,7 +8,10 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData as LoadConstants } from 'src/components/Constants/LoadConstantsMock';
+import {
+  loadConstantsMockData as LoadConstants,
+  loadConstantsMockData,
+} from 'src/components/Constants/LoadConstantsMock';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
@@ -56,11 +59,15 @@ describe('TaskModalLogForm', () => {
   it('default', async () => {
     const mutationSpy = jest.fn();
     const onClose = jest.fn();
-    const { getByText, findByText, getByLabelText } = render(
+    const { getByText, getByLabelText, getByRole, findByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider addTypename={false} onCall={mutationSpy}>
+            <GqlMockedProvider
+              addTypename={false}
+              onCall={mutationSpy}
+              mocks={{ LoadConstants: loadConstantsMockData }}
+            >
               <TaskModalLogForm
                 accountListId={accountListId}
                 onClose={onClose}
@@ -70,11 +77,14 @@ describe('TaskModalLogForm', () => {
         </SnackbarProvider>
       </LocalizationProvider>,
     );
-    userEvent.click(getByText('Cancel'));
-    expect(onClose).toHaveBeenCalled();
-    onClose.mockClear();
+
     userEvent.click(getByText('Save'));
-    expect(await findByText('Field is required')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+
+    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+    userEvent.click(await findByRole('option', { name: 'Initiation' }));
+    userEvent.click(await findByRole('combobox', { name: 'Action' }));
+    userEvent.click(await findByRole('option', { name: 'Text Message' }));
     userEvent.type(getByLabelText('Subject'), accountListId);
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
     userEvent.click(getByText('Save'));
@@ -105,6 +115,7 @@ describe('TaskModalLogForm', () => {
                     })),
                   },
                 },
+                LoadConstants: loadConstantsMockData,
               }}
             >
               <TaskModalLogForm
@@ -117,6 +128,10 @@ describe('TaskModalLogForm', () => {
       </LocalizationProvider>,
     );
 
+    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+    userEvent.click(await findByRole('option', { name: 'Initiation' }));
+    userEvent.click(await findByRole('combobox', { name: 'Action' }));
+    userEvent.click(await findByRole('option', { name: 'Text Message' }));
     userEvent.type(getByRole('textbox', { name: 'Subject' }), 'Do Something');
 
     const selectContact = async (name: string) => {
@@ -205,6 +220,7 @@ describe('TaskModalLogForm', () => {
             AssigneeOptions: AssigneeOptionsQuery;
             ContactOptions: ContactOptionsQuery;
             TagOptions: TagOptionsQuery;
+            LoadConstants: LoadConstantsQuery;
           }>
             mocks={{
               AssigneeOptions: {
@@ -232,6 +248,7 @@ describe('TaskModalLogForm', () => {
                   taskTagList: ['tag-1', 'tag-2'],
                 },
               },
+              LoadConstants: LoadConstants,
             }}
             onCall={mutationSpy}
           >
@@ -240,6 +257,10 @@ describe('TaskModalLogForm', () => {
         </SnackbarProvider>
       </LocalizationProvider>,
     );
+    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+    userEvent.click(await findByRole('option', { name: 'Initiation' }));
+    userEvent.click(getByRole('combobox', { name: 'Action' }));
+    userEvent.click(getByRole('option', { name: 'Text Message' }));
 
     userEvent.type(getByRole('textbox', { name: 'Subject' }), 'Do something');
 
@@ -256,6 +277,9 @@ describe('TaskModalLogForm', () => {
 
     userEvent.type(getByRole('textbox', { name: 'Comment' }), 'test comment');
 
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Save' })).not.toBeDisabled(),
+    );
     userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() =>
@@ -264,7 +288,8 @@ describe('TaskModalLogForm', () => {
         variables: {
           accountListId,
           attributes: {
-            subject: 'Do something',
+            activityType: 'INITIATION_TEXT_MESSAGE',
+            subject: 'Text Message To InitiateDo something',
             userId: 'user-2',
             contactIds: ['contact-2'],
             tagList: ['tag-2'],

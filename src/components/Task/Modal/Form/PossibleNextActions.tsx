@@ -11,7 +11,7 @@ import {
 export const possibleNextActions = (
   phaseData: Phase | null,
   resultName: DisplayResultEnum | null,
-  activity?: ActivityTypeEnum | null,
+  activity?: ActivityTypeEnum | undefined,
 ): ActivityTypeEnum[] => {
   if (!phaseData || !resultName || !activity) {
     return [];

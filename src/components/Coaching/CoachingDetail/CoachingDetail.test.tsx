@@ -131,7 +131,7 @@ describe('LoadCoachingDetail', () => {
       );
       expect(await findByRole('heading', { name: 'John Doe' })).toBeVisible();
       expect(getByText('Monthly $55')).toBeVisible();
-      expect(getByText('Monthly Activity')).toBeVisible();
+      expect(getByText('Monthly Giving')).toBeVisible();
     });
 
     it('null goal', async () => {
@@ -140,7 +140,7 @@ describe('LoadCoachingDetail', () => {
       );
       expect(await findByRole('heading', { name: 'John Doe' })).toBeVisible();
       expect(getByText('Monthly $0')).toBeVisible();
-      expect(getByText('Monthly Activity')).toBeVisible();
+      expect(getByText('Monthly Giving')).toBeVisible();
     });
   });
 

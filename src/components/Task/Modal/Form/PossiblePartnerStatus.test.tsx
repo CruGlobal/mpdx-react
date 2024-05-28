@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import {
   ActivityTypeEnum,

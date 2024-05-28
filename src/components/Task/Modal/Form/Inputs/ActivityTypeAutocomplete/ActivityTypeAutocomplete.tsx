@@ -1,5 +1,6 @@
-import { Ref, useMemo } from 'react';
+import { FocusEventHandler, Ref, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
+import { FormikErrors, FormikTouched } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { ActivityData } from 'src/hooks/usePhaseData';
@@ -8,12 +9,16 @@ import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 interface ActivityTypeProps {
   options: ActivityTypeEnum[];
   label: string;
-  value: ActivityTypeEnum | null | undefined;
-  onChange: (value: ActivityTypeEnum | null) => void;
-  // Set to true to make None an acceptable value. Otherwise, None will be converted to null.
+  value: ActivityTypeEnum | undefined;
+  onChange: (value: ActivityTypeEnum | undefined) => void;
+  // Set to true to make None an acceptable value. Otherwise, None will be converted to undefined.
   preserveNone?: boolean;
   activityTypes?: Map<ActivityTypeEnum, ActivityData>;
   inputRef?: Ref<HTMLElement>;
+  required?: boolean;
+  onBlur?: FocusEventHandler<HTMLDivElement>;
+  errors?: FormikErrors<any>;
+  touched?: FormikTouched<any>;
 }
 
 export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
@@ -24,6 +29,10 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
   preserveNone = false,
   activityTypes,
   inputRef,
+  required,
+  onBlur,
+  errors,
+  touched,
 }) => {
   const { t } = useTranslation();
 
@@ -54,13 +63,27 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
         }
       }}
       renderInput={(params) => (
-        <TextField inputRef={inputRef} {...params} label={label} />
+        <TextField
+          inputRef={inputRef}
+          {...params}
+          label={label}
+          required={required}
+          error={!!errors?.activityType && Boolean(touched?.activityType)}
+          helperText={
+            errors?.activityType &&
+            touched?.activityType &&
+            t('Field is required')
+          }
+        />
       )}
-      onChange={(_, value) =>
+      onChange={(_, value) => {
         onChange(
-          !preserveNone && value === ActivityTypeEnum.None ? null : value,
-        )
-      }
+          !preserveNone && value === ActivityTypeEnum.None
+            ? undefined
+            : value || undefined,
+        );
+      }}
+      onBlur={onBlur}
       disabled={!options.length}
     />
   );

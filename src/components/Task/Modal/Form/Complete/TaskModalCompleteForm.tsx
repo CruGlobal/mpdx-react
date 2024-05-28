@@ -22,6 +22,7 @@ import {
 import {
   ActivityTypeEnum,
   DisplayResultEnum,
+  PhaseEnum,
   ResultEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
@@ -31,8 +32,10 @@ import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
-import { isAppointmentActivityType } from 'src/utils/phases/isAppointmentActivityType';
-import { getPhaseByActivityType } from 'src/utils/phases/taskActivityTypes';
+import {
+  getPhaseByActivityType,
+  inPersonActivityTypes,
+} from 'src/utils/phases/taskActivityTypes';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';
@@ -81,10 +84,19 @@ const TaskModalCompleteForm = ({
   task,
   onClose,
 }: Props): ReactElement => {
-  const { activityType } = task;
+  const { t } = useTranslation();
+  const { openTaskModal } = useTaskModal();
+  const { enqueueSnackbar } = useSnackbar();
+  const activityType = task.activityType || undefined;
+  const taskPhase = useMemo(() => getPhaseByActivityType(activityType), [task]);
+  const { phaseData, setPhaseId, activityTypes } = usePhaseData(taskPhase);
+
   const initialCompletedAt =
     task.completedAt ||
-    (isAppointmentActivityType(activityType) ? task.startAt : null);
+    (inPersonActivityTypes.includes(activityType as ActivityTypeEnum) ||
+    taskPhase === PhaseEnum.Appointment
+      ? task.startAt
+      : null);
   const initialTask = useMemo(
     () => ({
       id: task.id,
@@ -101,12 +113,6 @@ const TaskModalCompleteForm = ({
     [task],
   );
 
-  const { t } = useTranslation();
-  const { openTaskModal } = useTaskModal();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const taskPhase = useMemo(() => getPhaseByActivityType(activityType), [task]);
-
   // TODO replace with ResultEnum when available
   const [resultSelected, setResultSelected] =
     useState<DisplayResultEnum | null>(
@@ -114,8 +120,9 @@ const TaskModalCompleteForm = ({
     );
   // TODO - Need to fix the above ^
 
-  const { phaseData, setPhaseId, activityTypes } = usePhaseData(taskPhase);
-  const activityData = activityType ? activityTypes.get(activityType) : null;
+  const activityData = activityType
+    ? activityTypes.get(activityType)
+    : undefined;
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -129,7 +136,7 @@ const TaskModalCompleteForm = ({
     if (activityType && activityTypes) {
       const activityData = activityType
         ? activityTypes.get(activityType)
-        : null;
+        : undefined;
       if (activityData) {
         setPhaseId(activityData.phaseId);
       }
@@ -359,7 +366,7 @@ const TaskModalCompleteForm = ({
                 <Grid item>
                   <ActivityTypeAutocomplete
                     options={nextActions}
-                    value={nextAction}
+                    value={nextAction || undefined}
                     label={t('Next Action')}
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)

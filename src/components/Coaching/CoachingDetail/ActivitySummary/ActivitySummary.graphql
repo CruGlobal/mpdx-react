@@ -1,16 +1,31 @@
 query ActivitySummary($accountListId: ID!, $range: String!) {
   reportsActivityResults(accountListId: $accountListId, range: $range) {
     periods {
-      callsWithAppointmentNext
-      completedCall
-      completedPreCallLetter
-      completedReminderLetter
-      completedSupportLetter
-      completedThank
-      dials
-      electronicMessageSent
-      electronicMessageWithAppointmentNext
+      appointmentInPerson
+      appointmentPhoneCall
+      appointmentVideoCall
+      contactsAdded
+      contactsReferred
+      followUpPhoneCall
+      followUpEmail
+      followUpTextMessage
+      followUpSocialMedia
+      followUpInPerson
+      partnerCareUpdateInformation
+      partnerCareToDo
+      partnerCareThank
+      partnerCarePrayerRequest
+      partnerCarePhysicalNewsletter
+      partnerCareDigitalNewsletter
+      initiationTextMessage
+      initiationEmail
+      initiationSpecialGiftAppeal
+      initiationSocialMedia
+      initiationPhoneCall
+      initiationLetter
+      initiationInPerson
       startDate
+      endDate
     }
   }
 }

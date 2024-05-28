@@ -72,7 +72,7 @@ describe('ActivityTypeAutocomplete', () => {
     const input = getByRole('combobox', { name: 'Type' });
     userEvent.click(input);
     await waitFor(() => userEvent.click(getByRole('option', { name: 'None' })));
-    expect(onChange).toHaveBeenCalledWith(null);
+    expect(onChange).toHaveBeenCalledWith(undefined);
   });
 
   it('preserves none values', () => {
@@ -119,7 +119,7 @@ describe('ActivityTypeAutocomplete', () => {
       <ActivityTypeAutocomplete
         options={[]}
         label="Type"
-        value={null}
+        value={undefined}
         onChange={onChange}
       />,
     );

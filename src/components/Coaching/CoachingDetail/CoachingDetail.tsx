@@ -219,11 +219,6 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               <TagsSummary
                 accountListId={accountListId}
                 period={period}
-                association={ReportsTagHistoriesAssociationEnum.Contacts}
-              />
-              <TagsSummary
-                accountListId={accountListId}
-                period={period}
                 association={ReportsTagHistoriesAssociationEnum.Tasks}
               />
               <Activity

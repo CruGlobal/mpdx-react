@@ -14,12 +14,18 @@ export type SetFieldValue = (
   shouldValidate?: boolean | undefined,
 ) => void;
 
+export type SetFieldTouched = (
+  field: string,
+  value: any,
+  shouldValidate?: boolean | undefined,
+) => void;
+
 export type SetResultSelected = React.Dispatch<
   React.SetStateAction<DisplayResultEnum | null>
 >;
 
 type SetActionSelected = React.Dispatch<
-  React.SetStateAction<ActivityTypeEnum | null>
+  React.SetStateAction<ActivityTypeEnum | undefined>
 >;
 
 export type HandleTaskPhaseChangeProps = {
@@ -32,10 +38,11 @@ export type HandleTaskPhaseChangeProps = {
 };
 
 export type HandleTaskActionChangeProps = {
-  activityType: ActivityTypeEnum | null;
+  activityType: ActivityTypeEnum | undefined;
   setFieldValue: SetFieldValue;
   setActionSelected: SetActionSelected;
   constants: Constants;
+  setFieldTouched: SetFieldTouched;
 };
 
 export type HandleResultChangeProps = {
@@ -60,7 +67,7 @@ export const handleTaskPhaseChange = ({
   setFieldValue('result', undefined);
   setFieldValue('nextAction', undefined);
   setResultSelected(null);
-  setActionSelected(null);
+  setActionSelected(undefined);
   setPhaseId(phase);
   setSelectedSuggestedTags([]);
 };
@@ -70,9 +77,10 @@ export const handleTaskActionChange = ({
   setFieldValue,
   setActionSelected,
   constants,
+  setFieldTouched,
 }: HandleTaskActionChangeProps): void => {
   setFieldValue('activityType', activityType);
-  setActionSelected(activityType);
+  setActionSelected(activityType || undefined);
   const activity = constants?.activities?.find(
     (activity) => activity.id === activityType,
   );
@@ -89,6 +97,7 @@ export const handleTaskActionChange = ({
         : '',
     );
   }
+  setTimeout(() => setFieldTouched('activityType', true));
 };
 
 export const handleResultChange = ({
@@ -111,14 +120,14 @@ export const handleResultChange = ({
   );
   setFieldValue(
     'nextAction',
-    actionsWithoutNone.length === 1 ? actionsWithoutNone[0] : null,
+    actionsWithoutNone.length === 1 ? actionsWithoutNone[0] : undefined,
   );
 };
 
 export const getDatabaseValueFromResult = (
   phaseData: Phase | null,
   displayResult?: DisplayResultEnum | ResultEnum,
-  activityType?: ActivityTypeEnum | null,
+  activityType?: ActivityTypeEnum | undefined,
 ): ResultEnum => {
   if (!displayResult || !phaseData || !activityType) {
     switch (displayResult) {

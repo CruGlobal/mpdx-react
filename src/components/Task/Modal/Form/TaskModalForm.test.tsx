@@ -82,11 +82,11 @@ describe('TaskModalForm', () => {
 
   it('Modal will not save if invalid data', async () => {
     const onClose = jest.fn();
-    const { getByText, findByText } = render(
+    const { getByText, findByText, getByRole, findByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <MockedProvider
-            mocks={[createTasksMutationMock()]}
+            mocks={[createTasksMutationMock(), LoadConstantsMock()]}
             addTypename={false}
           >
             <TaskModalForm accountListId={accountListId} onClose={onClose} />
@@ -96,8 +96,12 @@ describe('TaskModalForm', () => {
     );
     userEvent.click(getByText('Cancel'));
     expect(onClose).toHaveBeenCalled();
+    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+    userEvent.click(await findByRole('option', { name: 'Appointment' }));
+
+    userEvent.click(getByRole('combobox', { name: 'Action' }));
+    userEvent.click(await findByRole('option', { name: 'In Person' }));
     onClose.mockClear();
-    userEvent.click(getByText('Save'));
     expect(await findByText('Field is required')).toBeInTheDocument();
     await waitFor(() => expect(onClose).not.toHaveBeenCalled());
   });
@@ -174,6 +178,9 @@ describe('TaskModalForm', () => {
 
     userEvent.type(getByRole('textbox', { name: 'Comment' }), 'test comment');
 
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Save' })).not.toBeDisabled(),
+    );
     userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(onClose).toHaveBeenCalled());
@@ -256,7 +263,7 @@ describe('TaskModalForm', () => {
     userEvent.click(getByLabelText('Task Type'));
     userEvent.click(await findByRole('option', { name: 'Partner Care' }));
 
-    userEvent.click(getByLabelText('Action'));
+    userEvent.click(await findByRole('combobox', { name: 'Action' }));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
         'Digital Newsletter',
