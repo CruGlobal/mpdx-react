@@ -24,6 +24,10 @@ query ActivitySummary($accountListId: ID!, $range: String!) {
       initiationPhoneCall
       initiationLetter
       initiationInPerson
+      appointmentTotal
+      followUpTotal
+      partnerCareTotal
+      initiationTotal
       startDate
       endDate
     }

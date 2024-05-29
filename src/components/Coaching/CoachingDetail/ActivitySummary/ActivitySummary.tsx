@@ -51,7 +51,7 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
       range: period === CoachingPeriodEnum.Weekly ? '4w' : '4m',
     },
   });
-  const periods = data?.reportsActivityResults.periods ?? [];
+  const periods = data?.reportsActivityResults?.periods.slice().reverse() ?? [];
 
   const averages = useMemo(
     () =>
@@ -79,6 +79,10 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
         'initiationTextMessage',
         'initiationPhoneCall',
         'initiationLetter',
+        'appointmentTotal',
+        'followUpTotal',
+        'partnerCareTotal',
+        'initiationTotal',
       ].reduce<Record<string, number>>(
         (averages, field) => ({
           ...averages,
@@ -120,13 +124,15 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
                               month: 'short',
                               day: 'numeric',
                             }).formatRange(
-                              new Date(startDate),
-                              new Date(endDate),
+                              Date.parse(startDate),
+                              Date.parse(endDate),
                             )
-                          : dateFormatMonthOnly(
+                          : startDate
+                          ? dateFormatMonthOnly(
                               DateTime.fromISO(startDate),
                               locale,
-                            ))}
+                            )
+                          : null)}
                     </AlignedTableCell>
                   ))}
                   <AlignedTableCell>{t('Average')}</AlignedTableCell>
@@ -166,14 +172,22 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
                   </TableCell>
                 </DividerRow>
                 <HeaderRow role="rowheader">
-                  <AlignedTableCell colSpan={periods.length + 2}>
-                    {t('Initiations')}
+                  <AlignedTableCell>{t('Initiations')}</AlignedTableCell>
+                  {periods.map((period) => (
+                    <AlignedTableCell key={period?.startDate}>
+                      {period?.initiationTotal}
+                    </AlignedTableCell>
+                  ))}
+                  <AlignedTableCell>
+                    {Math.round(averages?.initiationTotal)}
                   </AlignedTableCell>
                 </HeaderRow>
                 {activitiesByPhase
                   .get(PhaseEnum.Initiation)
                   ?.map((activity) => {
-                    const activityVariableName = snakeToCamel(toLower(activity));
+                    const activityVariableName = snakeToCamel(
+                      toLower(activity),
+                    );
                     return !isNaN(averages[activityVariableName]) &&
                       averages[activityVariableName] !== null ? (
                       <TableRow>
@@ -198,11 +212,21 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
                 </DividerRow>
                 <HeaderRow role="rowheader">
                   <AlignedTableCell>{t('Appointments')}</AlignedTableCell>
+                  {periods.map((period) => (
+                    <AlignedTableCell key={period?.startDate}>
+                      {period?.appointmentTotal}
+                    </AlignedTableCell>
+                  ))}
+                  <AlignedTableCell>
+                    {Math.round(averages?.appointmentTotal)}
+                  </AlignedTableCell>
                 </HeaderRow>
                 {activitiesByPhase
                   .get(PhaseEnum.Appointment)
                   ?.map((activity) => {
-                    const activityVariableName = snakeToCamel(toLower(activity));
+                    const activityVariableName = snakeToCamel(
+                      toLower(activity),
+                    );
                     return !isNaN(averages[activityVariableName]) &&
                       averages[activityVariableName] !== null ? (
                       <TableRow>
@@ -226,8 +250,14 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
                   </TableCell>
                 </DividerRow>
                 <HeaderRow role="rowheader">
-                  <AlignedTableCell colSpan={periods.length + 2}>
-                    {t('Follow-Up')}
+                  <AlignedTableCell>{t('Follow-Up')}</AlignedTableCell>
+                  {periods.map((period) => (
+                    <AlignedTableCell key={period?.startDate}>
+                      {period?.followUpTotal}
+                    </AlignedTableCell>
+                  ))}
+                  <AlignedTableCell>
+                    {Math.round(averages?.followUpTotal)}
                   </AlignedTableCell>
                 </HeaderRow>
                 {activitiesByPhase.get(PhaseEnum.FollowUp)?.map((activity) => {
@@ -255,14 +285,22 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
                   </TableCell>
                 </DividerRow>
                 <HeaderRow role="rowheader">
-                  <AlignedTableCell colSpan={periods.length + 2}>
-                    {t('Partner Care')}
+                  <AlignedTableCell>{t('Partner Care')}</AlignedTableCell>
+                  {periods.map((period) => (
+                    <AlignedTableCell key={period?.startDate}>
+                      {period?.partnerCareTotal}
+                    </AlignedTableCell>
+                  ))}
+                  <AlignedTableCell>
+                    {Math.round(averages?.partnerCareTotal)}
                   </AlignedTableCell>
                 </HeaderRow>
                 {activitiesByPhase
                   .get(PhaseEnum.PartnerCare)
                   ?.map((activity) => {
-                    const activityVariableName = snakeToCamel(toLower(activity));
+                    const activityVariableName = snakeToCamel(
+                      toLower(activity),
+                    );
                     return !isNaN(averages[activityVariableName]) &&
                       averages[activityVariableName] !== null ? (
                       <TableRow>

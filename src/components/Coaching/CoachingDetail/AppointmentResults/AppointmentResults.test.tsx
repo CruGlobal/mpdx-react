@@ -1,54 +1,17 @@
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CoachingPeriodEnum } from '../CoachingDetail';
+import { appointmentResultsMocks } from '../coachingMocks';
 import { AppointmentResults } from './AppointmentResults';
-
-const mocks = {
-  AppointmentResults: {
-    appointmentResults: [
-      {
-        startDate: '2023-09-02',
-        endDate: '2023-09-04',
-        appointmentsScheduled: 6,
-        individualAppointments: 7,
-        newMonthlyPartners: 1,
-        newSpecialPledges: 2,
-        monthlyIncrease: 111.11,
-        monthlyDecrease: -222.22,
-        specialGifts: 333.33,
-      },
-      {
-        startDate: '2023-10-02',
-        endDate: '2023-10-04',
-        appointmentsScheduled: 8,
-        individualAppointments: 9,
-        newMonthlyPartners: 2,
-        newSpecialPledges: 3,
-        monthlyIncrease: 666.66,
-        monthlyDecrease: -444.44,
-        specialGifts: 555.55,
-      },
-      {
-        startDate: '2023-11-02',
-        endDate: '2023-11-04',
-        appointmentsScheduled: 11,
-        individualAppointments: 12,
-        newMonthlyPartners: 4,
-        newSpecialPledges: 5,
-        monthlyIncrease: 777.77,
-        monthlyDecrease: -888.88,
-        specialGifts: 999.99,
-      },
-    ],
-  },
-};
 
 const mutationSpy = jest.fn();
 
 describe('AppointmentResults', () => {
   it('renders the table data', async () => {
     const { findAllByRole } = render(
-      <GqlMockedProvider mocks={mocks}>
+      <GqlMockedProvider
+        mocks={{ AppointmentResults: appointmentResultsMocks }}
+      >
         <AppointmentResults
           accountListId="account-list-1"
           period={CoachingPeriodEnum.Weekly}
@@ -96,7 +59,10 @@ describe('AppointmentResults', () => {
 
   it('loads data for the weekly period', async () => {
     render(
-      <GqlMockedProvider onCall={mutationSpy} mocks={mocks}>
+      <GqlMockedProvider
+        onCall={mutationSpy}
+        mocks={{ AppointmentResults: appointmentResultsMocks }}
+      >
         <AppointmentResults
           accountListId="account-list-1"
           period={CoachingPeriodEnum.Weekly}

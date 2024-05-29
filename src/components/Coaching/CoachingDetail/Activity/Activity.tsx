@@ -106,10 +106,17 @@ const SectionTitle = styled(Typography)({
   flex: 1,
 });
 
+const SectionTitleNumber = styled(Typography)({
+  fontWeight: 'bold',
+  flex: 1,
+  fontSize: '2rem',
+});
+
 const StatsLargeNumber = styled(Typography)({
   fontWeight: 'bold',
   fontSize: '6rem',
   lineHeight: '1.167',
+  marginTop: '35px',
 });
 
 const StatsRow = styled('div')(({ theme }) => ({
@@ -205,8 +212,6 @@ export const Activity: React.FC<ActivityProps> = ({
     },
   });
 
-  // const contactsByStatus = data?.accountListAnalytics;
-
   const formattedDate = useMemo(() => {
     const format =
       start.year === DateTime.now().year ? dateFormatWithoutYear : dateFormat;
@@ -250,6 +255,26 @@ export const Activity: React.FC<ActivityProps> = ({
         <ActivitySection data-testid="CurrentRealityConnections">
           <PeopleOutline sx={{ fontSize: '6rem' }} />
           <SectionTitle>{t('Connections Remaining')}</SectionTitle>
+          <SectionTitleNumber>
+            <Link
+              href={contactsLink({
+                status: [
+                  ContactFilterStatusEnum.Null,
+                  ContactFilterStatusEnum.NeverContacted,
+                  ContactFilterStatusEnum.AskInFuture,
+                  ContactFilterStatusEnum.CultivateRelationship,
+                ],
+              })}
+              accountListType={accountListType}
+            >
+              <StatsText sx={{ fontWeight: 'bold' }}>
+                {
+                  data?.accountListAnalytics.contactsByStatus
+                    .connectionsRemaining
+                }
+              </StatsText>
+            </Link>
+          </SectionTitleNumber>
           {loading ? (
             <MultilineSkeleton lines={2} width="90%" />
           ) : (
@@ -265,7 +290,7 @@ export const Activity: React.FC<ActivityProps> = ({
                   accountListType={accountListType}
                 >
                   <StatsText>
-                    {data?.accountListAnalytics.contacts.active}
+                    {data?.accountListAnalytics.contactsByStatus.neverContacted}
                   </StatsText>
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(t, StatusEnum.NeverContacted)}
@@ -280,7 +305,7 @@ export const Activity: React.FC<ActivityProps> = ({
                   accountListType={accountListType}
                 >
                   <StatsText>
-                    {data?.accountListAnalytics.contacts.referralsOnHand}
+                    {data?.accountListAnalytics.contactsByStatus.future}
                   </StatsText>
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(t, StatusEnum.AskInFuture)}
@@ -295,7 +320,7 @@ export const Activity: React.FC<ActivityProps> = ({
                   accountListType={accountListType}
                 >
                   <StatsText>
-                    {data?.accountListAnalytics.contacts.referrals}
+                    {data?.accountListAnalytics.contactsByStatus.cultivate}
                   </StatsText>
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(
@@ -311,6 +336,22 @@ export const Activity: React.FC<ActivityProps> = ({
         <ActivitySection data-testid="CurrentRealityPartnerInitiations">
           <CalendarMonthOutlined sx={{ fontSize: '6rem' }} />
           <SectionTitle>{t('Partners Currently Initiating With')}</SectionTitle>
+          <SectionTitleNumber>
+            <Link
+              href={contactsLink({
+                status: [
+                  ContactFilterStatusEnum.ContactForAppointment,
+                  ContactFilterStatusEnum.AppointmentScheduled,
+                  ContactFilterStatusEnum.CallForDecision,
+                ],
+              })}
+              accountListType={accountListType}
+            >
+              <StatsText sx={{ fontWeight: 'bold' }}>
+                {data?.accountListAnalytics.contactsByStatus.initiations}
+              </StatsText>
+            </Link>
+          </SectionTitleNumber>
           {loading ? (
             <MultilineSkeleton lines={2} width="90%" />
           ) : (
@@ -323,7 +364,10 @@ export const Activity: React.FC<ActivityProps> = ({
                   accountListType={accountListType}
                 >
                   <StatsText>
-                    {data?.accountListAnalytics.contacts.active}
+                    {
+                      data?.accountListAnalytics.contactsByStatus
+                        .contactForAppointment
+                    }
                   </StatsText>
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(
@@ -341,7 +385,10 @@ export const Activity: React.FC<ActivityProps> = ({
                   accountListType={accountListType}
                 >
                   <StatsText>
-                    {data?.accountListAnalytics.appointments.completed}
+                    {
+                      data?.accountListAnalytics.contactsByStatus
+                        .appointmentScheduled
+                    }
                   </StatsText>
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(
@@ -359,7 +406,10 @@ export const Activity: React.FC<ActivityProps> = ({
                   accountListType={accountListType}
                 >
                   <StatsText>
-                    {data?.accountListAnalytics.contacts.referrals}
+                    {
+                      data?.accountListAnalytics.contactsByStatus
+                        .callForDecision
+                    }
                   </StatsText>
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(t, StatusEnum.CallForDecision)}
@@ -429,7 +479,7 @@ export const Activity: React.FC<ActivityProps> = ({
             <MultilineSkeleton lines={1} width="90%" height="90%" />
           ) : (
             <StatsLargeNumber>
-              {data?.accountListAnalytics.contacts.referralsOnHand}
+              {data?.accountListAnalytics.contactsByStatus.financial}
             </StatsLargeNumber>
           )}
           <Link
@@ -446,7 +496,7 @@ export const Activity: React.FC<ActivityProps> = ({
             <MultilineSkeleton lines={1} width="90%" height="90%" />
           ) : (
             <StatsLargeNumber>
-              {data?.accountListAnalytics.correspondence.reminders}
+              {data?.accountListAnalytics.contactsByStatus.special}
             </StatsLargeNumber>
           )}
           <Link
@@ -463,7 +513,7 @@ export const Activity: React.FC<ActivityProps> = ({
             <MultilineSkeleton lines={1} width="90%" height="90%" />
           ) : (
             <StatsLargeNumber>
-              {data?.accountListAnalytics.correspondence.reminders}
+              {data?.accountListAnalytics.contactsByStatus.prayer}
             </StatsLargeNumber>
           )}
           <Link

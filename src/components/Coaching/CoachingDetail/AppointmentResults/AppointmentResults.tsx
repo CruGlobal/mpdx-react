@@ -96,15 +96,19 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                   <AlignedTableCell></AlignedTableCell>
                   {appointmentResults.map(({ startDate, endDate }) => (
                     <AlignedTableCell key={startDate}>
-                      {period === CoachingPeriodEnum.Weekly
+                      {startDate &&
+                      endDate &&
+                      period === CoachingPeriodEnum.Weekly
                         ? new Intl.DateTimeFormat(locale, {
                             month: 'short',
                             day: 'numeric',
                           }).formatRange(new Date(startDate), new Date(endDate))
-                        : dateFormatMonthOnly(
+                        : startDate
+                        ? dateFormatMonthOnly(
                             DateTime.fromISO(startDate),
                             locale,
-                          )}
+                          )
+                        : null}
                     </AlignedTableCell>
                   ))}
                   <AlignedTableCell>{t('Average')}</AlignedTableCell>
