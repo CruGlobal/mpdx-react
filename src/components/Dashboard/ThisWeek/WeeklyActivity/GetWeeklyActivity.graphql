@@ -7,7 +7,7 @@ query GetWeeklyActivity(
     accountListId: $accountListId
     tasksFilter: {
       completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: CALL
+      activityType: INITIATION_PHONE_CALL
       result: [COMPLETED, DONE]
     }
   ) {
@@ -17,9 +17,9 @@ query GetWeeklyActivity(
     accountListId: $accountListId
     tasksFilter: {
       completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: CALL
+      activityType: INITIATION_PHONE_CALL
       result: [COMPLETED, DONE]
-      nextAction: APPOINTMENT
+      nextAction: APPOINTMENT_IN_PERSON
     }
   ) {
     totalCount
@@ -28,7 +28,11 @@ query GetWeeklyActivity(
     accountListId: $accountListId
     tasksFilter: {
       completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: [EMAIL, FACEBOOK_MESSAGE, TEXT_MESSAGE]
+      activityType: [
+        INITIATION_EMAIL
+        INITIATION_SOCIAL_MEDIA
+        INITIATION_TEXT_MESSAGE
+      ]
       result: [COMPLETED, DONE]
     }
   ) {
@@ -38,9 +42,13 @@ query GetWeeklyActivity(
     accountListId: $accountListId
     tasksFilter: {
       completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: [EMAIL, FACEBOOK_MESSAGE, TEXT_MESSAGE]
+      activityType: [
+        INITIATION_EMAIL
+        INITIATION_SOCIAL_MEDIA
+        INITIATION_TEXT_MESSAGE
+      ]
       result: [COMPLETED, DONE]
-      nextAction: APPOINTMENT
+      nextAction: APPOINTMENT_IN_PERSON
     }
   ) {
     totalCount
@@ -49,7 +57,7 @@ query GetWeeklyActivity(
     accountListId: $accountListId
     tasksFilter: {
       completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: APPOINTMENT
+      activityType: APPOINTMENT_IN_PERSON
       result: [COMPLETED, DONE]
     }
   ) {
@@ -59,7 +67,7 @@ query GetWeeklyActivity(
     accountListId: $accountListId
     tasksFilter: {
       completedAt: { min: $startOfWeek, max: $endOfWeek }
-      activityType: [PRE_CALL_LETTER, REMINDER_LETTER, SUPPORT_LETTER, THANK]
+      activityType: [INITIATION_LETTER, PARTNER_CARE_THANK]
       result: [COMPLETED, DONE]
     }
   ) {
