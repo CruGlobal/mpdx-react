@@ -61,6 +61,7 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
         'appointmentVideoCall',
         'contactsAdded',
         'contactsReferred',
+        'contactsTotal',
         'followUpEmail',
         'followUpInPerson',
         'followUpPhoneCall',
@@ -140,6 +141,14 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
                 <HeaderRow role="rowheader">
                   <AlignedTableCell>
                     {t('New Connections Added')}
+                  </AlignedTableCell>
+                  {periods.map((period) => (
+                    <AlignedTableCell key={period?.startDate}>
+                      {period?.contactsTotal}
+                    </AlignedTableCell>
+                  ))}
+                  <AlignedTableCell>
+                    {Math.round(averages?.contactsTotal)}
                   </AlignedTableCell>
                 </HeaderRow>
                 <TableRow>
