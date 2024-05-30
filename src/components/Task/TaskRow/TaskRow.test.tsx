@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { ResultEnum } from 'src/graphql/types.generated';
+import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../hooks/useTaskModal';
 import theme from '../../../theme';
 import { TaskModalEnum } from '../Modal/TaskModal';
@@ -337,6 +337,36 @@ describe('TaskRow', () => {
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByTestId('subject-wrap'));
+      expect(openTaskModal).toHaveBeenCalledWith({
+        taskId: task.id,
+        view: TaskModalEnum.Edit,
+      });
+    });
+    it('handle phase/action click', async () => {
+      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+        mocks: {
+          startAt,
+          result: ResultEnum.None,
+          activityType: ActivityTypeEnum.FollowUpEmail,
+        },
+      });
+
+      const { findByText, getByTestId } = render(
+        <GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <TaskRow
+              accountListId={accountListId}
+              task={task}
+              onTaskCheckToggle={onTaskCheckSelected}
+              onContactSelected={onContactSelected}
+              isChecked={false}
+            />
+          </ThemeProvider>
+        </GqlMockedProvider>,
+      );
+
+      expect(await findByText('Email')).toBeVisible();
+      userEvent.click(getByTestId('phase-action-wrap'));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
         view: TaskModalEnum.Edit,

@@ -10,6 +10,7 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import theme from 'src/theme';
+import { ActivitySummaryQuery } from './ActivitySummary/ActivitySummary.generated';
 import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
 import {
   LoadAccountListCoachingDetailQuery,
@@ -23,6 +24,7 @@ import {
   LoadAccountListCoachingNeedsQuery,
   LoadCoachingNeedsQuery,
 } from './OutstandingNeeds/OutstandingNeeds.generated';
+import { activitySummaryMocks } from './coachingMocks';
 
 jest.mock('./AppointmentResults/AppointmentResults');
 
@@ -52,6 +54,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         LoadAccountListCoachingCommitments: LoadAccountListCoachingCommitmentsQuery;
         LoadCoachingNeeds: LoadCoachingNeedsQuery;
         LoadAccountListCoachingNeeds: LoadAccountListCoachingNeedsQuery;
+        ActivitySummary: ActivitySummaryQuery;
       }>
         mocks={{
           LoadCoachingDetail: {
@@ -100,6 +103,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               },
             },
           },
+          ActivitySummary: activitySummaryMocks,
         }}
       >
         <CoachingDetail
@@ -171,7 +175,7 @@ describe('LoadCoachingDetail', () => {
       ).not.toBeInTheDocument();
 
       userEvent.click(
-        getByRole('button', {
+        await findByRole('button', {
           name: 'Toggle account details',
         }),
       );

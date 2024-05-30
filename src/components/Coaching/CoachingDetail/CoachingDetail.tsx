@@ -176,6 +176,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     <IconButton
                       onClick={() => setDrawerVisible(!drawerVisible)}
                       aria-label={t('Toggle account details')}
+                      name={t('Toggle account details')}
                     >
                       <MenuOpenIcon />
                     </IconButton>

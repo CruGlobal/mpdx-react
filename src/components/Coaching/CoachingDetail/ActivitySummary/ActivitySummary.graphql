@@ -6,6 +6,7 @@ query ActivitySummary($accountListId: ID!, $range: String!) {
       appointmentVideoCall
       contactsAdded
       contactsReferred
+      contactsTotal
       followUpPhoneCall
       followUpEmail
       followUpTextMessage
@@ -24,6 +25,10 @@ query ActivitySummary($accountListId: ID!, $range: String!) {
       initiationPhoneCall
       initiationLetter
       initiationInPerson
+      appointmentTotal
+      followUpTotal
+      partnerCareTotal
+      initiationTotal
       startDate
       endDate
     }
