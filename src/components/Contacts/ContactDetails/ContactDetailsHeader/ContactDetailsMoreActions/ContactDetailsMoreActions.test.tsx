@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
@@ -102,7 +103,7 @@ describe('ContactDetailsMoreActions', () => {
     await waitFor(() => expect(getByText('Add Task')).toBeInTheDocument());
     userEvent.click(getByText('Add Task'));
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'add',
+      view: TaskModalEnum.Add,
       defaultValues: {
         contactIds: [contactId],
       },
@@ -135,7 +136,7 @@ describe('ContactDetailsMoreActions', () => {
     await waitFor(() => expect(getByText('Log Task')).toBeInTheDocument());
     userEvent.click(getByText('Log Task'));
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'log',
+      view: TaskModalEnum.Log,
       defaultValues: {
         contactIds: [contactId],
       },

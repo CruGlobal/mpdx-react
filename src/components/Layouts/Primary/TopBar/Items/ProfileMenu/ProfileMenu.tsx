@@ -22,8 +22,8 @@ import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { clearDataDogUser } from 'src/hooks/useDataDog';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
+import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
 import HandoffLink from '../../../../../HandoffLink';
@@ -256,7 +256,7 @@ const ProfileMenu = (): ReactElement => {
           </AccountListSelectorDetails>
         </Accordion>
         {accountListId && (
-          <>
+          <div>
             <Divider />
             <Link
               href={`/accountLists/${accountListId}/settings/preferences`}
@@ -329,7 +329,7 @@ const ProfileMenu = (): ReactElement => {
                 </MenuItem>
               </HandoffLink>
             )}
-          </>
+          </div>
         )}
         <MenuItem>
           {session.impersonating && (

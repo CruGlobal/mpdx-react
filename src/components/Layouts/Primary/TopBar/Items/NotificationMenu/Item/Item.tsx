@@ -79,7 +79,9 @@ const NotificationMenuItem = ({
           },
         },
         update: (cache) => {
-          if (!optimisticResponse) return;
+          if (!optimisticResponse) {
+            return;
+          }
 
           const query = {
             query: GetNotificationsDocument,
@@ -102,7 +104,9 @@ const NotificationMenuItem = ({
         },
       });
     }
-    if (typeof onClick === 'function') onClick();
+    if (typeof onClick === 'function') {
+      onClick();
+    }
   };
 
   let message;

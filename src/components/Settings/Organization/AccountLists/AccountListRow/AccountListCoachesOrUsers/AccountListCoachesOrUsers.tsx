@@ -98,7 +98,9 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                 <Box>
                   {emails &&
                     emails.map((email, idx) => {
-                      if (!email?.id) return null;
+                      if (!email?.id) {
+                        return null;
+                      }
 
                       return (
                         <Box

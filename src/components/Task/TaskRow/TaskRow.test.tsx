@@ -6,6 +6,7 @@ import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ResultEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../hooks/useTaskModal';
 import theme from '../../../theme';
+import { TaskModalEnum } from '../Modal/TaskModal';
 import { TaskRow } from './TaskRow';
 import { TaskRowFragment, TaskRowFragmentDoc } from './TaskRow.generated';
 
@@ -248,7 +249,7 @@ describe('TaskRow', () => {
       userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        view: 'complete',
+        view: TaskModalEnum.Complete,
       });
     });
 
@@ -308,7 +309,7 @@ describe('TaskRow', () => {
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        view: 'comments',
+        view: TaskModalEnum.Comments,
       });
     });
 
@@ -338,7 +339,7 @@ describe('TaskRow', () => {
       userEvent.click(getByTestId('subject-wrap'));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
-        view: 'edit',
+        view: TaskModalEnum.Edit,
       });
     });
   });

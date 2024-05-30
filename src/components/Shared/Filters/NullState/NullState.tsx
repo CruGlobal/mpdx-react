@@ -3,17 +3,18 @@ import { mdiFormatListBulleted, mdiHome } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import {
+  AddMenuItemsEnum,
+  renderDialog,
+} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { preloadCreateContact } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
-import useTaskModal from '../../../../hooks/useTaskModal';
-import theme from '../../../../theme';
-import {
-  AddMenuItemsEnum,
-  renderDialog,
-} from '../../../Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
+import useTaskModal from 'src/hooks/useTaskModal';
+import theme from 'src/theme';
 import { NullStateBox } from './NullStateBox';
 
 interface CreateButtonProps {
@@ -26,7 +27,7 @@ const CreateButton: React.FC<CreateButtonProps> = ({ page }) => {
 
   const handleCreateClick = () => {
     if (page === 'task') {
-      openTaskModal({ view: 'add' });
+      openTaskModal({ view: TaskModalEnum.Add });
     } else {
       setContactsDialogOpen(true);
     }
@@ -34,7 +35,7 @@ const CreateButton: React.FC<CreateButtonProps> = ({ page }) => {
 
   const handleCreateHover = () => {
     if (page === 'task') {
-      preloadTaskModal('add');
+      preloadTaskModal(TaskModalEnum.Add);
     } else {
       preloadCreateContact();
     }

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
 import { ContactTasksTabNullState } from './ContactTasksTabNullState';
@@ -42,7 +43,7 @@ describe('ContactTasksTabNullState', () => {
     ).toBeInTheDocument();
     userEvent.click(getByText('Add New Task'));
     expect(openTaskModal).toHaveBeenCalledWith({
-      view: 'add',
+      view: TaskModalEnum.Add,
       defaultValues: { contactIds: [contactId] },
     });
   });

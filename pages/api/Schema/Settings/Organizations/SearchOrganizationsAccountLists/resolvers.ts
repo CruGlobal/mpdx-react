@@ -8,9 +8,9 @@ const SearchOrganizationsAccountListsResolvers: Resolvers = {
       { dataSources },
     ) => {
       return dataSources.mpdxRestApi.searchOrganizationsAccountLists(
-        organizationId,
         search,
         pageNumber || 1,
+        organizationId || '',
       );
     },
   },

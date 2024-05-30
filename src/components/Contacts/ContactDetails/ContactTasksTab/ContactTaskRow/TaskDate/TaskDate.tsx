@@ -47,7 +47,9 @@ export const TaskDate: React.FC<TaskDateProps> = ({
   taskDate,
   small,
 }) => {
-  if (!taskDate) return null;
+  if (!taskDate) {
+    return null;
+  }
   const locale = useLocale();
   const isLate = isComplete ? false : taskDate < DateTime.local();
   const showYear = taskDate.year !== DateTime.local().year;
