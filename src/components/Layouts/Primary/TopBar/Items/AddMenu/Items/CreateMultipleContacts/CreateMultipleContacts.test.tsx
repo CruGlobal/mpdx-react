@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -427,6 +427,168 @@ describe('CreateMultipleContacts', () => {
           },
         }),
       );
+    }, 20000);
+
+    it('creates one contact2 with default status', async () => {
+      const { getByText, getAllByRole } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider<CreateContactMocks>
+                onCall={mutationSpy}
+                mocks={{
+                  LoadConstants: loadConstantsMockData,
+                  CreateContact: {
+                    createContact: {
+                      contact: {
+                        id: 'contact-1',
+                        status: status,
+                      },
+                    },
+                  },
+                  CreateContactAddress: {
+                    createAddress: {
+                      address: {
+                        id: 'address-1',
+                      },
+                    },
+                  },
+                }}
+              >
+                <CreateMultipleContacts
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  rows={3}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      userEvent.type(getAllByRole('textbox', { name: 'First' })[0], first);
+      userEvent.type(getAllByRole('textbox', { name: 'Last' })[0], last);
+      userEvent.type(getAllByRole('textbox', { name: 'Spouse' })[0], spouse);
+      userEvent.type(getAllByRole('combobox')[0], address);
+      userEvent.type(getAllByRole('textbox', { name: 'Phone' })[0], phone);
+      userEvent.type(getAllByRole('textbox', { name: 'Email' })[0], email);
+
+      await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+      userEvent.click(getByText('Save'));
+      await waitFor(() => expect(handleClose).toHaveBeenCalled());
+
+      const { operation } = mutationSpy.mock.calls[1][0];
+      expect(operation.variables).toMatchObject({
+        accountListId,
+        attributes: {
+          name: `${last}, ${first} and ${spouse}`,
+          contactReferralsToMe: undefined,
+          status: 'NEVER_CONTACTED',
+        },
+      });
+
+      const { operation: personOperation } = mutationSpy.mock.calls[3][0];
+      expect(personOperation.variables.accountListId).toEqual(accountListId);
+      expect(personOperation.variables.attributes.firstName).toEqual(first);
+      expect(personOperation.variables.attributes.lastName).toEqual(last);
+      expect(personOperation.variables.attributes.phoneNumbers).toEqual([
+        {
+          number: phone,
+          primary: true,
+        },
+      ]);
+      expect(personOperation.variables.attributes.emailAddresses).toEqual([
+        {
+          email: email,
+          primary: true,
+        },
+      ]);
+
+      expect(mutationSpy.mock.calls[5][0].operation).toMatchObject({
+        operationName: 'CreateContactAddress',
+        variables: {
+          accountListId,
+          attributes: {
+            contactId: 'contact-1',
+            street: address,
+          },
+        },
+      });
+      expect(mutationSpy.mock.calls[6][0].operation).toMatchObject({
+        operationName: 'SetContactPrimaryAddress',
+        variables: {
+          contactId: 'contact-1',
+          primaryAddressId: 'address-1',
+        },
+      });
+    }, 20000);
+
+    it('sets the contact status when creating new contacts', async () => {
+      const { getByText, getAllByRole, findByRole } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider<CreateContactMocks>
+                onCall={mutationSpy}
+                mocks={{
+                  LoadConstants: loadConstantsMockData,
+                  CreateContact: {
+                    createContact: {
+                      contact: {
+                        id: 'contact-1',
+                        status: status,
+                      },
+                    },
+                  },
+                  CreateContactAddress: {
+                    createAddress: {
+                      address: {
+                        id: 'address-1',
+                      },
+                    },
+                  },
+                }}
+              >
+                <CreateMultipleContacts
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  rows={3}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      userEvent.type(getAllByRole('textbox', { name: 'First' })[0], first);
+      userEvent.type(getAllByRole('textbox', { name: 'Last' })[0], last);
+      userEvent.type(getAllByRole('textbox', { name: 'Spouse' })[0], spouse);
+      userEvent.type(getAllByRole('combobox')[0], address);
+      userEvent.type(getAllByRole('textbox', { name: 'Phone' })[0], phone);
+      userEvent.type(getAllByRole('textbox', { name: 'Email' })[0], email);
+
+      userEvent.tab();
+      userEvent.keyboard('{arrowdown}');
+      userEvent.keyboard('{arrowdown}');
+
+      screen.logTestingPlaygroundURL();
+
+      userEvent.click(
+        await findByRole('option', { name: 'Partner - Financial' }),
+      );
+      await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
+      userEvent.click(getByText('Save'));
+      await waitFor(() => expect(handleClose).toHaveBeenCalled());
+
+      const { operation } = mutationSpy.mock.calls[1][0];
+      expect(operation.variables).toMatchObject({
+        accountListId,
+        attributes: {
+          name: `${last}, ${first} and ${spouse}`,
+          contactReferralsToMe: undefined,
+          status: 'PARTNER_FINANCIAL',
+        },
+      });
     }, 20000);
   });
 });
