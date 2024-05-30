@@ -35,7 +35,7 @@ const AccountListsOrganizations = (): ReactElement => {
   >(null);
 
   useEffect(() => {
-    if (!window?.localStorage) return;
+    if (!window?.localStorage) {return;}
     const savedOrg = window.localStorage.getItem('admin-org');
     savedOrg && setSelectedOrganization(JSON.parse(savedOrg));
   }, []);
@@ -100,7 +100,6 @@ const AccountListsOrganizations = (): ReactElement => {
                   />
                 </Tooltip>
               )}
-
             </Box>
             <Box>
               <Autocomplete

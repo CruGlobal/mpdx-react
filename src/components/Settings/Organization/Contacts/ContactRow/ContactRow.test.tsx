@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -91,7 +91,7 @@ describe('ContactRow', () => {
     userEvent.click(getByText('Anonymize'));
 
     const modal = await findByRole('dialog');
-    expect(modal).toContainHTML("This is permanent and can't be recovered.");
+    expect(within(modal).getByText('Confirm')).toBeInTheDocument();
 
     userEvent.click(getByText('Yes'));
 
