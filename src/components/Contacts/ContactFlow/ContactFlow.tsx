@@ -1,22 +1,26 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { PhaseEnum } from 'pages/api/graphql-rest.page.generated';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   IdValue,
   StatusEnum,
+  TaskSortEnum,
 } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { getActivitiesByPhaseType } from 'src/utils/phases/taskActivityTypes';
 import theme from '../../../theme';
 import Loading from '../../Loading';
 import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { useHasActiveTaskLazyQuery } from './ContactFlow.generated';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
@@ -79,21 +83,27 @@ export const ContactFlow: React.FC<Props> = ({
   }, [userFlowOptions, loadingUserOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();
+  const [hasActiveTask] = useHasActiveTaskLazyQuery();
 
   const changeContactStatus = async (
     id: string,
     status: {
       __typename?: 'IdValue' | undefined;
     } & Pick<IdValue, 'id' | 'value'>,
+    contactPhase?: PhaseEnum | null,
   ): Promise<void> => {
     const attributes = {
       id,
       status: status.id as StatusEnum,
     };
+    let newContactPhase;
     await updateContactOther({
       variables: {
         accountListId,
         attributes,
+      },
+      update: (_, { data }) => {
+        newContactPhase = data?.updateContact?.contact.contactPhase;
       },
       refetchQueries: () =>
         flowOptions.map((flowOption) => ({
@@ -112,14 +122,69 @@ export const ContactFlow: React.FC<Props> = ({
     enqueueSnackbar(t('Contact status info updated!'), {
       variant: 'success',
     });
-    if (status.id && taskStatuses[status.id]) {
-      openTaskModal({
-        view: TaskModalEnum.Add,
-        defaultValues: {
-          activityType: taskStatuses[status.id],
-          contactIds: [id],
-        },
-      });
+
+    switch (contactPhase) {
+      case PhaseEnum.Initiation:
+      case PhaseEnum.Appointment:
+      case PhaseEnum.FollowUp:
+      case PhaseEnum.PartnerCare:
+        await hasActiveTask({
+          variables: {
+            accountListId,
+            sortBy: TaskSortEnum.StartAtAsc,
+            first: 1,
+            tasksFilter: {
+              completed: false,
+              contactIds: [id],
+              activityType: contactPhase
+                ? getActivitiesByPhaseType(contactPhase)
+                : [],
+            },
+          },
+          onCompleted(data) {
+            const taskId = data.tasks.nodes[0]?.id || undefined;
+            if (taskId) {
+              openTaskModal({
+                view: TaskModalEnum.Complete,
+                taskId,
+              });
+            } else {
+              if (
+                newContactPhase &&
+                newContactPhase !== PhaseEnum.Connection &&
+                newContactPhase !== PhaseEnum.Archive
+              ) {
+                openTaskModal({
+                  view: TaskModalEnum.Log,
+                  defaultValues: {
+                    taskPhase: newContactPhase,
+                    contactIds: [id],
+                  },
+                });
+              }
+            }
+          },
+        });
+        break;
+
+      case PhaseEnum.Connection:
+        if (
+          newContactPhase &&
+          newContactPhase !== PhaseEnum.Connection &&
+          newContactPhase !== PhaseEnum.Archive
+        ) {
+          openTaskModal({
+            view: TaskModalEnum.Add,
+            defaultValues: {
+              taskPhase: newContactPhase,
+              contactIds: [id],
+            },
+          });
+        }
+        break;
+
+      default:
+        break;
     }
   };
 

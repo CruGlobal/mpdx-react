@@ -17,6 +17,7 @@ import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   IdValue,
+  PhaseEnum,
 } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { InfiniteList } from '../../../InfiniteList/InfiniteList';
@@ -42,6 +43,7 @@ interface Props {
     status: {
       __typename?: 'IdValue' | undefined;
     } & Pick<IdValue, 'id' | 'value'>,
+    contactPhase?: PhaseEnum | null,
   ) => Promise<void>;
 }
 
@@ -158,6 +160,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
               <ContactFlowRow
                 accountListId={accountListId}
                 id={contact.id}
+                contactPhase={contact.contactPhase}
                 name={contact.name}
                 status={
                   constants?.statuses?.find(

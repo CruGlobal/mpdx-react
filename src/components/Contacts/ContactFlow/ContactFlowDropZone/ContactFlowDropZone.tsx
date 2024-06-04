@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
-import { IdValue } from 'src/graphql/types.generated';
+import { IdValue, PhaseEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 
@@ -15,6 +15,7 @@ interface Props {
     status: {
       __typename?: 'IdValue' | undefined;
     } & Pick<IdValue, 'id' | 'value'>,
+    contactPhase?: PhaseEnum | null,
   ) => Promise<void>;
 }
 
@@ -27,7 +28,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
     canDrop: (contact) => String(contact.status.id) !== String(status.id),
     drop: (contact: DraggedContact) => {
       String(contact.status.id) !== String(status.id)
-        ? changeContactStatus(contact.id, status)
+        ? changeContactStatus(contact.id, status, contact.contactPhase)
         : null;
     },
     collect: (monitor) => ({
