@@ -12,7 +12,6 @@ import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import {
   ContactFlowOption,
   colorMap,
-  statusMap,
 } from 'src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
 import { UnusedStatusesColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
@@ -41,6 +40,7 @@ const StickyBox = styled(Box)(() => ({
 const ContactFlowSetupPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { statusMap, contactStatuses } = useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
   const [flowOptions, setFlowOptions] = useState<
     {

@@ -6,6 +6,8 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData as LoadConstants } from 'src/components/Constants/LoadConstantsMock';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
@@ -168,11 +170,15 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should save when only status is inputted', async () => {
-    const { getByLabelText, getByText } = render(
+    const { getByText, getByRole, findByRole } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{ LoadConstants }}
+            >
               <EditPartnershipInfoModal
                 contact={newContactMock}
                 handleClose={handleClose}
@@ -182,10 +188,12 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const statusInput = getByLabelText('Status');
+    const statusInput = getByRole('combobox', { name: 'Status' });
 
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(
+      await findByRole('option', { name: 'Appointment Scheduled' }),
+    );
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -204,7 +212,11 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{ LoadConstants }}
+            >
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -217,17 +229,19 @@ describe('EditPartnershipInfoModal', () => {
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByLabelText('Frequency');
-    expect(statusInput.textContent).toEqual('Partner - Financial');
+    await waitFor(() =>
+      expect(statusInput.textContent).toEqual('Partner - Financial'),
+    );
 
     expect(amountInput).toHaveValue(50);
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(getByText('Ask in Future'));
 
     // Values get reset and inputs becomes disabled when status is not PARTNER_FINANCIAL
     expect(amountInput).toHaveValue(0);
     expect(amountInput).toBeDisabled();
-    expect(statusInput.textContent).toEqual('Ask In Future');
+    expect(statusInput.textContent).toEqual('Ask in Future');
 
     // these are flaky for some reason, disabling for now
     // await waitFor(() => expect(frequencyInput.textContent).toBe(''));
@@ -250,7 +264,11 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{ LoadConstants }}
+            >
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -263,7 +281,10 @@ describe('EditPartnershipInfoModal', () => {
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByLabelText('Frequency');
-    expect(statusInput.textContent).toEqual('Partner - Financial');
+
+    await waitFor(() =>
+      expect(statusInput.textContent).toEqual('Partner - Financial'),
+    );
 
     expect(amountInput).toHaveValue(50);
 

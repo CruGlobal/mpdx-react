@@ -5,6 +5,7 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  ListSubheader,
   MenuItem,
   Select,
   TextField,
@@ -15,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AssigneeAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
@@ -26,8 +28,8 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import Modal from '../../../common/Modal/Modal';
@@ -112,6 +114,9 @@ export const MassActionsEditFieldsModal: React.FC<
   const { data: constants, loading: loadingConstants } =
     useLoadConstantsQuery();
 
+  const phases = useApiConstants()?.phases;
+  const { contactStatuses } = useContactPartnershipStatuses();
+
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
       <Formik
@@ -170,11 +175,16 @@ export const MassActionsEditFieldsModal: React.FC<
                       <MenuItem value={''}>
                         <em>{t("Don't change")}</em>
                       </MenuItem>
-                      {Object.values(StatusEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedContactStatus(t, val)}
-                        </MenuItem>
-                      ))}
+                      {phases?.map((phase) => [
+                        <ListSubheader key={phase?.name}>
+                          {phase?.name}
+                        </ListSubheader>,
+                        phase?.contactStatuses.map((s: StatusEnum) => (
+                          <MenuItem key={s} value={s}>
+                            {contactStatuses[s]?.translated}
+                          </MenuItem>
+                        )),
+                      ])}
                     </Select>
                   </FormControl>
                 </Grid>

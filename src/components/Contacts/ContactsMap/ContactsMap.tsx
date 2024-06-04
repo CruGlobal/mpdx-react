@@ -10,6 +10,7 @@ import {
 } from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
 import {
@@ -47,31 +48,6 @@ const defaultCenter = {
   lng: -95,
 };
 
-const getStatusPin = (status: StatusEnum | null | undefined): string => {
-  switch (status) {
-    case StatusEnum.AppointmentScheduled:
-      return '_appt_scheduled';
-    case StatusEnum.AskInFuture:
-      return '_ask_in_future';
-    case StatusEnum.CallForDecision:
-      return '_call_for_decision';
-    case StatusEnum.ContactForAppointment:
-      return '_contact_for_appt';
-    case StatusEnum.CultivateRelationship:
-      return '_cultivate_relationship';
-    case StatusEnum.NeverContacted:
-      return '_never_contacted';
-    case StatusEnum.PartnerFinancial:
-      return '_partner_financial';
-    case StatusEnum.PartnerPray:
-      return '_partner_pray';
-    case StatusEnum.PartnerSpecial:
-      return '_partner_special';
-    default:
-      return '_grey';
-  }
-};
-
 export const ContactsMap: React.FC = ({}) => {
   const { t } = useTranslation();
   const {
@@ -81,6 +57,7 @@ export const ContactsMap: React.FC = ({}) => {
     setSelected,
     setContactFocus: onContactSelected,
   } = React.useContext(ContactsContext) as ContactsType;
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -117,6 +94,10 @@ export const ContactsMap: React.FC = ({}) => {
     });
     mapRef.current.fitBounds(bounds);
   }, [data, isLoaded, mapRef.current]);
+
+  const getStatusPin = (status: StatusEnum | null | undefined): string => {
+    return status && contactStatuses[status] ? status.toLowerCase() : 'grey';
+  };
 
   return !loadError && isLoaded ? (
     // Important! Always set the container height explicitly
@@ -155,7 +136,9 @@ export const ContactsMap: React.FC = ({}) => {
                           setSelected(contact);
                         }}
                         icon={{
-                          url: `/images/pin${getStatusPin(contact.status)}.png`,
+                          url: `/images/pin_${getStatusPin(
+                            contact.status,
+                          )}.png`,
                           origin: new window.google.maps.Point(0, 0),
                           anchor: new window.google.maps.Point(15, 48),
                           scaledSize: new window.google.maps.Size(30, 48),

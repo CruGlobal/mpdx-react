@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import {
-  ActivityTypeEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   IdValue,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useTaskModal from 'src/hooks/useTaskModal';
 import theme from '../../../theme';
 import Loading from '../../Loading';
@@ -39,29 +39,6 @@ export interface ContactFlowOption {
   color: string;
 }
 
-export const statusMap: { [key: string]: string } = {
-  'Never Contacted': 'NEVER_CONTACTED',
-  'Ask in Future': 'ASK_IN_FUTURE',
-  'Cultivate Relationship': 'CULTIVATE_RELATIONSHIP',
-  'Contact for Appointment': 'CONTACT_FOR_APPOINTMENT',
-  'Appointment Scheduled': 'APPOINTMENT_SCHEDULED',
-  'Call for Decision': 'CALL_FOR_DECISION',
-  'Partner - Financial': 'PARTNER_FINANCIAL',
-  'Partner - Special': 'PARTNER_SPECIAL',
-  'Partner - Pray': 'PARTNER_PRAY',
-  'Not Interested': 'NOT_INTERESTED',
-  Unresponsive: 'UNRESPONSIVE',
-  'Never Ask': 'NEVER_ASK',
-  'Research Abandoned': 'RESEARCH_ABANDONED',
-  'Expired Referral': 'EXPIRED_REFERRAL',
-};
-
-const taskStatuses: { [key: string]: ActivityTypeEnum } = {
-  APPOINTMENT_SCHEDULED: ActivityTypeEnum.Appointment,
-  CONTACT_FOR_APPOINTMENT: ActivityTypeEnum.Call,
-  CALL_FOR_DECISION: ActivityTypeEnum.Call,
-};
-
 export const colorMap: { [key: string]: string } = {
   'color-danger': theme.palette.error.main,
   'color-warning': theme.palette.progressBarYellow.main,
@@ -82,6 +59,7 @@ export const ContactFlow: React.FC<Props> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
+  const { statusMap, contactStatuses } = useContactPartnershipStatuses();
 
   const flowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||

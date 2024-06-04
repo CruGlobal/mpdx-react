@@ -2,11 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
-import { gqlMock } from '__tests__/util/graphqlMocking';
-import {
-  StatusEnum as ContactPartnershipStatusEnum,
-  PledgeFrequencyEnum,
-} from 'src/graphql/types.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
+import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import i18n from '../../../../../lib/i18n';
 import theme from '../../../../../theme';
 import {
@@ -85,32 +82,24 @@ describe('ContactHeaderStatusSection', () => {
     expect(queryByText('$500 - Monthly')).toBeInTheDocument();
   });
 
-  it.each([
-    ['NEVER_CONTACTED', 'Never Contacted'],
-    ['ASK_IN_FUTURE', 'Ask In Future'],
-    ['CULTIVATE_RELATIONSHIP', 'Cultivate Relationship'],
-    ['CONTACT_FOR_APPOINTMENT', 'Contact for Appointment'],
-    ['APPOINTMENT_SCHEDULED', 'Appointment Scheduled'],
-    ['CALL_FOR_DECISION', 'Call for Decision'],
-    ['PARTNER_FINANCIAL', 'Partner - Financial'],
-    ['PARTNER_SPECIAL', 'Partner - Special'],
-    ['PARTNER_PRAY', 'Partner - Pray'],
-    ['NOT_INTERESTED', 'Not Interested'],
-    ['UNRESPONSIVE', 'Unresponsive'],
-    ['NEVER_ASK', 'Never Ask'],
-    ['RESEARCH_ABANDONED', 'Research Abandoned'],
-    ['EXPIRED_REFERRAL', 'Expired Referral'],
-  ])('should render status | %s', (status, expected) => {
-    const { getByText } = render(
-      <ThemeProvider theme={theme}>
-        <I18nextProvider i18n={i18n}>
-          <ContactHeaderStatusSection
-            loading={false}
-            contact={contactMock(status as ContactPartnershipStatusEnum)}
-          />
-        </I18nextProvider>
-      </ThemeProvider>,
-    );
-    expect(getByText(expected)).toBeInTheDocument();
+  const statuses = Object.entries(StatusEnum).map(([_, status]) => {
+    return [
+      status,
+      loadConstantsMockData.constant.statuses?.find((s) => s.id === status)
+        ?.value || '',
+    ];
   });
+
+  it.each([...statuses])(
+    'should render status | %s',
+    async (status, expected) => {
+      const { findByText } = render(
+        <Components
+            loading={false}
+          contact={contactMock(status as StatusEnum)}
+        />,
+    );
+      expect(await findByText(expected)).toBeInTheDocument();
+    },
+  );
 });
