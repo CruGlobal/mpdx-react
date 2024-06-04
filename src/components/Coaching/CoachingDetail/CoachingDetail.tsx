@@ -176,6 +176,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     <IconButton
                       onClick={() => setDrawerVisible(!drawerVisible)}
                       aria-label={t('Toggle account details')}
+                      name={t('Toggle account details')}
                     >
                       <MenuOpenIcon />
                     </IconButton>
@@ -216,11 +217,6 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 period={period}
               />
               <ActivitySummary accountListId={accountListId} period={period} />
-              <TagsSummary
-                accountListId={accountListId}
-                period={period}
-                association={ReportsTagHistoriesAssociationEnum.Contacts}
-              />
               <TagsSummary
                 accountListId={accountListId}
                 period={period}
