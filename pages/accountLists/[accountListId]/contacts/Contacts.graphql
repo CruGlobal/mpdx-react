@@ -13,6 +13,7 @@ query Contacts(
     nodes {
       id
       avatar
+      contactPhase
       ...ContactRow
     }
     totalCount
