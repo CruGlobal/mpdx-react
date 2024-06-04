@@ -1,42 +1,25 @@
-import { ActivityTypeEnum } from 'src/graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  DisplayResultEnum,
+  Phase,
+} from 'src/graphql/types.generated';
 
 export const possibleNextActions = (
-  activityType: ActivityTypeEnum,
+  phaseData: Phase | null,
+  resultName: DisplayResultEnum | null,
+  activity?: ActivityTypeEnum | undefined,
 ): ActivityTypeEnum[] => {
-  const common = [
-    ActivityTypeEnum.None,
-    ActivityTypeEnum.Call,
-    ActivityTypeEnum.Email,
-    ActivityTypeEnum.TextMessage,
-    ActivityTypeEnum.FacebookMessage,
-    ActivityTypeEnum.TalkToInPerson,
-  ];
-  switch (activityType) {
-    case ActivityTypeEnum.Call:
-    case ActivityTypeEnum.Email:
-    case ActivityTypeEnum.TextMessage:
-    case ActivityTypeEnum.FacebookMessage:
-    case ActivityTypeEnum.TalkToInPerson:
-    case ActivityTypeEnum.PrayerRequest:
-      return [
-        ...common,
-        ActivityTypeEnum.Appointment,
-        ActivityTypeEnum.PrayerRequest,
-        ActivityTypeEnum.Thank,
-      ];
-    case ActivityTypeEnum.Appointment:
-      return [
-        ...common,
-        ActivityTypeEnum.PrayerRequest,
-        ActivityTypeEnum.Thank,
-      ];
-    case ActivityTypeEnum.Letter:
-    case ActivityTypeEnum.PreCallLetter:
-    case ActivityTypeEnum.ReminderLetter:
-    case ActivityTypeEnum.SupportLetter:
-    case ActivityTypeEnum.Thank:
-      return common;
-    default:
-      return [];
+  if (!phaseData || !resultName || !activity) {
+    return [];
   }
+
+  const result = phaseData.results?.resultOptions
+    ? phaseData.results.resultOptions.find(
+        (result) => result.name?.toLowerCase() === resultName.toLowerCase(),
+      )
+    : null;
+
+  return result?.suggestedNextActions
+    ? [ActivityTypeEnum.None, ...result.suggestedNextActions]
+    : [];
 };
