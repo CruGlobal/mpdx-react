@@ -20,6 +20,7 @@ import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsT
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
+import { getDefaultFlowOptions } from './contactFlowDefaultOptions';
 
 interface Props {
   accountListId: string;
@@ -61,10 +62,21 @@ export const ContactFlow: React.FC<Props> = ({
   const { openTaskModal } = useTaskModal();
   const { statusMap, contactStatuses } = useContactPartnershipStatuses();
 
-  const flowOptions: ContactFlowOption[] = JSON.parse(
+  const userFlowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
       '[]',
   );
+
+  const flowOptions = useMemo(() => {
+    if (loadingUserOptions) {
+      return [];
+    }
+    if (userFlowOptions.length) {
+      return userFlowOptions;
+    }
+
+    return getDefaultFlowOptions(t, contactStatuses);
+  }, [userFlowOptions, loadingUserOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();
 
