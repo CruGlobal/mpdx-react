@@ -1,4 +1,6 @@
 import React from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Tooltip } from '@mui/material';
 import { TagChip } from 'src/components/Shared/TagChip/TagChip';
 import {
   ContactFilterSetInput,
@@ -80,6 +82,11 @@ export const FilterTagChip: React.FC<FilterTagChipProps> = ({
         setSelectedTag(name);
         openDeleteModal(true);
       }}
+      deleteIcon={
+        <Tooltip title="Delete Tag" arrow>
+          <DeleteIcon sx={{ fill: 'white' }} />
+        </Tooltip>
+      }
     />
   );
 };
