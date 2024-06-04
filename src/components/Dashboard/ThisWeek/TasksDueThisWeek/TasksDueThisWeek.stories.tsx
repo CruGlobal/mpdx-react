@@ -13,7 +13,7 @@ export const Default = (): ReactElement => {
   const task: GetThisWeekQuery['dueTasks']['nodes'][0] = {
     id: 'task',
     subject: 'the quick brown fox jumps over the lazy dog',
-    activityType: ActivityTypeEnum.PrayerRequest,
+    activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
     contacts: { nodes: [{ id: '1', name: 'Smith, Roger' }], totalCount: 1 },
     startAt: null,
     completedAt: null,

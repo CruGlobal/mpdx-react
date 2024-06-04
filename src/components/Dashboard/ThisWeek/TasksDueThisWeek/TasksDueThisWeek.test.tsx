@@ -79,7 +79,7 @@ describe('TasksDueThisWeek', () => {
           {
             id: 'task_1',
             subject: 'the quick brown fox jumps over the lazy dog',
-            activityType: ActivityTypeEnum.PrayerRequest,
+            activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
             contacts: {
               nodes: [{ hidden: true, name: 'Smith, Roger', id: '1' }],
               totalCount: 1,
@@ -90,7 +90,7 @@ describe('TasksDueThisWeek', () => {
           {
             id: 'task_2',
             subject: 'the quick brown fox jumps over the lazy dog',
-            activityType: ActivityTypeEnum.Appointment,
+            activityType: ActivityTypeEnum.AppointmentInPerson,
             contacts: {
               nodes: [{ hidden: true, name: 'Smith, Sarah', id: '2' }],
               totalCount: 1,
@@ -151,7 +151,7 @@ describe('TasksDueThisWeek', () => {
           {
             id: 'task_1',
             subject: 'subject_1',
-            activityType: ActivityTypeEnum.PrayerRequest,
+            activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
             contacts: {
               nodes: [
                 { hidden: true, name: 'Smith, Roger', id: '1' },

@@ -36,27 +36,19 @@ describe('WeeklyActivity', () => {
     );
 
     expect(
-      getByTestId('WeeklyActivityTableCellCompletedCalls').children[0]
+      getByTestId('WeeklyActivityTableCellCompletedInitiations').children[0]
         .className,
-    ).toContain('MuiSkeleton-root');
-    expect(
-      getByTestId('WeeklyActivityTableCellCallsThatProducedAppointments')
-        .children[0].className,
-    ).toContain('MuiSkeleton-root');
-    expect(
-      getByTestId('WeeklyActivityTableCellCompletedMessages').children[0]
-        .className,
-    ).toContain('MuiSkeleton-root');
-    expect(
-      getByTestId('WeeklyActivityTableCellMessagesThatProducedAppointments')
-        .children[0].className,
     ).toContain('MuiSkeleton-root');
     expect(
       getByTestId('WeeklyActivityTableCellCompletedAppointments').children[0]
         .className,
     ).toContain('MuiSkeleton-root');
     expect(
-      getByTestId('WeeklyActivityTableCellCompletedCorrespondence').children[0]
+      getByTestId('WeeklyActivityTableCellCompletedFollowUps').children[0]
+        .className,
+    ).toContain('MuiSkeleton-root');
+    expect(
+      getByTestId('WeeklyActivityTableCellCompletedPartnerCare').children[0]
         .className,
     ).toContain('MuiSkeleton-root');
   });
@@ -81,24 +73,16 @@ describe('WeeklyActivity', () => {
       ).not.toBeInTheDocument(),
     );
     expect(
-      getByTestId('WeeklyActivityTableCellCompletedCalls').textContent,
+      getByTestId('WeeklyActivityTableCellCompletedInitiations').textContent,
     ).toEqual('1,234');
-    expect(
-      getByTestId('WeeklyActivityTableCellCallsThatProducedAppointments')
-        .textContent,
-    ).toEqual('5,678');
-    expect(
-      getByTestId('WeeklyActivityTableCellCompletedMessages').textContent,
-    ).toEqual('9,012');
-    expect(
-      getByTestId('WeeklyActivityTableCellMessagesThatProducedAppointments')
-        .textContent,
-    ).toEqual('3,456');
     expect(
       getByTestId('WeeklyActivityTableCellCompletedAppointments').textContent,
     ).toEqual('7,890');
     expect(
-      getByTestId('WeeklyActivityTableCellCompletedCorrespondence').textContent,
+      getByTestId('WeeklyActivityTableCellCompletedFollowUps').textContent,
+    ).toEqual('9,012');
+    expect(
+      getByTestId('WeeklyActivityTableCellCompletedPartnerCare').textContent,
     ).toEqual('1,234');
     fireEvent.click(getByTestId('WeeklyActivityIconButtonSubtractWeek'));
     await waitFor(() =>
@@ -110,7 +94,7 @@ describe('WeeklyActivity', () => {
       'Dec 22 - Dec 28',
     );
     expect(
-      getByTestId('WeeklyActivityTableCellCompletedCalls').textContent,
+      getByTestId('WeeklyActivityTableCellCompletedInitiations').textContent,
     ).toEqual('5,678');
     fireEvent.click(getByTestId('WeeklyActivityIconButtonAddWeek'));
     await waitFor(() =>
@@ -122,7 +106,7 @@ describe('WeeklyActivity', () => {
       'Dec 29 - Jan 4',
     );
     expect(
-      getByTestId('WeeklyActivityTableCellCompletedCalls').textContent,
+      getByTestId('WeeklyActivityTableCellCompletedInitiations').textContent,
     ).toEqual('1,234');
     expect(
       getByRole('link', { hidden: true, name: 'View Activity Detail' }),
