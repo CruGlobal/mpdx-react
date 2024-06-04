@@ -202,16 +202,16 @@ describe('EditGoogleAccountModal', () => {
               constant: {
                 activities: [
                   {
-                    id: 'Call',
-                    value: 'Call',
+                    value: Types.ActivityTypeEnum.AppointmentVideoCall,
+                    id: Types.ActivityTypeEnum.AppointmentVideoCall,
                   },
                   {
-                    id: 'Appointment',
-                    value: 'Appointment',
+                    value: Types.ActivityTypeEnum.AppointmentInPerson,
+                    id: Types.ActivityTypeEnum.AppointmentInPerson,
                   },
                   {
-                    id: 'Email',
-                    value: 'Email',
+                    value: Types.ActivityTypeEnum.FollowUpEmail,
+                    id: Types.ActivityTypeEnum.FollowUpEmail,
                   },
                 ],
               },
@@ -299,16 +299,16 @@ describe('EditGoogleAccountModal', () => {
               constant: {
                 activities: [
                   {
-                    id: 'Call',
-                    value: 'Call',
+                    value: Types.ActivityTypeEnum.AppointmentVideoCall,
+                    id: Types.ActivityTypeEnum.AppointmentVideoCall,
                   },
                   {
-                    id: 'Appointment',
-                    value: 'Appointment',
+                    value: Types.ActivityTypeEnum.AppointmentInPerson,
+                    id: Types.ActivityTypeEnum.AppointmentInPerson,
                   },
                   {
-                    id: 'Email',
-                    value: 'Email',
+                    value: Types.ActivityTypeEnum.FollowUpEmail,
+                    id: Types.ActivityTypeEnum.FollowUpEmail,
                   },
                 ],
               },
@@ -332,11 +332,13 @@ describe('EditGoogleAccountModal', () => {
     );
 
     await waitFor(() =>
-      expect(getByTestId('Call-Checkbox')).toBeInTheDocument(),
+      expect(
+        getByTestId('APPOINTMENT_VIDEO_CALL-Checkbox'),
+      ).toBeInTheDocument(),
     );
 
     await act(async () => {
-      userEvent.click(getByTestId('Call-Checkbox'));
+      userEvent.click(getByTestId('APPOINTMENT_VIDEO_CALL-Checkbox'));
       userEvent.click(getByRole('button', { name: /update/i }));
 
       await waitFor(() => {
@@ -354,7 +356,7 @@ describe('EditGoogleAccountModal', () => {
           googleAccountId: googleAccount.id,
           googleIntegration: {
             calendarId: 'calendarsID',
-            calendarIntegrations: ['Appointment', 'Call'],
+            calendarIntegrations: ['Appointment', 'APPOINTMENT_VIDEO_CALL'],
             overwrite: true,
           },
           googleIntegrationId: googleIntegration.id,
