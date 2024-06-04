@@ -1,8 +1,16 @@
 import React, { ReactElement, useMemo, useState } from 'react';
-import { DialogContent, Typography } from '@mui/material';
+import { CheckCircle } from '@mui/icons-material';
+import { DialogContent, Slide, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { TransitionProps } from '@mui/material/transitions';
 import { useTranslation } from 'react-i18next';
-import { TaskCreateInput, TaskUpdateInput } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import {
+  PhaseEnum,
+  StatusEnum,
+  TaskCreateInput,
+  TaskUpdateInput,
+} from 'src/graphql/types.generated';
+import { useAccountListId } from '../../../hooks/useAccountListId';
 import Loading from '../../Loading';
 import Modal from '../../common/Modal/Modal';
 import { DynamicTaskModalCommentsList } from './Comments/DynamicTaskModalCommentsList';
@@ -23,8 +31,29 @@ export interface TaskModalProps {
   onClose?: () => void;
   view: TaskModalEnum;
   showCompleteForm?: boolean;
-  defaultValues?: Partial<TaskCreateInput & TaskUpdateInput>;
+  defaultValues?: Partial<TaskCreateInput & TaskUpdateInput> & {
+    taskPhase?: PhaseEnum;
+    contactNodes?: [
+      {
+        id: string;
+        status: StatusEnum | undefined;
+      },
+    ];
+  };
 }
+
+const StyledCheckIcon = styled(CheckCircle)(({ theme }) => ({
+  color: theme.palette.mpdxGreen.main,
+}));
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" unmountOnExit ref={ref} {...props} />;
+});
 
 const TaskModal = ({
   taskId,
@@ -52,14 +81,24 @@ const TaskModal = ({
 
   const task = data?.task;
 
-  const title = useMemo((): string => {
+  const renderTitle = useMemo((): string | ReactElement => {
     switch (view) {
       case TaskModalEnum.Complete:
-        return t('Complete Task');
+        return (
+          <>
+            <StyledCheckIcon />
+            {t('Complete Task')}
+          </>
+        );
       case TaskModalEnum.Comments:
         return t('Task Comments');
-      case TaskModalEnum.Log:
-        return t('Log Task');
+      case 'log':
+        return (
+          <>
+            <StyledCheckIcon />
+            {t('Log Task')}
+          </>
+        );
       case TaskModalEnum.Edit:
         return t('Edit Task');
       default:
@@ -70,7 +109,13 @@ const TaskModal = ({
   return loading ? (
     <Loading loading />
   ) : (
-    <Modal isOpen={open} title={title} handleClose={onModalClose}>
+    <Modal
+      isOpen={open}
+      title={renderTitle}
+      handleClose={onModalClose}
+      transition={Transition}
+      altColors={view === 'log' || view === 'complete'}
+    >
       {accountListId ? (
         <>
           {view === TaskModalEnum.Complete && task && (
