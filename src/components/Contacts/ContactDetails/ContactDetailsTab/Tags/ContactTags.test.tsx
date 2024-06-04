@@ -86,6 +86,45 @@ describe('ContactTags', () => {
     );
   });
 
+  it('should delete the duplicate tag', async () => {
+    const { getByPlaceholderText } = render(
+      <SnackbarProvider>
+        <GqlMockedProvider<{ UpdateContactTags: UpdateContactTagsMutation }>
+          mocks={{
+            UpdateContactTags: {
+              updateContact: {
+                contact: {
+                  id: contactId,
+                  tagList: [...contactTags, 'tag3'],
+                },
+              },
+            },
+          }}
+          addTypename={false}
+        >
+          <ThemeProvider theme={theme}>
+            <ContactTags
+              accountListId={accountListId}
+              contactId={contactId}
+              contactTags={contactTags}
+            />
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>,
+    );
+    userEvent.type(getByPlaceholderText('add tag'), 'tag3{enter}');
+    await waitFor(() =>
+      expect(getByPlaceholderText('add tag')).toHaveValue(''),
+    );
+    userEvent.type(getByPlaceholderText('add tag'), '{enter}');
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Cannot add duplicate tags', {
+        variant: 'error',
+      }),
+    );
+  });
+
   it('should delete a tag', async () => {
     const mutationSpy = jest.fn();
     const { getAllByTitle } = render(
