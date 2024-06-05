@@ -24,6 +24,7 @@ import {
 } from 'src/components/Shared/Header/ListHeader';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
+import { TaskRowSkeleton } from 'src/components/Task/TaskRow/TaskRowSkeleton.skeleton';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -402,6 +403,8 @@ const TasksPage: React.FC = () => {
                       data-foo="bar"
                       loading={loading}
                       data={data?.tasks.nodes}
+                      Skeleton={TaskRowSkeleton}
+                      numberOfSkeletons={25}
                       style={{
                         height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
                       }}

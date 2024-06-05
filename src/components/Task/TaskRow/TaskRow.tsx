@@ -20,14 +20,14 @@ import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTa
 import { TaskModalEnum } from '../Modal/TaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
 
-const SubjectWrapOuter = styled(Box)(({ theme }) => ({
+export const SubjectWrapOuter = styled(Box)(({ theme }) => ({
   width: 'fit-content',
   display: 'flex',
   alignItems: 'center',
   marginRight: theme.spacing(1),
 }));
 
-const SubjectWrapInner = styled(Box)(({}) => ({
+export const SubjectWrapInner = styled(Box)(({}) => ({
   display: 'flex',
   '&:hover': {
     textDecoration: 'underline',
@@ -94,7 +94,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    marginTop: useTopMargin ? '20px' : '0',
+    marginTop: useTopMargin ? '16px' : '0',
   }));
 
   const { openTaskModal, preloadTaskModal } = useTaskModal();

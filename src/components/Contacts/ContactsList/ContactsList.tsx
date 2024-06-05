@@ -9,6 +9,7 @@ import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { ContactRow } from '../ContactRow/ContactRow';
+import { ContactRowSkeleton } from '../ContactRow/ContactRowSkeleton.skeleton';
 
 export const ContactsList: React.FC = () => {
   const {
@@ -16,20 +17,27 @@ export const ContactsList: React.FC = () => {
     searchTerm,
     isFiltered,
     setActiveFilters,
+    userOptionsLoading,
   } = React.useContext(ContactsContext) as ContactsType;
 
   return (
     <InfiniteList
-      loading={loading}
+      loading={loading || userOptionsLoading}
+      Skeleton={ContactRowSkeleton}
+      numberOfSkeletons={25}
       data={data?.contacts?.nodes ?? []}
       style={{ height: `calc(100vh - ${navBarHeight} - ${headerHeight})` }}
-      itemContent={(index, contact) => (
-        <ContactRow
-          key={contact.id}
-          contact={contact}
-          useTopMargin={index === 0}
-        />
-      )}
+      itemContent={
+        loading
+          ? (index) => <ContactRowSkeleton key={index} />
+          : (index, contact) => (
+              <ContactRow
+                key={contact.id}
+                contact={contact}
+                useTopMargin={index === 0}
+              />
+            )
+      }
       groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
       endReached={() =>
         data?.contacts?.pageInfo.hasNextPage &&

@@ -17,28 +17,26 @@ export const ContactsMainPanel: React.FC = () => {
     searchTerm,
     setContactFocus,
     viewMode,
-    userOptionsLoading,
   } = React.useContext(ContactsContext) as ContactsType;
 
   return (
     <>
       <ContactsMainPanelHeader />
-      {!userOptionsLoading &&
-        (viewMode === TableViewModeEnum.List ? (
-          <DynamicContactsList />
-        ) : viewMode === TableViewModeEnum.Flows ? (
-          <DynamicContactFlow
-            accountListId={accountListId ?? ''}
-            selectedFilters={{
-              ...activeFilters,
-              ...starredFilter,
-            }}
-            searchTerm={searchTerm}
-            onContactSelected={setContactFocus}
-          />
-        ) : (
-          <DynamicContactsMap />
-        ))}
+      {viewMode === TableViewModeEnum.List ? (
+        <DynamicContactsList />
+      ) : viewMode === TableViewModeEnum.Flows ? (
+        <DynamicContactFlow
+          accountListId={accountListId ?? ''}
+          selectedFilters={{
+            ...activeFilters,
+            ...starredFilter,
+          }}
+          searchTerm={searchTerm}
+          onContactSelected={setContactFocus}
+        />
+      ) : (
+        <DynamicContactsMap />
+      )}
     </>
   );
 };
