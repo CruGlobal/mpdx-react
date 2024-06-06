@@ -26,7 +26,10 @@ interface Props {
   selectedOrganizationName: string;
 }
 interface PersonDataProps {
-  person: ContactPeople | ContactPeopleAccountListsUsers;
+  person: ContactPeople;
+}
+interface UserDataProps {
+  person: ContactPeopleAccountListsUsers;
 }
 
 const StyledBox = styled(Box)(() => ({
@@ -47,6 +50,40 @@ const PersonData: React.FC<PersonDataProps> = ({ person }) => {
     <StyledBox>
       <Typography component="span" variant="body2">
         {person?.firstName} {person?.lastName}
+      </Typography>
+      {email && (
+        <Link
+          underline="hover"
+          key={`email-${email.email}`}
+          href={`mailto:${email.email}`}
+          target="_blank"
+        >
+          {email.email}
+        </Link>
+      )}
+      {phone && (
+        <Typography
+          key={`phone-${phone.number}`}
+          component="span"
+          variant="body2"
+        >
+          {phone.number}
+        </Typography>
+      )}
+    </StyledBox>
+  );
+};
+const UserPersonData: React.FC<UserDataProps> = ({ person }) => {
+  const email =
+    person?.userEmailAddresses &&
+    person?.userEmailAddresses.find((email) => email?.primary);
+  const phone =
+    person?.phoneNumbers &&
+    person?.phoneNumbers.find((phone) => phone?.primary);
+  return (
+    <StyledBox>
+      <Typography component="span" variant="body2">
+        {person?.userFirstName} {person?.userLastName}
       </Typography>
       {email && (
         <Link
@@ -168,7 +205,9 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
             }
             secondary={accountList?.accountListUsers?.map(
               (person, idx) =>
-                person && <PersonData person={person} key={`person-${idx}`} />,
+                person && (
+                  <UserPersonData person={person} key={`person-${idx}`} />
+                ),
             )}
           />
         </Grid>

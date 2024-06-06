@@ -1181,7 +1181,7 @@ class MpdxRestApi extends RESTDataSource {
   ) {
     const include =
       'people,people.email_addresses,people.phone_numbers,addresses,account_list,' +
-      'account_list.account_list_users,account_list.account_list_users.email_addresses';
+      'account_list.account_list_users,account_list.account_list_users.user_email_addresses';
     const filters =
       `filter[organization_id]=${organizationId}` +
       `&filter[wildcard_search]=${search}` +
@@ -1192,7 +1192,7 @@ class MpdxRestApi extends RESTDataSource {
       '&fields[email_addresses]=email,primary,historic' +
       '&fields[phone_numbers]=number,primary,historic' +
       '&fields[account_lists]=name,account_list_users' +
-      '&fields[account_list_users]=first_name,last_name,email_addresses' +
+      '&fields[account_list_users]=user_first_name,user_last_name,user_email_addresses' +
       '&fields[addresses]=primary_mailing_address,street,city,state,postal_code';
 
     const data: SearchOrganizationsContactsResponse = await this.get(
