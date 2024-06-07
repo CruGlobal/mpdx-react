@@ -36,7 +36,7 @@ const router = {
 
 describe('ContactFlowColumn', () => {
   it('should render a column with correct details', async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, findByText, getByTestId } = render(
       <SnackbarProvider>
         <DndProvider backend={HTML5Backend}>
           <ThemeProvider theme={theme}>
@@ -75,7 +75,7 @@ describe('ContactFlowColumn', () => {
     );
     await waitFor(() => expect(getByText(title)).toBeInTheDocument());
     expect(getByText('1')).toBeInTheDocument();
-    expect(getByText('Test Person')).toBeInTheDocument();
+    expect(await findByText('Test Person')).toBeInTheDocument();
     expect(getByTestId('column-header')).toHaveStyle({
       backgroundColor: 'theme.palette.mpdxBlue.main',
     });
