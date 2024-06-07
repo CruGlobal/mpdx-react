@@ -7,6 +7,7 @@ import {
   OrganizationsContext,
   OrganizationsContextType,
 } from 'pages/accountLists/[accountListId]/settings/organizations/OrganizationsContext';
+import { ContactRowSkeleton } from 'src/components/Contacts/ContactRow/ContactRowSkeleton.skeleton';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { NullStateBox } from 'src/components/Shared/Filters/NullState/NullStateBox';
 import { LoadingSpinner } from '../LoadingSpinner';
@@ -53,6 +54,8 @@ export const Contacts: React.FC = () => {
       {loading && <LoadingSpinner firstLoad={!pagination?.page} />}
       <InfiniteList
         loading={loading}
+        Skeleton={ContactRowSkeleton}
+        numberOfSkeletons={10}
         data={contacts ?? []}
         style={{
           height: infiniteListHeight
