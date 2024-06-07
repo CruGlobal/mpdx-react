@@ -2,9 +2,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
 import theme from 'src/theme';
 import { EarlyAdopterAccordion } from './EarlyAdopterAccordion';
 
@@ -35,18 +35,20 @@ interface ComponentsProps {
   tester: boolean;
   expandedPanel: string;
 }
-
+const userId = 'userID123';
 const Components: React.FC<ComponentsProps> = ({ tester, expandedPanel }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
-          <EarlyAdopterAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
-            tester={tester}
-            accountListId={accountListId}
-          />
+          <UserPreferenceContext.Provider value={{ userId, locale: 'en-US' }}>
+            <EarlyAdopterAccordion
+              handleAccordionChange={handleAccordionChange}
+              expandedPanel={expandedPanel}
+              tester={tester}
+              accountListId={accountListId}
+            />
+          </UserPreferenceContext.Provider>
         </GqlMockedProvider>
       </ThemeProvider>
     </TestRouter>
@@ -161,7 +163,7 @@ describe('EarlyAdopterAccordion', () => {
       );
 
       expect(window.location.href).toEqual(
-        `${process.env.SITE_URL}/api/handoff?accountListId=${accountListId}&userId=${session.user.userID}&path=%2Fpreferences%2Fpersonal`,
+        `${process.env.SITE_URL}/api/handoff?accountListId=${accountListId}&userId=${userId}&path=%2Fpreferences%2Fpersonal`,
       );
     });
   });
