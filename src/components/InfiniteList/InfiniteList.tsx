@@ -130,7 +130,7 @@ export const InfiniteList = <T, C>({
         <Loading Skeleton={Skeleton} numberOfSkeletons={numberOfSkeletons} />
       )}
 
-      {!!!groupCounts.length && (
+      {!!groupCounts.length && (
         <GroupedVirtuoso
           groupCounts={groupCounts}
           groupContent={(index) => (
@@ -142,7 +142,7 @@ export const InfiniteList = <T, C>({
           {...commonProps}
         />
       )}
-      {!!groupCounts.length && (
+      {!groupCounts.length && (
         <Virtuoso
           data={items}
           itemContent={(index) =>
