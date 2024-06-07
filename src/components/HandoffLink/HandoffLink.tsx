@@ -1,6 +1,6 @@
 import { Children, ReactElement, ReactNode, cloneElement } from 'react';
-import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useAccountListId } from '../../hooks/useAccountListId';
+import { useUserPreferenceContext } from '../User/Preferences/UserPreferenceProvider';
 
 interface Props {
   path: string;
@@ -9,8 +9,8 @@ interface Props {
 }
 
 const HandoffLink = ({ path, auth, children }: Props): ReactElement => {
-  const session = useRequiredSession();
   const accountListId = useAccountListId();
+  const { userId } = useUserPreferenceContext();
 
   const url = new URL(
     `${process.env.SITE_URL || window.location.origin}/api/handoff`,
@@ -20,7 +20,7 @@ const HandoffLink = ({ path, auth, children }: Props): ReactElement => {
     url.searchParams.append('auth', 'true');
   } else {
     url.searchParams.append('accountListId', accountListId ?? '');
-    url.searchParams.append('userId', session.userID);
+    url.searchParams.append('userId', userId ?? '');
   }
   url.searchParams.append('path', path);
 
