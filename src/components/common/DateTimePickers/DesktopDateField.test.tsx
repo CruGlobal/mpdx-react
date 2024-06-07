@@ -17,7 +17,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   value = DateTime.local(2024, 1, 2, 3, 4, 5),
   locale = 'en-US',
 }) => (
-  <UserPreferenceContext.Provider value={{ locale }}>
+  <UserPreferenceContext.Provider value={{ locale, userId: 'userId' }}>
     <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale={locale}>
       <DesktopDateField value={value} onChange={onChange} label="Date" />
     </LocalizationProvider>

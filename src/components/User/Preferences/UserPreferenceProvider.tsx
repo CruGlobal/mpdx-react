@@ -5,10 +5,12 @@ import { useGetUserQuery } from '../GetUser.generated';
 export type UserPreferenceType = {
   defaultCurrency?: string;
   locale: string;
+  userId: string;
 };
 
 export const UserPreferenceContext = createContext<UserPreferenceType>({
   locale: 'en-US',
+  userId: '',
 });
 
 export const useUserPreferenceContext = (): UserPreferenceType =>
@@ -29,7 +31,12 @@ export const UserPreferenceProvider: React.FC<Props> = ({ children }) => {
   }, [data]);
 
   return (
-    <UserPreferenceContext.Provider value={{ locale }}>
+    <UserPreferenceContext.Provider
+      value={{
+        locale,
+        userId: data?.user.id ?? '',
+      }}
+    >
       {children}
     </UserPreferenceContext.Provider>
   );
