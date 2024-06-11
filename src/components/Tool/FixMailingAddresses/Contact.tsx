@@ -89,18 +89,21 @@ const useStyles = makeStyles()(() => ({
 }));
 
 interface Props {
-  id?: string;
+  id: string;
   name: string;
   status: string;
   addresses: ContactAddressFragment[];
-  openFunction: (address: ContactAddressFragment) => void;
+  openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
+  openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
 }
 
 const Contact: React.FC<Props> = ({
+  id,
   name,
   status,
   addresses,
-  openFunction,
+  openEditAddressModal,
+  openNewAddressModal,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -194,7 +197,7 @@ const Contact: React.FC<Props> = ({
                       classes.paddingL2,
                       classes.hoverHighlight,
                     )}
-                    onClick={() => openFunction(address)}
+                    onClick={() => openEditAddressModal(address, id)}
                   >
                     <Box className={classes.address}>
                       <Typography>
@@ -238,7 +241,7 @@ const Contact: React.FC<Props> = ({
                 )}
               >
                 <Box
-                  onClick={() => openFunction(newAddress)}
+                  onClick={() => openNewAddressModal(newAddress, id)}
                   className={classes.address}
                 />
                 <Icon path={mdiPlus} size={1} />
