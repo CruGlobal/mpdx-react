@@ -168,7 +168,7 @@ const Contact: React.FC<Props> = ({
               </Grid>
             </Hidden>
             {addresses.map((address) => (
-              <Fragment key={address.street}>
+              <Fragment key={address.id}>
                 <Grid item xs={12} md={5} className={classes.paddingB2}>
                   <Box display="flex" justifyContent="space-between">
                     <Grid item md={8}>
