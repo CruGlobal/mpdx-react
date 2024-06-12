@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { ApolloCache } from '@apollo/client';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
@@ -20,6 +21,8 @@ import NoData from '../NoData';
 import Contact from './Contact';
 import {
   ContactAddressFragment,
+  InvalidAddressesDocument,
+  InvalidAddressesQuery,
   useInvalidAddressesQuery,
 } from './GetInvalidAddresses.generated';
 
@@ -120,7 +123,60 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
     variables: { accountListId },
   });
 
-  const handleOpen = (
+  const handleUpdateCacheForDeleteAddress = useCallback(
+    (cache: ApolloCache<unknown>, data) => {
+      cache.evict({
+        id: `Address:${data.deletedAddressId}`,
+      });
+      cache.gc();
+    },
+    [],
+  );
+
+  const handleUpdateCacheForAddAddress = useCallback(
+    (cache: ApolloCache<unknown>, createdAddressData) => {
+      const InvalidAddressesQuery = {
+        query: InvalidAddressesDocument,
+        variables: {
+          accountListId,
+        },
+      };
+      const dataFromInvalidAddressesCache =
+        cache.readQuery<InvalidAddressesQuery>(InvalidAddressesQuery);
+
+      if (dataFromInvalidAddressesCache) {
+        const newContacts = dataFromInvalidAddressesCache.contacts.nodes.map(
+          (contact) => {
+            if (contact.id !== createdAddressData.createAddress.contactId) {
+              return contact;
+            } else {
+              return {
+                ...contact,
+                addresses: {
+                  nodes: [
+                    ...contact.addresses.nodes,
+                    createdAddressData.createAddress.address,
+                  ],
+                },
+              };
+            }
+          },
+        );
+
+        const data = {
+          ...dataFromInvalidAddressesCache,
+          contacts: {
+            nodes: newContacts,
+          },
+        };
+        cache.writeQuery({ ...InvalidAddressesQuery, data });
+      }
+    },
+    [],
+  );
+
+  const handleModalOpen = (
+    modal: ModalEnum,
     address: ContactAddressFragment,
     contactId: string,
   ): void => {
@@ -244,6 +300,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
           address={modalState.address}
           contactId={modalState.contactId}
           handleClose={handleClose}
+          handleUpdateCacheOnDelete={handleUpdateCacheForDeleteAddress}
         />
       )}
     </Box>

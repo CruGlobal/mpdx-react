@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import { ApolloCache } from '@apollo/client';
 import {
   Box,
   Checkbox,
@@ -58,12 +59,14 @@ interface EditContactAddressModalProps {
   accountListId: string;
   contactId: string;
   handleClose: () => void;
+  handleUpdateCache?: (cache: ApolloCache<unknown>, object) => void;
 }
 
 export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
   accountListId,
   contactId,
   handleClose,
+  handleUpdateCache,
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -85,30 +88,39 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
         attributes,
       },
       update: (cache, { data: createdAddressData }) => {
-        const query = {
-          query: ContactDetailsTabDocument,
-          variables: {
-            accountListId,
-            contactId,
-          },
-        };
-        const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
-
-        if (dataFromCache) {
-          const data = {
-            ...dataFromCache,
-            contact: {
-              ...dataFromCache.contact,
-              addresses: {
-                ...dataFromCache.contact.addresses,
-                nodes: [
-                  ...dataFromCache.contact.addresses.nodes,
-                  { ...createdAddressData?.createAddress?.address },
-                ],
-              },
+        if (handleUpdateCache) {
+          handleUpdateCache(cache, {
+            createAddress: {
+              address: createdAddressData?.createAddress?.address,
+              contactId: attributes.contactId,
+            },
+          });
+        } else {
+          const query = {
+            query: ContactDetailsTabDocument,
+            variables: {
+              accountListId,
+              contactId,
             },
           };
-          cache.writeQuery({ ...query, data });
+          const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
+
+          if (dataFromCache) {
+            const data = {
+              ...dataFromCache,
+              contact: {
+                ...dataFromCache.contact,
+                addresses: {
+                  ...dataFromCache.contact.addresses,
+                  nodes: [
+                    ...dataFromCache.contact.addresses.nodes,
+                    { ...createdAddressData?.createAddress?.address },
+                  ],
+                },
+              },
+            };
+            cache.writeQuery({ ...query, data });
+          }
         }
       },
     });
