@@ -69,6 +69,7 @@ interface EditContactAddressModalProps {
   accountListId: string;
   address: ContactMailingFragment['addresses']['nodes'][0];
   contactId: string;
+  handleClose: () => void;
   handleUpdateCacheOnDelete?: (cache: ApolloCache<unknown>, object) => void;
 }
 
@@ -117,7 +118,7 @@ export const EditContactAddressModal: React.FC<
     enqueueSnackbar(t('Address updated successfully'), {
       variant: 'success',
     });
-    handleClose(false);
+    handleClose();
   };
 
   const deleteContactAddress = async (): Promise<void> => {
@@ -132,31 +133,31 @@ export const EditContactAddressModal: React.FC<
           if (handleUpdateCacheOnDelete) {
             handleUpdateCacheOnDelete(cache, { deletedAddressId });
           } else {
-          const query = {
-            query: ContactDetailsTabDocument,
-            variables: {
-              accountListId,
-              contactId,
-            },
-          };
+            const query = {
+              query: ContactDetailsTabDocument,
+              variables: {
+                accountListId,
+                contactId,
+              },
+            };
 
             const dataFromCache =
               cache.readQuery<ContactDetailsTabQuery>(query);
 
-          if (dataFromCache) {
-            const data = {
-              ...dataFromCache,
-              contact: {
-                ...dataFromCache.contact,
-                addresses: {
-                  ...dataFromCache.contact.addresses,
-                  nodes: dataFromCache.contact.addresses.nodes.filter(
-                    (address) => address.id !== deletedAddressId,
-                  ),
+            if (dataFromCache) {
+              const data = {
+                ...dataFromCache,
+                contact: {
+                  ...dataFromCache.contact,
+                  addresses: {
+                    ...dataFromCache.contact.addresses,
+                    nodes: dataFromCache.contact.addresses.nodes.filter(
+                      (address) => address.id !== deletedAddressId,
+                    ),
+                  },
                 },
-              },
-            };
-            cache.writeQuery({ ...query, data });
+              };
+              cache.writeQuery({ ...query, data });
             }
           }
           enqueueSnackbar(t('Address deleted successfully'), {
@@ -165,7 +166,7 @@ export const EditContactAddressModal: React.FC<
         },
       });
     }
-    handleClose(true);
+    handleClose();
   };
 
   const editingDisabled =
@@ -179,11 +180,7 @@ export const EditContactAddressModal: React.FC<
   });
 
   return (
-    <Modal
-      isOpen={true}
-      title={t('Edit Address')}
-      handleClose={() => handleClose(false)}
-    >
+    <Modal isOpen={true} title={t('Edit Address')} handleClose={handleClose}>
       <Formik
         initialValues={{
           id: address.id,
@@ -420,10 +417,7 @@ export const EditContactAddressModal: React.FC<
               {address && !editingDisabled && (
                 <DeleteButton onClick={deleteContactAddress} />
               )}
-              <CancelButton
-                onClick={() => handleClose(false)}
-                disabled={isSubmitting}
-              />
+              <CancelButton onClick={handleClose} disabled={isSubmitting} />
               <SubmitButton disabled={!isValid || isSubmitting}>
                 {(updating || deleting || settingPrimaryAddress) && (
                   <LoadingIndicator color="primary" size={20} />

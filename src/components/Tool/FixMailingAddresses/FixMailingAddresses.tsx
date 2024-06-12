@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { AddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/AddAddressModal';
 import { EditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -107,19 +108,22 @@ export const emptyAddress: ContactAddressFragment = {
 interface Props {
   accountListId: string;
 }
+enum ModalEnum {
+  New = 'New',
+  Edit = 'Edit',
+}
 
 const sourceOptions = ['MPDX', 'DataServer'];
 
 const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
-  const [modalState, setModalState] = useState({
-    open: false,
-    address: emptyAddress,
-    contactId: '',
-  });
   const { t } = useTranslation();
+  const [showEditAddressModal, setShowEditAddressModal] = useState(false);
+  const [showNewAddressModal, setShowNewAddressModal] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(emptyAddress);
+  const [selectedContactId, setSelectedContactId] = useState('');
   const [defaultSource, setDefaultSource] = useState('MPDX');
-  const { data, loading, refetch } = useInvalidAddressesQuery({
+  const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
 
@@ -180,14 +184,20 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
     address: ContactAddressFragment,
     contactId: string,
   ): void => {
-    setModalState({ open: true, address, contactId });
+    if (modal === ModalEnum.Edit) {
+      setShowEditAddressModal(true);
+    } else {
+      setShowNewAddressModal(true);
+    }
+    setSelectedAddress(address);
+    setSelectedContactId(contactId);
   };
 
-  const handleClose = (deleteAddress: boolean): void => {
-    if (deleteAddress) {
-      refetch();
-    }
-    setModalState({ open: false, address: emptyAddress, contactId: '' });
+  const handleClose = (): void => {
+    setShowEditAddressModal(false);
+    setShowNewAddressModal(false);
+    setSelectedAddress(emptyAddress);
+    setSelectedContactId('');
   };
 
   const handleSourceChange = (event: SelectChangeEvent<string>): void => {
@@ -272,8 +282,12 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                       status={contact.status || ''}
                       key={contact.id}
                       addresses={contact.addresses.nodes}
-                      openEditAddressModal={handleOpen}
-                      openNewAddressModal={handleOpen}
+                      openEditAddressModal={(address, contactId) =>
+                        handleModalOpen(ModalEnum.Edit, address, contactId)
+                      }
+                      openNewAddressModal={(address, contactId) =>
+                        handleModalOpen(ModalEnum.New, address, contactId)
+                      }
                     />
                   ))}
                 </Grid>
@@ -294,13 +308,21 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
           </React.Fragment>
         )}
       </Grid>
-      {modalState.open && (
+      {showEditAddressModal && (
         <EditContactAddressModal
           accountListId={accountListId}
-          address={modalState.address}
-          contactId={modalState.contactId}
+          address={selectedAddress}
+          contactId={selectedContactId}
           handleClose={handleClose}
           handleUpdateCacheOnDelete={handleUpdateCacheForDeleteAddress}
+        />
+      )}
+      {showNewAddressModal && (
+        <AddAddressModal
+          accountListId={accountListId}
+          contactId={selectedContactId}
+          handleClose={handleClose}
+          handleUpdateCacheOnDelete={handleUpdateCacheForAddAddress}
         />
       )}
     </Box>
