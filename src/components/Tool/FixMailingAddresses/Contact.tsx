@@ -126,21 +126,21 @@ const Contact: React.FC<Props> = ({
         <Grid item xs={12}>
           <Grid container>
             <Hidden mdDown>
-              <Grid item xs={12} md={6} className={classes.paddingB2}>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  className={classes.paddingX}
-                >
-                  <Typography>
-                    <strong>{t('Source')}</strong>
-                  </Typography>
-                  <Typography>
-                    <strong>{t('Primary')}</strong>
-                  </Typography>
+              <Grid item xs={12} md={5} className={classes.paddingB2}>
+                <Box display="flex" justifyContent="space-between">
+                  <Grid item md={8}>
+                    <Typography>
+                      <strong>{t('Source')}</strong>
+                    </Typography>
+                  </Grid>
+                  <Grid item md={4}>
+                    <Typography align="center">
+                      <strong>{t('Primary')}</strong>
+                    </Typography>
+                  </Grid>
                 </Box>
               </Grid>
-              <Grid item xs={12} md={6} className={classes.paddingB2}>
+              <Grid item xs={12} md={7} className={classes.paddingB2}>
                 <Box
                   display="flex"
                   justifyContent="flex-start"
@@ -154,13 +154,9 @@ const Contact: React.FC<Props> = ({
             </Hidden>
             {addresses.map((address) => (
               <Fragment key={address.street}>
-                <Grid item xs={12} md={6} className={classes.paddingB2}>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    className={classes.paddingX}
-                  >
-                    <Box>
+                <Grid item xs={12} md={5} className={classes.paddingB2}>
+                  <Box display="flex" justifyContent="space-between">
+                    <Grid item md={8}>
                       <Hidden mdUp>
                         <Typography display="inline">
                           <strong>{t('Source')}: </strong>
@@ -175,17 +171,19 @@ const Contact: React.FC<Props> = ({
                           locale,
                         )}
                       </Typography>
-                    </Box>
-                    <Typography>
-                      {address.primaryMailingAddress ? (
-                        <StarIcon className={classes.hoverHighlight} />
-                      ) : (
-                        <StarOutlineIcon className={classes.hoverHighlight} />
-                      )}
-                    </Typography>
+                    </Grid>
+                    <Grid item md={4}>
+                      <Typography align="center">
+                        {address.primaryMailingAddress ? (
+                          <StarIcon className={classes.hoverHighlight} />
+                        ) : (
+                          <StarOutlineIcon className={classes.hoverHighlight} />
+                        )}
+                      </Typography>
+                    </Grid>
                   </Box>
                 </Grid>
-                <Grid item xs={12} md={6} className={classes.paddingB2}>
+                <Grid item xs={12} md={7} className={classes.paddingB2}>
                   <Box
                     display="flex"
                     justifyContent="flex-start"
@@ -211,7 +209,7 @@ const Contact: React.FC<Props> = ({
                 </Grid>
               </Fragment>
             ))}
-            <Grid item xs={12} md={6} className={classes.paddingB2}>
+            <Grid item xs={12} md={5} className={classes.paddingB2}>
               <Box
                 display="flex"
                 justifyContent="space-between"
@@ -227,7 +225,7 @@ const Contact: React.FC<Props> = ({
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={12} md={6} className={classes.paddingB2}>
+            <Grid item xs={12} md={7} className={classes.paddingB2}>
               <Box
                 display="flex"
                 justifyContent="flex-start"
