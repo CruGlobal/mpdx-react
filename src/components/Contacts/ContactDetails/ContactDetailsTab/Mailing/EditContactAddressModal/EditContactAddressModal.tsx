@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import { ApolloCache } from '@apollo/client';
 import {
   Alert,
   AlertTitle,
@@ -68,7 +69,7 @@ interface EditContactAddressModalProps {
   accountListId: string;
   address: ContactMailingFragment['addresses']['nodes'][0];
   contactId: string;
-  handleClose: (deletedAddress: boolean) => void;
+  handleUpdateCacheOnDelete?: (cache: ApolloCache<unknown>, object) => void;
 }
 
 export const EditContactAddressModal: React.FC<
@@ -78,6 +79,7 @@ export const EditContactAddressModal: React.FC<
   address,
   contactId,
   handleClose,
+  handleUpdateCacheOnDelete,
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -125,8 +127,11 @@ export const EditContactAddressModal: React.FC<
           id: address.id,
           accountListId,
         },
-        update: (cache, { data: deletedContactAddress }) => {
-          const deletedAddressId = deletedContactAddress?.deleteAddress?.id;
+        update: (cache) => {
+          const deletedAddressId = address.id;
+          if (handleUpdateCacheOnDelete) {
+            handleUpdateCacheOnDelete(cache, { deletedAddressId });
+          } else {
           const query = {
             query: ContactDetailsTabDocument,
             variables: {
@@ -135,7 +140,8 @@ export const EditContactAddressModal: React.FC<
             },
           };
 
-          const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
+            const dataFromCache =
+              cache.readQuery<ContactDetailsTabQuery>(query);
 
           if (dataFromCache) {
             const data = {
@@ -151,6 +157,7 @@ export const EditContactAddressModal: React.FC<
               },
             };
             cache.writeQuery({ ...query, data });
+            }
           }
           enqueueSnackbar(t('Address deleted successfully'), {
             variant: 'success',
