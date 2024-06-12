@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { ApolloCache } from '@apollo/client';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
@@ -21,6 +22,8 @@ import NoData from '../NoData';
 import Contact from './Contact';
 import {
   ContactAddressFragment,
+  InvalidAddressesDocument,
+  InvalidAddressesQuery,
   useInvalidAddressesQuery,
 } from './GetInvalidAddresses.generated';
 
@@ -123,6 +126,43 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
+
+  const handleUpdateCacheForDeleteAddress = useCallback(
+    (cache: ApolloCache<unknown>, data) => {
+      cache.evict({
+        id: `Address:${data.deletedAddressId}`,
+      });
+      cache.gc();
+    },
+    [],
+  );
+
+  const handleUpdateCacheForAddAddress = useCallback(
+    (cache: ApolloCache<unknown>, { data: createdAddressData }) => {
+      const InvalidAddressesQuery = {
+        query: InvalidAddressesDocument,
+        variables: {
+          accountListId,
+        },
+      };
+      const dataFromInvalidAddressesCache =
+        cache.readQuery<InvalidAddressesQuery>(InvalidAddressesQuery);
+
+      if (dataFromInvalidAddressesCache) {
+        const data = {
+          ...dataFromInvalidAddressesCache,
+          contacts: {
+            nodes: [
+              ...dataFromInvalidAddressesCache.contacts.nodes,
+              { ...createdAddressData?.createAddress?.address },
+            ],
+          },
+        };
+        cache.writeQuery({ ...InvalidAddressesQuery, data });
+      }
+    },
+    [],
+  );
 
   const handleModalOpen = (
     modal: ModalEnum,
@@ -258,6 +298,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
           address={selectedAddress}
           contactId={selectedContactId}
           handleClose={handleClose}
+          handleUpdateCacheOnDelete={handleUpdateCacheForDeleteAddress}
         />
       )}
       {showNewAddressModal && (
@@ -265,6 +306,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
           accountListId={accountListId}
           contactId={selectedContactId}
           handleClose={handleClose}
+          handleUpdateCache={handleUpdateCacheForAddAddress}
         />
       )}
     </Box>
