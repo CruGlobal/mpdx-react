@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import styled from '@emotion/styled';
-import { mdiCheckboxMarkedCircle, mdiPlus } from '@mdi/js';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
@@ -21,6 +21,9 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import {
+  AddButton,
+  AddIcon,
+  AddText,
   EditIcon,
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
@@ -51,6 +54,9 @@ const ContactAvatar = styled(Avatar)(() => ({
 const useStyles = makeStyles()(() => ({
   confirmButon: {
     marginRight: theme.spacing(1),
+  },
+  AddButton: {
+    width: '100%',
   },
   contactCard: {
     marginBottom: theme.spacing(2),
@@ -240,11 +246,13 @@ const Contact: React.FC<Props> = ({
                   classes.hoverHighlight,
                 )}
               >
-                <Box
+                <AddButton
+                  className={classes.AddButton}
                   onClick={() => openNewAddressModal(newAddress, id)}
-                  className={classes.address}
-                />
-                <Icon path={mdiPlus} size={1} />
+                >
+                  <AddIcon />
+                  <AddText variant="subtitle1">{t('Add Address')}</AddText>
+                </AddButton>
               </Box>
             </Grid>
           </Grid>
