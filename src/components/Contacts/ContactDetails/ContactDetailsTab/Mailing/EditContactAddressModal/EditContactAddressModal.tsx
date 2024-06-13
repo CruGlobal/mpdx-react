@@ -68,7 +68,7 @@ interface EditContactAddressModalProps {
   accountListId: string;
   address: ContactMailingFragment['addresses']['nodes'][0];
   contactId: string;
-  handleClose: () => void;
+  handleClose: (deletedAddress: boolean) => void;
 }
 
 export const EditContactAddressModal: React.FC<
@@ -115,7 +115,7 @@ export const EditContactAddressModal: React.FC<
     enqueueSnackbar(t('Address updated successfully'), {
       variant: 'success',
     });
-    handleClose();
+    handleClose(false);
   };
 
   const deleteContactAddress = async (): Promise<void> => {
@@ -158,10 +158,11 @@ export const EditContactAddressModal: React.FC<
         },
       });
     }
-    handleClose();
+    handleClose(true);
   };
 
-  const editingDisabled = address.source === 'Siebel';
+  const editingDisabled =
+    address.source === 'Siebel' || address.source === 'DataServer';
   const { data: emailData } = useDonationServicesEmailQuery({
     variables: {
       accountListId,
@@ -171,7 +172,11 @@ export const EditContactAddressModal: React.FC<
   });
 
   return (
-    <Modal isOpen={true} title={t('Edit Address')} handleClose={handleClose}>
+    <Modal
+      isOpen={true}
+      title={t('Edit Address')}
+      handleClose={() => handleClose(false)}
+    >
       <Formik
         initialValues={{
           id: address.id,
@@ -213,29 +218,43 @@ export const EditContactAddressModal: React.FC<
               <ContactEditContainer>
                 {editingDisabled && (
                   <ContactInputWrapper>
-                    <Alert severity="info">
-                      <AlertTitle sx={{ fontWeight: 'bold' }}>
-                        {t('This address is provided by Donation Services')}
-                      </AlertTitle>
-                      <p>
-                        {t(
-                          'The address that syncs with Donation Services cannot be edited here. Please email Donation Services with the updated address, or you can create a new address and select it as your primary mailing address.',
-                        )}
-                      </p>
-                      {emailData && (
+                    {address.source === 'Siebel' && (
+                      <Alert severity="info">
+                        <AlertTitle sx={{ fontWeight: 'bold' }}>
+                          {t('This address is provided by Donation Services')}
+                        </AlertTitle>
                         <p>
-                          <Link
-                            href={`mailto:donation.services@cru.org?subject=Donor+address+change&body=${encodeURIComponent(
-                              generateEmailBody(emailData, address),
-                            )}`}
-                            underline="hover"
-                            sx={{ fontWeight: 'bold' }}
-                          >
-                            {t('Email Donation Services here')}
-                          </Link>
+                          {t(
+                            'The address that syncs with Donation Services cannot be edited here. Please email Donation Services with the updated address, or you can create a new address and select it as your primary mailing address.',
+                          )}
                         </p>
-                      )}
-                    </Alert>
+                        {emailData && (
+                          <p>
+                            <Link
+                              href={`mailto:donation.services@cru.org?subject=Donor+address+change&body=${encodeURIComponent(
+                                generateEmailBody(emailData, address),
+                              )}`}
+                              underline="hover"
+                              sx={{ fontWeight: 'bold' }}
+                            >
+                              {t('Email Donation Services here')}
+                            </Link>
+                          </p>
+                        )}
+                      </Alert>
+                    )}
+                    {address.source === 'DataServer' && (
+                      <Alert severity="info">
+                        <AlertTitle sx={{ fontWeight: 'bold' }}>
+                          {t('This address is provided by your organization.')}
+                        </AlertTitle>
+                        <p>
+                          {t(
+                            'The address that syncs with your organization’s donations cannot be edited here. Please email your donation department with the updated address, or you can create a new address and select it as your primary mailing address.',
+                          )}
+                        </p>
+                      </Alert>
+                    )}
                   </ContactInputWrapper>
                 )}
                 <ContactInputWrapper>
@@ -391,8 +410,13 @@ export const EditContactAddressModal: React.FC<
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              {address && <DeleteButton onClick={deleteContactAddress} />}
-              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+              {address && !editingDisabled && (
+                <DeleteButton onClick={deleteContactAddress} />
+              )}
+              <CancelButton
+                onClick={() => handleClose(false)}
+                disabled={isSubmitting}
+              />
               <SubmitButton disabled={!isValid || isSubmitting}>
                 {(updating || deleting || settingPrimaryAddress) && (
                   <LoadingIndicator color="primary" size={20} />
