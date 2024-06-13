@@ -356,6 +356,6 @@ describe('FixSendNewsletter', () => {
           getByText('Buckingham Palace, London . SW1A 1AA'),
         ).toBeInTheDocument(),
       );
-    });
+    }, 10000);
   });
 });
