@@ -14,9 +14,9 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { EditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import theme from '../../../theme';
 import NoData from '../NoData';
-import AddressModal from './AddressModal';
 import Contact from './Contact';
 import {
   ContactAddressFragment,
@@ -50,7 +50,6 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     justifyContent: 'center',
   },
-
   confirmAllButton: {
     [theme.breakpoints.down('md')]: {
       width: '100%',
@@ -58,7 +57,6 @@ const useStyles = makeStyles()(() => ({
       margin: `${theme.spacing(1)} auto 0`,
     },
   },
-
   buttonIcon: {
     marginRight: theme.spacing(1),
   },
@@ -114,38 +112,26 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const [modalState, setModalState] = useState({
     open: false,
     address: emptyAddress,
+    contactId: '',
   });
   const { t } = useTranslation();
   const [defaultSource, setDefaultSource] = useState('MPDX');
-  const { data, loading } = useInvalidAddressesQuery({
+  const { data, loading, refetch } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
 
-  const handleOpen = (address: ContactAddressFragment): void => {
-    setModalState({ open: true, address: address });
-  };
-
-  const handleClose = (): void => {
-    setModalState({ open: false, address: emptyAddress });
-  };
-
-  const handleChange = (
-    event:
-      | React.ChangeEvent<HTMLInputElement & HTMLSelectElement>
-      | React.ChangeEvent<HTMLInputElement>,
-    props: string,
+  const handleOpen = (
+    address: ContactAddressFragment,
+    contactId: string,
   ): void => {
-    const tempAddress = modalState.address; // Error prevention, can remove later
-    setModalState((prevState) => ({
-      ...prevState,
-      address: {
-        ...tempAddress,
-        [props]:
-          event.target.name === 'checkbox'
-            ? event.target.checked
-            : event.target.value,
-      },
-    }));
+    setModalState({ open: true, address, contactId });
+  };
+
+  const handleClose = (deleteAddress: boolean): void => {
+    if (deleteAddress) {
+      refetch();
+    }
+    setModalState({ open: false, address: emptyAddress, contactId: '' });
   };
 
   const handleSourceChange = (event: SelectChangeEvent<string>): void => {
@@ -230,7 +216,8 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                       status={contact.status || ''}
                       key={contact.id}
                       addresses={contact.addresses.nodes}
-                      openFunction={handleOpen}
+                      openEditAddressModal={handleOpen}
+                      openNewAddressModal={handleOpen}
                     />
                   ))}
                 </Grid>
@@ -251,11 +238,14 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
           </React.Fragment>
         )}
       </Grid>
-      <AddressModal
-        modalState={modalState}
-        handleClose={handleClose}
-        handleChange={handleChange}
-      />
+      {modalState.open && (
+        <EditContactAddressModal
+          accountListId={accountListId}
+          address={modalState.address}
+          contactId={modalState.contactId}
+          handleClose={handleClose}
+        />
+      )}
     </Box>
   );
 };
