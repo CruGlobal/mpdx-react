@@ -71,20 +71,21 @@ export const MassActionsAddTagsModal: React.FC<
   });
 
   const handleValidation = async (fields: Partial<ContactUpdateInput>) => {
+    const tags = fields.tagList ?? [];
     const contactsExistingTags =
       contactsForTags?.contacts.nodes.map((contact) => ({
         tagList: [...new Set([...contact.tagList])],
       })) ?? [];
 
-    const existingTags = [];
+    const existingTags: string[] = [];
     contactsExistingTags.forEach((contact) => {
       for (let i = 0; i < contact.tagList.length; i++) {
         existingTags.push(contact.tagList[i]);
       }
     });
 
-    for (let i = 0; i < fields.tagList?.length; i++) {
-      existingTags.push(fields.tagList[i]);
+    for (let i = 0; i < tags?.length; i++) {
+      existingTags.push(tags[i]);
       const duplicates = existingTags.filter(
         (item, index) => existingTags.indexOf(item) !== index,
       );
@@ -95,7 +96,7 @@ export const MassActionsAddTagsModal: React.FC<
             variant: 'error',
           },
         );
-        fields.tagList.pop();
+        existingTags.pop();
       }
     }
 
