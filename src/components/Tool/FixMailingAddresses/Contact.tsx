@@ -1,70 +1,59 @@
 import React, { Fragment } from 'react';
-import { mdiCheckboxMarkedCircle, mdiLock, mdiPencil, mdiPlus } from '@mdi/js';
+import styled from '@emotion/styled';
+import { mdiCheckboxMarkedCircle, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import { Avatar, Box, Button, Grid, Hidden, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  Hidden,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import {
+  EditIcon,
+  LockIcon,
+} from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
 import { emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 
+const ContactHeader = styled(CardHeader)(() => ({
+  '.MuiCardHeader-action': {
+    alignSelf: 'center',
+  },
+}));
+
+const ContactIconContainer = styled(IconButton)(() => ({
+  margin: theme.spacing(0, 1),
+  width: theme.spacing(4),
+  height: theme.spacing(4),
+}));
+
+const ContactAvatar = styled(Avatar)(() => ({
+  width: theme.spacing(4),
+  height: theme.spacing(4),
+}));
+
 const useStyles = makeStyles()(() => ({
-  left: {
-    [theme.breakpoints.up('lg')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
-  boxBottom: {
-    backgroundColor: theme.palette.cruGrayLight.main,
-    width: '100%',
-    [theme.breakpoints.down('sm')]: {
-      paddingTop: theme.spacing(2),
-    },
-  },
-  buttonTop: {
-    padding: theme.spacing(1),
-    [theme.breakpoints.down('md')]: {
-      display: 'flex',
-      justifyContent: 'center',
-      padding: theme.spacing(2),
-    },
-    '& .MuiButton-root': {
-      backgroundColor: theme.palette.mpdxBlue.main,
-      width: '100%',
-      color: 'white',
-      [theme.breakpoints.down('md')]: {
-        width: '50%',
-      },
-      [theme.breakpoints.down('xs')]: {
-        width: '100%',
-      },
-    },
-  },
-  buttonIcon: {
+  confirmButon: {
     marginRight: theme.spacing(1),
   },
-  rowChangeResponsive: {
-    flexDirection: 'column',
-    [theme.breakpoints.down('sm')]: {
-      marginTop: -20,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
+  contactCard: {
+    marginBottom: theme.spacing(2),
   },
   responsiveBorder: {
     [theme.breakpoints.down('sm')]: {
@@ -80,22 +69,28 @@ const useStyles = makeStyles()(() => ({
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
   },
+  paddingL2: {
+    paddingLeft: theme.spacing(2),
+    '@media(max-width: 900px)': {
+      paddingLeft: 0,
+    },
+  },
   paddingB2: {
     paddingBottom: theme.spacing(2),
   },
   address: {
     borderBottom: '1px solid gray',
     width: '100%',
-    cursor: 'text',
+    cursor: 'pointer',
   },
   hoverHighlight: {
+    cursor: 'pointer',
     '&:hover': {
       color: theme.palette.mpdxBlue.main,
     },
   },
-  avatar: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
+  alignCenter: {
+    textAlign: 'center',
   },
 }));
 
@@ -121,179 +116,138 @@ const Contact: React.FC<Props> = ({
   //TODO: Make contact name a link to contact page
 
   return (
-    <Grid container className={classes.container}>
-      <Grid container>
-        <Grid item lg={10} xs={12}>
-          <Box display="flex" alignItems="center" className={classes.left}>
-            <Grid container>
-              <Grid item xs={12}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  style={{ height: '100%' }}
-                  p={2}
-                >
-                  <Avatar src="" className={classes.avatar} />
-                  <Box display="flex" flexDirection="column" ml={2}>
-                    <Typography variant="h6">{name}</Typography>
-                    <Typography>{status}</Typography>
-                  </Box>
+    <Card className={classes.contactCard}>
+      <ContactHeader
+        avatar={<ContactAvatar src="" aria-label="Contact Avatar" />}
+        action={
+          <Button variant="contained" className={classes.confirmButon}>
+            <Icon path={mdiCheckboxMarkedCircle} size={0.8} />
+            {t('Confirm')}
+          </Button>
+        }
+        title={<Typography variant="h6">{name}</Typography>}
+        subheader={<Typography>{contactPartnershipStatus[status]}</Typography>}
+      />
+      <CardContent className={(classes.paddingX, classes.paddingY)}>
+        <Grid item xs={12}>
+          <Grid container>
+            <Hidden mdDown>
+              <Grid item xs={12} md={5} className={classes.paddingB2}>
+                <Box display="flex" justifyContent="space-between">
+                  <Grid item md={8}>
+                    <Typography>
+                      <strong>{t('Source')}</strong>
+                    </Typography>
+                  </Grid>
+                  <Grid item md={4}>
+                    <Typography align="center">
+                      <strong>{t('Primary')}</strong>
+                    </Typography>
+                  </Grid>
                 </Box>
               </Grid>
-
-              <Grid item xs={12} className={classes.boxBottom}>
-                <Grid container>
-                  <Hidden smDown>
-                    <Grid item xs={12} md={6} className={classes.paddingY}>
-                      <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        className={classes.paddingX}
-                      >
-                        <Typography>
-                          <strong>{t('Source')}</strong>
-                        </Typography>
-                        <Typography>
-                          <strong>{t('Primary')}</strong>
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} md={6} className={classes.paddingY}>
-                      <Box
-                        display="flex"
-                        justifyContent="flex-start"
-                        className={classes.paddingX}
-                      >
-                        <Typography>
-                          <strong>{t('Address')}</strong>
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  </Hidden>
-                  {addresses.map((address) => (
-                    <Fragment key={address.street}>
-                      <Grid item xs={12} md={6} className={classes.paddingB2}>
-                        <Box
-                          display="flex"
-                          justifyContent="space-between"
-                          className={classes.paddingX}
-                        >
-                          <Box>
-                            <Hidden mdUp>
-                              <Typography display="inline">
-                                <strong>{t('Source')}: </strong>
-                              </Typography>
-                            </Hidden>
-                            <Typography display="inline">
-                              {address.source}{' '}
-                            </Typography>
-                            <Typography display="inline">
-                              {dateFormatShort(
-                                DateTime.fromISO(address.createdAt),
-                                locale,
-                              )}
-                            </Typography>
-                          </Box>
-                          <Typography>
-                            {address.primaryMailingAddress ? (
-                              <StarIcon className={classes.hoverHighlight} />
-                            ) : (
-                              <StarOutlineIcon
-                                className={classes.hoverHighlight}
-                              />
-                            )}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={12} md={6} className={classes.paddingB2}>
-                        <Box
-                          display="flex"
-                          justifyContent="flex-start"
-                          className={clsx(
-                            classes.responsiveBorder,
-                            classes.paddingX,
-                            classes.hoverHighlight,
-                          )}
-                        >
-                          <Box
-                            onClick={() => openFunction(address)}
-                            className={classes.address}
-                          >
-                            <Typography>
-                              {`${address.street}, ${address.city} ${
-                                address.state ? address.state : ''
-                              }. ${address.postalCode}`}
-                            </Typography>
-                          </Box>
-
-                          <Icon
-                            path={
-                              address.source === 'MPDX' ? mdiPencil : mdiLock
-                            }
-                            size={1}
-                          />
-                        </Box>
-                      </Grid>
-                    </Fragment>
-                  ))}
-                  <Grid item xs={12} md={6} className={classes.paddingB2}>
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      className={classes.paddingX}
-                    >
-                      <Box>
-                        <Hidden mdUp>
-                          <Typography display="inline">
-                            <strong>{t('Source')}: </strong>
-                          </Typography>
-                        </Hidden>
-                        <Typography display="inline">MPDX</Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} md={6} className={classes.paddingB2}>
-                    <Box
-                      display="flex"
-                      justifyContent="flex-start"
-                      className={clsx(
-                        classes.responsiveBorder,
-                        classes.paddingX,
-                        classes.hoverHighlight,
-                      )}
-                    >
-                      <Box
-                        onClick={() => openFunction(newAddress)}
-                        className={classes.address}
-                      />
-                      <Icon path={mdiPlus} size={1} />
-                    </Box>
-                  </Grid>
-                </Grid>
+              <Grid item xs={12} md={7} className={classes.paddingB2}>
+                <Box
+                  display="flex"
+                  justifyContent="flex-start"
+                  className={classes.paddingX}
+                >
+                  <Typography>
+                    <strong>{t('Address')}</strong>
+                  </Typography>
+                </Box>
               </Grid>
+            </Hidden>
+            {addresses.map((address) => (
+              <Fragment key={address.street}>
+                <Grid item xs={12} md={5} className={classes.paddingB2}>
+                  <Box display="flex" justifyContent="space-between">
+                    <Grid item md={8}>
+                      <Hidden mdUp>
+                        <Typography display="inline">
+                          <strong>{t('Source')}: </strong>
+                        </Typography>
+                      </Hidden>
+                      <Typography display="inline">
+                        {address.source}{' '}
+                      </Typography>
+                      <Typography display="inline">
+                        {dateFormatShort(
+                          DateTime.fromISO(address.createdAt),
+                          locale,
+                        )}
+                      </Typography>
+                    </Grid>
+                    <Grid item md={4} className={classes.alignCenter}>
+                      <ContactIconContainer aria-label={t('Edit Icon')}>
+                        {address.primaryMailingAddress ? (
+                          <StarIcon className={classes.hoverHighlight} />
+                        ) : (
+                          <StarOutlineIcon className={classes.hoverHighlight} />
+                        )}
+                      </ContactIconContainer>
+                    </Grid>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={7} className={classes.paddingB2}>
+                  <Box
+                    display="flex"
+                    justifyContent="flex-start"
+                    className={clsx(
+                      classes.responsiveBorder,
+                      classes.paddingL2,
+                      classes.hoverHighlight,
+                    )}
+                    onClick={() => openFunction(address)}
+                  >
+                    <Box className={classes.address}>
+                      <Typography>
+                        {`${address.street}, ${address.city} ${
+                          address.state ? address.state : ''
+                        }. ${address.postalCode}`}
+                      </Typography>
+                    </Box>
+
+                    <ContactIconContainer aria-label={t('Edit Icon')}>
+                      {address.source === 'MPDX' ? <EditIcon /> : <LockIcon />}
+                    </ContactIconContainer>
+                  </Box>
+                </Grid>
+              </Fragment>
+            ))}
+            <Grid item xs={12} md={5} className={classes.paddingB2}>
+              <Box display="flex" justifyContent="space-between">
+                <Box>
+                  <Hidden mdUp>
+                    <Typography display="inline">
+                      <strong>{t('Source')}: </strong>
+                    </Typography>
+                  </Hidden>
+                  <Typography display="inline">MPDX</Typography>
+                </Box>
+              </Box>
             </Grid>
-          </Box>
-        </Grid>
-        <Grid item xs={12} lg={2}>
-          <Box
-            display="flex"
-            flexDirection="column"
-            style={{ paddingLeft: theme.spacing(1) }}
-          >
-            <Box className={classes.buttonTop}>
-              <Button variant="contained">
-                <Icon
-                  path={mdiCheckboxMarkedCircle}
-                  size={0.8}
-                  className={classes.buttonIcon}
+            <Grid item xs={12} md={7} className={classes.paddingB2}>
+              <Box
+                display="flex"
+                justifyContent="flex-start"
+                className={clsx(
+                  classes.responsiveBorder,
+                  classes.paddingX,
+                  classes.hoverHighlight,
+                )}
+              >
+                <Box
+                  onClick={() => openFunction(newAddress)}
+                  className={classes.address}
                 />
-                {t('Confirm')}
-              </Button>
-            </Box>
-          </Box>
+                <Icon path={mdiPlus} size={1} />
+              </Box>
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      </CardContent>
+    </Card>
   );
 };
 
