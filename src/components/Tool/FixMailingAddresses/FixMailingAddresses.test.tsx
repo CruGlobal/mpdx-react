@@ -10,6 +10,7 @@ import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDet
 import theme from 'src/theme';
 import FixSendNewsletter from './FixMailingAddresses';
 import {
+  mockInvalidAddressesResponse,
   mpdxSourcedAddress,
   tntSourcedAddress,
 } from './FixMailingAddressesMock';
@@ -18,7 +19,7 @@ import { InvalidAddressesQuery } from './GetInvalidAddresses.generated';
 jest.mock('next-auth/react');
 
 const accountListId = 'account-list-1';
-const contactId = 'd4db82ad-ff6f-4ba3-96ee-c143efc07d7c';
+const contactId = 'contactId';
 const router = {
   isReady: true,
 };
@@ -196,32 +197,7 @@ describe('FixSendNewsletter', () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'writeFragment');
       const { queryByTestId, getByText, getByRole, queryByText } = render(
-        <Components
-          cache={cache}
-          mocks={{
-            InvalidAddresses: {
-              contacts: {
-                nodes: [
-                  {
-                    id: contactId,
-                    name: 'Baggins, Frodo',
-                    status: null,
-                    addresses: {
-                      nodes: [
-                        mpdxSourcedAddress,
-                        tntSourcedAddress,
-                        {
-                          ...tntSourcedAddress,
-                          country: 'Canada',
-                        },
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          }}
-        />,
+        <Components cache={cache} mocks={mockInvalidAddressesResponse} />,
       );
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
@@ -257,33 +233,7 @@ describe('FixSendNewsletter', () => {
       jest.spyOn(cache, 'writeFragment');
       const { getByTestId, getByText, getByRole, queryByTestId, queryByRole } =
         render(
-          <Components
-            cache={cache}
-            mocks={{
-              InvalidAddresses: {
-                contacts: {
-                  nodes: [
-                    {
-                      id: contactId,
-                      name: 'Baggins, Frodo',
-                      status: null,
-                      addresses: {
-                        nodes: [
-                          mpdxSourcedAddress,
-                          tntSourcedAddress,
-                          {
-                            ...tntSourcedAddress,
-                            id: 'differentId',
-                            country: 'Canada',
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-            }}
-          />,
+          <Components cache={cache} mocks={mockInvalidAddressesResponse} />,
         );
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
@@ -326,26 +276,7 @@ describe('FixSendNewsletter', () => {
         <Components
           mocks={{
             InvalidAddresses: {
-              contacts: {
-                nodes: [
-                  {
-                    id: contactId,
-                    name: 'Baggins, Frodo',
-                    status: null,
-                    addresses: {
-                      nodes: [
-                        mpdxSourcedAddress,
-                        tntSourcedAddress,
-                        {
-                          ...tntSourcedAddress,
-                          id: 'differentId',
-                          country: 'Canada',
-                        },
-                      ],
-                    },
-                  },
-                ],
-              },
+              ...mockInvalidAddressesResponse.InvalidAddresses,
             },
             CreateContactAddress: {
               createAddress: {

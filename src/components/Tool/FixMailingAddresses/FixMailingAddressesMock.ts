@@ -32,23 +32,26 @@ export const tntSourcedAddress = {
 };
 
 export const mockInvalidAddressesResponse = {
-  contacts: {
-    nodes: [
-      {
-        id: 'd4db82ad-ff6f-4ba3-96ee-c143efc07d7c',
-        name: 'Baggins, Frodo',
-        status: null,
-        addresses: {
-          nodes: [
-            mpdxSourcedAddress,
-            tntSourcedAddress,
-            {
-              ...tntSourcedAddress,
-              country: 'Canada',
-            },
-          ],
+  InvalidAddresses: {
+    contacts: {
+      nodes: [
+        {
+          id: 'contactId',
+          name: 'Baggins, Frodo',
+          status: null,
+          addresses: {
+            nodes: [
+              mpdxSourcedAddress,
+              tntSourcedAddress,
+              {
+                ...tntSourcedAddress,
+                id: 'differentId',
+                country: 'Canada',
+              },
+            ],
+          },
         },
-      },
-    ],
+      ],
+    },
   },
 };
