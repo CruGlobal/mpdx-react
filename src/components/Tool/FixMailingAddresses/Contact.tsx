@@ -40,7 +40,7 @@ const ContactHeader = styled(CardHeader)(() => ({
   },
 }));
 
-const ContactEditIconContainer = styled(IconButton)(() => ({
+const ContactIconContainer = styled(IconButton)(() => ({
   margin: theme.spacing(0, 1),
   width: theme.spacing(4),
   height: theme.spacing(4),
@@ -77,6 +77,9 @@ const useStyles = makeStyles()(() => ({
   },
   paddingL2: {
     paddingLeft: theme.spacing(2),
+    '@media(max-width: 900px)': {
+      paddingLeft: 0,
+    },
   },
   paddingB2: {
     paddingBottom: theme.spacing(2),
@@ -91,6 +94,9 @@ const useStyles = makeStyles()(() => ({
     '&:hover': {
       color: theme.palette.mpdxBlue.main,
     },
+  },
+  alignCenter: {
+    textAlign: 'center',
   },
 }));
 
@@ -135,21 +141,21 @@ const Contact: React.FC<Props> = ({
         <Grid item xs={12}>
           <Grid container>
             <Hidden mdDown>
-              <Grid item xs={12} md={6} className={classes.paddingB2}>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  className={classes.paddingX}
-                >
-                  <Typography>
-                    <strong>{t('Source')}</strong>
-                  </Typography>
-                  <Typography>
-                    <strong>{t('Primary')}</strong>
-                  </Typography>
+              <Grid item xs={12} md={5} className={classes.paddingB2}>
+                <Box display="flex" justifyContent="space-between">
+                  <Grid item md={8}>
+                    <Typography>
+                      <strong>{t('Source')}</strong>
+                    </Typography>
+                  </Grid>
+                  <Grid item md={4}>
+                    <Typography align="center">
+                      <strong>{t('Primary')}</strong>
+                    </Typography>
+                  </Grid>
                 </Box>
               </Grid>
-              <Grid item xs={12} md={6} className={classes.paddingB2}>
+              <Grid item xs={12} md={7} className={classes.paddingB2}>
                 <Box
                   display="flex"
                   justifyContent="flex-start"
@@ -163,13 +169,9 @@ const Contact: React.FC<Props> = ({
             </Hidden>
             {addresses.map((address) => (
               <Fragment key={address.id}>
-                <Grid item xs={12} md={6} className={classes.paddingB2}>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    className={classes.paddingX}
-                  >
-                    <Box>
+                <Grid item xs={12} md={5} className={classes.paddingB2}>
+                  <Box display="flex" justifyContent="space-between">
+                    <Grid item md={8}>
                       <Hidden mdUp>
                         <Typography display="inline">
                           <strong>{t('Source')}: </strong>
@@ -184,17 +186,19 @@ const Contact: React.FC<Props> = ({
                           locale,
                         )}
                       </Typography>
-                    </Box>
-                    <Typography>
-                      {address.primaryMailingAddress ? (
-                        <StarIcon className={classes.hoverHighlight} />
-                      ) : (
-                        <StarOutlineIcon className={classes.hoverHighlight} />
-                      )}
-                    </Typography>
+                    </Grid>
+                    <Grid item md={4} className={classes.alignCenter}>
+                      <ContactIconContainer aria-label={t('Edit Icon')}>
+                        {address.primaryMailingAddress ? (
+                          <StarIcon className={classes.hoverHighlight} />
+                        ) : (
+                          <StarOutlineIcon className={classes.hoverHighlight} />
+                        )}
+                      </ContactIconContainer>
+                    </Grid>
                   </Box>
                 </Grid>
-                <Grid item xs={12} md={6} className={classes.paddingB2}>
+                <Grid item xs={12} md={7} className={classes.paddingB2}>
                   <Box
                     display="flex"
                     justifyContent="flex-start"
@@ -214,19 +218,15 @@ const Contact: React.FC<Props> = ({
                       </Typography>
                     </Box>
 
-                    <ContactEditIconContainer aria-label={t('Edit Icon')}>
+                    <ContactIconContainer aria-label={t('Edit Icon')}>
                       {address.source === 'MPDX' ? <EditIcon /> : <LockIcon />}
-                    </ContactEditIconContainer>
+                    </ContactIconContainer>
                   </Box>
                 </Grid>
               </Fragment>
             ))}
-            <Grid item xs={12} md={6} className={classes.paddingB2}>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                className={classes.paddingX}
-              >
+            <Grid item xs={12} md={5} className={classes.paddingB2}>
+              <Box display="flex" justifyContent="space-between">
                 <Box>
                   <Hidden mdUp>
                     <Typography display="inline">
@@ -237,7 +237,7 @@ const Contact: React.FC<Props> = ({
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={12} md={6} className={classes.paddingB2}>
+            <Grid item xs={12} md={7} className={classes.paddingB2}>
               <Box
                 display="flex"
                 justifyContent="flex-start"

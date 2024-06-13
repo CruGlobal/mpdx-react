@@ -253,6 +253,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                           className={classes.select}
                           value={defaultSource}
                           onChange={handleSourceChange}
+                          size="small"
                         >
                           {sourceOptions.map((source) => (
                             <MenuItem key={source} value={source}>
