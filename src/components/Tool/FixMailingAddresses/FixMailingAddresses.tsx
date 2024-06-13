@@ -217,7 +217,10 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         </Grid>
 
         {loading && !data && (
-          <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+          <CircularProgress
+            data-testid="loading"
+            style={{ marginTop: theme.spacing(3) }}
+          />
         )}
 
         {!loading && data && (

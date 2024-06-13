@@ -207,6 +207,7 @@ const Contact: React.FC<Props> = ({
                       classes.paddingL2,
                       classes.hoverHighlight,
                     )}
+                    data-testid={`address-${address.id}`}
                     onClick={() => openEditAddressModal(address, id)}
                   >
                     <Box className={classes.address}>
@@ -248,6 +249,7 @@ const Contact: React.FC<Props> = ({
               >
                 <AddButton
                   className={classes.AddButton}
+                  data-testid={`addAddress-${id}`}
                   onClick={() => openNewAddressModal(newAddress, id)}
                 >
                   <AddIcon />
