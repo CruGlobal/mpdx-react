@@ -61,6 +61,6 @@ export const uploadTnt = async ({
   });
   const data: { success: boolean } = await res.json();
   if (!data.success) {
-    throw new Error(t('Cannot upload file: server error') + data);
+    throw new Error(t('Cannot upload file: server not successful') + data);
   }
 };

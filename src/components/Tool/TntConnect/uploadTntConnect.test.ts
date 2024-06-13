@@ -76,4 +76,22 @@ describe('uploadTnt', () => {
       }),
     ).rejects.toThrow('Cannot upload file: server error');
   });
+
+  it('handles success being false', () => {
+    const fetch = jest.fn().mockResolvedValue({
+      json: () => Promise.resolve({ success: false }),
+    });
+    window.fetch = fetch;
+
+    return expect(
+      uploadTnt({
+        override: 'false',
+        selectedTags,
+        apiToken: '',
+        accountListId,
+        file,
+        t,
+      }),
+    ).rejects.toThrow('Cannot upload file: server not successful');
+  });
 });

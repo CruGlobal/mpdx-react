@@ -12,10 +12,15 @@ import TntConnect from './TntConnect';
 import { uploadTnt, validateTnt } from './uploadTntConnect';
 
 const mockEnqueue = jest.fn();
+const accountListId = '123';
+const file1 = new File(['contents1'], 'tnt1.xml', {
+  type: 'text/xml',
+});
+const file2 = new File(['contents2'], 'tnt2.xml', {
+  type: 'application/xml',
+});
 
 jest.mock('./uploadTntConnect');
-
-const accountListId = '123';
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -28,14 +33,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const file1 = new File(['contents1'], 'tnt1.xml', {
-  type: 'text/xml',
-});
-const file2 = new File(['contents2'], 'tnt2.xml', {
-  type: 'application/xml',
-});
-
-describe('Updating', () => {
+describe('TntConnect Import', () => {
   const createObjectURL = jest
     .fn()
     .mockReturnValueOnce('blob:1')
@@ -46,50 +44,6 @@ describe('Updating', () => {
     (validateTnt as jest.Mock).mockReturnValue({ success: true });
     window.URL.createObjectURL = createObjectURL;
     window.URL.revokeObjectURL = revokeObjectURL;
-  });
-
-  it('should save tags and radio buttons', async () => {
-    const { getByRole, getByText, getByTestId } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <TntConnect accountListId={accountListId} />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
-
-    const input = getByRole('combobox') as HTMLInputElement;
-    userEvent.type(input, 'tag123');
-    expect(input.value).toBe('tag123');
-    userEvent.type(input, '{enter}');
-
-    userEvent.click(
-      getByText(
-        'This import should override all fields in current contacts (contact info, notes) and add new contacts.',
-      ),
-    );
-
-    userEvent.upload(getByTestId('TntUpload'), file2);
-    userEvent.click(getByRole('button', { name: 'Import' }));
-
-    await waitFor(() =>
-      expect(uploadTnt).toHaveBeenCalledWith(
-        expect.objectContaining({
-          accountListId,
-          selectedTags: ['tag123'],
-          override: 'true',
-          file: file2,
-        }),
-      ),
-    );
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Upload Complete', {
-        variant: 'success',
-      }),
-    );
   });
 
   it('should handle uploading a file', async () => {
@@ -155,6 +109,50 @@ describe('Updating', () => {
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:2');
   });
 
+  it('should save tags and radio buttons', async () => {
+    const { getByRole, getByText, getByTestId } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <TntConnect accountListId={accountListId} />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+
+    const input = getByRole('combobox') as HTMLInputElement;
+    userEvent.type(input, 'tag123');
+    expect(input.value).toBe('tag123');
+    userEvent.type(input, '{enter}');
+
+    userEvent.click(
+      getByText(
+        'This import should override all fields in current contacts (contact info, notes) and add new contacts.',
+      ),
+    );
+
+    userEvent.upload(getByTestId('TntUpload'), file1);
+    userEvent.click(getByRole('button', { name: 'Import' }));
+
+    await waitFor(() =>
+      expect(uploadTnt).toHaveBeenCalledWith(
+        expect.objectContaining({
+          accountListId,
+          selectedTags: ['tag123'],
+          override: 'true',
+          file: file1,
+        }),
+      ),
+    );
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Upload Complete', {
+        variant: 'success',
+      }),
+    );
+  });
+
   it('should notify the user about validation errors', () => {
     (validateTnt as jest.Mock).mockReturnValue({
       success: false,
@@ -203,6 +201,34 @@ describe('Updating', () => {
 
     userEvent.upload(getByTestId('TntUpload'), file1);
     userEvent.click(getByRole('button', { name: 'Import' }));
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith('File could not be uploaded', {
+        variant: 'error',
+      });
+    });
+  });
+  it('should show default error message', async () => {
+    (uploadTnt as jest.Mock).mockRejectedValue(500);
+
+    const { getByTestId, getByRole } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <ContactDetailProvider>
+                <TntConnect accountListId={accountListId} />
+              </ContactDetailProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+
+    userEvent.upload(getByTestId('TntUpload'), file1);
+    await waitFor(() => {
+      userEvent.click(getByRole('button', { name: 'Import' }));
+    });
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith('File could not be uploaded', {

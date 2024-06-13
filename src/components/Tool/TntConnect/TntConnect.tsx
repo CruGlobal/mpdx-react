@@ -156,9 +156,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
         });
       } catch (err) {
         enqueueSnackbar(
-          err instanceof Error
-            ? err.message
-            : t('Avatar could not be uploaded'),
+          err instanceof Error ? err.message : t('File could not be uploaded'),
           {
             variant: 'error',
           },
@@ -200,7 +198,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
     }
 
     if (tntFile) {
-      // Release the previous avatar blob
+      // Release the previous file blob
       URL.revokeObjectURL(tntFile.blobUrl);
     }
     setTntFile({ file, blobUrl: URL.createObjectURL(file) });
