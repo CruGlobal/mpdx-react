@@ -89,7 +89,12 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
       },
       update: (cache, { data: createdAddressData }) => {
         if (handleUpdateCache) {
-          handleUpdateCache(cache, createdAddressData);
+          handleUpdateCache(cache, {
+            createAddress: {
+              address: createdAddressData?.createAddress?.address,
+              contactId: attributes.contactId,
+            },
+          });
         } else {
           const query = {
             query: ContactDetailsTabDocument,

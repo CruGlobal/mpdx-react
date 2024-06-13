@@ -138,7 +138,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   );
 
   const handleUpdateCacheForAddAddress = useCallback(
-    (cache: ApolloCache<unknown>, { data: createdAddressData }) => {
+    (cache: ApolloCache<unknown>, createdAddressData) => {
       const InvalidAddressesQuery = {
         query: InvalidAddressesDocument,
         variables: {
@@ -149,13 +149,28 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         cache.readQuery<InvalidAddressesQuery>(InvalidAddressesQuery);
 
       if (dataFromInvalidAddressesCache) {
+        const newContacts = dataFromInvalidAddressesCache.contacts.nodes.map(
+          (contact) => {
+            if (contact.id !== createdAddressData.createAddress.contactId) {
+              return contact;
+            } else {
+              return {
+                ...contact,
+                addresses: {
+                  nodes: [
+                    ...contact.addresses.nodes,
+                    createdAddressData.createAddress.address,
+                  ],
+                },
+              };
+            }
+          },
+        );
+
         const data = {
           ...dataFromInvalidAddressesCache,
           contacts: {
-            nodes: [
-              ...dataFromInvalidAddressesCache.contacts.nodes,
-              { ...createdAddressData?.createAddress?.address },
-            ],
+            nodes: newContacts,
           },
         };
         cache.writeQuery({ ...InvalidAddressesQuery, data });
