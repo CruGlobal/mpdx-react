@@ -221,7 +221,11 @@ const Contact: React.FC<Props> = ({
                     </Box>
 
                     <ContactIconContainer aria-label={t('Edit Icon')}>
-                      {address.source === 'MPDX' ? <EditIcon /> : <LockIcon />}
+                      {['MPDX', 'DataServer'].indexOf(address.source) > -1 ? (
+                        <EditIcon />
+                      ) : (
+                        <LockIcon />
+                      )}
                     </ContactIconContainer>
                   </Box>
                 </Grid>

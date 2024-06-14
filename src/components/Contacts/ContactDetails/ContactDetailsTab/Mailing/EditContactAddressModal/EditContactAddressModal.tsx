@@ -169,8 +169,7 @@ export const EditContactAddressModal: React.FC<
     handleClose();
   };
 
-  const editingDisabled =
-    address.source === 'Siebel' || address.source === 'DataServer';
+  const editingDisabled = address.source === 'Siebel';
   const { data: emailData } = useDonationServicesEmailQuery({
     variables: {
       accountListId,
