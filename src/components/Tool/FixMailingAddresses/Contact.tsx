@@ -23,7 +23,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
-import { useUpdateCache } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/useUpdateCache';
 import {
   AddButton,
   AddIcon,
@@ -32,6 +31,7 @@ import {
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useLocale } from 'src/hooks/useLocale';
+import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
