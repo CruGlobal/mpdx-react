@@ -22,6 +22,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
   AddButton,
@@ -109,6 +110,7 @@ interface Props {
   name: string;
   status: string;
   addresses: ContactAddressFragment[];
+  appName: string;
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
 }
@@ -118,6 +120,7 @@ const Contact: React.FC<Props> = ({
   name,
   status,
   addresses,
+  appName,
   openEditAddressModal,
   openNewAddressModal,
 }) => {
@@ -265,7 +268,11 @@ const Contact: React.FC<Props> = ({
                     </Box>
 
                     <ContactIconContainer aria-label={t('Edit Icon')}>
-                      {address.source === 'MPDX' ? <EditIcon /> : <LockIcon />}
+                      {editableSources.indexOf(address.source) > -1 ? (
+                        <EditIcon />
+                      ) : (
+                        <LockIcon />
+                      )}
                     </ContactIconContainer>
                   </Box>
                 </Grid>
@@ -279,7 +286,9 @@ const Contact: React.FC<Props> = ({
                       <strong>{t('Source')}: </strong>
                     </Typography>
                   </Hidden>
-                  <Typography display="inline">MPDX</Typography>
+                  <Typography display="inline">
+                    {t('{{appName}}', { appName })}
+                  </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -289,7 +298,6 @@ const Contact: React.FC<Props> = ({
                 justifyContent="flex-start"
                 className={clsx(
                   classes.responsiveBorder,
-                  classes.paddingX,
                   classes.hoverHighlight,
                 )}
               >
