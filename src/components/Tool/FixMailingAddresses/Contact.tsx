@@ -105,6 +105,7 @@ interface Props {
   name: string;
   status: string;
   addresses: ContactAddressFragment[];
+  appName: string;
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
 }
@@ -114,6 +115,7 @@ const Contact: React.FC<Props> = ({
   name,
   status,
   addresses,
+  appName,
   openEditAddressModal,
   openNewAddressModal,
 }) => {
@@ -233,7 +235,9 @@ const Contact: React.FC<Props> = ({
                       <strong>{t('Source')}: </strong>
                     </Typography>
                   </Hidden>
-                  <Typography display="inline">MPDX</Typography>
+                  <Typography display="inline">
+                    {t('{{appName}}', { appName })}
+                  </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -243,7 +247,6 @@ const Contact: React.FC<Props> = ({
                 justifyContent="flex-start"
                 className={clsx(
                   classes.responsiveBorder,
-                  classes.paddingX,
                   classes.hoverHighlight,
                 )}
               >
