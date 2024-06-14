@@ -28,7 +28,6 @@ describe('uploadTnt', () => {
       uploadTnt({
         override: 'false',
         selectedTags,
-        apiToken: '',
         accountListId,
         file,
         t,
@@ -41,7 +40,6 @@ describe('uploadTnt', () => {
       uploadTnt({
         override: 'false',
         selectedTags,
-        apiToken: '',
         accountListId,
         file: textFile,
         t,
@@ -54,7 +52,6 @@ describe('uploadTnt', () => {
       uploadTnt({
         override: 'false',
         selectedTags,
-        apiToken: '',
         accountListId,
         file: largeFile,
         t,
@@ -69,7 +66,6 @@ describe('uploadTnt', () => {
       uploadTnt({
         override: 'false',
         selectedTags,
-        apiToken: '',
         accountListId,
         file,
         t,
@@ -87,7 +83,6 @@ describe('uploadTnt', () => {
       uploadTnt({
         override: 'false',
         selectedTags,
-        apiToken: '',
         accountListId,
         file,
         t,

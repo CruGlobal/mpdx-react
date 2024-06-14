@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises';
 import { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { IncomingForm } from 'formidable';
+import { getToken } from 'next-auth/jwt';
 import fetch, { File, FormData } from 'node-fetch';
 
 export const config = {
@@ -34,16 +35,22 @@ const uploadTntConnect = async (
       return;
     }
 
+    const jwt = await getToken({
+      req,
+      secret: process.env.JWT_SECRET,
+    });
+    const apiToken = jwt?.apiToken;
+    if (!apiToken) {
+      res.status(401).send('Unauthorized');
+      return;
+    }
+
     const {
-      fields: { override, selectedTags, accountListId, apiToken },
+      fields: { override, selectedTags, accountListId },
       files: { file },
     } = await parseBody(req);
     if (typeof override !== 'string') {
       res.status(400).send('Missing override');
-      return;
-    }
-    if (!apiToken) {
-      res.status(401).send('Unauthorized');
       return;
     }
     if (!file || Array.isArray(file)) {
@@ -53,7 +60,7 @@ const uploadTntConnect = async (
 
     const fileUpload = new File(
       [await readFile(file.filepath)],
-      file.originalFilename ?? 'avatar',
+      file.originalFilename ?? 'tntConnectUpload',
     );
     const form = new FormData();
     form.append('data[type]', 'imports');

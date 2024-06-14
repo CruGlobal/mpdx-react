@@ -21,7 +21,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
-import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -32,7 +31,7 @@ import { ContactTagInput } from 'src/components/Tags/Tags';
 import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
-import { uploadTnt, validateTnt } from './uploadTntConnect';
+import { uploadTnt, validateTnt } from './uploads/uploadTntConnect';
 
 const BoldTypography = styled(Typography)(() => ({
   fontWeight: 'bold',
@@ -118,7 +117,6 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { data: sessionData } = useSession();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tntFile, setTntFile] = useState<{
@@ -151,7 +149,6 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
           selectedTags: attributes.selectedTags,
           file,
           t,
-          apiToken: sessionData?.user?.apiToken || '',
           accountListId,
         });
       } catch (err) {
@@ -270,7 +267,6 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Button
                       component="label"
-                      role={undefined}
                       variant="contained"
                       tabIndex={-1}
                       startIcon={<CloudUploadIcon />}

@@ -31,14 +31,12 @@ export const uploadTnt = async ({
   override,
   file,
   t,
-  apiToken,
   accountListId,
 }: {
   selectedTags: string[];
   override: string;
   file: File;
   t: TFunction;
-  apiToken: string;
   accountListId: string;
 }): Promise<void> => {
   const validationResult = validateTnt({ file, t });
@@ -50,10 +48,9 @@ export const uploadTnt = async ({
   form.append('override', override);
   form.append('tag_list', selectedTags.join(','));
   form.append('file', file);
-  form.append('apiToken', apiToken);
   form.append('accountListId', accountListId);
 
-  const res = await fetch(`/api/upload-tnt-connect-import`, {
+  const res = await fetch(`/api/uploads/upload-tnt-connect-import`, {
     method: 'POST',
     body: form,
   }).catch((err) => {
