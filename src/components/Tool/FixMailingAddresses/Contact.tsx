@@ -20,6 +20,7 @@ import clsx from 'clsx';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import {
   AddButton,
   AddIcon,
@@ -221,7 +222,7 @@ const Contact: React.FC<Props> = ({
                     </Box>
 
                     <ContactIconContainer aria-label={t('Edit Icon')}>
-                      {['MPDX', 'DataServer'].indexOf(address.source) > -1 ? (
+                      {editableSources.indexOf(address.source) > -1 ? (
                         <EditIcon />
                       ) : (
                         <LockIcon />
