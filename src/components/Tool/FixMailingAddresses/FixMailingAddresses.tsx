@@ -92,9 +92,11 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
+const appName = process.env.APP_NAME || 'MPDX';
+
 export const emptyAddress: ContactAddressFragment = {
   id: 'new',
-  source: 'MPDX',
+  source: appName,
   street: '',
   region: '',
   location: '',
@@ -114,7 +116,7 @@ enum ModalEnum {
   Edit = 'Edit',
 }
 
-const sourceOptions = ['MPDX', 'DataServer'];
+const sourceOptions = [appName, 'DataServer'];
 
 const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
@@ -123,7 +125,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const [showNewAddressModal, setShowNewAddressModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(emptyAddress);
   const [selectedContactId, setSelectedContactId] = useState('');
-  const [defaultSource, setDefaultSource] = useState('MPDX');
+  const [defaultSource, setDefaultSource] = useState(appName);
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
@@ -218,10 +220,12 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
           </Grid>
 
           {loading && !data && (
-            <CircularProgress
-              data-testid="loading"
-              style={{ marginTop: theme.spacing(3) }}
-            />
+            <Box className={classes.outer}>
+              <CircularProgress
+                data-testid="loading"
+                style={{ marginTop: theme.spacing(3) }}
+              />
+            </Box>
           )}
 
           {!loading && data && (
@@ -286,6 +290,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                         status={contact.status || ''}
                         key={contact.id}
                         addresses={contact.addresses.nodes}
+                        appName={appName}
                         openEditAddressModal={(address, contactId) =>
                           handleModalOpen(ModalEnum.Edit, address, contactId)
                         }

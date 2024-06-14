@@ -65,6 +65,8 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
+export const editableSources = ['MPDX', 'manual', 'TntImport'];
+
 interface EditContactAddressModalProps {
   accountListId: string;
   address: ContactMailingFragment['addresses']['nodes'][0];
@@ -169,8 +171,7 @@ export const EditContactAddressModal: React.FC<
     handleClose();
   };
 
-  const editingDisabled =
-    address.source === 'Siebel' || address.source === 'DataServer';
+  const editingDisabled = editableSources.indexOf(address.source) === -1;
   const { data: emailData } = useDonationServicesEmailQuery({
     variables: {
       accountListId,
