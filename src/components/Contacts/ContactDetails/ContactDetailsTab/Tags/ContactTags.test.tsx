@@ -119,9 +119,12 @@ describe('ContactTags', () => {
     userEvent.type(getByPlaceholderText('add tag'), '{enter}');
 
     await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Cannot add duplicate tags', {
-        variant: 'error',
-      }),
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Cannot add duplicate tags, duplicate tag has been removed',
+        {
+          variant: 'error',
+        },
+      ),
     );
   });
 

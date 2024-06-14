@@ -72,34 +72,24 @@ export const MassActionsAddTagsModal: React.FC<
 
   const handleValidation = async (fields: Partial<ContactUpdateInput>) => {
     const tags = fields.tagList ?? [];
-    const contactsExistingTags =
-      contactsForTags?.contacts.nodes.map((contact) => ({
-        tagList: [...new Set([...contact.tagList])],
-      })) ?? [];
-
-    const existingTags: string[] = [];
-    contactsExistingTags.forEach((contact) => {
-      for (let i = 0; i < contact.tagList.length; i++) {
-        existingTags.push(contact.tagList[i]);
-      }
+    let existingTags: string[] = [];
+    let contactNum = 0;
+    contactsForTags?.contacts.nodes.forEach((contact) => {
+      existingTags = [...existingTags, ...contact.tagList];
+      contactNum++;
     });
-
     for (let i = 0; i < tags?.length; i++) {
-      existingTags.push(tags[i]);
+      existingTags = [...existingTags, tags[i]];
       const duplicates = existingTags.filter(
         (item, index) => existingTags.indexOf(item) !== index,
       );
-      if (duplicates.length > 0) {
-        enqueueSnackbar(
-          t('One or more selected contacts already has this tag'),
-          {
-            variant: 'error',
-          },
-        );
-        existingTags.pop();
+      if (duplicates.length === contactNum && duplicates.length > 0) {
+        enqueueSnackbar(t('All selected contacts already have this tag'), {
+          variant: 'error',
+        });
+        tags.pop();
       }
     }
-
     return;
   };
 

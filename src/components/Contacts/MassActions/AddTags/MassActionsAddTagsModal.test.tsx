@@ -21,7 +21,6 @@ jest.mock('notistack', () => ({
     };
   },
 }));
-
 const selectedIds = ['abc'];
 const accountListId = '123456789';
 describe('MassActionsAddTags', () => {
@@ -65,6 +64,17 @@ describe('MassActionsAddTags', () => {
     const mutationSpy = jest.fn();
     const handleClose = jest.fn();
 
+    const GetContactsForAddingTags: GetContactsForAddingTagsQuery = {
+      contacts: {
+        nodes: [
+          {
+            id: 'abc',
+            tagList: ['tag123'],
+          },
+        ],
+      },
+    };
+
     const { getByRole, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
@@ -72,16 +82,7 @@ describe('MassActionsAddTags', () => {
         }>
           onCall={mutationSpy}
           mocks={{
-            GetContactsForAddingTags: {
-              contacts: {
-                nodes: [
-                  {
-                    id: 'abc',
-                    tagList: ['tag123'],
-                  },
-                ],
-              },
-            },
+            GetContactsForAddingTags,
           }}
         >
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -97,8 +98,12 @@ describe('MassActionsAddTags', () => {
       </ThemeProvider>,
     );
 
+    expect(GetContactsForAddingTags.contacts.nodes[0].tagList).toEqual([
+      'tag123',
+    ]);
     const input = getByRole('combobox') as HTMLInputElement;
     userEvent.type(input, 'tag123');
+    expect(GetContactsForAddingTags.contacts.nodes[0].tagList.length).toBe(1);
     expect(input.value).toBe('tag123');
     userEvent.type(input, '{enter}');
     await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
@@ -110,11 +115,12 @@ describe('MassActionsAddTags', () => {
     expect(operation.variables.attributes[0].tagList[0]).toEqual('tag123');
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
-        'One or more selected contacts already has this tag',
+        'All selected contacts already have this tag',
         {
           variant: 'error',
         },
       ),
     );
+    expect(GetContactsForAddingTags.contacts.nodes[0].tagList.length).toBe(1);
   });
 });

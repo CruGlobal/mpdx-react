@@ -91,9 +91,12 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
   }): Promise<void> => {
     for (let i = 0; i < tagList.length; i++) {
       if (contactTags.includes(tagList[i])) {
-        enqueueSnackbar(t('Cannot add duplicate tags'), {
-          variant: 'error',
-        });
+        enqueueSnackbar(
+          t('Cannot add duplicate tags, duplicate tag has been removed'),
+          {
+            variant: 'error',
+          },
+        );
         tagList.pop();
       }
     }
