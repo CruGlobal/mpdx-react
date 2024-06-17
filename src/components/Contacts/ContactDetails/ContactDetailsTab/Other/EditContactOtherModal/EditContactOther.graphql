@@ -25,6 +25,7 @@ mutation UpdateContactOther(
   ) {
     contact {
       id
+      contactPhase
       user {
         id
         firstName

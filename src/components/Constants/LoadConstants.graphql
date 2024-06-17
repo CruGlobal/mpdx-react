@@ -3,6 +3,7 @@ query LoadConstants {
     activities {
       id
       value
+      name
     }
     languages {
       id
@@ -58,9 +59,26 @@ query LoadConstants {
       key
       value
     }
-    # userNotificationTitles {
-    #   id
-    #   value
-    # }
+    phases {
+      id
+      name
+      results {
+        resultOptions {
+          dbResult {
+            task
+            result
+          }
+          name
+          suggestedContactStatus
+          suggestedNextActions
+        }
+        tags {
+          value
+          id
+        }
+      }
+      contactStatuses
+      tasks
+    }
   }
 }

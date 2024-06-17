@@ -10,6 +10,7 @@ import {
   FormControl,
   FormControlLabel,
   InputLabel,
+  ListSubheader,
   MenuItem,
   Select,
   TextField,
@@ -34,9 +35,9 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
@@ -122,6 +123,9 @@ export const EditPartnershipInfoModal: React.FC<
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
+  const { contactStatuses } = useContactPartnershipStatuses();
+
+  const phases = constants?.phases;
   const [referredByName, setReferredByName] = useState('');
   const referredContactIds = contact.contactReferralsToMe.nodes.map(
     (referral) => referral.referredBy.id,
@@ -349,11 +353,16 @@ export const EditPartnershipInfoModal: React.FC<
                       },
                     }}
                   >
-                    {Object.values(StatusEnum).map((value) => (
-                      <MenuItem key={value} value={value}>
-                        {getLocalizedContactStatus(t, value)}
-                      </MenuItem>
-                    ))}
+                    {phases?.map((phase) => [
+                      <ListSubheader key={phase?.name}>
+                        {phase?.name}
+                      </ListSubheader>,
+                      phase?.contactStatuses.map((s: StatusEnum) => (
+                        <MenuItem key={s} value={s}>
+                          {contactStatuses[s]?.translated}
+                        </MenuItem>
+                      )),
+                    ])}
                   </Select>
                 </FormControl>
               </ContactInputWrapper>

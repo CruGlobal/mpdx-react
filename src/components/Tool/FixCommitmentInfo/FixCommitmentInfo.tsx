@@ -17,8 +17,8 @@ import {
   PledgeFrequencyEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
@@ -88,8 +88,10 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
     });
   const [updateInvalidStatus, { loading: updating }] =
     useUpdateInvalidStatusMutation();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
-  const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
+  const contactFilterStatuses = contactFilterGroups?.accountList
+    ?.contactFilterGroups
     ? (
         contactFilterGroups.accountList.contactFilterGroups
           .find((group) => group?.filters[0]?.filterKey === 'status')
@@ -201,7 +203,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                       key={contact.name}
                       statusTitle={
                         contact.status
-                          ? contactPartnershipStatus[contact.status]
+                          ? contactStatuses[contact.status]?.translated
                           : ''
                       }
                       statusValue={contact.status || ''}
@@ -215,7 +217,9 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                       frequencyValue={contact.pledgeFrequency || ''}
                       hideFunction={hideContact}
                       updateFunction={updateContact}
-                      statuses={contactStatuses || [{ name: '', value: '' }]}
+                      statuses={
+                        contactFilterStatuses || [{ name: '', value: '' }]
+                      }
                     />
                   ))}
                 </Box>

@@ -18,9 +18,9 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
 
@@ -83,6 +83,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
+  const { contactStatuses } = useContactPartnershipStatuses();
   //TODO: Add button functionality
   //TODO: Make contact title a link to contact page
 
@@ -152,7 +153,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact1.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status: contactPartnershipStatus[contact1.status],
+                          status: contactStatuses[contact1.status]?.translated,
                         })}
                       </Typography>
                     )}
@@ -294,7 +295,7 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     {contact2.status && (
                       <Typography>
                         {t('Status: {{status}}', {
-                          status: contactPartnershipStatus[contact2.status],
+                          status: contactStatuses[contact2.status]?.translated,
                         })}
                       </Typography>
                     )}

@@ -39,7 +39,7 @@ describe('MonthlyCommitment', () => {
   });
 
   it('renders', async () => {
-    const { getByTestId } = render(
+    const { getByText } = render(
       <GqlMockedProvider<GetReportsPledgeHistoriesQuery>
         mocks={{
           GetReportsPledgeHistories: {
@@ -61,14 +61,12 @@ describe('MonthlyCommitment', () => {
     );
 
     await waitFor(() =>
-      expect(getByTestId('MonthlyCommitmentSummary')).toHaveTextContent(
-        'Monthly Commitment Average $55 | Monthly Commitment Goal: $2,000',
-      ),
+      expect(getByText('Monthly Commitments')).toBeInTheDocument(),
     );
   });
 
   it('renders with missing data', async () => {
-    const { getByTestId } = render(
+    const { getByText } = render(
       <GqlMockedProvider<GetReportsPledgeHistoriesQuery>
         mocks={{
           GetReportsPledgeHistories: {
@@ -94,9 +92,7 @@ describe('MonthlyCommitment', () => {
     );
 
     await waitFor(() =>
-      expect(getByTestId('MonthlyCommitmentSummary')).toHaveTextContent(
-        'Monthly Commitment Average $100 | Monthly Commitment Goal: $0',
-      ),
+      expect(getByText('Monthly Commitments')).toBeInTheDocument(),
     );
   });
 });

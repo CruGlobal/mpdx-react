@@ -10,52 +10,55 @@ export const getLocalizedTaskType = (
   }
 
   switch (taskType) {
-    case ActivityTypeEnum.Appointment:
-      return t('Appointment');
+    case ActivityTypeEnum.None:
+      return t('None');
 
-    case ActivityTypeEnum.Call:
-      return t('Call');
+    case ActivityTypeEnum.InitiationInPerson:
+    case ActivityTypeEnum.FollowUpInPerson:
+    case ActivityTypeEnum.AppointmentInPerson:
+    case ActivityTypeEnum.PartnerCareInPerson:
+      return t('In Person');
 
-    case ActivityTypeEnum.Email:
+    case ActivityTypeEnum.AppointmentPhoneCall:
+    case ActivityTypeEnum.InitiationPhoneCall:
+    case ActivityTypeEnum.FollowUpPhoneCall:
+    case ActivityTypeEnum.PartnerCarePhoneCall:
+      return t('Phone Call');
+
+    case ActivityTypeEnum.AppointmentVideoCall:
+      return t('Video Call');
+
+    case ActivityTypeEnum.InitiationEmail:
+    case ActivityTypeEnum.FollowUpEmail:
+    case ActivityTypeEnum.PartnerCareEmail:
       return t('Email');
 
-    case ActivityTypeEnum.FacebookMessage:
-      return t('Facebook Message');
-
-    case ActivityTypeEnum.Letter:
-      return t('Letter');
-
-    case ActivityTypeEnum.NewsletterEmail:
-      return t('Newsletter - Email');
-
-    case ActivityTypeEnum.NewsletterPhysical:
-      return t('Newsletter - Physical');
-
-    case ActivityTypeEnum.None:
-      return '';
-
-    case ActivityTypeEnum.PrayerRequest:
-      return t('Prayer Request');
-
-    case ActivityTypeEnum.PreCallLetter:
-      return t('Pre-Call Letter');
-
-    case ActivityTypeEnum.ReminderLetter:
-      return t('Reminder Letter');
-
-    case ActivityTypeEnum.SupportLetter:
-      return t('Support Letter');
-
-    case ActivityTypeEnum.TalkToInPerson:
-      return t('Talk To In Person');
-
-    case ActivityTypeEnum.TextMessage:
+    case ActivityTypeEnum.InitiationTextMessage:
+    case ActivityTypeEnum.FollowUpTextMessage:
+    case ActivityTypeEnum.PartnerCareTextMessage:
       return t('Text Message');
 
-    case ActivityTypeEnum.Thank:
-      return t('Thank');
+    case ActivityTypeEnum.FollowUpSocialMedia:
+    case ActivityTypeEnum.PartnerCareSocialMedia:
+    case ActivityTypeEnum.InitiationSocialMedia:
+      return t('Social Media');
 
-    case ActivityTypeEnum.ToDo:
+    case ActivityTypeEnum.InitiationLetter:
+      return t('Letter');
+    case ActivityTypeEnum.InitiationSpecialGiftAppeal:
+      return t('Special Gift Appeal');
+
+    case ActivityTypeEnum.PartnerCarePhysicalNewsletter:
+      return t('Physical Newsletter');
+    case ActivityTypeEnum.PartnerCareDigitalNewsletter:
+      return t('Digital Newsletter');
+    case ActivityTypeEnum.PartnerCareThank:
+      return t('Thank You Note');
+    case ActivityTypeEnum.PartnerCarePrayerRequest:
+      return t('Prayer Request');
+    case ActivityTypeEnum.PartnerCareUpdateInformation:
+      return t('Update Information');
+    case ActivityTypeEnum.PartnerCareToDo:
       return t('To Do');
   }
 };

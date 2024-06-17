@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { DesignationAccountsReport } from './DesignationAccountsReport';
@@ -133,16 +134,18 @@ describe('DesignationAccountsReport', () => {
   it('empty', async () => {
     const { queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{ DesignationAccounts: DesignationAccountsQuery }>
-          mocks={emptyMocks}
-        >
-          <DesignationAccountsReport
-            accountListId={accountListId}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-          />
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<{ DesignationAccounts: DesignationAccountsQuery }>
+            mocks={emptyMocks}
+          >
+            <DesignationAccountsReport
+              accountListId={accountListId}
+              isNavListOpen={true}
+              title={title}
+              onNavListToggle={onNavListToggle}
+            />
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </ThemeProvider>,
     );
 

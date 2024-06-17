@@ -33,13 +33,13 @@ const router = {
 const completedTask = {
   task: {
     id: 'id',
-    activityType: ActivityTypeEnum.PrayerRequest,
+    activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
     subject: 'New Task',
     location: null,
     startAt: '2023-08-18T17:26:52Z',
     completedAt: '2024-01-18T19:36:55Z',
     result: ResultEnum.Done,
-    nextAction: ActivityTypeEnum.TextMessage,
+    nextAction: ActivityTypeEnum.FollowUpTextMessage,
     tagList: [],
     user: null,
     notificationTimeBefore: null,
@@ -162,7 +162,7 @@ describe('TaskModal', () => {
         GetTaskForTaskModalMock={{
           task: {
             id: 'id',
-            activityType: ActivityTypeEnum.PrayerRequest,
+            activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
             subject: 'New Task',
             location: null,
             startAt: null,

@@ -1,0 +1,19 @@
+query HasActiveTask(
+  $accountListId: ID!
+  $tasksFilter: TaskFilterSetInput
+  $after: String
+  $first: Int
+  $sortBy: TaskSortEnum
+) {
+  tasks(
+    accountListId: $accountListId
+    tasksFilter: $tasksFilter
+    after: $after
+    first: $first
+    sortBy: $sortBy
+  ) {
+    nodes {
+      id
+    }
+  }
+}

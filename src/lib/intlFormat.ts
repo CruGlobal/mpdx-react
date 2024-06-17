@@ -78,6 +78,18 @@ export const dateFormatWithoutYear = (
   }).format(date.toJSDate());
 };
 
+export const dateFormatMonthOnly = (
+  date: DateTime | null,
+  locale: string,
+): string => {
+  if (date === null) {
+    return '';
+  }
+  return new Intl.DateTimeFormat(locale, {
+    month: 'short',
+  }).format(date.toJSDate());
+};
+
 export const dateFromParts = (
   year: number | null | undefined,
   month: number | null | undefined,
