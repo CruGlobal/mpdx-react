@@ -41,7 +41,12 @@ describe('FixEmailAddresses-Contact', () => {
             name={testData.name}
             key={testData.name}
             personId={testData.id}
-            emails={testData.emails}
+            email={testData.emails.map((email) => ({
+              ...email,
+              isValid: false,
+              personId: testData.id,
+              isPrimary: email.primary,
+            }))}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
             handleAdd={handleAddMock}
@@ -74,7 +79,12 @@ describe('FixEmailAddresses-Contact', () => {
             name={testData.name}
             key={testData.name}
             personId={testData.id}
-            emails={testData.emails}
+            email={testData.emails.map((email) => ({
+              ...email,
+              isValid: false,
+              personId: testData.id,
+              isPrimary: email.primary,
+            }))}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
             handleAdd={handleAddMock}
