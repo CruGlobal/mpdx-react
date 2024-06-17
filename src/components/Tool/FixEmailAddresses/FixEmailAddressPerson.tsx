@@ -1,6 +1,7 @@
-import React, { Fragment, useState } from 'react';
-import { mdiDelete, mdiLock, mdiPlus, mdiStar, mdiStarOutline } from '@mdi/js';
+import React, { Fragment } from 'react';
+import { mdiDelete, mdiLock, mdiStar, mdiStarOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
+import CheckIcon from '@mui/icons-material/Check';
 import {
   Avatar,
   Box,
@@ -13,9 +14,11 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import * as Yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
@@ -93,7 +96,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 
 interface FixEmailAddressPersonProps {
   name: string;
-  emails: EmailAddressData[];
+  email: EmailAddressData[];
   personId: string;
   toDelete: PersonEmailAddressInput[];
   contactId: string;
@@ -108,6 +111,74 @@ interface FixEmailAddressPersonProps {
   setContactFocus: SetContactFocus;
 }
 
+interface EmailAddressData {
+  email: string;
+  isValid: boolean;
+  updatedAt: string;
+  source: string;
+  personId: string; // Add the 'personId' property
+}
+
+// const onSubmit = (values: EmailAddressData, validationSchema) => {
+//   const { email, personId } = values;
+// };
+
+const EmailValidationForm = ({
+  email: initialEmail = {
+    email: '',
+    updatedAt: '',
+    source: '',
+    personId: '',
+    isValid: false, // Add the 'personId' property
+  },
+}: {
+  email?: EmailAddressData;
+}) => {
+  const validationSchema = Yup.object().shape({
+    email: Yup.string().email('Invalid email address format'),
+  });
+
+  return (
+    <Formik
+      initialValues={{
+        email: initialEmail.email,
+        updatedAt: '',
+        source: '',
+        personId: '',
+        isValid: false,
+      }}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+    >
+      {({ isValid }) => (
+        <Form>
+          <Grid container>
+            <div className="d-flex align-items-start">
+              <Field type="email" name="email" />
+            </div>
+            <div className="d-flex align-items-end">
+              <Button
+                style={{
+                  maxWidth: '20px',
+                  maxHeight: '20px',
+                  minWidth: '20px',
+                  minHeight: '20px',
+                }}
+                variant="contained"
+                type="submit"
+                disabled={!isValid}
+              >
+                <CheckIcon fontSize="small" />
+              </Button>
+            </div>
+          </Grid>
+          <ErrorMessage name="email" component="div" />
+        </Form>
+      )}
+    </Formik>
+  );
+};
+
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
   emails,
@@ -115,29 +186,29 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   contactId,
   handleChange,
   handleDelete,
-  handleAdd,
+  // handleAdd,
   handleChangePrimary,
   setContactFocus,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
-  const [newEmailAddress, setNewEmailAddress] = useState<string>('');
+  // const [newEmailAddress, setNewEmailAddress] = useState<string>('');
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info
 
-  const updateNewEmailAddress = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setNewEmailAddress(event.target.value);
-  };
+  // const updateNewEmailAddress = (
+  //   event: React.ChangeEvent<HTMLInputElement>,
+  // ): void => {
+  //   setNewEmailAddress(event.target.value);
+  // };
 
-  const addNewEmailAddress = (): void => {
-    if (newEmailAddress) {
-      handleAdd(personId, newEmailAddress);
-      setNewEmailAddress('');
-    }
-  };
+  // const addNewEmailAddress = (): void => {
+  //   if (newEmailAddress) {
+  //     handleAdd(personId, newEmailAddress);
+  //     setNewEmailAddress('');
+  //   }
+  // };
 
   const handleContactNameClick = () => {
     setContactFocus(contactId);
@@ -164,7 +235,6 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                   </Box>
                 </Box>
               </Grid>
-
               <EmailAddressListWrapper item xs={12}>
                 <Grid container>
                   <Hidden xsDown>
@@ -179,7 +249,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       </Box>
                     </ColumnHeaderWrapper>
                     <ColumnHeaderWrapper item xs={12} sm={6}>
-                      <Box display="flex" justifyContent="flex-start" px={2}>
+                      <Box display="flex" justifyContent="flex-start" px={3.25}>
                         <Typography>
                           <strong>{t('Address')}</strong>
                         </Typography>
@@ -281,24 +351,9 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                     <BoxWithResponsiveBorder
                       display="flex"
                       justifyContent="flex-start"
-                      px={2}
+                      px={3.5}
                     >
-                      <TextField
-                        style={{ width: '100%' }}
-                        onChange={(
-                          event: React.ChangeEvent<HTMLInputElement>,
-                        ) => updateNewEmailAddress(event)}
-                        inputProps={{
-                          'data-testid': `addNewEmailInput-${personId}`,
-                        }}
-                        value={newEmailAddress}
-                      />
-                      <Box
-                        onClick={() => addNewEmailAddress()}
-                        data-testid={`addButton-${personId}`}
-                      >
-                        <HoverableIcon path={mdiPlus} size={1} />
-                      </Box>
+                      <EmailValidationForm />
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>
