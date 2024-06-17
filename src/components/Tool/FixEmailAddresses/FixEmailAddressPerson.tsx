@@ -104,7 +104,6 @@ export interface FixEmailAddressPersonProps {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
   handleDelete: (personId: string, emailAddress: number) => void;
-  handleAdd: (personId: string, email: string) => void;
   handleChangePrimary: (personId: string, emailIndex: number) => void;
   setContactFocus: SetContactFocus;
 }
@@ -118,7 +117,6 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   handleDelete,
   handleChangePrimary,
   setContactFocus,
-  handleAdd,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -277,11 +275,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       {
                         //TODO: index will need to be mapped to the correct personId
                       }
-                      <EmailValidationForm
-                        handleAdd={handleAdd}
-                        index={0}
-                        personId={personId}
-                      />
+                      <EmailValidationForm index={0} personId={personId} />
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>
