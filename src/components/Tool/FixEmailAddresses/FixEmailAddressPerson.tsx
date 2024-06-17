@@ -119,9 +119,7 @@ interface EmailAddressData {
   isValid: boolean;
 }
 
-// const onSubmit = (values: EmailAddressData, validationSchema) => {
-//   const { email, personId } = values;
-// };
+const onSubmit = () => {};
 
 const EmailValidationForm = ({
   email: initialEmail = {
@@ -150,7 +148,7 @@ const EmailValidationForm = ({
         isValid: false,
       }}
       validationSchema={validationSchema}
-      // onSubmit={onSubmit}
+      onSubmit={onSubmit}
     >
       {({ isValid }) => (
         <Form>
