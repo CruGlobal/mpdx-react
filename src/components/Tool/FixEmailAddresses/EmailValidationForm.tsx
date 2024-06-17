@@ -4,7 +4,13 @@ import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { AddIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useEmailAddressesMutation } from './AddEmailAddress.generated';
 import { RowWrapper } from './FixEmailAddressPerson';
+import {
+  GetInvalidEmailAddressesDocument,
+  GetInvalidEmailAddressesQuery,
+} from './FixEmailAddresses.generated';
 
 const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -24,16 +30,12 @@ interface EmailValidationFormEmail {
 interface EmailValidationFormProps {
   index: number;
   personId: string;
-  handleAdd?: (personId: string, email: string) => void;
 }
-
-//TODO: Implement during MPDX-7946
-const onSubmit = (values, actions) => {
-  actions.resetForm();
-};
 
 const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const [emailAddressesMutation] = useEmailAddressesMutation();
 
   const initialEmail = {
     email: '',
@@ -54,6 +56,66 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
     personId: Yup.string(),
     isValid: Yup.bool().default(false),
   });
+
+  const onSubmit = (values, actions) => {
+    emailAddressesMutation({
+      variables: {
+        input: {
+          attributes: {
+            id: personId,
+            emailAddresses: [
+              {
+                email: values.email,
+              },
+            ],
+          },
+          accountListId: accountListId || '',
+        },
+      },
+      update: (cache, { data: addEmailAddressData }) => {
+        actions.resetForm();
+        const query = {
+          query: GetInvalidEmailAddressesDocument,
+          variables: {
+            accountListId: accountListId,
+          },
+        };
+        const dataFromCache =
+          cache.readQuery<GetInvalidEmailAddressesQuery>(query);
+        if (dataFromCache) {
+          const peopleWithNewEmail = dataFromCache.people.nodes.map(
+            (person) => {
+              if (
+                person.id === personId &&
+                addEmailAddressData?.updatePerson?.person.emailAddresses.nodes
+              ) {
+                return {
+                  ...person,
+                  emailAddresses: {
+                    nodes:
+                      addEmailAddressData?.updatePerson?.person.emailAddresses
+                        .nodes,
+                  },
+                };
+              } else {
+                return person;
+              }
+            },
+          );
+
+          cache.writeQuery({
+            ...query,
+            data: {
+              people: {
+                ...dataFromCache.people,
+                nodes: peopleWithNewEmail,
+              },
+            },
+          });
+        }
+      },
+    });
+  };
 
   return (
     <Formik
