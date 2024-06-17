@@ -25,7 +25,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
-import { EmailAddressData } from './FixEmailAddresses';
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -113,10 +112,11 @@ interface FixEmailAddressPersonProps {
 
 interface EmailAddressData {
   email: string;
-  isValid: boolean;
+  isPrimary: boolean;
   updatedAt: string;
   source: string;
   personId: string; // Add the 'personId' property
+  isValid: boolean;
 }
 
 // const onSubmit = (values: EmailAddressData, validationSchema) => {
@@ -126,6 +126,7 @@ interface EmailAddressData {
 const EmailValidationForm = ({
   email: initialEmail = {
     email: '',
+    isPrimary: false,
     updatedAt: '',
     source: '',
     personId: '',
@@ -142,13 +143,14 @@ const EmailValidationForm = ({
     <Formik
       initialValues={{
         email: initialEmail.email,
+        isPrimary: initialEmail.isPrimary,
         updatedAt: '',
         source: '',
         personId: '',
         isValid: false,
       }}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      // onSubmit={onSubmit}
     >
       {({ isValid }) => (
         <Form>
@@ -181,7 +183,7 @@ const EmailValidationForm = ({
 
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
-  emails,
+  email,
   personId,
   contactId,
   handleChange,
@@ -256,7 +258,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       </Box>
                     </ColumnHeaderWrapper>
                   </Hidden>
-                  {emails.map((email, index) => (
+                  {email.map((email, index) => (
                     <Fragment key={index}>
                       <RowWrapper item xs={12} sm={6}>
                         <Box
@@ -278,7 +280,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                             </Typography>
                           </Box>
                           <Typography>
-                            {email.primary ? (
+                            {email.isPrimary ? (
                               <Box
                                 data-testid={`starIcon-${personId}-${index}`}
                               >
