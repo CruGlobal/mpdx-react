@@ -43,6 +43,7 @@ const mockContact: ContactMailingFragment = {
         historic: true,
         street: '123 Cool Street',
         primaryMailingAddress: false,
+        source: 'MPDX',
       },
     ],
   },

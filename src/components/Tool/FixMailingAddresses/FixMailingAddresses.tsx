@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { ApolloCache } from '@apollo/client';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
@@ -14,12 +15,15 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { EditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
+import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
+import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
 import {
   ContactAddressFragment,
+  InvalidAddressesDocument,
+  InvalidAddressesQuery,
   useInvalidAddressesQuery,
 } from './GetInvalidAddresses.generated';
 
@@ -36,6 +40,7 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+    flexWrap: 'wrap',
     width: '100%',
   },
   divider: {
@@ -87,9 +92,11 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
+const appName = process.env.APP_NAME || 'MPDX';
+
 export const emptyAddress: ContactAddressFragment = {
   id: 'new',
-  source: 'MPDX',
+  source: appName,
   street: '',
   region: '',
   location: '',
@@ -104,34 +111,97 @@ export const emptyAddress: ContactAddressFragment = {
 interface Props {
   accountListId: string;
 }
+enum ModalEnum {
+  New = 'New',
+  Edit = 'Edit',
+}
 
-const sourceOptions = ['MPDX', 'DataServer'];
+const sourceOptions = [appName, 'DataServer'];
 
 const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
-  const [modalState, setModalState] = useState({
-    open: false,
-    address: emptyAddress,
-    contactId: '',
-  });
   const { t } = useTranslation();
-  const [defaultSource, setDefaultSource] = useState('MPDX');
-  const { data, loading, refetch } = useInvalidAddressesQuery({
+  const [showEditAddressModal, setShowEditAddressModal] = useState(false);
+  const [showNewAddressModal, setShowNewAddressModal] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(emptyAddress);
+  const [selectedContactId, setSelectedContactId] = useState('');
+  const [defaultSource, setDefaultSource] = useState(appName);
+  const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
 
-  const handleOpen = (
+  const handleUpdateCacheForDeleteAddress = useCallback(
+    (cache: ApolloCache<unknown>, data) => {
+      cache.evict({
+        id: `Address:${data.deletedAddressId}`,
+      });
+      cache.gc();
+    },
+    [],
+  );
+
+  const handleUpdateCacheForAddAddress = useCallback(
+    (cache: ApolloCache<unknown>, createdAddressData) => {
+      const InvalidAddressesQuery = {
+        query: InvalidAddressesDocument,
+        variables: {
+          accountListId,
+        },
+      };
+      const dataFromInvalidAddressesCache =
+        cache.readQuery<InvalidAddressesQuery>(InvalidAddressesQuery);
+
+      if (dataFromInvalidAddressesCache) {
+        const newContacts = dataFromInvalidAddressesCache.contacts.nodes.map(
+          (contact) => {
+            if (contact.id !== createdAddressData.createAddress.contactId) {
+              return contact;
+            } else {
+              return {
+                ...contact,
+                addresses: {
+                  nodes: [
+                    ...contact.addresses.nodes,
+                    createdAddressData.createAddress.address,
+                  ],
+                },
+              };
+            }
+          },
+        );
+
+        const data = {
+          ...dataFromInvalidAddressesCache,
+          contacts: {
+            ...dataFromInvalidAddressesCache.contacts,
+            nodes: newContacts,
+          },
+        };
+        cache.writeQuery({ ...InvalidAddressesQuery, data });
+      }
+    },
+    [],
+  );
+
+  const handleModalOpen = (
+    modal: ModalEnum,
     address: ContactAddressFragment,
     contactId: string,
   ): void => {
-    setModalState({ open: true, address, contactId });
+    if (modal === ModalEnum.Edit) {
+      setShowEditAddressModal(true);
+    } else {
+      setShowNewAddressModal(true);
+    }
+    setSelectedAddress(address);
+    setSelectedContactId(contactId);
   };
 
-  const handleClose = (deleteAddress: boolean): void => {
-    if (deleteAddress) {
-      refetch();
-    }
-    setModalState({ open: false, address: emptyAddress, contactId: '' });
+  const handleClose = (): void => {
+    setShowEditAddressModal(false);
+    setShowNewAddressModal(false);
+    setSelectedAddress(emptyAddress);
+    setSelectedContactId('');
   };
 
   const handleSourceChange = (event: SelectChangeEvent<string>): void => {
@@ -140,110 +210,129 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
 
   const totalContacts = data?.contacts?.nodes?.length || 0;
 
-  //TODO: Make navbar selectId = "fixSendNewsletter" when other branch gets merged
-
   return (
     <Box className={classes.outer} data-testid="Home">
-      <Grid container className={classes.container}>
-        <Grid item xs={12}>
-          <Typography variant="h4">{t('Fix Mailing Addresses')}</Typography>
-          <Divider className={classes.divider} />
-        </Grid>
+      <Box className={classes.outer}>
+        <Grid container className={classes.container}>
+          <Grid item xs={12}>
+            <Typography variant="h4">{t('Fix Mailing Addresses')}</Typography>
+            <Divider className={classes.divider} />
+          </Grid>
 
-        {loading && !data && (
-          <CircularProgress style={{ marginTop: theme.spacing(3) }} />
-        )}
+          {loading && !data && (
+            <Box className={classes.outer}>
+              <CircularProgress
+                data-testid="loading"
+                style={{ marginTop: theme.spacing(3) }}
+              />
+            </Box>
+          )}
 
-        {!loading && data && (
-          <React.Fragment>
-            {!totalContacts && <NoData tool="fixMailingAddresses" />}
-            {totalContacts && (
-              <>
-                <Grid item xs={12}>
-                  <Box className={classes.descriptionBox}>
-                    <Typography>
-                      <strong>
+          {!loading && data && (
+            <React.Fragment>
+              {!totalContacts && <NoData tool="fixMailingAddresses" />}
+              {totalContacts && (
+                <>
+                  <Grid item xs={12}>
+                    <Box className={classes.descriptionBox}>
+                      <Typography>
+                        <strong>
+                          {t(
+                            'You have {{amount}} mailing addresses to confirm.',
+                            {
+                              amount: totalContacts,
+                            },
+                          )}
+                        </strong>
+                      </Typography>
+                      <Typography>
                         {t(
-                          'You have {{amount}} mailing addresses to confirm.',
-                          {
-                            amount: totalContacts,
-                          },
+                          'Choose below which mailing address will be set as primary. Primary mailing addresses will be used for Newsletter exports.',
                         )}
-                      </strong>
-                    </Typography>
-                    <Typography>
-                      {t(
-                        'Choose below which mailing address will be set as primary. Primary mailing addresses will be used for Newsletter exports.',
-                      )}
-                    </Typography>
-                    <Box className={classes.defaultBox}>
-                      <Typography>{t('Default Primary Source:')}</Typography>
+                      </Typography>
+                      <Box className={classes.defaultBox}>
+                        <Typography>{t('Default Primary Source:')}</Typography>
 
-                      <Select
-                        className={classes.select}
-                        value={defaultSource}
-                        onChange={handleSourceChange}
-                        size="small"
-                      >
-                        {sourceOptions.map((source) => (
-                          <MenuItem key={source} value={source}>
-                            {source}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <Button
-                        variant="contained"
-                        className={classes.confirmAllButton}
-                      >
-                        <Icon
-                          path={mdiCheckboxMarkedCircle}
-                          size={0.8}
-                          className={classes.buttonIcon}
-                        />
-                        {t('Confirm {{amount}} as {{source}}', {
-                          amount: totalContacts,
-                          source: defaultSource,
-                        })}
-                      </Button>
+                        <Select
+                          className={classes.select}
+                          value={defaultSource}
+                          onChange={handleSourceChange}
+                          size="small"
+                        >
+                          {sourceOptions.map((source) => (
+                            <MenuItem key={source} value={source}>
+                              {source}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <Button
+                          variant="contained"
+                          className={classes.confirmAllButton}
+                        >
+                          <Icon
+                            path={mdiCheckboxMarkedCircle}
+                            size={0.8}
+                            className={classes.buttonIcon}
+                          />
+                          {t('Confirm {{amount}} as {{source}}', {
+                            amount: totalContacts,
+                            source: defaultSource,
+                          })}
+                        </Button>
+                      </Box>
                     </Box>
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  {data.contacts.nodes.map((contact) => (
-                    <Contact
-                      id={contact.id}
-                      name={contact.name}
-                      status={contact.status || ''}
-                      key={contact.id}
-                      addresses={contact.addresses.nodes}
-                      openEditAddressModal={handleOpen}
-                      openNewAddressModal={handleOpen}
-                    />
-                  ))}
-                </Grid>
-                <Grid item xs={12}>
-                  <Box className={classes.footer}>
-                    <Typography>
-                      <Trans
-                        defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                        shouldUnescape
-                        values={{ value: totalContacts }}
-                        components={{ bold: <strong /> }}
+                  </Grid>
+                  <Grid item xs={12}>
+                    {data.contacts.nodes.map((contact) => (
+                      <Contact
+                        id={contact.id}
+                        name={contact.name}
+                        status={contact.status || ''}
+                        key={contact.id}
+                        addresses={contact.addresses.nodes}
+                        appName={appName}
+                        openEditAddressModal={(address, contactId) =>
+                          handleModalOpen(ModalEnum.Edit, address, contactId)
+                        }
+                        openNewAddressModal={(address, contactId) =>
+                          handleModalOpen(ModalEnum.New, address, contactId)
+                        }
                       />
-                    </Typography>
-                  </Box>
-                </Grid>
-              </>
-            )}
-          </React.Fragment>
-        )}
-      </Grid>
-      {modalState.open && (
-        <EditContactAddressModal
+                    ))}
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box className={classes.footer}>
+                      <Typography>
+                        <Trans
+                          defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                          shouldUnescape
+                          values={{ value: totalContacts }}
+                          components={{ bold: <strong /> }}
+                        />
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </>
+              )}
+            </React.Fragment>
+          )}
+        </Grid>
+      </Box>
+      {showEditAddressModal && (
+        <DynamicEditContactAddressModal
           accountListId={accountListId}
-          address={modalState.address}
-          contactId={modalState.contactId}
+          address={selectedAddress}
+          contactId={selectedContactId}
           handleClose={handleClose}
+          handleUpdateCacheOnDelete={handleUpdateCacheForDeleteAddress}
+        />
+      )}
+      {showNewAddressModal && (
+        <DynamicAddAddressModal
+          accountListId={accountListId}
+          contactId={selectedContactId}
+          handleClose={handleClose}
+          handleUpdateCache={handleUpdateCacheForAddAddress}
         />
       )}
     </Box>
