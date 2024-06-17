@@ -23,6 +23,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { AddressCreateInput } from 'src/graphql/types.generated';
+import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
@@ -34,7 +35,6 @@ import {
 } from '../AddressLocation';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
-import { useUpdateCache } from '../useUpdateCache';
 import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
 import { createAddressSchema } from './createAddressSchema';
 

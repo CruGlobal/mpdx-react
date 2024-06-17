@@ -11,6 +11,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
   Grid,
   Hidden,
   IconButton,
@@ -18,9 +19,11 @@ import {
 } from '@mui/material';
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
+import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
   AddButton,
   AddIcon,
@@ -29,6 +32,7 @@ import {
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useLocale } from 'src/hooks/useLocale';
+import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
@@ -122,10 +126,35 @@ const Contact: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
   const newAddress = { ...emptyAddress, newAddress: true };
-  //TODO: Add button functionality
-  //TODO: Make contact name a link to contact page
+  const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
+    useSetContactPrimaryAddressMutation();
+  const { update } = useUpdateCache(id);
+
+  const handleSetPrimaryContact = async (address: ContactAddressFragment) => {
+    await setContactPrimaryAddress({
+      variables: {
+        contactId: id,
+        primaryAddressId: address.primaryMailingAddress ? null : address.id,
+      },
+      update,
+      onCompleted: () => {
+        enqueueSnackbar(t('Mailing information edited successfully'), {
+          variant: 'success',
+        });
+      },
+      onError: () => {
+        enqueueSnackbar(
+          t('Error occurred while updating mailing information'),
+          {
+            variant: 'error',
+          },
+        );
+      },
+    });
+  };
 
   return (
     <Card className={classes.contactCard}>
@@ -191,13 +220,30 @@ const Contact: React.FC<Props> = ({
                       </Typography>
                     </Grid>
                     <Grid item md={4} className={classes.alignCenter}>
-                      <ContactIconContainer aria-label={t('Edit Icon')}>
-                        {address.primaryMailingAddress ? (
-                          <StarIcon className={classes.hoverHighlight} />
-                        ) : (
-                          <StarOutlineIcon className={classes.hoverHighlight} />
-                        )}
-                      </ContactIconContainer>
+                      {!settingPrimaryAddress && (
+                        <ContactIconContainer
+                          aria-label={t('Edit Icon')}
+                          onClick={() => handleSetPrimaryContact(address)}
+                        >
+                          {address.primaryMailingAddress ? (
+                            <StarIcon
+                              className={classes.hoverHighlight}
+                              data-testid="primaryContactStarIcon"
+                            />
+                          ) : (
+                            <StarOutlineIcon
+                              className={classes.hoverHighlight}
+                              data-testid="contactStarIcon"
+                            />
+                          )}
+                        </ContactIconContainer>
+                      )}
+                      {settingPrimaryAddress && (
+                        <CircularProgress
+                          size={'20px'}
+                          data-testid="settingPrimaryAddress"
+                        />
+                      )}
                     </Grid>
                   </Box>
                 </Grid>

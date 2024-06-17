@@ -358,4 +358,42 @@ describe('FixSendNewsletter', () => {
       );
     }, 10000);
   });
+  describe('Set primary mailing address', () => {
+    it('should set the address as primary', async () => {
+      const { getByTestId, getAllByTestId, queryByTestId, queryAllByTestId } =
+        render(
+          <Components
+            mocks={{
+              InvalidAddresses: {
+                ...mockInvalidAddressesResponse.InvalidAddresses,
+              },
+            }}
+          />,
+        );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const primaryAddress = getByTestId('primaryContactStarIcon');
+      const secondaryAddresses = getAllByTestId('contactStarIcon');
+
+      expect(primaryAddress).toBeInTheDocument();
+      expect(secondaryAddresses.length).toBe(2);
+
+      expect(queryAllByTestId('settingPrimaryAddress').length).toBe(0);
+
+      userEvent.click(secondaryAddresses[0]);
+
+      expect(getAllByTestId('settingPrimaryAddress').length).toBe(3);
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Mailing information edited successfully',
+          {
+            variant: 'success',
+          },
+        ),
+      );
+    });
+  });
 });
