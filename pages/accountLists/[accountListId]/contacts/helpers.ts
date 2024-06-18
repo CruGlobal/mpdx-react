@@ -75,6 +75,11 @@ export const getRedirectPathname = ({
     '/accountLists/[accountListId]/tools/fixEmailAddresses/[[...contactId]]'
   ) {
     pathname = `/accountLists/${accountListId}/tools/fixEmailAddresses`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/fixPhoneNumbers/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/fixPhoneNumbers`;
   }
 
   if (contactId) {
