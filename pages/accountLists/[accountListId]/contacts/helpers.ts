@@ -55,6 +55,16 @@ export const getRedirectPathname = ({
     '/accountLists/[accountListId]/tools/fixMailingAddresses/[[...contactId]]'
   ) {
     pathname = `/accountLists/${accountListId}/tools/fixMailingAddresses`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/fixCommitmentInfo/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/fixCommitmentInfo`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/fixSendNewsletter/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/fixSendNewsletter`;
   }
 
   if (contactId) {
