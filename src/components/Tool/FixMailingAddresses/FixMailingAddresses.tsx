@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/fixMailingAddresses/[[...contactId]].page';
 import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import theme from '../../../theme';
@@ -110,6 +111,7 @@ export const emptyAddress: ContactAddressFragment = {
 
 interface Props {
   accountListId: string;
+  setContactFocus: SetContactFocus;
 }
 enum ModalEnum {
   New = 'New',
@@ -118,7 +120,10 @@ enum ModalEnum {
 
 const sourceOptions = [appName, 'DataServer'];
 
-const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
+const FixSendNewsletter: React.FC<Props> = ({
+  accountListId,
+  setContactFocus,
+}: Props) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const [showEditAddressModal, setShowEditAddressModal] = useState(false);
@@ -297,6 +302,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                         openNewAddressModal={(address, contactId) =>
                           handleModalOpen(ModalEnum.New, address, contactId)
                         }
+                        setContactFocus={setContactFocus}
                       />
                     ))}
                   </Grid>
