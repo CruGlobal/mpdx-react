@@ -4,13 +4,10 @@ const MergeContactsResolvers: Resolvers = {
   Mutation: {
     mergeContacts: (
       _source,
-      { input: { loserContactIds, winnerContactId } },
+      { input: { winnersAndLosers } },
       { dataSources },
     ) => {
-      return dataSources.mpdxRestApi.mergeContacts(
-        loserContactIds,
-        winnerContactId,
-      );
+      return dataSources.mpdxRestApi.mergeContacts(winnersAndLosers);
     },
   },
 };

@@ -11,6 +11,7 @@ import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
+  MergeContactsInput,
 } from 'src/graphql/types.generated';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
@@ -201,21 +202,23 @@ class MpdxRestApi extends RESTDataSource {
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
   }
 
-  async mergeContacts(loserContactIds: Array<string>, winnerContactId: string) {
+  async mergeContacts(
+    winnersAndLosers: MergeContactsInput['winnersAndLosers'],
+  ) {
     const response = await this.post('contacts/merges/bulk', {
-      data: loserContactIds.map((loserId) => ({
+      data: winnersAndLosers.map((contact) => ({
         data: {
           type: 'contacts',
           attributes: {
-            loser_id: loserId,
-            winner_id: winnerContactId,
+            loser_id: contact.loser_id,
+            winner_id: contact.winner_id,
           },
         },
       })),
     });
 
-    // Return the id of the winner
-    return response[0].data.id;
+    // Return the id of the winners
+    return response.map((contact) => contact.data.id);
   }
 
   async getAccountListAnalytics(
