@@ -23,7 +23,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/fixMailingAddresses/[[...contactId]].page';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {

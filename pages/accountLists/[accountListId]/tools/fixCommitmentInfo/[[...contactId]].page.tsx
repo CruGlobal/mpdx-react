@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import FixMailingAddresses from 'src/components/Tool/FixMailingAddresses/FixMailingAddresses';
+import FixCommitmentInfo from 'src/components/Tool/FixCommitmentInfo/FixCommitmentInfo';
 import { ToolsWrapper } from '../ToolsWrapper';
 import { SetContactFocus, useToolsHelper } from '../useToolsHelper';
 
-const FixMailingAddressesPage: React.FC = () => {
+const FixCommitmentInfoPage: React.FC = () => {
   const { t } = useTranslation();
   const { accountListId, handleSelectContact } = useToolsHelper();
-  const pageUrl = 'tools/fixMailingAddresses';
+  const pageUrl = 'tools/fixCommitmentInfo';
 
   const setContactFocus: SetContactFocus = (contactId) => {
     handleSelectContact(pageUrl, contactId);
@@ -16,11 +16,11 @@ const FixMailingAddressesPage: React.FC = () => {
 
   return (
     <ToolsWrapper
-      pageTitle={t('Fix Mailing Addresses')}
+      pageTitle={t('Fix Commitment Info')}
       pageUrl={pageUrl}
-      selectedMenuId="fixMailingAddresses"
+      selectedMenuId="fixCommitmentInfo"
     >
-      <FixMailingAddresses
+      <FixCommitmentInfo
         accountListId={accountListId || ''}
         setContactFocus={setContactFocus}
       />
@@ -30,4 +30,4 @@ const FixMailingAddressesPage: React.FC = () => {
 
 export const getServerSideProps = loadSession;
 
-export default FixMailingAddressesPage;
+export default FixCommitmentInfoPage;
