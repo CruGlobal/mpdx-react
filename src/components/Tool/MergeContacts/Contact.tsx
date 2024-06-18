@@ -15,6 +15,7 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -48,6 +49,7 @@ const useStyles = makeStyles()(() => ({
     height: '100%',
     width: '45%',
     position: 'relative',
+    padding: theme.spacing(2),
     '&:hover': {
       cursor: 'pointer',
     },
@@ -55,6 +57,14 @@ const useStyles = makeStyles()(() => ({
       backgroundColor: 'white',
       width: '100%',
     },
+  },
+  selectedBox: {
+    border: '2px solid',
+    borderColor: theme.palette.mpdxGreen.main,
+  },
+  unselectedBox: {
+    border: '2px solid',
+    borderColor: theme.palette.cruGrayMedium.main,
   },
   selected: {
     position: 'absolute',
@@ -70,6 +80,32 @@ const useStyles = makeStyles()(() => ({
     overflow: 'auto',
     scrollbarWidth: 'thin',
   },
+  green: {
+    color: theme.palette.mpdxGreen.main,
+  },
+  grey: {
+    color: theme.palette.cruGrayMedium.main,
+  },
+  red: {
+    color: 'red',
+  },
+}));
+
+const IconWrapper = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down('sm')]: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+  },
+  [theme.breakpoints.up('sm')]: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    width: '10%',
+  },
 }));
 
 interface Props {
@@ -83,7 +119,6 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
-  //TODO: Add button functionality
   //TODO: Make contact title a link to contact page
 
   const updateState = (side: string): void => {
@@ -107,7 +142,11 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   };
 
   return (
-    <Grid container className={classes.container}>
+    <Grid
+      container
+      className={classes.container}
+      data-testid="MergeContactPair"
+    >
       <Grid container>
         <Grid item xs={12}>
           <Box display="flex" alignItems="center">
@@ -120,15 +159,15 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                 <Box
                   display="flex"
                   alignItems="center"
-                  className={classes.contactBasic}
+                  className={`
+                  ${classes.contactBasic} 
+                  ${
+                    selected === 'left'
+                      ? classes.selectedBox
+                      : classes.unselectedBox
+                  }
+                `}
                   onClick={() => updateState('left')}
-                  p={2}
-                  style={{
-                    border:
-                      selected === 'left'
-                        ? `1px solid ${theme.palette.mpdxGreen.main}`
-                        : `1px solid ${theme.palette.cruGrayMedium.main}`,
-                  }}
                 >
                   <Avatar src="" className={classes.avatar} />
                   <Box
@@ -170,113 +209,83 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                       {t('From: {{where}}', { where: contact1.source })}
                     </Typography>
                     <Typography>
-                      {t('On: {{when}}', {
-                        when: dateFormatShort(
-                          DateTime.fromISO(contact1.createdAt),
-                          locale,
-                        ),
-                      })}
+                      {t('On:')}{' '}
+                      {dateFormatShort(
+                        DateTime.fromISO(contact1.createdAt),
+                        locale,
+                      )}
                     </Typography>
                   </Box>
                 </Box>
                 <Hidden smDown>
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ height: '100%', width: '10%' }}
-                  >
+                  <IconWrapper>
                     <IconButton
                       onClick={() => updateState('left')}
-                      style={{
-                        color:
-                          selected === 'left'
-                            ? theme.palette.mpdxGreen.main
-                            : theme.palette.cruGrayMedium.main,
-                      }}
+                      className={
+                        selected === 'left' ? classes.green : classes.grey
+                      }
                     >
                       <Icon path={mdiArrowLeftBold} size={1.5} />
                     </IconButton>
                     <IconButton
                       onClick={() => updateState('right')}
-                      style={{
-                        color:
-                          selected === 'right'
-                            ? theme.palette.mpdxGreen.main
-                            : theme.palette.cruGrayMedium.main,
-                      }}
+                      className={
+                        selected === 'right' ? classes.green : classes.grey
+                      }
                     >
                       <Icon path={mdiArrowRightBold} size={1.5} />
                     </IconButton>
                     <IconButton
                       onClick={() => updateState('cancel')}
-                      style={{
-                        color:
-                          selected === 'cancel'
-                            ? 'red'
-                            : theme.palette.cruGrayMedium.main,
-                      }}
+                      className={
+                        selected === 'cancel' ? classes.red : classes.grey
+                      }
                     >
                       <Icon path={mdiCloseThick} size={1.5} />
                     </IconButton>
-                  </Box>
+                  </IconWrapper>
                 </Hidden>
-                <Hidden mdUp>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ height: '100%' }}
-                  >
+                <Hidden smUp>
+                  <IconWrapper>
                     <IconButton
                       onClick={() => updateState('left')}
-                      style={{
-                        color:
-                          selected === 'left'
-                            ? theme.palette.mpdxGreen.main
-                            : theme.palette.cruGrayMedium.main,
-                      }}
+                      className={
+                        selected === 'left' ? classes.green : classes.grey
+                      }
                     >
                       <Icon path={mdiArrowUpBold} size={1.5} />
                     </IconButton>
                     <IconButton
                       onClick={() => updateState('right')}
-                      style={{
-                        color:
-                          selected === 'right'
-                            ? theme.palette.mpdxGreen.main
-                            : theme.palette.cruGrayMedium.main,
-                      }}
+                      className={
+                        selected === 'right' ? classes.green : classes.grey
+                      }
                     >
                       <Icon path={mdiArrowDownBold} size={1.5} />
                     </IconButton>
                     <IconButton
                       onClick={() => updateState('cancel')}
-                      style={{
-                        color:
-                          selected === 'cancel'
-                            ? 'red'
-                            : theme.palette.cruGrayMedium.main,
-                      }}
+                      className={
+                        selected === 'cancel' ? classes.red : classes.grey
+                      }
                     >
                       <Icon path={mdiCloseThick} size={1.5} />
                     </IconButton>
-                  </Box>
+                  </IconWrapper>
                 </Hidden>
 
                 <Box
                   display="flex"
                   alignItems="center"
-                  className={classes.contactBasic}
-                  onClick={() => updateState('right')}
-                  p={2}
-                  style={{
-                    border:
+                  className={`
+                    ${classes.contactBasic} 
+                    ${
                       selected === 'right'
-                        ? `1px solid ${theme.palette.mpdxGreen.main}`
-                        : `1px solid ${theme.palette.cruGrayMedium.main}`,
-                  }}
+                        ? classes.selectedBox
+                        : classes.unselectedBox
+                    }
+                  `}
+                  onClick={() => updateState('right')}
                 >
                   <Avatar src="" className={classes.avatar} />
                   <Box
@@ -312,12 +321,11 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                       {t('From: {{where}}', { where: contact2.source })}
                     </Typography>
                     <Typography>
-                      {t('On: {{when}}', {
-                        when: dateFormatShort(
-                          DateTime.fromISO(contact2.createdAt),
-                          locale,
-                        ),
-                      })}
+                      {t('On:')}{' '}
+                      {dateFormatShort(
+                        DateTime.fromISO(contact2.createdAt),
+                        locale,
+                      )}
                     </Typography>
                   </Box>
                 </Box>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -7,8 +7,10 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useMassActionsMergeMutation } from 'src/components/Contacts/MassActions/Merge/MassActionsMerge.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -18,12 +20,9 @@ import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
-    width: '70%',
+    width: '80%',
     display: 'flex',
-    [theme.breakpoints.down('md')]: {
-      width: '80%',
-    },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('lg')]: {
       width: '100%',
     },
   },
@@ -45,11 +44,6 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     justifyContent: 'center',
   },
-  confirmButton: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    width: 200,
-    color: 'white',
-  },
 }));
 
 interface ActionType {
@@ -65,10 +59,17 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const [actions, setActions] = useState<Record<string, ActionType>>({});
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useGetContactDuplicatesQuery({
     variables: { accountListId },
   });
   const { appName } = useGetAppSettings();
+  const [contactsMerge, { loading: updating }] = useMassActionsMergeMutation();
+  const actionsLength = useMemo(
+    () => Object.entries(actions).length,
+    [actions],
+  );
+  const disabled = updating || !actionsLength;
 
   const updateActions = (id1: string, id2: string, action: string): void => {
     if (action === 'cancel') {
@@ -85,21 +86,47 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
       }));
     }
   };
+  const handleConfirmAndContinue = () => {
+    mergeContacts();
+  };
+  const handleConfirmAndLeave = () => {
+    mergeContacts();
+    window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`;
+  };
 
-  const testFnc = (): void => {
-    for (const [id, action] of Object.entries(actions)) {
-      switch (action.action) {
-        case 'merge':
-          // eslint-disable-next-line no-console
-          console.log(`Merging ${id} with ${action.mergeId}`);
-          break;
-        case 'delete':
-          // eslint-disable-next-line no-console
-          console.log(`Deleting ${id}`);
-          break;
-        default:
-          break;
-      }
+  const mergeContacts = async () => {
+    const mergeActions = Object.entries(actions).filter(
+      (action) => action[1].action === 'merge',
+    );
+    if (mergeActions.length > 0) {
+      const winnersAndLosers: { winner_id: string; loser_id: string }[] =
+        mergeActions.map((action) => {
+          return { winner_id: action[0], loser_id: action[1].mergeId || '' };
+        });
+      await contactsMerge({
+        variables: {
+          input: {
+            winnersAndLosers,
+          },
+        },
+        update: (cache) => {
+          // Delete the loser contacts and remove dangling references to them
+          winnersAndLosers.forEach((contact) => {
+            cache.evict({ id: `Contact:${contact.loser_id}` });
+          });
+          cache.gc();
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Contacts merged!'), {
+            variant: 'success',
+          });
+        },
+        onError: (err) => {
+          enqueueSnackbar(t('A server error occurred. {{err}}', { err }), {
+            variant: 'error',
+          });
+        },
+      });
     }
   };
 
@@ -119,12 +146,15 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
           {data?.contactDuplicates.nodes.length > 0 ? (
             <>
               <Grid item xs={12}>
-                <Box className={classes.descriptionBox}>
+                <Box
+                  className={classes.descriptionBox}
+                  data-testid="ContactMergeDescription"
+                >
                   <Typography>
                     {t(
-                      'You have {{amount}} possible duplicate contacts. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
+                      'You have {{totalCount}} possible duplicate contacts. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
                       {
-                        amount: data?.contactDuplicates.nodes.length,
+                        totalCount: data?.contactDuplicates.totalCount,
                         appName,
                       },
                     )}
@@ -154,8 +184,8 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                 >
                   <Button
                     variant="contained"
-                    onClick={() => testFnc()}
-                    className={classes.confirmButton}
+                    disabled={disabled}
+                    onClick={() => handleConfirmAndContinue()}
                   >
                     {t('Confirm and Continue')}
                   </Button>
@@ -164,7 +194,11 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                       <strong>{t('OR')}</strong>
                     </Typography>
                   </Box>
-                  <Button className={classes.confirmButton}>
+                  <Button
+                    variant="contained"
+                    disabled={disabled}
+                    onClick={() => handleConfirmAndLeave()}
+                  >
                     {t('Confirm and Leave')}
                   </Button>
                 </Box>
@@ -173,9 +207,12 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                 <Box className={classes.footer}>
                   <Typography>
                     <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      defaults="Showing <bold>{{loaded}}</bold> of <bold>{{totalCount}}</bold>"
                       shouldUnescape
-                      values={{ value: data?.contactDuplicates.nodes.length }}
+                      values={{
+                        loaded: data?.contactDuplicates.nodes.length,
+                        totalCount: data?.contactDuplicates.totalCount,
+                      }}
                       components={{ bold: <strong /> }}
                     />
                   </Typography>
