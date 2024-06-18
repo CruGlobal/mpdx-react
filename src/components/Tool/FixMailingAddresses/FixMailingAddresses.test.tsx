@@ -65,6 +65,9 @@ const Components = ({
 );
 
 describe('FixSendNewsletter', () => {
+  beforeEach(() => {
+    setContactFocus.mockClear();
+  });
   it('should show noData component', async () => {
     const { queryByTestId, getByText } = render(
       <Components
@@ -398,6 +401,30 @@ describe('FixSendNewsletter', () => {
           },
         ),
       );
+    });
+  });
+
+  describe('setContactFocus()', () => {
+    it('should open up contact details', async () => {
+      const { getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            InvalidAddresses: {
+              ...mockInvalidAddressesResponse.InvalidAddresses,
+            },
+          }}
+        />,
+      );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+      expect(setContactFocus).not.toHaveBeenCalled();
+
+      const contactName = getByText('Baggins, Frodo');
+
+      expect(contactName).toBeInTheDocument();
+      userEvent.click(contactName);
+      expect(setContactFocus).toHaveBeenCalledWith(contactId);
     });
   });
 });
