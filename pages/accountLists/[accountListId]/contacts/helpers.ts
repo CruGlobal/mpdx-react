@@ -80,6 +80,11 @@ export const getRedirectPathname = ({
     '/accountLists/[accountListId]/tools/fixPhoneNumbers/[[...contactId]]'
   ) {
     pathname = `/accountLists/${accountListId}/tools/fixPhoneNumbers`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/mergePeople/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/mergePeople`;
   }
 
   if (contactId) {
