@@ -63,6 +63,28 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
     setFieldValue('anniversaryMonth', date?.month || null);
     setFieldValue('anniversaryYear', date?.year || null);
   };
+
+  const anniversaryDate =
+    anniversaryMonth && anniversaryDay
+      ? DateTime.local(
+          anniversaryYear ?? 1900,
+          anniversaryMonth,
+          anniversaryDay,
+        )
+      : null;
+
+  const invalidAnniversaryDate =
+    anniversaryMonth === 0 && anniversaryDay === 0
+      ? DateTime.local(
+          anniversaryYear ?? 1900,
+          anniversaryMonth,
+          anniversaryDay,
+        ).invalidExplanation !== ''
+      : false;
+
+  const backupAnniversaryDate =
+    `${anniversaryMonth}/${anniversaryDay}/${anniversaryYear}` as unknown as DateTime<boolean>;
+
   return (
     <>
       {/* Legal First Name and Gender Section */}
@@ -142,14 +164,9 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           <Grid item xs={12} sm={6}>
             <CustomDateField
               label={t('Anniversary')}
+              invalidDate={invalidAnniversaryDate}
               value={
-                anniversaryMonth && anniversaryDay
-                  ? DateTime.local(
-                      anniversaryYear ?? 1900,
-                      anniversaryMonth,
-                      anniversaryDay,
-                    )
-                  : null
+                invalidAnniversaryDate ? backupAnniversaryDate : anniversaryDate
               }
               onChange={(date) => date && handleDateChange(date)}
             />
