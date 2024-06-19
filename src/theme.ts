@@ -19,6 +19,7 @@ const statusColors = {
 const mpdxColors = {
   green: '#00CA99',
   blue: '#05699B',
+  blueLight: '#e7f2f7',
   yellow: '#FFF5CD',
   gray: '#DCDCDC',
 };
@@ -98,6 +99,7 @@ const theme = createTheme({
     },
     mpdxBlue: {
       main: mpdxColors.blue,
+      light: mpdxColors.blueLight,
     },
     mpdxYellow: {
       main: mpdxColors.yellow,

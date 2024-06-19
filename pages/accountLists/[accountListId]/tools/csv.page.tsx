@@ -8,6 +8,7 @@ import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import Loading from 'src/components/Loading';
 import CsvHeaders from 'src/components/Tool/Import/Csv/CsvHeaders';
 import { CsvImportProvider } from 'src/components/Tool/Import/Csv/CsvImportContext';
+import CsvPreview from 'src/components/Tool/Import/Csv/CsvPreview';
 import CsvUpload from 'src/components/Tool/Import/Csv/CsvUpload';
 import CsvValues from 'src/components/Tool/Import/Csv/CsvValues';
 import { HeaderBox } from 'src/components/Tool/Import/Csv/HeaderBox';
@@ -77,6 +78,13 @@ const CsvHome: React.FC = () => {
       case 'tools.import.csv.values':
         return (
           <CsvValues
+            accountListId={accountListId}
+            setCurrentTab={setCurrentTab}
+          />
+        );
+      case 'tools.import.csv.preview':
+        return (
+          <CsvPreview
             accountListId={accountListId}
             setCurrentTab={setCurrentTab}
           />
