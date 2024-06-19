@@ -14,7 +14,7 @@ export const useToolsHelper = () => {
     (pagePath: string, contactId: string) => {
       push(`/accountLists/${accountListId}/${pagePath}/${contactId}`);
     },
-    [],
+    [accountListId],
   );
 
   return {
