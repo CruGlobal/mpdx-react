@@ -185,6 +185,14 @@ describe('intlFormat', () => {
 
       expect(date).toBeNull();
     });
+
+    it('returns if month is null', () => {
+      const date = dateFromParts(0, 0, 2000, locale);
+
+      expect(date).toBe(
+        'Invalid Date - you specified 0 (of type number) as a month, which is invalid',
+      );
+    });
   });
   //this test often fails locally. It passes on github.
   describe('dateTimeFormat', () => {
