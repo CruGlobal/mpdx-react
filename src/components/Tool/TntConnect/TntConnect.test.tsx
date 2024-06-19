@@ -9,7 +9,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import theme from 'src/theme';
 import TntConnect from './TntConnect';
-import { uploadTnt, validateTnt } from './uploadTntConnect';
+import { uploadTnt, validateTnt } from './uploads/uploadTntConnect';
 
 const mockEnqueue = jest.fn();
 const accountListId = '123';
