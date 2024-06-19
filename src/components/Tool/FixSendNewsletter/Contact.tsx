@@ -139,8 +139,8 @@ const Contact = ({
                   <Box display="flex" flexDirection="column" ml={2}>
                     <Link underline="hover" onClick={handleContactNameClick}>
                       <Typography variant="h6">{name}</Typography>
-                      <Typography>{status}</Typography>
                     </Link>
+                    <Typography>{status}</Typography>
                   </Box>
                 </Box>
               </Grid>

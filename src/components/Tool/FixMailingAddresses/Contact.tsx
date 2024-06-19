@@ -186,11 +186,7 @@ const Contact: React.FC<Props> = ({
             <Typography variant="h6">{name}</Typography>
           </Link>
         }
-        subheader={
-          <Link underline="hover" onClick={handleContactNameClick}>
-            <Typography>{contactPartnershipStatus[status]}</Typography>
-          </Link>
-        }
+        subheader={<Typography>{contactPartnershipStatus[status]}</Typography>}
       />
       <CardContent className={(classes.paddingX, classes.paddingY)}>
         <Grid item xs={12}>
