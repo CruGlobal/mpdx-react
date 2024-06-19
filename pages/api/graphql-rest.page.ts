@@ -210,8 +210,8 @@ class MpdxRestApi extends RESTDataSource {
         data: {
           type: 'contacts',
           attributes: {
-            loser_id: contact.loser_id,
-            winner_id: contact.winner_id,
+            loser_id: contact.loserId,
+            winner_id: contact.winnerId,
           },
         },
       })),

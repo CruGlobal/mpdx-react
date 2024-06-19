@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import styled from '@emotion/styled';
 import {
   Box,
   Button,
@@ -22,6 +23,7 @@ const useStyles = makeStyles()(() => ({
     padding: theme.spacing(3),
     width: '80%',
     display: 'flex',
+    height: '100dvh',
     [theme.breakpoints.down('lg')]: {
       width: '100%',
     },
@@ -37,12 +39,31 @@ const useStyles = makeStyles()(() => ({
     marginBottom: theme.spacing(2),
   },
   descriptionBox: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(1),
   },
   footer: {
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
+  },
+}));
+const ButtonHeaderBox = styled(Box)(() => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+  backgroundColor: 'white',
+  paddingTop: theme.spacing(2),
+  paddingBottom: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  position: 'sticky',
+  top: '0',
+  zIndex: '100',
+  borderBottom: '1px solid',
+  borderBottomColor: theme.palette.cruGrayLight.main,
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    alignItems: 'start',
   },
 }));
 
@@ -70,6 +91,8 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
     [actions],
   );
   const disabled = updating || !actionsLength;
+  const totalCount = data?.contactDuplicates.totalCount || 0;
+  const showing = data?.contactDuplicates.nodes.length || 0;
 
   const updateActions = (id1: string, id2: string, action: string): void => {
     if (action === 'cancel') {
@@ -86,12 +109,14 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
       }));
     }
   };
-  const handleConfirmAndContinue = () => {
-    mergeContacts();
+  const handleConfirmAndContinue = async () => {
+    await mergeContacts();
   };
-  const handleConfirmAndLeave = () => {
-    mergeContacts();
-    window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`;
+  const handleConfirmAndLeave = async () => {
+    await mergeContacts().then(
+      () =>
+        (window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`),
+    );
   };
 
   const mergeContacts = async () => {
@@ -99,9 +124,9 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
       (action) => action[1].action === 'merge',
     );
     if (mergeActions.length > 0) {
-      const winnersAndLosers: { winner_id: string; loser_id: string }[] =
+      const winnersAndLosers: { winnerId: string; loserId: string }[] =
         mergeActions.map((action) => {
-          return { winner_id: action[0], loser_id: action[1].mergeId || '' };
+          return { winnerId: action[0], loserId: action[1].mergeId || '' };
         });
       await contactsMerge({
         variables: {
@@ -112,7 +137,7 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
         update: (cache) => {
           // Delete the loser contacts and remove dangling references to them
           winnersAndLosers.forEach((contact) => {
-            cache.evict({ id: `Contact:${contact.loser_id}` });
+            cache.evict({ id: `Contact:${contact.loserId}` });
           });
           cache.gc();
         },
@@ -143,7 +168,7 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
             <Typography variant="h4">{t('Merge Contacts')}</Typography>
             <Divider className={classes.divider} />
           </Grid>
-          {data?.contactDuplicates.nodes.length > 0 ? (
+          {showing > 0 ? (
             <>
               <Grid item xs={12}>
                 <Box
@@ -151,49 +176,44 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                   data-testid="ContactMergeDescription"
                 >
                   <Typography>
-                    {t(
-                      'You have {{totalCount}} possible duplicate contacts. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. ',
-                      {
-                        totalCount: data?.contactDuplicates.totalCount,
+                    <Trans
+                      defaults="You have <bold>{{totalCount}}</bold> possible duplicate contacts. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. "
+                      shouldUnescape
+                      values={{
+                        totalCount,
                         appName,
-                      },
-                    )}
+                      }}
+                      components={{ bold: <strong /> }}
+                    />
                   </Typography>
                   <Typography>
                     <strong>{t('This cannot be undone.')}</strong>
                   </Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12}>
-                {data?.contactDuplicates.nodes.map((duplicate) => (
-                  <Contact
-                    key={duplicate.id}
-                    contact1={duplicate.recordOne}
-                    contact2={duplicate.recordTwo}
-                    update={updateActions}
-                  />
-                ))}
-              </Grid>
-              <Grid item xs={12}>
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  style={{ width: '100%' }}
-                  p={2}
-                >
+              <ButtonHeaderBox>
+                <Box>
+                  <Typography>
+                    <Trans
+                      defaults="<i>Showing <bold>{{showing}}</bold> of <bold>{{totalCount}}</bold></i>"
+                      shouldUnescape
+                      values={{
+                        showing,
+                        totalCount,
+                      }}
+                      components={{ bold: <strong />, i: <i /> }}
+                    />
+                  </Typography>
+                </Box>
+                <Box>
                   <Button
                     variant="contained"
                     disabled={disabled}
                     onClick={() => handleConfirmAndContinue()}
+                    sx={{ mr: 2 }}
                   >
                     {t('Confirm and Continue')}
                   </Button>
-                  <Box ml={2} mr={2}>
-                    <Typography>
-                      <strong>{t('OR')}</strong>
-                    </Typography>
-                  </Box>
                   <Button
                     variant="contained"
                     disabled={disabled}
@@ -202,21 +222,18 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
                     {t('Confirm and Leave')}
                   </Button>
                 </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Box className={classes.footer}>
-                  <Typography>
-                    <Trans
-                      defaults="Showing <bold>{{loaded}}</bold> of <bold>{{totalCount}}</bold>"
-                      shouldUnescape
-                      values={{
-                        loaded: data?.contactDuplicates.nodes.length,
-                        totalCount: data?.contactDuplicates.totalCount,
-                      }}
-                      components={{ bold: <strong /> }}
+              </ButtonHeaderBox>
+              <Grid item xs={12} sx={{ margin: '0px 2px 20px 2px' }}>
+                {data?.contactDuplicates.nodes
+                  .map((duplicate) => (
+                    <Contact
+                      key={duplicate.id}
+                      contact1={duplicate.recordOne}
+                      contact2={duplicate.recordTwo}
+                      update={updateActions}
                     />
-                  </Typography>
-                </Box>
+                  ))
+                  .reverse()}
               </Grid>
             </>
           ) : (

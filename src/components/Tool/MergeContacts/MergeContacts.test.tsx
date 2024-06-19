@@ -146,24 +146,6 @@ describe('Tools - MergeContacts', () => {
     );
   });
 
-  // TODO
-  // it('should select clicked contact', async () => {
-  //   const { queryAllByTestId } = render(<MergeContactsWrapper />);
-
-  //   await waitFor(() =>
-  //     expect(queryAllByTestId('MassActionsMergeModalContact')).toHaveLength(2),
-  //   );
-
-  //   const contacts = queryAllByTestId('MassActionsMergeModalContact');
-  //   expect(queryByText(contacts[0], 'Use This One')).toBeInTheDocument();
-  //   expect(queryByText(contacts[1], 'Use This One')).not.toBeInTheDocument();
-
-  //   userEvent.click(contacts[1]);
-
-  //   expect(queryByText(contacts[0], 'Use This One')).not.toBeInTheDocument();
-  //   expect(queryByText(contacts[1], 'Use This One')).toBeInTheDocument();
-  // });
-
   it('should merge contacts', async () => {
     const mutationSpy = jest.fn();
 
@@ -198,11 +180,14 @@ describe('Tools - MergeContacts', () => {
       input: {
         winnersAndLosers: [
           {
-            loser_id: 'contact-1',
-            winner_id: 'contact-2',
+            loserId: 'contact-1',
+            winnerId: 'contact-2',
           },
         ],
       },
     });
+    // await waitFor(() =>
+    //   expect(queryByText('Doe, John and Nancy')).not.toBeInTheDocument(),
+    // );
   });
 });

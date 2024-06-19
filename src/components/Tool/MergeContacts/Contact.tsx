@@ -10,14 +10,18 @@ import { Icon } from '@mdi/react';
 import {
   Avatar,
   Box,
+  Card,
+  CardContent,
+  CardHeader,
   Grid,
-  Hidden,
   IconButton,
+  Tooltip,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
+import { TFunction, Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -44,41 +48,6 @@ const useStyles = makeStyles()(() => ({
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'column',
     },
-  },
-  contactBasic: {
-    height: '100%',
-    width: '45%',
-    position: 'relative',
-    padding: theme.spacing(2),
-    '&:hover': {
-      cursor: 'pointer',
-    },
-    [theme.breakpoints.down('sm')]: {
-      backgroundColor: 'white',
-      width: '100%',
-    },
-  },
-  selectedBox: {
-    border: '2px solid',
-    borderColor: theme.palette.mpdxGreen.main,
-  },
-  unselectedBox: {
-    border: '2px solid',
-    borderColor: theme.palette.cruGrayMedium.main,
-  },
-  selected: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    color: 'white',
-    backgroundColor: theme.palette.mpdxGreen.main,
-    paddingRight: theme.spacing(1),
-    paddingLeft: theme.spacing(1),
-  },
-  contactInfo: {
-    width: '100%',
-    overflow: 'auto',
-    scrollbarWidth: 'thin',
   },
   green: {
     color: theme.palette.mpdxGreen.main,
@@ -107,6 +76,140 @@ const IconWrapper = styled(Box)(({ theme }) => ({
     width: '10%',
   },
 }));
+const ContactAvatar = styled(Avatar)(() => ({
+  width: theme.spacing(4),
+  height: theme.spacing(4),
+}));
+interface ContactItemProps {
+  contact: RecordInfoFragment;
+  side: string;
+  updateState: (side: string) => void;
+  selected: boolean;
+  loser: boolean;
+  t: TFunction;
+}
+const ContactItem: React.FC<ContactItemProps> = ({
+  contact,
+  updateState,
+  selected,
+  loser,
+  t,
+  side,
+}) => {
+  const useStyles = makeStyles()(() => ({
+    contactBasic: {
+      height: '100%',
+      width: '45%',
+      position: 'relative',
+      '&:hover': {
+        cursor: 'pointer',
+      },
+      [theme.breakpoints.down('sm')]: {
+        backgroundColor: 'white',
+        width: '100%',
+        overflow: 'initial',
+      },
+    },
+    selectedBox: {
+      border: '2px solid',
+      borderColor: theme.palette.mpdxGreen.main,
+    },
+    unselectedBox: {
+      border: '2px solid rgba(0,0,0,0)',
+    },
+    loserBox: {
+      border: '2px solid rgba(0,0,0,0)',
+      opacity: '50%',
+    },
+    selected: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      color: 'white',
+      backgroundColor: theme.palette.mpdxGreen.main,
+      paddingRight: theme.spacing(1),
+      paddingLeft: theme.spacing(1),
+      borderTopRightRadius: '5px',
+    },
+    minimalPadding: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      paddingTop: theme.spacing(1),
+      paddingBottom: '8px!important',
+      [theme.breakpoints.down('sm')]: {
+        padding: '5px 15px!important',
+      },
+    },
+  }));
+  const { classes } = useStyles();
+  const locale = useLocale();
+  return (
+    <Card
+      className={`
+    ${classes.contactBasic} 
+    ${
+      selected
+        ? classes.selectedBox
+        : loser
+        ? classes.loserBox
+        : classes.unselectedBox
+    }`}
+      onClick={() => updateState(side)}
+    >
+      <CardHeader
+        avatar={
+          <ContactAvatar
+            src={contact?.avatar || ''}
+            aria-label="Contact Avatar"
+          />
+        }
+        title={
+          <>
+            <Typography variant="subtitle1">{contact.name}</Typography>{' '}
+            {selected && (
+              <Typography variant="body2" className={classes.selected}>
+                {t('Use this one')}
+              </Typography>
+            )}
+          </>
+        }
+        subheader={
+          <Typography variant="subtitle2">
+            {contact.status && contactPartnershipStatus[contact.status]}
+          </Typography>
+        }
+        className={classes.minimalPadding}
+      />
+      <CardContent className={classes.minimalPadding}>
+        {contact.primaryAddress ? (
+          <Typography variant="body2">
+            {`${contact?.primaryAddress?.street} 
+            ${contact?.primaryAddress?.city}, ${contact?.primaryAddress?.state} ${contact?.primaryAddress?.postalCode}`}
+          </Typography>
+        ) : (
+          ''
+        )}
+        <Typography variant="body2">
+          <Trans
+            defaults="<bold>Source:</bold> {{where}}"
+            shouldUnescape
+            values={{ where: contact.source }}
+            components={{ bold: <strong /> }}
+          />
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{ fontWeight: 'bold', display: 'inline' }}
+        >
+          {t('Created:')}{' '}
+        </Typography>
+        <Typography variant="body2" sx={{ display: 'inline' }}>
+          {dateFormatShort(DateTime.fromISO(contact.createdAt), locale)}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+};
 
 interface Props {
   contact1: RecordInfoFragment;
@@ -117,9 +220,10 @@ interface Props {
 const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
-  const locale = useLocale();
+  const matches = useMediaQuery('(max-width:600px)');
   const { classes } = useStyles();
-  //TODO: Make contact title a link to contact page
+  const leftSelected = selected === 'left';
+  const rightSelected = selected === 'right';
 
   const updateState = (side: string): void => {
     switch (side) {
@@ -156,85 +260,46 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                 style={{ width: '100%' }}
                 className={classes.outer}
               >
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  className={`
-                  ${classes.contactBasic} 
-                  ${
-                    selected === 'left'
-                      ? classes.selectedBox
-                      : classes.unselectedBox
-                  }
-                `}
-                  onClick={() => updateState('left')}
-                >
-                  <Avatar src="" className={classes.avatar} />
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    ml={2}
-                    className={classes.contactInfo}
+                <ContactItem
+                  contact={contact1}
+                  t={t}
+                  side={'left'}
+                  updateState={updateState}
+                  selected={leftSelected}
+                  loser={rightSelected}
+                />
+                <IconWrapper>
+                  <Tooltip
+                    title={t('Left Wins the Merge')}
+                    arrow
+                    placement={matches ? undefined : 'top'}
                   >
-                    {selected === 'left' && (
-                      <Typography variant="body2" className={classes.selected}>
-                        {t('Use this one')}
-                      </Typography>
-                    )}
-                    <Box
-                      style={{
-                        width: '100%',
-                      }}
-                    >
-                      <Typography variant="h6">{contact1.name}</Typography>
-                    </Box>
-                    {contact1.status && (
-                      <Typography>
-                        {t('Status: {{status}}', {
-                          status: contactPartnershipStatus[contact1.status],
-                        })}
-                      </Typography>
-                    )}
-                    {contact1.primaryAddress ? (
-                      <>
-                        <Typography>
-                          {contact1.primaryAddress.street}
-                        </Typography>
-                        <Typography>{`${contact1.primaryAddress.city}, ${contact1.primaryAddress.state} ${contact1.primaryAddress.postalCode}`}</Typography>
-                      </>
-                    ) : (
-                      ''
-                    )}
-                    <Typography>
-                      {t('From: {{where}}', { where: contact1.source })}
-                    </Typography>
-                    <Typography>
-                      {t('On:')}{' '}
-                      {dateFormatShort(
-                        DateTime.fromISO(contact1.createdAt),
-                        locale,
-                      )}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Hidden smDown>
-                  <IconWrapper>
                     <IconButton
                       onClick={() => updateState('left')}
-                      className={
-                        selected === 'left' ? classes.green : classes.grey
-                      }
+                      className={leftSelected ? classes.green : classes.grey}
                     >
-                      <Icon path={mdiArrowLeftBold} size={1.5} />
+                      <Icon
+                        path={matches ? mdiArrowUpBold : mdiArrowLeftBold}
+                        size={1.5}
+                      />
                     </IconButton>
+                  </Tooltip>
+                  <Tooltip
+                    title={t('Right Wins the Merge')}
+                    arrow
+                    placement={matches ? undefined : 'left'}
+                  >
                     <IconButton
                       onClick={() => updateState('right')}
-                      className={
-                        selected === 'right' ? classes.green : classes.grey
-                      }
+                      className={rightSelected ? classes.green : classes.grey}
                     >
-                      <Icon path={mdiArrowRightBold} size={1.5} />
+                      <Icon
+                        path={matches ? mdiArrowDownBold : mdiArrowRightBold}
+                        size={1.5}
+                      />
                     </IconButton>
+                  </Tooltip>
+                  <Tooltip title={t('Ignore this Duplicate')} arrow>
                     <IconButton
                       onClick={() => updateState('cancel')}
                       className={
@@ -243,92 +308,16 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                     >
                       <Icon path={mdiCloseThick} size={1.5} />
                     </IconButton>
-                  </IconWrapper>
-                </Hidden>
-                <Hidden smUp>
-                  <IconWrapper>
-                    <IconButton
-                      onClick={() => updateState('left')}
-                      className={
-                        selected === 'left' ? classes.green : classes.grey
-                      }
-                    >
-                      <Icon path={mdiArrowUpBold} size={1.5} />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => updateState('right')}
-                      className={
-                        selected === 'right' ? classes.green : classes.grey
-                      }
-                    >
-                      <Icon path={mdiArrowDownBold} size={1.5} />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => updateState('cancel')}
-                      className={
-                        selected === 'cancel' ? classes.red : classes.grey
-                      }
-                    >
-                      <Icon path={mdiCloseThick} size={1.5} />
-                    </IconButton>
-                  </IconWrapper>
-                </Hidden>
-
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  className={`
-                    ${classes.contactBasic} 
-                    ${
-                      selected === 'right'
-                        ? classes.selectedBox
-                        : classes.unselectedBox
-                    }
-                  `}
-                  onClick={() => updateState('right')}
-                >
-                  <Avatar src="" className={classes.avatar} />
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    ml={2}
-                    style={{ width: '100%' }}
-                  >
-                    {selected === 'right' && (
-                      <Typography variant="body2" className={classes.selected}>
-                        {t('Use this one')}
-                      </Typography>
-                    )}
-                    <Typography variant="h6">{contact2.name}</Typography>
-                    {contact2.status && (
-                      <Typography>
-                        {t('Status: {{status}}', {
-                          status: contactPartnershipStatus[contact2.status],
-                        })}
-                      </Typography>
-                    )}
-                    {contact2.primaryAddress ? (
-                      <>
-                        <Typography>
-                          {contact2.primaryAddress.street}
-                        </Typography>
-                        <Typography>{`${contact2.primaryAddress.city}, ${contact2.primaryAddress.state} ${contact2.primaryAddress.postalCode}`}</Typography>
-                      </>
-                    ) : (
-                      ''
-                    )}
-                    <Typography>
-                      {t('From: {{where}}', { where: contact2.source })}
-                    </Typography>
-                    <Typography>
-                      {t('On:')}{' '}
-                      {dateFormatShort(
-                        DateTime.fromISO(contact2.createdAt),
-                        locale,
-                      )}
-                    </Typography>
-                  </Box>
-                </Box>
+                  </Tooltip>
+                </IconWrapper>
+                <ContactItem
+                  contact={contact2}
+                  t={t}
+                  side={'right'}
+                  updateState={updateState}
+                  selected={rightSelected}
+                  loser={leftSelected}
+                />
               </Box>
             </Grid>
           </Box>

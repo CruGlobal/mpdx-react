@@ -167,8 +167,8 @@ describe('MassActionsMergeModal', () => {
       input: {
         winnersAndLosers: [
           {
-            loser_id: 'contact-2',
-            winner_id: 'contact-1',
+            loserId: 'contact-2',
+            winnerId: 'contact-1',
           },
         ],
       },

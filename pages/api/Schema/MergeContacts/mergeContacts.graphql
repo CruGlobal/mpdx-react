@@ -6,8 +6,8 @@ extend type Mutation {
 }
 
 input WinnersAndLosers {
-  winner_id: ID!
-  loser_id: ID!
+  winnerId: ID!
+  loserId: ID!
 }
 
 input MergeContactsInput {
