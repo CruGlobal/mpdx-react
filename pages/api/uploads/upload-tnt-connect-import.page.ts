@@ -46,7 +46,7 @@ const uploadTntConnect = async (
     }
 
     const {
-      fields: { override, selectedTags, accountListId },
+      fields: { override, tag_list, accountListId },
       files: { file },
     } = await parseBody(req);
     if (typeof override !== 'string') {
@@ -67,7 +67,7 @@ const uploadTntConnect = async (
     form.append('data[attributes][override]', override);
     form.append(
       'data[attributes][tag_list]',
-      Array.isArray(selectedTags) ? selectedTags.join(',') : selectedTags,
+      Array.isArray(tag_list) ? tag_list.join(',') : tag_list,
     );
     form.append('data[attributes][file]', fileUpload);
     const fetchRes = await fetch(
