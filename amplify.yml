@@ -6,23 +6,24 @@ frontend:
         - nvm install 18.13
         - nvm use 18.13
         - |
-          if [[ "${AWS_BRANCH_ARN#*/branches/}" == *"pr-"* ]]; then
+          if [[ "${AWS_BRANCH_ARN#*/branches/}" != "main" ]] && [["${AWS_BRANCH_ARN#*/branches/}" != "staging"]]; then
             PREVIEW_URL="https://${AWS_BRANCH_ARN#*/branches/}.${AWS_APP_ID}.amplifyapp.com";
-            NEXTAUTH_URL=$PREVIEW_URL;
-            echo "PREVIEW_URL=$PREVIEW_URL" >> .env;
-          elif [[ "${AWS_BRANCH}" != "main" && "${AWS_BRANCH}" != "staging" ]]; then
-            PREVIEW_URL="https://${AWS_BRANCH}.${AWS_APP_ID}.amplifyapp.com";
             NEXTAUTH_URL=$PREVIEW_URL;
             echo "PREVIEW_URL=$PREVIEW_URL" >> .env;
           fi
         - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
         - echo "NODE_ENV=$NODE_ENV" >> .env
-        - yarn set version 3.3.0
+        - yarn set version 3.2.3
         - yarn config set nodeLinker node-modules
         - yarn -v
         - yarn
         - yarn disable-telemetry
-        - yarn gql
+        - |
+          if [[ "${AWS_BRANCH_ARN#*/branches/}" != "main" ]] && [["${AWS_BRANCH_ARN#*/branches/}" != "staging"]]; then
+            API_URL=https://api.mpdx.org/graphql yarn gql
+          else
+            yarn gql
+          fi
     build:
       commands:
         - yarn build:amplify
