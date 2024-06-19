@@ -20,7 +20,7 @@ const file2 = new File(['contents2'], 'tnt2.xml', {
   type: 'application/xml',
 });
 
-jest.mock('./uploadTntConnect');
+jest.mock('./uploads/uploadTntConnect');
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
