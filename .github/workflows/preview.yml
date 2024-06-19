@@ -24,7 +24,7 @@ jobs:
       - name: deploy PR preview
         uses: CruGlobal/amplify-preview-actions@handle-existing-branches
         with:
-          branch_name: ${{ github.head_ref }}
+          branch_name: 'pr-${{ github.event.number}}'
           amplify_command: deploy
         env:
           AWS_ACCESS_KEY_ID: ${{ steps.creds.outputs.aws-access-key-id }}
@@ -32,4 +32,4 @@ jobs:
           AmplifyAppId: ${{ secrets.AMPLIFY_APP_ID }}
           AWS_REGION: 'us-east-1'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EnvironmentVariables: 'SITE_URL=https://${{ github.head_ref }}.${{ secrets.AMPLIFY_APP_ID }}.amplifyapp.com'
+          EnvironmentVariables: 'SITE_URL=https://pr-${{ github.event.number }}.${{ secrets.AMPLIFY_APP_ID }}.amplifyapp.com'
