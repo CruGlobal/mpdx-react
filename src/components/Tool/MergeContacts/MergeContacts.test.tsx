@@ -95,7 +95,7 @@ describe('Tools - MergeContacts', () => {
 
     userEvent.click(confirmButton);
     await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Contacts merged!', {
+      expect(mockEnqueue).toHaveBeenCalledWith('Success!', {
         variant: 'success',
       }),
     );

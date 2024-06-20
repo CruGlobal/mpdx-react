@@ -179,7 +179,9 @@ const ContactItem: React.FC<ContactItemProps> = ({
                 handleContactNameClick(contact.id);
               }}
             >
-              <Typography variant="subtitle1">{contact.name}</Typography>
+              <Typography variant="subtitle1" sx={{ display: 'inline' }}>
+                {contact.name}
+              </Typography>
             </Link>{' '}
             {selected && (
               <Typography variant="body2" className={classes.selected}>
