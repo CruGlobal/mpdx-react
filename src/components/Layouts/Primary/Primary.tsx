@@ -15,13 +15,11 @@ const RootContainer = styled('div')(({ theme }) => ({
 
 const ContentContainer = styled('div')(() => ({
   display: 'flex',
-  overflow: 'hidden',
 }));
 
 const Content = styled('div')(() => ({
   flex: '1 1 auto',
   height: '100%',
-  overflow: 'auto',
 }));
 
 interface Props {
