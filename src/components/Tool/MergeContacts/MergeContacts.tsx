@@ -152,7 +152,7 @@ const MergeContacts: React.FC<Props> = ({
           cache.gc();
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Contacts merged!'), {
+          enqueueSnackbar(t('Success!'), {
             variant: 'success',
           });
         },
@@ -172,9 +172,6 @@ const MergeContacts: React.FC<Props> = ({
       flexDirection="column"
       data-testid="Home"
     >
-      {(loading || updating) && (
-        <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
-      )}
       {!loading && data ? (
         <Grid container className={classes.container}>
           <Grid item xs={12}>
@@ -204,6 +201,9 @@ const MergeContacts: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
+              {(loading || updating) && (
+                <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
+              )}
               <ButtonHeaderBox>
                 <Box>
                   <Typography>
@@ -218,6 +218,12 @@ const MergeContacts: React.FC<Props> = ({
                     />
                   </Typography>
                 </Box>
+                {(loading || updating) && (
+                  <LoadingSpinner
+                    firstLoad={true}
+                    data-testid="LoadingSpinner"
+                  />
+                )}
                 <Box>
                   <Button
                     variant="contained"
