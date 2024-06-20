@@ -22,7 +22,8 @@ const MergeContactsPage: React.FC = () => {
       Styles={
         <style>{`
           div.MuiBox-root {
-            overflow-x: clip;
+            overflow-x: visible;
+            overflow-y: visible;
           },
     `}</style>
       }

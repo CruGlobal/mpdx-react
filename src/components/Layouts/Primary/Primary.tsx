@@ -1,4 +1,5 @@
 import React, { ReactElement, ReactNode, useState } from 'react';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { NavBar } from 'src/components/Layouts/Primary/NavBar/NavBar';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -17,9 +18,10 @@ const ContentContainer = styled('div')(() => ({
   display: 'flex',
 }));
 
-const Content = styled('div')(() => ({
+const Content = styled(Box)(() => ({
   flex: '1 1 auto',
   height: '100%',
+  overflow: 'auto',
 }));
 
 interface Props {
