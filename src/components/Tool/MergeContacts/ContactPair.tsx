@@ -174,7 +174,10 @@ const ContactItem: React.FC<ContactItemProps> = ({
           <>
             <Link
               underline="hover"
-              onClick={() => handleContactNameClick(contact.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleContactNameClick(contact.id);
+              }}
             >
               <Typography variant="subtitle1">{contact.name}</Typography>
             </Link>{' '}
