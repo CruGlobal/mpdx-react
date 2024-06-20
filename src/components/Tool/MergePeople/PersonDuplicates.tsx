@@ -13,11 +13,13 @@ import {
   Grid,
   Hidden,
   IconButton,
+  Link,
   Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
@@ -75,9 +77,17 @@ interface Props {
   person1: PersonInfoFragment;
   person2: PersonInfoFragment;
   update: (id1: string, id2: string, action: string) => void;
+  setContactFocus: SetContactFocus;
 }
 
-const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
+const PersonDuplicate: React.FC<Props> = ({
+  person1,
+  person2,
+  update,
+  // Remove below line when function is being used.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setContactFocus,
+}) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
   const locale = useLocale();
@@ -103,6 +113,14 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
         setSelected('');
         update(person1.id, person2.id, 'cancel');
     }
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleContactNameClick = (contactId) => {
+    // This currently doesn't work as we need to add the contactId onto the person graphQL endpoint.
+    // I've asked Andrew to add it here: https://cru-main.slack.com/archives/CG47BDCG6/p1718721024211409
+    // You'll need that to run the below function
+    // setContactFocus(contactId);
   };
 
   return (
@@ -146,7 +164,12 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                         width: '100%',
                       }}
                     >
-                      <Typography variant="h6">{`${person1.firstName} ${person1.lastName}`}</Typography>
+                      <Link
+                        underline="hover"
+                        onClick={() => handleContactNameClick('')}
+                      >
+                        <Typography variant="h6">{`${person1.firstName} ${person1.lastName}`}</Typography>
+                      </Link>
                     </Box>
 
                     {person1.primaryPhoneNumber ? (
@@ -294,7 +317,12 @@ const PersonDuplicate: React.FC<Props> = ({ person1, person2, update }) => {
                         {t('Use this one')}
                       </Typography>
                     )}
-                    <Typography variant="h6">{`${person1.firstName} ${person1.lastName}`}</Typography>
+                    <Link
+                      underline="hover"
+                      onClick={() => handleContactNameClick('')}
+                    >
+                      <Typography variant="h6">{`${person2.firstName} ${person2.lastName}`}</Typography>
+                    </Link>
 
                     {person1.primaryPhoneNumber ? (
                       <>

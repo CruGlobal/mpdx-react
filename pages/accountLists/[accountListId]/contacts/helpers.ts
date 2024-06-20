@@ -50,6 +50,41 @@ export const getRedirectPathname = ({
     '/accountLists/[accountListId]/reports/donations/[[...contactId]]'
   ) {
     pathname = `/accountLists/${accountListId}/reports/donations`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/fixMailingAddresses/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/fixMailingAddresses`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/fixCommitmentInfo/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/fixCommitmentInfo`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/fixSendNewsletter/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/fixSendNewsletter`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/mergeContacts/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/mergeContacts`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/fixEmailAddresses/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/fixEmailAddresses`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/fixPhoneNumbers/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/fixPhoneNumbers`;
+  } else if (
+    routerPathname ===
+    '/accountLists/[accountListId]/tools/mergePeople/[[...contactId]]'
+  ) {
+    pathname = `/accountLists/${accountListId}/tools/mergePeople`;
   }
 
   if (contactId) {

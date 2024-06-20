@@ -26,6 +26,8 @@ const testData = {
   ],
 };
 
+const setContactFocus = jest.fn();
+
 describe('FixEmailAddresses-Contact', () => {
   it('default', () => {
     const handleChangeMock = jest.fn();
@@ -46,6 +48,7 @@ describe('FixEmailAddresses-Contact', () => {
             handleDelete={handleDeleteModalOpenMock}
             handleAdd={handleAddMock}
             handleChangePrimary={handleChangePrimaryMock}
+            setContactFocus={setContactFocus}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -79,6 +82,7 @@ describe('FixEmailAddresses-Contact', () => {
             handleDelete={handleDeleteModalOpenMock}
             handleAdd={handleAddMock}
             handleChangePrimary={handleChangePrimaryMock}
+            setContactFocus={setContactFocus}
           />
         </TestWrapper>
       </ThemeProvider>,

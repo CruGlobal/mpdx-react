@@ -89,8 +89,16 @@ export const dateFromParts = (
   }
 
   if (typeof year === 'number') {
-    return dateFormat(DateTime.local(year, month, day), locale);
+    const date = DateTime.local(year, month, day);
+    if (date.invalidReason || date.invalidExplanation) {
+      return `Invalid Date - ${date.invalidExplanation}`;
+    }
+    return dateFormat(date, locale);
   } else {
+    const date = DateTime.local().set({ month, day });
+    if (date.invalidReason || date.invalidExplanation) {
+      return `Invalid Date - ${date.invalidExplanation}`;
+    }
     return dayMonthFormat(day, month, locale);
   }
 };

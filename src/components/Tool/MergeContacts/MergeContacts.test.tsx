@@ -13,6 +13,8 @@ import MergeContacts from './MergeContacts';
 
 const accountListId = '123';
 
+const setContactFocus = jest.fn();
+
 const mocks = {
   GetContactDuplicates: {
     contactDuplicates: {
@@ -128,7 +130,10 @@ const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
             contactId={[]}
             searchTerm={''}
           >
-            <MergeContacts accountListId={accountListId} />
+            <MergeContacts
+              accountListId={accountListId}
+              setContactFocus={setContactFocus}
+            />
           </ContactsProvider>
         </GqlMockedProvider>
       </TestRouter>

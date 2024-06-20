@@ -15,6 +15,7 @@ import {
   CardHeader,
   Grid,
   IconButton,
+  Link,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -23,6 +24,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { TFunction, Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
@@ -87,6 +89,7 @@ interface ContactItemProps {
   selected: boolean;
   loser: boolean;
   t: TFunction;
+  setContactFocus: SetContactFocus;
 }
 const ContactItem: React.FC<ContactItemProps> = ({
   contact,
@@ -95,6 +98,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
   loser,
   t,
   side,
+  setContactFocus,
 }) => {
   const useStyles = makeStyles()(() => ({
     contactBasic: {
@@ -143,6 +147,9 @@ const ContactItem: React.FC<ContactItemProps> = ({
   }));
   const { classes } = useStyles();
   const locale = useLocale();
+  const handleContactNameClick = (contactId) => {
+    setContactFocus(contactId);
+  };
   return (
     <Card
       className={`
@@ -165,7 +172,12 @@ const ContactItem: React.FC<ContactItemProps> = ({
         }
         title={
           <>
-            <Typography variant="subtitle1">{contact.name}</Typography>{' '}
+            <Link
+              underline="hover"
+              onClick={() => handleContactNameClick(contact.id)}
+            >
+              <Typography variant="subtitle1">{contact.name}</Typography>
+            </Link>{' '}
             {selected && (
               <Typography variant="body2" className={classes.selected}>
                 {t('Use this one')}
@@ -214,6 +226,7 @@ interface Props {
   contact2: RecordInfoFragment;
   update: (id1: string, id2: string, action: string) => void;
   updating: boolean;
+  setContactFocus: SetContactFocus;
 }
 
 const ContactPair: React.FC<Props> = ({
@@ -221,6 +234,7 @@ const ContactPair: React.FC<Props> = ({
   contact2,
   update,
   updating,
+  setContactFocus,
 }) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
@@ -273,6 +287,7 @@ const ContactPair: React.FC<Props> = ({
                   updateState={updateState}
                   selected={leftSelected}
                   loser={rightSelected}
+                  setContactFocus={setContactFocus}
                 />
                 <IconWrapper>
                   <Tooltip
@@ -326,6 +341,7 @@ const ContactPair: React.FC<Props> = ({
                   updateState={updateState}
                   selected={rightSelected}
                   loser={leftSelected}
+                  setContactFocus={setContactFocus}
                 />
               </Box>
             </Grid>
