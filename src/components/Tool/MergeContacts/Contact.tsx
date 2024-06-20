@@ -13,11 +13,13 @@ import {
   Grid,
   Hidden,
   IconButton,
+  Link,
   Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
@@ -76,9 +78,15 @@ interface Props {
   contact1: RecordInfoFragment;
   contact2: RecordInfoFragment;
   update: (id1: string, id2: string, action: string) => void;
+  setContactFocus: SetContactFocus;
 }
 
-const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
+const Contact: React.FC<Props> = ({
+  contact1,
+  contact2,
+  update,
+  setContactFocus,
+}) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
   const locale = useLocale();
@@ -104,6 +112,10 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
         setSelected('');
         update(contact1.id, contact2.id, 'cancel');
     }
+  };
+
+  const handleContactNameClick = (contactId) => {
+    setContactFocus(contactId);
   };
 
   return (
@@ -147,7 +159,12 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                         width: '100%',
                       }}
                     >
-                      <Typography variant="h6">{contact1.name}</Typography>
+                      <Link
+                        underline="hover"
+                        onClick={() => handleContactNameClick(contact1.id)}
+                      >
+                        <Typography variant="h6">{contact1.name}</Typography>
+                      </Link>
                     </Box>
                     {contact1.status && (
                       <Typography>
@@ -290,7 +307,14 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
                         {t('Use this one')}
                       </Typography>
                     )}
-                    <Typography variant="h6">{contact2.name}</Typography>
+                    <Typography variant="h6">
+                      <Link
+                        underline="hover"
+                        onClick={() => handleContactNameClick(contact2.id)}
+                      >
+                        <Typography variant="h6">{contact2.name}</Typography>
+                      </Link>
+                    </Typography>
                     {contact2.status && (
                       <Typography>
                         {t('Status: {{status}}', {

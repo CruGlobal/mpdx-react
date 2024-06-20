@@ -3,7 +3,7 @@ import {
   ContactPrimaryAddressRelationFragmentDoc,
   PrimaryMailingAddressFragmentDoc,
   SetContactPrimaryAddressMutation,
-} from './SetPrimaryAddress.generated';
+} from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 
 // This hook provides an Apollo cache update function for the setContactPrimaryAddress mutation
 // used by the add address and edit address modals
