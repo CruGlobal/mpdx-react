@@ -59,13 +59,13 @@ const ButtonHeaderBox = styled(Box)(() => ({
   marginBottom: theme.spacing(2),
   position: 'sticky',
   top: '64px',
-  // height: '50px',
   zIndex: '100',
   borderBottom: '1px solid',
   borderBottomColor: theme.palette.cruGrayLight.main,
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
     alignItems: 'start',
+    top: '56px',
   },
 }));
 

@@ -181,13 +181,11 @@ const ContactItem: React.FC<ContactItemProps> = ({
         className={classes.minimalPadding}
       />
       <CardContent className={classes.minimalPadding}>
-        {contact.primaryAddress ? (
+        {contact.primaryAddress && (
           <Typography variant="body2">
             {`${contact?.primaryAddress?.street} 
             ${contact?.primaryAddress?.city}, ${contact?.primaryAddress?.state} ${contact?.primaryAddress?.postalCode}`}
           </Typography>
-        ) : (
-          ''
         )}
         <Typography variant="body2">
           <Trans
@@ -285,10 +283,11 @@ const ContactPair: React.FC<Props> = ({
                     <IconButton
                       onClick={() => updateState('left')}
                       className={leftSelected ? classes.green : classes.grey}
+                      data-testid="leftButton"
                     >
                       <Icon
                         path={matches ? mdiArrowUpBold : mdiArrowLeftBold}
-                        size={1.5}
+                        size={1}
                       />
                     </IconButton>
                   </Tooltip>
@@ -300,10 +299,11 @@ const ContactPair: React.FC<Props> = ({
                     <IconButton
                       onClick={() => updateState('right')}
                       className={rightSelected ? classes.green : classes.grey}
+                      data-testid="rightButton"
                     >
                       <Icon
                         path={matches ? mdiArrowDownBold : mdiArrowRightBold}
-                        size={1.5}
+                        size={1}
                       />
                     </IconButton>
                   </Tooltip>
@@ -313,8 +313,9 @@ const ContactPair: React.FC<Props> = ({
                       className={
                         selected === 'cancel' ? classes.red : classes.grey
                       }
+                      data-testid="ignoreButton"
                     >
-                      <Icon path={mdiCloseThick} size={1.5} />
+                      <Icon path={mdiCloseThick} size={1} />
                     </IconButton>
                   </Tooltip>
                 </IconWrapper>

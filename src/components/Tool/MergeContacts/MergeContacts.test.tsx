@@ -186,8 +186,27 @@ describe('Tools - MergeContacts', () => {
         ],
       },
     });
-    // await waitFor(() =>
-    //   expect(queryByText('Doe, John and Nancy')).not.toBeInTheDocument(),
-    // );
+  });
+
+  it('should ignore contacts', async () => {
+    const mutationSpy = jest.fn();
+
+    const { queryByText, queryAllByTestId, findByText, getByRole } = render(
+      <SnackbarProvider>
+        <MergeContactsWrapper mutationSpy={mutationSpy} />
+      </SnackbarProvider>,
+    );
+
+    await waitFor(() =>
+      expect(queryAllByTestId('MergeContactPair')).toHaveLength(2),
+    );
+    const confirmButton = getByRole('button', { name: 'Confirm and Continue' });
+
+    expect(confirmButton).toBeDisabled();
+    userEvent.click(queryAllByTestId('rightButton')[0]);
+    expect(await findByText('Use this one')).toBeInTheDocument();
+    userEvent.click(queryAllByTestId('ignoreButton')[0]);
+    expect(queryByText('Use this one')).not.toBeInTheDocument();
+    expect(confirmButton).not.toBeDisabled();
   });
 });
