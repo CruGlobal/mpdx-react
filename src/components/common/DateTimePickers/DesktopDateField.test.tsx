@@ -9,6 +9,7 @@ import { DesktopDateField } from './DesktopDateField';
 interface TestComponentProps {
   value?: DateTime | null;
   locale?: string;
+  invalidDate?: boolean;
 }
 
 const onChange = jest.fn();
@@ -16,10 +17,16 @@ const onChange = jest.fn();
 const TestComponent: React.FC<TestComponentProps> = ({
   value = DateTime.local(2024, 1, 2, 3, 4, 5),
   locale = 'en-US',
+  invalidDate = false,
 }) => (
   <UserPreferenceContext.Provider value={{ locale, userId: 'userId' }}>
     <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale={locale}>
-      <DesktopDateField value={value} onChange={onChange} label="Date" />
+      <DesktopDateField
+        value={value}
+        onChange={onChange}
+        label="Date"
+        invalidDate={invalidDate}
+      />
     </LocalizationProvider>
   </UserPreferenceContext.Provider>
 );
@@ -38,6 +45,30 @@ describe('DesktopDateField', () => {
       );
 
       expect(getByRole('textbox')).toHaveValue('');
+    });
+
+    it('shows invalid date when invalidDate prop is TRUE', () => {
+      const { getByRole, rerender } = render(<TestComponent />);
+      rerender(
+        <TestComponent
+          value={'0/0/2000' as unknown as DateTime}
+          invalidDate={true}
+        />,
+      );
+
+      expect(getByRole('textbox')).toHaveValue('0/0/2000');
+    });
+
+    it('shows default date with a invalid date when invalidDate prop is FALSE', () => {
+      const { getByRole, rerender } = render(<TestComponent />);
+      rerender(
+        <TestComponent
+          value={'0/0/2000' as unknown as DateTime}
+          invalidDate={false}
+        />,
+      );
+
+      expect(getByRole('textbox')).toHaveValue('1/2/2024');
     });
 
     it('the formatted value', () => {
