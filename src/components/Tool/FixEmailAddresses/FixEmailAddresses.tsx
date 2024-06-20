@@ -291,7 +291,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     name={`${person.firstName} ${person.lastName}`}
                     key={person.id}
                     personId={person.id}
-                    email={
+                    emails={
                       dataState[person.id]?.emailAddresses.map((email) => ({
                         ...email,
                         isValid: false,
