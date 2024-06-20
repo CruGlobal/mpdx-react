@@ -201,9 +201,6 @@ const MergeContacts: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-              {(loading || updating) && (
-                <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
-              )}
               <ButtonHeaderBox>
                 <Box>
                   <Typography>
