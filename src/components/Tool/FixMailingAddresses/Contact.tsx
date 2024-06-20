@@ -15,6 +15,7 @@ import {
   Grid,
   Hidden,
   IconButton,
+  Link,
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
@@ -22,6 +23,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
@@ -40,6 +42,7 @@ import { emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 
 const ContactHeader = styled(CardHeader)(() => ({
+  cursor: 'pointer',
   '.MuiCardHeader-action': {
     alignSelf: 'center',
   },
@@ -113,6 +116,7 @@ interface Props {
   appName: string;
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
+  setContactFocus: SetContactFocus;
 }
 
 const Contact: React.FC<Props> = ({
@@ -123,6 +127,7 @@ const Contact: React.FC<Props> = ({
   appName,
   openEditAddressModal,
   openNewAddressModal,
+  setContactFocus,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -156,17 +161,31 @@ const Contact: React.FC<Props> = ({
     });
   };
 
+  const handleContactNameClick = () => {
+    setContactFocus(id);
+  };
+
   return (
     <Card className={classes.contactCard}>
       <ContactHeader
-        avatar={<ContactAvatar src="" aria-label="Contact Avatar" />}
+        avatar={
+          <ContactAvatar
+            src=""
+            aria-label="Contact Avatar"
+            onClick={handleContactNameClick}
+          />
+        }
         action={
           <Button variant="contained" className={classes.confirmButon}>
             <Icon path={mdiCheckboxMarkedCircle} size={0.8} />
             {t('Confirm')}
           </Button>
         }
-        title={<Typography variant="h6">{name}</Typography>}
+        title={
+          <Link underline="hover" onClick={handleContactNameClick}>
+            <Typography variant="h6">{name}</Typography>
+          </Link>
+        }
         subheader={<Typography>{contactPartnershipStatus[status]}</Typography>}
       />
       <CardContent className={(classes.paddingX, classes.paddingY)}>
