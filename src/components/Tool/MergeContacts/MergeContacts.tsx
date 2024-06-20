@@ -12,10 +12,11 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useMassActionsMergeMutation } from 'src/components/Contacts/MassActions/Merge/MassActionsMerge.generated';
+import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
-import Contact from './Contact';
+import ContactPair from './ContactPair';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -23,7 +24,7 @@ const useStyles = makeStyles()(() => ({
     padding: theme.spacing(3),
     width: '80%',
     display: 'flex',
-    height: '100dvh',
+    height: 'auto',
     [theme.breakpoints.down('lg')]: {
       width: '100%',
     },
@@ -57,7 +58,8 @@ const ButtonHeaderBox = styled(Box)(() => ({
   paddingBottom: theme.spacing(2),
   marginBottom: theme.spacing(2),
   position: 'sticky',
-  top: '0',
+  top: '64px',
+  // height: '50px',
   zIndex: '100',
   borderBottom: '1px solid',
   borderBottomColor: theme.palette.cruGrayLight.main,
@@ -95,28 +97,31 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
   const showing = data?.contactDuplicates.nodes.length || 0;
 
   const updateActions = (id1: string, id2: string, action: string): void => {
-    if (action === 'cancel') {
-      setActions((prevState) => ({
-        ...prevState,
-        [id1]: { action: '' },
-        [id2]: { action: '' },
-      }));
-    } else {
-      setActions((prevState) => ({
-        ...prevState,
-        [id1]: { action: 'merge', mergeId: id2 },
-        [id2]: { action: 'delete' },
-      }));
+    if (!updating) {
+      if (action === 'cancel') {
+        setActions((prevState) => ({
+          ...prevState,
+          [id1]: { action: '' },
+          [id2]: { action: '' },
+        }));
+      } else {
+        setActions((prevState) => ({
+          ...prevState,
+          [id1]: { action: 'merge', mergeId: id2 },
+          [id2]: { action: 'delete' },
+        }));
+      }
     }
   };
   const handleConfirmAndContinue = async () => {
     await mergeContacts();
+    setActions({});
   };
   const handleConfirmAndLeave = async () => {
-    await mergeContacts().then(
-      () =>
-        (window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`),
-    );
+    await mergeContacts().then(() => {
+      window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`;
+      setActions({});
+    });
   };
 
   const mergeContacts = async () => {
@@ -162,6 +167,9 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
       flexDirection="column"
       data-testid="Home"
     >
+      {(loading || updating) && (
+        <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
+      )}
       {!loading && data ? (
         <Grid container className={classes.container}>
           <Grid item xs={12}>
@@ -226,11 +234,12 @@ const MergeContacts: React.FC<Props> = ({ accountListId }: Props) => {
               <Grid item xs={12} sx={{ margin: '0px 2px 20px 2px' }}>
                 {data?.contactDuplicates.nodes
                   .map((duplicate) => (
-                    <Contact
+                    <ContactPair
                       key={duplicate.id}
                       contact1={duplicate.recordOne}
                       contact2={duplicate.recordTwo}
                       update={updateActions}
+                      updating={updating}
                     />
                   ))
                   .reverse()}

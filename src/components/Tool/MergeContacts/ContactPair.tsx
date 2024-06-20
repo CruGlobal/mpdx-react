@@ -215,9 +215,15 @@ interface Props {
   contact1: RecordInfoFragment;
   contact2: RecordInfoFragment;
   update: (id1: string, id2: string, action: string) => void;
+  updating: boolean;
 }
 
-const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
+const ContactPair: React.FC<Props> = ({
+  contact1,
+  contact2,
+  update,
+  updating,
+}) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
   const matches = useMediaQuery('(max-width:600px)');
@@ -226,22 +232,24 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   const rightSelected = selected === 'right';
 
   const updateState = (side: string): void => {
-    switch (side) {
-      case 'left':
-        setSelected('left');
-        update(contact1.id, contact2.id, 'merge');
-        break;
-      case 'right':
-        setSelected('right');
-        update(contact2.id, contact1.id, 'merge');
-        break;
-      case 'cancel':
-        setSelected('cancel');
-        update(contact1.id, contact2.id, 'cancel');
-        break;
-      default:
-        setSelected('');
-        update(contact1.id, contact2.id, 'cancel');
+    if (!updating) {
+      switch (side) {
+        case 'left':
+          setSelected('left');
+          update(contact1.id, contact2.id, 'merge');
+          break;
+        case 'right':
+          setSelected('right');
+          update(contact2.id, contact1.id, 'merge');
+          break;
+        case 'cancel':
+          setSelected('cancel');
+          update(contact1.id, contact2.id, 'cancel');
+          break;
+        default:
+          setSelected('');
+          update(contact1.id, contact2.id, 'cancel');
+      }
     }
   };
 
@@ -327,4 +335,4 @@ const Contact: React.FC<Props> = ({ contact1, contact2, update }) => {
   );
 };
 
-export default Contact;
+export default ContactPair;
