@@ -41,7 +41,7 @@ describe('FixEmailAddresses-Contact', () => {
             name={testData.name}
             key={testData.name}
             personId={testData.id}
-            email={testData.emails.map((email) => ({
+            emails={testData.emails.map((email) => ({
               ...email,
               isValid: false,
               personId: testData.id,
@@ -79,7 +79,7 @@ describe('FixEmailAddresses-Contact', () => {
             name={testData.name}
             key={testData.name}
             personId={testData.id}
-            email={testData.emails.map((email) => ({
+            emails={testData.emails.map((email) => ({
               ...email,
               isValid: false,
               personId: testData.id,

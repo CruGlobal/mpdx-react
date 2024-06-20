@@ -93,7 +93,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 
 interface FixEmailAddressPersonProps {
   name: string;
-  email: EmailAddressData[];
+  emails: EmailValidationFormProps[];
   personId: string;
   toDelete: PersonEmailAddressInput[];
   handleChange: (
@@ -106,7 +106,7 @@ interface FixEmailAddressPersonProps {
   handleChangePrimary: (personId: string, emailIndex: number) => void;
 }
 
-interface EmailAddressData {
+interface EmailValidationFormProps {
   email: string;
   isPrimary: boolean;
   updatedAt: string;
@@ -118,20 +118,28 @@ interface EmailAddressData {
 const onSubmit = () => {};
 
 const EmailValidationForm = ({
-  email: initialEmail = {
+  emails: initialEmail = {
     email: '',
     isPrimary: false,
     updatedAt: '',
     source: '',
     personId: '',
-    isValid: false, // Add the 'personId' property
+    isValid: false,
   },
 }: {
-  email?: EmailAddressData;
+  emails?: EmailValidationFormProps;
+  personId?: string;
+  handleAdd: (personId: string, email: string) => void;
 }) => {
   const validationSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email address format'),
   });
+
+  // const handleButtonClick = (email) => {
+
+  // };
+
+  //TODO: Add button functionality to add email using graphql mutation
 
   return (
     <Formik
@@ -140,8 +148,8 @@ const EmailValidationForm = ({
         isPrimary: initialEmail.isPrimary,
         updatedAt: '',
         source: '',
-        personId: '',
-        isValid: false,
+        personId: 'test',
+        isValid: initialEmail.isValid,
       }}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
@@ -150,7 +158,11 @@ const EmailValidationForm = ({
         <Form>
           <Grid container>
             <div className="d-flex align-items-start">
-              <Field type="email" name="email" />
+              <Field
+                type="email"
+                name="email"
+                data-testid={`personId-${initialEmail.personId}`}
+              />
             </div>
             <div className="d-flex align-items-end">
               <Button
@@ -163,6 +175,8 @@ const EmailValidationForm = ({
                 variant="contained"
                 type="submit"
                 disabled={!isValid}
+                data-testid={`addButton-${initialEmail.personId}`}
+                // onClick={() => handleButtonClick(values.email)}
               >
                 <CheckIcon fontSize="small" />
               </Button>
@@ -177,32 +191,18 @@ const EmailValidationForm = ({
 
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
-  email,
+  emails,
   personId,
   handleChange,
   handleDelete,
-  // handleAdd,
   handleChangePrimary,
+  handleAdd,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
-  // const [newEmailAddress, setNewEmailAddress] = useState<string>('');
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info
-
-  // const updateNewEmailAddress = (
-  //   event: React.ChangeEvent<HTMLInputElement>,
-  // ): void => {
-  //   setNewEmailAddress(event.target.value);
-  // };
-
-  // const addNewEmailAddress = (): void => {
-  //   if (newEmailAddress) {
-  //     handleAdd(personId, newEmailAddress);
-  //     setNewEmailAddress('');
-  //   }
-  // };
 
   return (
     <Container container>
@@ -244,7 +244,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       </Box>
                     </ColumnHeaderWrapper>
                   </Hidden>
-                  {email.map((email, index) => (
+                  {emails.map((email, index) => (
                     <Fragment key={index}>
                       <RowWrapper item xs={12} sm={6}>
                         <Box
@@ -341,7 +341,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       justifyContent="flex-start"
                       px={3.5}
                     >
-                      <EmailValidationForm />
+                      <EmailValidationForm handleAdd={handleAdd} />
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>
