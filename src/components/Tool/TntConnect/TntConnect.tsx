@@ -294,6 +294,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
                     <Autocomplete
                       multiple
                       freeSolo
+                      autoSelect
                       autoHighlight
                       fullWidth
                       loading={contactTagsListLoading}
