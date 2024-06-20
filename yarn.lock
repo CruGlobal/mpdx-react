@@ -8154,24 +8154,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@virtuoso.dev/react-urx@npm:^0.2.12":
-  version: 0.2.13
-  resolution: "@virtuoso.dev/react-urx@npm:0.2.13"
-  dependencies:
-    "@virtuoso.dev/urx": ^0.2.13
-  peerDependencies:
-    react: ">=16"
-  checksum: 173e91c21f6a8cd506ad3b72af10656897fe1951124ed9eeb1fd85575534993bea2f97cba3f81c08ae1e88a2613df348e2c80d0ceecb3021f8c8c8fe0e053ee2
-  languageName: node
-  linkType: hard
-
-"@virtuoso.dev/urx@npm:^0.2.12, @virtuoso.dev/urx@npm:^0.2.13":
-  version: 0.2.13
-  resolution: "@virtuoso.dev/urx@npm:0.2.13"
-  checksum: 682a99cf40ccc429241268dd37495cd1ed4695ae58b5a1169c75df1630d5dc3fd8eb3aaa655f71c37f39ba9c23c0aaf4401b76d8a986986d1a38a422d596a6ba
-  languageName: node
-  linkType: hard
-
 "@webassemblyjs/ast@npm:1.11.1":
   version: 1.11.1
   resolution: "@webassemblyjs/ast@npm:1.11.1"
@@ -19529,7 +19511,7 @@ __metadata:
     react-dnd-html5-backend: ^14.0.2
     react-dom: ^18.2.0
     react-i18next: ^11.18.6
-    react-virtuoso: 2.19.0
+    react-virtuoso: ^4.7.4
     recharts: 2.3.2
     rollbar: ^2.25.2
     storybook: ^6.5.16
@@ -22257,16 +22239,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtuoso@npm:2.19.0":
-  version: 2.19.0
-  resolution: "react-virtuoso@npm:2.19.0"
-  dependencies:
-    "@virtuoso.dev/react-urx": ^0.2.12
-    "@virtuoso.dev/urx": ^0.2.12
+"react-virtuoso@npm:^4.7.4":
+  version: 4.7.11
+  resolution: "react-virtuoso@npm:4.7.11"
   peerDependencies:
     react: ">=16 || >=17 || >= 18"
     react-dom: ">=16 || >=17 || >= 18"
-  checksum: 146416808b72a533d9e710826dfa2626fcc5761d6cb5709d082ed069b92b76e1258ae14bcea391fb6ac9fec09280e5e9b33fb10b4f269695e234f4323af4434c
+  checksum: 3e9b56e8bd2ae88b04563ff3ce221c95db493741ff89667475e390a8abfb202a9b0692cbe9edd822316a27c902c835ce0e287b036df6644909317c7a6c1462fc
   languageName: node
   linkType: hard
 

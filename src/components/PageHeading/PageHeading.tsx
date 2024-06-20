@@ -42,10 +42,7 @@ const PageHeading = ({
   const { classes } = useStyles();
 
   return (
-    <motion.div
-      initial={{ y: -height }}
-      animate={{ y: 0, transition: { ease: 'easeInOut' } }}
-      exit={{ y: -height, transition: { ease: 'easeInOut', delay: 0.75 } }}
+    <Box
       className={classes.div}
       style={{ marginBottom: -overlap, height }}
       data-testid="PageHeading"
@@ -57,9 +54,17 @@ const PageHeading = ({
       >
         <Box className={classes.pageHeading}>
           <motion.div
-            animate={{ x: 0, opacity: 1, transition: { delay: 1 } }}
+            animate={{
+              x: 0,
+              opacity: 1,
+              transition: { delay: 0, duration: 0.1 },
+            }}
             initial={{ x: -20, opacity: 0 }}
-            exit={{ x: -20, opacity: 0, transition: { delay: 0.2 } }}
+            exit={{
+              x: -20,
+              opacity: 0,
+              transition: { delay: 0.1, duration: 0.1 },
+            }}
           >
             <Typography
               variant="h4"
@@ -71,7 +76,11 @@ const PageHeading = ({
           </motion.div>
           {subheading && (
             <motion.div
-              animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
+              animate={{
+                x: 0,
+                opacity: 1,
+                transition: { delay: 0.1, duration: 0.1 },
+              }}
               initial={{ x: -20, opacity: 0 }}
               exit={{ x: -20, opacity: 0 }}
             >
@@ -85,7 +94,7 @@ const PageHeading = ({
           <Box display={{ xs: 'none', sm: 'block' }} fontSize={0}>
             <motion.img
               initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1, transition: { delay: 1.2 } }}
+              animate={{ x: 0, opacity: 1, transition: { delay: 0.2 } }}
               exit={{ x: 20, opacity: 0 }}
               data-testid="PageHeadingImg"
               src={imgSrc || illustration20}
@@ -95,7 +104,7 @@ const PageHeading = ({
           </Box>
         )}
       </Container>
-    </motion.div>
+    </Box>
   );
 };
 

@@ -23,6 +23,7 @@ import { InfiniteList } from '../../../InfiniteList/InfiniteList';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
 import { ContactFlowRow } from '../ContactFlowRow/ContactFlowRow';
+import { ContactFlowRowSkeleton } from '../ContactFlowRow/ContactFlowRow.skeleton';
 
 interface Props {
   data?: ContactRowFragment[];
@@ -150,6 +151,8 @@ export const ContactFlowColumn: React.FC<Props> = ({
         <Box ref={cardContentRef} width="100%" height="100%">
           <InfiniteList
             loading={loading}
+            Skeleton={ContactFlowRowSkeleton}
+            numberOfSkeletons={10}
             data={data?.contacts.nodes}
             itemContent={(_index, contact) => (
               <ContactFlowRow

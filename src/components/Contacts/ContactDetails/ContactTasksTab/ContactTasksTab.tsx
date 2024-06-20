@@ -10,6 +10,7 @@ import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { TaskRowSkeleton } from 'src/components/Task/TaskRow/TaskRowSkeleton.skeleton';
 import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
@@ -227,6 +228,8 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
       <Box ref={infiniteListRef}>
         <InfiniteList
           loading={loading}
+          Skeleton={TaskRowSkeleton}
+          numberOfSkeletons={10}
           data={data?.tasks.nodes}
           EmptyPlaceholder={<ContactTasksTabNullState contactId={contactId} />}
           itemContent={(index, task) => (

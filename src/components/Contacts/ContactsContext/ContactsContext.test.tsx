@@ -47,39 +47,29 @@ jest.mock('notistack', () => ({
 }));
 
 const TestRender: React.FC = () => {
-  const { viewMode, handleViewModeChange, userOptionsLoading } = useContext(
+  const { viewMode, handleViewModeChange } = useContext(
     ContactsContext,
   ) as ContactsType;
   return (
     <Box>
-      {!userOptionsLoading ? (
-        <>
-          <Typography>{viewMode}</Typography>
-          <Button
-            onClick={(event) =>
-              handleViewModeChange(event, TableViewModeEnum.List)
-            }
-          >
-            List Button
-          </Button>
-          <Button
-            onClick={(event) =>
-              handleViewModeChange(event, TableViewModeEnum.Flows)
-            }
-          >
-            Flows Button
-          </Button>
-          <Button
-            onClick={(event) =>
-              handleViewModeChange(event, TableViewModeEnum.Map)
-            }
-          >
-            Map Button
-          </Button>
-        </>
-      ) : (
-        <>Loading</>
-      )}
+      <Typography>{viewMode}</Typography>
+      <Button
+        onClick={(event) => handleViewModeChange(event, TableViewModeEnum.List)}
+      >
+        List Button
+      </Button>
+      <Button
+        onClick={(event) =>
+          handleViewModeChange(event, TableViewModeEnum.Flows)
+        }
+      >
+        Flows Button
+      </Button>
+      <Button
+        onClick={(event) => handleViewModeChange(event, TableViewModeEnum.Map)}
+      >
+        Map Button
+      </Button>
     </Box>
   );
 };
@@ -128,7 +118,6 @@ describe('ContactsPageContext', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    expect(getByText('Loading')).toBeInTheDocument();
     await waitFor(() => expect(getByText('Flows Button')).toBeInTheDocument());
     userEvent.click(getByText('Flows Button'));
     await waitFor(() => expect(getByText('flows')).toBeInTheDocument());
@@ -171,7 +160,6 @@ describe('ContactsPageContext', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    expect(getByText('Loading')).toBeInTheDocument();
     await waitFor(() => expect(getByText('Map Button')).toBeInTheDocument());
     userEvent.click(getByText('Map Button'));
     await waitFor(() => expect(getByText('map')).toBeInTheDocument());
@@ -192,7 +180,7 @@ describe('ContactsPageContext', () => {
   });
 
   it('does not have a contact id and changes to map', async () => {
-    const { getByText, queryByText } = render(
+    const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
@@ -222,8 +210,6 @@ describe('ContactsPageContext', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    expect(getByText('Loading')).toBeInTheDocument();
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
     await waitFor(() => expect(getByText('Map Button')).toBeInTheDocument());
     userEvent.click(getByText('Map Button'));
     await waitFor(() => expect(getByText('map')).toBeInTheDocument());

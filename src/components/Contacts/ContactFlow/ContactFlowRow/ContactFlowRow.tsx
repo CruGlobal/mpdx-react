@@ -32,7 +32,7 @@ const ContactLink = styled(Typography)(() => ({
   },
 }));
 
-const DraggableBox = styled(Box)(() => ({
+export const DraggableBox = styled(Box)(() => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',

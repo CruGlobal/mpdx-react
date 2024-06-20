@@ -156,16 +156,18 @@ export const ContactsProvider: React.FC<Props> = ({
   //User options for display view
   const { loading: userOptionsLoading } = useGetUserOptionsQuery({
     onCompleted: ({ userOptions }) => {
-      if (contactId?.includes('list')) {
-        setViewMode(TableViewModeEnum.List);
-      } else {
-        setViewMode(
-          (userOptions.find((option) => option.key === 'contacts_view')
-            ?.value as TableViewModeEnum) || TableViewModeEnum.List,
-        );
-      }
+      setViewMode(
+        (userOptions.find((option) => option.key === 'contacts_view')
+          ?.value as TableViewModeEnum) || TableViewModeEnum.List,
+      );
     },
+    skip: contactId?.includes('list'),
   });
+  useEffect(() => {
+    if (contactId?.includes('list')) {
+      setViewMode(TableViewModeEnum.List);
+    }
+  }, []);
 
   const contactsFilters = useMemo(
     () => ({
