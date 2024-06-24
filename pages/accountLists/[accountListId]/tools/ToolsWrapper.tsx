@@ -12,14 +12,14 @@ interface ToolsWrapperProps {
   pageUrl: string;
   selectedMenuId: string; // for later use
   children: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
-  Styles?: React.ReactNode;
+  styles?: React.ReactNode;
 }
 
 export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
   pageTitle,
   pageUrl,
   children,
-  Styles,
+  styles,
 }) => {
   const { appName } = useGetAppSettings();
   const { accountListId, selectedContactId, handleSelectContact } =
@@ -31,7 +31,7 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
         <title>
           {appName} | {pageTitle}
         </title>
-        {Styles}
+        {styles}
       </Head>
       {accountListId ? (
         <SidePanelsLayout
