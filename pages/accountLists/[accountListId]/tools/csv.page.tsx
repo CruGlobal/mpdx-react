@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import Loading from 'src/components/Loading';
+import { CsvImportProvider } from 'src/components/Tool/Import/Csv/CsvImportContext';
 import CsvUpload from 'src/components/Tool/Import/Csv/CsvUpload';
 import { HeaderBox } from 'src/components/Tool/Import/Csv/HeaderBox';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -55,8 +56,22 @@ const CsvHome: React.FC = () => {
   const { classes } = useStyles();
   const [currentTab, setCurrentTab] = useState('tools.import.csv.upload');
 
+  const renderTab = (accountListId: string) => {
+    switch (currentTab) {
+      case 'tools.import.csv.upload':
+        return (
+          <CsvUpload
+            accountListId={accountListId}
+            setCurrentTab={setCurrentTab}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <>
+    <CsvImportProvider>
       <Head>
         <title>
           {appName} | {t('Tools - Import - CSV - Upload')}
@@ -124,19 +139,14 @@ const CsvHome: React.FC = () => {
                 <Typography variant="body1">{t('Preview')}</Typography>
               </StepBox>
               <br />
-              <Box sx={{ border: '1px solid' }}>
-                <CsvUpload
-                  accountListId={accountListId}
-                  setCurrentTab={setCurrentTab}
-                ></CsvUpload>
-              </Box>
+              {renderTab(accountListId)}
             </Grid>
           </ContainerGrid>
         </Box>
       ) : (
         <Loading loading />
       )}
-    </>
+    </CsvImportProvider>
   );
 };
 

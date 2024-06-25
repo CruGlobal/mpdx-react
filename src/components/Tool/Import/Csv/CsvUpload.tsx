@@ -3,6 +3,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
+import { CsvImportContext, CsvImportType } from './CsvImportContext';
 import { HeaderBox } from './HeaderBox';
 import { getMaxFileSize, uploadFile } from './uploadCsvFile';
 
@@ -19,6 +20,7 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
   const fileRef = useRef<HTMLInputElement>(null);
   const maxSizeInMB = useMemo(getMaxFileSize, []);
   const { enqueueSnackbar } = useSnackbar();
+  const setUploadData = React.useContext(CsvImportContext)?.setUploadData;
 
   const handleFileClick = (e) => {
     e.preventDefault();
@@ -40,7 +42,24 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
         const errorMessage = `File too large, ${maxSizeInMB}MB max`;
         throw new Error(t(errorMessage));
       } else {
-        uploadFile({ accountListId, file, t });
+        uploadFile({ accountListId, file, t }).then((data) => {
+          if (data) {
+            const transformedData = {
+              fileConstants: data['attributes']['file_constants'],
+              fileConstantsMappings:
+                data['attributes']['file_constants_mappings'],
+              fileHeaders: data['attributes']['file_headers'],
+              fileHeadersMappings: data['attributes']['file_headers_mappings'],
+              id: data['id'],
+              inPreview: data['attributes']['in_preview'],
+              sampleContacts: data['relationships']['sample_contacts']['data'],
+              tagList: data['attributes']['tag_list'],
+            } as CsvImportType;
+            if (setUploadData) {
+              setUploadData(transformedData);
+            }
+          }
+        });
         setCurrentTab('tools.import.csv.headers');
       }
     } catch (err) {
