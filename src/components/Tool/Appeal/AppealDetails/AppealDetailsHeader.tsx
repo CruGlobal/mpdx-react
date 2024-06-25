@@ -134,7 +134,7 @@ const AppealDetailsHeader = ({ appeal }: Props): ReactElement => {
               <AppealProgressBar
                 given={appeal.givenTotal}
                 received={appeal.receivedTotal}
-                commited={appeal.committedTotal}
+                committed={appeal.committedTotal}
                 amount={appeal.goal}
                 amountCurrency={appeal.currency}
               />
