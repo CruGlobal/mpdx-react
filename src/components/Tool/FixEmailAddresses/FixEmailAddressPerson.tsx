@@ -1,21 +1,23 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { mdiDelete, mdiLock, mdiStar, mdiStarOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import CheckIcon from '@mui/icons-material/Check';
+import AddIcon from '@mui/icons-material/Add';
 import {
   Avatar,
   Box,
   Button,
   Grid,
   Hidden,
+  IconButton,
   Link,
   TextField,
   Theme,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { ErrorMessage, Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as Yup from 'yup';
@@ -25,6 +27,13 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
+import { EmailAddressData } from './FixEmailAddresses';
+
+const ContactInputField = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -34,8 +43,8 @@ const PersonCard = styled(Box)(({ theme }) => ({
 
 const Container = styled(Grid)(({ theme }) => ({
   display: 'flex',
-  alignItems: 'center',
-  marginBottom: theme.spacing(2),
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
   [theme.breakpoints.down('sm')]: {
     border: `1px solid ${theme.palette.cruGrayMedium.main}`,
   },
@@ -95,7 +104,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 
 interface FixEmailAddressPersonProps {
   name: string;
-  emails: EmailValidationFormProps[];
+  emailAddress?: EmailAddressData[];
   personId: string;
   toDelete: PersonEmailAddressInput[];
   contactId: string;
@@ -110,13 +119,20 @@ interface FixEmailAddressPersonProps {
   setContactFocus: SetContactFocus;
 }
 
-interface EmailValidationFormProps {
+interface EmailValidationFormEmail {
   email: string;
   isPrimary: boolean;
   updatedAt: string;
   source: string;
-  personId: string; // Add the 'personId' property
+  personId: string;
   isValid: boolean;
+}
+
+interface EmailValidationFormProps {
+  emails?: EmailValidationFormEmail;
+  index: number;
+  personId?: string;
+  handleAdd?: (personId: string, email: string) => void;
 }
 
 const onSubmit = () => {};
@@ -130,20 +146,27 @@ const EmailValidationForm = ({
     personId: '',
     isValid: false,
   },
-}: {
-  emails?: EmailValidationFormProps;
-  personId?: string;
-  handleAdd: (personId: string, email: string) => void;
-}) => {
+}: EmailValidationFormProps) => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const validationSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email address format'),
+    email: Yup.string().email(' ').required(' '),
   });
+  const { t } = useTranslation();
+
+  const handleValidation = (isValid) => {
+    if (!isValid) {
+      enqueueSnackbar(t('Invalid Email Address Format'), {
+        variant: 'error',
+      });
+    }
+  };
+
+  //TODO: Add button functionality to add email using graphql mutation
 
   // const handleButtonClick = (email) => {
 
   // };
-
-  //TODO: Add button functionality to add email using graphql mutation
 
   return (
     <Formik
@@ -153,39 +176,35 @@ const EmailValidationForm = ({
         updatedAt: '',
         source: '',
         personId: 'test',
-        isValid: initialEmail.isValid,
+        isValid: false,
       }}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
-      {({ isValid }) => (
+      {({ values, handleChange, isValid }) => (
         <Form>
-          <Grid container>
-            <div className="d-flex align-items-start">
-              <Field
+          <RowWrapper>
+            <Grid container>
+              <ContactInputField
+                destroyed={false}
+                label={t('New Email Address')}
                 type="email"
                 name="email"
-                data-testid={`personId-${initialEmail.personId}`}
+                value={values.email}
+                onChange={handleChange}
+                onBlur={() => handleValidation(isValid)}
               />
-            </div>
-            <div className="d-flex align-items-end">
-              <Button
-                style={{
-                  maxWidth: '20px',
-                  maxHeight: '20px',
-                  minWidth: '20px',
-                  minHeight: '20px',
-                }}
-                variant="contained"
+              <IconButton
                 type="submit"
-                disabled={!isValid}
+                color="primary"
+                disabled={!isValid || values.email === ''}
                 data-testid={`addButton-${initialEmail.personId}`}
                 // onClick={() => handleButtonClick(values.email)}
               >
-                <CheckIcon fontSize="small" />
-              </Button>
-            </div>
-          </Grid>
+                <AddIcon fontSize="large" />
+              </IconButton>
+            </Grid>
+          </RowWrapper>
           <ErrorMessage name="email" component="div" />
         </Form>
       )}
@@ -195,7 +214,7 @@ const EmailValidationForm = ({
 
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
-  emails,
+  emailAddress,
   personId,
   contactId,
   handleChange,
@@ -207,6 +226,18 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
+
+  const emails = useMemo(
+    () =>
+      emailAddress?.map((email) => ({
+        ...email,
+        isValid: false,
+        personId: personId,
+        isPrimary: email.primary,
+      })) || [],
+    [emailAddress],
+  );
+
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info
 
@@ -364,9 +395,12 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                     <BoxWithResponsiveBorder
                       display="flex"
                       justifyContent="flex-start"
-                      px={3.5}
+                      px={2}
                     >
-                      <EmailValidationForm handleAdd={handleAdd} />
+                      {
+                        //index will need to be mapped to the correct personId
+                      }
+                      <EmailValidationForm handleAdd={handleAdd} index={0} />
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>
