@@ -288,14 +288,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     name={`${person.firstName} ${person.lastName}`}
                     key={person.id}
                     personId={person.id}
-                    emails={
-                      dataState[person.id]?.emailAddresses.map((email) => ({
-                        ...email,
-                        isValid: false,
-                        personId: person.id,
-                        isPrimary: email.primary,
-                      })) || []
-                    }
+                    emailAddress={dataState[person.id]?.emailAddresses}
                     toDelete={dataState[person.id]?.toDelete}
                     handleChange={handleChange}
                     handleDelete={handleDeleteModalOpen}
