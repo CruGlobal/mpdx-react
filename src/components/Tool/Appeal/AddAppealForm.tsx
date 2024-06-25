@@ -1,7 +1,8 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { mdiClose, mdiEqual, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
+  Alert,
   Autocomplete,
   Box,
   Button,
@@ -10,6 +11,7 @@ import {
   CircularProgress,
   FormControl,
   Grid,
+  Skeleton,
   TextField,
   Theme,
   Typography,
@@ -23,7 +25,6 @@ import * as yup from 'yup';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { useAccountListId } from '../../../hooks/useAccountListId';
 import theme from '../../../theme';
 import AnimatedCard from '../../AnimatedCard';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
@@ -93,10 +94,41 @@ const contactExclusions = [
   },
 ];
 
-const AddAppealForm = (): ReactElement => {
+const calculateGoal = (
+  initialGoal: number,
+  letterCost: number,
+  adminCost: number,
+): number => {
+  return (initialGoal + letterCost) * (1 + adminCost / 100);
+};
+
+const appealFormSchema = yup.object({
+  name: yup.string().required('Please enter a name'),
+  initialGoal: yup.number().required(),
+  letterCost: yup.number().required(),
+  adminCost: yup.number().required(),
+  statuses: yup.array().of(
+    yup.object({
+      __typename: yup.string(),
+      name: yup.string(),
+      value: yup.string(),
+    }),
+  ),
+  tags: yup.array().of(yup.string()),
+  exclusions: yup.array().of(
+    yup.object({
+      name: yup.string(),
+      value: yup.string(),
+    }),
+  ),
+});
+interface AddAppealFormProps {
+  accountListId: string;
+}
+
+const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
-  const accountListId = useAccountListId() || '';
   const { enqueueSnackbar } = useSnackbar();
   const { data: contactFilterTags, loading: loadingTags } =
     useGetContactTagsQuery({
@@ -111,45 +143,21 @@ const AddAppealForm = (): ReactElement => {
         doNotBatch: true,
       },
     });
+  const [createNewAppeal, { loading: updating }] = useCreateAppealMutation();
 
-  const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
-    ? (
+  const contactStatuses = useMemo(() => {
+    if (contactFilterGroups?.accountList?.contactFilterGroups) {
+      return (
         contactFilterGroups.accountList.contactFilterGroups
           .find((group) => group?.filters[0]?.filterKey === 'status')
           ?.filters.find(
             (filter: { filterKey: string }) => filter.filterKey === 'status',
           ) as MultiselectFilter
-      ).options
-    : [{ name: '', value: '' }];
-
-  const [filterTags, setFilterTags] = useState<{
-    statuses: { name: string; value: string }[] | undefined;
-    tags: string[];
-    exclusions: { name: string; value: string }[];
-  }>({
-    statuses: [],
-    tags: [],
-    exclusions: [],
-  });
-  const [createNewAppeal, { loading: updating }] = useCreateAppealMutation();
-
-  const calculateGoal = (
-    initialGoal: number,
-    letterCost: number,
-    adminCost: number,
-  ): number => {
-    return (initialGoal + letterCost) * (1 + adminCost / 100);
-  };
-
-  const handleChange = (
-    values: { name: string; value: string }[] | string[],
-    props: string,
-  ): void => {
-    setFilterTags((prevState) => ({
-      ...prevState,
-      [props]: values,
-    }));
-  };
+      ).options;
+    } else {
+      return [{ name: '', value: '' }];
+    }
+  }, [contactFilterGroups]);
 
   const onSubmit = async (props: FormAttributes) => {
     const attributes = {
@@ -172,32 +180,25 @@ const AddAppealForm = (): ReactElement => {
     });
   };
 
-  const appealFormSchema = yup.object({
-    name: yup.string().required('Please enter a name'),
-  });
-
   const contactTagsList = contactFilterTags?.accountList.contactTagList ?? [];
 
-  const selectAllStatuses = (): void => {
-    setFilterTags((prevState) => ({
-      ...prevState,
-      statuses: contactStatuses?.filter(
+  const handleSelectAllStatuses = (setFieldValue) => {
+    setFieldValue(
+      'statuses',
+      contactStatuses?.filter(
         (status: { value: string }) =>
-          status.value !== 'ACTIVE' && status.value !== 'HIDDEN',
+          status.value !== 'ACTIVE' &&
+          status.value !== 'HIDDEN' &&
+          status.value !== 'NULL',
       ),
-    }));
+    );
   };
 
-  const selectAllTags = (): void => {
-    setFilterTags((prevState) => ({
-      ...prevState,
-      tags: contactTagsList,
-    }));
+  const handleSelectAllTags = (setFieldValue) => {
+    setFieldValue('tags', contactTagsList);
   };
 
-  return loadingStatuses || loadingTags ? (
-    <CircularProgress />
-  ) : (
+  return (
     <Box m={1}>
       <AnimatedCard>
         <CardHeader
@@ -215,13 +216,24 @@ const AddAppealForm = (): ReactElement => {
               initialGoal: 0,
               letterCost: 0,
               adminCost: 12,
+              statuses: [],
+              tags: [],
+              exclusions: [],
             }}
             onSubmit={onSubmit}
             validationSchema={appealFormSchema}
           >
             {({
-              values: { initialGoal, letterCost, adminCost },
+              values: {
+                initialGoal,
+                letterCost,
+                adminCost,
+                statuses,
+                tags,
+                exclusions,
+              },
               handleSubmit,
+              setFieldValue,
               isSubmitting,
               isValid,
               errors,
@@ -238,7 +250,6 @@ const AddAppealForm = (): ReactElement => {
                       name="name"
                       type="input"
                       variant="outlined"
-                      size="small"
                       className={classes.input}
                       as={TextField}
                     />
@@ -260,6 +271,8 @@ const AddAppealForm = (): ReactElement => {
                           variant="outlined"
                           size="small"
                           className={classes.input}
+                          error={errors.initialGoal}
+                          helperText={errors.initialGoal}
                           as={TextField}
                         />
                       </Box>
@@ -289,6 +302,8 @@ const AddAppealForm = (): ReactElement => {
                           label={t('Letter Cost')}
                           size="small"
                           className={classes.input}
+                          error={errors.letterCost}
+                          helperText={errors.letterCost}
                           as={TextField}
                         />
                       </Box>
@@ -318,6 +333,8 @@ const AddAppealForm = (): ReactElement => {
                           label={t('Admin %')}
                           size="small"
                           className={classes.input}
+                          error={errors.adminCost}
+                          helperText={errors.adminCost}
                           as={TextField}
                         />
                       </Box>
@@ -365,20 +382,25 @@ const AddAppealForm = (): ReactElement => {
                     )}
                   </Typography>
                 </Box>
-                {contactStatuses && (
-                  <Box mt={1} mb={1}>
-                    <Typography variant="h6" display="inline">
-                      {t('Add contacts with the following status(es):')}
-                    </Typography>
+
+                <Box mt={1} mb={1}>
+                  <Typography variant="h6" display="inline">
+                    {t('Add contacts with the following status(es):')}
+                  </Typography>
+                  {!!contactStatuses && (
                     <Typography
                       variant="h6"
                       display="inline"
                       className={classes.selectAll}
-                      onClick={selectAllStatuses}
+                      onClick={() => handleSelectAllStatuses(setFieldValue)}
                     >
                       {t('select all')}
                     </Typography>
+                  )}
 
+                  {loadingStatuses && <Skeleton height={40} />}
+
+                  {!!contactStatuses && !loadingStatuses && (
                     <Autocomplete
                       multiple
                       autoSelect
@@ -386,14 +408,12 @@ const AddAppealForm = (): ReactElement => {
                       id="tags-standard"
                       options={contactStatuses.filter(
                         ({ value: id1 }) =>
-                          !filterTags?.statuses?.some(
-                            ({ value: id2 }) => id2 === id1,
-                          ),
+                          !statuses?.some(({ value: id2 }) => id2 === id1),
                       )}
                       getOptionLabel={(option) => option.name}
-                      value={filterTags.statuses}
+                      value={statuses}
                       onChange={(_event, values) =>
-                        handleChange(values, 'statuses')
+                        setFieldValue('statuses', values)
                       }
                       renderInput={(params) => (
                         <TextField
@@ -404,34 +424,39 @@ const AddAppealForm = (): ReactElement => {
                         />
                       )}
                     />
-                  </Box>
-                )}
-                {contactTagsList && contactTagsList.length > 0 && (
-                  <Box mt={1} mb={1}>
-                    <Typography variant="h6" display="inline">
-                      {t('Add contacts with the following tag(s):')}
-                    </Typography>
+                  )}
+                </Box>
+
+                <Box mt={1} mb={1}>
+                  <Typography variant="h6" display="inline">
+                    {t('Add contacts with the following tag(s):')}
+                  </Typography>
+                  {!!contactTagsList.length && (
                     <Typography
                       variant="h6"
                       display="inline"
                       className={classes.selectAll}
-                      onClick={selectAllTags}
+                      onClick={() => handleSelectAllTags(setFieldValue)}
                     >
                       {t('select all')}
                     </Typography>
+                  )}
+
+                  {loadingTags && <Skeleton height={40} />}
+
+                  {contactTagsList && !loadingTags && (
                     <Autocomplete
                       multiple
                       autoSelect
                       autoHighlight
                       id="tags-standard"
                       options={contactTagsList.filter(
-                        (tag1) =>
-                          !filterTags.tags.some((tag2) => tag2 === tag1),
+                        (tag1) => !tags.some((tag2) => tag2 === tag1),
                       )}
                       getOptionLabel={(option) => option}
-                      value={filterTags.tags}
+                      value={tags}
                       onChange={(_event, values) =>
-                        handleChange(values, 'tags')
+                        setFieldValue('tags', values)
                       }
                       renderInput={(params) => (
                         <TextField
@@ -442,8 +467,8 @@ const AddAppealForm = (): ReactElement => {
                         />
                       )}
                     />
-                  </Box>
-                )}
+                  )}
+                </Box>
                 <Box mt={1} mb={1}>
                   <Typography variant="h6">
                     {t('Do not add contacts who:')}
@@ -452,17 +477,15 @@ const AddAppealForm = (): ReactElement => {
                     multiple
                     autoSelect
                     autoHighlight
-                    id="tags-standard"
+                    id="exclusions-standard"
                     options={contactExclusions.filter(
                       ({ value: id1 }) =>
-                        !filterTags.exclusions.some(
-                          ({ value: id2 }) => id2 === id1,
-                        ),
+                        !exclusions.some(({ value: id2 }) => id2 === id1),
                     )}
                     getOptionLabel={(option) => option.name}
-                    value={filterTags.exclusions}
+                    value={exclusions}
                     onChange={(_event, values) =>
-                      handleChange(values, 'exclusions')
+                      setFieldValue('exclusions', values)
                     }
                     renderInput={(params) => (
                       <TextField
@@ -474,6 +497,19 @@ const AddAppealForm = (): ReactElement => {
                     )}
                   />
                 </Box>
+
+                {[errors.statuses, errors.tags, errors.exclusions].map(
+                  (error, idx) => {
+                    if (error) {
+                      return (
+                        <Alert severity="error" key={`error-${idx}`}>
+                          {error}
+                        </Alert>
+                      );
+                    }
+                  },
+                )}
+
                 <Box mt={2} mb={1}>
                   <Button
                     type="submit"

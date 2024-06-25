@@ -64,7 +64,7 @@ const AppealsPage: React.FC = () => {
             </Grid>
             <Grid item xs={12} sm={12} md={6}>
               <Box width="100%" display="flex" justifyContent="center">
-                  <AddAppealForm />
+                <AddAppealForm accountListId={accountListId} />
               </Box>
             </Grid>
           </Grid>
