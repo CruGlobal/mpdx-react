@@ -1,3 +1,7 @@
+mutation MergePeopleBulk($input: MergePeopleBulkInput!) {
+  mergePeopleBulk(input: $input)
+}
+
 query GetPersonDuplicates($accountListId: ID!) {
   # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
   personDuplicates(accountListId: $accountListId, first: 50) {
@@ -11,22 +15,27 @@ query GetPersonDuplicates($accountListId: ID!) {
         ...PersonInfo
       }
     }
+    totalCount
   }
 }
 
 fragment BasicEmailInfo on EmailAddress {
   email
+  source
 }
 
 fragment BasicPhoneNumberInfo on PhoneNumber {
   number
+  source
 }
 
 fragment PersonInfo on Person {
   id
+  contactId
   firstName
   lastName
   createdAt
+  avatar
   primaryPhoneNumber {
     ...BasicPhoneNumberInfo
   }
