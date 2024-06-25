@@ -126,6 +126,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
         style={{
           transform: rightOpen ? 'none' : 'translate(100%)',
         }}
+        id="scrollOverride"
       >
         {rightOpen && rightPanel}
       </RightPanelWrapper>
