@@ -38,7 +38,7 @@ import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
-import { emptyAddress } from './FixMailingAddresses';
+import { HandleSingleConfirmProps, emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 
 const ContactHeader = styled(CardHeader)(() => ({
@@ -117,6 +117,12 @@ interface Props {
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
   setContactFocus: SetContactFocus;
+  handleSingleConfirm: ({
+    addresses,
+    id,
+    name,
+    onlyErrorOnce,
+  }: HandleSingleConfirmProps) => void;
 }
 
 const Contact: React.FC<Props> = ({
@@ -128,6 +134,7 @@ const Contact: React.FC<Props> = ({
   openEditAddressModal,
   openNewAddressModal,
   setContactFocus,
+  handleSingleConfirm,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -161,6 +168,10 @@ const Contact: React.FC<Props> = ({
     });
   };
 
+  const handleConfirm = () => {
+    handleSingleConfirm({ addresses, id, name });
+  };
+
   const handleContactNameClick = () => {
     setContactFocus(id);
   };
@@ -176,7 +187,11 @@ const Contact: React.FC<Props> = ({
           />
         }
         action={
-          <Button variant="contained" className={classes.confirmButon}>
+          <Button
+            variant="contained"
+            className={classes.confirmButon}
+            onClick={handleConfirm}
+          >
             <Icon path={mdiCheckboxMarkedCircle} size={0.8} />
             {t('Confirm')}
           </Button>

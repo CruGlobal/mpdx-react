@@ -13,6 +13,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
@@ -26,7 +27,15 @@ import {
   InvalidAddressesDocument,
   InvalidAddressesQuery,
   useInvalidAddressesQuery,
+  useUpdateContactAddressMutation,
 } from './GetInvalidAddresses.generated';
+
+export type HandleSingleConfirmProps = {
+  addresses: ContactAddressFragment[];
+  id: string;
+  name: string;
+  onlyErrorOnce?: boolean;
+};
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -134,6 +143,63 @@ const FixSendNewsletter: React.FC<Props> = ({
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
+  const [updateAddress] = useUpdateContactAddressMutation();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleSingleConfirm = async ({
+    addresses,
+    id,
+    name,
+    onlyErrorOnce = false,
+  }: HandleSingleConfirmProps) => {
+    const errors: string[] = [];
+
+    for (let idx = 0; idx < addresses.length; idx++) {
+      const address = addresses[idx];
+
+      await updateAddress({
+        variables: {
+          accountListId,
+          attributes: {
+            id: address.id,
+            validValues: true,
+            // TODO: Fix the Graph QL Input
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            primaryMailingAddress: address.primaryMailingAddress,
+          },
+        },
+        update(cache) {
+          if (idx === addresses.length - 1 && !errors.length) {
+            cache.evict({ id: `Contact:${id}` });
+          }
+        },
+        onError(error) {
+          errors.push(
+            `${name} - ${t('Error while saving addresses.')} ${error.cause}`,
+          );
+        },
+      });
+    }
+
+    if (errors.length) {
+      if (onlyErrorOnce) {
+        enqueueSnackbar(t(`Error updating contact ${name}`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      } else {
+        errors.forEach((error) => {
+          enqueueSnackbar(error, { variant: 'error' });
+        });
+      }
+      return { success: false };
+    } else {
+      enqueueSnackbar(t(`Updated contact ${name}`), { variant: 'success' });
+      return { success: true };
+    }
+  };
+
 
   const handleUpdateCacheForDeleteAddress = useCallback(
     (cache: ApolloCache<unknown>, data) => {
@@ -303,6 +369,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                           handleModalOpen(ModalEnum.New, address, contactId)
                         }
                         setContactFocus={setContactFocus}
+                        handleSingleConfirm={handleSingleConfirm}
                       />
                     ))}
                   </Grid>
