@@ -154,8 +154,8 @@ const ContactItem: React.FC<ContactItemProps> = ({
   const handleContactNameClick = (contactId) => {
     setContactFocus(contactId);
   };
-  const personType = contact.__typename === 'Person';
-  const contactType = contact.__typename === 'Contact';
+  const isPersonType = contact.__typename === 'Person';
+  const isContactType = contact.__typename === 'Contact';
   return (
     <Card
       className={`
@@ -183,18 +183,18 @@ const ContactItem: React.FC<ContactItemProps> = ({
               onClick={(e) => {
                 e.stopPropagation();
                 handleContactNameClick(
-                  personType
+                  isPersonType
                     ? contact.contactId
-                    : contactType
+                    : isContactType
                     ? contact.id
                     : null,
                 );
               }}
             >
               <InlineTypography variant="subtitle1">
-                {personType
+                {isPersonType
                   ? `${contact.firstName} ${contact.lastName}`
-                  : contactType
+                  : isContactType
                   ? contact.name
                   : null}
               </InlineTypography>
@@ -207,7 +207,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
           </>
         }
         subheader={
-          contactType && (
+          isContactType && (
             <Typography variant="subtitle2">
               {contact?.status && contactPartnershipStatus[contact?.status]}
             </Typography>
@@ -216,13 +216,13 @@ const ContactItem: React.FC<ContactItemProps> = ({
         className={classes.minimalPadding}
       />
       <CardContent className={classes.minimalPadding}>
-        {contactType && contact.primaryAddress && (
+        {isContactType && contact.primaryAddress && (
           <Typography variant="body2">
             {`${contact?.primaryAddress?.street} 
             ${contact?.primaryAddress?.city}, ${contact?.primaryAddress?.state} ${contact?.primaryAddress?.postalCode}`}
           </Typography>
         )}
-        {contactType && (
+        {isContactType && (
           <Typography variant="body2">
             <Trans
               defaults="<bold>Source:</bold> {{where}}"
@@ -232,7 +232,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
             />
           </Typography>
         )}
-        {personType && contact.primaryPhoneNumber && (
+        {isPersonType && contact.primaryPhoneNumber && (
           <Box>
             <InlineTypography variant="body2">
               {`${contact?.primaryPhoneNumber?.number}`}
@@ -249,7 +249,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
             </Tooltip>
           </Box>
         )}
-        {personType && contact.primaryEmailAddress && (
+        {isPersonType && contact.primaryEmailAddress && (
           <Box>
             <InlineTypography variant="body2">
               {`${contact?.primaryEmailAddress?.email}`}

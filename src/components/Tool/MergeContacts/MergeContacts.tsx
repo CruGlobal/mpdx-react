@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -67,12 +67,11 @@ const MergeContacts: React.FC<Props> = ({
   const { appName } = useGetAppSettings();
   const [contactsMerge, { loading: updating }] = useMassActionsMergeMutation();
   const disabled = useMemo(
-    () => updating || Object.entries(actions).length === 0,
+    () => updating || !Object.entries(actions).length,
     [actions, updating],
   );
   const totalCount = data?.contactDuplicates.totalCount || 0;
-  const showing = data?.contactDuplicates.nodes.length || 0;
-  const MemoizedStickyConfirmButtons = memo(StickyConfirmButtons);
+  const duplicatesDisplayedCount = data?.contactDuplicates.nodes.length || 0;
 
   const updateActions = (id1: string, id2: string, action: string): void => {
     if (!updating) {
@@ -96,7 +95,7 @@ const MergeContacts: React.FC<Props> = ({
     const mergeActions = Object.entries(actions).filter(
       (action) => action[1].action === 'merge',
     );
-    if (mergeActions.length > 0) {
+    if (mergeActions.length) {
       const winnersAndLosers: { winnerId: string; loserId: string }[] =
         mergeActions.map((action) => {
           return { winnerId: action[0], loserId: action[1].mergeId || '' };
@@ -141,7 +140,7 @@ const MergeContacts: React.FC<Props> = ({
             <Typography variant="h4">{t('Merge Contacts')}</Typography>
             <Divider className={classes.divider} />
           </Grid>
-          {showing > 0 ? (
+          {duplicatesDisplayedCount ? (
             <>
               <Grid item xs={12}>
                 <Box
@@ -164,11 +163,11 @@ const MergeContacts: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-              <MemoizedStickyConfirmButtons
+              <StickyConfirmButtons
                 accountListId={accountListId}
                 loading={loading}
                 updating={updating}
-                showing={showing}
+                duplicatesDisplayedCount={duplicatesDisplayedCount}
                 disabled={disabled}
                 totalCount={totalCount}
                 confirmAction={mergeContacts}

@@ -6,13 +6,33 @@ import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpin
 import theme from 'src/theme';
 import { ActionType } from './MergeContacts';
 
+const ButtonHeaderBox = styled(Box)(() => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+  backgroundColor: 'white',
+  paddingTop: theme.spacing(2),
+  paddingBottom: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  position: 'sticky',
+  top: '64px',
+  zIndex: '100',
+  borderBottom: '1px solid',
+  borderBottomColor: theme.palette.cruGrayLight.main,
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    alignItems: 'start',
+    top: '56px',
+  },
+}));
 interface StickyConfirmButtonsProps {
   accountListId: string;
   confirmAction: () => void;
   disabled: boolean;
   loading: boolean;
   setActions: Dispatch<SetStateAction<Record<string, ActionType>>>;
-  showing: number;
+  duplicatesDisplayedCount: number;
   totalCount: number;
   updating: boolean;
 }
@@ -22,30 +42,10 @@ export const StickyConfirmButtons: React.FC<StickyConfirmButtonsProps> = ({
   disabled,
   loading,
   setActions,
-  showing,
+  duplicatesDisplayedCount,
   totalCount,
   updating,
 }) => {
-  const ButtonHeaderBox = styled(Box)(() => ({
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    backgroundColor: 'white',
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    position: 'sticky',
-    top: '64px',
-    zIndex: '100',
-    borderBottom: '1px solid',
-    borderBottomColor: theme.palette.cruGrayLight.main,
-    [theme.breakpoints.down('sm')]: {
-      flexDirection: 'column',
-      alignItems: 'start',
-      top: '56px',
-    },
-  }));
   const { t } = useTranslation();
 
   const handleConfirmAndContinue = async () => {
@@ -62,10 +62,10 @@ export const StickyConfirmButtons: React.FC<StickyConfirmButtonsProps> = ({
       <Box>
         <Typography>
           <Trans
-            defaults="<i>Showing <bold>{{showing}}</bold> of <bold>{{totalCount}}</bold></i>"
+            defaults="<i>Showing <bold>{{duplicatesDisplayedCount}}</bold> of <bold>{{totalCount}}</bold></i>"
             shouldUnescape
             values={{
-              showing,
+              duplicatesDisplayedCount,
               totalCount,
             }}
             components={{ bold: <strong />, i: <i /> }}
