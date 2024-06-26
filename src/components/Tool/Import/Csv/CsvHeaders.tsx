@@ -20,6 +20,7 @@ import {
   CsvImportContext,
   CsvImportType,
   CsvImportValue,
+  CsvImportViewStepEnum,
 } from './CsvImportContext';
 import { HeaderBox } from './HeaderBox';
 import { get, save } from './csvImportService';
@@ -27,7 +28,7 @@ import { useRequiredHeaders, useSupportedHeaders } from './uploadCsvFile';
 
 export interface CsvHeadersProps {
   accountListId: string;
-  setCurrentTab: (currentTab: string) => void;
+  setCurrentTab: (currentTab: CsvImportViewStepEnum) => void;
 }
 
 const buildDefaultFileHeadersMappings = (
@@ -158,7 +159,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
   const handleSubmitModal = () => {
     setMappedHeaders([]);
     setUploadData(null);
-    setCurrentTab('tools.import.csv.upload');
+    setCurrentTab(CsvImportViewStepEnum.Upload);
   };
 
   const handleSave = () => {
@@ -179,8 +180,8 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
     }).then((transformedData) => {
       const nextTab =
         Object.keys(transformedData.valuesToConstantsMappings).length === 0
-          ? 'tools.import.csv.preview'
-          : 'tools.import.csv.values';
+          ? CsvImportViewStepEnum.Preview
+          : CsvImportViewStepEnum.Values;
       setCurrentTab(nextTab);
     });
   };

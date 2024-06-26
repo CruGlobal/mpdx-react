@@ -3,13 +3,17 @@ import { Box, Button, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
-import { CsvImportContext, CsvImportType } from './CsvImportContext';
+import {
+  CsvImportContext,
+  CsvImportType,
+  CsvImportViewStepEnum,
+} from './CsvImportContext';
 import { HeaderBox } from './HeaderBox';
 import { getMaxFileSize, uploadFile } from './uploadCsvFile';
 
 interface CsvUploadProps {
   accountListId: string;
-  setCurrentTab: (currentTab: string) => void;
+  setCurrentTab: (currentTab: CsvImportViewStepEnum) => void;
 }
 
 const CsvUpload: React.FC<CsvUploadProps> = ({
@@ -60,7 +64,7 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
             }
           }
         });
-        setCurrentTab('tools.import.csv.headers');
+        setCurrentTab(CsvImportViewStepEnum.Headers);
       }
     } catch (err) {
       enqueueSnackbar(getErrorMessage(err), { variant: 'error' });

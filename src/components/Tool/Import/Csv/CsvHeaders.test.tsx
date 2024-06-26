@@ -6,7 +6,11 @@ import TestWrapper from '__tests__/util/TestWrapper';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import theme from 'src/theme';
 import CsvHeaders, { CsvHeadersProps } from './CsvHeaders';
-import { CsvImportContext, CsvImportType } from './CsvImportContext';
+import {
+  CsvImportContext,
+  CsvImportType,
+  CsvImportViewStepEnum,
+} from './CsvImportContext';
 import { get, save } from './csvImportService';
 
 jest.mock('./csvImportService');
@@ -293,7 +297,7 @@ describe('CsvHeaders', () => {
       );
       userEvent.click(getByRole('button', { name: 'Back' }));
       userEvent.click(getByRole('button', { name: 'Yes' }));
-      expect(setCurrentTab).toHaveBeenCalledWith('tools.import.csv.upload');
+      expect(setCurrentTab).toHaveBeenCalledWith(CsvImportViewStepEnum.Upload);
     });
   });
 
@@ -382,7 +386,9 @@ describe('CsvHeaders', () => {
 
       userEvent.click(await findByRole('button', { name: 'Next' }));
       await waitFor(() =>
-        expect(setCurrentTab).toHaveBeenCalledWith('tools.import.csv.values'),
+        expect(setCurrentTab).toHaveBeenCalledWith(
+          CsvImportViewStepEnum.Values,
+        ),
       );
     });
 
@@ -395,7 +401,9 @@ describe('CsvHeaders', () => {
       );
       userEvent.click(await findByRole('button', { name: 'Next' }));
       await waitFor(() =>
-        expect(setCurrentTab).toHaveBeenCalledWith('tools.import.csv.preview'),
+        expect(setCurrentTab).toHaveBeenCalledWith(
+          CsvImportViewStepEnum.Preview,
+        ),
       );
     });
 

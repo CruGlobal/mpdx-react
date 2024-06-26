@@ -5,7 +5,11 @@ import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import theme from 'src/theme';
-import { CsvImportContext, CsvImportType } from './CsvImportContext';
+import {
+  CsvImportContext,
+  CsvImportType,
+  CsvImportViewStepEnum,
+} from './CsvImportContext';
 import CsvValues, { CsvValuesProps } from './CsvValues';
 import { save } from './csvImportService';
 
@@ -303,7 +307,7 @@ describe('CsvValues', () => {
         ></CsvValuesMockComponent>,
       );
       userEvent.click(getByRole('button', { name: /back/i }));
-      expect(setCurrentTab).toHaveBeenCalledWith('tools.import.csv.headers');
+      expect(setCurrentTab).toHaveBeenCalledWith(CsvImportViewStepEnum.Headers);
     });
   });
 
@@ -337,7 +341,9 @@ describe('CsvValues', () => {
       );
       userEvent.click(getByRole('button', { name: /next/i }));
       await waitFor(() => {
-        expect(setCurrentTab).toHaveBeenCalledWith('tools.import.csv.preview');
+        expect(setCurrentTab).toHaveBeenCalledWith(
+          CsvImportViewStepEnum.Preview,
+        );
       });
     });
   });
