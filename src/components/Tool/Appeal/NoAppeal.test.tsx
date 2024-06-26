@@ -1,14 +1,18 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestWrapper from '__tests__/util/TestWrapper';
+import theme from 'src/theme';
 import NoAppeals from './NoAppeals';
 
 describe('NoAppeals', () => {
   it('regular', () => {
     const { queryByText } = render(
-      <TestWrapper>
-        <NoAppeals />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <NoAppeals />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(queryByText('No Appeals have been setup yet.')).toBeInTheDocument();
     expect(
@@ -18,9 +22,11 @@ describe('NoAppeals', () => {
 
   it('primary', () => {
     const { queryByText } = render(
-      <TestWrapper>
-        <NoAppeals primary />
-      </TestWrapper>,
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <NoAppeals primary />
+        </TestWrapper>
+      </ThemeProvider>,
     );
     expect(
       queryByText('No Appeals have been setup yet.'),
