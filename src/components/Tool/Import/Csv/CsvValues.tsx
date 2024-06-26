@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -12,6 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import { invert } from 'lodash';
+import { cloneDeep } from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -23,7 +24,7 @@ import {
   CsvImportViewStepEnum,
 } from './CsvImportContext';
 import { HeaderBox } from './HeaderBox';
-import { save } from './csvImportService';
+import { get, save } from './csvImportService';
 import { useSupportedHeaders } from './uploadCsvFile';
 
 export interface CsvValuesProps {
@@ -35,14 +36,22 @@ const CsvValues: React.FC<CsvValuesProps> = ({
   accountListId,
   setCurrentTab,
 }) => {
-  const { uploadData, setUploadData, initialData, setInitialData } = useContext(
-    CsvImportContext,
-  ) as CsvImportValue;
+  const { uploadData, setUploadData, initialData, setInitialData, csvFileId } =
+    useContext(CsvImportContext) as CsvImportValue;
 
   const supportedHeaders = useSupportedHeaders();
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const constants = useApiConstants() ?? {};
+
+  useEffect(() => {
+    if (!uploadData?.id && csvFileId) {
+      get(accountListId, csvFileId, initialData).then((data) => {
+        setInitialData(data);
+        setUploadData(cloneDeep(data));
+      });
+    }
+  }, [csvFileId, uploadData]);
 
   const handleBack = () => {
     setCurrentTab(CsvImportViewStepEnum.Headers);
@@ -96,7 +105,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
     setUploadData(newUploadData);
   };
 
-  if (!accountListId || !uploadData || !initialData || !constants) {
+  if (!accountListId || !uploadData?.id || !initialData || !constants) {
     return null;
   }
 

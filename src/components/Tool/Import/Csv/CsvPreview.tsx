@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext, useState } from 'react';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import {
   Autocomplete,
   Box,
@@ -13,6 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { cloneDeep } from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
@@ -26,7 +27,7 @@ import {
 } from './CsvImportContext';
 import { CsvImportSuccessModal } from './CsvImportSuccessModal';
 import { HeaderBox } from './HeaderBox';
-import { save } from './csvImportService';
+import { get, save } from './csvImportService';
 import { useSupportedHeaders } from './uploadCsvFile';
 
 const StripedTableBody = styled(TableBody)(() => ({
@@ -53,9 +54,8 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
   accountListId,
   setCurrentTab,
 }) => {
-  const { uploadData, setUploadData, initialData, setInitialData } = useContext(
-    CsvImportContext,
-  ) as CsvImportValue;
+  const { uploadData, setUploadData, initialData, setInitialData, csvFileId } =
+    useContext(CsvImportContext) as CsvImportValue;
 
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
@@ -70,6 +70,15 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
 
   const [accept, setAccept] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  useEffect(() => {
+    if (!uploadData?.id && csvFileId) {
+      get(accountListId, csvFileId, initialData).then((data) => {
+        setInitialData(data);
+        setUploadData(cloneDeep(data));
+      });
+    }
+  }, [csvFileId, uploadData]);
 
   const handleBack = () => {
     setCurrentTab(
@@ -99,7 +108,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
     });
   };
 
-  if (!uploadData) {
+  if (!uploadData?.id) {
     return null;
   }
 

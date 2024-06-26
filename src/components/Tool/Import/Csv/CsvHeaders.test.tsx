@@ -37,7 +37,13 @@ const CsvHeadersMockComponent: React.FC<CsvHeadersProps> = ({
   <TestWrapper>
     <ThemeProvider theme={theme}>
       <CsvImportContext.Provider
-        value={{ uploadData, setUploadData, initialData, setInitialData }}
+        value={{
+          uploadData,
+          setUploadData,
+          initialData,
+          setInitialData,
+          csvFileId: 'csvFileId',
+        }}
       >
         <CsvHeaders
           accountListId={accountListId}
@@ -59,6 +65,7 @@ beforeEach(() => {
 describe('CsvHeaders', () => {
   beforeEach(() => {
     uploadData = {
+      id: 'csvFileId',
       fileHeadersMappings: {},
     } as CsvImportType;
     initialData = {} as CsvImportType;

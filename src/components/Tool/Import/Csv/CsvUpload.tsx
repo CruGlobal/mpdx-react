@@ -14,11 +14,13 @@ import { getMaxFileSize, uploadFile } from './uploadCsvFile';
 interface CsvUploadProps {
   accountListId: string;
   setCurrentTab: (currentTab: CsvImportViewStepEnum) => void;
+  setCsvFileId: (csvFileId: string) => void;
 }
 
 const CsvUpload: React.FC<CsvUploadProps> = ({
   accountListId,
   setCurrentTab,
+  setCsvFileId,
 }) => {
   const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -62,6 +64,7 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
             if (setUploadData) {
               setUploadData(transformedData);
             }
+            setCsvFileId(transformedData.id);
           }
         });
         setCurrentTab(CsvImportViewStepEnum.Headers);
