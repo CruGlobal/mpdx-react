@@ -67,25 +67,26 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                   `${item.userFirstName} ${item.userLastName}`}
                 {item.__typename === 'OrganizationAccountListCoaches' &&
                   `${item.coachFirstName} ${item.coachLastName}`}
-                {item.__typename === 'AccountListUsers' && (
-                  <Tooltip
-                    title={t('Permanently delete this user.')}
-                    placement={'top'}
-                    arrow
-                    data-testid="DeleteUserButton"
-                  >
-                    <IconButton
-                      aria-label={t('Delete')}
-                      color="error"
-                      size="small"
-                      onClick={() => {
-                        setDeleteUser(item);
-                      }}
+                {item.__typename === 'AccountListUsers' &&
+                  item.organizationCount === 1 && (
+                    <Tooltip
+                      title={t('Permanently delete this user.')}
+                      placement={'top'}
+                      arrow
+                      data-testid="DeleteUserButton"
                     >
-                      <DeleteForever fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
+                      <IconButton
+                        aria-label={t('Delete')}
+                        color="error"
+                        size="small"
+                        onClick={() => {
+                          setDeleteUser(item);
+                        }}
+                      >
+                        <DeleteForever fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
               </HeaderBox>
               <Box
                 style={{

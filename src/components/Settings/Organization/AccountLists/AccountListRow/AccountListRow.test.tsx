@@ -135,6 +135,28 @@ describe('AccountLists', () => {
       });
     });
 
+    it('should not show delete icon if the account list is in more than 1 organization', async () => {
+      const alteredAccountList = { ...accountList };
+      alteredAccountList.organizationCount = 2;
+      const { queryByTestId } = render(
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <ThemeProvider theme={theme}>
+                <AccountListRow
+                  accountList={alteredAccountList}
+                  search=""
+                  organizationId=""
+                />
+              </ThemeProvider>
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>,
+      );
+
+      expect(queryByTestId('DeleteAccountListButton')).not.toBeInTheDocument();
+    });
+
     it('should delete users', async () => {
       const { getAllByRole, getByRole } = render(
         <Components accountList={accountList} search="" organizationId="" />,

@@ -5,6 +5,7 @@ export class AccountListsMocks {
     __typename: 'OrganizationsAccountList',
     id: '1111',
     name: 'Name1',
+    organizationCount: 1,
     designationAccounts: [
       {
         id: '297b398f',
@@ -36,6 +37,7 @@ export class AccountListsMocks {
         allowDeletion: true,
         userId: 'e8a19920',
         lastSyncedAt: '',
+        organizationCount: 1,
         userEmailAddresses: [
           {
             id: '507548d6',

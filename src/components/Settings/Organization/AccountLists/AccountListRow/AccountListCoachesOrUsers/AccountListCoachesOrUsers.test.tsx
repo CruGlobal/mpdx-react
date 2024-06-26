@@ -44,6 +44,7 @@ const userAccountListItems = [
     userFirstName: 'userFirstName1',
     userLastName: 'userLastName1',
     allowDeletion: false,
+    organizationCount: 1,
     userEmailAddresses: [
       {
         id: '507548d6',
@@ -58,6 +59,7 @@ const userAccountListItems = [
     userFirstName: 'userFirstName2',
     userLastName: 'userLastName2',
     allowDeletion: true,
+    organizationCount: 2,
     userEmailAddresses: [
       {
         id: '930548d6',
@@ -144,6 +146,23 @@ describe('AccountLists Coaches or Users', () => {
       })[0],
     );
     expect(handleDelete).toHaveBeenCalled();
+  });
+
+  it('should not show delete button if the user is in more than 1 organization', async () => {
+    const { queryByTestId } = render(
+      <Components>
+        <GqlMockedProvider>
+          <AccountListCoachesOrUsers
+            accountListItems={[userAccountListItems[1]]}
+            setRemoveUser={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
+          />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    expect(queryByTestId('DeleteForeverIcon')).not.toBeInTheDocument();
   });
 
   it('should show coach remove buttons, tooltip and handleDelete()', async () => {

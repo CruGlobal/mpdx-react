@@ -1238,9 +1238,9 @@ class MpdxRestApi extends RESTDataSource {
       : '';
     const filters = `filter[wildcard_search]=${search}` + organizationIdFilter;
     const fields =
-      'fields[account_lists]=name,account_list_coaches,account_list_users,account_list_invites,designation_accounts' +
+      'fields[account_lists]=name,account_list_coaches,account_list_users,account_list_invites,designation_accounts,organization_count' +
       '&fields[account_list_coaches]=coach_first_name,coach_last_name,coach_email_addresses' +
-      '&fields[account_list_users]=user_first_name,user_last_name,user_email_addresses,allow_deletion,user_id,last_synced_at' +
+      '&fields[account_list_users]=user_first_name,user_last_name,user_email_addresses,allow_deletion,user_id,last_synced_at,organization_count' +
       '&fields[email_addresses]=email,primary' +
       '&fields[designation_accounts]=display_name,organization' +
       '&fields[organizations]=name' +

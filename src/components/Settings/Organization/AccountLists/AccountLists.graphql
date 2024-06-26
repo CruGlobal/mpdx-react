@@ -11,6 +11,7 @@ query SearchOrganizationsAccountLists(
     accountLists {
       name
       id
+      organizationCount
       designationAccounts {
         id
         displayName
@@ -41,6 +42,7 @@ query SearchOrganizationsAccountLists(
           email
           primary
         }
+        organizationCount
       }
       accountListCoaches {
         id
