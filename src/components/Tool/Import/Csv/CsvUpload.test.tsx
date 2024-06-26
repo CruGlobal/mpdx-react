@@ -2,7 +2,11 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { CsvImportContext, CsvImportType } from './CsvImportContext';
+import {
+  CsvImportContext,
+  CsvImportType,
+  CsvImportViewStepEnum,
+} from './CsvImportContext';
 import CsvUpload from './CsvUpload';
 import { getMaxFileSize, uploadFile } from './uploadCsvFile';
 
@@ -124,7 +128,7 @@ describe('CsvUpload', () => {
       expect(setUploadData).toHaveBeenCalledWith(expectedData),
     );
     await waitFor(() =>
-      expect(setCurrentTab).toHaveBeenCalledWith('tools.import.csv.headers'),
+      expect(setCurrentTab).toHaveBeenCalledWith(CsvImportViewStepEnum.Headers),
     );
   });
 });

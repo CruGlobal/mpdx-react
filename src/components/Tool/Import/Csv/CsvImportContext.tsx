@@ -26,6 +26,13 @@ export type CsvContact = Pick<
   spouse?: Types.Maybe<Types.Person>;
 };
 
+export enum CsvImportViewStepEnum {
+  Upload = 'upload',
+  Headers = 'headers',
+  Values = 'values',
+  Preview = 'preview',
+}
+
 export type CsvImportType = {
   fileConstants: object;
   fileConstantsMappings: object;

@@ -7,7 +7,10 @@ import { makeStyles } from 'tss-react/mui';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import Loading from 'src/components/Loading';
 import CsvHeaders from 'src/components/Tool/Import/Csv/CsvHeaders';
-import { CsvImportProvider } from 'src/components/Tool/Import/Csv/CsvImportContext';
+import {
+  CsvImportProvider,
+  CsvImportViewStepEnum,
+} from 'src/components/Tool/Import/Csv/CsvImportContext';
 import CsvPreview from 'src/components/Tool/Import/Csv/CsvPreview';
 import CsvUpload from 'src/components/Tool/Import/Csv/CsvUpload';
 import CsvValues from 'src/components/Tool/Import/Csv/CsvValues';
@@ -57,32 +60,32 @@ const CsvHome: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { classes } = useStyles();
-  const [currentTab, setCurrentTab] = useState('tools.import.csv.upload');
+  const [currentTab, setCurrentTab] = useState(CsvImportViewStepEnum.Upload);
 
   const renderTab = (accountListId: string) => {
     switch (currentTab) {
-      case 'tools.import.csv.upload':
+      case CsvImportViewStepEnum.Upload:
         return (
           <CsvUpload
             accountListId={accountListId}
             setCurrentTab={setCurrentTab}
           />
         );
-      case 'tools.import.csv.headers':
+      case CsvImportViewStepEnum.Headers:
         return (
           <CsvHeaders
             accountListId={accountListId}
             setCurrentTab={setCurrentTab}
           />
         );
-      case 'tools.import.csv.values':
+      case CsvImportViewStepEnum.Values:
         return (
           <CsvValues
             accountListId={accountListId}
             setCurrentTab={setCurrentTab}
           />
         );
-      case 'tools.import.csv.preview':
+      case CsvImportViewStepEnum.Preview:
         return (
           <CsvPreview
             accountListId={accountListId}
@@ -119,7 +122,7 @@ const CsvHome: React.FC = () => {
               <StepBox
                 m={2}
                 className={
-                  currentTab === 'tools.import.csv.upload'
+                  currentTab === CsvImportViewStepEnum.Upload
                     ? classes.panelSuccess
                     : ''
                 }
@@ -132,7 +135,7 @@ const CsvHome: React.FC = () => {
               <StepBox
                 m={2}
                 className={
-                  currentTab === 'tools.import.csv.headers'
+                  currentTab === CsvImportViewStepEnum.Headers
                     ? classes.panelSuccess
                     : ''
                 }
@@ -143,7 +146,7 @@ const CsvHome: React.FC = () => {
               <StepBox
                 m={2}
                 className={
-                  currentTab === 'tools.import.csv.values'
+                  currentTab === CsvImportViewStepEnum.Values
                     ? classes.panelSuccess
                     : ''
                 }
@@ -154,7 +157,7 @@ const CsvHome: React.FC = () => {
               <StepBox
                 m={2}
                 className={
-                  currentTab === 'tools.import.csv.preview'
+                  currentTab === CsvImportViewStepEnum.Preview
                     ? classes.panelSuccess
                     : ''
                 }

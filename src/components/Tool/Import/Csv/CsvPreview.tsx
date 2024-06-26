@@ -22,6 +22,7 @@ import {
   CsvImportContext,
   CsvImportType,
   CsvImportValue,
+  CsvImportViewStepEnum,
 } from './CsvImportContext';
 import { CsvImportSuccessModal } from './CsvImportSuccessModal';
 import { HeaderBox } from './HeaderBox';
@@ -45,7 +46,7 @@ const LastColumn = styled(TableCell)(() => ({
 
 export interface CsvPreviewProps {
   accountListId: string;
-  setCurrentTab: (currentTab: string) => void;
+  setCurrentTab: (currentTab: CsvImportViewStepEnum) => void;
 }
 
 const CsvPreview: React.FC<CsvPreviewProps> = ({
@@ -73,8 +74,8 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
   const handleBack = () => {
     setCurrentTab(
       !Object.keys(uploadData?.valuesToConstantsMappings ?? {}).length
-        ? 'tools.import.csv.headers'
-        : 'tools.import.csv.values',
+        ? CsvImportViewStepEnum.Headers
+        : CsvImportViewStepEnum.Values,
     );
   };
 
