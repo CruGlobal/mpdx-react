@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -68,13 +68,14 @@ const MergePeople: React.FC<Props> = ({
   });
   const { appName } = useGetAppSettings();
   const [peopleMerge, { loading: updating }] = useMergePeopleBulkMutation();
-  const actionsLength = useMemo(
-    () => Object.entries(actions).length,
-    [actions],
+  const disabled = useMemo(
+    () => updating || Object.entries(actions).length === 0,
+    [actions, updating],
   );
-  const disabled = updating || !actionsLength;
   const totalCount = data?.personDuplicates.totalCount || 0;
   const showing = data?.personDuplicates.nodes.length || 0;
+
+  const MemoizedStickyConfirmButtons = memo(StickyConfirmButtons);
 
   const updateActions = (id1: string, id2: string, action: string): void => {
     if (!updating) {
@@ -166,7 +167,7 @@ const MergePeople: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-              <StickyConfirmButtons
+              <MemoizedStickyConfirmButtons
                 accountListId={accountListId}
                 loading={loading}
                 updating={updating}
