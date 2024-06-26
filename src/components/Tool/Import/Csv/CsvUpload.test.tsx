@@ -49,6 +49,7 @@ beforeEach(() => {
 
 describe('CsvUpload', () => {
   const setCurrentTab = jest.fn();
+  const setCsvFileId = jest.fn();
 
   it('should show the max file size', () => {
     const { getByTestId } = render(
@@ -56,6 +57,7 @@ describe('CsvUpload', () => {
         <CsvUpload
           accountListId="wee"
           setCurrentTab={setCurrentTab}
+          setCsvFileId={setCsvFileId}
         ></CsvUpload>
       </TestWrapper>,
     );
@@ -71,6 +73,7 @@ describe('CsvUpload', () => {
         <CsvUpload
           accountListId="wee"
           setCurrentTab={setCurrentTab}
+          setCsvFileId={setCsvFileId}
         ></CsvUpload>
       </TestWrapper>,
     );
@@ -111,11 +114,18 @@ describe('CsvUpload', () => {
     const { getByTestId } = render(
       <TestWrapper>
         <CsvImportContext.Provider
-          value={{ uploadData, setUploadData, initialData, setInitialData }}
+          value={{
+            uploadData,
+            setUploadData,
+            initialData,
+            setInitialData,
+            csvFileId: '',
+          }}
         >
           <CsvUpload
             accountListId="wee"
             setCurrentTab={setCurrentTab}
+            setCsvFileId={setCsvFileId}
           ></CsvUpload>
         </CsvImportContext.Provider>
       </TestWrapper>,

@@ -50,6 +50,7 @@ export interface CsvImportValue {
   setUploadData: React.Dispatch<React.SetStateAction<CsvImportType | null>>;
   initialData: CsvImportType | null;
   setInitialData: React.Dispatch<React.SetStateAction<CsvImportType | null>>;
+  csvFileId: string | null;
 }
 
 export const CsvImportContext = React.createContext<CsvImportValue | null>(
@@ -58,10 +59,12 @@ export const CsvImportContext = React.createContext<CsvImportValue | null>(
 
 interface CsvImportProviderProps {
   children: React.ReactNode;
+  csvFileId: string;
 }
 
 export const CsvImportProvider: React.FC<CsvImportProviderProps> = ({
   children,
+  csvFileId,
 }) => {
   const [uploadData, setUploadData] = useState<CsvImportType | null>(
     {} as CsvImportType,
@@ -73,7 +76,13 @@ export const CsvImportProvider: React.FC<CsvImportProviderProps> = ({
 
   return (
     <CsvImportContext.Provider
-      value={{ uploadData, setUploadData, initialData, setInitialData }}
+      value={{
+        uploadData,
+        setUploadData,
+        initialData,
+        setInitialData,
+        csvFileId,
+      }}
     >
       {children}
     </CsvImportContext.Provider>

@@ -55,6 +55,7 @@ const constants = {
 
 const initializeData = () => {
   uploadData = {
+    id: 'csvFileId',
     fileConstants: {
       weird: 'Odd Value',
       foo: 'bar',
@@ -117,7 +118,13 @@ const CsvPreviewMockComponent: React.FC<CsvPreviewProps> = ({
   <TestWrapper>
     <ThemeProvider theme={theme}>
       <CsvImportContext.Provider
-        value={{ uploadData, setUploadData, initialData, setInitialData }}
+        value={{
+          uploadData,
+          setUploadData,
+          initialData,
+          setInitialData,
+          csvFileId: uploadData?.csvFileId,
+        }}
       >
         <CsvPreview
           accountListId={accountListId}

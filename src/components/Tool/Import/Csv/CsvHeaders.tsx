@@ -12,6 +12,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { cloneDeep } from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -68,9 +69,8 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
   accountListId,
   setCurrentTab,
 }) => {
-  const { uploadData, setUploadData, initialData, setInitialData } = useContext(
-    CsvImportContext,
-  ) as CsvImportValue;
+  const { uploadData, setUploadData, initialData, setInitialData, csvFileId } =
+    useContext(CsvImportContext) as CsvImportValue;
 
   const importHeaders = uploadData?.fileHeaders ?? {};
   const supportedHeaders = useSupportedHeaders();
@@ -100,7 +100,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
   };
 
   useEffect(() => {
-    if (uploadData) {
+    if (uploadData?.id) {
       if (!initialData?.id) {
         get(accountListId, uploadData.id, initialData).then((data) => {
           setInitialData(data);
@@ -144,8 +144,13 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
         setUnmappedHeadersChecked(true);
         updateHeaders(uploadData);
       }
+    } else if (csvFileId) {
+      get(accountListId, csvFileId, initialData).then((data) => {
+        setInitialData(data);
+        setUploadData(cloneDeep(data));
+      });
     }
-  }, [uploadData]);
+  }, [uploadData, csvFileId]);
 
   const handleUpdateHeaders = (event, importHeader) => {
     fileHeadersMappings[importHeader] = event.target.value;
@@ -186,7 +191,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
     });
   };
 
-  if (!accountListId || !uploadData || !unmappedHeadersChecked) {
+  if (!accountListId || !uploadData?.id || !unmappedHeadersChecked) {
     return null;
   }
 
