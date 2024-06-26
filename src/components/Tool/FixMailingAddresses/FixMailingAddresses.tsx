@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { ApolloCache } from '@apollo/client';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
@@ -7,18 +8,23 @@ import {
   CircularProgress,
   Divider,
   Grid,
-  NativeSelect,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Typography,
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
+import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import theme from '../../../theme';
 import NoData from '../NoData';
-import { StyledInput } from '../StyledInput';
-import AddressModal from './AddressModal';
 import Contact from './Contact';
 import {
   ContactAddressFragment,
+  InvalidAddressesDocument,
+  InvalidAddressesQuery,
   useInvalidAddressesQuery,
 } from './GetInvalidAddresses.generated';
 
@@ -35,6 +41,7 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
+    flexWrap: 'wrap',
     width: '100%',
   },
   divider: {
@@ -49,13 +56,11 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     justifyContent: 'center',
   },
-  buttonBlue: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    paddingRight: theme.spacing(1.5),
-    color: 'white',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(2),
+  confirmAllButton: {
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      maxWidth: '200px',
+      margin: `${theme.spacing(1)} auto 0`,
     },
   },
   buttonIcon: {
@@ -67,28 +72,32 @@ const useStyles = makeStyles()(() => ({
     alignItems: 'center',
     flexWrap: 'wrap',
     marginTop: theme.spacing(1),
+    [theme.breakpoints.down('sm')]: {
+      justifyContent: 'center',
+    },
     [theme.breakpoints.down('xs')]: {
       flexDirection: 'column',
       alignItems: 'start',
     },
   },
-  nativeSelect: {
+  select: {
     minWidth: theme.spacing(20),
-    width: '10%',
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing(0),
-      marginRight: theme.spacing(0),
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
+
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      maxWidth: '200px',
+      margin: `${theme.spacing(1)} auto 0`,
     },
   },
 }));
 
+const appName = process.env.APP_NAME || 'MPDX';
+
 export const emptyAddress: ContactAddressFragment = {
   id: 'new',
-  source: 'MPDX',
+  source: appName,
   street: '',
   region: '',
   location: '',
@@ -102,144 +111,236 @@ export const emptyAddress: ContactAddressFragment = {
 
 interface Props {
   accountListId: string;
+  setContactFocus: SetContactFocus;
+}
+enum ModalEnum {
+  New = 'New',
+  Edit = 'Edit',
 }
 
-const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
+const sourceOptions = [appName, 'DataServer'];
+
+const FixSendNewsletter: React.FC<Props> = ({
+  accountListId,
+  setContactFocus,
+}: Props) => {
   const { classes } = useStyles();
-  const [modalState, setModalState] = useState({
-    open: false,
-    address: emptyAddress,
-  });
   const { t } = useTranslation();
-  const [defaultSource, setDefaultSource] = useState('MPDX');
+  const [showEditAddressModal, setShowEditAddressModal] = useState(false);
+  const [showNewAddressModal, setShowNewAddressModal] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(emptyAddress);
+  const [selectedContactId, setSelectedContactId] = useState('');
+  const [defaultSource, setDefaultSource] = useState(appName);
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
 
-  const handleOpen = (address: ContactAddressFragment): void => {
-    setModalState({ open: true, address: address });
+  const handleUpdateCacheForDeleteAddress = useCallback(
+    (cache: ApolloCache<unknown>, data) => {
+      cache.evict({
+        id: `Address:${data.deletedAddressId}`,
+      });
+      cache.gc();
+    },
+    [],
+  );
+
+  const handleUpdateCacheForAddAddress = useCallback(
+    (cache: ApolloCache<unknown>, createdAddressData) => {
+      const InvalidAddressesQuery = {
+        query: InvalidAddressesDocument,
+        variables: {
+          accountListId,
+        },
+      };
+      const dataFromInvalidAddressesCache =
+        cache.readQuery<InvalidAddressesQuery>(InvalidAddressesQuery);
+
+      if (dataFromInvalidAddressesCache) {
+        const newContacts = dataFromInvalidAddressesCache.contacts.nodes.map(
+          (contact) => {
+            if (contact.id !== createdAddressData.createAddress.contactId) {
+              return contact;
+            } else {
+              return {
+                ...contact,
+                addresses: {
+                  nodes: [
+                    ...contact.addresses.nodes,
+                    createdAddressData.createAddress.address,
+                  ],
+                },
+              };
+            }
+          },
+        );
+
+        const data = {
+          ...dataFromInvalidAddressesCache,
+          contacts: {
+            ...dataFromInvalidAddressesCache.contacts,
+            nodes: newContacts,
+          },
+        };
+        cache.writeQuery({ ...InvalidAddressesQuery, data });
+      }
+    },
+    [],
+  );
+
+  const handleModalOpen = (
+    modal: ModalEnum,
+    address: ContactAddressFragment,
+    contactId: string,
+  ): void => {
+    if (modal === ModalEnum.Edit) {
+      setShowEditAddressModal(true);
+    } else {
+      setShowNewAddressModal(true);
+    }
+    setSelectedAddress(address);
+    setSelectedContactId(contactId);
   };
 
   const handleClose = (): void => {
-    setModalState({ open: false, address: emptyAddress });
+    setShowEditAddressModal(false);
+    setShowNewAddressModal(false);
+    setSelectedAddress(emptyAddress);
+    setSelectedContactId('');
   };
 
-  const handleChange = (
-    event:
-      | React.ChangeEvent<HTMLInputElement & HTMLSelectElement>
-      | React.ChangeEvent<HTMLInputElement>,
-    props: string,
-  ): void => {
-    const tempAddress = modalState.address; // Error prevention, can remove later
-    setModalState((prevState) => ({
-      ...prevState,
-      address: {
-        ...tempAddress,
-        [props]:
-          event.target.name === 'checkbox'
-            ? event.target.checked
-            : event.target.value,
-      },
-    }));
-  };
-
-  const handleSourceChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ): void => {
+  const handleSourceChange = (event: SelectChangeEvent<string>): void => {
     setDefaultSource(event.target.value);
   };
 
-  //TODO: Make navbar selectId = "fixSendNewsletter" when other branch gets merged
+  const totalContacts = data?.contacts?.nodes?.length || 0;
 
   return (
     <Box className={classes.outer} data-testid="Home">
-      {!loading && data ? (
+      <Box className={classes.outer}>
         <Grid container className={classes.container}>
           <Grid item xs={12}>
             <Typography variant="h4">{t('Fix Mailing Addresses')}</Typography>
             <Divider className={classes.divider} />
           </Grid>
-          {data.contacts?.nodes.length > 0 ? (
-            <>
-              <Grid item xs={12}>
-                <Box className={classes.descriptionBox}>
-                  <Typography>
-                    <strong>
-                      {t('You have {{amount}} mailing addresses to confirm.', {
-                        amount: data?.contacts.nodes.length,
-                      })}
-                    </strong>
-                  </Typography>
-                  <Typography>
-                    {t(
-                      'Choose below which mailing address will be set as primary. Primary mailing addresses will be used for Newsletter exports.',
-                    )}
-                  </Typography>
-                  <Box className={classes.defaultBox}>
-                    <Typography>{t('Default Primary Source:')}</Typography>
 
-                    <NativeSelect
-                      input={<StyledInput />}
-                      className={classes.nativeSelect}
-                      value={defaultSource}
-                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                        handleSourceChange(event)
-                      }
-                    >
-                      <option value="MPDX">MPDX</option>
-                      <option value="DataServer">DataServer</option>
-                    </NativeSelect>
-                    <Button className={classes.buttonBlue}>
-                      <Icon
-                        path={mdiCheckboxMarkedCircle}
-                        size={0.8}
-                        className={classes.buttonIcon}
+          {loading && !data && (
+            <Box className={classes.outer}>
+              <CircularProgress
+                data-testid="loading"
+                style={{ marginTop: theme.spacing(3) }}
+              />
+            </Box>
+          )}
+
+          {!loading && data && (
+            <React.Fragment>
+              {!totalContacts && <NoData tool="fixMailingAddresses" />}
+              {totalContacts && (
+                <>
+                  <Grid item xs={12}>
+                    <Box className={classes.descriptionBox}>
+                      <Typography>
+                        <strong>
+                          {t(
+                            'You have {{amount}} mailing addresses to confirm.',
+                            {
+                              amount: totalContacts,
+                            },
+                          )}
+                        </strong>
+                      </Typography>
+                      <Typography>
+                        {t(
+                          'Choose below which mailing address will be set as primary. Primary mailing addresses will be used for Newsletter exports.',
+                        )}
+                      </Typography>
+                      <Box className={classes.defaultBox}>
+                        <Typography>{t('Default Primary Source:')}</Typography>
+
+                        <Select
+                          className={classes.select}
+                          value={defaultSource}
+                          onChange={handleSourceChange}
+                          size="small"
+                        >
+                          {sourceOptions.map((source) => (
+                            <MenuItem key={source} value={source}>
+                              {source}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <Button
+                          variant="contained"
+                          className={classes.confirmAllButton}
+                        >
+                          <Icon
+                            path={mdiCheckboxMarkedCircle}
+                            size={0.8}
+                            className={classes.buttonIcon}
+                          />
+                          {t('Confirm {{amount}} as {{source}}', {
+                            amount: totalContacts,
+                            source: defaultSource,
+                          })}
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    {data.contacts.nodes.map((contact) => (
+                      <Contact
+                        id={contact.id}
+                        name={contact.name}
+                        status={contact.status || ''}
+                        key={contact.id}
+                        addresses={contact.addresses.nodes}
+                        appName={appName}
+                        openEditAddressModal={(address, contactId) =>
+                          handleModalOpen(ModalEnum.Edit, address, contactId)
+                        }
+                        openNewAddressModal={(address, contactId) =>
+                          handleModalOpen(ModalEnum.New, address, contactId)
+                        }
+                        setContactFocus={setContactFocus}
                       />
-                      {t('Confirm {{amount}} as {{source}}', {
-                        amount: data?.contacts.nodes.length,
-                        source: defaultSource,
-                      })}
-                    </Button>
-                  </Box>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                {data.contacts.nodes.map((contact) => (
-                  <Contact
-                    id={contact.id}
-                    name={contact.name}
-                    status={contact.status || ''}
-                    key={contact.id}
-                    addresses={contact.addresses.nodes}
-                    openFunction={handleOpen}
-                  />
-                ))}
-              </Grid>
-              <Grid item xs={12}>
-                <Box className={classes.footer}>
-                  <Typography>
-                    <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                      shouldUnescape
-                      values={{ value: data?.contacts.nodes.length }}
-                      components={{ bold: <strong /> }}
-                    />
-                  </Typography>
-                </Box>
-              </Grid>
-            </>
-          ) : (
-            <NoData tool="fixMailingAddresses" />
+                    ))}
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box className={classes.footer}>
+                      <Typography>
+                        <Trans
+                          defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                          shouldUnescape
+                          values={{ value: totalContacts }}
+                          components={{ bold: <strong /> }}
+                        />
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </>
+              )}
+            </React.Fragment>
           )}
         </Grid>
-      ) : (
-        <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+      </Box>
+      {showEditAddressModal && (
+        <DynamicEditContactAddressModal
+          accountListId={accountListId}
+          address={selectedAddress}
+          contactId={selectedContactId}
+          handleClose={handleClose}
+          handleUpdateCacheOnDelete={handleUpdateCacheForDeleteAddress}
+        />
       )}
-      <AddressModal
-        modalState={modalState}
-        handleClose={handleClose}
-        handleChange={handleChange}
-      />
+      {showNewAddressModal && (
+        <DynamicAddAddressModal
+          accountListId={accountListId}
+          contactId={selectedContactId}
+          handleClose={handleClose}
+          handleUpdateCache={handleUpdateCacheForAddAddress}
+        />
+      )}
     </Box>
   );
 };

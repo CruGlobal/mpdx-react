@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
@@ -110,10 +111,12 @@ interface PersonEmailAddresses {
 
 interface FixEmailAddressesProps {
   accountListId: string;
+  setContactFocus: SetContactFocus;
 }
 
 export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   accountListId,
+  setContactFocus,
 }) => {
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
@@ -294,6 +297,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     handleDelete={handleDeleteModalOpen}
                     handleAdd={handleAdd}
                     handleChangePrimary={handleChangePrimary}
+                    setContactFocus={setContactFocus}
                   />
                 ))}
               </Grid>

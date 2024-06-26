@@ -164,8 +164,14 @@ describe('MassActionsMergeModal', () => {
       .filter(({ operationName }) => operationName === 'MassActionsMerge');
     expect(mergeCalls).toHaveLength(1);
     expect(mergeCalls[0].variables).toEqual({
-      loserContactIds: ['contact-2'],
-      winnerContactId: 'contact-1',
+      input: {
+        winnersAndLosers: [
+          {
+            loserId: 'contact-2',
+            winnerId: 'contact-1',
+          },
+        ],
+      },
     });
   });
 

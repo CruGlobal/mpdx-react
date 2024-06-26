@@ -16,7 +16,7 @@ const onChange = jest.fn();
 const TestComponent: React.FC<TestComponentProps> = ({
   value = DateTime.local(2024, 1, 2, 3, 4, 5),
 }) => (
-  <UserPreferenceContext.Provider value={{ locale: 'en-US' }}>
+  <UserPreferenceContext.Provider value={{ locale: 'en-US', userId: 'userId' }}>
     <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale="en-US">
       <DateTimeFieldPair
         value={value}
