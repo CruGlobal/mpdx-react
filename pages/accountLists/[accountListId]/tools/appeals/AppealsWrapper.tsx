@@ -28,6 +28,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [page, setPage] = useState<PageEnum>(PageEnum.InitialPage);
+  const [appealId, setAppealId] = useState<string | undefined>(undefined);
   const [contactId, setContactId] = useState<string | string[] | undefined>(
     undefined,
   );
@@ -36,32 +37,36 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
     [activeFilters],
   );
 
-  const { appealId, searchTerm } = query;
+  const { appealId: appealIdParams, searchTerm } = query;
 
   useEffect(() => {
+    // TODO: Fix these suggested Articles
     suggestArticles(
-      appealId ? 'HS_CONTACTS_CONTACT_SUGGESTIONS' : 'HS_CONTACTS_SUGGESTIONS',
+      appealIdParams
+        ? 'HS_CONTACTS_CONTACT_SUGGESTIONS'
+        : 'HS_CONTACTS_SUGGESTIONS',
     );
-    if (appealId === undefined) {
+    if (appealIdParams === undefined) {
       setPage(PageEnum.InitialPage);
       return;
     }
-    const length = appealId.length;
+    const length = appealIdParams.length;
+    setAppealId(appealIdParams[0]);
     if (length === 1) {
       setPage(PageEnum.DetailsPage);
     } else if (
       length === 2 &&
-      (appealId[1].toLowerCase() === 'flows' ||
-        appealId[1].toLowerCase() === 'list')
+      (appealIdParams[1].toLowerCase() === 'flows' ||
+        appealIdParams[1].toLowerCase() === 'list')
     ) {
       setPage(PageEnum.DetailsPage);
-      setContactId([appealId[1]]);
+      setContactId([appealIdParams[1]]);
     } else if (length > 2) {
       setPage(PageEnum.ContactsPage);
-      const appealIdCopy = [...appealId];
-      setContactId(appealIdCopy.shift());
+      const appealIdParamsCopy = [...appealIdParams];
+      setContactId(appealIdParamsCopy.shift());
     }
-  }, [appealId]);
+  }, [appealIdParams]);
 
   useEffect(() => {
     if (!isReady) {
@@ -89,6 +94,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
       setStarredFilter={setStarredFilter}
       filterPanelOpen={filterPanelOpen}
       setFilterPanelOpen={setFilterPanelOpen}
+      appealId={appealId}
       contactId={contactId}
       searchTerm={searchTerm}
       page={page}

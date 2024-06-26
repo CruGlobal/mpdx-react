@@ -5,7 +5,6 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { type DebouncedFunc, debounce, omit } from 'lodash';
@@ -14,14 +13,9 @@ import {
   useContactFiltersQuery,
   useContactsQuery,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import {
-  coordinatesFromContacts,
-  getRedirectPathname,
-} from 'pages/accountLists/[accountListId]/contacts/helpers';
 import { PageEnum } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
-import { Coordinates } from 'src/components/Contacts/ContactsMap/coordinates';
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
 import {
   ListHeaderCheckBoxState,
@@ -30,10 +24,10 @@ import {
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useLocale } from 'src/hooks/useLocale';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 // Changed
+
 export type AppealsType = {
   accountListId: string | undefined;
   contactId: string | string[] | undefined;
@@ -59,11 +53,6 @@ export type AppealsType = {
     event: React.MouseEvent<HTMLElement>,
     view: string,
   ) => void;
-  selected: Coordinates | null;
-  setSelected: Dispatch<SetStateAction<Coordinates | null>>;
-  mapRef: React.MutableRefObject<google.maps.Map | null>;
-  panTo: (coords: { lat: number; lng: number }) => void;
-  mapData: Coordinates[] | undefined;
   activeFilters: ContactFilterSetInput;
   sanitizedFilters: ContactFilterSetInput;
   setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
@@ -82,6 +71,7 @@ export type AppealsType = {
   selectedIds: string[];
   deselectAll: () => void;
   userOptionsLoading: boolean;
+  appealId: string | undefined;
   page: PageEnum;
 };
 
@@ -96,12 +86,13 @@ interface Props {
   setStarredFilter: (filter: ContactFilterSetInput) => void;
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
+  appealId: string | undefined;
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
   page: PageEnum;
 }
 // Changed
-export const ContactsContextSavedFilters = (
+export const AppealsContextSavedFilters = (
   filterData: ContactFiltersQuery | undefined,
   accountListId: string | undefined,
 ): UserOptionFragment[] => {
@@ -134,11 +125,11 @@ export const AppealsProvider: React.FC<Props> = ({
   setStarredFilter,
   filterPanelOpen,
   setFilterPanelOpen,
+  appealId,
   contactId,
   searchTerm,
   page,
 }) => {
-  const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
   const router = useRouter();
   const { query, push, replace, isReady, pathname } = router;
@@ -146,7 +137,7 @@ export const AppealsProvider: React.FC<Props> = ({
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
   const [viewMode, setViewMode] = useState<TableViewModeEnum>(
-    TableViewModeEnum.List,
+    TableViewModeEnum.Flows,
   );
   const sanitizedFilters = useMemo(
     () => sanitizeFilters(activeFilters),
@@ -169,6 +160,7 @@ export const AppealsProvider: React.FC<Props> = ({
         );
       }
     },
+    skip: page === PageEnum.InitialPage,
   });
 
   const contactsFilters = useMemo(
@@ -176,8 +168,7 @@ export const AppealsProvider: React.FC<Props> = ({
       ...sanitizedFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
-      ids:
-        viewMode === TableViewModeEnum.Map && urlFilters ? urlFilters.ids : [],
+      ids: [],
     }),
     [sanitizedFilters, starredFilter, searchTerm],
   );
@@ -186,9 +177,9 @@ export const AppealsProvider: React.FC<Props> = ({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters,
-      first: contactId?.includes('map') ? 20000 : 25,
+      first: 25,
     },
-    skip: !accountListId,
+    skip: !accountListId || page === PageEnum.InitialPage,
   });
   const { data, loading, fetchMore } = contactsQueryResult;
 
@@ -201,7 +192,7 @@ export const AppealsProvider: React.FC<Props> = ({
       first: contactCount,
       contactsFilters,
     },
-    skip: contactCount === 0,
+    skip: contactCount === 0 || page === PageEnum.InitialPage,
   });
   const allContactIds = useMemo(
     () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
@@ -228,7 +219,6 @@ export const AppealsProvider: React.FC<Props> = ({
     if (isReady && contactId) {
       if (
         contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'map' &&
         contactId[contactId.length - 1] !== 'list'
       ) {
         setContactDetailsId(contactId[contactId.length - 1]);
@@ -248,7 +238,6 @@ export const AppealsProvider: React.FC<Props> = ({
     setContactFocus(
       contactId &&
         contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'map' &&
         contactId[contactId.length - 1] !== 'list'
         ? contactId[contactId.length - 1]
         : undefined,
@@ -267,7 +256,7 @@ export const AppealsProvider: React.FC<Props> = ({
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    skip: !accountListId || page === PageEnum.InitialPage,
     context: {
       doNotBatch: true,
     },
@@ -281,7 +270,7 @@ export const AppealsProvider: React.FC<Props> = ({
     setSearchTerm('');
   };
 
-  const savedFilters: UserOptionFragment[] = ContactsContextSavedFilters(
+  const savedFilters: UserOptionFragment[] = AppealsContextSavedFilters(
     filterData,
     accountListId,
   );
@@ -296,10 +285,13 @@ export const AppealsProvider: React.FC<Props> = ({
   //#region User Actions
   // Changed
   const setContactFocus = (id?: string, openDetails = true) => {
+    if (page === PageEnum.InitialPage) {
+      return;
+    }
     const {
       accountListId: _accountListId,
       contactId: _contactId,
-      appealId: appealId,
+      appealId: _appealId,
       ...filteredQuery
     } = query;
     if (viewMode === TableViewModeEnum.Map && ids && ids.length > 0) {
@@ -314,15 +306,17 @@ export const AppealsProvider: React.FC<Props> = ({
       }
     }
 
-    const pathname = getRedirectPathname({
-      routerPathname: router.pathname,
-      accountListId,
-      contactId: id,
+    let pathname = '';
+    pathname = `/accountLists/${accountListId}/tools/appeals`;
+    if (appealId) {
+      pathname += `/${appealId}`;
+    }
+    if (viewMode === TableViewModeEnum.Flows) {
+      pathname += '/flows';
+    } else if (viewMode === TableViewModeEnum.List) {
+      pathname += '/list';
+    }
 
-      appealId:
-        typeof appealId === 'string' ? appealId : appealId ? appealId[0] : '',
-      viewMode,
-    });
     push({
       pathname,
       query: filteredQuery,
@@ -379,27 +373,6 @@ export const AppealsProvider: React.FC<Props> = ({
     });
   };
 
-  // map states and functions
-  const [selected, setSelected] = useState<Coordinates | null>(null);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mapRef = useRef<google.maps.Map | null>(null);
-
-  const panTo = useCallback(
-    ({ lat, lng }) => {
-      if (mapRef.current) {
-        mapRef.current.panTo({ lat, lng });
-        mapRef.current.setZoom(14);
-      }
-    },
-    [mapRef.current],
-  );
-
-  const mapData = useMemo(
-    () => data && coordinatesFromContacts(data.contacts, locale),
-    [data],
-  );
-
   return (
     // Changed
     <AppealsContext.Provider
@@ -420,11 +393,6 @@ export const AppealsProvider: React.FC<Props> = ({
         setContactFocus: setContactFocus,
         setSearchTerm: setSearchTerm,
         handleViewModeChange: handleViewModeChange,
-        selected: selected,
-        setSelected: setSelected,
-        mapRef: mapRef,
-        mapData: mapData,
-        panTo: panTo,
         activeFilters: activeFilters,
         sanitizedFilters,
         setActiveFilters: setActiveFilters,
@@ -443,6 +411,7 @@ export const AppealsProvider: React.FC<Props> = ({
         selectedIds: ids,
         deselectAll: deselectAll,
         userOptionsLoading: userOptionsLoading,
+        appealId,
         page,
       }}
     >
