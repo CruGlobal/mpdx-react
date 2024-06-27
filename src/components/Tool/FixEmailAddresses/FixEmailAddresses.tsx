@@ -320,7 +320,10 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           )}
         </FixEmailAddressesWrapper>
       ) : (
-        <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+        <CircularProgress
+          data-testid="loading"
+          style={{ marginTop: theme.spacing(3) }}
+        />
       )}
       <DeleteModal
         modalState={deleteModalState}

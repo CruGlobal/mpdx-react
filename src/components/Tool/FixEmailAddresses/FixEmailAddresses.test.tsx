@@ -1,17 +1,20 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from '../../../theme';
 import { FixEmailAddresses } from './FixEmailAddresses';
+import {
+  contactId,
+  mockInvalidEmailAddressesResponse,
+} from './FixEmailAddressesMocks';
 import { GetInvalidEmailAddressesQuery } from './GetInvalidEmailAddresses.generated';
 
 const accountListId = 'test121';
-
 const router = {
   query: { accountListId },
   isReady: true,
@@ -19,88 +22,38 @@ const router = {
 
 const setContactFocus = jest.fn();
 
-const testData: ErgonoMockShape[] = [
-  {
-    id: 'testid',
-    firstName: 'Test',
-    lastName: 'Contact',
-    emailAddresses: {
-      nodes: [
-        {
-          id: 'id1',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          email: 'email1@gmail.com',
-          primary: true,
-          source: 'MPDX',
-        },
-        {
-          id: 'id12',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          email: 'email2@gmail.com',
-          primary: false,
-          source: 'MPDX',
-        },
-        {
-          id: 'id3',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          email: 'email3@gmail.com',
-          primary: false,
-          source: 'MPDX',
-        },
-      ],
-    },
-  },
-  {
-    id: 'testid2',
-    firstName: 'Simba',
-    lastName: 'Lion',
-    emailAddresses: {
-      nodes: [
-        {
-          id: 'id4',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          number: 'email4@gmail.com',
-          primary: true,
-          source: 'MPDX',
-        },
-        {
-          id: 'id5',
-          updatedAt: new Date('2021-06-22T03:40:05-06:00').toISOString(),
-          number: 'email5@gmail.com',
-          primary: false,
-          source: 'MPDX',
-        },
-      ],
-    },
-  },
-];
+const Components = ({
+  mockNodes = mockInvalidEmailAddressesResponse,
+}: {
+  mockNodes?: ErgonoMockShape[];
+}) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter router={router}>
+      <TestWrapper>
+        <GqlMockedProvider<{
+          GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+        }>
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockNodes,
+              },
+            },
+          }}
+        >
+          <FixEmailAddresses
+            accountListId={accountListId}
+            setContactFocus={setContactFocus}
+          />
+        </GqlMockedProvider>
+      </TestWrapper>
+    </TestRouter>
+  </ThemeProvider>
+);
 
 describe('FixPhoneNumbers-Home', () => {
   it('default with test data', async () => {
-    const { getByText, getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByText, getByTestId, queryByTestId } = render(<Components />);
 
     await waitFor(() =>
       expect(getByText('Fix Email Addresses')).toBeInTheDocument(),
@@ -120,30 +73,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('change primary of first email', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByTestId } = render(<Components />);
 
     const star1 = await waitFor(() => getByTestId('starOutlineIcon-testid-1'));
     userEvent.click(star1);
@@ -154,30 +84,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('delete third email from first person', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByTestId } = render(<Components />);
 
     const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
     userEvent.click(delete02);
@@ -189,30 +96,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('change second email for second person to primary then delete it', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByTestId } = render(<Components />);
 
     const star11 = await waitFor(() =>
       getByTestId('starOutlineIcon-testid2-1'),
@@ -230,30 +114,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('add an email address to second person', async () => {
-    const { getByTestId, getByDisplayValue } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId, getByDisplayValue } = render(<Components />);
     await waitFor(() =>
       expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument(),
     );
@@ -272,30 +133,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should render no contacts with no data', async () => {
-    const { getByText, getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: [],
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByText, getByTestId } = render(<Components mockNodes={[]} />);
     await waitFor(() =>
       expect(getByTestId('fixEmailAddresses-null-state')).toBeInTheDocument(),
     );
@@ -305,30 +143,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should modify first email of first contact', async () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId } = render(<Components />);
     await waitFor(() => {
       expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     });
@@ -337,5 +152,21 @@ describe('FixPhoneNumbers-Home', () => {
     expect(firstInput.value).toBe('email1@gmail.com');
     userEvent.type(firstInput, '123');
     expect(firstInput.value).toBe('email1@gmail.com123');
+  });
+
+  describe('setContactFocus()', () => {
+    it('should open up contact details', async () => {
+      const { getByText, queryByTestId } = render(<Components />);
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+      expect(setContactFocus).not.toHaveBeenCalled();
+
+      const contactName = getByText('Test Contact');
+
+      expect(contactName).toBeInTheDocument();
+      userEvent.click(contactName);
+      expect(setContactFocus).toHaveBeenCalledWith(contactId);
+    });
   });
 });
