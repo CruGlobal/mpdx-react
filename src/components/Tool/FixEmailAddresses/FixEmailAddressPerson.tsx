@@ -1,28 +1,38 @@
-import React, { Fragment, useState } from 'react';
-import { mdiDelete, mdiLock, mdiPlus, mdiStar, mdiStarOutline } from '@mdi/js';
+import React, { Fragment, useMemo } from 'react';
+import { mdiDelete, mdiLock, mdiStar, mdiStarOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
+import AddIcon from '@mui/icons-material/Add';
 import {
   Avatar,
   Box,
   Button,
   Grid,
   Hidden,
+  IconButton,
   Link,
   TextField,
   Theme,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { ErrorMessage, Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import * as Yup from 'yup';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import { EmailAddressData } from './FixEmailAddresses';
+
+const ContactInputField = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'destroyed',
+})(({ destroyed }: { destroyed: boolean }) => ({
+  textDecoration: destroyed ? 'line-through' : 'none',
+}));
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -32,8 +42,8 @@ const PersonCard = styled(Box)(({ theme }) => ({
 
 const Container = styled(Grid)(({ theme }) => ({
   display: 'flex',
-  alignItems: 'center',
-  marginBottom: theme.spacing(2),
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
   [theme.breakpoints.down('sm')]: {
     border: `1px solid ${theme.palette.cruGrayMedium.main}`,
   },
@@ -93,7 +103,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 
 interface FixEmailAddressPersonProps {
   name: string;
-  emails: EmailAddressData[];
+  emailAddress?: EmailAddressData[];
   personId: string;
   toDelete: PersonEmailAddressInput[];
   handleChange: (
@@ -107,14 +117,107 @@ interface FixEmailAddressPersonProps {
   setContactFocus: SetContactFocus;
 }
 
+interface EmailValidationFormEmail {
+  email: string;
+  isPrimary: boolean;
+  updatedAt: string;
+  source: string;
+  personId: string;
+  isValid: boolean;
+}
+
+interface EmailValidationFormProps {
+  emails?: EmailValidationFormEmail;
+  index: number;
+  personId?: string;
+  handleAdd?: (personId: string, email: string) => void;
+}
+
+const onSubmit = () => {};
+
+const EmailValidationForm = ({
+  emails: initialEmail = {
+    email: '',
+    isPrimary: false,
+    updatedAt: '',
+    source: '',
+    personId: '',
+    isValid: false,
+  },
+}: EmailValidationFormProps) => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const validationSchema = Yup.object().shape({
+    email: Yup.string().email(' ').required(' '),
+  });
+  const { t } = useTranslation();
+
+  const handleValidation = (isValid) => {
+    if (!isValid) {
+      enqueueSnackbar(t('Invalid Email Address Format'), {
+        variant: 'error',
+      });
+    }
+  };
+
+  //TODO: Add button functionality to add email using graphql mutation
+
+  // const handleButtonClick = (email) => {
+
+  // };
+
+  return (
+    <Formik
+      initialValues={{
+        email: initialEmail.email,
+        isPrimary: initialEmail.isPrimary,
+        updatedAt: '',
+        source: '',
+        personId: 'test',
+        isValid: false,
+      }}
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+    >
+      {({ values, handleChange, isValid }) => (
+        <Form>
+          <RowWrapper>
+            <Grid container>
+              <ContactInputField
+                destroyed={false}
+                label={t('New Email Address')}
+                type="email"
+                name="email"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={() => handleValidation(isValid)}
+              />
+              <IconButton
+                type="submit"
+                color="primary"
+                disabled={!isValid || values.email === ''}
+                data-testid={`addButton-${initialEmail.personId}`}
+                // onClick={() => handleButtonClick(values.email)}
+              >
+                <AddIcon fontSize="large" />
+              </IconButton>
+            </Grid>
+          </RowWrapper>
+          <ErrorMessage name="email" component="div" />
+        </Form>
+      )}
+    </Formik>
+  );
+};
+
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
-  emails,
+  emailAddress,
   personId,
   handleChange,
   handleDelete,
-  handleAdd,
   handleChangePrimary,
+  handleAdd,
   // Remove below line when function is being used.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
@@ -122,22 +225,20 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
-  const [newEmailAddress, setNewEmailAddress] = useState<string>('');
+
+  const emails = useMemo(
+    () =>
+      emailAddress?.map((email) => ({
+        ...email,
+        isValid: false,
+        personId: personId,
+        isPrimary: email.primary,
+      })) || [],
+    [emailAddress],
+  );
+
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info
-
-  const updateNewEmailAddress = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setNewEmailAddress(event.target.value);
-  };
-
-  const addNewEmailAddress = (): void => {
-    if (newEmailAddress) {
-      handleAdd(personId, newEmailAddress);
-      setNewEmailAddress('');
-    }
-  };
 
   const handleContactNameClick = () => {
     // This currently doesn't work as we need to add the contactId onto the person graphQL endpoint.
@@ -167,7 +268,6 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                   </Box>
                 </Box>
               </Grid>
-
               <EmailAddressListWrapper item xs={12}>
                 <Grid container>
                   <Hidden xsDown>
@@ -182,7 +282,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       </Box>
                     </ColumnHeaderWrapper>
                     <ColumnHeaderWrapper item xs={12} sm={6}>
-                      <Box display="flex" justifyContent="flex-start" px={2}>
+                      <Box display="flex" justifyContent="flex-start" px={3.25}>
                         <Typography>
                           <strong>{t('Address')}</strong>
                         </Typography>
@@ -211,7 +311,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                             </Typography>
                           </Box>
                           <Typography>
-                            {email.primary ? (
+                            {email.isPrimary ? (
                               <Box
                                 data-testid={`starIcon-${personId}-${index}`}
                               >
@@ -286,22 +386,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       justifyContent="flex-start"
                       px={2}
                     >
-                      <TextField
-                        style={{ width: '100%' }}
-                        onChange={(
-                          event: React.ChangeEvent<HTMLInputElement>,
-                        ) => updateNewEmailAddress(event)}
-                        inputProps={{
-                          'data-testid': `addNewEmailInput-${personId}`,
-                        }}
-                        value={newEmailAddress}
-                      />
-                      <Box
-                        onClick={() => addNewEmailAddress()}
-                        data-testid={`addButton-${personId}`}
-                      >
-                        <HoverableIcon path={mdiPlus} size={1} />
-                      </Box>
+                      {
+                        //index will need to be mapped to the correct personId
+                      }
+                      <EmailValidationForm handleAdd={handleAdd} index={0} />
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>
