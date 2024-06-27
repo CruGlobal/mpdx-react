@@ -293,6 +293,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     personId={person.id}
                     emails={dataState[person.id]?.emailAddresses || []}
                     toDelete={dataState[person.id]?.toDelete}
+                    contactId={person.contactId}
                     handleChange={handleChange}
                     handleDelete={handleDeleteModalOpen}
                     handleAdd={handleAdd}

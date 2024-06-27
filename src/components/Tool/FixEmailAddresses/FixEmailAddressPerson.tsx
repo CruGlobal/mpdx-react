@@ -96,6 +96,7 @@ interface FixEmailAddressPersonProps {
   emails: EmailAddressData[];
   personId: string;
   toDelete: PersonEmailAddressInput[];
+  contactId: string;
   handleChange: (
     personId: string,
     numberIndex: number,
@@ -111,12 +112,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
   emails,
   personId,
+  contactId,
   handleChange,
   handleDelete,
   handleAdd,
   handleChangePrimary,
-  // Remove below line when function is being used.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
 }) => {
   const { t } = useTranslation();
@@ -140,10 +140,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   };
 
   const handleContactNameClick = () => {
-    // This currently doesn't work as we need to add the contactId onto the person graphQL endpoint.
-    // I've asked Andrew to add it here: https://cru-main.slack.com/archives/CG47BDCG6/p1718721024211409
-    // You'll need that to run the below function
-    // setContactFocus(id);
+    setContactFocus(contactId);
   };
 
   return (
