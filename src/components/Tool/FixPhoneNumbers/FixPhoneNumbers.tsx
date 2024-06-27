@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -98,10 +99,6 @@ const defaultDeleteModalState = {
   phoneNumber: '',
 };
 
-interface Props {
-  accountListId: string;
-}
-
 export interface PhoneNumberData {
   id?: string;
   primary: boolean;
@@ -116,7 +113,15 @@ interface PersonPhoneNumbers {
   toDelete: PersonPhoneNumberInput[];
 }
 
-const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
+interface Props {
+  accountListId: string;
+  setContactFocus: SetContactFocus;
+}
+
+const FixPhoneNumbers: React.FC<Props> = ({
+  accountListId,
+  setContactFocus,
+}: Props) => {
   const { classes } = useStyles();
 
   const [defaultSource, setDefaultSource] = useState('MPDX');
@@ -311,6 +316,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                     handleDelete={handleDeleteModalOpen}
                     handleAdd={handleAdd}
                     handleChangePrimary={handleChangePrimary}
+                    setContactFocus={setContactFocus}
                   />
                 ))}
               </Grid>

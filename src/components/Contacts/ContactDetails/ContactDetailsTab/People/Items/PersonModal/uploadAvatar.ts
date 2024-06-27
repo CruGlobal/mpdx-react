@@ -52,7 +52,7 @@ export const uploadAvatar = async ({
   form.append('personId', personId);
   form.append('avatar', file);
 
-  const res = await fetch(`/api/upload-person-avatar`, {
+  const res = await fetch(`/api/uploads/upload-person-avatar`, {
     method: 'POST',
     body: form,
   }).catch(() => {

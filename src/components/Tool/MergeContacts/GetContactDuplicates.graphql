@@ -1,6 +1,7 @@
 query GetContactDuplicates($accountListId: ID!) {
   # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
-  contactDuplicates(accountListId: $accountListId, first: 50) {
+  contactDuplicates(accountListId: $accountListId, ignore: false, first: 10) {
+    totalCount
     nodes {
       id
       reason
@@ -27,6 +28,7 @@ fragment RecordInfo on Contact {
   status
   source
   createdAt
+  avatar
   primaryAddress {
     ...BasicAddressInfo
   }

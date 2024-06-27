@@ -3,11 +3,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import Loading from 'src/components/Loading';
-import MergePeople from 'src/components/Tool/MergePeople/MergePeople';
+import TntConnect from 'src/components/Tool/TntConnect/TntConnect';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-const MergePeoplePage: React.FC = () => {
+const TntConnectPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
@@ -16,11 +16,11 @@ const MergePeoplePage: React.FC = () => {
     <>
       <Head>
         <title>
-          {appName} | {t('Merge People')}
+          {appName} | {t('Import Tnt')}
         </title>
       </Head>
       {accountListId ? (
-        <MergePeople accountListId={accountListId} />
+        <TntConnect accountListId={accountListId} />
       ) : (
         <Loading loading />
       )}
@@ -30,4 +30,4 @@ const MergePeoplePage: React.FC = () => {
 
 export const getServerSideProps = loadSession;
 
-export default MergePeoplePage;
+export default TntConnectPage;

@@ -63,16 +63,21 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
   });
 
   const mergeContacts = async () => {
-    const loserContactIds = ids.filter((id) => id !== primaryContactId);
+    const winnersAndLosers = ids
+      .filter((id) => id !== primaryContactId)
+      .map((id) => {
+        return { winnerId: primaryContactId, loserId: id };
+      });
     await contactsMerge({
       variables: {
-        loserContactIds,
-        winnerContactId: primaryContactId,
+        input: {
+          winnersAndLosers,
+        },
       },
       update: (cache) => {
         // Delete the loser contacts and remove dangling references to them
-        loserContactIds.forEach((id) => {
-          cache.evict({ id: `Contact:${id}` });
+        winnersAndLosers.forEach((contact) => {
+          cache.evict({ id: `Contact:${contact.loserId}` });
         });
         cache.gc();
       },

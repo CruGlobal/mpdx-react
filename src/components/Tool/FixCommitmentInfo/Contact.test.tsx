@@ -21,6 +21,7 @@ const testData = {
 const router = {
   push: jest.fn(),
 };
+const setContactFocus = jest.fn();
 
 describe('FixCommitmentContact', () => {
   it('default', () => {
@@ -42,6 +43,7 @@ describe('FixCommitmentContact', () => {
             hideFunction={hideFunction}
             updateFunction={updateFunction}
             statuses={[]}
+            setContactFocus={setContactFocus}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -75,6 +77,7 @@ describe('FixCommitmentContact', () => {
             hideFunction={hideFunction}
             updateFunction={updateFunction}
             statuses={[]}
+            setContactFocus={setContactFocus}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -113,6 +116,7 @@ describe('FixCommitmentContact', () => {
             hideFunction={hideFunction}
             updateFunction={updateFunction}
             statuses={[]}
+            setContactFocus={setContactFocus}
           />
         </TestRouter>
       </ThemeProvider>,
@@ -145,6 +149,7 @@ describe('FixCommitmentContact', () => {
               { name: 'Partner - Financial', value: 'PARTNER_FINANCIAL' },
               { name: 'test_option_1', value: 'test1' },
             ]}
+            setContactFocus={setContactFocus}
           />
         </TestRouter>
       </ThemeProvider>,

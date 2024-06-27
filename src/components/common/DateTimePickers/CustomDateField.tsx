@@ -11,12 +11,13 @@ export const CustomDateField: React.FC<DesktopDateFieldProps> = (props) => {
   const isDesktop = useMediaQuery(DEFAULT_DESKTOP_MODE_MEDIA_QUERY, {
     defaultMatches: true,
   });
+  const { label, value, invalidDate, onChange, ...textFieldProps } = props;
 
-  if (isDesktop) {
+  // If value is not valid render desktop input as it can render invalid value
+  if (isDesktop || invalidDate) {
     return <DesktopDateField {...props} />;
   }
 
-  const { label, value, onChange, ...textFieldProps } = props;
   return (
     <MobileDatePicker<DateTime>
       label={label}

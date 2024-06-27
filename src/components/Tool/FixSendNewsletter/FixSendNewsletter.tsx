@@ -12,6 +12,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -62,9 +63,13 @@ const useStyles = makeStyles()(() => ({
 
 interface Props {
   accountListId: string;
+  setContactFocus: SetContactFocus;
 }
 
-const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
+const FixSendNewsletter: React.FC<Props> = ({
+  accountListId,
+  setContactFocus,
+}: Props) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -190,6 +195,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                       }
                     }
                     updateFunction={updateContact}
+                    setContactFocus={setContactFocus}
                   />
                 ))}
               </Grid>

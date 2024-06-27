@@ -11,7 +11,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
     left: '50%',
     marginLeft: '-28px',
     marginTop: '-28px',
-    zIndex: 10,
+    zIndex: 1000,
     opacity: 0,
     transition: theme.transitions.create(['opacity', 'visibility'], {
       duration: theme.transitions.duration.short,

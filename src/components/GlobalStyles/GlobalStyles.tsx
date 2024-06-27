@@ -14,10 +14,10 @@ const useStyles = makeStyles(() =>
         '-moz-osx-font-smoothing': 'grayscale',
         height: '100%',
         width: '100%',
-        overflow: 'hidden',
       },
       body: {
         height: '100%',
+        minHeight: '100vh',
         width: '100%',
       },
       '#__next': {

@@ -12,6 +12,7 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import {
   MultiselectFilter,
   PledgeFrequencyEnum,
@@ -66,9 +67,13 @@ const useStyles = makeStyles()((theme: Theme) => ({
 
 interface Props {
   accountListId: string;
+  setContactFocus: SetContactFocus;
 }
 
-const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
+const FixCommitmentInfo: React.FC<Props> = ({
+  accountListId,
+  setContactFocus,
+}: Props) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -216,6 +221,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
                       hideFunction={hideContact}
                       updateFunction={updateContact}
                       statuses={contactStatuses || [{ name: '', value: '' }]}
+                      setContactFocus={setContactFocus}
                     />
                   ))}
                 </Box>

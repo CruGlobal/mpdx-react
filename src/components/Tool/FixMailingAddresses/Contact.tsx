@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import styled from '@emotion/styled';
-import { mdiCheckboxMarkedCircle, mdiPlus } from '@mdi/js';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
@@ -11,20 +11,30 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
   Grid,
   Hidden,
   IconButton,
+  Link,
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
+import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
+  AddButton,
+  AddIcon,
+  AddText,
   EditIcon,
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useLocale } from 'src/hooks/useLocale';
+import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
@@ -32,6 +42,7 @@ import { emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 
 const ContactHeader = styled(CardHeader)(() => ({
+  cursor: 'pointer',
   '.MuiCardHeader-action': {
     alignSelf: 'center',
   },
@@ -51,6 +62,9 @@ const ContactAvatar = styled(Avatar)(() => ({
 const useStyles = makeStyles()(() => ({
   confirmButon: {
     marginRight: theme.spacing(1),
+  },
+  AddButton: {
+    width: '100%',
   },
   contactCard: {
     marginBottom: theme.spacing(2),
@@ -99,8 +113,10 @@ interface Props {
   name: string;
   status: string;
   addresses: ContactAddressFragment[];
+  appName: string;
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
+  setContactFocus: SetContactFocus;
 }
 
 const Contact: React.FC<Props> = ({
@@ -108,27 +124,68 @@ const Contact: React.FC<Props> = ({
   name,
   status,
   addresses,
+  appName,
   openEditAddressModal,
   openNewAddressModal,
+  setContactFocus,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
   const newAddress = { ...emptyAddress, newAddress: true };
-  //TODO: Add button functionality
-  //TODO: Make contact name a link to contact page
+  const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
+    useSetContactPrimaryAddressMutation();
+  const { update } = useUpdateCache(id);
+
+  const handleSetPrimaryContact = async (address: ContactAddressFragment) => {
+    await setContactPrimaryAddress({
+      variables: {
+        contactId: id,
+        primaryAddressId: address.primaryMailingAddress ? null : address.id,
+      },
+      update,
+      onCompleted: () => {
+        enqueueSnackbar(t('Mailing information edited successfully'), {
+          variant: 'success',
+        });
+      },
+      onError: () => {
+        enqueueSnackbar(
+          t('Error occurred while updating mailing information'),
+          {
+            variant: 'error',
+          },
+        );
+      },
+    });
+  };
+
+  const handleContactNameClick = () => {
+    setContactFocus(id);
+  };
 
   return (
     <Card className={classes.contactCard}>
       <ContactHeader
-        avatar={<ContactAvatar src="" aria-label="Contact Avatar" />}
+        avatar={
+          <ContactAvatar
+            src=""
+            aria-label="Contact Avatar"
+            onClick={handleContactNameClick}
+          />
+        }
         action={
           <Button variant="contained" className={classes.confirmButon}>
             <Icon path={mdiCheckboxMarkedCircle} size={0.8} />
             {t('Confirm')}
           </Button>
         }
-        title={<Typography variant="h6">{name}</Typography>}
+        title={
+          <Link underline="hover" onClick={handleContactNameClick}>
+            <Typography variant="h6">{name}</Typography>
+          </Link>
+        }
         subheader={<Typography>{contactPartnershipStatus[status]}</Typography>}
       />
       <CardContent className={(classes.paddingX, classes.paddingY)}>
@@ -162,7 +219,7 @@ const Contact: React.FC<Props> = ({
               </Grid>
             </Hidden>
             {addresses.map((address) => (
-              <Fragment key={address.street}>
+              <Fragment key={address.id}>
                 <Grid item xs={12} md={5} className={classes.paddingB2}>
                   <Box display="flex" justifyContent="space-between">
                     <Grid item md={8}>
@@ -182,13 +239,30 @@ const Contact: React.FC<Props> = ({
                       </Typography>
                     </Grid>
                     <Grid item md={4} className={classes.alignCenter}>
-                      <ContactIconContainer aria-label={t('Edit Icon')}>
-                        {address.primaryMailingAddress ? (
-                          <StarIcon className={classes.hoverHighlight} />
-                        ) : (
-                          <StarOutlineIcon className={classes.hoverHighlight} />
-                        )}
-                      </ContactIconContainer>
+                      {!settingPrimaryAddress && (
+                        <ContactIconContainer
+                          aria-label={t('Edit Icon')}
+                          onClick={() => handleSetPrimaryContact(address)}
+                        >
+                          {address.primaryMailingAddress ? (
+                            <StarIcon
+                              className={classes.hoverHighlight}
+                              data-testid="primaryContactStarIcon"
+                            />
+                          ) : (
+                            <StarOutlineIcon
+                              className={classes.hoverHighlight}
+                              data-testid="contactStarIcon"
+                            />
+                          )}
+                        </ContactIconContainer>
+                      )}
+                      {settingPrimaryAddress && (
+                        <CircularProgress
+                          size={'20px'}
+                          data-testid="settingPrimaryAddress"
+                        />
+                      )}
                     </Grid>
                   </Box>
                 </Grid>
@@ -201,6 +275,7 @@ const Contact: React.FC<Props> = ({
                       classes.paddingL2,
                       classes.hoverHighlight,
                     )}
+                    data-testid={`address-${address.id}`}
                     onClick={() => openEditAddressModal(address, id)}
                   >
                     <Box className={classes.address}>
@@ -212,7 +287,11 @@ const Contact: React.FC<Props> = ({
                     </Box>
 
                     <ContactIconContainer aria-label={t('Edit Icon')}>
-                      {address.source === 'MPDX' ? <EditIcon /> : <LockIcon />}
+                      {editableSources.indexOf(address.source) > -1 ? (
+                        <EditIcon />
+                      ) : (
+                        <LockIcon />
+                      )}
                     </ContactIconContainer>
                   </Box>
                 </Grid>
@@ -226,7 +305,9 @@ const Contact: React.FC<Props> = ({
                       <strong>{t('Source')}: </strong>
                     </Typography>
                   </Hidden>
-                  <Typography display="inline">MPDX</Typography>
+                  <Typography display="inline">
+                    {t('{{appName}}', { appName })}
+                  </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -236,15 +317,17 @@ const Contact: React.FC<Props> = ({
                 justifyContent="flex-start"
                 className={clsx(
                   classes.responsiveBorder,
-                  classes.paddingX,
                   classes.hoverHighlight,
                 )}
               >
-                <Box
+                <AddButton
+                  className={classes.AddButton}
+                  data-testid={`addAddress-${id}`}
                   onClick={() => openNewAddressModal(newAddress, id)}
-                  className={classes.address}
-                />
-                <Icon path={mdiPlus} size={1} />
+                >
+                  <AddIcon />
+                  <AddText variant="subtitle1">{t('Add Address')}</AddText>
+                </AddButton>
               </Box>
             </Grid>
           </Grid>

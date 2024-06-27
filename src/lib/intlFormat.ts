@@ -88,8 +88,16 @@ export const dateFromParts = (
     return null;
   }
 
+  const date = validateAndFormatInvalidDate(year, month, day, locale);
+  if (date.dateTime.invalidExplanation) {
+    if (date.formattedInvalidDate) {
+      return `${date.formattedInvalidDate} - Invalid Date, please fix.`;
+    } else {
+      return `Invalid Date - ${date.dateTime.invalidExplanation}`;
+    }
+  }
   if (typeof year === 'number') {
-    return dateFormat(DateTime.local(year, month, day), locale);
+    return dateFormat(date.dateTime, locale);
   } else {
     return dayMonthFormat(day, month, locale);
   }
@@ -110,6 +118,41 @@ export const dateTimeFormat = (
     minute: 'numeric',
     timeZoneName: 'short',
   }).format(date.toJSDate());
+};
+
+export const validateAndFormatInvalidDate = (
+  year: number | null | undefined,
+  month: number,
+  day: number,
+  locale: string,
+) => {
+  const yyyy = year ?? DateTime.local().year;
+  const date = DateTime.local(yyyy, month, day);
+  let formattedInvalidDate = '';
+  if (date.invalidExplanation && month === 0 && day === 0) {
+    const placeholderYear = 2024;
+    const placeholderMonth = 8;
+    const placeholderDay = 15;
+    const placeholderDate = new Date(
+      placeholderYear,
+      placeholderMonth - 1,
+      placeholderDay,
+    );
+    const formattedPlaceholderDate = dateFormatShort(
+      DateTime.fromISO(placeholderDate.toISOString()),
+      locale,
+    );
+
+    formattedInvalidDate = formattedPlaceholderDate
+      .replace(`${placeholderYear}`, `${yyyy}`)
+      .replace(`${placeholderMonth}`, `${month}`)
+      .replace(`${placeholderDay}`, `${day}`);
+  }
+
+  return {
+    formattedInvalidDate,
+    dateTime: date,
+  };
 };
 
 const intlFormat = {

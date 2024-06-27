@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import BusinessIcon from '@mui/icons-material/Business';
 import SchoolIcon from '@mui/icons-material/School';
 import {
@@ -20,11 +20,14 @@ import {
   PersonCreateInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { validateAndFormatInvalidDate } from 'src/lib/intlFormat';
 import { RingIcon } from '../../../../../../RingIcon';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionIcon } from '../ModalSectionIcon/ModalSectionIcon';
 import { NewSocial } from '../PersonModal';
 import { PersonSocial } from '../PersonSocials/PersonSocials';
+import { buildDate } from '../personModalHelper';
 
 const DeceasedLabel = styled(FormControlLabel)(() => ({
   margin: 'none',
@@ -40,6 +43,11 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
   showDeceased = true,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+  const [anniversaryDateIsInvalid, setAnniversaryDateIsInvalid] =
+    useState(false);
+  const [backupAnniversaryDate, setBackupAnniversaryDate] =
+    useState<DateTime<boolean> | null>(null);
 
   const {
     values: {
@@ -58,11 +66,40 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
     setFieldValue,
   } = formikProps;
 
+  useEffect(() => {
+    if (
+      typeof anniversaryMonth !== 'number' ||
+      typeof anniversaryDay !== 'number'
+    ) {
+      return;
+    }
+
+    const date = validateAndFormatInvalidDate(
+      anniversaryYear,
+      anniversaryMonth,
+      anniversaryDay,
+      locale,
+    );
+
+    setBackupAnniversaryDate(
+      date.formattedInvalidDate as unknown as DateTime<boolean>,
+    );
+    if (date.dateTime.invalidExplanation) {
+      setAnniversaryDateIsInvalid(true);
+    }
+  }, [anniversaryMonth, anniversaryDay, anniversaryYear]);
+
   const handleDateChange = (date: DateTime | null) => {
-    setFieldValue('anniversaryDay', date?.day || null);
-    setFieldValue('anniversaryMonth', date?.month || null);
-    setFieldValue('anniversaryYear', date?.year || null);
+    setFieldValue('anniversaryDay', date?.day ?? null);
+    setFieldValue('anniversaryMonth', date?.month ?? null);
+    setFieldValue('anniversaryYear', date?.year ?? null);
   };
+
+  const anniversaryDate = useMemo(
+    () => buildDate(anniversaryMonth, anniversaryDay, anniversaryYear),
+    [anniversaryMonth, anniversaryDay, anniversaryYear],
+  );
+
   return (
     <>
       {/* Legal First Name and Gender Section */}
@@ -142,14 +179,11 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
           <Grid item xs={12} sm={6}>
             <CustomDateField
               label={t('Anniversary')}
+              invalidDate={anniversaryDateIsInvalid}
               value={
-                anniversaryMonth && anniversaryDay
-                  ? DateTime.local(
-                      anniversaryYear ?? 1900,
-                      anniversaryMonth,
-                      anniversaryDay,
-                    )
-                  : null
+                anniversaryDateIsInvalid
+                  ? backupAnniversaryDate
+                  : anniversaryDate
               }
               onChange={(date) => date && handleDateChange(date)}
             />

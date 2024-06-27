@@ -9,6 +9,7 @@ import {
   Button,
   Grid,
   Hidden,
+  Link,
   TextField,
   Theme,
   Typography,
@@ -17,6 +18,7 @@ import clsx from 'clsx';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -111,6 +113,7 @@ interface Props {
   handleDelete: (personId: string, phoneNumber: number) => void;
   handleAdd: (personId: string, number: string) => void;
   handleChangePrimary: (personId: string, numberIndex: number) => void;
+  setContactFocus: SetContactFocus;
 }
 
 const Contact: React.FC<Props> = ({
@@ -121,6 +124,9 @@ const Contact: React.FC<Props> = ({
   handleDelete,
   handleAdd,
   handleChangePrimary,
+  // Remove below line when function is being used.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setContactFocus,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -142,6 +148,13 @@ const Contact: React.FC<Props> = ({
     }
   };
 
+  const handleContactNameClick = () => {
+    // This currently doesn't work as we need to add the contactId onto the person graphQL endpoint.
+    // I've asked Andrew to add it here: https://cru-main.slack.com/archives/CG47BDCG6/p1718721024211409
+    // You'll need that to run the below function
+    // setContactFocus(id);
+  };
+
   return (
     <Grid container className={classes.container}>
       <Grid container>
@@ -157,7 +170,9 @@ const Contact: React.FC<Props> = ({
                 >
                   <Avatar src="" className={classes.avatar} />
                   <Box display="flex" flexDirection="column" ml={2}>
-                    <Typography variant="h6">{name}</Typography>
+                    <Link underline="hover" onClick={handleContactNameClick}>
+                      <Typography variant="h6">{name}</Typography>
+                    </Link>
                   </Box>
                 </Box>
               </Grid>

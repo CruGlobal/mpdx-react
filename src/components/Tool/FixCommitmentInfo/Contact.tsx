@@ -1,4 +1,3 @@
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
@@ -9,13 +8,14 @@ import {
   Button,
   Grid,
   IconButton,
+  Link,
   NativeSelect,
   TextField,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { FilterOption } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
@@ -85,14 +85,6 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-const ContactLink = styled(Typography)(() => ({
-  color: theme.palette.mpdxBlue.main,
-  '&:hover': {
-    textDecoration: 'underline',
-    cursor: 'pointer',
-  },
-}));
-
 interface Props {
   id: string;
   name: string;
@@ -112,6 +104,7 @@ interface Props {
     pledgeFrequency?: string,
   ) => Promise<void>;
   statuses: FilterOption[];
+  setContactFocus: SetContactFocus;
 }
 
 const Contact: React.FC<Props> = ({
@@ -126,6 +119,7 @@ const Contact: React.FC<Props> = ({
   hideFunction,
   updateFunction,
   statuses,
+  setContactFocus,
 }) => {
   const [values, setValues] = useState({
     statusValue: statusValue,
@@ -149,6 +143,10 @@ const Contact: React.FC<Props> = ({
     setValues((prevState) => ({ ...prevState, [props]: event.target.value }));
   };
 
+  const handleContactNameClick = () => {
+    setContactFocus(id);
+  };
+
   return (
     <Grid container className={classes.container}>
       <Grid container>
@@ -164,12 +162,9 @@ const Contact: React.FC<Props> = ({
               style={{ width: theme.spacing(7), height: theme.spacing(7) }}
             />
             <Box display="flex" flexDirection="column" ml={2}>
-              <NextLink
-                href={`/accountLists/${accountListId}/contacts/${id}`}
-                scroll={false}
-              >
-                <ContactLink variant="h6">{name}</ContactLink>
-              </NextLink>
+              <Link underline="hover" onClick={handleContactNameClick}>
+                <Typography variant="h6">{name}</Typography>
+              </Link>
               <Typography>
                 Current:{' '}
                 {`${statusTitle} ${amount.toFixed(
