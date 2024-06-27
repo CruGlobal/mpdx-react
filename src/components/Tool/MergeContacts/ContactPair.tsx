@@ -29,6 +29,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
+import { PersonInfoFragment } from '../MergePeople/GetPersonDuplicates.generated';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -83,7 +84,7 @@ const ContactAvatar = styled(Avatar)(() => ({
   height: theme.spacing(4),
 }));
 interface ContactItemProps {
-  contact: RecordInfoFragment;
+  contact: RecordInfoFragment | PersonInfoFragment;
   side: string;
   updateState: (side: string) => void;
   selected: boolean;
@@ -145,11 +146,16 @@ const ContactItem: React.FC<ContactItemProps> = ({
       },
     },
   }));
+  const InlineTypography = styled(Typography)(() => ({
+    display: 'inline',
+  }));
   const { classes } = useStyles();
   const locale = useLocale();
   const handleContactNameClick = (contactId) => {
     setContactFocus(contactId);
   };
+  const isPersonType = contact.__typename === 'Person';
+  const isContactType = contact.__typename === 'Contact';
   return (
     <Card
       className={`
@@ -176,12 +182,22 @@ const ContactItem: React.FC<ContactItemProps> = ({
               underline="hover"
               onClick={(e) => {
                 e.stopPropagation();
-                handleContactNameClick(contact.id);
+                handleContactNameClick(
+                  isPersonType
+                    ? contact.contactId
+                    : isContactType
+                    ? contact.id
+                    : null,
+                );
               }}
             >
-              <Typography variant="subtitle1" sx={{ display: 'inline' }}>
-                {contact.name}
-              </Typography>
+              <InlineTypography variant="subtitle1">
+                {isPersonType
+                  ? `${contact.firstName} ${contact.lastName}`
+                  : isContactType
+                  ? contact.name
+                  : null}
+              </InlineTypography>
             </Link>{' '}
             {selected && (
               <Typography variant="body2" className={classes.selected}>
@@ -191,44 +207,81 @@ const ContactItem: React.FC<ContactItemProps> = ({
           </>
         }
         subheader={
-          <Typography variant="subtitle2">
-            {contact.status && contactPartnershipStatus[contact.status]}
-          </Typography>
+          isContactType && (
+            <Typography variant="subtitle2">
+              {contact?.status && contactPartnershipStatus[contact?.status]}
+            </Typography>
+          )
         }
         className={classes.minimalPadding}
       />
       <CardContent className={classes.minimalPadding}>
-        {contact.primaryAddress && (
+        {isContactType && contact.primaryAddress && (
           <Typography variant="body2">
             {`${contact?.primaryAddress?.street} 
             ${contact?.primaryAddress?.city}, ${contact?.primaryAddress?.state} ${contact?.primaryAddress?.postalCode}`}
           </Typography>
         )}
-        <Typography variant="body2">
-          <Trans
-            defaults="<bold>Source:</bold> {{where}}"
-            shouldUnescape
-            values={{ where: contact.source }}
-            components={{ bold: <strong /> }}
-          />
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{ fontWeight: 'bold', display: 'inline' }}
-        >
-          {t('Created:')}{' '}
-        </Typography>
-        <Typography variant="body2" sx={{ display: 'inline' }}>
-          {dateFormatShort(DateTime.fromISO(contact.createdAt), locale)}
-        </Typography>
+        {isContactType && (
+          <Typography variant="body2">
+            <Trans
+              defaults="<bold>Source:</bold> {{where}}"
+              shouldUnescape
+              values={{ where: contact.source }}
+              components={{ bold: <strong /> }}
+            />
+          </Typography>
+        )}
+        {isPersonType && contact.primaryPhoneNumber && (
+          <Box>
+            <InlineTypography variant="body2">
+              {`${contact?.primaryPhoneNumber?.number}`}
+            </InlineTypography>
+            <Tooltip title="Source" arrow placement="right">
+              <InlineTypography variant="body2">
+                <Trans
+                  defaults=" ({{source}})"
+                  shouldUnescape
+                  values={{ source: contact.primaryPhoneNumber?.source }}
+                  components={{ bold: <strong /> }}
+                />
+              </InlineTypography>
+            </Tooltip>
+          </Box>
+        )}
+        {isPersonType && contact.primaryEmailAddress && (
+          <Box>
+            <InlineTypography variant="body2">
+              {`${contact?.primaryEmailAddress?.email}`}
+            </InlineTypography>
+            <Tooltip title="Source" arrow placement="right">
+              <InlineTypography variant="body2">
+                <Trans
+                  defaults=" ({{where}})"
+                  shouldUnescape
+                  values={{ where: contact.primaryEmailAddress?.source }}
+                  components={{ bold: <strong /> }}
+                />
+              </InlineTypography>
+            </Tooltip>
+          </Box>
+        )}
+        <Box>
+          <InlineTypography variant="body2" sx={{ fontWeight: 'bold' }}>
+            {t('Created:')}{' '}
+          </InlineTypography>
+          <InlineTypography variant="body2">
+            {dateFormatShort(DateTime.fromISO(contact.createdAt), locale)}
+          </InlineTypography>
+        </Box>
       </CardContent>
     </Card>
   );
 };
 
 interface Props {
-  contact1: RecordInfoFragment;
-  contact2: RecordInfoFragment;
+  contact1: RecordInfoFragment | PersonInfoFragment;
+  contact2: RecordInfoFragment | PersonInfoFragment;
   update: (id1: string, id2: string, action: string) => void;
   updating: boolean;
   setContactFocus: SetContactFocus;

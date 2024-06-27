@@ -1,8 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import styled from '@emotion/styled';
 import {
   Box,
-  Button,
   CircularProgress,
   Divider,
   Grid,
@@ -13,12 +11,12 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useMassActionsMergeMutation } from 'src/components/Contacts/MassActions/Merge/MassActionsMerge.generated';
-import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import ContactPair from './ContactPair';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
+import { StickyConfirmButtons } from './StickyConfirmButtons';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -43,34 +41,9 @@ const useStyles = makeStyles()(() => ({
   descriptionBox: {
     marginBottom: theme.spacing(1),
   },
-  footer: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-  },
-}));
-const ButtonHeaderBox = styled(Box)(() => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-  backgroundColor: 'white',
-  paddingTop: theme.spacing(2),
-  paddingBottom: theme.spacing(2),
-  marginBottom: theme.spacing(2),
-  position: 'sticky',
-  top: '64px',
-  zIndex: '100',
-  borderBottom: '1px solid',
-  borderBottomColor: theme.palette.cruGrayLight.main,
-  [theme.breakpoints.down('sm')]: {
-    flexDirection: 'column',
-    alignItems: 'start',
-    top: '56px',
-  },
 }));
 
-interface ActionType {
+export interface ActionType {
   action: string;
   mergeId?: string;
 }
@@ -93,13 +66,12 @@ const MergeContacts: React.FC<Props> = ({
   });
   const { appName } = useGetAppSettings();
   const [contactsMerge, { loading: updating }] = useMassActionsMergeMutation();
-  const actionsLength = useMemo(
-    () => Object.entries(actions).length,
-    [actions],
+  const disabled = useMemo(
+    () => updating || !Object.entries(actions).length,
+    [actions, updating],
   );
-  const disabled = updating || !actionsLength;
   const totalCount = data?.contactDuplicates.totalCount || 0;
-  const showing = data?.contactDuplicates.nodes.length || 0;
+  const duplicatesDisplayedCount = data?.contactDuplicates.nodes.length || 0;
 
   const updateActions = (id1: string, id2: string, action: string): void => {
     if (!updating) {
@@ -118,22 +90,12 @@ const MergeContacts: React.FC<Props> = ({
       }
     }
   };
-  const handleConfirmAndContinue = async () => {
-    await mergeContacts();
-    setActions({});
-  };
-  const handleConfirmAndLeave = async () => {
-    await mergeContacts().then(() => {
-      window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`;
-      setActions({});
-    });
-  };
 
   const mergeContacts = async () => {
     const mergeActions = Object.entries(actions).filter(
       (action) => action[1].action === 'merge',
     );
-    if (mergeActions.length > 0) {
+    if (mergeActions.length) {
       const winnersAndLosers: { winnerId: string; loserId: string }[] =
         mergeActions.map((action) => {
           return { winnerId: action[0], loserId: action[1].mergeId || '' };
@@ -178,7 +140,7 @@ const MergeContacts: React.FC<Props> = ({
             <Typography variant="h4">{t('Merge Contacts')}</Typography>
             <Divider className={classes.divider} />
           </Grid>
-          {showing > 0 ? (
+          {duplicatesDisplayedCount ? (
             <>
               <Grid item xs={12}>
                 <Box
@@ -201,44 +163,16 @@ const MergeContacts: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-              <ButtonHeaderBox>
-                <Box>
-                  <Typography>
-                    <Trans
-                      defaults="<i>Showing <bold>{{showing}}</bold> of <bold>{{totalCount}}</bold></i>"
-                      shouldUnescape
-                      values={{
-                        showing,
-                        totalCount,
-                      }}
-                      components={{ bold: <strong />, i: <i /> }}
-                    />
-                  </Typography>
-                </Box>
-                {(loading || updating) && (
-                  <LoadingSpinner
-                    firstLoad={true}
-                    data-testid="LoadingSpinner"
-                  />
-                )}
-                <Box>
-                  <Button
-                    variant="contained"
-                    disabled={disabled}
-                    onClick={() => handleConfirmAndContinue()}
-                    sx={{ mr: 2 }}
-                  >
-                    {t('Confirm and Continue')}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    disabled={disabled}
-                    onClick={() => handleConfirmAndLeave()}
-                  >
-                    {t('Confirm and Leave')}
-                  </Button>
-                </Box>
-              </ButtonHeaderBox>
+              <StickyConfirmButtons
+                accountListId={accountListId}
+                loading={loading}
+                updating={updating}
+                duplicatesDisplayedCount={duplicatesDisplayedCount}
+                disabled={disabled}
+                totalCount={totalCount}
+                confirmAction={mergeContacts}
+                setActions={setActions}
+              />
               <Grid item xs={12} sx={{ margin: '0px 2px 20px 2px' }}>
                 {data?.contactDuplicates.nodes
                   .map((duplicate) => (

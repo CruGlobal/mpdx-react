@@ -1,0 +1,7 @@
+extend type Mutation {
+  mergePeopleBulk(input: MergePeopleBulkInput!): [ID!]!
+}
+
+input MergePeopleBulkInput {
+  winnersAndLosers: [WinnersAndLosers!]!
+}

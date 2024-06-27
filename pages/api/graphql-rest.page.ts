@@ -12,6 +12,7 @@ import {
   ExportLabelTypeEnum,
   ExportSortEnum,
   MergeContactsInput,
+  MergePeopleBulkInput,
 } from 'src/graphql/types.generated';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
@@ -219,6 +220,23 @@ class MpdxRestApi extends RESTDataSource {
 
     // Return the id of the winners
     return response.map((contact) => contact.data.id);
+  }
+
+  async mergePeopleBulk(
+    winnersAndLosers: MergePeopleBulkInput['winnersAndLosers'],
+  ) {
+    const response = await this.post('contacts/people/merges/bulk', {
+      data: winnersAndLosers.map((person) => ({
+        data: {
+          type: 'people',
+          attributes: {
+            loser_id: person.loserId,
+            winner_id: person.winnerId,
+          },
+        },
+      })),
+    });
+    return response.map((person) => person.data.id);
   }
 
   async getAccountListAnalytics(

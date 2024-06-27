@@ -7,9 +7,9 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import theme from 'src/theme';
-import { GetContactDuplicatesQuery } from './GetContactDuplicates.generated';
-import MergeContacts from './MergeContacts';
-import { getContactDuplicatesMocks } from './MergeContactsMock';
+import { GetPersonDuplicatesQuery } from './GetPersonDuplicates.generated';
+import MergePeople from './MergePeople';
+import { getPersonDuplicatesMocks } from './PersonDuplicatesMock';
 
 const accountListId = '123';
 
@@ -27,20 +27,20 @@ jest.mock('notistack', () => ({
   },
 }));
 
-interface MergeContactsWrapperProps {
+interface MergePeopleWrapperProps {
   mutationSpy?: () => void;
 }
 
-const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
+const MergePeopleWrapper: React.FC<MergePeopleWrapperProps> = ({
   mutationSpy,
 }) => {
   return (
     <ThemeProvider theme={theme}>
       <TestRouter>
         <GqlMockedProvider<{
-          GetContactDuplicates: GetContactDuplicatesQuery;
+          GetPersonDuplicates: GetPersonDuplicatesQuery;
         }>
-          mocks={getContactDuplicatesMocks}
+          mocks={getPersonDuplicatesMocks}
           onCall={mutationSpy}
         >
           <ContactsProvider
@@ -53,7 +53,7 @@ const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
             contactId={[]}
             searchTerm={''}
           >
-            <MergeContacts
+            <MergePeople
               accountListId={accountListId}
               setContactFocus={setContactFocus}
             />
@@ -64,32 +64,34 @@ const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
   );
 };
 
-describe('Tools - MergeContacts', () => {
+describe('Tools - MergePeople', () => {
   it('should render', async () => {
-    const { findByText, getByTestId } = render(<MergeContactsWrapper />);
+    const { findByText, getByTestId } = render(<MergePeopleWrapper />);
 
-    expect(await findByText('Merge Contacts')).toBeInTheDocument();
-    expect(getByTestId('ContactMergeDescription').textContent).toMatch(
-      'You have 55 possible duplicate contacts',
+    expect(await findByText('Merge People')).toBeInTheDocument();
+    expect(getByTestId('PeopleMergeDescription').textContent).toMatch(
+      'You have 55 possible duplicate people',
     );
   });
 
-  it('should merge contacts', async () => {
+  it('should merge people', async () => {
     const mutationSpy = jest.fn();
 
     const { getByText, queryAllByTestId, findByText, getByRole } = render(
       <SnackbarProvider>
-        <MergeContactsWrapper mutationSpy={mutationSpy} />
+        <MergePeopleWrapper mutationSpy={mutationSpy} />
       </SnackbarProvider>,
     );
 
     await waitFor(() =>
       expect(queryAllByTestId('MergeContactPair')).toHaveLength(2),
     );
-    const confirmButton = getByRole('button', { name: 'Confirm and Continue' });
+    expect(getByText('(Siebel)')).toBeInTheDocument();
 
-    expect(confirmButton).toBeDisabled();
-    userEvent.click(getByText('123 John St Orlando, FL 32832'));
+    expect(
+      getByRole('button', { name: 'Confirm and Continue' }),
+    ).toBeDisabled();
+    userEvent.click(getByText('555-555-5555'));
     expect(await findByText('Use this one')).toBeInTheDocument();
     expect(
       getByRole('button', { name: 'Confirm and Continue' }),
@@ -104,14 +106,14 @@ describe('Tools - MergeContacts', () => {
 
     const mergeCalls = mutationSpy.mock.calls
       .map(([{ operation }]) => operation)
-      .filter(({ operationName }) => operationName === 'MassActionsMerge');
+      .filter(({ operationName }) => operationName === 'MergePeopleBulk');
     expect(mergeCalls).toHaveLength(1);
     expect(mergeCalls[0].variables).toEqual({
       input: {
         winnersAndLosers: [
           {
-            loserId: 'contact-1',
-            winnerId: 'contact-2',
+            loserId: 'person-1.5',
+            winnerId: 'person-1',
           },
         ],
       },
@@ -123,7 +125,7 @@ describe('Tools - MergeContacts', () => {
 
     const { queryByText, queryAllByTestId, findByText, getByRole } = render(
       <SnackbarProvider>
-        <MergeContactsWrapper mutationSpy={mutationSpy} />
+        <MergePeopleWrapper mutationSpy={mutationSpy} />
       </SnackbarProvider>,
     );
 
@@ -146,14 +148,14 @@ describe('Tools - MergeContacts', () => {
     it('should open up contact details', async () => {
       const mutationSpy = jest.fn();
       const { findByText, queryByTestId } = render(
-        <MergeContactsWrapper mutationSpy={mutationSpy} />,
+        <MergePeopleWrapper mutationSpy={mutationSpy} />,
       );
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
       expect(setContactFocus).not.toHaveBeenCalled();
 
-      const contactName = await findByText('Doe, John and Nancy');
+      const contactName = await findByText('Ellie Francisco');
 
       expect(contactName).toBeInTheDocument();
       userEvent.click(contactName);
