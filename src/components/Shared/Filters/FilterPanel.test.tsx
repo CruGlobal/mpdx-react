@@ -416,6 +416,7 @@ describe('FilterPanel', () => {
           reverseAppeal: true,
           state: ['FL'],
           status: [
+            ContactFilterStatusEnum.NeverContacted,
             ContactFilterStatusEnum.Active,
             ContactFilterStatusEnum.Hidden,
             ContactFilterStatusEnum.Null,

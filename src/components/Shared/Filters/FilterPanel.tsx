@@ -417,10 +417,14 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   ...acc,
                   [key]: value.split(',').map((enumValue) => {
                     // Status
-                    // Check if saved filter (enumValue) is either the status in all caps (PARTNER_FINANCIAL) or (Partner - Financial)
+                    // Check if saved filter (enumValue) is either the status  (partner_financial) or (Partner - Financial)
                     const s = Object.entries(statusMapForFilters)?.find(
                       ([statusKey, status]) => {
-                        return statusKey === enumValue || status === enumValue;
+                        return (
+                          statusKey === enumValue ||
+                          status === enumValue ||
+                          status.toLowerCase() === enumValue
+                        );
                       },
                     );
                     return (
