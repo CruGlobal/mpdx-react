@@ -14,7 +14,7 @@ import {
   AppealListViewEnum,
   AppealsContext,
   AppealsType,
-} from '../ContactsContext/AppealsContext';
+} from '../AppealsContext/AppealsContext';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
 

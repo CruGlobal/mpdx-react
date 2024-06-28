@@ -79,13 +79,13 @@ export type AppealsType = {
   deselectAll: () => void;
   userOptionsLoading: boolean;
   appealId: string | undefined;
-  page: PageEnum;
+  page: PageEnum | undefined;
   appealListView: AppealListViewEnum;
   setAppealListView: Dispatch<SetStateAction<AppealListViewEnum>>;
 };
 
 export const AppealsContext = React.createContext<AppealsType | null>(null);
-// Changed
+
 interface Props {
   children?: React.ReactNode;
   urlFilters?: any;
@@ -98,9 +98,9 @@ interface Props {
   appealId: string | undefined;
   contactId: string | string[] | undefined;
   searchTerm: string | string[] | undefined;
-  page: PageEnum;
+  page?: PageEnum;
 }
-// Changed
+
 export const AppealsContextSavedFilters = (
   filterData: ContactFiltersQuery | undefined,
   accountListId: string | undefined,
@@ -296,7 +296,6 @@ export const AppealsProvider: React.FC<Props> = ({
   //#endregion
 
   //#region User Actions
-  // Changed
   const setContactFocus = (id?: string, openDetails = true) => {
     if (page === PageEnum.InitialPage) {
       return;
@@ -387,7 +386,6 @@ export const AppealsProvider: React.FC<Props> = ({
   };
 
   return (
-    // Changed
     <AppealsContext.Provider
       value={{
         accountListId: accountListId ?? '',

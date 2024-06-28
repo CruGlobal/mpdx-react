@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { AppealsProvider } from 'src/components/Tool/Appeal/ContactsContext/AppealsContext';
+import { AppealsProvider } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';

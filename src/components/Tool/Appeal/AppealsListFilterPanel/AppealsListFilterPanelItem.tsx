@@ -4,7 +4,7 @@ import { Box, ListItem, ListItemText } from '@mui/material';
 import clsx from 'clsx';
 import { makeStyles } from 'tss-react/mui';
 import theme from 'src/theme';
-import { AppealListViewEnum } from '../ContactsContext/AppealsContext';
+import { AppealListViewEnum } from '../AppealsContext/AppealsContext';
 
 const useStyles = makeStyles()(() => ({
   li: {
@@ -55,8 +55,6 @@ export const AppealsListFilterPanelItem = ({
   const handleClick = () => {
     onClick(id);
   };
-
-  // Start to query for data and bring it down to listHeader and filters.
 
   return (
     <ListItem

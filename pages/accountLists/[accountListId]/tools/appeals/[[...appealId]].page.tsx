@@ -4,7 +4,7 @@ import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import {
   AppealsContext,
   AppealsType,
-} from 'src/components/Tool/Appeal/ContactsContext/AppealsContext';
+} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { DynamicAppealsDetailsPage } from 'src/components/Tool/Appeal/DynamicAppealsDetailsPage';
 import { DynamicAppealsInitialPage } from 'src/components/Tool/Appeal/DynamicAppealsInitialPage';
 import { ToolsWrapper } from '../ToolsWrapper';

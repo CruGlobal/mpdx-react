@@ -1,7 +1,7 @@
 import React from 'react';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 // import { DynamicContactFlow } from '../ContactFlow/DynamicContactFlow';
-import { AppealsContext, AppealsType } from '../ContactsContext/AppealsContext';
+import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
 // import { DynamicContactsList } from '../ContactsList/DynamicContactsList';
 import { AppealsMainPanelHeader } from './AppealsMainPanelHeader';
 

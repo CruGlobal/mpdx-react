@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import {
   AppealsContext,
   AppealsType,
-} from 'src/components/Tool/Appeal/ContactsContext/AppealsContext';
+} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import {
   ActivityTypeEnum,
   ContactFilterNewsletterEnum,

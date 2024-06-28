@@ -6,8 +6,8 @@ import {
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
 import { AppealsLeftPanel } from './AppealLeftPanel/AppealsLeftPanel';
+import { AppealsContext, AppealsType } from './AppealsContext/AppealsContext';
 import { AppealsMainPanel } from './AppealsMainPanel/AppealsMainPanel';
-import { AppealsContext, AppealsType } from './ContactsContext/AppealsContext';
 
 const AppealsDetailsPage: React.FC = () => {
   const { filterPanelOpen, setContactFocus, viewMode, contactDetailsOpen } =
