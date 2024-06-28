@@ -10,6 +10,7 @@ import { FixEmailAddressPerson } from './FixEmailAddressPerson';
 const testData = {
   name: 'Test Contact',
   id: 'testid',
+  contactId: 'contactTestId',
   emails: [
     {
       source: 'DonorHub',
@@ -43,6 +44,7 @@ describe('FixEmailAddresses-Contact', () => {
             name={testData.name}
             key={testData.name}
             personId={testData.id}
+            contactId={testData.contactId}
             emails={testData.emails}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
@@ -77,6 +79,7 @@ describe('FixEmailAddresses-Contact', () => {
             name={testData.name}
             key={testData.name}
             personId={testData.id}
+            contactId={testData.contactId}
             emails={testData.emails}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}

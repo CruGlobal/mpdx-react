@@ -293,6 +293,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     personId={person.id}
                     emails={dataState[person.id]?.emailAddresses || []}
                     toDelete={dataState[person.id]?.toDelete}
+                    contactId={person.contactId}
                     handleChange={handleChange}
                     handleDelete={handleDeleteModalOpen}
                     handleAdd={handleAdd}
@@ -319,7 +320,10 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           )}
         </FixEmailAddressesWrapper>
       ) : (
-        <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+        <CircularProgress
+          data-testid="loading"
+          style={{ marginTop: theme.spacing(3) }}
+        />
       )}
       <DeleteModal
         modalState={deleteModalState}
