@@ -34,25 +34,24 @@ const ContainerGrid = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down('lg')]: {
     width: '90%',
   },
-  [theme.breakpoints.down('md')]: {
-    width: '70%',
-  },
   [theme.breakpoints.down('sm')]: {
     width: '100%',
   },
 }));
 
 const StepBox = styled(HeaderBox)(({ theme }) => ({
+  border: '1px solid transparent',
   textAlign: 'center',
   width: '22%',
+  marginLeft: '10px',
+  marginRight: '10px',
   [theme.breakpoints.down('lg')]: {
     width: '22%',
   },
   [theme.breakpoints.down('md')]: {
-    width: '22%',
-  },
-  [theme.breakpoints.down('sm')]: {
     width: '100%',
+    marginLeft: 0,
+    minWidth: '340px',
   },
 }));
 
@@ -124,50 +123,54 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
             <Typography variant="h4">{t('Import from CSV')}</Typography>
           </Box>
           <Divider />
-          <StepBox
-            m={2}
-            className={
-              currentTab === CsvImportViewStepEnum.Upload
-                ? classes.panelSuccess
-                : ''
-            }
-          >
-            <Typography variant="h5">{t('Step 1')}</Typography>
-            <Typography variant="body1">{t('Upload your CSV File')}</Typography>
-          </StepBox>
-          <StepBox
-            m={2}
-            className={
-              currentTab === CsvImportViewStepEnum.Headers
-                ? classes.panelSuccess
-                : ''
-            }
-          >
-            <Typography variant="h5">{t('Step 2')}</Typography>
-            <Typography variant="body1">{t('Map your headers')}</Typography>
-          </StepBox>
-          <StepBox
-            m={2}
-            className={
-              currentTab === CsvImportViewStepEnum.Values
-                ? classes.panelSuccess
-                : ''
-            }
-          >
-            <Typography variant="h5">{t('Step 3')}</Typography>
-            <Typography variant="body1">{t('Map your values')}</Typography>
-          </StepBox>
-          <StepBox
-            m={2}
-            className={
-              currentTab === CsvImportViewStepEnum.Preview
-                ? classes.panelSuccess
-                : ''
-            }
-          >
-            <Typography variant="h5">{t('Step 4')}</Typography>
-            <Typography variant="body1">{t('Preview')}</Typography>
-          </StepBox>
+          <Box>
+            <StepBox
+              m={2}
+              className={
+                currentTab === CsvImportViewStepEnum.Upload
+                  ? classes.panelSuccess
+                  : ''
+              }
+            >
+              <Typography variant="h5">{t('Step 1')}</Typography>
+              <Typography variant="body1">
+                {t('Upload your CSV File')}
+              </Typography>
+            </StepBox>
+            <StepBox
+              m={2}
+              className={
+                currentTab === CsvImportViewStepEnum.Headers
+                  ? classes.panelSuccess
+                  : ''
+              }
+            >
+              <Typography variant="h5">{t('Step 2')}</Typography>
+              <Typography variant="body1">{t('Map your headers')}</Typography>
+            </StepBox>
+            <StepBox
+              m={2}
+              className={
+                currentTab === CsvImportViewStepEnum.Values
+                  ? classes.panelSuccess
+                  : ''
+              }
+            >
+              <Typography variant="h5">{t('Step 3')}</Typography>
+              <Typography variant="body1">{t('Map your values')}</Typography>
+            </StepBox>
+            <StepBox
+              m={2}
+              className={
+                currentTab === CsvImportViewStepEnum.Preview
+                  ? classes.panelSuccess
+                  : ''
+              }
+            >
+              <Typography variant="h5">{t('Step 4')}</Typography>
+              <Typography variant="body1">{t('Preview')}</Typography>
+            </StepBox>
+          </Box>
           <br />
           {renderTab(accountListId)}
         </Grid>
