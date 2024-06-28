@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { TypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GetPersonDuplicatesQuery } from './GetPersonDuplicates.generated';
 import MergePeople from './MergePeople';
@@ -99,7 +100,7 @@ describe('Tools - MergePeople', () => {
 
     userEvent.click(getByRole('button', { name: 'Confirm and Continue' }));
     await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Success!', {
+      expect(mockEnqueue).toHaveBeenCalledWith('Updated 1 duplicate(s)', {
         variant: 'success',
       }),
     );
@@ -120,10 +121,17 @@ describe('Tools - MergePeople', () => {
     });
   });
 
-  it('should ignore contacts', async () => {
+  it('should ignore duplicates', async () => {
     const mutationSpy = jest.fn();
 
-    const { queryByText, queryAllByTestId, findByText, getByRole } = render(
+    const {
+      queryByText,
+      queryAllByTestId,
+      findByText,
+      getByRole,
+      queryByTestId,
+      getByText,
+    } = render(
       <SnackbarProvider>
         <MergePeopleWrapper mutationSpy={mutationSpy} />
       </SnackbarProvider>,
@@ -138,10 +146,36 @@ describe('Tools - MergePeople', () => {
     userEvent.click(queryAllByTestId('rightButton')[0]);
     expect(await findByText('Use this one')).toBeInTheDocument();
     userEvent.click(queryAllByTestId('ignoreButton')[0]);
+    userEvent.click(queryAllByTestId('ignoreButton')[1]);
     expect(queryByText('Use this one')).not.toBeInTheDocument();
-    expect(
-      getByRole('button', { name: 'Confirm and Continue' }),
-    ).not.toBeDisabled();
+
+    userEvent.click(getByRole('button', { name: 'Confirm and Continue' }));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Updated 2 duplicate(s)', {
+        variant: 'success',
+      }),
+    );
+
+    const mergeCalls = mutationSpy.mock.calls
+      .map(([{ operation }]) => operation)
+      .filter(({ operationName }) => operationName === 'MergePeopleBulk');
+    expect(mergeCalls).toHaveLength(0);
+
+    const ignoreCalls = mutationSpy.mock.calls
+      .map(([{ operation }]) => operation)
+      .filter(({ operationName }) => operationName === 'UpdateDuplicate');
+    expect(ignoreCalls).toHaveLength(2);
+    expect(ignoreCalls[0].variables).toEqual({
+      input: {
+        attributes: {
+          ignore: true,
+        },
+        type: TypeEnum.Person,
+        id: '1',
+      },
+    });
+    expect(queryByTestId('ignoreButton')).not.toBeInTheDocument();
+    expect(getByText('No duplicate people need attention')).toBeInTheDocument();
   });
 
   describe('setContactFocus()', () => {
