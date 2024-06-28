@@ -24,7 +24,9 @@ const Appeals = (): ReactElement => {
       <>
         {page === PageEnum.InitialPage && <DynamicAppealsInitialPage />}
 
-        {page !== PageEnum.InitialPage && <DynamicAppealsDetailsPage />}
+        {(page === PageEnum.DetailsPage || page === PageEnum.ContactsPage) && (
+          <DynamicAppealsDetailsPage />
+        )}
       </>
     </ToolsWrapper>
   );

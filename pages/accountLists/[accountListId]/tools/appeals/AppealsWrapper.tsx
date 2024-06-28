@@ -27,7 +27,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   );
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  const [page, setPage] = useState<PageEnum>(PageEnum.InitialPage);
+  const [page, setPage] = useState<PageEnum>();
   const [appealId, setAppealId] = useState<string | undefined>(undefined);
   const [contactId, setContactId] = useState<string | string[] | undefined>(
     undefined,
