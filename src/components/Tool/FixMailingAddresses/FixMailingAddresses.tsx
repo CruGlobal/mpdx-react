@@ -13,11 +13,13 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
@@ -26,7 +28,15 @@ import {
   InvalidAddressesDocument,
   InvalidAddressesQuery,
   useInvalidAddressesQuery,
+  useUpdateContactAddressMutation,
 } from './GetInvalidAddresses.generated';
+
+export type HandleSingleConfirmProps = {
+  addresses: ContactAddressFragment[];
+  id: string;
+  name: string;
+  onlyErrorOnce?: boolean;
+};
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -131,9 +141,111 @@ const FixSendNewsletter: React.FC<Props> = ({
   const [selectedAddress, setSelectedAddress] = useState(emptyAddress);
   const [selectedContactId, setSelectedContactId] = useState('');
   const [defaultSource, setDefaultSource] = useState(appName);
+  const [openBulkConfirmModal, setOpenBulkConfirmModal] = useState(false);
+
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
+  const [updateAddress] = useUpdateContactAddressMutation();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleSingleConfirm = async ({
+    addresses,
+    id,
+    name,
+  }: HandleSingleConfirmProps) => {
+    let errorOccurred = false;
+
+    for (let idx = 0; idx < addresses.length; idx++) {
+      const address = addresses[idx];
+
+      await updateAddress({
+        variables: {
+          accountListId,
+          attributes: {
+            id: address.id,
+            validValues: true,
+            primaryMailingAddress: address.primaryMailingAddress,
+          },
+        },
+        update(cache) {
+          if (idx === addresses.length - 1 && !errorOccurred) {
+            cache.evict({ id: `Contact:${id}` });
+          }
+        },
+        onError() {
+          errorOccurred = true;
+        },
+      });
+    }
+
+    if (errorOccurred) {
+      enqueueSnackbar(t(`Error updating contact ${name}`), {
+        variant: 'error',
+        autoHideDuration: 7000,
+      });
+      return { success: false };
+    } else {
+      enqueueSnackbar(t(`Updated contact ${name}`), { variant: 'success' });
+      return { success: true };
+    }
+  };
+
+  const handleBulkConfirm = async () => {
+    try {
+      const callsByContact: (() => Promise<{ success: boolean }>)[] = [];
+      data?.contacts?.nodes.forEach((contact) => {
+        const primaryAddress = contact.addresses.nodes.find(
+          (address) =>
+            address.source === defaultSource ||
+            (defaultSource === appName && address.source === 'MPDX'),
+        );
+        if (primaryAddress) {
+          const addresses: ContactAddressFragment[] = [];
+          contact.addresses.nodes.forEach((address) => {
+            addresses.push({
+              ...address,
+              primaryMailingAddress: address.id === primaryAddress?.id,
+            });
+          });
+          const callContactMutation = () =>
+            handleSingleConfirm({
+              addresses,
+              id: contact.id,
+              name: contact.name,
+            });
+          callsByContact.push(callContactMutation);
+        }
+      });
+
+      if (callsByContact.length) {
+        const results = await Promise.all(callsByContact.map((call) => call()));
+
+        const failedUpdates = results.filter(
+          (result) => !result.success,
+        ).length;
+        const successfulUpdates = results.length - failedUpdates;
+
+        if (successfulUpdates) {
+          enqueueSnackbar(t(`Updated ${successfulUpdates} contact(s)`), {
+            variant: 'success',
+          });
+        }
+        if (failedUpdates) {
+          enqueueSnackbar(
+            t(`Error when updating ${failedUpdates} contact(s)`),
+            {
+              variant: 'error',
+            },
+          );
+        }
+      } else {
+        enqueueSnackbar(t(`No contacts were updated`), { variant: 'warning' });
+      }
+    } catch (error) {
+      enqueueSnackbar(t(`Error updating contacts`), { variant: 'error' });
+    }
+  };
 
   const handleUpdateCacheForDeleteAddress = useCallback(
     (cache: ApolloCache<unknown>, data) => {
@@ -213,6 +325,10 @@ const FixSendNewsletter: React.FC<Props> = ({
     setDefaultSource(event.target.value);
   };
 
+  const handleBulkConfirmModalClose = () => {
+    setOpenBulkConfirmModal(false);
+  };
+
   const totalContacts = data?.contacts?.nodes?.length || 0;
 
   return (
@@ -273,6 +389,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                         <Button
                           variant="contained"
                           className={classes.confirmAllButton}
+                          onClick={() => setOpenBulkConfirmModal(true)}
                         >
                           <Icon
                             path={mdiCheckboxMarkedCircle}
@@ -303,6 +420,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                           handleModalOpen(ModalEnum.New, address, contactId)
                         }
                         setContactFocus={setContactFocus}
+                        handleSingleConfirm={handleSingleConfirm}
                       />
                     ))}
                   </Grid>
@@ -339,6 +457,18 @@ const FixSendNewsletter: React.FC<Props> = ({
           contactId={selectedContactId}
           handleClose={handleClose}
           handleUpdateCache={handleUpdateCacheForAddAddress}
+        />
+      )}
+      {openBulkConfirmModal && (
+        <Confirmation
+          isOpen={true}
+          title={t('Confirm')}
+          message={t(
+            `You are updating all contacts visible on this page, setting the first {{source}} address as the primary address. If no such address exists the contact will not be updated. Are you sure you want to do this?`,
+            { source: defaultSource },
+          )}
+          handleClose={handleBulkConfirmModalClose}
+          mutation={handleBulkConfirm}
         />
       )}
     </Box>
