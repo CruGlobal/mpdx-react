@@ -6,13 +6,11 @@ import {
   Box,
   Button,
   Grid,
-  Link,
   NativeSelect,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
 import {
@@ -85,7 +83,6 @@ interface Props {
   primaryAddress?: ContactPrimaryAddressFragment;
   source?: string;
   updateFunction: (id: string, sendNewsletter: string) => Promise<void>;
-  setContactFocus: SetContactFocus;
 }
 
 const Contact = ({
@@ -95,14 +92,13 @@ const Contact = ({
   status,
   primaryAddress,
   updateFunction,
-  setContactFocus,
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [newsletter, setNewsletter] = useState('BOTH');
   const { classes } = useStyles();
 
   //TODO: Add button functionality
-  //TODO: Make contact name a link to contact page
+  //TODO: Mkae contact name a link to contact page
 
   const handleChange = (
     event:
@@ -110,10 +106,6 @@ const Contact = ({
       | React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ): void => {
     setNewsletter(event.target.value);
-  };
-
-  const handleContactNameClick = () => {
-    setContactFocus(id);
   };
 
   return (
@@ -137,9 +129,7 @@ const Contact = ({
                     }}
                   />
                   <Box display="flex" flexDirection="column" ml={2}>
-                    <Link underline="hover" onClick={handleContactNameClick}>
-                      <Typography variant="h6">{name}</Typography>
-                    </Link>
+                    <Typography variant="h6">{name}</Typography>
                     <Typography>{status}</Typography>
                   </Box>
                 </Box>

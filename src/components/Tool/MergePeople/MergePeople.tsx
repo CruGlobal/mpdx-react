@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -64,13 +63,9 @@ interface ActionsType {
 
 interface Props {
   accountListId: string;
-  setContactFocus: SetContactFocus;
 }
 
-const MergePeople: React.FC<Props> = ({
-  accountListId,
-  setContactFocus,
-}: Props) => {
+const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const [actions, setActions] = useState<ActionsType>({});
   const { t } = useTranslation();
@@ -150,7 +145,6 @@ const MergePeople: React.FC<Props> = ({
                     person1={duplicate.recordOne}
                     person2={duplicate.recordTwo}
                     update={updateActions}
-                    setContactFocus={setContactFocus}
                   />
                 ))}
               </Grid>

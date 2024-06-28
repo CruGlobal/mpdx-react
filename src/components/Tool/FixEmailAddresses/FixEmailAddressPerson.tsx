@@ -9,7 +9,6 @@ import {
   Grid,
   Hidden,
   IconButton,
-  Link,
   TextField,
   Theme,
   Typography,
@@ -114,7 +113,6 @@ interface FixEmailAddressPersonProps {
   handleDelete: (personId: string, emailAddress: number) => void;
   handleAdd: (personId: string, email: string) => void;
   handleChangePrimary: (personId: string, emailIndex: number) => void;
-  setContactFocus: SetContactFocus;
 }
 
 interface EmailValidationFormEmail {
@@ -218,9 +216,6 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   handleDelete,
   handleChangePrimary,
   handleAdd,
-  // Remove below line when function is being used.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setContactFocus,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -240,13 +235,6 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info
 
-  const handleContactNameClick = () => {
-    // This currently doesn't work as we need to add the contactId onto the person graphQL endpoint.
-    // I've asked Andrew to add it here: https://cru-main.slack.com/archives/CG47BDCG6/p1718721024211409
-    // You'll need that to run the below function
-    // setContactFocus(id);
-  };
-
   return (
     <Container container>
       <Grid container>
@@ -262,9 +250,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                 >
                   <Avatar src="" className={classes.avatar} />
                   <Box display="flex" flexDirection="column" ml={2}>
-                    <Link underline="hover" onClick={handleContactNameClick}>
-                      <Typography variant="h6">{name}</Typography>
-                    </Link>
+                    <Typography variant="h6">{name}</Typography>
                   </Box>
                 </Box>
               </Grid>

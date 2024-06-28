@@ -12,13 +12,11 @@ export interface DesktopDateFieldProps
   extends Omit<StandardTextFieldProps, 'onChange'> {
   value: DateTime | null;
   onChange: (date: DateTime | null) => void;
-  invalidDate?: boolean;
 }
 
 export const DesktopDateField: React.FC<DesktopDateFieldProps> = ({
   value,
   onChange,
-  invalidDate,
   ...props
 }) => {
   const locale = useLocale();
@@ -32,8 +30,6 @@ export const DesktopDateField: React.FC<DesktopDateFieldProps> = ({
       setRawDate('');
     } else if (value.isValid) {
       setRawDate(value.toFormat('D', options));
-    } else if (invalidDate) {
-      setRawDate(value as unknown as string);
     }
   }, [locale, value]);
 

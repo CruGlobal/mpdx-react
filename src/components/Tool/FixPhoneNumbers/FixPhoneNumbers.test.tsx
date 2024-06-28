@@ -16,7 +16,7 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
-const setContactFocus = jest.fn();
+
 const testData: ErgonoMockShape[] = [
   {
     id: 'testid',
@@ -90,10 +90,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -128,10 +125,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -162,10 +156,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -197,10 +188,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -238,10 +226,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -280,10 +265,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -313,10 +295,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>

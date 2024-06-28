@@ -1,5 +1,4 @@
 import React, { ReactElement } from 'react';
-import { ApolloCache } from '@apollo/client';
 import {
   Box,
   Checkbox,
@@ -23,7 +22,6 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { AddressCreateInput } from 'src/graphql/types.generated';
-import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
@@ -35,6 +33,7 @@ import {
 } from '../AddressLocation';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
+import { useUpdateCache } from '../useUpdateCache';
 import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
 import { createAddressSchema } from './createAddressSchema';
 
@@ -59,14 +58,12 @@ interface EditContactAddressModalProps {
   accountListId: string;
   contactId: string;
   handleClose: () => void;
-  handleUpdateCache?: (cache: ApolloCache<unknown>, object) => void;
 }
 
 export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
   accountListId,
   contactId,
   handleClose,
-  handleUpdateCache,
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -88,39 +85,30 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
         attributes,
       },
       update: (cache, { data: createdAddressData }) => {
-        if (handleUpdateCache) {
-          handleUpdateCache(cache, {
-            createAddress: {
-              address: createdAddressData?.createAddress?.address,
-              contactId: attributes.contactId,
-            },
-          });
-        } else {
-          const query = {
-            query: ContactDetailsTabDocument,
-            variables: {
-              accountListId,
-              contactId,
+        const query = {
+          query: ContactDetailsTabDocument,
+          variables: {
+            accountListId,
+            contactId,
+          },
+        };
+        const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
+
+        if (dataFromCache) {
+          const data = {
+            ...dataFromCache,
+            contact: {
+              ...dataFromCache.contact,
+              addresses: {
+                ...dataFromCache.contact.addresses,
+                nodes: [
+                  ...dataFromCache.contact.addresses.nodes,
+                  { ...createdAddressData?.createAddress?.address },
+                ],
+              },
             },
           };
-          const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
-
-          if (dataFromCache) {
-            const data = {
-              ...dataFromCache,
-              contact: {
-                ...dataFromCache.contact,
-                addresses: {
-                  ...dataFromCache.contact.addresses,
-                  nodes: [
-                    ...dataFromCache.contact.addresses.nodes,
-                    { ...createdAddressData?.createAddress?.address },
-                  ],
-                },
-              },
-            };
-            cache.writeQuery({ ...query, data });
-          }
+          cache.writeQuery({ ...query, data });
         }
       },
     });

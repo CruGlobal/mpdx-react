@@ -17,8 +17,6 @@ const router = {
   isReady: true,
 };
 
-const setContactFocus = jest.fn();
-
 const testData: ErgonoMockShape[] = [
   {
     id: 'testid',
@@ -92,10 +90,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixEmailAddresses accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -135,10 +130,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixEmailAddresses accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -169,10 +161,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixEmailAddresses accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -204,10 +193,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixEmailAddresses accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -245,10 +231,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixEmailAddresses accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -287,10 +270,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixEmailAddresses accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
@@ -320,10 +300,7 @@ describe('FixPhoneNumbers-Home', () => {
                 },
               }}
             >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixEmailAddresses accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>

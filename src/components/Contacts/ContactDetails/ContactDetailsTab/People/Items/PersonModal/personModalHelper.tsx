@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import { TFunction } from 'react-i18next';
 import * as yup from 'yup';
 import {
@@ -263,8 +262,4 @@ export const formatSubmittedFields = (
         })),
     ),
   };
-};
-
-export const buildDate = (month, day, year) => {
-  return month && day ? DateTime.local(year ?? 1900, month, day) : null;
 };

@@ -150,6 +150,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
                 autoHighlight
                 fullWidth
                 loading={loading}
+                popupIcon={<ContactTagIcon />}
                 filterSelectedOptions
                 value={tagList}
                 options={unusedTags || []}
