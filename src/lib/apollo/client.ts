@@ -42,7 +42,6 @@ const makeClient = (apiToken: string) => {
       batchLink,
     ]),
     cache,
-    connectToDevTools: true,
     assumeImmutableResults: true,
     defaultOptions: {
       watchQuery: {
