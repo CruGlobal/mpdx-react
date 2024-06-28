@@ -23,6 +23,10 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  GetAppealsDocument,
+  GetAppealsQuery,
+} from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
@@ -45,14 +49,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
     backgroundColor: theme.palette.mpdxBlue.main,
     width: '150px',
     color: 'white',
-  },
-  blueBox: {
-    border: '1px solid',
-    borderColor: theme.palette.mpdxBlue.main,
-    borderRadius: 5,
-    backgroundColor: theme.palette.cruGrayLight.main,
-    color: theme.palette.mpdxBlue.main,
-    padding: 10,
   },
   selectAll: {
     color: theme.palette.mpdxBlue.main,
@@ -159,7 +155,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
     }
   }, [contactFilterGroups]);
 
-  const onSubmit = async (props: FormAttributes) => {
+  const onSubmit = async (props: FormAttributes, resetForm: () => void) => {
     const attributes = {
       name: props.name,
       amount: calculateGoal(
@@ -174,10 +170,30 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
         accountListId,
         attributes,
       },
+      update: (cache, result) => {
+        const query = {
+          query: GetAppealsDocument,
+          variables: { accountListId },
+        };
+        const dataFromCache = cache.readQuery<GetAppealsQuery>(query);
+        if (dataFromCache && result.data?.createAppeal?.appeal) {
+          const data = {
+            regularAppeals: {
+              ...dataFromCache.regularAppeals,
+              nodes: [
+                { ...result.data.createAppeal.appeal },
+                ...dataFromCache.regularAppeals.nodes,
+              ],
+            },
+          };
+          cache.writeQuery({ ...query, data });
+        }
+      },
     });
     enqueueSnackbar(t('Appeal successfully added!'), {
       variant: 'success',
     });
+    resetForm();
   };
 
   const contactTagsList = contactFilterTags?.accountList.contactTagList ?? [];
@@ -205,8 +221,6 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
           title="Add Appeal"
           style={{
             backgroundColor: theme.palette.cruGrayLight.main,
-            borderBottom: '1px solid',
-            borderColor: theme.palette.cruGrayMedium.main,
           }}
         />
         <CardContent>
@@ -220,7 +234,9 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
               tags: [],
               exclusions: [],
             }}
-            onSubmit={onSubmit}
+            onSubmit={async (values, { resetForm }) => {
+              await onSubmit(values, resetForm);
+            }}
             validationSchema={appealFormSchema}
           >
             {({
@@ -257,7 +273,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                 </Box>
                 <Box mt={1} mb={1}>
                   <Grid container spacing={0}>
-                    <Grid item xs={12} md={2}>
+                    <Grid item xs={12} sm={2}>
                       <Box
                         display="flex"
                         flexDirection="column"
@@ -277,7 +293,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                         />
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={1}>
+                    <Grid item xs={12} sm={1}>
                       <Box
                         display="flex"
                         alignItems="center"
@@ -289,7 +305,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                         <Icon path={mdiPlus} size={1} />
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={2}>
+                    <Grid item xs={12} sm={2}>
                       <Box
                         display="flex"
                         flexDirection="column"
@@ -308,7 +324,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                         />
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={1}>
+                    <Grid item xs={12} sm={1}>
                       <Box
                         display="flex"
                         alignItems="center"
@@ -320,7 +336,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                         <Icon path={mdiClose} size={1} />
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={2}>
+                    <Grid item xs={12} sm={2}>
                       <Box
                         display="flex"
                         flexDirection="column"
@@ -339,7 +355,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                         />
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={1}>
+                    <Grid item xs={12} sm={1}>
                       <Box
                         display="flex"
                         alignItems="center"
@@ -351,7 +367,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                         <Icon path={mdiEqual} size={1} />
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid item xs={12} sm={3}>
                       <Box
                         display="flex"
                         flexDirection="column"
@@ -375,21 +391,17 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                     </Grid>
                   </Grid>
                 </Box>
-                <Box mt={2} mb={1} className={classes.blueBox}>
-                  <Typography variant="body2">
-                    {t(
-                      'You can add contacts to your appeal based on their status and/or tags. You can also add additional contacts individually at a later time.',
-                    )}
-                  </Typography>
-                </Box>
-
+                <Alert severity="info">
+                  {t(
+                    'You can add contacts to your appeal based on their status and/or tags. You can also add additional contacts individually at a later time.',
+                  )}
+                </Alert>
                 <Box mt={1} mb={1}>
-                  <Typography variant="h6" display="inline">
+                  <Typography display="inline">
                     {t('Add contacts with the following status(es):')}
                   </Typography>
                   {!!contactStatuses && (
                     <Typography
-                      variant="h6"
                       display="inline"
                       className={classes.selectAll}
                       onClick={() => handleSelectAllStatuses(setFieldValue)}
@@ -403,7 +415,6 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                   {!!contactStatuses && !loadingStatuses && (
                     <Autocomplete
                       multiple
-                      autoSelect
                       autoHighlight
                       id="tags-standard"
                       options={contactStatuses.filter(
@@ -428,12 +439,11 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                 </Box>
 
                 <Box mt={1} mb={1}>
-                  <Typography variant="h6" display="inline">
+                  <Typography display="inline">
                     {t('Add contacts with the following tag(s):')}
                   </Typography>
                   {!!contactTagsList.length && (
                     <Typography
-                      variant="h6"
                       display="inline"
                       className={classes.selectAll}
                       onClick={() => handleSelectAllTags(setFieldValue)}
@@ -447,7 +457,6 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                   {contactTagsList && !loadingTags && (
                     <Autocomplete
                       multiple
-                      autoSelect
                       autoHighlight
                       id="tags-standard"
                       options={contactTagsList.filter(
@@ -470,12 +479,9 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                   )}
                 </Box>
                 <Box mt={1} mb={1}>
-                  <Typography variant="h6">
-                    {t('Do not add contacts who:')}
-                  </Typography>
+                  <Typography>{t('Do not add contacts who:')}</Typography>
                   <Autocomplete
                     multiple
-                    autoSelect
                     autoHighlight
                     id="exclusions-standard"
                     options={contactExclusions.filter(
