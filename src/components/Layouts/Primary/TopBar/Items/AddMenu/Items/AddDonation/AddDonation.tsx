@@ -130,7 +130,7 @@ export const AddDonation = ({
     ],
   });
 
-  const pledgeCurrencies = constants?.pledgeCurrencies;
+  const pledgeCurrencies = constants?.pledgeCurrency;
 
   const designationAccounts =
     designationAccountsData?.designationAccounts?.flatMap(

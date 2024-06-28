@@ -141,7 +141,7 @@ export const EditPartnershipInfoModal: React.FC<
 
   const [updateContactPartnership, { loading: updating }] =
     useUpdateContactPartnershipMutation();
-  const pledgeCurrencies = constants?.pledgeCurrencies;
+  const pledgeCurrencies = constants?.pledgeCurrency;
 
   const onSubmit = async (attributes: Attributes) => {
     const removedReferrals = contact.contactReferralsToMe.nodes

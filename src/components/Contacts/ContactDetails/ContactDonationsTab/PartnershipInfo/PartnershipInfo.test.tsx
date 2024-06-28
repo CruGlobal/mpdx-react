@@ -61,7 +61,7 @@ describe('PartnershipInfo', () => {
                   result: {
                     data: {
                       constant: {
-                        statuses: [
+                        status: [
                           {
                             id: StatusEnum.PartnerFinancial,
                             value: 'Principal - Financial',
