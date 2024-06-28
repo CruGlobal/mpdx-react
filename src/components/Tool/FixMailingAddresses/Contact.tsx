@@ -120,7 +120,6 @@ interface Props {
     addresses,
     id,
     name,
-    onlyErrorOnce,
   }: HandleSingleConfirmProps) => void;
 }
 

@@ -153,9 +153,8 @@ const FixSendNewsletter: React.FC<Props> = ({
     addresses,
     id,
     name,
-    onlyErrorOnce = false,
   }: HandleSingleConfirmProps) => {
-    const errors: string[] = [];
+    let errorOccurred = false;
 
     for (let idx = 0; idx < addresses.length; idx++) {
       const address = addresses[idx];
@@ -170,29 +169,21 @@ const FixSendNewsletter: React.FC<Props> = ({
           },
         },
         update(cache) {
-          if (idx === addresses.length - 1 && !errors.length) {
+          if (idx === addresses.length - 1 && !errorOccurred) {
             cache.evict({ id: `Contact:${id}` });
           }
         },
-        onError(error) {
-          errors.push(
-            `${name} - ${t('Error while saving addresses.')} ${error.cause}`,
-          );
+        onError() {
+          errorOccurred = true;
         },
       });
     }
 
-    if (errors.length) {
-      if (onlyErrorOnce) {
-        enqueueSnackbar(t(`Error updating contact ${name}`), {
-          variant: 'error',
-          autoHideDuration: 7000,
-        });
-      } else {
-        errors.forEach((error) => {
-          enqueueSnackbar(error, { variant: 'error' });
-        });
-      }
+    if (errorOccurred) {
+      enqueueSnackbar(t(`Error updating contact ${name}`), {
+        variant: 'error',
+        autoHideDuration: 7000,
+      });
       return { success: false };
     } else {
       enqueueSnackbar(t(`Updated contact ${name}`), { variant: 'success' });
@@ -222,7 +213,6 @@ const FixSendNewsletter: React.FC<Props> = ({
               addresses,
               id: contact.id,
               name: contact.name,
-              onlyErrorOnce: true,
             });
           callsByContact.push(callContactMutation);
         }

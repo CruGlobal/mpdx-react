@@ -429,7 +429,40 @@ describe('FixSendNewsletter', () => {
   });
 
   describe('handleSingleConfirm()', () => {
-    it('should fire handleSingleConfirm', async () => {
+    const name = 'Baggins, Frodo';
+    it('should handle error', async () => {
+      const { getAllByRole, getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            InvalidAddresses: {
+              ...mockInvalidAddressesResponse.InvalidAddresses,
+            },
+            UpdateContactAddress: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+
+      await waitFor(() => expect(getByText(name)).toBeInTheDocument());
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating contact ${name}`,
+          {
+            variant: 'error',
+            autoHideDuration: 7000,
+          },
+        );
+      });
+      expect(getByText(name)).toBeInTheDocument();
+    });
+
+    it('should handle success and remove contact', async () => {
       const { getAllByRole, getByText, queryByTestId, queryByText } = render(
         <Components
           mocks={{
@@ -444,7 +477,6 @@ describe('FixSendNewsletter', () => {
       );
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
 
-      const name = 'Baggins, Frodo';
       await waitFor(() => expect(getByText(name)).toBeInTheDocument());
 
       await waitFor(() => {
@@ -457,10 +489,86 @@ describe('FixSendNewsletter', () => {
   });
 
   describe('handleBulkConfirm()', () => {
-    it('should fire handleSingleConfirm', async () => {
+    const name1 = 'Baggins, Frodo';
+    const name2 = 'Gamgee, Samwise';
+
+    it('should handle Error', async () => {
       process.env.APP_NAME = 'MPDX';
-      const name1 = 'Baggins, Frodo';
-      const name2 = 'Gamgee, Samwise';
+      const { getByRole, getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            InvalidAddresses: {
+              contacts: {
+                nodes: [
+                  {
+                    id: 'contactId',
+                    name: name1,
+                    status: null,
+                    addresses: {
+                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                    },
+                  },
+                  {
+                    id: 'contactId2',
+                    name: name2,
+                    status: null,
+                    addresses: {
+                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                    },
+                  },
+                ],
+              },
+            },
+            UpdateContactAddress: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      expect(getByText(name1)).toBeInTheDocument();
+      expect(getByText(name2)).toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: 'Confirm 2 as MPDX' }));
+
+      await waitFor(() =>
+        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
+      );
+
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating contact ${name1}`,
+          {
+            variant: 'error',
+            autoHideDuration: 7000,
+          },
+        );
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating contact ${name2}`,
+          {
+            variant: 'error',
+            autoHideDuration: 7000,
+          },
+        );
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error when updating 2 contact(s)`,
+          {
+            variant: 'error',
+          },
+        );
+
+        expect(getByText(name1)).toBeInTheDocument();
+        expect(getByText(name2)).toBeInTheDocument();
+      });
+    });
+
+    it('should handle success and remove contacts', async () => {
+      process.env.APP_NAME = 'MPDX';
       const { getByRole, queryByTestId, queryByText } = render(
         <Components
           mocks={{
@@ -514,7 +622,7 @@ describe('FixSendNewsletter', () => {
     });
   });
 
-  it('should fire handleSingleConfirm', async () => {
+  it('should not fire handleSingleConfirm', async () => {
     process.env.APP_NAME = 'MPDX';
     const { getByRole, queryByTestId, queryByText } = render(
       <Components
@@ -538,13 +646,11 @@ describe('FixSendNewsletter', () => {
       expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
     );
 
-    userEvent.click(getByRole('button', { name: 'Yes' }));
+    userEvent.click(getByRole('button', { name: 'No' }));
 
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(`Updated contact ${name}`, {
-        variant: 'success',
-      });
-      expect(queryByText(name)).not.toBeInTheDocument();
+      expect(mockEnqueue).not.toHaveBeenCalled();
+      expect(queryByText(name)).toBeInTheDocument();
     });
   });
 });
