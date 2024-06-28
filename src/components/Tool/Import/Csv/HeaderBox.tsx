@@ -3,8 +3,7 @@ import { styled } from '@mui/material/styles';
 
 export const HeaderBox = styled(Box)(() => ({
   backgroundColor: '#f5f5f5',
-  border: '1px solid transparent',
-  borderColor: '#bfbfbf',
+  borderBottom: '1px solid #bfbfbf',
   borderRadius: '1px',
   boxShadow: '0 1px 1px rgba(0, 0, 0, .05)',
   borderTopLeftRadius: '3px',
