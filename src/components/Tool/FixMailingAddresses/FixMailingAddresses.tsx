@@ -166,9 +166,6 @@ const FixSendNewsletter: React.FC<Props> = ({
           attributes: {
             id: address.id,
             validValues: true,
-            // TODO: Fix the Graph QL Input
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             primaryMailingAddress: address.primaryMailingAddress,
           },
         },

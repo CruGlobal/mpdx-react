@@ -430,7 +430,7 @@ describe('FixSendNewsletter', () => {
 
   describe('handleSingleConfirm()', () => {
     it('should fire handleSingleConfirm', async () => {
-      const { getAllByRole, getByText, queryByTestId } = render(
+      const { getAllByRole, getByText, queryByTestId, queryByText } = render(
         <Components
           mocks={{
             InvalidAddresses: {
@@ -447,30 +447,44 @@ describe('FixSendNewsletter', () => {
       const name = 'Baggins, Frodo';
       await waitFor(() => expect(getByText(name)).toBeInTheDocument());
 
-      // TODO: Fix when GraphQL is fixed
-      await waitFor(() =>
-        expect(mockEnqueue).toHaveBeenCalledWith(
-          `${name} - Error while saving addresses. undefined`,
-          {
-            variant: 'error',
-          },
-        ),
-      );
-
-      // await waitFor(() =>
-      //   expect(queryByText(name)).not.toBeInTheDocument(),
-      // );
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(`Updated contact ${name}`, {
+          variant: 'success',
+        });
+        expect(queryByText(name)).not.toBeInTheDocument();
+      });
     });
   });
 
   describe('handleBulkConfirm()', () => {
     it('should fire handleSingleConfirm', async () => {
       process.env.APP_NAME = 'MPDX';
-      const { getByRole, queryByTestId } = render(
+      const name1 = 'Baggins, Frodo';
+      const name2 = 'Gamgee, Samwise';
+      const { getByRole, queryByTestId, queryByText } = render(
         <Components
           mocks={{
             InvalidAddresses: {
-              ...mockInvalidAddressesResponse.InvalidAddresses,
+              contacts: {
+                nodes: [
+                  {
+                    id: 'contactId',
+                    name: name1,
+                    status: null,
+                    addresses: {
+                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                    },
+                  },
+                  {
+                    id: 'contactId2',
+                    name: name2,
+                    status: null,
+                    addresses: {
+                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                    },
+                  },
+                ],
+              },
             },
           }}
         />,
@@ -478,7 +492,7 @@ describe('FixSendNewsletter', () => {
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
-      userEvent.click(getByRole('button', { name: 'Confirm 1 as MPDX' }));
+      userEvent.click(getByRole('button', { name: 'Confirm 2 as MPDX' }));
 
       await waitFor(() =>
         expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
@@ -486,33 +500,23 @@ describe('FixSendNewsletter', () => {
 
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
-      // TODO: Fix when GraphQL is fixed
-      const name = 'Baggins, Frodo';
       await waitFor(() => {
-        expect(mockEnqueue).toHaveBeenCalledWith(
-          `Error updating contact ${name}`,
-          {
-            variant: 'error',
-            autoHideDuration: 7000,
-          },
-        );
-        expect(mockEnqueue).toHaveBeenCalledWith(
-          `Error when updating 1 contact(s)`,
-          {
-            variant: 'error',
-          },
-        );
-      });
+        expect(mockEnqueue).toHaveBeenCalledWith(`Updated contact ${name1}`, {
+          variant: 'success',
+        });
+        expect(mockEnqueue).toHaveBeenCalledWith(`Updated contact ${name2}`, {
+          variant: 'success',
+        });
 
-      // await waitFor(() =>
-      //   expect(queryByText(name)).not.toBeInTheDocument(),
-      // );
+        expect(queryByText(name1)).not.toBeInTheDocument();
+        expect(queryByText(name2)).not.toBeInTheDocument();
+      });
     });
   });
 
   it('should fire handleSingleConfirm', async () => {
     process.env.APP_NAME = 'MPDX';
-    const { getByRole, queryByTestId } = render(
+    const { getByRole, queryByTestId, queryByText } = render(
       <Components
         mocks={{
           InvalidAddresses: {
@@ -536,25 +540,11 @@ describe('FixSendNewsletter', () => {
 
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    // TODO: Fix when GraphQL is fixed
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        `Error updating contact ${name}`,
-        {
-          variant: 'error',
-          autoHideDuration: 7000,
-        },
-      );
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        `Error when updating 1 contact(s)`,
-        {
-          variant: 'error',
-        },
-      );
+      expect(mockEnqueue).toHaveBeenCalledWith(`Updated contact ${name}`, {
+        variant: 'success',
+      });
+      expect(queryByText(name)).not.toBeInTheDocument();
     });
-
-    // await waitFor(() =>
-    //   expect(queryByText(name)).not.toBeInTheDocument(),
-    // );
   });
 });

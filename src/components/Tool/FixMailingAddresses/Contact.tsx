@@ -42,7 +42,6 @@ import { HandleSingleConfirmProps, emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 
 const ContactHeader = styled(CardHeader)(() => ({
-  cursor: 'pointer',
   '.MuiCardHeader-action': {
     alignSelf: 'center',
   },
