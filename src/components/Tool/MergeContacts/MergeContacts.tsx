@@ -11,8 +11,10 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useMassActionsMergeMutation } from 'src/components/Contacts/MassActions/Merge/MassActionsMerge.generated';
+import { TypeEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
+import { useUpdateDuplicateMutation } from '../MergePeople/GetPersonDuplicates.generated';
 import NoData from '../NoData';
 import ContactPair from './ContactPair';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
@@ -66,6 +68,7 @@ const MergeContacts: React.FC<Props> = ({
   });
   const { appName } = useGetAppSettings();
   const [contactsMerge, { loading: updating }] = useMassActionsMergeMutation();
+  const [updateDuplicates] = useUpdateDuplicateMutation();
   const disabled = useMemo(
     () => updating || !Object.entries(actions).length,
     [actions, updating],
@@ -73,13 +76,19 @@ const MergeContacts: React.FC<Props> = ({
   const totalCount = data?.contactDuplicates.totalCount || 0;
   const duplicatesDisplayedCount = data?.contactDuplicates.nodes.length || 0;
 
-  const updateActions = (id1: string, id2: string, action: string): void => {
+  const updateActions = (
+    id1: string,
+    id2: string,
+    duplicateId: string,
+    action: string,
+  ): void => {
     if (!updating) {
-      if (action === 'cancel') {
+      if (action === 'ignore') {
         setActions((prevState) => ({
           ...prevState,
           [id1]: { action: '' },
           [id2]: { action: '' },
+          [duplicateId]: { action: 'ignore' },
         }));
       } else {
         setActions((prevState) => ({
@@ -91,40 +100,112 @@ const MergeContacts: React.FC<Props> = ({
     }
   };
 
-  const mergeContacts = async () => {
-    const mergeActions = Object.entries(actions).filter(
-      (action) => action[1].action === 'merge',
-    );
-    if (mergeActions.length) {
-      const winnersAndLosers: { winnerId: string; loserId: string }[] =
-        mergeActions.map((action) => {
-          return { winnerId: action[0], loserId: action[1].mergeId || '' };
-        });
-      await contactsMerge({
-        variables: {
-          input: {
-            winnersAndLosers,
-          },
-        },
-        update: (cache) => {
-          // Delete the loser contacts and remove dangling references to them
-          winnersAndLosers.forEach((contact) => {
-            cache.evict({ id: `Contact:${contact.loserId}` });
+  const handleBulkUpdateDuplicates = async () => {
+    try {
+      const callsByDuplicate: (() => Promise<{ success: boolean }>)[] = [];
+
+      const mergeActions = Object.entries(actions).filter(
+        (action) => action[1].action === 'merge',
+      );
+
+      if (mergeActions.length) {
+        const winnersAndLosers: { winnerId: string; loserId: string }[] =
+          mergeActions.map((action) => {
+            return { winnerId: action[0], loserId: action[1].mergeId || '' };
           });
-          cache.gc();
-        },
-        onCompleted: () => {
-          enqueueSnackbar(t('Success!'), {
+
+        const callMergeDuplicatesMutation = () =>
+          mergeDuplicates(winnersAndLosers);
+        callsByDuplicate.push(callMergeDuplicatesMutation);
+      }
+
+      const duplicatesToIgnore = Object.entries(actions)
+        .filter((action) => action[1].action === 'ignore')
+        .map((action) => action[0]);
+
+      if (duplicatesToIgnore.length) {
+        duplicatesToIgnore.forEach((duplicateId) => {
+          const callIgnoreDuplicateMutation = () =>
+            ignoreDuplicates(duplicateId);
+          callsByDuplicate.push(callIgnoreDuplicateMutation);
+        });
+      }
+
+      if (callsByDuplicate.length) {
+        const results = await Promise.all(
+          callsByDuplicate.map((call) => call()),
+        );
+
+        const failedUpdates = results.filter(
+          (result) => !result.success,
+        ).length;
+        const successfulUpdates = results.length - failedUpdates;
+
+        if (successfulUpdates) {
+          enqueueSnackbar(t(`Updated ${successfulUpdates} duplicate(s)`), {
             variant: 'success',
           });
-        },
-        onError: (err) => {
-          enqueueSnackbar(t('A server error occurred. {{err}}', { err }), {
-            variant: 'error',
-          });
-        },
-      });
+        }
+        if (failedUpdates) {
+          enqueueSnackbar(
+            t(`Error when updating ${failedUpdates} duplicate(s)`),
+            {
+              variant: 'error',
+            },
+          );
+        }
+      } else {
+        enqueueSnackbar(t(`No duplicates were updated`), {
+          variant: 'warning',
+        });
+      }
+    } catch (error) {
+      enqueueSnackbar(t(`Error updating duplicates`), { variant: 'error' });
     }
+  };
+
+  const ignoreDuplicates = async (duplicateId: string) => {
+    await updateDuplicates({
+      variables: {
+        input: {
+          attributes: {
+            ignore: true,
+          },
+          type: TypeEnum.Contact,
+          id: duplicateId,
+        },
+      },
+      update: (cache) => {
+        // Delete the duplicate
+        cache.evict({ id: `ContactDuplicate:${duplicateId}` });
+        cache.gc();
+      },
+      onError: () => {
+        return { success: false };
+      },
+    });
+    return { success: true };
+  };
+
+  const mergeDuplicates = async (winnersAndLosers) => {
+    await contactsMerge({
+      variables: {
+        input: {
+          winnersAndLosers,
+        },
+      },
+      update: (cache) => {
+        // Delete the contacts and remove dangling references to them
+        winnersAndLosers.forEach((contact) => {
+          cache.evict({ id: `Contact:${contact.loserId}` });
+        });
+        cache.gc();
+      },
+      onError: () => {
+        return { success: false };
+      },
+    });
+    return { success: true };
   };
 
   return (
@@ -170,22 +251,21 @@ const MergeContacts: React.FC<Props> = ({
                 duplicatesDisplayedCount={duplicatesDisplayedCount}
                 disabled={disabled}
                 totalCount={totalCount}
-                confirmAction={mergeContacts}
+                confirmAction={handleBulkUpdateDuplicates}
                 setActions={setActions}
               />
               <Grid item xs={12} sx={{ margin: '0px 2px 20px 2px' }}>
-                {data?.contactDuplicates.nodes
-                  .map((duplicate) => (
-                    <ContactPair
-                      key={duplicate.id}
-                      contact1={duplicate.recordOne}
-                      contact2={duplicate.recordTwo}
-                      update={updateActions}
-                      updating={updating}
-                      setContactFocus={setContactFocus}
-                    />
-                  ))
-                  .reverse()}
+                {data?.contactDuplicates.nodes.map((duplicate) => (
+                  <ContactPair
+                    key={duplicate.id}
+                    duplicateId={duplicate.id}
+                    contact1={duplicate.recordOne}
+                    contact2={duplicate.recordTwo}
+                    update={updateActions}
+                    updating={updating}
+                    setContactFocus={setContactFocus}
+                  />
+                ))}
               </Grid>
             </>
           ) : (
