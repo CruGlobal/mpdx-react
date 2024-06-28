@@ -40,8 +40,8 @@ const Components = ({ children }: PropsWithChildren) => (
   </SnackbarProvider>
 );
 
-describe('AccountLists', () => {
-  it('should show user details', async () => {
+describe('AccountList Invites', () => {
+  it('should show invite details, tooltip and remove invite', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByTestId } = render(
       <Components>
@@ -59,20 +59,19 @@ describe('AccountLists', () => {
       getByText('Invited by inviteCoachFirstName inviteCoachLastName'),
     ).toBeInTheDocument();
 
-    expect(getByTestId('DeleteIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('DeleteIcon'));
+    expect(getByTestId('PersonRemoveIcon')).toBeInTheDocument();
 
+    userEvent.hover(getByTestId('PersonRemoveIcon'));
     await waitFor(() => {
-      expect(
-        getByText(
-          'Are you sure you want to remove the invite for {{email}} from {{accountList}}?',
-        ),
-      ).toBeInTheDocument();
-      userEvent.click(getByText('Yes'));
+      expect(getByText('Remove this invite from the account.')).toBeVisible();
     });
 
+    userEvent.click(getByTestId('PersonRemoveIcon'));
+
+    userEvent.click(getByText('Yes'));
+
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith('Successfully deleted user', {
+      expect(mockEnqueue).toHaveBeenCalledWith('Successfully removed invite', {
         variant: 'success',
       });
     });

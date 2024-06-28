@@ -6,10 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../../../theme';
-import {
-  AccountListCoachesOrUsers,
-  AccountListItemType,
-} from './AccountListCoachesOrUsers';
+import { AccountListCoachesOrUsers } from './AccountListCoachesOrUsers';
 
 jest.mock('next-auth/react');
 
@@ -47,6 +44,7 @@ const userAccountListItems = [
     userFirstName: 'userFirstName1',
     userLastName: 'userLastName1',
     allowDeletion: false,
+    organizationCount: 1,
     userEmailAddresses: [
       {
         id: '507548d6',
@@ -61,6 +59,7 @@ const userAccountListItems = [
     userFirstName: 'userFirstName2',
     userLastName: 'userLastName2',
     allowDeletion: true,
+    organizationCount: 2,
     userEmailAddresses: [
       {
         id: '930548d6',
@@ -87,7 +86,7 @@ const coachAccountListItems = [
   },
 ];
 
-describe('AccountLists', () => {
+describe('AccountLists Coaches or Users', () => {
   const handleDelete = jest.fn().mockResolvedValue(true);
   beforeEach(() => {
     handleDelete.mockClear();
@@ -98,10 +97,10 @@ describe('AccountLists', () => {
       <Components>
         <GqlMockedProvider>
           <AccountListCoachesOrUsers
-            name={'accountName'}
             accountListItems={userAccountListItems}
-            type={AccountListItemType.USER}
-            handleDelete={handleDelete}
+            setRemoveUser={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
           />
         </GqlMockedProvider>
       </Components>,
@@ -113,88 +112,113 @@ describe('AccountLists', () => {
     expect(getByText('userEmail2@cru.org')).toBeInTheDocument();
   });
 
-  it('should show user Info buttons', async () => {
-    const { getByText, getByTestId, queryByTestId } = render(
+  it('should show user Info buttons, tooltips and delete button', async () => {
+    const { getByText, getByTestId, getAllByRole } = render(
       <Components>
         <GqlMockedProvider>
           <AccountListCoachesOrUsers
-            name={'accountName'}
             accountListItems={[userAccountListItems[0]]}
-            type={AccountListItemType.USER}
-            handleDelete={handleDelete}
+            setRemoveUser={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
           />
         </GqlMockedProvider>
       </Components>,
     );
 
-    expect(queryByTestId('DeleteIcon')).not.toBeInTheDocument();
     userEvent.hover(getByTestId('InformationButton'));
     await waitFor(() => {
       expect(
         getByText(
-          'User has been granted access to this account list by donation services',
+          'User has been granted access to this account list by donation services. Last synced:',
         ),
       ).toBeVisible();
     });
+
+    userEvent.hover(getByTestId('DeleteForeverIcon'));
+    await waitFor(() => {
+      expect(getByText('Permanently delete this user.')).toBeVisible();
+    });
+
+    userEvent.click(
+      getAllByRole('button', {
+        name: 'Delete',
+      })[0],
+    );
+    expect(handleDelete).toHaveBeenCalled();
   });
 
-  it('should show user delete buttons and handleDelete()', async () => {
-    const { getByText, getByTestId } = render(
+  it('should not show delete button if the user is in more than 1 organization', async () => {
+    const { queryByTestId } = render(
       <Components>
         <GqlMockedProvider>
           <AccountListCoachesOrUsers
-            name={'accountName'}
             accountListItems={[userAccountListItems[1]]}
-            type={AccountListItemType.USER}
-            handleDelete={handleDelete}
+            setRemoveUser={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
           />
         </GqlMockedProvider>
       </Components>,
     );
 
-    expect(getByTestId('DeleteIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('DeleteIcon'));
-
-    await waitFor(() => {
-      expect(
-        getByText(
-          'Are you sure you want to remove {{user}} as a user from {{accountList}}?',
-        ),
-      ).toBeInTheDocument();
-      userEvent.click(getByText('Yes'));
-    });
-
-    await waitFor(() => expect(handleDelete).toHaveBeenCalledTimes(1));
+    expect(queryByTestId('DeleteForeverIcon')).not.toBeInTheDocument();
   });
 
-  it('should show coach delete buttons and handleDelete()', async () => {
-    const { getByText, getByTestId } = render(
+  it('should show coach remove buttons, tooltip and handleDelete()', async () => {
+    const { getByText, getByTestId, getAllByRole } = render(
       <Components>
         <GqlMockedProvider>
           <AccountListCoachesOrUsers
-            name={'accountName'}
             accountListItems={coachAccountListItems}
-            type={AccountListItemType.COACH}
-            handleDelete={handleDelete}
+            setRemoveUser={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
           />
         </GqlMockedProvider>
       </Components>,
     );
     expect(getByText('coachFirstName1 coachLastName1')).toBeInTheDocument();
     expect(getByText('coach1@cru.org')).toBeInTheDocument();
+    expect(getByTestId('CheckIcon')).toBeInTheDocument();
 
-    expect(getByTestId('DeleteIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('DeleteIcon'));
-
+    userEvent.hover(getByTestId('RemoveCoachButton'));
     await waitFor(() => {
-      expect(
-        getByText(
-          'Are you sure you want to remove {{coach}} as a coach from {{accountList}}?',
-        ),
-      ).toBeInTheDocument();
-      userEvent.click(getByText('Yes'));
+      expect(getByText('Remove this coach from the account.')).toBeVisible();
     });
 
-    await waitFor(() => expect(handleDelete).toHaveBeenCalledTimes(1));
+    userEvent.click(
+      getAllByRole('button', {
+        name: 'Remove Coach',
+      })[0],
+    );
+    expect(handleDelete).toHaveBeenCalled();
+  });
+
+  it('should show user remove buttons, tooltip and handleDelete()', async () => {
+    const { getByText, getByTestId, getAllByRole } = render(
+      <Components>
+        <GqlMockedProvider>
+          <AccountListCoachesOrUsers
+            accountListItems={[userAccountListItems[0]]}
+            setRemoveUser={handleDelete}
+            setRemoveCoach={handleDelete}
+            setDeleteUser={handleDelete}
+          />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    userEvent.hover(getByTestId('RemoveUserButton'));
+    await waitFor(() => {
+      expect(getByText('Remove this user from the account.')).toBeVisible();
+    });
+
+    userEvent.click(
+      getAllByRole('button', {
+        name: 'Remove User',
+      })[0],
+    );
+    expect(handleDelete).toHaveBeenCalled();
   });
 });

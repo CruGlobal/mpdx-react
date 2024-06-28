@@ -67,8 +67,8 @@ type ContactPeopleAccountLists {
 
 type ContactPeopleAccountListsUsers {
   id: ID
-  firstName: String
-  lastName: String
-  emailAddresses: [ContactPeopleEmailAddresses]
+  userFirstName: String
+  userLastName: String
+  userEmailAddresses: [ContactPeopleEmailAddresses]
   phoneNumbers: [ContactPeoplePhoneNumbers]
 }
