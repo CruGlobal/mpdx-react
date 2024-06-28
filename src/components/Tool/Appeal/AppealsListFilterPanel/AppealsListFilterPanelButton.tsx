@@ -1,38 +1,50 @@
 import React, { ReactElement } from 'react';
-import { Box, Button, ListItem, ListItemText } from '@mui/material';
+import {
+  Box,
+  Button,
+  ButtonTypeMap,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import theme from '../../../../../theme';
+import theme from 'src/theme';
 
 const useStyles = makeStyles()(() => ({
   li: {
-    borderBottom: '1px solid black',
+    borderBottom: '1px solid #EBECF1',
     paddingBottom: theme.spacing(3),
   },
+  itemBox: {
+    width: '100%',
+  },
   itemButton: {
-    backgroundColor: theme.palette.cruGrayLight.main,
-    width: '260px',
+    width: '100%',
     textTransform: 'none',
   },
 }));
 
 interface Props {
   title: string;
-  func: () => void;
+  onClick: () => void;
   buttonText: string;
+  buttonError?: ButtonTypeMap['props']['color'];
+  buttonVariant?: ButtonTypeMap['props']['variant'];
   disabled?: boolean;
 }
 
-export const AppealDrawerItemButton = ({
+export const AppealsListFilterPanelButton = ({
   title,
-  func,
+  onClick,
   buttonText,
+  buttonError = 'primary',
+  buttonVariant = 'contained',
   disabled,
 }: Props): ReactElement => {
   const { classes } = useStyles();
 
   return (
     <ListItem className={classes.li}>
-      <Box display="flex" flexDirection="column">
+      <Box display="flex" flexDirection="column" className={classes.itemBox}>
         <ListItemText
           primaryTypographyProps={{
             variant: 'subtitle1',
@@ -41,10 +53,11 @@ export const AppealDrawerItemButton = ({
           primary={title}
         />
         <Button
-          variant="contained"
-          onClick={func}
+          variant={buttonVariant}
+          onClick={onClick}
           disabled={disabled}
           className={classes.itemButton}
+          color={buttonError}
         >
           {buttonText}
         </Button>

@@ -1,9 +1,9 @@
 import React from 'react';
-import { testAppeal2 } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
+import { ContextTypesEnum } from 'src/components/Shared/Filters/FilterPanel';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
-import AppealDrawer from '../AppealDrawer/AppealDrawer';
-import { AppealsContext, AppealsType } from '../ContactsContext/AppealsContext';
+import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
+import { DynamicAppealsListFilterPanel } from '../AppealsListFilterPanel/DynamicAppealsListFilterPanel';
 
 export const AppealsLeftPanel: React.FC = () => {
   const {
@@ -17,7 +17,7 @@ export const AppealsLeftPanel: React.FC = () => {
   } = React.useContext(AppealsContext) as AppealsType;
 
   return viewMode !== TableViewModeEnum.Flows ? (
-    <AppealDrawer open={true} toggle={toggleFilterPanel} appeal={testAppeal2} />
+    <DynamicAppealsListFilterPanel onClose={toggleFilterPanel} />
   ) : filterData && !filtersLoading ? (
     <DynamicFilterPanel
       filters={filterData?.accountList?.contactFilterGroups}
@@ -25,6 +25,7 @@ export const AppealsLeftPanel: React.FC = () => {
       selectedFilters={activeFilters}
       onClose={toggleFilterPanel}
       onSelectedFiltersChanged={setActiveFilters}
+      contextType={ContextTypesEnum.Appeals}
     />
   ) : null;
 };

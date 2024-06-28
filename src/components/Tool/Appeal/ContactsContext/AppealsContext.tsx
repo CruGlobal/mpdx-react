@@ -26,7 +26,14 @@ import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-// Changed
+
+export enum AppealListViewEnum {
+  Given = 'given',
+  Received = 'received',
+  Committed = 'committed',
+  Asked = 'asked',
+  Excluded = 'excluded',
+}
 
 export type AppealsType = {
   accountListId: string | undefined;
@@ -73,6 +80,8 @@ export type AppealsType = {
   userOptionsLoading: boolean;
   appealId: string | undefined;
   page: PageEnum;
+  appealListView: AppealListViewEnum;
+  setAppealListView: Dispatch<SetStateAction<AppealListViewEnum>>;
 };
 
 export const AppealsContext = React.createContext<AppealsType | null>(null);
@@ -139,6 +148,10 @@ export const AppealsProvider: React.FC<Props> = ({
   const [viewMode, setViewMode] = useState<TableViewModeEnum>(
     TableViewModeEnum.Flows,
   );
+  const [appealListView, setAppealListView] = useState<AppealListViewEnum>(
+    AppealListViewEnum.Given,
+  );
+
   const sanitizedFilters = useMemo(
     () => sanitizeFilters(activeFilters),
     [activeFilters],
@@ -413,6 +426,8 @@ export const AppealsProvider: React.FC<Props> = ({
         userOptionsLoading: userOptionsLoading,
         appealId,
         page,
+        appealListView,
+        setAppealListView,
       }}
     >
       {children}
