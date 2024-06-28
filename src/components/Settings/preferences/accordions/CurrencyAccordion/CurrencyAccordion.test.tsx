@@ -46,7 +46,7 @@ const Components: React.FC<ComponentsProps> = ({ currency, expandedPanel }) => (
           mocks={{
             LoadConstants: {
               constant: {
-                pledgeCurrencies: [
+                pledgeCurrency: [
                   {
                     code: 'CAD',
                     codeSymbolString: 'CAD ($)',

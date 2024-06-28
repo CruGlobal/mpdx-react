@@ -34,7 +34,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
   const constants = useApiConstants();
-  const currencies = constants?.pledgeCurrencies ?? [];
+  const currencies = constants?.pledgeCurrency ?? [];
   const label = t('Default Currency');
 
   const onSubmit = async (
