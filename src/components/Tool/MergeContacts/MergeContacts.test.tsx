@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -30,10 +31,12 @@ jest.mock('notistack', () => ({
 
 interface MergeContactsWrapperProps {
   mutationSpy?: () => void;
+  mocks?: ApolloErgonoMockMap;
 }
 
 const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
   mutationSpy,
+  mocks = getContactDuplicatesMocks,
 }) => {
   return (
     <ThemeProvider theme={theme}>
@@ -41,7 +44,7 @@ const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
         <GqlMockedProvider<{
           GetContactDuplicates: GetContactDuplicatesQuery;
         }>
-          mocks={getContactDuplicatesMocks}
+          mocks={mocks}
           onCall={mutationSpy}
         >
           <ContactsProvider
@@ -80,7 +83,16 @@ describe('Tools - MergeContacts', () => {
 
     const { getByText, queryAllByTestId, findByText, getByRole } = render(
       <SnackbarProvider>
-        <MergeContactsWrapper mutationSpy={mutationSpy} />
+        <MergeContactsWrapper
+          mutationSpy={mutationSpy}
+          mocks={{
+            GetContactDuplicates:
+              getContactDuplicatesMocks.GetContactDuplicates,
+            MassActionsMerge: () => {
+              return { mergeContacts: ['contact-2'] };
+            },
+          }}
+        />
       </SnackbarProvider>,
     );
 
@@ -90,7 +102,16 @@ describe('Tools - MergeContacts', () => {
     const confirmButton = getByRole('button', { name: 'Confirm and Continue' });
 
     expect(confirmButton).toBeDisabled();
-    userEvent.click(getByText('123 John St Orlando, FL 32832'));
+    userEvent.click(queryAllByTestId('ignoreButton')[1]);
+    userEvent.click(
+      getByText('(contact-2 address) 123 John St Orlando, FL 32832'),
+    );
+    userEvent.click(
+      getByText('(contact-1 address) 123 Main St Orlando, FL 32832'),
+    );
+    userEvent.click(
+      getByText('(contact-2 address) 123 John St Orlando, FL 32832'),
+    );
     expect(await findByText('Use this one')).toBeInTheDocument();
     expect(
       getByRole('button', { name: 'Confirm and Continue' }),
@@ -98,7 +119,7 @@ describe('Tools - MergeContacts', () => {
 
     userEvent.click(getByRole('button', { name: 'Confirm and Continue' }));
     await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Updated 1 duplicate(s)', {
+      expect(mockEnqueue).toHaveBeenCalledWith('Updated 2 duplicate(s)', {
         variant: 'success',
       }),
     );
@@ -111,8 +132,8 @@ describe('Tools - MergeContacts', () => {
       input: {
         winnersAndLosers: [
           {
-            loserId: 'contact-1',
             winnerId: 'contact-2',
+            loserId: 'contact-1',
           },
         ],
       },
@@ -176,6 +197,42 @@ describe('Tools - MergeContacts', () => {
     expect(
       getByText('No duplicate contacts need attention'),
     ).toBeInTheDocument();
+  });
+
+  it('should show error', async () => {
+    const mutationSpy = jest.fn();
+
+    const { queryAllByTestId, getByRole } = render(
+      <SnackbarProvider>
+        <MergeContactsWrapper
+          mutationSpy={mutationSpy}
+          mocks={{
+            GetContactDuplicates:
+              getContactDuplicatesMocks.GetContactDuplicates,
+            UpdateDuplicate: () => {
+              throw new Error('Server Error');
+            },
+            MassActionsMerge: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />
+      </SnackbarProvider>,
+    );
+    await waitFor(() =>
+      expect(queryAllByTestId('MergeContactPair')).toHaveLength(2),
+    );
+    userEvent.click(queryAllByTestId('ignoreButton')[0]);
+
+    userEvent.click(getByRole('button', { name: 'Confirm and Continue' }));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Failed to update 1 duplicate(s)',
+        {
+          variant: 'error',
+        },
+      ),
+    );
   });
 
   describe('setContactFocus()', () => {

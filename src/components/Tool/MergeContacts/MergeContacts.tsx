@@ -19,6 +19,7 @@ import NoData from '../NoData';
 import ContactPair from './ContactPair';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 import { StickyConfirmButtons } from './StickyConfirmButtons';
+import { bulkUpdateDuplicates } from './mergeDuplicatesHelper';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -100,112 +101,15 @@ const MergeContacts: React.FC<Props> = ({
     }
   };
 
-  const handleBulkUpdateDuplicates = async () => {
-    try {
-      const callsByDuplicate: (() => Promise<{ success: boolean }>)[] = [];
-
-      const mergeActions = Object.entries(actions).filter(
-        (action) => action[1].action === 'merge',
-      );
-
-      if (mergeActions.length) {
-        const winnersAndLosers: { winnerId: string; loserId: string }[] =
-          mergeActions.map((action) => {
-            return { winnerId: action[0], loserId: action[1].mergeId || '' };
-          });
-
-        const callMergeDuplicatesMutation = () =>
-          mergeDuplicates(winnersAndLosers);
-        callsByDuplicate.push(callMergeDuplicatesMutation);
-      }
-
-      const duplicatesToIgnore = Object.entries(actions)
-        .filter((action) => action[1].action === 'ignore')
-        .map((action) => action[0]);
-
-      if (duplicatesToIgnore.length) {
-        duplicatesToIgnore.forEach((duplicateId) => {
-          const callIgnoreDuplicateMutation = () =>
-            ignoreDuplicates(duplicateId);
-          callsByDuplicate.push(callIgnoreDuplicateMutation);
-        });
-      }
-
-      if (callsByDuplicate.length) {
-        const results = await Promise.all(
-          callsByDuplicate.map((call) => call()),
-        );
-
-        const failedUpdates = results.filter(
-          (result) => !result.success,
-        ).length;
-        const successfulUpdates = results.length - failedUpdates;
-
-        if (successfulUpdates) {
-          enqueueSnackbar(t(`Updated ${successfulUpdates} duplicate(s)`), {
-            variant: 'success',
-          });
-        }
-        if (failedUpdates) {
-          enqueueSnackbar(
-            t(`Error when updating ${failedUpdates} duplicate(s)`),
-            {
-              variant: 'error',
-            },
-          );
-        }
-      } else {
-        enqueueSnackbar(t(`No duplicates were updated`), {
-          variant: 'warning',
-        });
-      }
-    } catch (error) {
-      enqueueSnackbar(t(`Error updating duplicates`), { variant: 'error' });
-    }
-  };
-
-  const ignoreDuplicates = async (duplicateId: string) => {
-    await updateDuplicates({
-      variables: {
-        input: {
-          attributes: {
-            ignore: true,
-          },
-          type: TypeEnum.Contact,
-          id: duplicateId,
-        },
-      },
-      update: (cache) => {
-        // Delete the duplicate
-        cache.evict({ id: `ContactDuplicate:${duplicateId}` });
-        cache.gc();
-      },
-      onError: () => {
-        return { success: false };
-      },
-    });
-    return { success: true };
-  };
-
-  const mergeDuplicates = async (winnersAndLosers) => {
-    await contactsMerge({
-      variables: {
-        input: {
-          winnersAndLosers,
-        },
-      },
-      update: (cache) => {
-        // Delete the contacts and remove dangling references to them
-        winnersAndLosers.forEach((contact) => {
-          cache.evict({ id: `Contact:${contact.loserId}` });
-        });
-        cache.gc();
-      },
-      onError: () => {
-        return { success: false };
-      },
-    });
-    return { success: true };
+  const handleSubmit = () => {
+    bulkUpdateDuplicates(
+      TypeEnum.Contact,
+      actions,
+      contactsMerge,
+      updateDuplicates,
+      enqueueSnackbar,
+      t,
+    );
   };
 
   return (
@@ -251,7 +155,7 @@ const MergeContacts: React.FC<Props> = ({
                 duplicatesDisplayedCount={duplicatesDisplayedCount}
                 disabled={disabled}
                 totalCount={totalCount}
-                confirmAction={handleBulkUpdateDuplicates}
+                confirmAction={handleSubmit}
                 setActions={setActions}
               />
               <Grid item xs={12} sx={{ margin: '0px 2px 20px 2px' }}>

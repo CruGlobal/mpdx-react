@@ -13,7 +13,7 @@ export const getPersonDuplicatesMocks = {
             lastName: 'Doe',
             createdAt: '2022-09-06T00:00:00-05:00',
             primaryPhoneNumber: {
-              number: '555-555-5555',
+              number: '(person-1 phone) 555-555-5555',
               source: 'MPDX',
             },
             primaryEmailAddress: {
@@ -29,7 +29,7 @@ export const getPersonDuplicatesMocks = {
             lastName: 'Doe',
             createdAt: '2021-09-06T00:00:00-05:00',
             primaryPhoneNumber: {
-              number: '444-444-4444',
+              number: '(person-1.5 phone) 444-444-4444',
               source: 'MPDX',
             },
             primaryEmailAddress: {

@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -30,10 +31,12 @@ jest.mock('notistack', () => ({
 
 interface MergePeopleWrapperProps {
   mutationSpy?: () => void;
+  mocks?: ApolloErgonoMockMap;
 }
 
 const MergePeopleWrapper: React.FC<MergePeopleWrapperProps> = ({
   mutationSpy,
+  mocks = getPersonDuplicatesMocks,
 }) => {
   return (
     <ThemeProvider theme={theme}>
@@ -41,7 +44,7 @@ const MergePeopleWrapper: React.FC<MergePeopleWrapperProps> = ({
         <GqlMockedProvider<{
           GetPersonDuplicates: GetPersonDuplicatesQuery;
         }>
-          mocks={getPersonDuplicatesMocks}
+          mocks={mocks}
           onCall={mutationSpy}
         >
           <ContactsProvider
@@ -80,7 +83,15 @@ describe('Tools - MergePeople', () => {
 
     const { getByText, queryAllByTestId, findByText, getByRole } = render(
       <SnackbarProvider>
-        <MergePeopleWrapper mutationSpy={mutationSpy} />
+        <MergePeopleWrapper
+          mutationSpy={mutationSpy}
+          mocks={{
+            GetPersonDuplicates: getPersonDuplicatesMocks.GetPersonDuplicates,
+            MergePeopleBulk: () => {
+              return { mergePeopleBulk: ['person-1'] };
+            },
+          }}
+        />
       </SnackbarProvider>,
     );
 
@@ -92,7 +103,10 @@ describe('Tools - MergePeople', () => {
     expect(
       getByRole('button', { name: 'Confirm and Continue' }),
     ).toBeDisabled();
-    userEvent.click(getByText('555-555-5555'));
+    userEvent.click(queryAllByTestId('ignoreButton')[1]);
+    userEvent.click(getByText('(person-1 phone) 555-555-5555'));
+    userEvent.click(getByText('(person-1.5 phone) 444-444-4444'));
+    userEvent.click(getByText('(person-1 phone) 555-555-5555'));
     expect(await findByText('Use this one')).toBeInTheDocument();
     expect(
       getByRole('button', { name: 'Confirm and Continue' }),
@@ -100,7 +114,7 @@ describe('Tools - MergePeople', () => {
 
     userEvent.click(getByRole('button', { name: 'Confirm and Continue' }));
     await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Updated 1 duplicate(s)', {
+      expect(mockEnqueue).toHaveBeenCalledWith('Updated 2 duplicate(s)', {
         variant: 'success',
       }),
     );
@@ -176,6 +190,41 @@ describe('Tools - MergePeople', () => {
     });
     expect(queryByTestId('ignoreButton')).not.toBeInTheDocument();
     expect(getByText('No duplicate people need attention')).toBeInTheDocument();
+  });
+
+  it('should show error', async () => {
+    const mutationSpy = jest.fn();
+
+    const { queryAllByTestId, getByRole } = render(
+      <SnackbarProvider>
+        <MergePeopleWrapper
+          mutationSpy={mutationSpy}
+          mocks={{
+            GetPersonDuplicates: getPersonDuplicatesMocks.GetPersonDuplicates,
+            UpdateDuplicate: () => {
+              throw new Error('Server Error');
+            },
+            MergePeopleBulk: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />
+      </SnackbarProvider>,
+    );
+    await waitFor(() =>
+      expect(queryAllByTestId('MergeContactPair')).toHaveLength(2),
+    );
+    userEvent.click(queryAllByTestId('ignoreButton')[0]);
+
+    userEvent.click(getByRole('button', { name: 'Confirm and Continue' }));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Failed to update 1 duplicate(s)',
+        {
+          variant: 'error',
+        },
+      ),
+    );
   });
 
   describe('setContactFocus()', () => {
