@@ -151,7 +151,7 @@ const EmailValidationForm = ({
   const { t } = useTranslation();
 
   const handleValidation = (isValid) => {
-    if (!isValid) {
+    if (!isValid && initialEmail.email !== '') {
       enqueueSnackbar(t('Invalid Email Address Format'), {
         variant: 'error',
       });
