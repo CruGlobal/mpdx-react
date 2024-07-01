@@ -128,6 +128,15 @@ const FixCommitmentInfo: React.FC<Props> = ({
           statusValid: true,
         }
       : { id, statusValid: true };
+
+    if (!pledgeFrequency) {
+      alert('please select pledge frequency');
+    }
+
+    if (!status) {
+      alert('Please select a status');
+    }
+
     await updateInvalidStatus({
       variables: {
         accountListId,
@@ -203,7 +212,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                     <Contact
                       id={contact.id}
                       name={contact.name}
-                      key={contact.name}
+                      key={contact.id}
                       statusTitle={
                         contact.status
                           ? contactPartnershipStatus[contact.status]
