@@ -448,7 +448,8 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                         (activities?.find((activity) => {
                           return (
                             activity.id === enumValue ||
-                            activity.value === enumValue
+                            activity.value === enumValue ||
+                            activity?.id?.toLowerCase() === enumValue
                           );
                         })?.id as ActivityTypeEnum) || ActivityTypeEnum.None
                       );
@@ -474,7 +475,8 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                         (activities?.find((activity) => {
                           return (
                             activity.id === enumValue ||
-                            activity.value === enumValue
+                            activity.value === enumValue ||
+                            activity?.id?.toLowerCase() === enumValue
                           );
                         })?.id as ActivityTypeEnum) || ActivityTypeEnum.None
                       );
