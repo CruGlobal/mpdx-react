@@ -97,7 +97,7 @@ const Appeals: React.FC<AppealsProps> = ({ accountListId }) => {
       )}
       {!loading && (
         <Box display="flex" justifyContent="center">
-          <Typography variant="h6" data-testid="TypographyShowing">
+          <Typography data-testid="TypographyShowing">
             Showing{' '}
             <strong>
               {(data?.primaryAppeal ? data.primaryAppeal.nodes.length : 0) +

@@ -147,7 +147,7 @@ const AppealProgressBar = ({
               }}
             />
           </Tooltip>
-          <Tooltip title="committed" placement="top-start" arrow>
+          <Tooltip title="Committed" placement="top-start" arrow>
             <Box
               style={{
                 minWidth: `${(committed / (amount || 1)) * 100}%`,
