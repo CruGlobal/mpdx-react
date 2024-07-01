@@ -282,14 +282,21 @@ const ContactItem: React.FC<ContactItemProps> = ({
 interface Props {
   contact1: RecordInfoFragment | PersonInfoFragment;
   contact2: RecordInfoFragment | PersonInfoFragment;
-  update: (id1: string, id2: string, action: string) => void;
+  update: (
+    id1: string,
+    id2: string,
+    duplicateId: string,
+    action: string,
+  ) => void;
   updating: boolean;
   setContactFocus: SetContactFocus;
+  duplicateId: string;
 }
 
 const ContactPair: React.FC<Props> = ({
   contact1,
   contact2,
+  duplicateId,
   update,
   updating,
   setContactFocus,
@@ -306,19 +313,19 @@ const ContactPair: React.FC<Props> = ({
       switch (side) {
         case 'left':
           setSelected('left');
-          update(contact1.id, contact2.id, 'merge');
+          update(contact1.id, contact2.id, duplicateId, 'merge');
           break;
         case 'right':
           setSelected('right');
-          update(contact2.id, contact1.id, 'merge');
+          update(contact2.id, contact1.id, duplicateId, 'merge');
           break;
-        case 'cancel':
-          setSelected('cancel');
-          update(contact1.id, contact2.id, 'cancel');
+        case 'ignore':
+          setSelected('ignore');
+          update(contact1.id, contact2.id, duplicateId, 'ignore');
           break;
         default:
           setSelected('');
-          update(contact1.id, contact2.id, 'cancel');
+          update(contact1.id, contact2.id, duplicateId, 'ignore');
       }
     }
   };
@@ -382,9 +389,9 @@ const ContactPair: React.FC<Props> = ({
                   </Tooltip>
                   <Tooltip title={t('Ignore this Duplicate')} arrow>
                     <IconButton
-                      onClick={() => updateState('cancel')}
+                      onClick={() => updateState('ignore')}
                       className={
-                        selected === 'cancel' ? classes.red : classes.grey
+                        selected === 'ignore' ? classes.red : classes.grey
                       }
                       data-testid="ignoreButton"
                     >
