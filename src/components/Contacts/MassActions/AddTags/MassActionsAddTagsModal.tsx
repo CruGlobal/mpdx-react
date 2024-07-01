@@ -70,6 +70,29 @@ export const MassActionsAddTagsModal: React.FC<
     },
   });
 
+  const handleValidation = async (fields: Partial<ContactUpdateInput>) => {
+    const tags = fields.tagList ?? [];
+    let existingTags: string[] = [];
+    let contactNum = 0;
+    contactsForTags?.contacts.nodes.forEach((contact) => {
+      existingTags = [...existingTags, ...contact.tagList];
+      contactNum++;
+    });
+    for (let i = 0; i < tags?.length; i++) {
+      existingTags = [...existingTags, tags[i]];
+      const duplicates = existingTags.filter(
+        (item, index) => existingTags.indexOf(item) !== index,
+      );
+      if (duplicates.length === contactNum && duplicates.length > 0) {
+        enqueueSnackbar(t('All selected contacts already have this tag'), {
+          variant: 'error',
+        });
+        tags.pop();
+      }
+    }
+    return;
+  };
+
   const onSubmit = async (fields: Partial<ContactUpdateInput>) => {
     const tags = fields.tagList ?? [];
     const attributes =
@@ -108,6 +131,7 @@ export const MassActionsAddTagsModal: React.FC<
           tagList: [],
         }}
         onSubmit={onSubmit}
+        validate={handleValidation}
         validationSchema={tagSchema}
       >
         {({
