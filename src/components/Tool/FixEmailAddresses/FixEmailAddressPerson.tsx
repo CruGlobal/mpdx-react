@@ -136,7 +136,7 @@ const onSubmit = () => {};
 const EmailValidationForm = ({
   emails: initialEmail = {
     email: '',
-    isPrimary: false,
+    isPrimary: true,
     updatedAt: '',
     source: '',
     personId: '',
