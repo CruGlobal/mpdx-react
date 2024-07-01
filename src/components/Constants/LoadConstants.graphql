@@ -17,8 +17,16 @@ query LoadConstants {
       id
       value
     }
+    likelyToGive {
+      id
+      value
+    }
     locations {
       id
+    }
+    newsletter {
+      id
+      value
     }
     # notifications {
     #   id
@@ -29,7 +37,17 @@ query LoadConstants {
       name
       code
     }
+    pledgeCurrency {
+      codeSymbolString
+      name
+      code
+    }
     pledgeFrequencies {
+      id
+      key
+      value
+    }
+    pledgeFrequency {
       id
       key
       value
@@ -51,6 +69,10 @@ query LoadConstants {
       value
     }
     statuses {
+      id
+      value
+    }
+    status {
       id
       value
     }
