@@ -3,7 +3,7 @@ mutation CreateAppeal($accountListId: ID!, $attributes: AppealCreateInput!) {
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
     appeal {
-      id
+      ...AppealFields
     }
   }
 }

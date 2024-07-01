@@ -5,6 +5,17 @@ import TestWrapper from '__tests__/util/TestWrapper';
 import theme from '../../../theme';
 import Appeal from './Appeal';
 
+const appeal = {
+  name: 'test 123',
+  id: '',
+  amount: 100,
+  amountCurrency: 'CAD',
+  pledgesAmountTotal: 60,
+  pledgesAmountProcessed: 10,
+  pledgesAmountReceivedNotProcessed: 20,
+  pledgesAmountNotReceivedNotProcessed: 30,
+};
+
 describe('AppealTest', () => {
   it('regular', () => {
     const changePrimary = jest.fn();
@@ -12,15 +23,8 @@ describe('AppealTest', () => {
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <Appeal
-            name={'test 123'}
-            id={''}
+            appeal={appeal}
             primary={false}
-            amount={100}
-            amountCurrency={'CAD'}
-            given={10}
-            received={20}
-            commited={30}
-            total={60}
             changePrimary={changePrimary}
           />
         </TestWrapper>
@@ -28,8 +32,8 @@ describe('AppealTest', () => {
     );
     expect(getByText('test 123')).toBeInTheDocument();
     expect(getByText('10.00 / 100.00')).toBeInTheDocument();
-    expect(getByText('10 CAD (10%)')).toBeInTheDocument();
-    expect(getByText('30 CAD (30%)')).toBeInTheDocument();
-    expect(getByText('60 CAD (60%)')).toBeInTheDocument();
+    expect(getByText('CA$10 (10%)')).toBeInTheDocument();
+    expect(getByText('CA$30 (30%)')).toBeInTheDocument();
+    expect(getByText('CA$60 (60%)')).toBeInTheDocument();
   });
 });
