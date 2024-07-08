@@ -1,0 +1,11 @@
+mutation EmailAddresses($input: PersonUpdateMutationInput!) {
+  updatePerson(input: $input) {
+    person {
+      emailAddresses {
+        nodes {
+          email
+        }
+      }
+    }
+  }
+}
