@@ -5,9 +5,9 @@ import {
   TableViewModeEnum,
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
-import { AppealsLeftPanel } from './AppealLeftPanel/AppealsLeftPanel';
+import { AppealsLeftPanel } from './AppealDetails/AppealLeftPanel/AppealsLeftPanel';
+import { AppealsMainPanel } from './AppealDetails/AppealsMainPanel/AppealsMainPanel';
 import { AppealsContext, AppealsType } from './AppealsContext/AppealsContext';
-import { AppealsMainPanel } from './AppealsMainPanel/AppealsMainPanel';
 
 const AppealsDetailsPage: React.FC = () => {
   const { filterPanelOpen, setContactFocus, viewMode, contactDetailsOpen } =

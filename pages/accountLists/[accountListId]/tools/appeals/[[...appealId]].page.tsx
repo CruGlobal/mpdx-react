@@ -6,7 +6,7 @@ import {
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { DynamicAppealsDetailsPage } from 'src/components/Tool/Appeal/DynamicAppealsDetailsPage';
-import { DynamicAppealsInitialPage } from 'src/components/Tool/Appeal/DynamicAppealsInitialPage';
+import { DynamicAppealsInitialPage } from 'src/components/Tool/Appeal/InitialPage/DynamicAppealsInitialPage';
 import { ToolsWrapper } from '../ToolsWrapper';
 import { AppealsWrapper, PageEnum } from './AppealsWrapper';
 

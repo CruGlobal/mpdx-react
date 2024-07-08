@@ -133,7 +133,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   return (
     <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
       <HeaderWrapInner style={{ marginRight: 8 }}>
-        {contactsView !== TableViewModeEnum.Map && page !== PageEnum.Appeal && (
+        {contactsView !== TableViewModeEnum.Map && (
           <Hidden xsDown>
             <StyledCheckbox
               checked={headerCheckboxState === ListHeaderCheckBoxState.Checked}

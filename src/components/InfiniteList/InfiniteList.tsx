@@ -103,8 +103,8 @@ export const InfiniteList = <T, C>({
       ...props.components,
     },
     scrollSeekConfiguration: {
-      enter: (velocity) => Math.abs(velocity) > 200,
-      exit: (velocity) => Math.abs(velocity) < 10,
+      enter: (velocity) => Math.abs(velocity) > 2000,
+      exit: (velocity) => Math.abs(velocity) < 100,
       ...props.scrollSeekConfiguration,
     },
   };

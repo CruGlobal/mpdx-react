@@ -50,6 +50,9 @@ export const createCache = () =>
         },
         merge: true,
       },
+      AppealContacts: {
+        merge: true,
+      },
       SearchOrganizationsAccountListsResponse: {
         fields: {
           accountLists: {
@@ -74,6 +77,7 @@ export const createCache = () =>
           financialAccounts: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,
+          appealContacts: paginationFieldPolicy,
           // Ignore the input.pageNumber arg so that queries with different page numbers will
           // be merged together
           searchOrganizationsAccountLists: {
