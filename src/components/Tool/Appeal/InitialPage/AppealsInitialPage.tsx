@@ -2,9 +2,9 @@ import React, { useContext } from 'react';
 import { Box, Divider, Grid, Theme, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import AddAppealForm from 'src/components/Tool/Appeal/AddAppealForm';
-import Appeals from 'src/components/Tool/Appeal/Appeals';
-import { AppealsContext, AppealsType } from './AppealsContext/AppealsContext';
+import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm';
+import Appeals from 'src/components/Tool/Appeal/InitialPage/Appeals';
+import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {

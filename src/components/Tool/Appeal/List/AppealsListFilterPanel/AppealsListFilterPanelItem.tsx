@@ -4,7 +4,7 @@ import { Box, ListItem, ListItemText } from '@mui/material';
 import clsx from 'clsx';
 import { makeStyles } from 'tss-react/mui';
 import theme from 'src/theme';
-import { AppealListViewEnum } from '../AppealsContext/AppealsContext';
+import { AppealListViewEnum } from '../../AppealsContext/AppealsContext';
 
 const useStyles = makeStyles()(() => ({
   li: {

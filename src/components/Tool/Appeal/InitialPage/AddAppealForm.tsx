@@ -29,8 +29,8 @@ import {
 } from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import theme from '../../../theme';
-import AnimatedCard from '../../AnimatedCard';
+import theme from '../../../../theme';
+import AnimatedCard from '../../../AnimatedCard';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
 import { useGetContactTagsQuery } from './GetContactTags.generated';
 

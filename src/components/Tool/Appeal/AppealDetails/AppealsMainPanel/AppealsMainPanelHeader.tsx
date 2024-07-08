@@ -17,7 +17,10 @@ import {
   PageEnum,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
-import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
+import {
+  AppealsContext,
+  AppealsType,
+} from '../../AppealsContext/AppealsContext';
 
 const ViewSettingsButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
