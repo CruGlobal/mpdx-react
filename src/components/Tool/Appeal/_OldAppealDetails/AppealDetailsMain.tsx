@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
-import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
+import { useAppealContext } from '../_OldAppealContextProvider/AppealContextProvider';
 import AppealDetailsAsked from './AppealDetailsAsked';
 import AppealDetailsCommitted from './AppealDetailsCommitted';
 import AppealDetailsExcluded from './AppealDetailsExcluded';

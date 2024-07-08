@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
+import { useAppealContext } from '../_OldAppealContextProvider/AppealContextProvider';
 
 const StyledBox = styled(Box)(({ theme }) => ({
   width: '100%',

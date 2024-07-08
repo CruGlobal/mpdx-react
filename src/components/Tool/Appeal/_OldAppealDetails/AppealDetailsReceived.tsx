@@ -7,7 +7,7 @@ import { makeStyles } from 'tss-react/mui';
 import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import i18n from 'src/lib/i18n';
 import theme from '../../../../theme';
-import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
+import { useAppealContext } from '../_OldAppealContextProvider/AppealContextProvider';
 import AppealDetailsNoData from './AppealDetailsNoData';
 
 const useStyles = makeStyles()(() => ({
@@ -66,14 +66,14 @@ const columns = [
     flex: 1,
   },
   {
-    field: 'committed',
-    headerName: i18n.t('Amount Committed'),
-    minWidth: 200,
+    field: 'amount',
+    headerName: i18n.t('Amount Received'),
+    minWidth: 150,
     flex: 1,
   },
   {
     field: 'date',
-    headerName: i18n.t('Date Committed'),
+    headerName: i18n.t('Date Received'),
     minWidth: 200,
     flex: 1,
   },
@@ -103,14 +103,14 @@ export interface Props {
   appeal: TestAppeal;
 }
 
-const AppealDetailsCommitted = ({ appeal }: Props): ReactElement => {
+const AppealDetailsReceived = ({ appeal }: Props): ReactElement => {
   const { classes } = useStyles();
   const { appealState, setAppealState } = useAppealContext();
 
-  const rows = appeal.committed.map((donation, index) => ({
+  const rows = appeal.received.map((donation, index) => ({
     id: index,
     contact: donation.name,
-    committed: `${donation.amount?.toFixed(2)} ${donation.currency}`,
+    amount: `${donation.amount?.toFixed(2)} ${donation.currency}`,
     date: donation.date,
   }));
 
@@ -120,7 +120,7 @@ const AppealDetailsCommitted = ({ appeal }: Props): ReactElement => {
     );
     setAppealState({ ...appealState, selected: [...temp] });
   };
-  return appeal.committed.length > 0 ? (
+  return appeal.received.length > 0 ? (
     <Box component="div" className={classes.container}>
       <DataGrid
         rows={rows}
@@ -137,4 +137,4 @@ const AppealDetailsCommitted = ({ appeal }: Props): ReactElement => {
   );
 };
 
-export default AppealDetailsCommitted;
+export default AppealDetailsReceived;

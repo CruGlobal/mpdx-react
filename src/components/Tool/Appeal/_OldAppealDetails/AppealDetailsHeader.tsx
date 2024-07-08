@@ -11,8 +11,8 @@ import { makeStyles } from 'tss-react/mui';
 import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
 import theme from '../../../../theme';
-import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
 import AppealProgressBar from '../AppealProgressBar';
+import { useAppealContext } from '../_OldAppealContextProvider/AppealContextProvider';
 
 const useStyles = makeStyles()(() => ({
   container: {

@@ -7,7 +7,7 @@ import { makeStyles } from 'tss-react/mui';
 import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import i18n from 'src/lib/i18n';
 import theme from '../../../../theme';
-import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
+import { useAppealContext } from '../_OldAppealContextProvider/AppealContextProvider';
 import AppealDetailsNoData from './AppealDetailsNoData';
 
 const useStyles = makeStyles()(() => ({

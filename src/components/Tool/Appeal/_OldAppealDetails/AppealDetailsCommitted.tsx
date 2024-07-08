@@ -7,7 +7,7 @@ import { makeStyles } from 'tss-react/mui';
 import { TestAppeal } from 'pages/accountLists/[accountListId]/tools/appeals/testAppeal';
 import i18n from 'src/lib/i18n';
 import theme from '../../../../theme';
-import { useAppealContext } from '../AppealContextProvider/AppealContextProvider';
+import { useAppealContext } from '../_OldAppealContextProvider/AppealContextProvider';
 import AppealDetailsNoData from './AppealDetailsNoData';
 
 const useStyles = makeStyles()(() => ({
@@ -66,8 +66,14 @@ const columns = [
     flex: 1,
   },
   {
-    field: 'regularGiving',
-    headerName: i18n.t('Regular Giving'),
+    field: 'committed',
+    headerName: i18n.t('Amount Committed'),
+    minWidth: 200,
+    flex: 1,
+  },
+  {
+    field: 'date',
+    headerName: i18n.t('Date Committed'),
     minWidth: 200,
     flex: 1,
   },
@@ -97,16 +103,15 @@ export interface Props {
   appeal: TestAppeal;
 }
 
-const AppealDetailsAsked = ({ appeal }: Props): ReactElement => {
+const AppealDetailsCommitted = ({ appeal }: Props): ReactElement => {
   const { classes } = useStyles();
   const { appealState, setAppealState } = useAppealContext();
 
-  const rows = appeal.asked.map((contact, index) => ({
+  const rows = appeal.committed.map((donation, index) => ({
     id: index,
-    contact: contact.name,
-    regularGiving: `${contact.regularGiving?.toFixed(2)} ${contact.currency} ${
-      contact.frequency ? contact.frequency : ''
-    }`,
+    contact: donation.name,
+    committed: `${donation.amount?.toFixed(2)} ${donation.currency}`,
+    date: donation.date,
   }));
 
   const updateSelected = (e: GridSelectionModel): void => {
@@ -115,7 +120,7 @@ const AppealDetailsAsked = ({ appeal }: Props): ReactElement => {
     );
     setAppealState({ ...appealState, selected: [...temp] });
   };
-  return appeal.asked.length > 0 ? (
+  return appeal.committed.length > 0 ? (
     <Box component="div" className={classes.container}>
       <DataGrid
         rows={rows}
@@ -132,4 +137,4 @@ const AppealDetailsAsked = ({ appeal }: Props): ReactElement => {
   );
 };
 
-export default AppealDetailsAsked;
+export default AppealDetailsCommitted;
