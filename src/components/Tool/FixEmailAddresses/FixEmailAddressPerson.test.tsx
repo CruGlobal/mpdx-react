@@ -9,39 +9,38 @@ import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
-import {
-  FixEmailAddressPerson,
-  FixEmailAddressPersonProps,
-} from './FixEmailAddressPerson';
+import { FixEmailAddressPerson } from './FixEmailAddressPerson';
 import { EmailAddressData, PersonEmailAddresses } from './FixEmailAddresses';
-import { GetInvalidEmailAddressesQuery } from './FixEmailAddresses.generated';
+import {
+  GetInvalidEmailAddressesQuery,
+  PersonInvalidEmailFragment,
+} from './FixEmailAddresses.generated';
 import { mockInvalidEmailAddressesResponse } from './FixEmailAddressesMocks';
 
-const testData = {
-  name: 'Test Contact',
-  personId: 'testid',
+const person: PersonInvalidEmailFragment = {
+  id: 'contactTestId',
+  firstName: 'Test',
+  lastName: 'Contact',
   contactId: 'contactTestId',
-  emailAddresses: [
-    {
-      source: 'DonorHub',
-      updatedAt: DateTime.fromISO('2021-06-21').toString(),
-      email: 'test1@test1.com',
-      primary: true,
-      isValid: false,
-      personId: 'testid',
-      isPrimary: true,
-    } as EmailAddressData,
-    {
-      source: 'MPDX',
-      updatedAt: DateTime.fromISO('2021-06-22').toString(),
-      email: 'test2@test1.com',
-      primary: false,
-      isValid: false,
-      personId: 'testid',
-      isPrimary: false,
-    } as EmailAddressData,
-  ],
-} as FixEmailAddressPersonProps;
+  emailAddresses: {
+    nodes: [
+      {
+        id: 'email1',
+        source: 'DonorHub',
+        updatedAt: DateTime.fromISO('2021-06-21').toString(),
+        email: 'test1@test1.com',
+        primary: true,
+      },
+      {
+        id: 'email2',
+        source: 'MPDX',
+        updatedAt: DateTime.fromISO('2021-06-22').toString(),
+        email: 'test2@test1.com',
+        primary: false,
+      },
+    ],
+  },
+};
 
 const setContactFocus = jest.fn();
 
@@ -51,8 +50,8 @@ const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
   const handleChangePrimaryMock = jest.fn();
   const toDelete = [] as PersonEmailAddressInput[];
   const dataState = {
-    id: {
-      emailAddresses: testData.emailAddresses as EmailAddressData[],
+    contactTestId: {
+      emailAddresses: person.emailAddresses.nodes as EmailAddressData[],
       toDelete,
     },
   } as { [key: string]: PersonEmailAddresses };
@@ -67,13 +66,9 @@ const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
           mocks={mocks}
         >
           <FixEmailAddressPerson
+            person={person}
             toDelete={toDelete}
-            name={testData.name}
-            key={testData.name}
-            personId={testData.personId}
             dataState={dataState}
-            contactId={testData.contactId}
-            emailAddresses={testData.emailAddresses}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
             handleChangePrimary={handleChangePrimaryMock}
@@ -99,12 +94,14 @@ describe('FixEmailAddressPerson', () => {
       />,
     );
 
-    expect(getByText(testData.name)).toBeInTheDocument();
+    expect(
+      getByText(`${person.firstName} ${person.lastName}`),
+    ).toBeInTheDocument();
     expect(getByText('DonorHub (6/21/2021)')).toBeInTheDocument();
-    expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
+    expect(getByTestId('textfield-contactTestId-0')).toBeInTheDocument();
     expect(getByDisplayValue('test1@test1.com')).toBeInTheDocument();
     expect(getByText('MPDX (6/22/2021)')).toBeInTheDocument();
-    expect(getByTestId('textfield-testid-1')).toBeInTheDocument();
+    expect(getByTestId('textfield-contactTestId-1')).toBeInTheDocument();
     expect(getByDisplayValue('test2@test1.com')).toBeInTheDocument();
   });
 
@@ -122,7 +119,7 @@ describe('FixEmailAddressPerson', () => {
     );
 
     const addInput = getByLabelText('New Email Address');
-    const addButton = getByTestId('addButton-testid');
+    const addButton = getByTestId('addButton-contactTestId');
 
     userEvent.type(addInput, 'new@new.com');
     await waitFor(() => {
@@ -152,7 +149,7 @@ describe('FixEmailAddressPerson', () => {
       userEvent.click(addInput);
       userEvent.tab();
 
-      const addButton = getByTestId('addButton-testid');
+      const addButton = getByTestId('addButton-contactTestId');
       await waitFor(() => {
         expect(addButton).toBeDisabled();
         expect(getByText('Please enter a valid email address')).toBeVisible();
@@ -176,7 +173,7 @@ describe('FixEmailAddressPerson', () => {
       userEvent.type(addInput, 'ab');
       userEvent.tab();
 
-      const addButton = getByTestId('addButton-testid');
+      const addButton = getByTestId('addButton-contactTestId');
       await waitFor(() => {
         expect(addButton).toBeDisabled();
         expect(getByText('Invalid Email Address Format')).toBeVisible();
@@ -200,7 +197,7 @@ describe('FixEmailAddressPerson', () => {
       userEvent.type(addInput, 'new@new.com');
       userEvent.tab();
 
-      const addButton = getByTestId('addButton-testid');
+      const addButton = getByTestId('addButton-contactTestId');
       await waitFor(() => {
         expect(addButton).not.toBeDisabled();
       });

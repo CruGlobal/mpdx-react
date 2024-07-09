@@ -15,8 +15,6 @@ import {
   contactId,
   contactOneEmailAddressNodes,
   contactTwoEmailAddressNodes,
-  mockCacheWriteData,
-  mockCacheWriteDataContactTwo,
   mockInvalidEmailAddressesResponse,
   newEmail,
 } from './FixEmailAddressesMocks';
@@ -152,7 +150,7 @@ describe('FixPhoneNumbers-Home', () => {
             nodes: [
               ...emailAddressNodes,
               {
-                email: newEmail.email,
+                ...newEmail,
               },
             ],
           },
@@ -218,7 +216,7 @@ describe('FixPhoneNumbers-Home', () => {
 
       await waitFor(() => {
         expect(cache.writeQuery).toHaveBeenLastCalledWith(
-          expect.objectContaining({ data: mockCacheWriteData }),
+          expect.objectContaining({ data: postSaveResponse }),
         );
       });
     });
@@ -249,7 +247,7 @@ describe('FixPhoneNumbers-Home', () => {
 
       await waitFor(() => {
         expect(cache.writeQuery).toHaveBeenLastCalledWith(
-          expect.objectContaining({ data: mockCacheWriteDataContactTwo }),
+          expect.objectContaining({ data: postSaveResponse }),
         );
       });
     });

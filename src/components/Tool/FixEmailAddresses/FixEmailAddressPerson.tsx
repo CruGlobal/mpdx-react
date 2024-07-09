@@ -23,7 +23,8 @@ import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import EmailValidationForm from './EmailValidationForm';
-import { EmailAddressData, PersonEmailAddresses } from './FixEmailAddresses';
+import { PersonEmailAddresses } from './FixEmailAddresses';
+import { PersonInvalidEmailFragment } from './FixEmailAddresses.generated';
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -93,12 +94,9 @@ const useStyles = makeStyles()((theme: Theme) => ({
 }));
 
 export interface FixEmailAddressPersonProps {
-  name: string;
-  emailAddresses?: EmailAddressData[];
-  personId: string;
-  dataState: { [key: string]: PersonEmailAddresses };
+  person: PersonInvalidEmailFragment;
   toDelete: PersonEmailAddressInput[];
-  contactId: string;
+  dataState: { [key: string]: PersonEmailAddresses };
   handleChange: (
     personId: string,
     numberIndex: number,
@@ -110,11 +108,8 @@ export interface FixEmailAddressPersonProps {
 }
 
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
-  name,
-  emailAddresses,
-  personId,
+  person,
   dataState,
-  contactId,
   handleChange,
   handleDelete,
   handleChangePrimary,
@@ -124,16 +119,23 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   const locale = useLocale();
   const { classes } = useStyles();
 
-  const emails = useMemo(
-    () =>
-      emailAddresses?.map((email) => ({
+  const { id, contactId } = person;
+  const name = `${person.firstName} ${person.lastName}`;
+
+  const emails = useMemo(() => {
+    if (!dataState[id]?.emailAddresses.length) {
+      return [];
+    }
+
+    return (
+      dataState[id]?.emailAddresses.map((email) => ({
         ...email,
         isValid: false,
-        personId: personId,
+        personId: id,
         isPrimary: email.primary,
-      })) || [],
-    [emailAddresses, dataState],
-  );
+      })) || []
+    );
+  }, [person, dataState]);
 
   const handleContactNameClick = () => {
     setContactFocus(contactId);
@@ -203,15 +205,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                             </Typography>
                           </Box>
                           {email.isPrimary ? (
-                            <Box data-testid={`starIcon-${personId}-${index}`}>
+                            <Box data-testid={`starIcon-${id}-${index}`}>
                               <HoverableIcon path={mdiStar} size={1} />
                             </Box>
                           ) : (
                             <Box
-                              data-testid={`starOutlineIcon-${personId}-${index}`}
-                              onClick={() =>
-                                handleChangePrimary(personId, index)
-                              }
+                              data-testid={`starOutlineIcon-${id}-${index}`}
+                              onClick={() => handleChangePrimary(id, index)}
                             >
                               <HoverableIcon path={mdiStarOutline} size={1} />
                             </Box>
@@ -227,19 +227,19 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           <TextField
                             style={{ width: '100%' }}
                             inputProps={{
-                              'data-testid': `textfield-${personId}-${index}`,
+                              'data-testid': `textfield-${id}-${index}`,
                             }}
                             onChange={(
                               event: React.ChangeEvent<HTMLInputElement>,
-                            ) => handleChange(personId, index, event)}
+                            ) => handleChange(id, index, event)}
                             value={email.email}
                             disabled={email.source !== 'MPDX'}
                           />
 
                           {email.source === 'MPDX' ? (
                             <Box
-                              data-testid={`delete-${personId}-${index}`}
-                              onClick={() => handleDelete(personId, index)}
+                              data-testid={`delete-${id}-${index}`}
+                              onClick={() => handleDelete(id, index)}
                             >
                               <HoverableIcon path={mdiDelete} size={1} />
                             </Box>
@@ -277,7 +277,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       {
                         //TODO: index will need to be mapped to the correct personId
                       }
-                      <EmailValidationForm index={0} personId={personId} />
+                      <EmailValidationForm index={0} personId={id} />
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>

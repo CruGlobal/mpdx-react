@@ -157,7 +157,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
             )
           : {},
       ),
-    [loading],
+    [loading, data],
   );
 
   const handleDeleteModalOpen = (
@@ -209,12 +209,14 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   // Change the primary address in the state
   const handleChangePrimary = (personId: string, emailIndex: number): void => {
     const temp = { ...dataState };
-    temp[personId].emailAddresses = temp[personId].emailAddresses.map(
-      (email, index) => ({
-        ...email,
-        primary: index === emailIndex,
-      }),
-    );
+    if (temp[personId]) {
+      temp[personId].emailAddresses = temp[personId].emailAddresses.map(
+        (email, index) => ({
+          ...email,
+          primary: index === emailIndex,
+        }),
+      );
+    }
     setDataState(temp);
   };
 
@@ -276,13 +278,10 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
               <Grid item xs={12}>
                 {data?.people.nodes.map((person) => (
                   <FixEmailAddressPerson
-                    name={`${person.firstName} ${person.lastName}`}
+                    person={person}
                     key={person.id}
-                    personId={person.id}
                     dataState={dataState}
-                    emailAddresses={dataState[person.id]?.emailAddresses}
                     toDelete={dataState[person.id]?.toDelete}
-                    contactId={person.contactId}
                     handleChange={handleChange}
                     handleDelete={handleDeleteModalOpen}
                     handleChangePrimary={handleChangePrimary}
