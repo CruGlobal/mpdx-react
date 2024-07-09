@@ -10,14 +10,17 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { TypeEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import ContactPair from '../MergeContacts/ContactPair';
 import { StickyConfirmButtons } from '../MergeContacts/StickyConfirmButtons';
+import { bulkUpdateDuplicates } from '../MergeContacts/mergeDuplicatesHelper';
 import NoData from '../NoData';
 import {
   useGetPersonDuplicatesQuery,
   useMergePeopleBulkMutation,
+  useUpdateDuplicateMutation,
 } from './GetPersonDuplicates.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -68,6 +71,7 @@ const MergePeople: React.FC<Props> = ({
   });
   const { appName } = useGetAppSettings();
   const [peopleMerge, { loading: updating }] = useMergePeopleBulkMutation();
+  const [updateDuplicates] = useUpdateDuplicateMutation();
   const disabled = useMemo(
     () => updating || !Object.entries(actions).length,
     [actions, updating],
@@ -75,13 +79,19 @@ const MergePeople: React.FC<Props> = ({
   const totalCount = data?.personDuplicates.totalCount || 0;
   const duplicatesDisplayedCount = data?.personDuplicates.nodes.length || 0;
 
-  const updateActions = (id1: string, id2: string, action: string): void => {
+  const updateActions = (
+    id1: string,
+    id2: string,
+    duplicateId: string,
+    action: string,
+  ): void => {
     if (!updating) {
-      if (action === 'cancel') {
+      if (action === 'ignore') {
         setActions((prevState) => ({
           ...prevState,
           [id1]: { action: '' },
           [id2]: { action: '' },
+          [duplicateId]: { action: 'ignore' },
         }));
       } else {
         setActions((prevState) => ({
@@ -93,40 +103,15 @@ const MergePeople: React.FC<Props> = ({
     }
   };
 
-  const mergePeople = async () => {
-    const mergeActions = Object.entries(actions).filter(
-      (action) => action[1].action === 'merge',
+  const handleSubmit = () => {
+    bulkUpdateDuplicates(
+      TypeEnum.Person,
+      actions,
+      peopleMerge,
+      updateDuplicates,
+      enqueueSnackbar,
+      t,
     );
-    if (mergeActions.length) {
-      const winnersAndLosers: { winnerId: string; loserId: string }[] =
-        mergeActions.map((action) => {
-          return { winnerId: action[0], loserId: action[1].mergeId || '' };
-        });
-      await peopleMerge({
-        variables: {
-          input: {
-            winnersAndLosers,
-          },
-        },
-        update: (cache) => {
-          // Delete the loser people and remove dangling references to them
-          winnersAndLosers.forEach((person) => {
-            cache.evict({ id: `Person:${person.loserId}` });
-          });
-          cache.gc();
-        },
-        onCompleted: () => {
-          enqueueSnackbar(t('Success!'), {
-            variant: 'success',
-          });
-        },
-        onError: (err) => {
-          enqueueSnackbar(t('A server error occurred. {{err}}', { err }), {
-            variant: 'error',
-          });
-        },
-      });
-    }
   };
 
   return (
@@ -172,22 +157,21 @@ const MergePeople: React.FC<Props> = ({
                 duplicatesDisplayedCount={duplicatesDisplayedCount}
                 disabled={disabled}
                 totalCount={totalCount}
-                confirmAction={mergePeople}
+                confirmAction={handleSubmit}
                 setActions={setActions}
               />
               <Grid item xs={12} sx={{ margin: '0px 2px 20px 2px' }}>
-                {data?.personDuplicates.nodes
-                  .map((duplicate) => (
-                    <ContactPair
-                      key={duplicate.id}
-                      contact1={duplicate.recordOne}
-                      contact2={duplicate.recordTwo}
-                      update={updateActions}
-                      updating={updating}
-                      setContactFocus={setContactFocus}
-                    />
-                  ))
-                  .reverse()}
+                {data?.personDuplicates.nodes.map((duplicate) => (
+                  <ContactPair
+                    key={duplicate.id}
+                    duplicateId={duplicate.id}
+                    contact1={duplicate.recordOne}
+                    contact2={duplicate.recordTwo}
+                    update={updateActions}
+                    updating={updating}
+                    setContactFocus={setContactFocus}
+                  />
+                ))}
               </Grid>
             </>
           ) : (
