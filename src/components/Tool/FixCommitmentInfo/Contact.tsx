@@ -249,7 +249,7 @@ const Contact: React.FC<Props> = ({
                   <Grid item xs={12} lg={4}>
                     <Box className={classes.boxBottom}>
                       <Select
-                        as={NativeSelect}
+                        input={<StyledInput />}
                         label={t('Commitment Currency')}
                         labelId="pledgeCurrency"
                         value={pledgeCurrency}
