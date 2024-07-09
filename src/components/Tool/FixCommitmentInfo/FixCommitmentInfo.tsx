@@ -66,17 +66,18 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-interface Contact {
-  id?: string;
-  status?: string;
-  pledgeCurrency?: string;
-  pledgeAmount?: number;
-  pledgeFrequency?: string;
+interface ContactType {
+  id?: string | undefined;
+  status?: string | undefined;
+  name?: string | undefined;
+  pledgeCurrency?: string | undefined;
+  pledgeAmount?: number | undefined;
+  pledgeFrequency?: string | undefined;
 }
 
 export interface ModalState {
   open: boolean;
-  contact: Contact;
+  contact: ContactType;
 }
 
 const defaultHideModalState = {
@@ -134,23 +135,39 @@ const FixCommitmentInfo: React.FC<Props> = ({
   //TODO: Make currency field a select element
 
   const updateContact = async (
-    id: string,
-    change: boolean,
+    updateType: string,
+    id?: string,
     status?: string,
     pledgeCurrency?: string,
     pledgeAmount?: number,
     pledgeFrequency?: string,
   ): Promise<void> => {
-    const attributes = change
-      ? {
+    let attributes;
+
+    switch (updateType) {
+      case 'CHANGE':
+        attributes = {
           id,
           status: status as StatusEnum,
           pledgeAmount,
           pledgeCurrency,
           pledgeFrequency: pledgeFrequency as PledgeFrequencyEnum,
           statusValid: true,
-        }
-      : { id, statusValid: true };
+        };
+        break;
+      case 'DONT_CHANGE':
+        attributes = {
+          id,
+          statusValid: true,
+        };
+        break;
+      case 'HIDE':
+        attributes = {
+          id,
+          status: 'NEVER_ASK' as StatusEnum,
+        };
+        break;
+    }
 
     await updateInvalidStatus({
       variables: {
@@ -162,28 +179,6 @@ const FixCommitmentInfo: React.FC<Props> = ({
       variant: 'success',
     });
     hideContactFromView(id);
-  };
-
-  const hideContact = async (contact: Contact): Promise<void> => {
-    const attributes = {
-      id: contact.id as string,
-      status: 'NEVER_ASK' as StatusEnum,
-      pledgeAmount: contact.pledgeAmount,
-      pledgeCurrency: contact.pledgeCurrency,
-      pledgeFrequency: contact.pledgeFrequency as PledgeFrequencyEnum,
-      statusValid: true,
-    };
-
-    await updateInvalidStatus({
-      variables: {
-        accountListId,
-        attributes,
-      },
-    });
-    enqueueSnackbar(t('Contact commitment hidden!'), {
-      variant: 'success',
-    });
-    hideContactFromView(contact.id as string);
   };
 
   const hideContactFromView = (hideId: string): void => {
@@ -211,7 +206,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
     }
   };
 
-  const handleHideModalOpen = (contact: object): void => {
+  const handleHideModalOpen = (contact: object) => {
     setHideModalState({
       open: true,
       contact,
@@ -308,7 +303,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
             { source: hideModalState.contact.name },
           )}
           handleClose={() => setHideModalState(defaultHideModalState)}
-          mutation={() => hideContact(hideModalState.contact)}
+          mutation={() => updateContact('HIDE', hideModalState?.contact?.id)}
         />
       )}
     </Box>

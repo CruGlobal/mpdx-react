@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -23,7 +22,6 @@ import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { FilterOption } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
@@ -111,7 +109,7 @@ interface Props {
   hideFunction: (hideId: string) => void;
   updateFunction: (
     id: string,
-    change: boolean,
+    updateType: string,
     status?: string,
     pledgeCurrency?: string,
     pledgeAmount?: number,
@@ -137,36 +135,14 @@ const Contact: React.FC<Props> = ({
 }) => {
   const { data: constants, loading: loadingConstants } =
     useLoadConstantsQuery();
-  // const [values, setValues] = useState({
-  //   statusValue: statusValue,
-  //   amountCurrency: amountCurrency,
-  //   amount: amount,
-  //   frequencyValue: frequencyValue,
-  // });
+
   const { classes } = useStyles();
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
-  const { push } = useRouter();
-  //TODO: Add button functionality
-  //TODO: Show donation history
-
-  // const handleChange = (
-  //   event:
-  //     | React.ChangeEvent<HTMLSelectElement>
-  //     | React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-  //   props: string,
-  // ): void => {
-  //   setValues((prevState) => ({ ...prevState, [props]: event.target.value }));
-  // };
-
-  const handleContactNameClick = () => {
-    setContactFocus(id);
-  };
 
   const onSubmit = async (props: FormAttributes, resetForm: () => void) => {
     updateFunction(
+      'CHANGE',
       id,
-      true,
       props.status,
       props.pledgeCurrency,
       parseFloat(`${props.pledgeAmount}`),
@@ -176,8 +152,11 @@ const Contact: React.FC<Props> = ({
   };
 
   const appealFormSchema = yup.object({
-    statusValue: yup.string().required('Please select a status'),
-    pledgeCurrency: yup.string().required(),
+    statusValue: yup
+      .string()
+      .required('Please select a status')
+      .oneOf(statuses.map((status) => status.value)),
+    pledgeCurrency: yup.string().required('Please select a currency'),
     pledgeAmount: yup.number().required(),
     pledgeFrequency: yup.string().required('Please select frequency'),
   });
@@ -224,7 +203,7 @@ const Contact: React.FC<Props> = ({
                     }}
                   />
                   <Box display="flex" flexDirection="column" ml={2}>
-                    <Link underline="hover" onClick={handleContactNameClick}>
+                    <Link underline="hover" onClick={() => setContactFocus(id)}>
                       <Typography variant="h6">{name}</Typography>
                     </Link>
                     <Typography>
@@ -245,7 +224,6 @@ const Contact: React.FC<Props> = ({
                         data-testid="statusSelect"
                         style={{ width: '100%' }}
                         value={statusValue}
-                        error={errors.statusValue}
                         as={NativeSelect}
                         onChange={(event) =>
                           setFieldValue('statusValue', event.target.value)
@@ -266,41 +244,24 @@ const Contact: React.FC<Props> = ({
                     </Box>
                   </Grid>
                   <Grid item xs={12} lg={4}>
-                    <Select
-                      label={t('Commitment Currency')}
-                      labelId="pledgeCurrency"
-                      value={pledgeCurrency}
-                      onChange={(e) =>
-                        setFieldValue('pledgeCurrency', e.target.value)
-                      }
-                    >
-                      <MenuItem value={''}>
-                        <em>{t("Don't change")}</em>
-                      </MenuItem>
-                      {!loadingConstants &&
-                        getPledgeCurrencyOptions(
-                          constants?.constant?.pledgeCurrencies,
-                        )}
-                    </Select>
-
                     <Box className={classes.boxBottom}>
-                      <NativeSelect
-                        input={<StyledInput />}
-                        style={{ width: '100%' }}
+                      <Select
+                        as={NativeSelect}
+                        label={t('Commitment Currency')}
+                        labelId="pledgeCurrency"
                         value={pledgeCurrency}
-                        onChange={(event) =>
-                          setFieldValue('pledgeCurrency', event.target.value)
+                        onChange={(e) =>
+                          setFieldValue('pledgeCurrency', e.target.value)
                         }
                       >
-                        <option value="" disabled>
-                          Currency
-                        </option>
-                        {!loadingConstants
-                          ? getPledgeCurrencyOptions(
-                              constants?.constant?.pledgeCurrencies,
-                            )
-                          : 'poop'}
-                      </NativeSelect>
+                        <MenuItem value={''}>
+                          <em>{t("Don't change")}</em>
+                        </MenuItem>
+                        {!loadingConstants &&
+                          getPledgeCurrencyOptions(
+                            constants?.constant?.pledgeCurrencies,
+                          )}
+                      </Select>
                       <FormHelperText error={true}>
                         {errors.pledgeCurrency && errors.pledgeCurrency}
                       </FormHelperText>
@@ -384,7 +345,7 @@ const Contact: React.FC<Props> = ({
                       variant="contained"
                       style={{ width: '100%' }}
                       data-testid="doNotChangeButton"
-                      onClick={() => updateFunction(id, false)}
+                      onClick={() => updateFunction('DONT_CHANGE', id)}
                     >
                       {"Don't Change"}
                     </Button>
@@ -392,12 +353,7 @@ const Contact: React.FC<Props> = ({
                   <Box>
                     <IconButton
                       data-testid="goToContactsButton"
-                      onClick={() =>
-                        push({
-                          pathname: `/accountLists/[accountListId]/contacts/[contactId]`,
-                          query: { accountListId, contactId: id },
-                        })
-                      }
+                      onClick={() => setContactFocus(id)}
                     >
                       <SearchIcon />
                     </IconButton>
