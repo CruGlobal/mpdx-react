@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TabKey } from './ContactDetails';
 import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 
@@ -67,6 +67,12 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   ) => {
     setSelectedTabKey(newKey);
   };
+
+  useEffect(() => {
+    if (query.tabKey) {
+      setSelectedTabKey(query.tabKey);
+    }
+  }, [query]);
 
   const [editPersonModalOpen, setEditPersonModalOpen] = useState<string>();
   const [createPersonModalOpen, setCreatePersonModalOpen] = useState(false);

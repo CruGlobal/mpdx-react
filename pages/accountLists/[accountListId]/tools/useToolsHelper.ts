@@ -11,8 +11,13 @@ export const useToolsHelper = () => {
   const selectedContactId = getQueryParam(query, 'contactId');
 
   const handleSelectContact = useCallback(
-    (pagePath: string, contactId: string) => {
-      push(`/accountLists/${accountListId}/${pagePath}/${contactId}`);
+    (pagePath: string, contactId: string, tabKey?: string) => {
+      tabKey
+        ? push({
+            pathname: `/accountLists/${accountListId}/${pagePath}/${contactId}`,
+            query: { tabKey: tabKey },
+          })
+        : push(`/accountLists/${accountListId}/${pagePath}/${contactId}`);
     },
     [accountListId],
   );
