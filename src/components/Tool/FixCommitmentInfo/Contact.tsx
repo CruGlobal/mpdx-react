@@ -192,7 +192,6 @@ const Contact: React.FC<Props> = ({
           pledgeFrequency: frequencyValue,
         }}
         onSubmit={async (values, { resetForm }) => {
-          // console.log('values', values);
           await onSubmit(values, resetForm);
         }}
         validationSchema={appealFormSchema}
@@ -239,7 +238,7 @@ const Contact: React.FC<Props> = ({
               </Grid>
               <Grid item xs={12} lg={5} className={classes.right}>
                 <Grid container style={{ paddingRight: theme.spacing(1) }}>
-                  <Grid item xs={12} ld>
+                  <Grid item xs={12}>
                     <Box className={classes.boxTop}>
                       <Field
                         input={<StyledInput />}
@@ -266,24 +265,42 @@ const Contact: React.FC<Props> = ({
                       </FormHelperText>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} ld>
+                  <Grid item xs={12} lg={4}>
+                    <Select
+                      label={t('Commitment Currency')}
+                      labelId="pledgeCurrency"
+                      value={pledgeCurrency}
+                      onChange={(e) =>
+                        setFieldValue('pledgeCurrency', e.target.value)
+                      }
+                    >
+                      <MenuItem value={''}>
+                        <em>{t("Don't change")}</em>
+                      </MenuItem>
+                      {!loadingConstants &&
+                        getPledgeCurrencyOptions(
+                          constants?.constant?.pledgeCurrencies,
+                        )}
+                    </Select>
+
                     <Box className={classes.boxBottom}>
-                      <Select
-                        label={t('Commitment Currency')}
-                        labelId="pledgeCurrency"
+                      <NativeSelect
+                        input={<StyledInput />}
+                        style={{ width: '100%' }}
                         value={pledgeCurrency}
-                        onChange={(e) =>
-                          setFieldValue('pledgeCurrency', e.target.value)
+                        onChange={(event) =>
+                          setFieldValue('pledgeCurrency', event.target.value)
                         }
                       >
-                        <MenuItem value={''}>
-                          <em>{t("Don't change")}</em>
-                        </MenuItem>
-                        {!loadingConstants &&
-                          getPledgeCurrencyOptions(
-                            constants?.constant?.pledgeCurrencies,
-                          )}
-                      </Select>
+                        <option value="" disabled>
+                          Currency
+                        </option>
+                        {!loadingConstants
+                          ? getPledgeCurrencyOptions(
+                              constants?.constant?.pledgeCurrencies,
+                            )
+                          : 'poop'}
+                      </NativeSelect>
                       <FormHelperText error={true}>
                         {errors.pledgeCurrency && errors.pledgeCurrency}
                       </FormHelperText>

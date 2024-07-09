@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApolloClient } from '@apollo/client';
 import {
   Box,
@@ -13,6 +13,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   MultiselectFilter,
   PledgeFrequencyEnum,
@@ -29,7 +30,7 @@ import {
   useGetInvalidStatusesQuery,
 } from './GetInvalidStatuses.generated';
 import { frequencies } from './InputOptions/Frequencies';
-import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
+import { useUpdateStatusMutation } from './UpdateStatus.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {
@@ -65,6 +66,24 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
+interface Contact {
+  id?: string;
+  status?: string;
+  pledgeCurrency?: string;
+  pledgeAmount?: number;
+  pledgeFrequency?: string;
+}
+
+export interface ModalState {
+  open: boolean;
+  contact: Contact;
+}
+
+const defaultHideModalState = {
+  open: false,
+  contact: {},
+};
+
 interface Props {
   accountListId: string;
   setContactFocus: SetContactFocus;
@@ -75,6 +94,9 @@ const FixCommitmentInfo: React.FC<Props> = ({
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
+  const [hideModalState, setHideModalState] = useState<ModalState>(
+    defaultHideModalState,
+  );
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
@@ -91,8 +113,9 @@ const FixCommitmentInfo: React.FC<Props> = ({
         doNotBatch: true,
       },
     });
+
   const [updateInvalidStatus, { loading: updating }] =
-    useUpdateInvalidStatusMutation();
+    useUpdateStatusMutation();
 
   const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
     ? (
@@ -129,14 +152,6 @@ const FixCommitmentInfo: React.FC<Props> = ({
         }
       : { id, statusValid: true };
 
-    if (!pledgeFrequency) {
-      alert('please select pledge frequency');
-    }
-
-    if (!status) {
-      alert('Please select a status');
-    }
-
     await updateInvalidStatus({
       variables: {
         accountListId,
@@ -146,10 +161,32 @@ const FixCommitmentInfo: React.FC<Props> = ({
     enqueueSnackbar(t('Contact commitment info updated!'), {
       variant: 'success',
     });
-    hideContact(id);
+    hideContactFromView(id);
   };
 
-  const hideContact = (hideId: string): void => {
+  const hideContact = async (contact: Contact): Promise<void> => {
+    const attributes = {
+      id: contact.id as string,
+      status: 'NEVER_ASK' as StatusEnum,
+      pledgeAmount: contact.pledgeAmount,
+      pledgeCurrency: contact.pledgeCurrency,
+      pledgeFrequency: contact.pledgeFrequency as PledgeFrequencyEnum,
+      statusValid: true,
+    };
+
+    await updateInvalidStatus({
+      variables: {
+        accountListId,
+        attributes,
+      },
+    });
+    enqueueSnackbar(t('Contact commitment hidden!'), {
+      variant: 'success',
+    });
+    hideContactFromView(contact.id as string);
+  };
+
+  const hideContactFromView = (hideId: string): void => {
     const query = {
       query: GetInvalidStatusesDocument,
       variables: {
@@ -172,6 +209,13 @@ const FixCommitmentInfo: React.FC<Props> = ({
 
       client.writeQuery({ ...query, data });
     }
+  };
+
+  const handleHideModalOpen = (contact: object): void => {
+    setHideModalState({
+      open: true,
+      contact,
+    });
   };
 
   return (
@@ -227,7 +271,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                           : ''
                       }
                       frequencyValue={contact.pledgeFrequency || ''}
-                      hideFunction={hideContact}
+                      hideFunction={() => handleHideModalOpen(contact)}
                       updateFunction={updateContact}
                       statuses={contactStatuses || [{ name: '', value: '' }]}
                       setContactFocus={setContactFocus}
@@ -254,6 +298,18 @@ const FixCommitmentInfo: React.FC<Props> = ({
         </Grid>
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+      )}
+      {hideModalState.open && (
+        <Confirmation
+          isOpen={true}
+          title={t('Hide')}
+          message={t(
+            `Are you sure you wish to hide {{source}}? Hiding a contact in MPDX actually sets the contact status to "Never Ask".`,
+            { source: hideModalState.contact.name },
+          )}
+          handleClose={() => setHideModalState(defaultHideModalState)}
+          mutation={() => hideContact(hideModalState.contact)}
+        />
       )}
     </Box>
   );
