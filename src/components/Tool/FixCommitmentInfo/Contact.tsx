@@ -203,7 +203,10 @@ const Contact: React.FC<Props> = ({
                     }}
                   />
                   <Box display="flex" flexDirection="column" ml={2}>
-                    <Link underline="hover" onClick={() => setContactFocus(id)}>
+                    <Link
+                      underline="hover"
+                      onClick={() => setContactFocus(id, 'Donations')}
+                    >
                       <Typography variant="h6">{name}</Typography>
                     </Link>
                     <Typography>
@@ -353,7 +356,7 @@ const Contact: React.FC<Props> = ({
                   <Box>
                     <IconButton
                       data-testid="goToContactsButton"
-                      onClick={() => setContactFocus(id)}
+                      onClick={() => setContactFocus(id, 'Donations')}
                     >
                       <SearchIcon />
                     </IconButton>

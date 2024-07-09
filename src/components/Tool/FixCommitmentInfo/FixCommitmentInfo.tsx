@@ -181,7 +181,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
     hideContactFromView(id);
   };
 
-  const hideContactFromView = (hideId: string): void => {
+  const hideContactFromView = (hideId?: string): void => {
     const query = {
       query: GetInvalidStatusesDocument,
       variables: {
