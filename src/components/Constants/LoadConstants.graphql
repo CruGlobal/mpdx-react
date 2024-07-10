@@ -13,7 +13,7 @@ query LoadConstants {
       nativeName
       shortName
     }
-    likelyToGiveOptions {
+    likelyToGive {
       id
       value
     }
@@ -24,12 +24,12 @@ query LoadConstants {
     #   id
     #   value
     # }
-    pledgeCurrencies {
+    pledgeCurrency {
       codeSymbolString
       name
       code
     }
-    pledgeFrequencies {
+    pledgeFrequency {
       id
       key
       value
@@ -46,11 +46,11 @@ query LoadConstants {
       id
       value
     }
-    sendNewsletterOptions {
+    newsletter {
       id
       value
     }
-    statuses {
+    status {
       id
       value
     }

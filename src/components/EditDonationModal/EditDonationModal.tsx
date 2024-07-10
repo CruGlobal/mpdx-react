@@ -71,7 +71,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   const accountListId = useAccountListId() ?? '';
   const constants = useApiConstants();
 
-  const pledgeCurrencies = constants?.pledgeCurrencies;
+  const pledgeCurrencies = constants?.pledgeCurrency;
 
   const {
     data: appeals,
