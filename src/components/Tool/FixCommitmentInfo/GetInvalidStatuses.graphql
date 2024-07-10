@@ -1,8 +1,9 @@
-query GetInvalidStatuses($accountListId: ID!) {
+query GetInvalidStatuses($accountListId: ID!, $after: String) {
   contacts(
     accountListId: $accountListId
     contactsFilter: { statusValid: false }
-    first: 100
+    after: $after
+    first: 10
   ) {
     nodes {
       id
@@ -12,5 +13,13 @@ query GetInvalidStatuses($accountListId: ID!) {
       pledgeCurrency
       pledgeFrequency
     }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    edges {
+      cursor
+    }
+    totalCount
   }
 }

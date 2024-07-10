@@ -25,6 +25,7 @@ import { FilterOption } from 'src/graphql/types.generated';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
+import { UpdateTypeEnum } from './FixCommitmentInfo';
 import { frequencies } from './InputOptions/Frequencies';
 
 interface FormAttributes {
@@ -108,8 +109,8 @@ interface Props {
   frequencyValue: string;
   hideFunction: (hideId: string) => void;
   updateFunction: (
+    updateType: UpdateTypeEnum,
     id: string,
-    updateType: string,
     status?: string,
     pledgeCurrency?: string,
     pledgeAmount?: number,
@@ -141,7 +142,7 @@ const Contact: React.FC<Props> = ({
 
   const onSubmit = async (props: FormAttributes, resetForm: () => void) => {
     updateFunction(
-      'CHANGE',
+      UpdateTypeEnum.Change,
       id,
       props.status,
       props.pledgeCurrency,
@@ -348,7 +349,9 @@ const Contact: React.FC<Props> = ({
                       variant="contained"
                       style={{ width: '100%' }}
                       data-testid="doNotChangeButton"
-                      onClick={() => updateFunction('DONT_CHANGE', id)}
+                      onClick={() =>
+                        updateFunction(UpdateTypeEnum.DontChange, id)
+                      }
                     >
                       {"Don't Change"}
                     </Button>
