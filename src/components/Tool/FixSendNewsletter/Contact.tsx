@@ -102,7 +102,6 @@ const Contact = ({
   const { classes } = useStyles();
 
   //TODO: Add button functionality
-  //TODO: Make contact name a link to contact page
 
   const handleChange = (
     event:
