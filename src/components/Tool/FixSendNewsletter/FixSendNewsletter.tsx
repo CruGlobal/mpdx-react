@@ -181,6 +181,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                         primaryEmailAddress: {
                           email: '',
                         },
+                        optoutEnewsletter: false,
                       }
                     }
                     key={contact.id}

@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
@@ -99,8 +99,27 @@ const Contact = ({
   setContactFocus,
 }: Props): ReactElement => {
   const { t } = useTranslation();
-  const [newsletter, setNewsletter] = useState(SendNewsletterEnum.Both);
+  const [newsletter, setNewsletter] = useState(SendNewsletterEnum.None);
   const { classes } = useStyles();
+
+  useEffect(() => {
+    let newNewsletterValue = SendNewsletterEnum.None;
+    if (primaryAddress?.street) {
+      newNewsletterValue = SendNewsletterEnum.Physical;
+    }
+    if (primaryPerson) {
+      if (!primaryPerson.optoutEnewsletter) {
+        if (primaryPerson.primaryEmailAddress?.email?.length) {
+          if (newNewsletterValue === SendNewsletterEnum.Physical) {
+            newNewsletterValue = SendNewsletterEnum.Both;
+          } else {
+            newNewsletterValue = SendNewsletterEnum.Email;
+          }
+        }
+      }
+    }
+    setNewsletter(newNewsletterValue);
+  }, [primaryAddress]);
 
   //TODO: Add button functionality
 

@@ -37,4 +37,5 @@ fragment ContactPrimaryPerson on Person {
   primaryEmailAddress {
     email
   }
+  optoutEnewsletter
 }
