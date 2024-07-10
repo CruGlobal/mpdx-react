@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useApolloClient } from '@apollo/client';
 import {
   Box,
@@ -9,10 +9,13 @@ import {
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   MultiselectFilter,
@@ -90,6 +93,12 @@ interface Props {
   setContactFocus: SetContactFocus;
 }
 
+export enum UpdateTypeEnum {
+  Change = 'CHANGE',
+  DontChange = 'DONT_CHANGE',
+  Hide = 'HIDE',
+}
+
 const FixCommitmentInfo: React.FC<Props> = ({
   accountListId,
   setContactFocus,
@@ -98,13 +107,27 @@ const FixCommitmentInfo: React.FC<Props> = ({
   const [hideModalState, setHideModalState] = useState<ModalState>(
     defaultHideModalState,
   );
+  const [descriptionBoxHeight, setDescriptionBoxHeight] = useState<number>(0);
+  const descriptionBoxRef = useRef<HTMLDivElement | null>(null);
+  const headingBoxRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
   const client = useApolloClient();
-  const { data, loading } = useGetInvalidStatusesQuery({
+  const { data, loading, fetchMore } = useGetInvalidStatusesQuery({
     variables: { accountListId },
+    nextFetchPolicy: 'no-cache',
   });
+
+  useEffect(() => {
+    if (descriptionBoxRef.current && headingBoxRef.current) {
+      setDescriptionBoxHeight(
+        descriptionBoxRef?.current.clientHeight +
+          headingBoxRef?.current.clientHeight,
+      );
+    }
+  });
+
   const { data: contactFilterGroups, loading: loadingStatuses } =
     useContactFiltersQuery({
       variables: {
@@ -132,10 +155,9 @@ const FixCommitmentInfo: React.FC<Props> = ({
           status.value !== 'ACTIVE',
       )
     : [{ name: '', value: '' }];
-  //TODO: Make currency field a select element
 
   const updateContact = async (
-    updateType: string,
+    updateType: UpdateTypeEnum,
     id?: string,
     status?: string,
     pledgeCurrency?: string,
@@ -215,15 +237,15 @@ const FixCommitmentInfo: React.FC<Props> = ({
 
   return (
     <Box className={classes.outer} data-testid="Home">
-      {!loading && !updating && !loadingStatuses && data ? (
+      {!updating && !loadingStatuses && data ? (
         <Grid container className={classes.container}>
-          <Grid item xs={12}>
+          <Grid item xs={12} ref={headingBoxRef}>
             <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
             <Divider className={classes.divider} />
           </Grid>
           {data.contacts?.nodes.length > 0 ? (
             <>
-              <Grid item xs={12}>
+              <Grid item xs={12} ref={descriptionBoxRef}>
                 <Box className={classes.descriptionBox}>
                   <Typography>
                     <strong>
@@ -246,45 +268,48 @@ const FixCommitmentInfo: React.FC<Props> = ({
               </Grid>
 
               <Grid item xs={12}>
-                <Box>
-                  {data.contacts.nodes.map((contact) => (
-                    <Contact
-                      id={contact.id}
-                      name={contact.name}
-                      key={contact.id}
-                      statusTitle={
-                        contact.status
-                          ? contactPartnershipStatus[contact.status]
-                          : ''
-                      }
-                      statusValue={contact.status || ''}
-                      amount={contact.pledgeAmount || 0}
-                      amountCurrency={contact.pledgeCurrency || ''}
-                      frequencyTitle={
-                        contact.pledgeFrequency
-                          ? frequencies[contact.pledgeFrequency]
-                          : ''
-                      }
-                      frequencyValue={contact.pledgeFrequency || ''}
-                      hideFunction={() => handleHideModalOpen(contact)}
-                      updateFunction={updateContact}
-                      statuses={contactStatuses || [{ name: '', value: '' }]}
-                      setContactFocus={setContactFocus}
-                    />
-                  ))}
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Box className={classes.footer}>
-                  <Typography>
-                    <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                      shouldUnescape
-                      values={{ value: data.contacts.nodes.length }}
-                      components={{ bold: <strong /> }}
-                    />
-                  </Typography>
-                </Box>
+                <InfiniteList
+                  loading={loading}
+                  data={data?.contacts?.nodes ?? []}
+                  style={{
+                    height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${descriptionBoxHeight}px)`,
+                  }}
+                  itemContent={(index, contact) => (
+                    <Box>
+                      <Contact
+                        id={contact.id}
+                        name={contact.name}
+                        key={contact.id}
+                        statusTitle={
+                          contact.status
+                            ? contactPartnershipStatus[contact.status]
+                            : ''
+                        }
+                        statusValue={contact.status || ''}
+                        amount={contact.pledgeAmount || 0}
+                        amountCurrency={contact.pledgeCurrency || ''}
+                        frequencyTitle={
+                          contact.pledgeFrequency
+                            ? frequencies[contact.pledgeFrequency]
+                            : ''
+                        }
+                        frequencyValue={contact.pledgeFrequency || ''}
+                        hideFunction={() => handleHideModalOpen(contact)}
+                        updateFunction={updateContact}
+                        statuses={contactStatuses || [{ name: '', value: '' }]}
+                        setContactFocus={setContactFocus}
+                      />
+                    </Box>
+                  )}
+                  endReached={() =>
+                    data?.contacts?.pageInfo.hasNextPage &&
+                    fetchMore({
+                      variables: {
+                        after: data.contacts?.pageInfo.endCursor,
+                      },
+                    })
+                  }
+                />
               </Grid>
             </>
           ) : (
@@ -303,7 +328,9 @@ const FixCommitmentInfo: React.FC<Props> = ({
             { source: hideModalState.contact.name },
           )}
           handleClose={() => setHideModalState(defaultHideModalState)}
-          mutation={() => updateContact('HIDE', hideModalState?.contact?.id)}
+          mutation={() =>
+            updateContact(UpdateTypeEnum.Hide, hideModalState?.contact?.id)
+          }
         />
       )}
     </Box>
