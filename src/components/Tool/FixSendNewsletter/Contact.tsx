@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
 import {
@@ -98,7 +99,7 @@ const Contact = ({
   setContactFocus,
 }: Props): ReactElement => {
   const { t } = useTranslation();
-  const [newsletter, setNewsletter] = useState('BOTH');
+  const [newsletter, setNewsletter] = useState(SendNewsletterEnum.Both);
   const { classes } = useStyles();
 
   //TODO: Add button functionality
@@ -108,7 +109,7 @@ const Contact = ({
       | React.ChangeEvent<HTMLSelectElement>
       | React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ): void => {
-    setNewsletter(event.target.value);
+    setNewsletter(event.target.value as SendNewsletterEnum);
   };
 
   const handleContactNameClick = () => {
@@ -159,10 +160,14 @@ const Contact = ({
                     value={newsletter}
                     onChange={(event) => handleChange(event)}
                   >
-                    <option value="PHYSICAL">{t('Physical')}</option>
-                    <option value="EMAIL">{t('Email')}</option>
-                    <option value="BOTH">{t('Both')}</option>
-                    <option value="NONE">{t('None')}</option>
+                    <option value={SendNewsletterEnum.Physical}>
+                      {t('Physical')}
+                    </option>
+                    <option value={SendNewsletterEnum.Email}>
+                      {t('Email')}
+                    </option>
+                    <option value={SendNewsletterEnum.Both}>{t('Both')}</option>
+                    <option value={SendNewsletterEnum.None}>{t('None')}</option>
                   </NativeSelect>
                 </Box>
               </Grid>
