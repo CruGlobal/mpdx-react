@@ -108,8 +108,8 @@ const FixCommitmentInfo: React.FC<Props> = ({
     defaultHideModalState,
   );
   const [descriptionBoxHeight, setDescriptionBoxHeight] = useState<number>(0);
-  const descriptionBoxRef = useRef<HTMLDivElement>(null);
-  const headingBoxRef = useRef<HTMLDivElement>(null);
+  const descriptionBoxRef = useRef<HTMLDivElement | null>(null);
+  const headingBoxRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
@@ -120,13 +120,13 @@ const FixCommitmentInfo: React.FC<Props> = ({
   });
 
   useEffect(() => {
-    if (descriptionBoxRef && headingBoxRef) {
+    if (descriptionBoxRef.current && headingBoxRef.current) {
       setDescriptionBoxHeight(
         descriptionBoxRef?.current.clientHeight +
           headingBoxRef?.current.clientHeight,
       );
     }
-  }, []);
+  });
 
   const { data: contactFilterGroups, loading: loadingStatuses } =
     useContactFiltersQuery({
