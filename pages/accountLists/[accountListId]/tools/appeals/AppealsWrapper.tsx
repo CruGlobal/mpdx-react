@@ -60,11 +60,10 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
         appealIdParams[1].toLowerCase() === 'list')
     ) {
       setPage(PageEnum.DetailsPage);
-      setContactId([appealIdParams[1]]);
+      setContactId(appealIdParams);
     } else if (length > 2) {
       setPage(PageEnum.ContactsPage);
-      const appealIdParamsCopy = [...appealIdParams];
-      setContactId(appealIdParamsCopy.shift());
+      setContactId(appealIdParams);
     }
   }, [appealIdParams]);
 
