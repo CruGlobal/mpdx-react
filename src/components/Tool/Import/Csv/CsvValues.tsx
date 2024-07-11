@@ -135,7 +135,9 @@ const CsvValues: React.FC<CsvValuesProps> = ({
                       <TableHead>
                         <TableRow>
                           <TableCell>{fileHeader(constantKey)}</TableCell>
-                          <TableCell>{supportedHeaders[constantKey]}</TableCell>
+                          <TableCell>
+                            {t(supportedHeaders[constantKey])}
+                          </TableCell>
                         </TableRow>
                       </TableHead>
 
