@@ -17,6 +17,7 @@ import {
 } from '../../AppealsContext/AppealsContext';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
+import { useContactsCountQuery } from './contactsCount.generated';
 
 const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -45,13 +46,78 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const { appealListView, setAppealListView } = React.useContext(
-    AppealsContext,
-  ) as AppealsType;
+  const {
+    accountListId,
+    appealId,
+    activeFilters,
+    setActiveFilters,
+    selectedIds,
+    deselectAll,
+  } = React.useContext(AppealsContext) as AppealsType;
 
-  const handleFilterItemClick = (newAppealListView) => {
-    setAppealListView(newAppealListView);
+  const { data: askedCount, loading: askedLoading } = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        appeal: [appealId || ''],
+        appealStatus: AppealListViewEnum.Asked,
+      },
+    },
+  });
+
+  const { data: excludedCount, loading: excludedLoading } =
+    useContactsCountQuery({
+      variables: {
+        accountListId: accountListId || '',
+        contactsFilter: {
+          appeal: [appealId || ''],
+          appealStatus: AppealListViewEnum.Excluded,
+        },
+      },
+    });
+
+  const { data: committedCount, loading: committedLoading } =
+    useContactsCountQuery({
+      variables: {
+        accountListId: accountListId || '',
+        contactsFilter: {
+          appeal: [appealId || ''],
+          appealStatus: AppealListViewEnum.Committed,
+        },
+      },
+    });
+
+  const { data: givenCount, loading: givenLoading } = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        appeal: [appealId || ''],
+        appealStatus: AppealListViewEnum.Given,
+      },
+    },
+  });
+
+  const { data: receivedCount, loading: receivedLoading } =
+    useContactsCountQuery({
+      variables: {
+        accountListId: accountListId || '',
+        contactsFilter: {
+          appeal: [appealId || ''],
+          appealStatus: AppealListViewEnum.Received,
+        },
+      },
+    });
+
+  const handleFilterItemClick = (newAppealListView: AppealListViewEnum) => {
+    deselectAll();
+    setActiveFilters({
+      ...activeFilters,
+      appealStatus: newAppealListView,
+    });
   };
+
+  const appealListView = activeFilters.appealStatus;
+  const noContactsSelected = !selectedIds.length;
 
   const handleFilterButtonClick = () => {};
 
@@ -81,35 +147,40 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 <AppealsListFilterPanelItem
                   id={AppealListViewEnum.Given}
                   title={t('Given')}
-                  value={0}
+                  count={givenCount?.contacts.totalCount}
+                  loading={givenLoading}
                   isSelected={appealListView === AppealListViewEnum.Given}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
                   id={AppealListViewEnum.Received}
                   title={t('Received')}
-                  value={0}
+                  count={receivedCount?.contacts.totalCount}
+                  loading={receivedLoading}
                   isSelected={appealListView === AppealListViewEnum.Received}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
                   id={AppealListViewEnum.Committed}
                   title={t('Committed')}
-                  value={0}
+                  count={committedCount?.contacts.totalCount}
+                  loading={committedLoading}
                   isSelected={appealListView === AppealListViewEnum.Committed}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
                   id={AppealListViewEnum.Asked}
                   title={t('Asked')}
-                  value={0}
+                  count={askedCount?.contacts.totalCount}
+                  loading={askedLoading}
                   isSelected={appealListView === AppealListViewEnum.Asked}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
                   id={AppealListViewEnum.Excluded}
                   title={t('Excluded')}
-                  value={0}
+                  count={excludedCount?.contacts.totalCount}
+                  loading={excludedLoading}
                   isSelected={appealListView === AppealListViewEnum.Excluded}
                   onClick={handleFilterItemClick}
                 />
@@ -117,14 +188,18 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 <AppealsListFilterPanelButton
                   title={t('Export to CSV')}
                   onClick={handleFilterButtonClick}
-                  buttonText={t('Export {{number}} Selected', { number: 0 })}
-                  disabled={false}
+                  buttonText={t('Export {{number}} Selected', {
+                    number: selectedIds.length,
+                  })}
+                  disabled={noContactsSelected}
                 />
                 <AppealsListFilterPanelButton
                   title={t('Export Emails')}
                   onClick={handleFilterButtonClick}
-                  buttonText={t('Export {{number}} Selected', { number: 0 })}
-                  disabled={false}
+                  buttonText={t('Export {{number}} Selected', {
+                    number: selectedIds.length,
+                  })}
+                  disabled={noContactsSelected}
                 />
                 <AppealsListFilterPanelButton
                   title={t('Add Contact to Appeal')}

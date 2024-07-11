@@ -1,6 +1,12 @@
 import React, { ReactElement } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
-import { Box, ListItem, ListItemText } from '@mui/material';
+import {
+  Box,
+  ListItem,
+  ListItemText,
+  Skeleton,
+  Typography,
+} from '@mui/material';
 import clsx from 'clsx';
 import { makeStyles } from 'tss-react/mui';
 import theme from 'src/theme';
@@ -39,15 +45,17 @@ interface Props {
   id: AppealListViewEnum;
   title: string;
   isSelected: boolean;
-  value: number;
-  onClick: (id: string) => void;
+  count?: number;
+  loading: boolean;
+  onClick: (newAppealListView: AppealListViewEnum) => void;
 }
 
 export const AppealsListFilterPanelItem = ({
   id,
   title,
   isSelected,
-  value,
+  count,
+  loading,
   onClick,
 }: Props): ReactElement => {
   const { classes } = useStyles();
@@ -70,6 +78,10 @@ export const AppealsListFilterPanelItem = ({
         }}
         primary={title}
       />
+
+      {loading && count === undefined && (
+        <Skeleton width={'25px'} height={'35px'} />
+      )}
       <Box
         className={clsx(
           classes.valueText,
@@ -82,7 +94,7 @@ export const AppealsListFilterPanelItem = ({
             : classes.gold,
         )}
       >
-        {value}
+        <Typography variant="body2">{count}</Typography>
       </Box>
       <ArrowForwardIos fontSize="small" color="disabled" />
     </ListItem>

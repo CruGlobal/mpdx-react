@@ -11,7 +11,6 @@ import { type DebouncedFunc, debounce, omit } from 'lodash';
 import {
   ContactFiltersQuery,
   useContactFiltersQuery,
-  useContactsQuery,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { PageEnum } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
@@ -26,11 +25,12 @@ import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { useContactsQuery } from './contacts.generated';
 
 export enum AppealListViewEnum {
-  Given = 'given',
-  Received = 'received',
-  Committed = 'committed',
+  Given = 'processed',
+  Received = 'received_not_processed',
+  Committed = 'not_received',
   Asked = 'asked',
   Excluded = 'excluded',
 }
@@ -182,6 +182,7 @@ export const AppealsProvider: React.FC<Props> = ({
       ...starredFilter,
       wildcardSearch: searchTerm as string,
       ids: [],
+      appeal: [appealId || ''],
     }),
     [sanitizedFilters, starredFilter, searchTerm],
   );
@@ -327,6 +328,9 @@ export const AppealsProvider: React.FC<Props> = ({
       pathname += '/flows';
     } else if (viewMode === TableViewModeEnum.List) {
       pathname += '/list';
+    }
+    if (id) {
+      pathname += `/${id}`;
     }
 
     push({
