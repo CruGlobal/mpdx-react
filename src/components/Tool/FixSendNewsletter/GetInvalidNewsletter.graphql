@@ -20,6 +20,9 @@ query GetInvalidNewsletter($accountListId: ID!) {
       }
     }
   }
+  constant {
+    ...Status
+  }
 }
 
 fragment ContactPrimaryAddress on Address {
@@ -38,4 +41,11 @@ fragment ContactPrimaryPerson on Person {
     email
   }
   optoutEnewsletter
+}
+
+fragment Status on Constant {
+  status {
+    id
+    value
+  }
 }
