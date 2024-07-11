@@ -5,6 +5,7 @@ import {
   TableViewModeEnum,
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
+import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import { AppealsLeftPanel } from './AppealDetails/AppealLeftPanel/AppealsLeftPanel';
 import { AppealsMainPanel } from './AppealDetails/AppealsMainPanel/AppealsMainPanel';
 import { AppealsContext, AppealsType } from './AppealsContext/AppealsContext';
@@ -29,6 +30,7 @@ const AppealsDetailsPage: React.FC = () => {
               viewMode === TableViewModeEnum.Map,
             )
           }
+          contextType={ContactContextTypesEnum.Appeals}
         />
       }
       rightOpen={contactDetailsOpen}

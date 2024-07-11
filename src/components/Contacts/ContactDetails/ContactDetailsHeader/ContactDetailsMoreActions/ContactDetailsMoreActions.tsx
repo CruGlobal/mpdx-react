@@ -23,9 +23,14 @@ import {
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import {
+  AppealsContext,
+  AppealsType,
+} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import Modal from 'src/components/common/Modal/Modal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import {
   ContactDetailContext,
   ContactDetailsType,
@@ -117,17 +122,19 @@ interface ContactDetailsMoreAcitionsProps {
   contactId: string;
   status: StatusEnum;
   onClose: () => void;
+  contextType?: ContactContextTypesEnum;
 }
 
 export const ContactDetailsMoreAcitions: React.FC<
   ContactDetailsMoreAcitionsProps
-> = ({ contactId, status, onClose }) => {
+> = ({ contactId, status, onClose, contextType }) => {
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { t } = useTranslation();
   const { query, push } = useRouter();
-  const { accountListId, searchTerm } = React.useContext(
-    ContactsContext,
-  ) as ContactsType;
+  const { accountListId, searchTerm } =
+    contextType === ContactContextTypesEnum.Contacts
+      ? (React.useContext(ContactsContext) as ContactsType)
+      : (React.useContext(AppealsContext) as AppealsType);
 
   const {
     referralsModalOpen,
