@@ -3,11 +3,11 @@ import { styled } from '@mui/material/styles';
 import { TFunction } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import Loading from 'src/components/Loading';
-import CsvHeaders from './CsvHeaders';
 import { CsvImportViewStepEnum } from './CsvImportContext';
-import CsvPreview from './CsvPreview';
-import CsvUpload from './CsvUpload';
-import CsvValues from './CsvValues';
+import { DynamicCsvHeaders } from './DynamicCsvHeaders';
+import { DynamicCsvPreview } from './DynamicCsvPreview';
+import { DynamicCsvUpload } from './DynamicCsvUpload';
+import { DynamicCsvValues } from './DynamicCsvValues';
 import { HeaderBox } from './HeaderBox';
 
 const useStyles = makeStyles()(() => ({
@@ -67,7 +67,7 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
     switch (currentTab) {
       case CsvImportViewStepEnum.Upload:
         return (
-          <CsvUpload
+          <DynamicCsvUpload
             accountListId={accountListId}
             setCurrentTab={setCurrentTab}
             setCsvFileId={setCsvFileId}
@@ -75,21 +75,21 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
         );
       case CsvImportViewStepEnum.Headers:
         return (
-          <CsvHeaders
+          <DynamicCsvHeaders
             accountListId={accountListId}
             setCurrentTab={setCurrentTab}
           />
         );
       case CsvImportViewStepEnum.Values:
         return (
-          <CsvValues
+          <DynamicCsvValues
             accountListId={accountListId}
             setCurrentTab={setCurrentTab}
           />
         );
       case CsvImportViewStepEnum.Preview:
         return (
-          <CsvPreview
+          <DynamicCsvPreview
             accountListId={accountListId}
             setCurrentTab={setCurrentTab}
           />
