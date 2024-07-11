@@ -28,7 +28,7 @@ import {
   InvalidAddressesDocument,
   InvalidAddressesQuery,
   useInvalidAddressesQuery,
-  useUpdateContactAddressMutation,
+  useUpdateContactMailingAddressMutation,
 } from './GetInvalidAddresses.generated';
 
 export type HandleSingleConfirmProps = {
@@ -146,7 +146,7 @@ const FixSendNewsletter: React.FC<Props> = ({
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
-  const [updateAddress] = useUpdateContactAddressMutation();
+  const [updateAddress] = useUpdateContactMailingAddressMutation();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleSingleConfirm = async ({
