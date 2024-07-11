@@ -83,7 +83,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                     variant="text"
                     style={{
                       display: 'inline',
-                      width: 240,
+                      width: 200,
                       fontSize: 24,
                     }}
                   />
@@ -110,7 +110,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                     variant="text"
                     style={{
                       display: 'inline',
-                      width: 240,
+                      width: 100,
                       fontSize: 24,
                     }}
                   />

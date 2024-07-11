@@ -65,7 +65,7 @@ export const ContactListRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     },
   }));
 
-  const onClick = () => {
+  const handleContactClick = () => {
     onContactSelected(contact.id);
   };
 
@@ -94,7 +94,7 @@ export const ContactListRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   return (
     <ListItemButton
       focusRipple
-      onClick={onClick}
+      onClick={handleContactClick}
       onMouseEnter={preloadContactsRightPanel}
       data-testid="rowButton"
     >

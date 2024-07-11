@@ -136,6 +136,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {contactsView !== TableViewModeEnum.Map && (
           <Hidden xsDown>
             <StyledCheckbox
+              name="check all"
               checked={headerCheckboxState === ListHeaderCheckBoxState.Checked}
               color="secondary"
               indeterminate={
