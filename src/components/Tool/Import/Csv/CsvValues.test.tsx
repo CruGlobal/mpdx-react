@@ -5,11 +5,8 @@ import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import theme from 'src/theme';
-import {
-  CsvImportContext,
-  CsvImportType,
-  CsvImportViewStepEnum,
-} from './CsvImportContext';
+import { CsvImportContext, CsvImportViewStepEnum } from './CsvImportContext';
+import { constants, resetUploadData } from './CsvImportMocks';
 import CsvValues, { CsvValuesProps } from './CsvValues';
 import { save } from './csvImportService';
 
@@ -24,82 +21,8 @@ const setInitialData = jest.fn();
 
 const setCurrentTab = jest.fn();
 
-const constants = {
-  sendAppeals: [
-    { id: 'true', value: 'Yes' },
-    { id: 'false', value: 'No' },
-  ],
-  newsletter: [
-    {
-      id: 'Physical',
-      value: 'Physical',
-    },
-    {
-      id: 'Email',
-      value: 'Email',
-    },
-    {
-      id: 'Both',
-      value: 'Both',
-    },
-    {
-      id: 'None',
-      value: 'None',
-    },
-  ],
-  pledgeCurrency: [
-    {
-      code: 'USD',
-      codeSymbolString: 'USD $',
-      name: 'USD',
-    },
-  ],
-};
-
 const initializeData = () => {
-  uploadData = {
-    id: 'csvFileId',
-    fileConstants: {
-      weird: 'Odd Value',
-      foo: 'bar',
-    },
-    fileConstantsMappings: {
-      send_appeals: [
-        {
-          id: '',
-          values: ['Odd Value'],
-        },
-      ],
-      newsletter: [
-        {
-          id: '',
-          values: ['bar'],
-        },
-      ],
-    },
-    fileHeaders: {
-      first_name: 'first_name',
-      last_name: 'last_name',
-      full_name: 'full_name',
-      weird: 'weird',
-      foo: 'foo',
-    },
-    fileHeadersMappings: {
-      first_name: 'first_name',
-      last_name: 'last_name',
-      full_name: 'full_name',
-      weird: 'send_appeals',
-      foo: 'newsletter',
-    },
-    valuesToConstantsMappings: {
-      send_appeals: {
-        'Odd Value': null,
-      },
-      newsletter: {
-        bar: null,
-      },
-    },
-  } as CsvImportType;
+  uploadData = resetUploadData();
   initialData = JSON.parse(JSON.stringify(uploadData));
 };
 

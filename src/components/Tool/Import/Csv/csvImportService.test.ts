@@ -1,4 +1,5 @@
 import { CsvImportType } from './CsvImportContext';
+import { constants, supportedHeaders } from './CsvImportMocks';
 import {
   SaveCsvProps,
   constantsMappingsToValueMappings,
@@ -46,120 +47,6 @@ jest.mock('./uploadCsvFile', () => {
 });
 
 describe('csvImportService', () => {
-  const importConstants = {
-    commitment_currency: {
-      usd: 'USD',
-      '': '',
-    },
-    commitmentCurrency: {
-      usd: 'USD',
-      '': '',
-    },
-    commitment_frequency: {
-      '0_23076923076923': '0.23076923076923',
-      '0_46153846153846': '0.46153846153846',
-      '1_0': '1.0',
-      '2_0': '2.0',
-      '3_0': '3.0',
-      '4_0': '4.0',
-      '6_0': '6.0',
-      '12_0': '12.0',
-      '24_0': '24.0',
-      '': '',
-    },
-    commitmentFrequency: {
-      '0_23076923076923': '0.23076923076923',
-      '0_46153846153846': '0.46153846153846',
-      '1_0': '1.0',
-      '2_0': '2.0',
-      '3_0': '3.0',
-      '4_0': '4.0',
-      '6_0': '6.0',
-      '12_0': '12.0',
-      '24_0': '24.0',
-      '': '',
-    },
-    likely_to_give: {
-      least_likely: 'Least Likely',
-      likely: 'Likely',
-      most_likely: 'Most Likely',
-      '': '',
-    },
-    likelyToGive: {
-      leastLikely: 'Least Likely',
-      likely: 'Likely',
-      mostLikely: 'Most Likely',
-      '': '',
-    },
-    newsletter: {
-      physical: 'Physical',
-      email: 'Email',
-      both: 'Both',
-      '': '',
-    },
-    send_appeals: {
-      true: 'true',
-      false: 'false',
-      '': '',
-    },
-    sendAppeals: {
-      true: 'true',
-      false: 'false',
-      '': '',
-    },
-    status: {
-      never_contacted: 'Never Contacted',
-      ask_in_future: 'Ask in Future',
-      cultivate_relationship: 'Cultivate Relationship',
-      contact_for_appointment: 'Contact for Appointment',
-      appointment_scheduled: 'Appointment Scheduled',
-      call_for_decision: 'Call for Decision',
-      partner_financial: 'Partner - Financial',
-      partner_special: 'Partner - Special',
-      partner_pray: 'Partner - Pray',
-      not_interested: 'Not Interested',
-      unresponsive: 'Unresponsive',
-      never_ask: 'Never Ask',
-      research_abandoned: 'Research Abandoned',
-      expired_referral: 'Expired Referral',
-      '': '',
-    },
-  };
-
-  const supportedHeaders = {
-    church: 'Church',
-    city: 'City',
-    commitment_amount: 'Commitment Amount',
-    commitment_currency: 'Commitment Currency',
-    commitment_frequency: 'Commitment Frequency',
-    country: 'Country',
-    email_1: 'Email 1',
-    email_2: 'Email 2',
-    envelope_greeting: 'Envelope Greeting',
-    first_name: 'First Name',
-    greeting: 'Greeting',
-    last_name: 'Last Name',
-    likely_to_give: 'Likely To Give',
-    metro_area: 'Metro Area',
-    newsletter: 'Newsletter',
-    notes: 'Notes',
-    phone_1: 'Phone 1',
-    phone_2: 'Phone 2',
-    phone_3: 'Phone 3',
-    region: 'Region',
-    send_appeals: 'Send Goals?',
-    spouse_email: 'Spouse Email',
-    spouse_first_name: 'Spouse First Name',
-    spouse_last_name: 'Spouse Last Name',
-    spouse_phone: 'Spouse Phone',
-    state: 'State',
-    status: 'Status',
-    street: 'Street',
-    tags: 'Tags',
-    website: 'Website',
-    zip: 'Zip',
-  };
-
   describe('constantsMappingsToValueMappings', () => {
     it('should return deserialized object', () => {
       const fileConstants = {
@@ -239,7 +126,7 @@ describe('csvImportService', () => {
           formattedData,
           fileConstants,
           fileHeadersMappings,
-          importConstants,
+          constants,
         ),
       ).toEqual(data);
     });
@@ -274,7 +161,7 @@ describe('csvImportService', () => {
           formattedData,
           fileConstants,
           fileHeadersMappings,
-          importConstants,
+          constants,
         ),
       ).toEqual(data);
     });
@@ -301,7 +188,7 @@ describe('csvImportService', () => {
       await save({
         uploadData: data,
         initialData: data,
-        constants: importConstants,
+        constants,
         accountListId,
         t,
         supportedHeaders,
@@ -329,7 +216,7 @@ describe('csvImportService', () => {
         const transformedData = await save({
           uploadData: data,
           initialData: data,
-          constants: importConstants,
+          constants,
           accountListId,
           t,
           supportedHeaders,
@@ -350,7 +237,7 @@ describe('csvImportService', () => {
         await save({
           uploadData: data,
           initialData: data,
-          constants: importConstants,
+          constants,
           accountListId,
           t,
           supportedHeaders,
@@ -389,7 +276,7 @@ describe('csvImportService', () => {
         const transformedData = await save({
           uploadData: data,
           initialData: data,
-          constants: importConstants,
+          constants,
           accountListId,
           t,
           supportedHeaders,
@@ -433,7 +320,7 @@ describe('csvImportService', () => {
           const transformedData = await save({
             uploadData: data,
             initialData: data,
-            constants: importConstants,
+            constants,
             accountListId,
             t,
             supportedHeaders,
@@ -470,7 +357,7 @@ describe('csvImportService', () => {
           const transformedData = await save({
             uploadData: data,
             initialData: data,
-            constants: importConstants,
+            constants,
             accountListId,
             t,
             supportedHeaders,
@@ -512,7 +399,7 @@ describe('csvImportService', () => {
           const transformedData = await save({
             uploadData: data,
             initialData: data,
-            constants: importConstants,
+            constants,
             accountListId,
             t,
             supportedHeaders,
@@ -560,7 +447,7 @@ describe('csvImportService', () => {
           await save({
             uploadData,
             initialData,
-            constants: importConstants,
+            constants,
             accountListId,
             t,
             supportedHeaders,
@@ -588,7 +475,7 @@ describe('csvImportService', () => {
         const transformedData = await save({
           uploadData: data,
           initialData: data,
-          constants: importConstants,
+          constants,
           accountListId,
           t,
           supportedHeaders,
@@ -602,7 +489,7 @@ describe('csvImportService', () => {
         const transformedData = await save({
           uploadData: data,
           initialData: data,
-          constants: importConstants,
+          constants,
           accountListId,
           t,
           supportedHeaders,
@@ -627,7 +514,7 @@ describe('csvImportService', () => {
           await save({
             uploadData: data,
             initialData: data,
-            constants: importConstants,
+            constants,
             accountListId,
             t,
             supportedHeaders,

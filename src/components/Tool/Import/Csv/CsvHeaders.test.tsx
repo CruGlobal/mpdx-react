@@ -11,17 +11,12 @@ import {
   CsvImportType,
   CsvImportViewStepEnum,
 } from './CsvImportContext';
+import { constants, uploadDataFileHeaders } from './CsvImportMocks';
 import { get, save } from './csvImportService';
 
 jest.mock('./csvImportService');
 jest.mock('src/components/Constants/UseApiConstants');
 
-const constants = {
-  sendAppeals: [
-    { id: 'true', value: 'Yes' },
-    { id: 'false', value: 'No' },
-  ],
-};
 let uploadData;
 const setUploadData = jest.fn();
 
@@ -109,11 +104,7 @@ describe('CsvHeaders', () => {
     });
 
     it('should not show errors if required headers are mapped', async () => {
-      uploadData.fileHeaders = {
-        first_name: 'first_name',
-        last_name: 'last_name',
-        full_name: 'full_name',
-      };
+      uploadData.fileHeaders = uploadDataFileHeaders;
       const { queryByText } = render(
         <CsvHeadersMockComponent
           accountListId="wee"
@@ -197,12 +188,7 @@ describe('CsvHeaders', () => {
 
   describe('handleUpdateHeaders', () => {
     beforeEach(() => {
-      uploadData.fileHeaders = {
-        first_name: 'Wee',
-        last_name: 'Foo',
-        full_name: 'Wee Foo',
-        weird: 'Odd Value',
-      };
+      uploadData.fileHeaders = uploadDataFileHeaders;
     });
 
     it('should disable options that are already mapped to other fields', async () => {
@@ -330,12 +316,7 @@ describe('CsvHeaders', () => {
 
   describe('handleSave', () => {
     beforeEach(() => {
-      uploadData.fileHeaders = {
-        first_name: 'Wee',
-        last_name: 'Foo',
-        full_name: 'Wee Foo',
-        weird: 'Odd Value',
-      };
+      uploadData.fileHeaders = uploadDataFileHeaders;
       uploadData.fileHeadersMappings = {
         first_name: 'first_name',
         last_name: 'last_name',
