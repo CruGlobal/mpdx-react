@@ -74,13 +74,25 @@ const DeleteModal: React.FC<Props> = ({
               flexDirection="column"
               alignItems="center"
               className={classes.headerBox}
+              position="relative"
             >
-              <Typography variant="h5" style={{ marginTop: -theme.spacing(1) }}>
-                {t('Confirm')}
-              </Typography>
-              <IconButton onClick={handleClose} className={classes.iconButton}>
+              <IconButton
+                onClick={handleClose}
+                className={classes.iconButton}
+                style={{
+                  position: 'absolute',
+                  top: -4,
+                  right: 0,
+                }}
+              >
                 <Icon path={mdiCloseThick} size={1} />
               </IconButton>
+              <Typography
+                variant="h5"
+                style={{ marginTop: -theme.spacing(1), alignSelf: 'center' }}
+              >
+                {t('Confirm')}
+              </Typography>
             </Box>
           }
         />
