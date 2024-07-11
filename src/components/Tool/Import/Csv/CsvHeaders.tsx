@@ -283,7 +283,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
         </Table>
         <Box
           sx={{
-            backgroundColor: '#f5f5f5',
+            backgroundColor: 'cruGrayLight.main',
             padding: '10px 15px',
             display: 'flex',
             justifyContent: 'space-between',

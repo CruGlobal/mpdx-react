@@ -1,7 +1,9 @@
 import React from 'react';
+import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
+import theme from 'src/theme';
 import {
   CsvImportContext,
   CsvImportType,
@@ -54,11 +56,13 @@ describe('CsvUpload', () => {
   it('should show the max file size', () => {
     const { getByTestId } = render(
       <TestWrapper>
-        <CsvUpload
-          accountListId="wee"
-          setCurrentTab={setCurrentTab}
-          setCsvFileId={setCsvFileId}
-        ></CsvUpload>
+        <ThemeProvider theme={theme}>
+          <CsvUpload
+            accountListId="wee"
+            setCurrentTab={setCurrentTab}
+            setCsvFileId={setCsvFileId}
+          ></CsvUpload>
+        </ThemeProvider>
       </TestWrapper>,
     );
 
@@ -70,11 +74,13 @@ describe('CsvUpload', () => {
   it('should fail to upload a file that is too large', async () => {
     const { getByTestId } = render(
       <TestWrapper>
-        <CsvUpload
-          accountListId="wee"
-          setCurrentTab={setCurrentTab}
-          setCsvFileId={setCsvFileId}
-        ></CsvUpload>
+        <ThemeProvider theme={theme}>
+          <CsvUpload
+            accountListId="wee"
+            setCurrentTab={setCurrentTab}
+            setCsvFileId={setCsvFileId}
+          ></CsvUpload>
+        </ThemeProvider>
       </TestWrapper>,
     );
 
@@ -113,21 +119,23 @@ describe('CsvUpload', () => {
 
     const { getByTestId } = render(
       <TestWrapper>
-        <CsvImportContext.Provider
-          value={{
-            uploadData,
-            setUploadData,
-            initialData,
-            setInitialData,
-            csvFileId: '',
-          }}
-        >
-          <CsvUpload
-            accountListId="wee"
-            setCurrentTab={setCurrentTab}
-            setCsvFileId={setCsvFileId}
-          ></CsvUpload>
-        </CsvImportContext.Provider>
+        <ThemeProvider theme={theme}>
+          <CsvImportContext.Provider
+            value={{
+              uploadData,
+              setUploadData,
+              initialData,
+              setInitialData,
+              csvFileId: '',
+            }}
+          >
+            <CsvUpload
+              accountListId="wee"
+              setCurrentTab={setCurrentTab}
+              setCsvFileId={setCsvFileId}
+            ></CsvUpload>
+          </CsvImportContext.Provider>
+        </ThemeProvider>
       </TestWrapper>,
     );
 

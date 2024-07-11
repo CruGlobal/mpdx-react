@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-export const HeaderBox = styled(Box)(() => ({
-  backgroundColor: '#f5f5f5',
+export const HeaderBox = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.cruGrayLight.main,
   borderBottom: '1px solid #bfbfbf',
   borderRadius: '1px',
   boxShadow: '0 1px 1px rgba(0, 0, 0, .05)',
