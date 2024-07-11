@@ -13,11 +13,17 @@ import {
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { ContactListRow } from '../ContactListRow/ContactListRow';
-import { useAppealContactsQuery, useAppealQuery } from './appealInfo.generated';
+import { useAppealQuery } from './appealInfo.generated';
 
 export const ContactsList: React.FC = () => {
-  const { accountListId, appealId, isFiltered, searchTerm, setActiveFilters } =
-    React.useContext(AppealsContext) as AppealsType;
+  const {
+    accountListId,
+    appealId,
+    contactsQueryResult,
+    isFiltered,
+    searchTerm,
+    setActiveFilters,
+  } = React.useContext(AppealsContext) as AppealsType;
 
   const { data: appealInfo, loading: appealInfoLoading } = useAppealQuery({
     variables: {
@@ -27,13 +33,7 @@ export const ContactsList: React.FC = () => {
     skip: !accountListId || !appealId,
   });
 
-  const { data, loading, fetchMore } = useAppealContactsQuery({
-    variables: {
-      appealId: appealId || '',
-      first: 25,
-    },
-    skip: !appealId,
-  });
+  const { data, loading, fetchMore } = contactsQueryResult;
 
   return (
     <>
@@ -44,23 +44,23 @@ export const ContactsList: React.FC = () => {
 
       <InfiniteList
         loading={loading}
-        data={data?.appealContacts?.nodes ?? []}
+        data={data?.contacts?.nodes ?? []}
         style={{
           height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoHeight})`,
         }}
         itemContent={(index, contact) => (
           <ContactListRow
-            key={contact.contact.id}
-            contact={contact.contact}
+            key={contact.id}
+            contact={contact}
             useTopMargin={index === 0}
           />
         )}
-        groupBy={(item) => ({ label: item.contact.name[0].toUpperCase() })}
+        groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
         endReached={() =>
-          data?.appealContacts?.pageInfo.hasNextPage &&
+          data?.contacts?.pageInfo.hasNextPage &&
           fetchMore({
             variables: {
-              after: data.appealContacts?.pageInfo.endCursor,
+              after: data.contacts?.pageInfo.endCursor,
             },
           })
         }
@@ -68,7 +68,7 @@ export const ContactsList: React.FC = () => {
           <Box width="75%" margin="auto" mt={2}>
             <NullState
               page="contact"
-              totalCount={data?.appealContacts.totalCount || 0}
+              totalCount={data?.contacts.totalCount || 0}
               filtered={isFiltered || !!searchTerm}
               changeFilters={setActiveFilters}
             />

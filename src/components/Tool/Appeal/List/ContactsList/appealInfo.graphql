@@ -3,24 +3,3 @@ query Appeal($accountListId: ID!, $appealId: ID!) {
     ...AppealFields
   }
 }
-
-query AppealContacts($appealId: ID!, $after: String, $first: Int) {
-  appealContacts(appealId: $appealId, after: $after, first: $first) {
-    nodes {
-      id
-      contact {
-        id
-        name
-        pledgeAmount
-        pledgeFrequency
-        pledgeCurrency
-        pledgeReceived
-      }
-    }
-    pageInfo {
-      hasNextPage
-      endCursor
-    }
-    totalCount
-  }
-}
