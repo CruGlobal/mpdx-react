@@ -80,7 +80,7 @@ const FixSendNewsletter: React.FC<Props> = ({
     useUpdateContactNewsletterMutation();
 
   //TODO: Add deceased to contact filters
-  const updateContact = async (
+  const handleSingleConfirm = async (
     id: string,
     sendNewsletter: string,
   ): Promise<void> => {
@@ -200,7 +200,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                         createdAt: '',
                       }
                     }
-                    updateFunction={updateContact}
+                    handleSingleConfirm={handleSingleConfirm}
                     setContactFocus={setContactFocus}
                   />
                 ))}

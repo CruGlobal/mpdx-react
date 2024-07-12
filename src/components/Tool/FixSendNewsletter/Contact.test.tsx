@@ -21,7 +21,7 @@ const TestComponent = ({
       primaryPerson={primaryPerson}
       status=""
       primaryAddress={primaryAddress}
-      updateFunction={jest.fn()}
+      handleSingleConfirm={jest.fn()}
       setContactFocus={jest.fn()}
     />
   </ThemeProvider>
