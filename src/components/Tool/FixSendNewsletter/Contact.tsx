@@ -125,8 +125,6 @@ const Contact = ({
     setNewsletter(newNewsletterValue);
   }, [primaryAddress]);
 
-  //TODO: Add button functionality
-
   const handleChange = (
     event:
       | React.ChangeEvent<HTMLSelectElement>
