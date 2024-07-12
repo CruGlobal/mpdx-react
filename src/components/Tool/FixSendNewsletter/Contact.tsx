@@ -85,7 +85,11 @@ interface Props {
   status?: string;
   primaryAddress?: ContactPrimaryAddressFragment;
   source?: string;
-  handleSingleConfirm: (id: string, sendNewsletter: string) => Promise<void>;
+  handleSingleConfirm: (
+    id: string,
+    name: string,
+    sendNewsletter: string,
+  ) => Promise<void>;
   setContactFocus: SetContactFocus;
 }
 
@@ -252,7 +256,7 @@ const Contact = ({
             <Box className={classes.buttonTop}>
               <Button
                 variant="contained"
-                onClick={() => handleSingleConfirm(id, newsletter)}
+                onClick={() => handleSingleConfirm(id, name, newsletter)}
               >
                 <Icon
                   path={mdiCheckboxMarkedCircle}

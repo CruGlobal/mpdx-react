@@ -82,6 +82,7 @@ const FixSendNewsletter: React.FC<Props> = ({
   //TODO: Add deceased to contact filters
   const handleSingleConfirm = async (
     id: string,
+    name: string,
     sendNewsletter: string,
   ): Promise<void> => {
     const attributes = {
@@ -119,6 +120,12 @@ const FixSendNewsletter: React.FC<Props> = ({
           };
           cache.writeQuery({ ...query, data });
         }
+      },
+      onError() {
+        enqueueSnackbar(t(`Error updating contact ${name}`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
       },
     });
     enqueueSnackbar(t('Newsletter updated!'), {
