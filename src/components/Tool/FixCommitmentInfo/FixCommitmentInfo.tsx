@@ -15,7 +15,7 @@ import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/conta
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
-import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+// import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   MultiselectFilter,
@@ -69,7 +69,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-interface ContactType {
+export interface ContactType {
   id?: string | undefined;
   status?: string | undefined;
   name?: string | undefined;
@@ -78,14 +78,20 @@ interface ContactType {
   pledgeFrequency?: string | undefined;
 }
 
-export interface ModalState {
+export interface ModalStateType {
   open: boolean;
   contact: ContactType;
+  message: string;
+  title: string;
+  updateType: UpdateTypeEnum | null;
 }
 
-const defaultHideModalState = {
+const defaultModalState = {
   open: false,
   contact: {},
+  message: '',
+  title: '',
+  updateType: null,
 };
 
 interface Props {
@@ -104,9 +110,8 @@ const FixCommitmentInfo: React.FC<Props> = ({
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
-  const [hideModalState, setHideModalState] = useState<ModalState>(
-    defaultHideModalState,
-  );
+  const [modalState, setModalState] =
+    useState<ModalStateType>(defaultModalState);
   const [descriptionBoxHeight, setDescriptionBoxHeight] = useState<number>(0);
   const descriptionBoxRef = useRef<HTMLDivElement | null>(null);
   const headingBoxRef = useRef<HTMLDivElement | null>(null);
@@ -116,7 +121,6 @@ const FixCommitmentInfo: React.FC<Props> = ({
   const client = useApolloClient();
   const { data, loading, fetchMore } = useGetInvalidStatusesQuery({
     variables: { accountListId },
-    nextFetchPolicy: 'no-cache',
   });
 
   useEffect(() => {
@@ -158,12 +162,14 @@ const FixCommitmentInfo: React.FC<Props> = ({
 
   const updateContact = async (
     updateType: UpdateTypeEnum,
+    name?: string,
     id?: string,
     status?: string,
     pledgeCurrency?: string,
     pledgeAmount?: number,
     pledgeFrequency?: string,
   ): Promise<void> => {
+    let errorOccurred = false;
     let attributes;
 
     switch (updateType) {
@@ -196,11 +202,23 @@ const FixCommitmentInfo: React.FC<Props> = ({
         accountListId,
         attributes,
       },
+      onError() {
+        errorOccurred = true;
+      },
     });
-    enqueueSnackbar(t('Contact commitment info updated!'), {
-      variant: 'success',
-    });
-    hideContactFromView(id);
+
+    if (errorOccurred) {
+      enqueueSnackbar(t(`Error updating ${name}'s commitment info`), {
+        variant: 'error',
+        autoHideDuration: 7000,
+      });
+    } else {
+      enqueueSnackbar(t(`${name}'s commitment info updated!`), {
+        variant: 'success',
+        autoHideDuration: 7000,
+      });
+      hideContactFromView(id);
+    }
   };
 
   const hideContactFromView = (hideId?: string): void => {
@@ -228,25 +246,36 @@ const FixCommitmentInfo: React.FC<Props> = ({
     }
   };
 
-  const handleHideModalOpen = (contact: object) => {
-    setHideModalState({
+  const handleShowModal = (
+    contact: ContactType,
+    message: string,
+    title: string,
+    updateType: UpdateTypeEnum,
+  ) => {
+    setModalState({
       open: true,
       contact,
+      message,
+      title,
+      updateType,
     });
   };
 
   return (
     <Box className={classes.outer} data-testid="Home">
       {!updating && !loadingStatuses && data ? (
-        <Grid container className={classes.container}>
+        <Grid container className={classes.container} data-testid="Container">
           <Grid item xs={12} ref={headingBoxRef}>
             <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
-            <Divider className={classes.divider} />
+            <Divider className={classes.divider} data-testid="Divider" />
           </Grid>
           {data.contacts?.nodes.length > 0 ? (
             <>
               <Grid item xs={12} ref={descriptionBoxRef}>
-                <Box className={classes.descriptionBox}>
+                <Box
+                  className={classes.descriptionBox}
+                  data-testid="Description"
+                >
                   <Typography>
                     <strong>
                       {t('You have {{amount}} partner statuses to confirm.', {
@@ -266,20 +295,23 @@ const FixCommitmentInfo: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-
               <Grid item xs={12}>
                 <InfiniteList
                   loading={loading}
                   data={data?.contacts?.nodes ?? []}
                   style={{
-                    height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${descriptionBoxHeight}px)`,
+                    height: `calc(100vh - ${navBarHeight} - ${descriptionBoxHeight}px - ${theme.spacing(
+                      5,
+                    )})`,
+                    border: 'none !important',
                   }}
                   itemContent={(index, contact) => (
-                    <Box>
+                    <Grid item xs={12}>
                       <Contact
                         id={contact.id}
                         name={contact.name}
                         key={contact.id}
+                        donations={contact.donations?.nodes}
                         statusTitle={
                           contact.status
                             ? contactPartnershipStatus[contact.status]
@@ -294,12 +326,11 @@ const FixCommitmentInfo: React.FC<Props> = ({
                             : ''
                         }
                         frequencyValue={contact.pledgeFrequency || ''}
-                        hideFunction={() => handleHideModalOpen(contact)}
-                        updateFunction={updateContact}
+                        showModal={handleShowModal}
                         statuses={contactStatuses || [{ name: '', value: '' }]}
                         setContactFocus={setContactFocus}
                       />
-                    </Box>
+                    </Grid>
                   )}
                   endReached={() =>
                     data?.contacts?.pageInfo.hasNextPage &&
@@ -319,17 +350,23 @@ const FixCommitmentInfo: React.FC<Props> = ({
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}
-      {hideModalState.open && (
+      {modalState.open && (
         <Confirmation
+          data-testid="HideModal"
           isOpen={true}
-          title={t('Hide')}
-          message={t(
-            `Are you sure you wish to hide {{source}}? Hiding a contact in MPDX actually sets the contact status to "Never Ask".`,
-            { source: hideModalState.contact.name },
-          )}
-          handleClose={() => setHideModalState(defaultHideModalState)}
+          title={modalState.title}
+          message={modalState.message}
+          handleClose={() => setModalState(defaultModalState)}
           mutation={() =>
-            updateContact(UpdateTypeEnum.Hide, hideModalState?.contact?.id)
+            updateContact(
+              modalState.updateType!,
+              modalState.contact.name,
+              modalState.contact.id,
+              modalState.contact.status,
+              modalState.contact.pledgeCurrency,
+              modalState.contact.pledgeAmount,
+              modalState.contact.pledgeFrequency,
+            )
           }
         />
       )}

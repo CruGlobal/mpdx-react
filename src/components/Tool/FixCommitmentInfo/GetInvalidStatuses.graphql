@@ -3,7 +3,7 @@ query GetInvalidStatuses($accountListId: ID!, $after: String) {
     accountListId: $accountListId
     contactsFilter: { statusValid: false }
     after: $after
-    first: 10
+    first: 100
   ) {
     nodes {
       id
@@ -12,6 +12,15 @@ query GetInvalidStatuses($accountListId: ID!, $after: String) {
       pledgeAmount
       pledgeCurrency
       pledgeFrequency
+      donations(first: 5) {
+        nodes {
+          amount {
+            amount
+            currency
+            conversionDate
+          }
+        }
+      }
     }
     pageInfo {
       endCursor
