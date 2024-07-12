@@ -15,7 +15,7 @@ import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/conta
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
-import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+// import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   MultiselectFilter,
@@ -69,7 +69,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-interface ContactType {
+export interface ContactType {
   id?: string | undefined;
   status?: string | undefined;
   name?: string | undefined;
@@ -116,7 +116,6 @@ const FixCommitmentInfo: React.FC<Props> = ({
   const client = useApolloClient();
   const { data, loading, fetchMore } = useGetInvalidStatusesQuery({
     variables: { accountListId },
-    nextFetchPolicy: 'no-cache',
   });
 
   useEffect(() => {
@@ -272,7 +271,9 @@ const FixCommitmentInfo: React.FC<Props> = ({
                   loading={loading}
                   data={data?.contacts?.nodes ?? []}
                   style={{
-                    height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${descriptionBoxHeight}px)`,
+                    height: `calc(100vh - ${navBarHeight} - ${descriptionBoxHeight}px - ${theme.spacing(
+                      5,
+                    )})`,
                   }}
                   itemContent={(index, contact) => (
                     <Box>

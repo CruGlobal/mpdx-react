@@ -10,7 +10,6 @@ import {
   IconButton,
   Link,
   MenuItem,
-  NativeSelect,
   Select,
   TextField,
   Typography,
@@ -137,6 +136,8 @@ const Contact: React.FC<Props> = ({
   const { data: constants, loading: loadingConstants } =
     useLoadConstantsQuery();
 
+  const pledgeCurrencies = constants?.constant.pledgeCurrencies;
+
   const { classes } = useStyles();
   const { t } = useTranslation();
 
@@ -153,12 +154,9 @@ const Contact: React.FC<Props> = ({
   };
 
   const appealFormSchema = yup.object({
-    statusValue: yup
-      .string()
-      .required('Please select a status')
-      .oneOf(statuses.map((status) => status.value)),
+    statusValue: yup.string().required('Please select a status'),
     pledgeCurrency: yup.string().required('Please select a currency'),
-    pledgeAmount: yup.number().required(),
+    pledgeAmount: yup.number().required('Please enter an amount'),
     pledgeFrequency: yup.string().required('Please select frequency'),
   });
 
@@ -171,10 +169,10 @@ const Contact: React.FC<Props> = ({
           pledgeAmount: amount,
           pledgeFrequency: frequencyValue,
         }}
+        validationSchema={appealFormSchema}
         onSubmit={async (values, { resetForm }) => {
           await onSubmit(values, resetForm);
         }}
-        validationSchema={appealFormSchema}
       >
         {({
           values: {
@@ -205,6 +203,7 @@ const Contact: React.FC<Props> = ({
                   />
                   <Box display="flex" flexDirection="column" ml={2}>
                     <Link
+                      data-testid="contactSelect"
                       underline="hover"
                       onClick={() => setContactFocus(id, 'Donations')}
                     >
@@ -212,9 +211,9 @@ const Contact: React.FC<Props> = ({
                     </Link>
                     <Typography>
                       Current:{' '}
-                      {`${statusTitle} ${amount.toFixed(
-                        2,
-                      )} ${amountCurrency} ${frequencyTitle}`}
+                      {`${statusTitle} ${
+                        typeof amount === 'number' && amount.toFixed(2)
+                      } ${amountCurrency} ${frequencyTitle}`}
                     </Typography>
                   </Box>
                 </Box>
@@ -223,12 +222,12 @@ const Contact: React.FC<Props> = ({
                 <Grid container style={{ paddingRight: theme.spacing(1) }}>
                   <Grid item xs={12}>
                     <Box className={classes.boxTop}>
-                      <Field
+                      <Select
                         input={<StyledInput />}
+                        inputProps={{ 'data-testid': 'pledgeStatus-input' }}
                         data-testid="statusSelect"
                         style={{ width: '100%' }}
                         value={statusValue}
-                        as={NativeSelect}
                         onChange={(event) =>
                           setFieldValue('statusValue', event.target.value)
                         }
@@ -237,12 +236,19 @@ const Contact: React.FC<Props> = ({
                           Status
                         </option>
                         {statuses.map((status) => (
-                          <option value={status.value} key={status.value}>
+                          <option
+                            value={status.value}
+                            key={status.value}
+                            data-testid="statusSelectOptions"
+                          >
                             {status.name}
                           </option>
                         ))}
-                      </Field>
-                      <FormHelperText error={true}>
+                      </Select>
+                      <FormHelperText
+                        error={true}
+                        data-testid="statusSelectError"
+                      >
                         {errors.statusValue && errors.statusValue}
                       </FormHelperText>
                     </Box>
@@ -252,21 +258,24 @@ const Contact: React.FC<Props> = ({
                       <Select
                         input={<StyledInput />}
                         label={t('Commitment Currency')}
-                        labelId="pledgeCurrency"
+                        data-testid="pledgeCurrency"
+                        inputProps={{ 'data-testid': 'pledgeCurrency-input' }}
                         value={pledgeCurrency}
                         onChange={(e) =>
                           setFieldValue('pledgeCurrency', e.target.value)
                         }
                       >
+                        <option value="Currency">Currency</option>
                         <MenuItem value={''}>
                           <em>{t("Don't change")}</em>
                         </MenuItem>
                         {!loadingConstants &&
-                          getPledgeCurrencyOptions(
-                            constants?.constant?.pledgeCurrencies,
-                          )}
+                          getPledgeCurrencyOptions(pledgeCurrencies)}
                       </Select>
-                      <FormHelperText error={true}>
+                      <FormHelperText
+                        error={true}
+                        data-testid="pledgeCurrencyError"
+                      >
                         {errors.pledgeCurrency && errors.pledgeCurrency}
                       </FormHelperText>
                     </Box>
@@ -275,42 +284,61 @@ const Contact: React.FC<Props> = ({
                     <Box className={classes.boxBottom}>
                       <Field
                         id="standard-number"
+                        input={<StyledInput />}
                         type="number"
+                        data-testid="pledgeAmount"
+                        inputProps={{ 'data-testid': 'pledgeAmount-input' }}
                         variant="outlined"
                         size="small"
                         fullWidth
                         error={errors.pledgeAmount}
                         helperText={errors.pledgeAmount}
+                        validate={pledgeAmount}
                         value={pledgeAmount}
                         onChange={(event) =>
                           setFieldValue('pledgeAmount', event.target.value)
                         }
                         as={TextField}
                       />
+                      <FormHelperText
+                        error={true}
+                        data-testid="pledgeAmountError"
+                      >
+                        {errors.pledgeAmount && errors.pledgeAmount}
+                      </FormHelperText>
                     </Box>
                   </Grid>
                   <Grid item xs={12} lg={4}>
                     <Box className={classes.boxBottom}>
-                      <NativeSelect
+                      <Select
                         input={<StyledInput />}
+                        inputProps={{ 'data-testid': 'pledgeFrequency-input' }}
+                        data-testid="pledgeFrequency"
                         style={{ width: '100%' }}
                         value={pledgeFrequency}
                         onChange={(event) =>
                           setFieldValue('pledgeFrequency', event.target.value)
                         }
                       >
-                        <option value="" disabled>
+                        <option value="Frequency" disabled>
                           Frequency
                         </option>
                         {Object.entries(frequencies).map(
                           ([freqValue, freqTranslated]) => (
-                            <option value={freqValue} key={freqValue}>
+                            <option
+                              value={freqValue}
+                              key={freqValue}
+                              data-testid="pledgeFrequencyOptions"
+                            >
                               {freqTranslated}
                             </option>
                           ),
                         )}
-                      </NativeSelect>
-                      <FormHelperText error={true}>
+                      </Select>
+                      <FormHelperText
+                        error={true}
+                        data-testid="pledgeFrequencyError"
+                      >
                         {errors.pledgeFrequency && errors.pledgeFrequency}
                       </FormHelperText>
                     </Box>
@@ -329,17 +357,6 @@ const Contact: React.FC<Props> = ({
                       variant="contained"
                       data-testid="confirmButton"
                       style={{ width: '100%' }}
-                      // onClick={() => {
-                      //   console.log(values);
-                      //   updateFunction(
-                      //     id,
-                      //     true,
-                      //     values.statusValue,
-                      //     values.amountCurrency,
-                      //     parseFloat(`${values.amount}`),
-                      //     values.frequencyValue,
-                      //   );
-                      // }}
                     >
                       {t('Confirm')}
                     </Button>
