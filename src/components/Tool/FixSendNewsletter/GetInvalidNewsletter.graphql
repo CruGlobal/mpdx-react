@@ -41,6 +41,7 @@ fragment ContactPrimaryPerson on Person {
     email
   }
   optoutEnewsletter
+  deceased
 }
 
 fragment Status on Constant {

@@ -65,6 +65,9 @@ const TestComponent = ({
 );
 
 describe('FixSendNewsletter', () => {
+  const deceasedName =
+    mockInvalidNewslettersResponse.GetInvalidNewsletter.contacts.nodes[2].name;
+
   beforeEach(() => {
     setContactFocus.mockClear();
   });
@@ -99,6 +102,26 @@ describe('FixSendNewsletter', () => {
 
       await waitFor(() => {
         expect(getAllByRole('button', { name: 'Confirm' })[0]).toBeVisible();
+      });
+    });
+
+    it('should not show deceased contacts', async () => {
+      const { queryByRole, queryByText } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+      );
+
+      await waitFor(() => {
+        expect(queryByText(deceasedName)).not.toBeInTheDocument();
       });
     });
   });
@@ -178,6 +201,75 @@ describe('FixSendNewsletter', () => {
             variant: 'error',
             autoHideDuration: 7000,
           },
+        );
+      });
+    });
+
+    it('should filter out deceased', async () => {
+      const cache = new InMemoryCache();
+      jest.spyOn(cache, 'readQuery').mockReturnValue({
+        ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+      });
+      jest.spyOn(cache, 'writeQuery');
+
+      const { getAllByRole, queryByText, queryByRole } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            },
+            UpdateContactNewsletter: {
+              ...mockUploadNewsletterChange.UpdateContactNewsletter,
+            },
+          }}
+          cache={cache}
+        />,
+      );
+      await waitFor(() =>
+        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+      );
+
+      const newsletterDropdown = getAllByRole('combobox')[0];
+      userEvent.selectOptions(newsletterDropdown, newNewsletterValue);
+      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
+      await waitFor(() => {
+        expect(queryByText(deceasedName)).not.toBeInTheDocument();
+        expect(queryByText(otherName)).toBeInTheDocument();
+        expect(cache.writeQuery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: {
+              constant: expect.any(Object),
+              contacts: {
+                nodes: [
+                  {
+                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
+                      .contacts.nodes[0],
+                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
+                      .contacts.nodes[1],
+                  },
+                ],
+              },
+            },
+          }),
+        );
+        expect(cache.writeQuery).not.toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: {
+              constant: expect.any(Object),
+              contacts: {
+                nodes: [
+                  {
+                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
+                      .contacts.nodes[0],
+                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
+                      .contacts.nodes[1],
+                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
+                      .contacts.nodes[2],
+                  },
+                ],
+              },
+            },
+          }),
         );
       });
     });

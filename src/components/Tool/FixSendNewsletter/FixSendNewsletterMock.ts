@@ -16,6 +16,7 @@ export const primaryPerson = {
     email: 'frodo.baggins@shire.com',
   },
   optoutEnewsletter: false,
+  deceased: false,
 };
 
 export const mockInvalidNewslettersResponse = {
@@ -38,12 +39,23 @@ export const mockInvalidNewslettersResponse = {
           primaryAddress: null,
           primaryPerson: null,
         },
+        {
+          id: 'contactId3',
+          name: 'Gollum, Smeagol',
+          status: StatusEnum.NeverAsk,
+          source: 'MPDX',
+          primaryAddress: null,
+          primaryPerson: {
+            deceased: true,
+          },
+        },
       ],
     },
     constant: {
       status: [
         { id: StatusEnum.PartnerPray, value: 'Partner - Pray' },
         { id: StatusEnum.PartnerFinancial, value: 'Partner - Financial' },
+        { id: StatusEnum.NeverAsk, value: 'Never Ask' },
       ],
     },
   },
