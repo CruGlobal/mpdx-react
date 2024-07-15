@@ -70,6 +70,22 @@ describe('FixSendNewsletter', () => {
   });
 
   describe('render', () => {
+    it('should show the readable value of contact status', async () => {
+      const { getByText } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(getByText('Partner - Pray')).toBeVisible();
+      });
+    });
+
     it('should show the confirm button', async () => {
       const { getAllByRole } = render(
         <TestComponent

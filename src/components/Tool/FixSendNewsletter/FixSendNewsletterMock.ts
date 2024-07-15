@@ -40,6 +40,12 @@ export const mockInvalidNewslettersResponse = {
         },
       ],
     },
+    constant: {
+      status: [
+        { id: StatusEnum.PartnerPray, value: 'Partner - Pray' },
+        { id: StatusEnum.PartnerFinancial, value: 'Partner - Financial' },
+      ],
+    },
   },
 };
 
