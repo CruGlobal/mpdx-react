@@ -266,9 +266,9 @@ const Contact: React.FC<Props> = ({
                         <MenuItem value={''}>
                           <em>{t("Don't change")}</em>
                         </MenuItem>
-                        {constants?.constant?.pledgeCurrencies &&
+                        {constants?.constant?.pledgeCurrency &&
                           getPledgeCurrencyOptions(
-                            constants?.constant?.pledgeCurrencies,
+                            constants?.constant?.pledgeCurrency,
                           )}
                       </Select>
                       <FormHelperText
