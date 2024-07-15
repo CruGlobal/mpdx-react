@@ -176,7 +176,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                       className={classes.buttonIcon}
                     />
                     <Trans
-                      defaults="Cofirm {{value}}"
+                      defaults="Confirm {{value}}"
                       values={{
                         value: numberOfContacts,
                       }}

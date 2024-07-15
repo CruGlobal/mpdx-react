@@ -105,6 +105,22 @@ describe('FixSendNewsletter', () => {
       });
     });
 
+    it('should show the confirm all button', async () => {
+      const { getByRole } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(getByRole('button', { name: 'Confirm 2' })).toBeVisible();
+      });
+    });
+
     it('should not show deceased contacts', async () => {
       const { queryByRole, queryByText } = render(
         <TestComponent
