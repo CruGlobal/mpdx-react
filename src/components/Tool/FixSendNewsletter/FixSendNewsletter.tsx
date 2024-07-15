@@ -115,6 +115,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                 (contact) => contact.id !== updateContactId,
               ),
             },
+            constant: dataFromCache.constant,
           };
           cache.writeQuery({ ...query, data });
         }
@@ -173,7 +174,11 @@ const FixSendNewsletter: React.FC<Props> = ({
                     id={contact.id}
                     name={contact.name}
                     // need to fix this after changes to fix commitment info get merged
-                    status={contact.status || ''}
+                    status={
+                      data.constant.status?.find(
+                        (status) => contact.status === status.id,
+                      )?.value || ''
+                    }
                     primaryPerson={
                       contact.primaryPerson || {
                         firstName: '',
