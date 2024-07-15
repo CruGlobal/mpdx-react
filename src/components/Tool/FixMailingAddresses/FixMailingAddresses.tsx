@@ -130,7 +130,7 @@ enum ModalEnum {
 
 const sourceOptions = [appName, 'DataServer'];
 
-const FixSendNewsletter: React.FC<Props> = ({
+const FixMailingAddresses: React.FC<Props> = ({
   accountListId,
   setContactFocus,
 }: Props) => {
@@ -475,4 +475,4 @@ const FixSendNewsletter: React.FC<Props> = ({
   );
 };
 
-export default FixSendNewsletter;
+export default FixMailingAddresses;
