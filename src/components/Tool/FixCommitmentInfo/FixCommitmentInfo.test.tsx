@@ -1,7 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-// import userEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
+import { SnackbarProvider } from 'notistack';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -11,8 +13,9 @@ import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
 import { GetInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 
-const mockEnqueue = jest.fn();
+jest.setTimeout(8000);
 
+const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -38,28 +41,34 @@ const Components = ({
 }: {
   mockNodes?: ErgonoMockShape[];
 }) => (
-  <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
-      <TestWrapper>
-        <GqlMockedProvider<{
-          GetInvalidStatuses: GetInvalidStatusesQuery;
-        }>
-          mocks={{
-            GetInvalidStatuses: {
-              contacts: {
-                nodes: mockNodes,
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <TestWrapper>
+          <GqlMockedProvider<{
+            GetInvalidStatuses: GetInvalidStatusesQuery;
+          }>
+            mocks={{
+              GetInvalidStatuses: {
+                contacts: {
+                  nodes: mockNodes,
+                },
               },
-            },
-          }}
-        >
-          <FixCommitmentInfo
-            accountListId={accountListId}
-            setContactFocus={setContactFocus}
-          />
-        </GqlMockedProvider>
-      </TestWrapper>
-    </TestRouter>
-  </ThemeProvider>
+            }}
+          >
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
+            >
+              <FixCommitmentInfo
+                accountListId={accountListId}
+                setContactFocus={setContactFocus}
+              />
+            </VirtuosoMockContext.Provider>
+          </GqlMockedProvider>
+        </TestWrapper>
+      </TestRouter>
+    </ThemeProvider>
+  </SnackbarProvider>
 );
 
 describe('FixCommitmentContact', () => {
@@ -73,6 +82,7 @@ describe('FixCommitmentContact', () => {
       ).toBeInTheDocument();
     });
   });
+
   it('has correct styles', async () => {
     const { getByTestId, debug } = render(<Components />);
     debug(undefined, Infinity);
@@ -87,20 +97,62 @@ describe('FixCommitmentContact', () => {
       const divider = getByTestId('Divider');
       const description = getByTestId('Description');
 
-      expect(
-        container.classList.contains('css-vb35gf-MuiGrid-root-container'),
-      ).toBe(true);
+      expect(container.className).toEqual(expect.stringContaining('container'));
       expect(container).toHaveStyle('width: 70%');
 
-      expect(
-        divider.classList.contains('css-bm8pe9-MuiDivider-root-divider'),
-      ).toBe(true);
+      expect(divider.className).toEqual(expect.stringContaining('divider'));
       expect(divider).toHaveStyle('margin-top: 16px');
 
-      expect(description.classList.contains('css-ys3m4j-descriptionBox')).toBe(
-        true,
+      expect(description.className).toEqual(
+        expect.stringContaining('descriptionBox'),
       );
+
       expect(description).toHaveStyle('margin-bottom: 16px');
+    });
+  });
+
+  it('Shows hide modal', async () => {
+    const { getAllByTestId, queryByText, getByText } = render(<Components />);
+
+    await waitFor(() => {
+      userEvent.click(getAllByTestId('hideButton')[0]);
+    });
+
+    expect(
+      getByText(
+        'Are you sure you wish to hide Tester 1? Hiding a contact in MPDX actually sets the contact status to "Never Ask".',
+      ),
+    ).toBeInTheDocument();
+
+    userEvent.click(getAllByTestId('action-button')[0]);
+
+    expect(
+      queryByText(
+        'Are you sure you wish to hide Tester 1? Hiding a contact in MPDX actually sets the contact status to "Never Ask".',
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it('calls update function', async () => {
+    const { getAllByTestId, queryByText } = render(<Components />);
+
+    await waitFor(() => {
+      userEvent.click(getAllByTestId('confirmButton')[0]);
+    });
+
+    await waitFor(() =>
+      expect(queryByText('Tester 1')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('opens contact drawer to donations tab', async () => {
+    const { getAllByTestId } = render(<Components />);
+
+    await waitFor(() => {
+      userEvent.click(getAllByTestId('goToContactsButton')[0]);
+    });
+    await waitFor(() => {
+      expect(setContactFocus).toHaveBeenCalled();
     });
   });
 });

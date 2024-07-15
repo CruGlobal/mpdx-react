@@ -14,7 +14,7 @@ export const mockInvalidStatusesResponse: ErgonoMockShape[] = [
   },
   {
     id: 'tester-2',
-    name: 'Tester 1',
+    name: 'Tester 2',
     status: 'PARTNER_FINANCIAL',
     pledgeAmount: 0,
     pledgeCurrency: 'USD',

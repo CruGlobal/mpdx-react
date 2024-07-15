@@ -324,6 +324,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
       )}
       {hideModalState.open && (
         <Confirmation
+          data-testid="HideModal"
           isOpen={true}
           title={t('Hide')}
           message={t(

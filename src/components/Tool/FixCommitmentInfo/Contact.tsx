@@ -136,8 +136,6 @@ const Contact: React.FC<Props> = ({
   const { data: constants, loading: loadingConstants } =
     useLoadConstantsQuery();
 
-  const pledgeCurrencies = constants?.constant.pledgeCurrencies;
-
   const { classes } = useStyles();
   const { t } = useTranslation();
 
@@ -270,7 +268,9 @@ const Contact: React.FC<Props> = ({
                           <em>{t("Don't change")}</em>
                         </MenuItem>
                         {!loadingConstants &&
-                          getPledgeCurrencyOptions(pledgeCurrencies)}
+                          getPledgeCurrencyOptions(
+                            constants?.constant?.pledgeCurrencies,
+                          )}
                       </Select>
                       <FormHelperText
                         error={true}
@@ -309,7 +309,7 @@ const Contact: React.FC<Props> = ({
                     </Box>
                   </Grid>
                   <Grid item xs={12} lg={4}>
-                    <Box className={classes.boxBottom}>
+                    <Box className={classes.boxBottom} data-testid="BoxBottom">
                       <Select
                         input={<StyledInput />}
                         inputProps={{ 'data-testid': 'pledgeFrequency-input' }}

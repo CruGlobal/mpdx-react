@@ -57,7 +57,7 @@ const TestComponent: React.FC = () => (
 
 describe('FixCommitmentContact', () => {
   it('default', () => {
-    const { getByText } = render(<TestComponent />);
+    const { getByText, getByTestId } = render(<TestComponent />);
     expect(getByText(testData.name)).toBeInTheDocument();
     expect(
       getByText(
@@ -66,16 +66,18 @@ describe('FixCommitmentContact', () => {
         } ${testData.frequencyTitle}`,
       ),
     ).toBeInTheDocument();
+    expect(getByTestId('pledgeCurrency-input')).toBeInTheDocument();
   });
 
   it('should call hide and update functions', async () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { getByTestId, debug } = render(<TestComponent />);
+    debug(undefined, Infinity);
     userEvent.click(getByTestId('confirmButton'));
     await waitFor(() => expect(updateFunction).toHaveBeenCalledTimes(1));
     userEvent.click(getByTestId('doNotChangeButton'));
     expect(updateFunction).toHaveBeenCalledTimes(2);
     userEvent.click(getByTestId('hideButton'));
-    expect(hideFunction).toHaveBeenCalledTimes(1);
+    expect(hideFunction).toHaveBeenCalledWith('test123');
   });
 
   it('should redirect the page', () => {
@@ -195,5 +197,19 @@ describe('FixCommitmentContact', () => {
     const amount = getByTestId('pledgeAmount-input');
     userEvent.type(amount, '2.00');
     expect(amount).toHaveValue(2);
+  });
+
+  it('should render with correct styles', async () => {
+    const { getByTestId, debug } = render(
+      <TestRouter router={router}>
+        <TestComponent />
+      </TestRouter>,
+    );
+    debug(undefined, Infinity);
+    await waitFor(() => {
+      const boxBottom = getByTestId('BoxBottom');
+      expect(boxBottom.className).toEqual(expect.stringContaining('boxBottom'));
+      expect(boxBottom).toHaveStyle('margin-left: 8px');
+    });
   });
 });
