@@ -237,15 +237,18 @@ const FixCommitmentInfo: React.FC<Props> = ({
   return (
     <Box className={classes.outer} data-testid="Home">
       {!updating && !loadingStatuses && data ? (
-        <Grid container className={classes.container}>
+        <Grid container className={classes.container} data-testid="Container">
           <Grid item xs={12} ref={headingBoxRef}>
             <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
-            <Divider className={classes.divider} />
+            <Divider className={classes.divider} data-testid="Divider" />
           </Grid>
           {data.contacts?.nodes.length > 0 ? (
             <>
               <Grid item xs={12} ref={descriptionBoxRef}>
-                <Box className={classes.descriptionBox}>
+                <Box
+                  className={classes.descriptionBox}
+                  data-testid="Description"
+                >
                   <Typography>
                     <strong>
                       {t('You have {{amount}} partner statuses to confirm.', {
@@ -265,7 +268,6 @@ const FixCommitmentInfo: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-
               <Grid item xs={12}>
                 <InfiniteList
                   loading={loading}
