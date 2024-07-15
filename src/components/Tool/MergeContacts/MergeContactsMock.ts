@@ -15,7 +15,7 @@ export const getContactDuplicatesMocks = {
             status: null,
             primaryAddress: {
               id: 'address-1',
-              street: '123 Main St',
+              street: '(contact-1 address) 123 Main St',
               city: 'Orlando',
               state: 'FL',
               postalCode: '32832',
@@ -30,7 +30,7 @@ export const getContactDuplicatesMocks = {
             status: null,
             primaryAddress: {
               id: 'address-1',
-              street: '123 John St',
+              street: '(contact-2 address) 123 John St',
               city: 'Orlando',
               state: 'FL',
               postalCode: '32832',

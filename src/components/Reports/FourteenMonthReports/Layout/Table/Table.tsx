@@ -146,7 +146,7 @@ export const FourteenMonthReportTable: React.FC<
                           Math.round(contact.pledgeAmount),
                           locale,
                         )} ${contact.pledgeCurrency} ${
-                          apiConstants?.pledgeFrequencies?.find(
+                          apiConstants?.pledgeFrequency?.find(
                             ({ key }) => key === contact.pledgeFrequency,
                           )?.value ?? ''
                         }`}

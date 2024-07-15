@@ -368,7 +368,7 @@ describe('EditPartnershipInfoModal', () => {
               mocks={{
                 LoadConstants: {
                   constant: {
-                    pledgeCurrencies: [
+                    pledgeCurrency: [
                       {
                         code: 'CAD',
                         codeSymbolString: 'CAD ($)',
@@ -470,7 +470,7 @@ describe('EditPartnershipInfoModal', () => {
               mocks={{
                 LoadConstants: {
                   constant: {
-                    pledgeCurrencies: [
+                    pledgeCurrency: [
                       {
                         id: 'CAD',
                         value: 'CAD ($)',
@@ -696,7 +696,7 @@ describe('EditPartnershipInfoModal', () => {
               mocks={{
                 LoadConstants: {
                   constant: {
-                    pledgeCurrencies: [
+                    pledgeCurrency: [
                       {
                         id: 'CAD',
                         value: 'CAD ($)',
