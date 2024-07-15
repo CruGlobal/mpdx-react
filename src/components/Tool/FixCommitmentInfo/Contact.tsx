@@ -133,8 +133,7 @@ const Contact: React.FC<Props> = ({
   statuses,
   setContactFocus,
 }) => {
-  const { data: constants, loading: loadingConstants } =
-    useLoadConstantsQuery();
+  const { data: constants } = useLoadConstantsQuery();
 
   const { classes } = useStyles();
   const { t } = useTranslation();
@@ -267,7 +266,7 @@ const Contact: React.FC<Props> = ({
                         <MenuItem value={''}>
                           <em>{t("Don't change")}</em>
                         </MenuItem>
-                        {!loadingConstants &&
+                        {constants?.constant?.pledgeCurrencies &&
                           getPledgeCurrencyOptions(
                             constants?.constant?.pledgeCurrencies,
                           )}
