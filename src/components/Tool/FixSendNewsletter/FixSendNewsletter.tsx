@@ -170,6 +170,12 @@ const FixSendNewsletter: React.FC<Props> = ({
           variables: { accountListId },
         },
       ],
+      onError: () => {
+        enqueueSnackbar(t(`Error updating contacts`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
     });
     enqueueSnackbar(t('Newsletter statuses updated successfully'), {
       variant: 'success',

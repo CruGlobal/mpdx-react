@@ -301,6 +301,36 @@ describe('FixSendNewsletter', () => {
   });
 
   describe('bulk confirm', () => {
+    const secondContactNewNewsletterValue = 'Both';
+
+    const confirmAll = async (getAllByRole, getByRole, queryByRole) => {
+      await waitFor(() =>
+        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+      );
+
+      const firstNewsletterDropdown = getAllByRole('combobox')[0];
+      await waitFor(() => {
+        expect(firstNewsletterDropdown).toHaveDisplayValue([
+          initialNewsletterValue,
+        ]);
+      });
+      userEvent.selectOptions(firstNewsletterDropdown, newNewsletterValue);
+
+      const secondNewsletterDropdown = getAllByRole('combobox')[1];
+      await waitFor(() => {
+        expect(secondNewsletterDropdown).toHaveDisplayValue([
+          initialNewsletterValue,
+        ]);
+      });
+      userEvent.selectOptions(
+        secondNewsletterDropdown,
+        secondContactNewNewsletterValue,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Confirm 2' }));
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+    };
+
     it('should bring up the confirmation modal', async () => {
       const { getByRole, getByText, queryByRole } = render(
         <TestComponent
@@ -331,7 +361,6 @@ describe('FixSendNewsletter', () => {
     });
 
     it('should successfully update all the contacts', async () => {
-      const secondContactNewNewsletterValue = 'Both';
       let cardinality = 0;
 
       const { getAllByRole, getByRole, queryByText, queryByRole } = render(
@@ -364,31 +393,7 @@ describe('FixSendNewsletter', () => {
           }}
         />,
       );
-      await waitFor(() =>
-        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
-      );
-
-      const firstNewsletterDropdown = getAllByRole('combobox')[0];
-      await waitFor(() => {
-        expect(firstNewsletterDropdown).toHaveDisplayValue([
-          initialNewsletterValue,
-        ]);
-      });
-      userEvent.selectOptions(firstNewsletterDropdown, newNewsletterValue);
-
-      const secondNewsletterDropdown = getAllByRole('combobox')[1];
-      await waitFor(() => {
-        expect(secondNewsletterDropdown).toHaveDisplayValue([
-          initialNewsletterValue,
-        ]);
-      });
-      userEvent.selectOptions(
-        secondNewsletterDropdown,
-        secondContactNewNewsletterValue,
-      );
-
-      userEvent.click(getByRole('button', { name: 'Confirm 2' }));
-      userEvent.click(getByRole('button', { name: 'Yes' }));
+      confirmAll(getAllByRole, getByRole, queryByRole);
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
           'Newsletter statuses updated successfully',
@@ -398,6 +403,28 @@ describe('FixSendNewsletter', () => {
         );
         expect(queryByText(firstContactName)).not.toBeInTheDocument();
         expect(queryByText(secondContactName)).not.toBeInTheDocument();
+      });
+    });
+
+    it('should handle errors', async () => {
+      const { getAllByRole, getByRole, queryByRole } = render(
+        <TestComponent
+          mocks={{
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
+            },
+            MassActionsUpdateContacts: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+      confirmAll(getAllByRole, getByRole, queryByRole);
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(`Error updating contacts`, {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
       });
     });
   });
