@@ -30,7 +30,6 @@ const router = {
 };
 
 const setContactFocus = jest.fn();
-const hideFunction = jest.fn();
 const updateFunction = jest.fn();
 
 const TestComponent: React.FC = () => (
@@ -46,8 +45,6 @@ const TestComponent: React.FC = () => (
         amountCurrency={testData.amountCurrency}
         frequencyTitle={testData.frequencyTitle}
         frequencyValue={testData.frequencyValue}
-        hideFunction={hideFunction}
-        updateFunction={updateFunction}
         statuses={statuses}
         setContactFocus={setContactFocus}
       />
