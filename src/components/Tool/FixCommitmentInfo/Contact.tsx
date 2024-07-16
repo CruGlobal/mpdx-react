@@ -15,6 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
@@ -24,7 +25,7 @@ import { FilterOption } from 'src/graphql/types.generated';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
-import { UpdateTypeEnum } from './FixCommitmentInfo';
+import { ContactType, UpdateTypeEnum } from './FixCommitmentInfo';
 import { frequencies } from './InputOptions/Frequencies';
 
 interface FormAttributes {
@@ -34,30 +35,45 @@ interface FormAttributes {
   pledgeFrequency?: string;
 }
 
+interface DonationsType {
+  amount: {
+    amount: number;
+    currency: string;
+    conversionDate: string;
+  };
+}
+
 const useStyles = makeStyles()(() => ({
   right: {
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    padding: theme.spacing(2),
     [theme.breakpoints.up('lg')]: {
       borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
-      borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
+      borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
       borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      borderTopRightRadius: 5,
+      // borderBottomRightRadius: 5,
     },
   },
   left: {
     height: '100%',
     [theme.breakpoints.up('lg')]: {
       borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
-      borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
+      borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
       borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      borderTopLeftRadius: 5,
+      // borderBottomLeftRadius: 5,
     },
   },
   container: {
     display: 'flex',
     alignItems: 'center',
+    width: '100%',
     height: '100%',
     marginBottom: theme.spacing(3),
+    border: 'none',
     [theme.breakpoints.down('md')]: {
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
@@ -79,6 +95,22 @@ const useStyles = makeStyles()(() => ({
       marginLeft: theme.spacing(2),
     },
   },
+  donationsTable: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    padding: theme.spacing(1),
+    borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
+    borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
+    borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+    backgroundColor: theme.palette.cruGrayLight.main,
+  },
+  buttonGroup: {
+    display: 'flex',
+    alignItems: 'center',
+    height: '100%',
+  },
   buttonTop: {
     margin: theme.spacing(1),
     [theme.breakpoints.down('md')]: {
@@ -95,26 +127,32 @@ const useStyles = makeStyles()(() => ({
       marginRight: theme.spacing(1),
     },
   },
+  select: {
+    width: '100%',
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      maxWidth: '200px',
+      margin: `${theme.spacing(1)} auto 0`,
+    },
+  },
 }));
 
 interface Props {
   id: string;
   name: string;
+  donations: DonationsType[];
   statusTitle: string;
   statusValue: string;
   amount: number;
   amountCurrency: string;
   frequencyTitle: string;
   frequencyValue: string;
-  hideFunction: (hideId: string) => void;
-  updateFunction: (
+  showModal: (
+    contact: ContactType,
+    message: string,
+    title: string,
     updateType: UpdateTypeEnum,
-    id: string,
-    status?: string,
-    pledgeCurrency?: string,
-    pledgeAmount?: number,
-    pledgeFrequency?: string,
-  ) => Promise<void>;
+  ) => void;
   statuses: FilterOption[];
   setContactFocus: SetContactFocus;
 }
@@ -122,14 +160,14 @@ interface Props {
 const Contact: React.FC<Props> = ({
   id,
   name,
+  donations,
   statusTitle,
   statusValue,
   amount,
   amountCurrency,
   frequencyTitle,
   frequencyValue,
-  hideFunction,
-  updateFunction,
+  showModal,
   statuses,
   setContactFocus,
 }) => {
@@ -138,16 +176,22 @@ const Contact: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
 
-  const onSubmit = async (props: FormAttributes, resetForm: () => void) => {
-    updateFunction(
+  const onSubmit = async (props: FormAttributes) => {
+    showModal(
+      {
+        id,
+        status: props.status,
+        name,
+        pledgeCurrency: props.pledgeCurrency,
+        pledgeAmount: props.pledgeAmount,
+        pledgeFrequency: props.pledgeFrequency,
+      },
+      t(`Are you sure you wish to update {{source}} commitment info?`, {
+        source: name,
+      }),
+      t('Update'),
       UpdateTypeEnum.Change,
-      id,
-      props.status,
-      props.pledgeCurrency,
-      parseFloat(`${props.pledgeAmount}`),
-      props.pledgeFrequency,
     );
-    resetForm();
   };
 
   const appealFormSchema = yup.object({
@@ -167,8 +211,8 @@ const Contact: React.FC<Props> = ({
           pledgeFrequency: frequencyValue,
         }}
         validationSchema={appealFormSchema}
-        onSubmit={async (values, { resetForm }) => {
-          await onSubmit(values, resetForm);
+        onSubmit={async (values) => {
+          await onSubmit(values);
         }}
       >
         {({
@@ -184,12 +228,20 @@ const Contact: React.FC<Props> = ({
         }): ReactElement => (
           <Form onSubmit={handleSubmit}>
             <Grid container>
-              <Grid item lg={5} xs={12}>
+              <Grid item lg={4} xs={12}>
                 <Box
                   display="flex"
                   p={2}
                   alignItems="center"
                   className={classes.left}
+                  style={
+                    !donations.length
+                      ? {
+                          borderBottomLeftRadius: 5,
+                          borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
+                        }
+                      : {}
+                  }
                 >
                   <Avatar
                     src=""
@@ -215,12 +267,25 @@ const Contact: React.FC<Props> = ({
                   </Box>
                 </Box>
               </Grid>
-              <Grid item xs={12} lg={5} className={classes.right}>
+              <Grid
+                item
+                xs={12}
+                lg={6}
+                className={classes.right}
+                style={
+                  !donations.length
+                    ? {
+                        borderBottomRightRadius: 5,
+                        borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
+                      }
+                    : {}
+                }
+              >
                 <Grid container style={{ paddingRight: theme.spacing(1) }}>
                   <Grid item xs={12}>
                     <Box className={classes.boxTop}>
                       <Select
-                        input={<StyledInput />}
+                        className={classes.select}
                         inputProps={{ 'data-testid': 'pledgeStatus-input' }}
                         data-testid="statusSelect"
                         style={{ width: '100%' }}
@@ -229,17 +294,17 @@ const Contact: React.FC<Props> = ({
                           setFieldValue('statusValue', event.target.value)
                         }
                       >
-                        <option value="" disabled>
+                        <MenuItem value="" disabled>
                           Status
-                        </option>
+                        </MenuItem>
                         {statuses.map((status) => (
-                          <option
+                          <MenuItem
                             value={status.value}
                             key={status.value}
                             data-testid="statusSelectOptions"
                           >
                             {status.name}
-                          </option>
+                          </MenuItem>
                         ))}
                       </Select>
                       <FormHelperText
@@ -253,7 +318,7 @@ const Contact: React.FC<Props> = ({
                   <Grid item xs={12} lg={4}>
                     <Box className={classes.boxBottom}>
                       <Select
-                        input={<StyledInput />}
+                        className={classes.select}
                         label={t('Commitment Currency')}
                         data-testid="pledgeCurrency"
                         inputProps={{ 'data-testid': 'pledgeCurrency-input' }}
@@ -262,13 +327,13 @@ const Contact: React.FC<Props> = ({
                           setFieldValue('pledgeCurrency', e.target.value)
                         }
                       >
-                        <option value="Currency">Currency</option>
-                        <MenuItem value={''}>
-                          <em>{t("Don't change")}</em>
+                        <MenuItem value={''} disabled>
+                          {t('Currency')}
                         </MenuItem>
                         {constants?.constant?.pledgeCurrency &&
                           getPledgeCurrencyOptions(
                             constants?.constant?.pledgeCurrency,
+                            'short',
                           )}
                       </Select>
                       <FormHelperText
@@ -283,6 +348,7 @@ const Contact: React.FC<Props> = ({
                     <Box className={classes.boxBottom}>
                       <Field
                         id="standard-number"
+                        as={TextField}
                         input={<StyledInput />}
                         type="number"
                         data-testid="pledgeAmount"
@@ -290,14 +356,18 @@ const Contact: React.FC<Props> = ({
                         variant="outlined"
                         size="small"
                         fullWidth
-                        error={errors.pledgeAmount}
-                        helperText={errors.pledgeAmount}
                         validate={pledgeAmount}
                         value={pledgeAmount}
-                        onChange={(event) =>
-                          setFieldValue('pledgeAmount', event.target.value)
-                        }
-                        as={TextField}
+                        render={() => (
+                          <TextField
+                            className={classes.select}
+                            name={'pledgeAmount'}
+                            error={Boolean(errors.pledgeAmount)}
+                            onChange={(event) =>
+                              setFieldValue('pledgeAmount', event.target.value)
+                            }
+                          />
+                        )}
                       />
                       <FormHelperText
                         error={true}
@@ -310,7 +380,7 @@ const Contact: React.FC<Props> = ({
                   <Grid item xs={12} lg={4}>
                     <Box className={classes.boxBottom} data-testid="BoxBottom">
                       <Select
-                        input={<StyledInput />}
+                        className={classes.select}
                         inputProps={{ 'data-testid': 'pledgeFrequency-input' }}
                         data-testid="pledgeFrequency"
                         style={{ width: '100%' }}
@@ -319,18 +389,18 @@ const Contact: React.FC<Props> = ({
                           setFieldValue('pledgeFrequency', event.target.value)
                         }
                       >
-                        <option value="Frequency" disabled>
+                        <MenuItem value="Frequency" disabled>
                           Frequency
-                        </option>
+                        </MenuItem>
                         {Object.entries(frequencies).map(
                           ([freqValue, freqTranslated]) => (
-                            <option
+                            <MenuItem
                               value={freqValue}
                               key={freqValue}
                               data-testid="pledgeFrequencyOptions"
                             >
                               {freqTranslated}
-                            </option>
+                            </MenuItem>
                           ),
                         )}
                       </Select>
@@ -344,7 +414,7 @@ const Contact: React.FC<Props> = ({
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={12} lg={2}>
+              <Grid item xs={12} lg={2} className={classes.buttonGroup}>
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -366,7 +436,22 @@ const Contact: React.FC<Props> = ({
                       style={{ width: '100%' }}
                       data-testid="doNotChangeButton"
                       onClick={() =>
-                        updateFunction(UpdateTypeEnum.DontChange, id)
+                        showModal(
+                          {
+                            id: id,
+                            status: statusValue,
+                            name: name,
+                            pledgeCurrency,
+                            pledgeAmount,
+                            pledgeFrequency,
+                          },
+                          t(
+                            `Are you sure you wish to leave {{source}}'s commitment information unchanged?`,
+                            { source: name },
+                          ),
+                          t("Don't Change"),
+                          UpdateTypeEnum.DontChange,
+                        )
                       }
                     >
                       {"Don't Change"}
@@ -381,13 +466,55 @@ const Contact: React.FC<Props> = ({
                     </IconButton>
                     <IconButton
                       data-testid="hideButton"
-                      onClick={() => hideFunction(id)}
+                      onClick={() =>
+                        showModal(
+                          {
+                            id: id,
+                            status: statusValue,
+                            name: name,
+                            pledgeCurrency,
+                            pledgeAmount,
+                            pledgeFrequency,
+                          },
+                          t(
+                            `Are you sure you wish to hide {{source}}? Hiding a contact in MPDX actually sets the contact status to "Never Ask".`,
+                            { source: name },
+                          ),
+                          t('Hide'),
+                          UpdateTypeEnum.Hide,
+                        )
+                      }
                     >
                       <VisibilityOffIcon />
                     </IconButton>
                   </Box>
                 </Box>
               </Grid>
+              {donations.length > 0 && (
+                <Grid container className={classes.donationsTable} lg={10}>
+                  {donations.map((donation) => (
+                    <Grid
+                      key={donation.amount.conversionDate}
+                      display="flex"
+                      flexDirection="column"
+                    >
+                      <Box>
+                        <Typography fontWeight={700}>
+                          {DateTime.fromISO(donation.amount.conversionDate)
+                            //TODO get user preferences
+                            .setLocale('en')
+                            .toLocaleString()}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography sx={{ textAlign: 'center' }}>
+                          {`${donation.amount.amount} ${donation.amount.currency}`}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
             </Grid>
           </Form>
         )}
