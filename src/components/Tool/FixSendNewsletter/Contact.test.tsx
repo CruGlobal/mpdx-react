@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import Contact from './Contact';
 import {
@@ -21,6 +22,9 @@ const TestComponent = ({
       primaryPerson={primaryPerson}
       status=""
       primaryAddress={primaryAddress}
+      contactUpdates={[
+        { id: '', sendNewsletter: null as unknown as SendNewsletterEnum },
+      ]}
       handleSingleConfirm={jest.fn()}
       setContactFocus={jest.fn()}
     />

@@ -18,6 +18,7 @@ query InvalidNewsletter($accountListId: ID!) {
       primaryPerson {
         ...ContactPrimaryPerson
       }
+      sendNewsletter
     }
   }
   constant {

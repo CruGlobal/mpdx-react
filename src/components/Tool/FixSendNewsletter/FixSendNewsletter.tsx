@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
@@ -13,6 +13,7 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -61,6 +62,11 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
+export interface ContactUpdateData {
+  id: string;
+  sendNewsletter: SendNewsletterEnum;
+}
+
 interface Props {
   accountListId: string;
   setContactFocus: SetContactFocus;
@@ -86,6 +92,8 @@ const FixSendNewsletter: React.FC<Props> = ({
   }
   const [updateNewsletter, { loading: updating }] =
     useUpdateContactNewsletterMutation();
+  const [contactUpdates] = useState<ContactUpdateData[]>([]);
+  const [updateContacts] = useMassActionsUpdateContactsMutation();
 
   const handleSingleConfirm = async (
     id: string,
@@ -142,6 +150,30 @@ const FixSendNewsletter: React.FC<Props> = ({
     });
   };
 
+  const handleBulkConfirm = async () => {
+    if (!data?.contacts.nodes.length) {
+      return;
+    }
+    await updateContacts({
+      variables: {
+        accountListId: accountListId ?? '',
+        attributes: contactUpdates.map((contact) => ({
+          id: contact.id,
+          sendNewsletter: contact.sendNewsletter,
+        })),
+      },
+      refetchQueries: [
+        {
+          query: InvalidNewsletterDocument,
+          variables: { accountListId },
+        },
+      ],
+    });
+    enqueueSnackbar(t('Newsletter statuses updated successfully'), {
+      variant: 'success',
+    });
+  };
+
   return (
     <Box className={classes.outer} data-testid="Home">
       {!loading && !updating && data ? (
@@ -169,7 +201,11 @@ const FixSendNewsletter: React.FC<Props> = ({
                       'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
                     )}
                   </Typography>
-                  <Button variant="contained" className={classes.buttonBlue}>
+                  <Button
+                    variant="contained"
+                    className={classes.buttonBlue}
+                    onClick={() => handleBulkConfirm()}
+                  >
                     <Icon
                       path={mdiCheckboxMarkedCircle}
                       size={0.8}
@@ -219,6 +255,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                             createdAt: '',
                           }
                         }
+                        contactUpdates={contactUpdates}
                         handleSingleConfirm={handleSingleConfirm}
                         setContactFocus={setContactFocus}
                       />

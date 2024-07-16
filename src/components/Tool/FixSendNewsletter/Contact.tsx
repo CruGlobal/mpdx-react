@@ -16,6 +16,7 @@ import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToo
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
+import { ContactUpdateData } from './FixSendNewsletter';
 import {
   ContactPrimaryAddressFragment,
   ContactPrimaryPersonFragment,
@@ -85,6 +86,7 @@ interface Props {
   status?: string;
   primaryAddress?: ContactPrimaryAddressFragment;
   source?: string;
+  contactUpdates: ContactUpdateData[];
   handleSingleConfirm: (
     id: string,
     name: string,
@@ -99,6 +101,7 @@ const Contact = ({
   primaryPerson,
   status,
   primaryAddress,
+  contactUpdates,
   handleSingleConfirm,
   setContactFocus,
 }: Props): ReactElement => {
@@ -122,15 +125,30 @@ const Contact = ({
         }
       }
     }
-    setNewsletter(newNewsletterValue);
+    updateNewsletterValue(newNewsletterValue);
   }, [primaryAddress]);
+
+  const updateNewsletterValue = (sendNewsletter: SendNewsletterEnum): void => {
+    setNewsletter(sendNewsletter);
+    const existingItem = contactUpdates.find(
+      (contactData) => contactData.id === id,
+    );
+    if (existingItem) {
+      existingItem.sendNewsletter = sendNewsletter;
+    } else {
+      contactUpdates.push({
+        id,
+        sendNewsletter: sendNewsletter,
+      });
+    }
+  };
 
   const handleChange = (
     event:
       | React.ChangeEvent<HTMLSelectElement>
       | React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ): void => {
-    setNewsletter(event.target.value as SendNewsletterEnum);
+    updateNewsletterValue(event.target.value as SendNewsletterEnum);
   };
 
   const handleContactNameClick = () => {

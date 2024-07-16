@@ -7,6 +7,7 @@ import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import FixSendNewsletter from './FixSendNewsletter';
 import {
@@ -109,8 +110,8 @@ describe('FixSendNewsletter', () => {
       const { getByRole } = render(
         <TestComponent
           mocks={{
-            GetInvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
             },
           }}
         />,
@@ -153,7 +154,15 @@ describe('FixSendNewsletter', () => {
     it('should successfully update the newsletter', async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'readQuery').mockReturnValue({
-        ...mockInvalidNewslettersResponse.InvalidNewsletter,
+        contacts: {
+          nodes: [
+            {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
+                .nodes[1],
+              sendNewsletter: SendNewsletterEnum.Physical,
+            },
+          ],
+        },
       });
 
       const { getAllByRole, queryByText, queryByRole } = render(
