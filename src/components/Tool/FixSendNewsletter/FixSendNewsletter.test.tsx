@@ -297,4 +297,35 @@ describe('FixSendNewsletter', () => {
       });
     });
   });
+
+  describe('bulk confirm', () => {
+    it('should bring up the confirmation modal', async () => {
+      const { getByRole, getByText, queryByRole } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            },
+            UpdateContactNewsletter: {
+              ...mockUploadNewsletterChange.UpdateContactNewsletter,
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(getByRole('button', { name: 'Confirm 2' }));
+
+      await waitFor(() => {
+        expect(
+          getByText(
+            'You are updating all contacts visible on this page, setting it to the visible newsletter selection. Are you sure you want to do this?',
+          ),
+        ).toBeVisible();
+      });
+    });
+  });
 });

@@ -14,6 +14,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -94,6 +95,7 @@ const FixSendNewsletter: React.FC<Props> = ({
     useUpdateContactNewsletterMutation();
   const [contactUpdates] = useState<ContactUpdateData[]>([]);
   const [updateContacts] = useMassActionsUpdateContactsMutation();
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
   const handleSingleConfirm = async (
     id: string,
@@ -204,7 +206,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                   <Button
                     variant="contained"
                     className={classes.buttonBlue}
-                    onClick={() => handleBulkConfirm()}
+                    onClick={() => setShowBulkConfirmModal(true)}
                   >
                     <Icon
                       path={mdiCheckboxMarkedCircle}
@@ -284,6 +286,15 @@ const FixSendNewsletter: React.FC<Props> = ({
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}
+      <Confirmation
+        isOpen={showBulkConfirmModal}
+        handleClose={() => setShowBulkConfirmModal(false)}
+        mutation={handleBulkConfirm}
+        title={t('Confirm')}
+        message={t(
+          'You are updating all contacts visible on this page, setting it to the visible newsletter selection. Are you sure you want to do this?',
+        )}
+      />
     </Box>
   );
 };
