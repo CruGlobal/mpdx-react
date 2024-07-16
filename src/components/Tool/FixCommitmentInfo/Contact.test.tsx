@@ -21,6 +21,18 @@ let testData = {
   frequencyValue: 'monthly',
   amount: 50,
   amountCurrency: 'US Dollar - USD ($)',
+  donations: {
+    nodes: [
+      {
+        amount: {
+          amount: 175,
+          currency: 'USD',
+          conversionDate: '2019-10-15',
+          convertedCurrency: 'USD',
+        },
+      },
+    ],
+  },
 };
 
 let statuses = [{ name: '', value: '' }];
@@ -31,6 +43,7 @@ const router = {
 
 const setContactFocus = jest.fn();
 const updateFunction = jest.fn();
+const handleShowModal = jest.fn();
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
@@ -38,7 +51,9 @@ const TestComponent: React.FC = () => (
       <Contact
         id={testData.id}
         name={testData.name}
+        donations={testData.donations.nodes}
         key={testData.name}
+        showModal={handleShowModal}
         statusTitle={testData.statusTitle}
         statusValue={testData.statusValue}
         amount={testData.amount}
@@ -74,7 +89,7 @@ describe('FixCommitmentContact', () => {
     userEvent.click(getByTestId('doNotChangeButton'));
     expect(updateFunction).toHaveBeenCalledTimes(2);
     userEvent.click(getByTestId('hideButton'));
-    expect(hideFunction).toHaveBeenCalledWith('test123');
+    expect(updateFunction).toHaveBeenCalledWith('test123');
   });
 
   it('should redirect the page', () => {
@@ -99,6 +114,18 @@ describe('FixCommitmentContact', () => {
       frequencyValue: '',
       amount: null!,
       amountCurrency: '',
+      donations: {
+        nodes: [
+          {
+            amount: {
+              amount: 175,
+              currency: 'USD',
+              conversionDate: '2019-10-15',
+              convertedCurrency: 'USD',
+            },
+          },
+        ],
+      },
     };
 
     const { getByTestId } = render(<TestComponent />);
@@ -135,6 +162,18 @@ describe('FixCommitmentContact', () => {
       frequencyValue: '',
       amount: null!,
       amountCurrency: '',
+      donations: {
+        nodes: [
+          {
+            amount: {
+              amount: 175,
+              currency: 'USD',
+              conversionDate: '2019-10-15',
+              convertedCurrency: 'USD',
+            },
+          },
+        ],
+      },
     };
     statuses = [
       { name: 'Partner - Financial', value: 'PARTNER_FINANCIAL' },
