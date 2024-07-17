@@ -8,6 +8,7 @@ import {
   FormHelperText,
   Grid,
   IconButton,
+  InputLabel,
   Link,
   MenuItem,
   Select,
@@ -82,9 +83,6 @@ const useStyles = makeStyles()(() => ({
     marginRight: theme.spacing(1),
     marginBottom: theme.spacing(2),
     marginLeft: theme.spacing(1),
-    [theme.breakpoints.down('md')]: {
-      marginTop: theme.spacing(0),
-    },
   },
   boxBottom: {
     marginLeft: theme.spacing(1),
@@ -101,11 +99,8 @@ const useStyles = makeStyles()(() => ({
     borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
     backgroundColor: theme.palette.cruGrayLight.main,
     [theme.breakpoints.up('md')]: {
-      // borderBottomLeftRadius: 5,
-      // borderBottomRightRadius: 5,
       borderTop: 'none',
       borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
-      // borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
       borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
@@ -113,9 +108,6 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     alignItems: 'center',
     height: '100%',
-    [theme.breakpoints.down('md')]: {
-      justifyContent: 'center',
-    },
   },
   buttonGroupBox: {
     display: 'flex',
@@ -124,6 +116,7 @@ const useStyles = makeStyles()(() => ({
     paddingLeft: theme.spacing(1),
     [theme.breakpoints.up('md')]: {
       flexDirection: 'column',
+      marginBottom: 0,
     },
   },
   buttonTop: {
@@ -138,9 +131,6 @@ const useStyles = makeStyles()(() => ({
   },
   buttonBottom: {
     margin: theme.spacing(1),
-    [theme.breakpoints.down('md')]: {
-      marginRight: theme.spacing(1),
-    },
   },
   ButtonIcons: {
     [theme.breakpoints.down('md')]: {
@@ -298,8 +288,12 @@ const Contact: React.FC<Props> = ({
                   <Grid container style={{ paddingRight: theme.spacing(1) }}>
                     <Grid item xs={12} md={6} lg={12}>
                       <Box className={classes.boxTop}>
+                        <InputLabel id="status-label">{t('Status')}</InputLabel>
                         <Select
                           className={classes.select}
+                          placeholder="Status"
+                          labelId="status-label"
+                          label={t('Status')}
                           inputProps={{ 'data-testid': 'pledgeStatus-input' }}
                           data-testid="statusSelect"
                           style={{ width: '100%' }}
@@ -331,9 +325,14 @@ const Contact: React.FC<Props> = ({
                     </Grid>
                     <Grid item xs={12} md={6} lg={4}>
                       <Box className={classes.boxBottom}>
+                        <InputLabel id="currency-label">
+                          {t('Currency')}
+                        </InputLabel>
                         <Select
                           className={classes.select}
-                          label={t('Commitment Currency')}
+                          labelId="currency-label"
+                          label={t('Currency')}
+                          placeholder="Currency"
                           data-testid="pledgeCurrency"
                           inputProps={{
                             'data-testid': 'pledgeCurrency-input',
@@ -362,10 +361,14 @@ const Contact: React.FC<Props> = ({
                     </Grid>
                     <Grid item xs={12} lg={4}>
                       <Box className={classes.boxBottom}>
+                        <InputLabel id="amount-label">{t('Amount')}</InputLabel>
                         <Field
                           id="standard-number"
                           as={TextField}
                           input={<StyledInput />}
+                          label={t('Amount')}
+                          labelId="amount-label"
+                          placeholder="Amount"
                           type="number"
                           data-testid="pledgeAmount"
                           inputProps={{ 'data-testid': 'pledgeAmount-input' }}
@@ -378,6 +381,7 @@ const Contact: React.FC<Props> = ({
                             <TextField
                               className={classes.select}
                               name={'pledgeAmount'}
+                              type="number"
                               error={Boolean(errors.pledgeAmount)}
                               onChange={(event) =>
                                 setFieldValue(
@@ -401,12 +405,18 @@ const Contact: React.FC<Props> = ({
                         className={classes.boxBottom}
                         data-testid="BoxBottom"
                       >
+                        <InputLabel id="frequency-label">
+                          {t('Frequency')}
+                        </InputLabel>
                         <Select
                           className={classes.select}
                           inputProps={{
                             'data-testid': 'pledgeFrequency-input',
                           }}
                           data-testid="pledgeFrequency"
+                          label={t('Frequency')}
+                          labelId="frequency-label"
+                          placeholder="Frequency"
                           style={{ width: '100%' }}
                           value={pledgeFrequency}
                           onChange={(event) =>
