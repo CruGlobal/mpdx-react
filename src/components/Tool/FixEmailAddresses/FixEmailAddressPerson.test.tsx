@@ -17,12 +17,18 @@ const testData = {
       updatedAt: DateTime.fromISO('2021-06-21').toString(),
       email: 'test1@test1.com',
       primary: true,
+      isValid: false,
+      personId: 'testid',
+      isPrimary: true,
     },
     {
       source: 'MPDX',
       updatedAt: DateTime.fromISO('2021-06-22').toString(),
       email: 'test2@test1.com',
       primary: false,
+      isValid: false,
+      personId: 'testid',
+      isPrimary: false,
     },
   ],
 };
@@ -45,12 +51,7 @@ describe('FixEmailAddresses-Contact', () => {
             key={testData.name}
             personId={testData.id}
             contactId={testData.contactId}
-            emailAddress={testData.emails.map((email) => ({
-              ...email,
-              isValid: false,
-              personId: testData.id,
-              isPrimary: email.primary,
-            }))}
+            emailAddress={testData.emails}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
             handleAdd={handleAddMock}
@@ -85,12 +86,7 @@ describe('FixEmailAddresses-Contact', () => {
             key={testData.name}
             personId={testData.id}
             contactId={testData.contactId}
-            emailAddress={testData.emails.map((email) => ({
-              ...email,
-              isValid: false,
-              personId: testData.id,
-              isPrimary: email.primary,
-            }))}
+            emailAddress={testData.emails}
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
             handleAdd={handleAddMock}
