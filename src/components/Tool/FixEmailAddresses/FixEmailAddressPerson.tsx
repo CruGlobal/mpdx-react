@@ -1,39 +1,29 @@
 import React, { Fragment, useMemo } from 'react';
 import { mdiDelete, mdiLock, mdiStar, mdiStarOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import AddIcon from '@mui/icons-material/Add';
 import {
   Avatar,
   Box,
   Button,
   Grid,
   Hidden,
-  IconButton,
   Link,
   TextField,
   Theme,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { ErrorMessage, Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import * as Yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
+import EmailValidationForm from './EmailValidationForm';
 import { EmailAddressData } from './FixEmailAddresses';
-
-const ContactInputField = styled(TextField, {
-  shouldForwardProp: (prop) => prop !== 'destroyed',
-})(({ destroyed }: { destroyed: boolean }) => ({
-  textDecoration: destroyed ? 'line-through' : 'none',
-}));
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -84,7 +74,7 @@ const ColumnHeaderWrapper = styled(Grid)(({ theme }) => ({
   paddingBottom: theme.spacing(2),
 }));
 
-const RowWrapper = styled(Grid)(({ theme }) => ({
+export const RowWrapper = styled(Grid)(({ theme }) => ({
   paddingBottom: theme.spacing(2),
 }));
 
@@ -118,100 +108,6 @@ interface FixEmailAddressPersonProps {
   handleChangePrimary: (personId: string, emailIndex: number) => void;
   setContactFocus: SetContactFocus;
 }
-
-interface EmailValidationFormEmail {
-  email: string;
-  isPrimary: boolean;
-  updatedAt: string;
-  source: string;
-  personId: string;
-  isValid: boolean;
-}
-
-interface EmailValidationFormProps {
-  emails?: EmailValidationFormEmail;
-  index: number;
-  personId?: string;
-  handleAdd?: (personId: string, email: string) => void;
-}
-
-//TODO: Implement during MPDX-7946
-const onSubmit = () => {};
-
-const EmailValidationForm = ({
-  emails: initialEmail = {
-    email: '',
-    isPrimary: false,
-    updatedAt: '',
-    source: '',
-    personId: '',
-    isValid: false,
-  },
-}: EmailValidationFormProps) => {
-  const { enqueueSnackbar } = useSnackbar();
-
-  const validationSchema = Yup.object().shape({
-    email: Yup.string().email(' ').required(' '),
-  });
-  const { t } = useTranslation();
-
-  const handleValidation = (isValid) => {
-    if (!isValid) {
-      enqueueSnackbar(t('Invalid Email Address Format'), {
-        variant: 'error',
-      });
-    }
-  };
-
-  //TODO: Add button functionality to add email using graphql mutation
-
-  // const handleButtonClick = (email) => {
-
-  // };
-
-  return (
-    <Formik
-      initialValues={{
-        email: initialEmail.email,
-        isPrimary: initialEmail.isPrimary,
-        updatedAt: '',
-        source: '',
-        personId: 'test',
-        isValid: false,
-      }}
-      validationSchema={validationSchema}
-      onSubmit={onSubmit}
-    >
-      {({ values, handleChange, isValid }) => (
-        <Form>
-          <RowWrapper>
-            <Grid container>
-              <ContactInputField
-                destroyed={false}
-                label={t('New Email Address')}
-                type="email"
-                name="email"
-                value={values.email}
-                onChange={handleChange}
-                onBlur={() => handleValidation(isValid)}
-              />
-              <IconButton
-                type="submit"
-                color="primary"
-                disabled={!isValid || values.email === ''}
-                data-testid={`addButton-${initialEmail.personId}`}
-                // onClick={() => handleButtonClick(values.email)}
-              >
-                <AddIcon fontSize="large" />
-              </IconButton>
-            </Grid>
-          </RowWrapper>
-          <ErrorMessage name="email" component="div" />
-        </Form>
-      )}
-    </Formik>
-  );
-};
 
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
