@@ -65,7 +65,7 @@ const TestComponent: React.FC = () => {
   );
 };
 
-describe('FixEmailAddresses-Contact', () => {
+describe('FixEmailAddressPerson', () => {
   it('default', () => {
     const { getByText, getByTestId, getByDisplayValue } = render(
       <TestComponent />,
