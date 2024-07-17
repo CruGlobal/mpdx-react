@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { TabKey } from './ContactDetails';
 import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 
@@ -59,7 +59,7 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [editOtherModalOpen, setEditOtherModalOpen] = useState(false);
   const [editMailingModalOpen, setEditMailingModalOpen] = useState(false);
   const [selectedTabKey, setSelectedTabKey] = React.useState(
-    query?.tab ? TabKey[query?.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
+    query?.tab ? TabKey[query.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
   );
   const handleTabChange = (
     _event: React.ChangeEvent<Record<string, unknown>>,
@@ -67,12 +67,6 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   ) => {
     setSelectedTabKey(newKey);
   };
-
-  useEffect(() => {
-    if (query.tabKey) {
-      setSelectedTabKey(query.tabKey);
-    }
-  }, [query]);
 
   const [editPersonModalOpen, setEditPersonModalOpen] = useState<string>();
   const [createPersonModalOpen, setCreatePersonModalOpen] = useState(false);

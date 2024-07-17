@@ -10,10 +10,7 @@ const FixCommitmentInfoPage: React.FC = () => {
   const { accountListId, handleSelectContact } = useToolsHelper();
   const pageUrl = 'tools/fix/commitmentInfo';
 
-  const setContactFocus: SetContactFocus = (
-    contactId: string,
-    tabKey?: string,
-  ) => {
+  const setContactFocus: SetContactFocus = (contactId, tabKey) => {
     handleSelectContact(pageUrl, contactId, tabKey);
   };
 

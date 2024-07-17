@@ -1,18 +1,20 @@
-query GetInvalidStatuses($accountListId: ID!, $after: String) {
+query InvalidStatuses($accountListId: ID!, $after: String) {
   contacts(
     accountListId: $accountListId
     contactsFilter: { statusValid: false }
     after: $after
-    first: 100
+    first: 50
   ) {
     nodes {
       id
       name
+      avatar
       status
       pledgeAmount
       pledgeCurrency
       pledgeFrequency
-      donations(first: 5) {
+      suggestedChanges
+      donations(first: 6) {
         nodes {
           amount {
             amount

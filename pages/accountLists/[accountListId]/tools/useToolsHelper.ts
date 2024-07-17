@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
+import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
 
-export type SetContactFocus = (contactId: string, tabKey?: string) => void;
+export type SetContactFocus = (contactId: string, tab?: TabKey) => void;
 
 export const useToolsHelper = () => {
   const { query, push } = useRouter();
@@ -11,13 +12,14 @@ export const useToolsHelper = () => {
   const selectedContactId = getQueryParam(query, 'contactId');
 
   const handleSelectContact = useCallback(
-    (pagePath: string, contactId: string, tabKey?: string) => {
-      tabKey
+    (pagePath: string, contactId: string, tab?: TabKey) => {
+      const pathname = `/accountLists/${accountListId}/${pagePath}/${contactId}`;
+      tab
         ? push({
-            pathname: `/accountLists/${accountListId}/${pagePath}/${contactId}`,
-            query: { tabKey: tabKey },
+            pathname,
+            query: { tab },
           })
-        : push(`/accountLists/${accountListId}/${pagePath}/${contactId}`);
+        : push(pathname);
     },
     [accountListId],
   );

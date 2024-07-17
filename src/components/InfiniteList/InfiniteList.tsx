@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { List, ListItem, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
@@ -23,22 +23,26 @@ const ListContainer: React.ComponentType<ListProps> = React.forwardRef(
   ),
 );
 
-export const ItemWithBorders = styled(ListItem, {
+const ItemWithBorders = styled(ListItem, {
   shouldForwardProp: (prop) => prop !== 'disableHover',
 })<{ disableHover?: boolean }>(({ disableHover }) => ({
   padding: `${padding}px`,
+  borderBottom: `1px solid ${theme.palette.grey[200]}`,
   '&:last-child': {
     borderBottom: 'none',
   },
   ...(disableHover
     ? {}
     : {
-        borderBottom: `1px solid ${theme.palette.grey[200]}`,
         '&:hover': {
           backgroundColor: theme.palette.cruGrayLight.main,
         },
       }),
 }));
+
+const Item: React.ComponentType<ItemProps> = (props) => (
+  <ItemWithBorders disableGutters {...props} />
+);
 
 const SkeletonItem: React.FC<{ height: number }> = ({ height }) => (
   <ItemWithBorders disableGutters disableHover>
@@ -68,7 +72,6 @@ export interface InfiniteListProps<T, C> {
   loading: boolean;
   disableHover?: boolean;
   EmptyPlaceholder?: ReactElement | null;
-  ItemOverride?: React.ComponentType<ItemProps> | null;
   itemContent: ItemContent<T, C>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: any;
@@ -80,7 +83,6 @@ export const InfiniteList = <T, C>({
   disableHover = false,
   data = [],
   EmptyPlaceholder = null,
-  ItemOverride = null,
   context,
   groupBy,
   itemContent,
@@ -92,20 +94,13 @@ export const InfiniteList = <T, C>({
     [data, groupBy],
   );
 
-  const Item: React.ComponentType<ItemProps> = useCallback(
-    (props) => (
-      <ItemWithBorders disableGutters disableHover={disableHover} {...props} />
-    ),
-    [disableHover],
-  );
-
   const commonProps: Omit<VirtuosoProps<T, C>, 'itemContent'> = {
     ...props,
     components: {
       Footer: loading ? Loading : undefined,
       EmptyPlaceholder: loading ? undefined : () => EmptyPlaceholder,
       List: ListContainer,
-      Item: ItemOverride ?? Item,
+      Item,
       ScrollSeekPlaceholder: SkeletonItem,
       ...props.components,
     },
@@ -114,7 +109,6 @@ export const InfiniteList = <T, C>({
       exit: (velocity) => Math.abs(velocity) < 100,
       ...props.scrollSeekConfiguration,
     },
-    overscan: 2000,
   };
 
   if (groupCounts.length > 0) {
