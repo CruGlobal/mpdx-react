@@ -306,29 +306,31 @@ const FixCommitmentInfo: React.FC<Props> = ({
                     border: 'none !important',
                   }}
                   itemContent={(index, contact) => (
-                    <Contact
-                      id={contact.id}
-                      name={contact.name}
-                      key={contact.id}
-                      donations={contact.donations?.nodes}
-                      statusTitle={
-                        contact.status
-                          ? contactPartnershipStatus[contact.status]
-                          : ''
-                      }
-                      statusValue={contact.status || ''}
-                      amount={contact.pledgeAmount || 0}
-                      amountCurrency={contact.pledgeCurrency || ''}
-                      frequencyTitle={
-                        contact.pledgeFrequency
-                          ? frequencies[contact.pledgeFrequency]
-                          : ''
-                      }
-                      frequencyValue={contact.pledgeFrequency || ''}
-                      showModal={handleShowModal}
-                      statuses={contactStatuses || [{ name: '', value: '' }]}
-                      setContactFocus={setContactFocus}
-                    />
+                    <Grid item xs={12}>
+                      <Contact
+                        id={contact.id}
+                        name={contact.name}
+                        key={contact.id}
+                        donations={contact.donations?.nodes}
+                        statusTitle={
+                          contact.status
+                            ? contactPartnershipStatus[contact.status]
+                            : ''
+                        }
+                        statusValue={contact.status || ''}
+                        amount={contact.pledgeAmount || 0}
+                        amountCurrency={contact.pledgeCurrency || ''}
+                        frequencyTitle={
+                          contact.pledgeFrequency
+                            ? frequencies[contact.pledgeFrequency]
+                            : ''
+                        }
+                        frequencyValue={contact.pledgeFrequency || ''}
+                        showModal={handleShowModal}
+                        statuses={contactStatuses || [{ name: '', value: '' }]}
+                        setContactFocus={setContactFocus}
+                      />
+                    </Grid>
                   )}
                   endReached={() =>
                     data?.contacts?.pageInfo.hasNextPage &&

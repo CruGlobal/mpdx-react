@@ -48,23 +48,27 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    order: 1,
     padding: theme.spacing(2),
-    [theme.breakpoints.up('lg')]: {
-      borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
+    [theme.breakpoints.up('md')]: {
+      order: 0,
+      borderTopRightRadius: 5,
       borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
       borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
-      borderTopRightRadius: 5,
-      // borderBottomRightRadius: 5,
+      borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      borderLeft: 'none',
     },
   },
   left: {
     height: '100%',
-    [theme.breakpoints.up('lg')]: {
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    [theme.breakpoints.up('md')]: {
+      borderTopRightRadius: 0,
+      borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      borderRight: 'none',
       borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
       borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
-      borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
-      borderTopLeftRadius: 5,
-      // borderBottomLeftRadius: 5,
     },
   },
   container: {
@@ -73,43 +77,54 @@ const useStyles = makeStyles()(() => ({
     width: '100%',
     height: '100%',
     marginBottom: theme.spacing(3),
-    border: 'none',
-    [theme.breakpoints.down('md')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
   },
   boxTop: {
     marginRight: theme.spacing(1),
     marginBottom: theme.spacing(2),
     marginLeft: theme.spacing(1),
     [theme.breakpoints.down('md')]: {
-      marginLeft: theme.spacing(2),
       marginTop: theme.spacing(0),
     },
   },
   boxBottom: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       marginBottom: theme.spacing(2),
-      marginLeft: theme.spacing(2),
     },
   },
   donationsTable: {
     display: 'flex',
     justifyContent: 'space-around',
     padding: theme.spacing(1),
-    borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
-    borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    borderBottomLeftRadius: 5,
-    borderBottomRightRadius: 5,
+    borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+    borderTop: `1px solid ${theme.palette.cruGrayMedium.main}`,
     backgroundColor: theme.palette.cruGrayLight.main,
+    [theme.breakpoints.up('md')]: {
+      // borderBottomLeftRadius: 5,
+      // borderBottomRightRadius: 5,
+      borderTop: 'none',
+      borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      // borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
+      borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
+    },
   },
   buttonGroup: {
     display: 'flex',
     alignItems: 'center',
     height: '100%',
+    [theme.breakpoints.down('md')]: {
+      justifyContent: 'center',
+    },
+  },
+  buttonGroupBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginBottom: theme.spacing(3),
+    paddingLeft: theme.spacing(1),
+    [theme.breakpoints.up('md')]: {
+      flexDirection: 'column',
+    },
   },
   buttonTop: {
     margin: theme.spacing(1),
@@ -127,12 +142,31 @@ const useStyles = makeStyles()(() => ({
       marginRight: theme.spacing(1),
     },
   },
+  ButtonIcons: {
+    [theme.breakpoints.down('md')]: {
+      display: 'flex',
+    },
+  },
   select: {
     width: '100%',
+  },
+  formWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
     [theme.breakpoints.down('md')]: {
-      width: '100%',
-      maxWidth: '200px',
-      margin: `${theme.spacing(1)} auto 0`,
+      flexDirection: 'column',
+      flexWrap: 'wrap',
+      borderRadius: 5,
+      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
+    },
+  },
+  formInner: {
+    [theme.breakpoints.up('md')]: {
+      borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
+      borderBottomLeftRadius: 5,
+      borderBottomRightRadius: 5,
     },
   },
 }));
@@ -227,199 +261,211 @@ const Contact: React.FC<Props> = ({
           errors,
         }): ReactElement => (
           <Form onSubmit={handleSubmit}>
-            <Grid container>
-              <Grid item lg={4} xs={12}>
-                <Box
-                  display="flex"
-                  p={2}
-                  alignItems="center"
-                  className={classes.left}
-                  style={
-                    !donations.length
-                      ? {
-                          borderBottomLeftRadius: 5,
-                          borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
-                        }
-                      : {}
-                  }
-                >
-                  <Avatar
-                    src=""
-                    style={{
-                      width: theme.spacing(7),
-                      height: theme.spacing(7),
-                    }}
-                  />
-                  <Box display="flex" flexDirection="column" ml={2}>
-                    <Link
-                      data-testid="contactSelect"
-                      underline="hover"
-                      onClick={() => setContactFocus(id, 'Donations')}
-                    >
-                      <Typography variant="h6">{name}</Typography>
-                    </Link>
-                    <Typography>
-                      Current:{' '}
-                      {`${statusTitle} ${
-                        typeof amount === 'number' && amount.toFixed(2)
-                      } ${amountCurrency} ${frequencyTitle}`}
-                    </Typography>
+            <Grid container className={classes.formWrapper}>
+              <Grid container className={classes.formInner}>
+                <Grid item lg={6} md={4} xs={12}>
+                  <Box
+                    display="flex"
+                    p={2}
+                    alignItems="center"
+                    className={classes.left}
+                  >
+                    <Avatar
+                      src=""
+                      style={{
+                        width: theme.spacing(7),
+                        height: theme.spacing(7),
+                      }}
+                    />
+                    <Box display="flex" flexDirection="column" ml={2}>
+                      <Link
+                        data-testid="contactSelect"
+                        underline="hover"
+                        onClick={() => setContactFocus(id, 'Donations')}
+                      >
+                        <Typography variant="h6">{name}</Typography>
+                      </Link>
+                      <Typography>
+                        Current:{' '}
+                        {`${statusTitle} ${
+                          typeof amount === 'number' && amount.toFixed(2)
+                        } ${amountCurrency} ${frequencyTitle}`}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                lg={6}
-                className={classes.right}
-                style={
-                  !donations.length
-                    ? {
-                        borderBottomRightRadius: 5,
-                        borderBottom: `16px solid ${theme.palette.cruGrayMedium.main}`,
-                      }
-                    : {}
-                }
-              >
-                <Grid container style={{ paddingRight: theme.spacing(1) }}>
-                  <Grid item xs={12}>
-                    <Box className={classes.boxTop}>
-                      <Select
-                        className={classes.select}
-                        inputProps={{ 'data-testid': 'pledgeStatus-input' }}
-                        data-testid="statusSelect"
-                        style={{ width: '100%' }}
-                        value={statusValue}
-                        onChange={(event) =>
-                          setFieldValue('statusValue', event.target.value)
-                        }
-                      >
-                        <MenuItem value="" disabled>
-                          Status
-                        </MenuItem>
-                        {statuses.map((status) => (
-                          <MenuItem
-                            value={status.value}
-                            key={status.value}
-                            data-testid="statusSelectOptions"
-                          >
-                            {status.name}
+                </Grid>
+                <Grid item xs={12} md={8} lg={6} className={classes.right}>
+                  <Grid container style={{ paddingRight: theme.spacing(1) }}>
+                    <Grid item xs={12} md={6} lg={12}>
+                      <Box className={classes.boxTop}>
+                        <Select
+                          className={classes.select}
+                          inputProps={{ 'data-testid': 'pledgeStatus-input' }}
+                          data-testid="statusSelect"
+                          style={{ width: '100%' }}
+                          value={statusValue}
+                          onChange={(event) =>
+                            setFieldValue('statusValue', event.target.value)
+                          }
+                        >
+                          <MenuItem value="" disabled>
+                            Status
                           </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText
-                        error={true}
-                        data-testid="statusSelectError"
-                      >
-                        {errors.statusValue && errors.statusValue}
-                      </FormHelperText>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} lg={4}>
-                    <Box className={classes.boxBottom}>
-                      <Select
-                        className={classes.select}
-                        label={t('Commitment Currency')}
-                        data-testid="pledgeCurrency"
-                        inputProps={{ 'data-testid': 'pledgeCurrency-input' }}
-                        value={pledgeCurrency}
-                        onChange={(e) =>
-                          setFieldValue('pledgeCurrency', e.target.value)
-                        }
-                      >
-                        <MenuItem value={''} disabled>
-                          {t('Currency')}
-                        </MenuItem>
-                        {constants?.constant?.pledgeCurrency &&
-                          getPledgeCurrencyOptions(
-                            constants?.constant?.pledgeCurrency,
-                            'short',
-                          )}
-                      </Select>
-                      <FormHelperText
-                        error={true}
-                        data-testid="pledgeCurrencyError"
-                      >
-                        {errors.pledgeCurrency && errors.pledgeCurrency}
-                      </FormHelperText>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} lg={4}>
-                    <Box className={classes.boxBottom}>
-                      <Field
-                        id="standard-number"
-                        as={TextField}
-                        input={<StyledInput />}
-                        type="number"
-                        data-testid="pledgeAmount"
-                        inputProps={{ 'data-testid': 'pledgeAmount-input' }}
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        validate={pledgeAmount}
-                        value={pledgeAmount}
-                        render={() => (
-                          <TextField
-                            className={classes.select}
-                            name={'pledgeAmount'}
-                            error={Boolean(errors.pledgeAmount)}
-                            onChange={(event) =>
-                              setFieldValue('pledgeAmount', event.target.value)
-                            }
-                          />
-                        )}
-                      />
-                      <FormHelperText
-                        error={true}
-                        data-testid="pledgeAmountError"
-                      >
-                        {errors.pledgeAmount && errors.pledgeAmount}
-                      </FormHelperText>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} lg={4}>
-                    <Box className={classes.boxBottom} data-testid="BoxBottom">
-                      <Select
-                        className={classes.select}
-                        inputProps={{ 'data-testid': 'pledgeFrequency-input' }}
-                        data-testid="pledgeFrequency"
-                        style={{ width: '100%' }}
-                        value={pledgeFrequency}
-                        onChange={(event) =>
-                          setFieldValue('pledgeFrequency', event.target.value)
-                        }
-                      >
-                        <MenuItem value="Frequency" disabled>
-                          Frequency
-                        </MenuItem>
-                        {Object.entries(frequencies).map(
-                          ([freqValue, freqTranslated]) => (
+                          {statuses.map((status) => (
                             <MenuItem
-                              value={freqValue}
-                              key={freqValue}
-                              data-testid="pledgeFrequencyOptions"
+                              value={status.value}
+                              key={status.value}
+                              data-testid="statusSelectOptions"
                             >
-                              {freqTranslated}
+                              {status.name}
                             </MenuItem>
-                          ),
-                        )}
-                      </Select>
-                      <FormHelperText
-                        error={true}
-                        data-testid="pledgeFrequencyError"
+                          ))}
+                        </Select>
+                        <FormHelperText
+                          error={true}
+                          data-testid="statusSelectError"
+                        >
+                          {errors.statusValue && errors.statusValue}
+                        </FormHelperText>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={4}>
+                      <Box className={classes.boxBottom}>
+                        <Select
+                          className={classes.select}
+                          label={t('Commitment Currency')}
+                          data-testid="pledgeCurrency"
+                          inputProps={{
+                            'data-testid': 'pledgeCurrency-input',
+                          }}
+                          value={pledgeCurrency}
+                          onChange={(e) =>
+                            setFieldValue('pledgeCurrency', e.target.value)
+                          }
+                        >
+                          <MenuItem value={''} disabled>
+                            {t('Currency')}
+                          </MenuItem>
+                          {constants?.constant?.pledgeCurrency &&
+                            getPledgeCurrencyOptions(
+                              constants?.constant?.pledgeCurrency,
+                              'short',
+                            )}
+                        </Select>
+                        <FormHelperText
+                          error={true}
+                          data-testid="pledgeCurrencyError"
+                        >
+                          {errors.pledgeCurrency && errors.pledgeCurrency}
+                        </FormHelperText>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} lg={4}>
+                      <Box className={classes.boxBottom}>
+                        <Field
+                          id="standard-number"
+                          as={TextField}
+                          input={<StyledInput />}
+                          type="number"
+                          data-testid="pledgeAmount"
+                          inputProps={{ 'data-testid': 'pledgeAmount-input' }}
+                          variant="outlined"
+                          size="small"
+                          fullWidth
+                          validate={pledgeAmount}
+                          value={pledgeAmount}
+                          render={() => (
+                            <TextField
+                              className={classes.select}
+                              name={'pledgeAmount'}
+                              error={Boolean(errors.pledgeAmount)}
+                              onChange={(event) =>
+                                setFieldValue(
+                                  'pledgeAmount',
+                                  event.target.value,
+                                )
+                              }
+                            />
+                          )}
+                        />
+                        <FormHelperText
+                          error={true}
+                          data-testid="pledgeAmountError"
+                        >
+                          {errors.pledgeAmount && errors.pledgeAmount}
+                        </FormHelperText>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} lg={4}>
+                      <Box
+                        className={classes.boxBottom}
+                        data-testid="BoxBottom"
                       >
-                        {errors.pledgeFrequency && errors.pledgeFrequency}
-                      </FormHelperText>
-                    </Box>
+                        <Select
+                          className={classes.select}
+                          inputProps={{
+                            'data-testid': 'pledgeFrequency-input',
+                          }}
+                          data-testid="pledgeFrequency"
+                          style={{ width: '100%' }}
+                          value={pledgeFrequency}
+                          onChange={(event) =>
+                            setFieldValue('pledgeFrequency', event.target.value)
+                          }
+                        >
+                          <MenuItem value="Frequency" disabled>
+                            Frequency
+                          </MenuItem>
+                          {Object.entries(frequencies).map(
+                            ([freqValue, freqTranslated]) => (
+                              <MenuItem
+                                value={freqValue}
+                                key={freqValue}
+                                data-testid="pledgeFrequencyOptions"
+                              >
+                                {freqTranslated}
+                              </MenuItem>
+                            ),
+                          )}
+                        </Select>
+                        <FormHelperText
+                          error={true}
+                          data-testid="pledgeFrequencyError"
+                        >
+                          {errors.pledgeFrequency && errors.pledgeFrequency}
+                        </FormHelperText>
+                      </Box>
+                    </Grid>
                   </Grid>
                 </Grid>
+                {donations.length > 0 && (
+                  <Grid container className={classes.donationsTable} lg={12}>
+                    {donations.map((donation) => (
+                      <Grid
+                        key={donation.amount.conversionDate}
+                        display="flex"
+                        flexDirection="column"
+                      >
+                        <Box>
+                          <Typography fontWeight={700}>
+                            {DateTime.fromISO(donation.amount.conversionDate)
+                              //TODO get user preferences
+                              .setLocale('en')
+                              .toLocaleString()}
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography sx={{ textAlign: 'center' }}>
+                            {`${donation.amount.amount} ${donation.amount.currency}`}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
               </Grid>
-              <Grid item xs={12} lg={2} className={classes.buttonGroup}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  style={{ paddingLeft: theme.spacing(1) }}
-                >
+              <Grid item xs={12} md={3} className={classes.buttonGroup}>
+                <Box className={classes.buttonGroupBox}>
                   <Box className={classes.buttonTop}>
                     <Button
                       type="submit"
@@ -457,7 +503,7 @@ const Contact: React.FC<Props> = ({
                       {"Don't Change"}
                     </Button>
                   </Box>
-                  <Box>
+                  <Box className={classes.ButtonIcons}>
                     <IconButton
                       data-testid="goToContactsButton"
                       onClick={() => setContactFocus(id, 'Donations')}
@@ -490,31 +536,6 @@ const Contact: React.FC<Props> = ({
                   </Box>
                 </Box>
               </Grid>
-              {donations.length > 0 && (
-                <Grid container className={classes.donationsTable} lg={10}>
-                  {donations.map((donation) => (
-                    <Grid
-                      key={donation.amount.conversionDate}
-                      display="flex"
-                      flexDirection="column"
-                    >
-                      <Box>
-                        <Typography fontWeight={700}>
-                          {DateTime.fromISO(donation.amount.conversionDate)
-                            //TODO get user preferences
-                            .setLocale('en')
-                            .toLocaleString()}
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Typography sx={{ textAlign: 'center' }}>
-                          {`${donation.amount.amount} ${donation.amount.currency}`}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
             </Grid>
           </Form>
         )}
