@@ -1,7 +1,6 @@
 import { Grid, IconButton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { ErrorMessage, Form, Formik } from 'formik';
-import { useSnackbar } from 'notistack';
+import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { AddIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
@@ -34,7 +33,7 @@ const onSubmit = (values, actions) => {
 };
 
 const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const initialEmail = {
     email: '',
@@ -46,22 +45,15 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
   } as EmailValidationFormEmail;
 
   const validationSchema = Yup.object({
-    email: Yup.string().email(' ').required(' '),
+    email: Yup.string()
+      .email(t('Invalid Email Address Format'))
+      .required('Please enter a valid email address'),
     isPrimary: Yup.bool().default(false),
     updatedAt: Yup.string(),
     source: Yup.string(),
     personId: Yup.string(),
     isValid: Yup.bool().default(false),
   });
-  const { t } = useTranslation();
-
-  const handleValidation = (isValid) => {
-    if (!isValid) {
-      enqueueSnackbar(t('Invalid Email Address Format'), {
-        variant: 'error',
-      });
-    }
-  };
 
   //TODO: Add button functionality to add email using graphql mutation
 
@@ -75,7 +67,7 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
-      {({ values, handleChange, isValid }) => (
+      {({ values, handleChange, handleBlur, isValid, touched, errors }) => (
         <Form>
           <RowWrapper>
             <Grid container>
@@ -86,7 +78,11 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
                 name="email"
                 value={values.email}
                 onChange={handleChange}
-                onBlur={() => handleValidation(isValid)}
+                onBlur={handleBlur}
+                error={touched.email && Boolean(errors.email)}
+                helperText={
+                  touched.email && Boolean(errors.email) ? errors.email : ''
+                }
               />
               <IconButton
                 type="submit"
@@ -99,7 +95,6 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
               </IconButton>
             </Grid>
           </RowWrapper>
-          <ErrorMessage name="email" component="div" />
         </Form>
       )}
     </Formik>

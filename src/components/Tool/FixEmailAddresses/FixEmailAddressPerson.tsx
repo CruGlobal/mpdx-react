@@ -92,7 +92,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-interface FixEmailAddressPersonProps {
+export interface FixEmailAddressPersonProps {
   name: string;
   emailAddresses?: EmailAddressData[];
   personId: string;
