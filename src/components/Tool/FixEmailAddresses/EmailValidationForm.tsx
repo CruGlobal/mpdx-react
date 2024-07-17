@@ -55,12 +55,6 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
     isValid: Yup.bool().default(false),
   });
 
-  //TODO: Add button functionality to add email using graphql mutation
-
-  // const handleButtonClick = (email) => {
-
-  // };
-
   return (
     <Formik
       initialValues={initialEmail}
@@ -89,7 +83,6 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
                 color="primary"
                 disabled={!isValid || values.email === ''}
                 data-testid={`addButton-${initialEmail.personId}`}
-                // onClick={() => handleButtonClick(values.email)}
               >
                 <AddIcon fontSize="large" />
               </IconButton>

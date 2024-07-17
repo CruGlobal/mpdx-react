@@ -135,22 +135,6 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
     [emailAddresses],
   );
 
-  //TODO: Add button functionality
-  //TODO: Make name pop up a modal to edit the person info
-
-  // const updateNewEmailAddress = (
-  //   event: React.ChangeEvent<HTMLInputElement>,
-  // ): void => {
-  //   setNewEmailAddress(event.target.value);
-  // };
-
-  // const addNewEmailAddress = (): void => {
-  //   if (newEmailAddress) {
-  //     handleAdd(personId, newEmailAddress);
-  //     setNewEmailAddress('');
-  //   }
-  // };
-
   const handleContactNameClick = () => {
     setContactFocus(contactId);
   };
@@ -295,7 +279,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       px={2}
                     >
                       {
-                        //index will need to be mapped to the correct personId
+                        //TODO: index will need to be mapped to the correct personId
                       }
                       <EmailValidationForm
                         handleAdd={handleAdd}
