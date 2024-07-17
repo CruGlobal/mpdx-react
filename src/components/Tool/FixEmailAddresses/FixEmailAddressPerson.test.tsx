@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { render } from '__tests__/util/testingLibraryReactMock';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from '../../../theme';
 import { FixEmailAddressPerson } from './FixEmailAddressPerson';
 
@@ -71,13 +71,13 @@ describe('FixEmailAddresses-Contact', () => {
     expect(getByDisplayValue('test2@test1.com')).toBeInTheDocument();
   });
 
-  it('input reset after adding an email address', () => {
+  it('input reset after adding an email address', async () => {
     const handleChangeMock = jest.fn();
     const handleDeleteModalOpenMock = jest.fn();
     const handleAddMock = jest.fn();
     const handleChangePrimaryMock = jest.fn();
 
-    const { getByTestId } = render(
+    const { getByTestId, getByLabelText } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <FixEmailAddressPerson
@@ -97,12 +97,16 @@ describe('FixEmailAddresses-Contact', () => {
       </ThemeProvider>,
     );
 
-    const addInput = getByTestId('addNewEmailInput-testid') as HTMLInputElement;
+    const addInput = getByLabelText('New Email Address');
     const addButton = getByTestId('addButton-testid');
 
     userEvent.type(addInput, 'new@new.com');
-    expect(addInput.value).toBe('new@new.com');
+    await waitFor(() => {
+      expect(addInput).toHaveValue('new@new.com');
+    });
     userEvent.click(addButton);
-    expect(addInput.value).toBe('');
+    await waitFor(() => {
+      expect(addInput).toHaveValue('');
+    });
   });
 });

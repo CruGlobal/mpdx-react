@@ -297,7 +297,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       {
                         //index will need to be mapped to the correct personId
                       }
-                      <EmailValidationForm handleAdd={handleAdd} index={0} />
+                      <EmailValidationForm
+                        handleAdd={handleAdd}
+                        index={0}
+                        personId={personId}
+                      />
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>

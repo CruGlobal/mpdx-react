@@ -23,29 +23,35 @@ interface EmailValidationFormEmail {
 }
 
 interface EmailValidationFormProps {
-  emails?: EmailValidationFormEmail;
   index: number;
-  personId?: string;
+  personId: string;
   handleAdd?: (personId: string, email: string) => void;
 }
 
 //TODO: Implement during MPDX-7946
-const onSubmit = () => {};
+const onSubmit = (values, actions) => {
+  actions.resetForm();
+};
 
-const EmailValidationForm = ({
-  emails: initialEmail = {
+const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const initialEmail = {
     email: '',
     isPrimary: false,
     updatedAt: '',
     source: '',
-    personId: '',
+    personId,
     isValid: false,
-  },
-}: EmailValidationFormProps) => {
-  const { enqueueSnackbar } = useSnackbar();
+  } as EmailValidationFormEmail;
 
-  const validationSchema = Yup.object().shape({
+  const validationSchema = Yup.object({
     email: Yup.string().email(' ').required(' '),
+    isPrimary: Yup.bool().default(false),
+    updatedAt: Yup.string(),
+    source: Yup.string(),
+    personId: Yup.string(),
+    isValid: Yup.bool().default(false),
   });
   const { t } = useTranslation();
 
@@ -65,14 +71,7 @@ const EmailValidationForm = ({
 
   return (
     <Formik
-      initialValues={{
-        email: initialEmail.email,
-        isPrimary: initialEmail.isPrimary,
-        updatedAt: '',
-        source: '',
-        personId: 'test',
-        isValid: false,
-      }}
+      initialValues={initialEmail}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
