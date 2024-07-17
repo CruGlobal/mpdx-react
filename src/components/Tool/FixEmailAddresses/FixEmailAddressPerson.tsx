@@ -94,7 +94,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 
 interface FixEmailAddressPersonProps {
   name: string;
-  emailAddress?: EmailAddressData[];
+  emailAddresses?: EmailAddressData[];
   personId: string;
   toDelete: PersonEmailAddressInput[];
   contactId: string;
@@ -111,7 +111,7 @@ interface FixEmailAddressPersonProps {
 
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
-  emailAddress,
+  emailAddresses,
   personId,
   contactId,
   handleChange,
@@ -126,13 +126,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
 
   const emails = useMemo(
     () =>
-      emailAddress?.map((email) => ({
+      emailAddresses?.map((email) => ({
         ...email,
         isValid: false,
         personId: personId,
         isPrimary: email.primary,
       })) || [],
-    [emailAddress],
+    [emailAddresses],
   );
 
   //TODO: Add button functionality
