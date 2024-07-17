@@ -22,6 +22,7 @@ import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { useUserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { FilterOption } from 'src/graphql/types.generated';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import theme from '../../../theme';
@@ -196,7 +197,7 @@ const Contact: React.FC<Props> = ({
   setContactFocus,
 }) => {
   const { data: constants } = useLoadConstantsQuery();
-
+  const { locale } = useUserPreferenceContext();
   const { classes } = useStyles();
   const { t } = useTranslation();
 
@@ -372,15 +373,14 @@ const Contact: React.FC<Props> = ({
                           type="number"
                           data-testid="pledgeAmount"
                           inputProps={{ 'data-testid': 'pledgeAmount-input' }}
-                          variant="outlined"
+                          variant="standard"
                           size="small"
                           fullWidth
-                          validate={pledgeAmount}
-                          value={pledgeAmount}
                           render={() => (
                             <TextField
                               className={classes.select}
                               name={'pledgeAmount'}
+                              value={pledgeAmount}
                               type="number"
                               error={Boolean(errors.pledgeAmount)}
                               onChange={(event) =>
@@ -460,7 +460,7 @@ const Contact: React.FC<Props> = ({
                           <Typography fontWeight={700}>
                             {DateTime.fromISO(donation.amount.conversionDate)
                               //TODO get user preferences
-                              .setLocale('en')
+                              .setLocale(locale)
                               .toLocaleString()}
                           </Typography>
                         </Box>
