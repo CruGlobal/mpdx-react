@@ -343,7 +343,7 @@ const Contact: React.FC<Props> = ({
                             setFieldValue('pledgeCurrency', e.target.value)
                           }
                         >
-                          <MenuItem value={''} disabled>
+                          <MenuItem value={'Currency'} disabled>
                             {t('Currency')}
                           </MenuItem>
                           {constants?.constant?.pledgeCurrency &&
@@ -371,14 +371,15 @@ const Contact: React.FC<Props> = ({
                           labelId="amount-label"
                           placeholder="Amount"
                           type="number"
-                          data-testid="pledgeAmount"
-                          inputProps={{ 'data-testid': 'pledgeAmount-input' }}
                           variant="standard"
                           size="small"
                           fullWidth
                           render={() => (
                             <TextField
                               className={classes.select}
+                              inputProps={{
+                                'data-testid': 'pledgeAmount-input',
+                              }}
                               name={'pledgeAmount'}
                               value={pledgeAmount}
                               type="number"

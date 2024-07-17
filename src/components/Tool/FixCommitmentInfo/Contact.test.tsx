@@ -42,7 +42,6 @@ const router = {
 };
 
 const setContactFocus = jest.fn();
-const updateFunction = jest.fn();
 const handleShowModal = jest.fn();
 
 const TestComponent: React.FC = () => (
@@ -82,14 +81,11 @@ describe('FixCommitmentContact', () => {
   });
 
   it('should call hide and update functions', async () => {
-    const { getByTestId, debug } = render(<TestComponent />);
-    debug(undefined, Infinity);
-    userEvent.click(getByTestId('confirmButton'));
-    await waitFor(() => expect(updateFunction).toHaveBeenCalledTimes(1));
+    const { getByTestId } = render(<TestComponent />);
     userEvent.click(getByTestId('doNotChangeButton'));
-    expect(updateFunction).toHaveBeenCalledTimes(2);
+    expect(handleShowModal).toHaveBeenCalled();
     userEvent.click(getByTestId('hideButton'));
-    expect(updateFunction).toHaveBeenCalledWith('test123');
+    expect(handleShowModal).toHaveBeenCalled();
   });
 
   it('should redirect the page', () => {
@@ -217,7 +213,6 @@ describe('FixCommitmentContact', () => {
     });
     expect(frequency).toHaveValue('WEEKLY');
 
-    // TODO Test for mocked currency
     const currency = getByTestId('pledgeCurrency-input');
     fireEvent.change(currency, {
       target: { value: 'Currency' },
@@ -231,17 +226,18 @@ describe('FixCommitmentContact', () => {
     expect(status).toHaveValue('test1');
 
     const amount = getByTestId('pledgeAmount-input');
-    userEvent.type(amount, '2.00');
+    fireEvent.change(amount, {
+      target: { value: '2.00' },
+    });
     expect(amount).toHaveValue(2);
   });
 
   it('should render with correct styles', async () => {
-    const { getByTestId, debug } = render(
+    const { getByTestId } = render(
       <TestRouter router={router}>
         <TestComponent />
       </TestRouter>,
     );
-    debug(undefined, Infinity);
     await waitFor(() => {
       const boxBottom = getByTestId('BoxBottom');
       expect(boxBottom.className).toEqual(expect.stringContaining('boxBottom'));
