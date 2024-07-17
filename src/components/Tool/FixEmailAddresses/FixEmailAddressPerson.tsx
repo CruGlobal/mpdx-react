@@ -202,24 +202,20 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               )})`}
                             </Typography>
                           </Box>
-                          <Typography>
-                            {email.isPrimary ? (
-                              <Box
-                                data-testid={`starIcon-${personId}-${index}`}
-                              >
-                                <HoverableIcon path={mdiStar} size={1} />
-                              </Box>
-                            ) : (
-                              <Box
-                                data-testid={`starOutlineIcon-${personId}-${index}`}
-                                onClick={() =>
-                                  handleChangePrimary(personId, index)
-                                }
-                              >
-                                <HoverableIcon path={mdiStarOutline} size={1} />
-                              </Box>
-                            )}
-                          </Typography>
+                          {email.isPrimary ? (
+                            <Box data-testid={`starIcon-${personId}-${index}`}>
+                              <HoverableIcon path={mdiStar} size={1} />
+                            </Box>
+                          ) : (
+                            <Box
+                              data-testid={`starOutlineIcon-${personId}-${index}`}
+                              onClick={() =>
+                                handleChangePrimary(personId, index)
+                              }
+                            >
+                              <HoverableIcon path={mdiStarOutline} size={1} />
+                            </Box>
+                          )}
                         </Box>
                       </RowWrapper>
                       <RowWrapper item xs={12} sm={6}>
