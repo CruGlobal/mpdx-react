@@ -153,6 +153,40 @@ describe('FixCommitmentContact', () => {
     await waitFor(() =>
       expect(queryByText('Tester 1')).not.toBeInTheDocument(),
     );
+
+    await waitFor(() => {
+      userEvent.click(getAllByTestId('confirmButton')[0]);
+    });
+
+    await waitFor(() =>
+      expect(
+        queryByText(
+          'Are you sure you wish to update Tester 2 commitment info?',
+        ),
+      ).toBeInTheDocument(),
+    );
+
+    userEvent.click(getAllByTestId('action-button')[0]);
+
+    await waitFor(() => expect(queryByText('Tester 2')).toBeInTheDocument());
+
+    await waitFor(() => {
+      userEvent.click(getAllByTestId('hideButton')[0]);
+    });
+
+    await waitFor(() =>
+      expect(
+        queryByText(
+          `Are you sure you wish to hide Tester 2? Hiding a contact in MPDX actually sets the contact status to "Never Ask".`,
+        ),
+      ).toBeInTheDocument(),
+    );
+
+    userEvent.click(getAllByTestId('action-button')[1]);
+
+    await waitFor(() =>
+      expect(queryByText('Tester 2')).not.toBeInTheDocument(),
+    );
   });
 
   it('opens contact drawer to donations tab', async () => {

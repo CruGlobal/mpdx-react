@@ -3,7 +3,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   fireEvent,
   render,
@@ -175,37 +174,7 @@ describe('FixCommitmentContact', () => {
       { name: 'Partner - Financial', value: 'PARTNER_FINANCIAL' },
       { name: 'test_option_1', value: 'test1' },
     ];
-    const { getByTestId } = render(
-      <GqlMockedProvider
-        mocks={{
-          LoadConstants: {
-            constants: {
-              constant: {
-                pledgeCurrencies: [
-                  {
-                    code: 'CAD',
-                    codeSymbolString: 'CAD ($)',
-                    name: 'Canadian Dollar',
-                  },
-                  {
-                    code: 'CDF',
-                    codeSymbolString: 'CDF (CDF)',
-                    name: 'Congolese Franc',
-                  },
-                  {
-                    code: 'CHE',
-                    codeSymbolString: 'CHE (CHE)',
-                    name: 'WIR Euro',
-                  },
-                ],
-              },
-            },
-          },
-        }}
-      >
-        <TestComponent />
-      </GqlMockedProvider>,
-    );
+    const { getByTestId } = render(<TestComponent />);
 
     const frequency = getByTestId('pledgeFrequency-input');
     fireEvent.change(frequency, {
@@ -243,5 +212,16 @@ describe('FixCommitmentContact', () => {
       expect(boxBottom.className).toEqual(expect.stringContaining('boxBottom'));
       expect(boxBottom).toHaveStyle('margin-left: 8px');
     });
+  });
+  it('should render donation data', async () => {
+    const { getByTestId } = render(
+      <TestRouter router={router}>
+        <TestComponent />
+      </TestRouter>,
+    );
+    const donationDate = getByTestId('donationDate');
+    expect(donationDate).toHaveTextContent('10/15/2019');
+    const donationAmount = getByTestId('donationAmount');
+    expect(donationAmount).toHaveTextContent('175 USD');
   });
 });

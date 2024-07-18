@@ -458,15 +458,20 @@ const Contact: React.FC<Props> = ({
                         flexDirection="column"
                       >
                         <Box>
-                          <Typography fontWeight={700}>
+                          <Typography
+                            fontWeight={700}
+                            data-testid="donationDate"
+                          >
                             {DateTime.fromISO(donation.amount.conversionDate)
-                              //TODO get user preferences
-                              .setLocale(locale)
+                              .setLocale(locale || 'en')
                               .toLocaleString()}
                           </Typography>
                         </Box>
                         <Box>
-                          <Typography sx={{ textAlign: 'center' }}>
+                          <Typography
+                            sx={{ textAlign: 'center' }}
+                            data-testid="donationAmount"
+                          >
                             {`${donation.amount.amount} ${donation.amount.currency}`}
                           </Typography>
                         </Box>
