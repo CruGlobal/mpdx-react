@@ -6,13 +6,14 @@ import { DateTime } from 'luxon';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
 import {
   FixEmailAddressPerson,
   FixEmailAddressPersonProps,
 } from './FixEmailAddressPerson';
-import { EmailAddressData } from './FixEmailAddresses';
+import { EmailAddressData, PersonEmailAddresses } from './FixEmailAddresses';
 import { GetInvalidEmailAddressesQuery } from './FixEmailAddresses.generated';
 import { mockInvalidEmailAddressesResponse } from './FixEmailAddressesMocks';
 
@@ -46,6 +47,14 @@ const handleDeleteModalOpenMock = jest.fn();
 const handleChangePrimaryMock = jest.fn();
 
 const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
+  const toDelete = [] as PersonEmailAddressInput[];
+  const dataState = {
+    id: {
+      emailAddresses: testData.emailAddresses as EmailAddressData[],
+      toDelete,
+    },
+  } as { [key: string]: PersonEmailAddresses };
+
   return (
     <ThemeProvider theme={theme}>
       <TestWrapper>
@@ -56,10 +65,11 @@ const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
           mocks={mocks}
         >
           <FixEmailAddressPerson
-            toDelete={[]}
+            toDelete={toDelete}
             name={testData.name}
             key={testData.name}
             personId={testData.personId}
+            dataState={dataState}
             contactId={testData.contactId}
             emailAddresses={testData.emailAddresses}
             handleChange={handleChangeMock}
