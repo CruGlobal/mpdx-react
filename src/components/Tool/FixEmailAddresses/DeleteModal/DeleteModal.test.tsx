@@ -2,14 +2,14 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import theme from '../../../theme';
+import theme from 'src/theme';
 import DeleteModal from './DeleteModal';
 
 const testState = {
   open: true,
   personId: '',
-  emailIndex: 0,
-  emailAddress: 'test@test.com',
+  id: '',
+  email: 'test@test.com',
 };
 
 describe('FixEmailAddresses-DeleteModal', () => {

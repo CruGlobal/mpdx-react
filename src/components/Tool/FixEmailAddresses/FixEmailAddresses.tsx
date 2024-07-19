@@ -9,16 +9,19 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { useGetInvalidEmailAddressesQuery } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
-import { PersonEmailAddressInput } from 'src/graphql/types.generated';
+import {
+  useGetInvalidEmailAddressesQuery,
+  useUpdateEmailAddressesMutation,
+} from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
-import DeleteModal from './DeleteModal';
-import { FixEmailAddressPerson } from './FixEmailAddressPerson';
+import DeleteModal from './DeleteModal/DeleteModal';
+import { FixEmailAddressPerson } from './FixEmailAddressPerson/FixEmailAddressPerson';
 
 const Container = styled(Box)(() => ({
   padding: theme.spacing(3),
@@ -82,21 +85,12 @@ const DefaultSourceWrapper = styled(Box)(({ theme }) => ({
 }));
 
 export interface ModalState {
-  open: boolean;
   personId: string;
-  emailIndex: number;
-  emailAddress: string;
+  id: string;
+  email: string;
 }
-
-const defaultDeleteModalState = {
-  open: false,
-  personId: '',
-  emailIndex: 0,
-  emailAddress: '',
-};
-
 export interface EmailAddressData {
-  id?: string;
+  id: string;
   primary: boolean;
   updatedAt: string;
   source: string;
@@ -106,7 +100,6 @@ export interface EmailAddressData {
 
 export interface PersonEmailAddresses {
   emailAddresses: EmailAddressData[];
-  toDelete: PersonEmailAddressInput[];
 }
 
 interface FixEmailAddressesProps {
@@ -119,14 +112,16 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   setContactFocus,
 }) => {
   const [defaultSource, setDefaultSource] = useState('MPDX');
-  const [deleteModalState, setDeleteModalState] = useState<ModalState>(
-    defaultDeleteModalState,
+  const [deleteModalState, setDeleteModalState] = useState<ModalState | null>(
+    null,
   );
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data, loading } = useGetInvalidEmailAddressesQuery({
     variables: { accountListId },
   });
+  const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
 
   const [dataState, setDataState] = useState<{
     [key: string]: PersonEmailAddresses;
@@ -150,7 +145,6 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                       email: emailAddress.email,
                     }),
                   ),
-                  toDelete: [],
                 },
               }),
               {},
@@ -162,18 +156,57 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
 
   const handleDeleteModalOpen = (
     personId: string,
-    emailIndex: number,
+    id: string,
+    email: string,
   ): void => {
     setDeleteModalState({
-      open: true,
-      personId: personId,
-      emailIndex: emailIndex,
-      emailAddress: dataState[personId].emailAddresses[emailIndex].email,
+      personId,
+      id,
+      email,
     });
   };
 
   const handleDeleteModalClose = (): void => {
-    setDeleteModalState(defaultDeleteModalState);
+    setDeleteModalState(null);
+  };
+
+  // Delete function called after confirming with the delete modal
+  const handleDelete = async ({
+    personId,
+    id,
+    email,
+  }: ModalState): Promise<void> => {
+    await updateEmailAddressesMutation({
+      variables: {
+        input: {
+          accountListId,
+          attributes: {
+            id: personId,
+            emailAddresses: [
+              {
+                id: id,
+                destroy: true,
+              },
+            ],
+          },
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `EmailAddress:${id}` });
+        cache.gc();
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t(`Successfully deleted email address ${email}`), {
+          variant: 'success',
+        });
+        handleDeleteModalClose();
+      },
+      onError: () => {
+        enqueueSnackbar(t(`Error deleting email address ${email}`), {
+          variant: 'error',
+        });
+      },
+    });
   };
 
   // Update the state with the textfield's value
@@ -185,25 +218,6 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     const temp = { ...dataState };
     dataState[personId].emailAddresses[numberIndex].email = event.target.value;
     setDataState(temp);
-  };
-
-  // Delete function called after confirming with the delete modal
-  const handleDelete = (): void => {
-    const temp = { ...dataState };
-    const deleting = temp[deleteModalState.personId].emailAddresses.splice(
-      deleteModalState.emailIndex,
-      1,
-    )[0];
-    deleting.destroy = true;
-    deleting.primary &&
-      (temp[deleteModalState.personId].emailAddresses[0].primary = true); // If the deleted email was primary, set the new first index to primary
-    deleting.id &&
-      temp[deleteModalState.personId].toDelete.push({
-        destroy: true,
-        id: deleting.id,
-      }); //Only destroy the email if it already exists (has an ID)
-    setDataState(temp);
-    handleDeleteModalClose();
   };
 
   // Change the primary address in the state
@@ -281,7 +295,6 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     person={person}
                     key={person.id}
                     dataState={dataState}
-                    toDelete={dataState[person.id]?.toDelete}
                     handleChange={handleChange}
                     handleDelete={handleDeleteModalOpen}
                     handleChangePrimary={handleChangePrimary}
@@ -312,11 +325,13 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           style={{ marginTop: theme.spacing(3) }}
         />
       )}
-      <DeleteModal
-        modalState={deleteModalState}
-        handleClose={handleDeleteModalClose}
-        handleDelete={handleDelete}
-      />
+      {deleteModalState && (
+        <DeleteModal
+          modalState={deleteModalState}
+          handleClose={handleDeleteModalClose}
+          handleDelete={handleDelete}
+        />
+      )}
     </Container>
   );
 };

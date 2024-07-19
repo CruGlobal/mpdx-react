@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { AddIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useEmailAddressesMutation } from './AddEmailAddress.generated';
-import { RowWrapper } from './FixEmailAddressPerson';
+import { RowWrapper } from './FixEmailAddressPerson/FixEmailAddressPerson';
 import {
   GetInvalidEmailAddressesDocument,
   GetInvalidEmailAddressesQuery,

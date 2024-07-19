@@ -18,8 +18,8 @@ import {
   CancelButton,
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import theme from '../../../theme';
-import { ModalState } from './FixEmailAddresses';
+import theme from 'src/theme';
+import { ModalState } from '../FixEmailAddresses';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   modal: {
@@ -50,7 +50,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 interface Props {
   modalState: ModalState;
   handleClose: () => void;
-  handleDelete: () => void;
+  handleDelete: ({ personId, id, email }: ModalState) => void;
 }
 
 const DeleteModal: React.FC<Props> = ({
@@ -61,11 +61,7 @@ const DeleteModal: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   return (
-    <Modal
-      open={modalState.open}
-      onClose={handleClose}
-      className={classes.modal}
-    >
+    <Modal open={true} onClose={handleClose} className={classes.modal}>
       <Card>
         <CardHeader
           title={
@@ -106,14 +102,14 @@ const DeleteModal: React.FC<Props> = ({
             <Typography>
               {t('Are you sure you wish to delete this email address:')}
             </Typography>
-            <Typography>{`"${modalState.emailAddress}"`}</Typography>
+            <Typography>{`"${modalState.email}"`}</Typography>
           </Box>
         </CardContent>
         <CardActions>
           <CancelButton onClick={handleClose} />
           <DeleteButton
             dataTestId="emailAddressDeleteButton"
-            onClick={handleDelete}
+            onClick={() => handleDelete(modalState)}
             sx={{ marginRight: 0 }}
           >
             {/*TODO: make "newAddress" field in address false so it says "edit" instead of "add" */}

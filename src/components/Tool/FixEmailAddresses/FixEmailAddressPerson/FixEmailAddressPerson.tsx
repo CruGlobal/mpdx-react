@@ -17,14 +17,13 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import theme from '../../../theme';
-import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
-import EmailValidationForm from './EmailValidationForm';
-import { PersonEmailAddresses } from './FixEmailAddresses';
-import { PersonInvalidEmailFragment } from './FixEmailAddresses.generated';
+import theme from 'src/theme';
+import { ConfirmButtonIcon } from '../../ConfirmButtonIcon';
+import EmailValidationForm from '../EmailValidationForm';
+import { PersonEmailAddresses } from '../FixEmailAddresses';
+import { PersonInvalidEmailFragment } from '../FixEmailAddresses.generated';
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -95,14 +94,13 @@ const useStyles = makeStyles()((theme: Theme) => ({
 
 export interface FixEmailAddressPersonProps {
   person: PersonInvalidEmailFragment;
-  toDelete: PersonEmailAddressInput[];
   dataState: { [key: string]: PersonEmailAddresses };
   handleChange: (
     personId: string,
     numberIndex: number,
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
-  handleDelete: (personId: string, emailAddress: number) => void;
+  handleDelete: (personId: string, id: string, email: string) => void;
   handleChangePrimary: (personId: string, emailIndex: number) => void;
   setContactFocus: SetContactFocus;
 }
@@ -239,7 +237,9 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           {email.source === 'MPDX' ? (
                             <Box
                               data-testid={`delete-${id}-${index}`}
-                              onClick={() => handleDelete(id, index)}
+                              onClick={() =>
+                                handleDelete(id, email.id, email.email)
+                              }
                             >
                               <HoverableIcon path={mdiDelete} size={1} />
                             </Box>
