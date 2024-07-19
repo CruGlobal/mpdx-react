@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -17,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { FilterOption } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
 import { frequencies } from './InputOptions/Frequencies';
@@ -129,8 +127,6 @@ const Contact: React.FC<Props> = ({
   });
   const { classes } = useStyles();
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
-  const { push } = useRouter();
   //TODO: Add button functionality
   //TODO: Show donation history
 
@@ -141,10 +137,6 @@ const Contact: React.FC<Props> = ({
     props: string,
   ): void => {
     setValues((prevState) => ({ ...prevState, [props]: event.target.value }));
-  };
-
-  const handleContactNameClick = () => {
-    setContactFocus(id);
   };
 
   return (
@@ -162,7 +154,10 @@ const Contact: React.FC<Props> = ({
               style={{ width: theme.spacing(7), height: theme.spacing(7) }}
             />
             <Box display="flex" flexDirection="column" ml={2}>
-              <Link underline="hover" onClick={handleContactNameClick}>
+              <Link
+                underline="hover"
+                onClick={() => setContactFocus(id, 'Donations')}
+              >
                 <Typography variant="h6">{name}</Typography>
               </Link>
               <Typography>
@@ -279,12 +274,7 @@ const Contact: React.FC<Props> = ({
             <Box>
               <IconButton
                 data-testid="goToContactsButton"
-                onClick={() =>
-                  push({
-                    pathname: `/accountLists/[accountListId]/contacts/[contactId]`,
-                    query: { accountListId, contactId: id },
-                  })
-                }
+                onClick={() => setContactFocus(id, 'Donations')}
               >
                 <SearchIcon />
               </IconButton>
