@@ -6,18 +6,24 @@ import {
   Avatar,
   Box,
   Button,
+  FormHelperText,
   Grid,
   IconButton,
+  InputLabel,
   Link,
+  MenuItem,
   NativeSelect,
+  Select,
   TextField,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { FilterOption } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
 import { frequencies } from './InputOptions/Frequencies';
@@ -127,6 +133,7 @@ const Contact: React.FC<Props> = ({
     amount: amount,
     frequencyValue: frequencyValue,
   });
+  const { data: constants } = useLoadConstantsQuery();
   const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -193,16 +200,31 @@ const Contact: React.FC<Props> = ({
                 </NativeSelect>
               </Box>
             </Grid>
-            <Grid item xs={12} lg={4}>
+            <Grid item xs={12} md={6} lg={4}>
               <Box className={classes.boxBottom}>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  style={{ width: '100%' }}
-                  placeholder="Currency" //TODO: change to select with currency options
-                  value={values.amountCurrency}
-                  onChange={(event) => handleChange(event, 'amountCurrency')}
-                />
+                <InputLabel id="currency-label">{t('Currency')}</InputLabel>
+                <Select
+                  labelId="currency-label"
+                  label={t('Currency')}
+                  placeholder="Currency"
+                  data-testid="pledgeCurrency"
+                  inputProps={{
+                    'data-testid': 'pledgeCurrency-input',
+                  }}
+                >
+                  <MenuItem value={'Currency'} disabled>
+                    {t('Currency')}
+                  </MenuItem>
+                  {constants?.constant?.pledgeCurrency &&
+                    getPledgeCurrencyOptions(
+                      constants?.constant?.pledgeCurrency,
+                      'short',
+                    )}
+                </Select>
+                <FormHelperText
+                  error={true}
+                  data-testid="pledgeCurrencyError"
+                ></FormHelperText>
               </Box>
             </Grid>
             <Grid item xs={12} lg={4}>

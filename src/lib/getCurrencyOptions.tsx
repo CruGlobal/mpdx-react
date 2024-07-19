@@ -3,6 +3,7 @@ import { Currency } from 'src/graphql/types.generated';
 
 export const getPledgeCurrencyOptions = (
   pledgeCurrencies: Currency[] | undefined | null,
+  format = 'long',
 ) => {
   return pledgeCurrencies?.map(
     ({ code, codeSymbolString, name }) =>
@@ -10,7 +11,9 @@ export const getPledgeCurrencyOptions = (
       code &&
       codeSymbolString && (
         <MenuItem key={code} value={code}>
-          {name + ' - ' + codeSymbolString}
+          {format === 'long'
+            ? name + ' - ' + codeSymbolString
+            : codeSymbolString}
         </MenuItem>
       ),
   );
