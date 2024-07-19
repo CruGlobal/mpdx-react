@@ -112,7 +112,6 @@ const DeleteModal: React.FC<Props> = ({
             onClick={() => handleDelete(modalState)}
             sx={{ marginRight: 0 }}
           >
-            {/*TODO: make "newAddress" field in address false so it says "edit" instead of "add" */}
             {t('Delete')}
           </DeleteButton>
         </CardActions>

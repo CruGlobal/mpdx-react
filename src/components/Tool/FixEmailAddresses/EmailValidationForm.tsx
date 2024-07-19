@@ -28,7 +28,6 @@ interface EmailValidationFormEmail {
 }
 
 interface EmailValidationFormProps {
-  index: number;
   personId: string;
 }
 
@@ -69,7 +68,7 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
               },
             ],
           },
-          accountListId: accountListId || '',
+          accountListId: accountListId ?? '',
         },
       },
       update: (cache, { data: addEmailAddressData }) => {

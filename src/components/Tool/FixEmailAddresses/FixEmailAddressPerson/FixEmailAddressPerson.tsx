@@ -182,7 +182,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                     </ColumnHeaderWrapper>
                   </Hidden>
                   {emails.map((email, index) => (
-                    <Fragment key={index}>
+                    <Fragment key={email.id}>
                       <RowWrapper item xs={12} sm={6}>
                         <Box
                           display="flex"
@@ -274,10 +274,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       justifyContent="flex-start"
                       px={2}
                     >
-                      {
-                        //TODO: index will need to be mapped to the correct personId
-                      }
-                      <EmailValidationForm index={0} personId={id} />
+                      <EmailValidationForm personId={id} />
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>
