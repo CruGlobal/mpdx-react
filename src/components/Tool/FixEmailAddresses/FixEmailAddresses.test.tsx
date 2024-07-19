@@ -90,21 +90,23 @@ describe('FixPhoneNumbers-Home', () => {
     expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
   });
 
-  //TODO: Fix during MPDX-7936
-  it.skip('delete third email from first person', async () => {
+  it('delete third email from first person', async () => {
     const { getByTestId, queryByTestId } = render(<Components />);
 
     const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
     userEvent.click(delete02);
 
-    const deleteButton = getByTestId('modal-delete-button');
+    const deleteButton = await waitFor(() =>
+      getByTestId('modal-delete-button'),
+    );
     userEvent.click(deleteButton);
 
-    expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+    });
   });
 
-  //TODO: Fix during MPDX-7936
-  it.skip('change second email for second person to primary then delete it', async () => {
+  it('change second email for second person to primary then delete it', async () => {
     const { getByTestId, queryByTestId } = render(<Components />);
 
     const star11 = await waitFor(() =>
@@ -112,14 +114,18 @@ describe('FixPhoneNumbers-Home', () => {
     );
     userEvent.click(star11);
 
-    const delete11 = getByTestId('delete-testid2-1');
+    const delete11 = await waitFor(() => getByTestId('delete-testid2-1'));
     userEvent.click(delete11);
 
-    const deleteButton = getByTestId('modal-delete-button');
+    const deleteButton = await waitFor(() =>
+      getByTestId('modal-delete-button'),
+    );
     userEvent.click(deleteButton);
 
-    expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
-    expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
+      expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument();
+    });
   });
 
   describe('add email address', () => {
