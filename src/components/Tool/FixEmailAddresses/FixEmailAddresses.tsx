@@ -104,7 +104,7 @@ export interface EmailAddressData {
   destroy?: boolean;
 }
 
-interface PersonEmailAddresses {
+export interface PersonEmailAddresses {
   emailAddresses: EmailAddressData[];
   toDelete: PersonEmailAddressInput[];
 }
@@ -279,6 +279,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     name={`${person.firstName} ${person.lastName}`}
                     key={person.id}
                     personId={person.id}
+                    dataState={dataState}
                     emailAddresses={dataState[person.id]?.emailAddresses}
                     toDelete={dataState[person.id]?.toDelete}
                     contactId={person.contactId}

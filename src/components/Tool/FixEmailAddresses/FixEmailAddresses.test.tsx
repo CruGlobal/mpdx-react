@@ -273,17 +273,16 @@ describe('FixPhoneNumbers-Home', () => {
     ).toBeInTheDocument();
   });
 
-  //TODO: Fix during MPDX-7946
-  it.skip('should modify first email of first contact', async () => {
+  it('should modify first email of first contact', async () => {
     const { getByTestId } = render(<Components />);
     await waitFor(() => {
       expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     });
-    const firstInput = getByTestId('textfield-testid-0') as HTMLInputElement;
+    const firstInput = getByTestId('textfield-testid-0');
 
-    expect(firstInput.value).toBe('email1@gmail.com');
+    expect(firstInput).toHaveValue('email1@gmail.com');
     userEvent.type(firstInput, '123');
-    expect(firstInput.value).toBe('email1@gmail.com123');
+    expect(firstInput).toHaveValue('email1@gmail.com123');
   });
 
   describe('setContactFocus()', () => {

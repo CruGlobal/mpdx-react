@@ -23,7 +23,7 @@ import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import EmailValidationForm from './EmailValidationForm';
-import { EmailAddressData } from './FixEmailAddresses';
+import { EmailAddressData, PersonEmailAddresses } from './FixEmailAddresses';
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -96,6 +96,7 @@ export interface FixEmailAddressPersonProps {
   name: string;
   emailAddresses?: EmailAddressData[];
   personId: string;
+  dataState: { [key: string]: PersonEmailAddresses };
   toDelete: PersonEmailAddressInput[];
   contactId: string;
   handleChange: (
@@ -112,6 +113,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
   emailAddresses,
   personId,
+  dataState,
   contactId,
   handleChange,
   handleDelete,
@@ -130,7 +132,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
         personId: personId,
         isPrimary: email.primary,
       })) || [],
-    [emailAddresses],
+    [emailAddresses, dataState],
   );
 
   const handleContactNameClick = () => {
