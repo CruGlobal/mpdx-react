@@ -78,6 +78,7 @@ describe('FixEmailAddressPerson', () => {
     expect(getByText('MPDX (6/22/2021)')).toBeInTheDocument();
     expect(getByTestId('textfield-testid-1')).toBeInTheDocument();
     expect(getByDisplayValue('test2@test1.com')).toBeInTheDocument();
+    expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
   });
 
   it('input reset after adding an email address', async () => {
