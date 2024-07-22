@@ -10,7 +10,7 @@ import {
 import clsx from 'clsx';
 import { makeStyles } from 'tss-react/mui';
 import theme from 'src/theme';
-import { AppealListViewEnum } from '../../AppealsContext/AppealsContext';
+import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
 
 const useStyles = makeStyles()(() => ({
   li: {
@@ -42,12 +42,12 @@ const useStyles = makeStyles()(() => ({
 }));
 
 interface Props {
-  id: AppealListViewEnum;
+  id: AppealStatusEnum;
   title: string;
   isSelected: boolean;
   count?: number;
   loading: boolean;
-  onClick: (newAppealListView: AppealListViewEnum) => void;
+  onClick: (newAppealListView: AppealStatusEnum) => void;
 }
 
 export const AppealsListFilterPanelItem = ({
@@ -85,11 +85,11 @@ export const AppealsListFilterPanelItem = ({
       <Box
         className={clsx(
           classes.valueText,
-          id === AppealListViewEnum.Excluded
+          id === AppealStatusEnum.Excluded
             ? classes.red
-            : id === AppealListViewEnum.Asked
+            : id === AppealStatusEnum.Asked
             ? classes.gray
-            : id === AppealListViewEnum.Given
+            : id === AppealStatusEnum.Processed
             ? classes.green
             : classes.gold,
         )}

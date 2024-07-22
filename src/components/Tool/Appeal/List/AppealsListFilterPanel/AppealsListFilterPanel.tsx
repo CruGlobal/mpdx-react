@@ -11,7 +11,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
-  AppealListViewEnum,
+  AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
@@ -60,7 +60,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       accountListId: accountListId || '',
       contactsFilter: {
         appeal: [appealId || ''],
-        appealStatus: AppealListViewEnum.Asked,
+        appealStatus: AppealStatusEnum.Asked,
       },
     },
   });
@@ -71,7 +71,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         accountListId: accountListId || '',
         contactsFilter: {
           appeal: [appealId || ''],
-          appealStatus: AppealListViewEnum.Excluded,
+          appealStatus: AppealStatusEnum.Excluded,
         },
       },
     });
@@ -82,7 +82,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         accountListId: accountListId || '',
         contactsFilter: {
           appeal: [appealId || ''],
-          appealStatus: AppealListViewEnum.Committed,
+          appealStatus: AppealStatusEnum.NotReceived,
         },
       },
     });
@@ -92,7 +92,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       accountListId: accountListId || '',
       contactsFilter: {
         appeal: [appealId || ''],
-        appealStatus: AppealListViewEnum.Given,
+        appealStatus: AppealStatusEnum.Processed,
       },
     },
   });
@@ -103,12 +103,12 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         accountListId: accountListId || '',
         contactsFilter: {
           appeal: [appealId || ''],
-          appealStatus: AppealListViewEnum.Received,
+          appealStatus: AppealStatusEnum.ReceivedNotProcessed,
         },
       },
     });
 
-  const handleFilterItemClick = (newAppealListView: AppealListViewEnum) => {
+  const handleFilterItemClick = (newAppealListView: AppealStatusEnum) => {
     deselectAll();
     setActiveFilters({
       ...activeFilters,
@@ -145,43 +145,45 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
             <FilterList dense sx={{ paddingY: 0 }}>
               <List sx={{ padding: '0' }}>
                 <AppealsListFilterPanelItem
-                  id={AppealListViewEnum.Given}
+                  id={AppealStatusEnum.Processed}
                   title={t('Given')}
                   count={givenCount?.contacts.totalCount}
                   loading={givenLoading}
-                  isSelected={appealListView === AppealListViewEnum.Given}
+                  isSelected={appealListView === AppealStatusEnum.Processed}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
-                  id={AppealListViewEnum.Received}
+                  id={AppealStatusEnum.ReceivedNotProcessed}
                   title={t('Received')}
                   count={receivedCount?.contacts.totalCount}
                   loading={receivedLoading}
-                  isSelected={appealListView === AppealListViewEnum.Received}
+                  isSelected={
+                    appealListView === AppealStatusEnum.ReceivedNotProcessed
+                  }
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
-                  id={AppealListViewEnum.Committed}
+                  id={AppealStatusEnum.NotReceived}
                   title={t('Committed')}
                   count={committedCount?.contacts.totalCount}
                   loading={committedLoading}
-                  isSelected={appealListView === AppealListViewEnum.Committed}
+                  isSelected={appealListView === AppealStatusEnum.NotReceived}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
-                  id={AppealListViewEnum.Asked}
+                  id={AppealStatusEnum.Asked}
                   title={t('Asked')}
                   count={askedCount?.contacts.totalCount}
                   loading={askedLoading}
-                  isSelected={appealListView === AppealListViewEnum.Asked}
+                  isSelected={appealListView === AppealStatusEnum.Asked}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
-                  id={AppealListViewEnum.Excluded}
+                  id={AppealStatusEnum.Excluded}
                   title={t('Excluded')}
                   count={excludedCount?.contacts.totalCount}
                   loading={excludedLoading}
-                  isSelected={appealListView === AppealListViewEnum.Excluded}
+                  isSelected={appealListView === AppealStatusEnum.Excluded}
                   onClick={handleFilterItemClick}
                 />
 

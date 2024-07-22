@@ -27,12 +27,12 @@ import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useContactsQuery } from './contacts.generated';
 
-export enum AppealListViewEnum {
-  Given = 'processed',
-  Received = 'received_not_processed',
-  Committed = 'not_received',
-  Asked = 'asked',
+export enum AppealStatusEnum {
   Excluded = 'excluded',
+  Asked = 'asked',
+  NotReceived = 'not_received',
+  ReceivedNotProcessed = 'received_not_processed',
+  Processed = 'processed',
 }
 
 export type AppealsType = {
@@ -80,8 +80,8 @@ export type AppealsType = {
   userOptionsLoading: boolean;
   appealId: string | undefined;
   page: PageEnum | undefined;
-  appealListView: AppealListViewEnum;
-  setAppealListView: Dispatch<SetStateAction<AppealListViewEnum>>;
+  appealListView: AppealStatusEnum;
+  setAppealListView: Dispatch<SetStateAction<AppealStatusEnum>>;
 };
 
 export const AppealsContext = React.createContext<AppealsType | null>(null);
@@ -148,8 +148,8 @@ export const AppealsProvider: React.FC<Props> = ({
   const [viewMode, setViewMode] = useState<TableViewModeEnum>(
     TableViewModeEnum.Flows,
   );
-  const [appealListView, setAppealListView] = useState<AppealListViewEnum>(
-    AppealListViewEnum.Given,
+  const [appealListView, setAppealListView] = useState<AppealStatusEnum>(
+    AppealStatusEnum.Processed,
   );
 
   const sanitizedFilters = useMemo(
