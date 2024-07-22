@@ -23,7 +23,6 @@ const testData = {
       primary: true,
       isValid: false,
       personId: 'testid',
-      isPrimary: true,
     } as EmailAddressData,
     {
       source: 'MPDX',
@@ -32,7 +31,6 @@ const testData = {
       primary: false,
       isValid: false,
       personId: 'testid',
-      isPrimary: false,
     } as EmailAddressData,
   ],
 } as FixEmailAddressPersonProps;
