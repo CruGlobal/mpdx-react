@@ -8,30 +8,24 @@ import {
   AppealHeaderInfo,
   appealHeaderInfoHeight,
 } from '../../AppealDetails/AppealHeaderInfo';
+import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/appealInfo.generated';
 import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { ContactListRow } from '../ContactListRow/ContactListRow';
-import { useAppealQuery } from './appealInfo.generated';
 
-export const ContactsList: React.FC = () => {
-  const {
-    accountListId,
-    appealId,
-    contactsQueryResult,
-    isFiltered,
-    searchTerm,
-    setActiveFilters,
-  } = React.useContext(AppealsContext) as AppealsType;
+interface ContactsListProps {
+  appealInfo?: AppealQuery;
+  appealInfoLoading: boolean;
+}
 
-  const { data: appealInfo, loading: appealInfoLoading } = useAppealQuery({
-    variables: {
-      accountListId: accountListId || '',
-      appealId: appealId || '',
-    },
-    skip: !accountListId || !appealId,
-  });
+export const ContactsList: React.FC<ContactsListProps> = ({
+  appealInfo,
+  appealInfoLoading,
+}) => {
+  const { contactsQueryResult, isFiltered, searchTerm, setActiveFilters } =
+    React.useContext(AppealsContext) as AppealsType;
 
   const { data, loading, fetchMore } = contactsQueryResult;
 
