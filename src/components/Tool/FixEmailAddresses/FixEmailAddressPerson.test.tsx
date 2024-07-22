@@ -38,12 +38,12 @@ const testData = {
 } as FixEmailAddressPersonProps;
 
 const setContactFocus = jest.fn();
+const handleChangeMock = jest.fn();
+const handleDeleteModalOpenMock = jest.fn();
+const handleAddMock = jest.fn();
+const handleChangePrimaryMock = jest.fn();
 
 const TestComponent: React.FC = () => {
-  const handleChangeMock = jest.fn();
-  const handleDeleteModalOpenMock = jest.fn();
-  const handleAddMock = jest.fn();
-  const handleChangePrimaryMock = jest.fn();
   return (
     <ThemeProvider theme={theme}>
       <TestWrapper>
