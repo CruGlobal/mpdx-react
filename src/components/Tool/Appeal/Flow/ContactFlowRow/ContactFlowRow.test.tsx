@@ -5,14 +5,22 @@ import userEvent from '@testing-library/user-event';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestWrapper from '__tests__/util/TestWrapper';
+import { ContactFragmentFragment } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import theme from 'src/theme';
 import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
 import { ContactFlowRow } from './ContactFlowRow';
 
 const accountListId = 'abc';
-const id = '123';
-const name = 'Test Name';
-const status = AppealStatusEnum.Processed;
+const contact = {
+  id: '123',
+  name: 'Test Name',
+  starred: true,
+  avatar: 'avatar.jpg',
+  pledgeAmount: 100,
+  pledgeCurrency: 'USD',
+  pledgeReceived: false,
+  uncompletedTasksCount: 0,
+} as ContactFragmentFragment;
 const onContactSelected = jest.fn();
 
 describe('ContactFlowRow', () => {
@@ -23,10 +31,8 @@ describe('ContactFlowRow', () => {
           <TestWrapper>
             <ContactFlowRow
               accountListId={accountListId}
-              id={id}
-              name={name}
-              status={status}
-              starred
+              contact={contact}
+              appealStatus={AppealStatusEnum.Processed}
               onContactSelected={onContactSelected}
             />
           </TestWrapper>
@@ -44,10 +50,8 @@ describe('ContactFlowRow', () => {
           <TestWrapper>
             <ContactFlowRow
               accountListId={accountListId}
-              id={id}
-              name={name}
-              status={status}
-              starred
+              contact={contact}
+              appealStatus={AppealStatusEnum.Processed}
               onContactSelected={onContactSelected}
             />
           </TestWrapper>

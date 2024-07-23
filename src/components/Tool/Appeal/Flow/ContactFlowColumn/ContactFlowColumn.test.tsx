@@ -9,7 +9,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
 import { ContactFlowColumn } from './ContactFlowColumn';
@@ -21,7 +21,7 @@ const changeContactStatus = jest.fn();
 const contact = {
   id: '123',
   name: 'Test Person',
-  status: AppealStatusEnum.Processed,
+  status: StatusEnum.NotInterested,
   primaryAddress: {
     id: 'address',
     updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
@@ -61,7 +61,7 @@ describe('ContactFlowColumn', () => {
                       title={title}
                       onContactSelected={onContactSelected}
                       changeContactStatus={changeContactStatus}
-                      statuses={[ContactFilterStatusEnum.PartnerFinancial]}
+                      appealStatus={AppealStatusEnum.Processed}
                     />
                   </VirtuosoMockContext.Provider>
                 </ContactsWrapper>
