@@ -11,6 +11,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   GetInvalidEmailAddressesQuery,
   UpdateEmailAddressesMutation,
+  UpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
@@ -62,6 +63,7 @@ const Components = ({
             GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
             EmailAddresses: EmailAddressesMutation;
             UpdateEmailAddresses: UpdateEmailAddressesMutation;
+            UpdatePeople: UpdatePeopleMutation;
           }>
             mocks={mocks}
             cache={cache}
@@ -472,6 +474,83 @@ describe('FixPhoneNumbers-Home', () => {
           'Error updating email addresses for Test Contact',
           { variant: 'error', autoHideDuration: 7000 },
         );
+      });
+    });
+  });
+
+  describe('handleBulkConfirm', () => {
+    it('should save all the email changes for all people', async () => {
+      const cache = new InMemoryCache();
+      const noPeopleMessage = 'No people with email addresses need attention';
+
+      const { getByRole, getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+          cache={cache}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Successfully updated email addresses`,
+          { variant: 'success' },
+        );
+        expect(getByText(noPeopleMessage)).toBeVisible();
+      });
+    });
+
+    it('should handle errors', async () => {
+      const cache = new InMemoryCache();
+      const personName1 = 'Test Contact';
+      const personName2 = 'Simba Lion';
+
+      const { getByRole, getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+            UpdatePeople: () => {
+              throw new Error('Server error');
+            },
+          }}
+          cache={cache}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating email addresses`,
+          { variant: 'error', autoHideDuration: 7000 },
+        );
+        expect(getByText(personName1)).toBeVisible();
+        expect(getByText(personName2)).toBeVisible();
       });
     });
   });

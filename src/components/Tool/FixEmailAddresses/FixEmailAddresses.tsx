@@ -16,6 +16,7 @@ import {
   PersonInvalidEmailFragment,
   useGetInvalidEmailAddressesQuery,
   useUpdateEmailAddressesMutation,
+  useUpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
@@ -124,6 +125,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     variables: { accountListId },
   });
   const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
+  const [updatePeople] = useUpdatePeopleMutation();
 
   const [dataState, setDataState] = useState<{
     [key: string]: PersonEmailAddresses;
@@ -287,6 +289,44 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     });
   };
 
+  const handleBulkConfirm = async () => {
+    await updatePeople({
+      variables: {
+        input: {
+          accountListId,
+          attributes: Object.entries(dataState).map((value) => ({
+            id: value[0],
+            emailAddresses: value[1].emailAddresses.map(
+              (emailAddress) =>
+                ({
+                  email: emailAddress.email,
+                  id: emailAddress.id,
+                  primary: emailAddress.primary,
+                  validValues: true,
+                } as PersonEmailAddressInput),
+            ),
+          })),
+        },
+      },
+      update: (cache) => {
+        data?.people.nodes.forEach((person) => {
+          cache.evict({ id: `Person:${person.id}` });
+        });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t(`Successfully updated email addresses`), {
+          variant: 'success',
+        });
+      },
+      onError: () => {
+        enqueueSnackbar(t(`Error updating email addresses`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+  };
+
   return (
     <Container>
       {!loading && data && dataState ? (
@@ -322,7 +362,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                       <option value="MPDX">MPDX</option>
                       <option value="DataServer">DataServer</option>
                     </SourceSelect>
-                    <ConfirmButton>
+                    <ConfirmButton onClick={handleBulkConfirm}>
                       <ConfirmButtonIcon />
                       {t('Confirm {{amount}} as {{source}}', {
                         amount: data.people.nodes.length,
