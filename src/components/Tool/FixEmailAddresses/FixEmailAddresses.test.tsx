@@ -98,15 +98,76 @@ describe('FixPhoneNumbers-Home', () => {
     expect(queryByTestId('no-data')).not.toBeInTheDocument();
   });
 
-  it('change primary of first email', async () => {
-    const { getByTestId, queryByTestId } = render(<Components />);
+  describe('handleChangePrimary()', () => {
+    it('changes primary of first email', async () => {
+      const { getByTestId, queryByTestId } = render(<Components />);
 
-    const star1 = await waitFor(() => getByTestId('starOutlineIcon-testid-1'));
-    userEvent.click(star1);
+      const star1 = await waitFor(() =>
+        getByTestId('starOutlineIcon-testid-1'),
+      );
+      userEvent.click(star1);
 
-    expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
-    expect(getByTestId('starIcon-testid-1')).toBeInTheDocument();
-    expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
+      expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
+      expect(getByTestId('starIcon-testid-1')).toBeInTheDocument();
+      expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
+    });
+
+    it('should choose primary and deselect primary from others', async () => {
+      const { getByTestId, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: [
+                  {
+                    ...mockInvalidEmailAddressesResponse[0],
+                    emailAddresses: {
+                      nodes: [
+                        {
+                          ...contactOneEmailAddressNodes[0],
+                          primary: true,
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[1],
+                          primary: true,
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[2],
+                          primary: true,
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    ...mockInvalidEmailAddressesResponse[1],
+                  },
+                ],
+              },
+            },
+          }}
+        />,
+      );
+
+      let newPrimary;
+      await waitFor(() => {
+        expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
+        expect(getByTestId('starIcon-testid-1')).toBeInTheDocument();
+        newPrimary = getByTestId('starIcon-testid-2');
+        expect(newPrimary).toBeInTheDocument();
+      });
+      userEvent.click(newPrimary);
+
+      await waitFor(() => {
+        expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
+        expect(queryByTestId('starIcon-testid-1')).not.toBeInTheDocument();
+        expect(getByTestId('starIcon-testid-2')).toBeInTheDocument();
+        expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+        expect(
+          queryByTestId('starOutlineIcon-testid-2'),
+        ).not.toBeInTheDocument();
+      });
+    });
   });
 
   it('delete third email from first person', async () => {
