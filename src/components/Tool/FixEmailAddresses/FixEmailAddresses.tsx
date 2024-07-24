@@ -13,9 +13,11 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import {
+  PersonInvalidEmailFragment,
   useGetInvalidEmailAddressesQuery,
   useUpdateEmailAddressesMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
@@ -240,6 +242,51 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     setDefaultSource(event.target.value);
   };
 
+  const handleSingleConfirm = async (
+    person: PersonInvalidEmailFragment,
+    emails: EmailAddressData[],
+  ) => {
+    const personName = `${person.firstName} ${person.lastName}`;
+    const emailAddresses = [] as PersonEmailAddressInput[];
+    emails.map((emailAddress) => {
+      emailAddresses.push({
+        email: emailAddress.email,
+        id: emailAddress.id,
+        primary: emailAddress.primary,
+        validValues: true,
+      });
+    });
+
+    await updateEmailAddressesMutation({
+      variables: {
+        input: {
+          accountListId,
+          attributes: {
+            id: person.id,
+            emailAddresses,
+          },
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Person:${person.id}` });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t(`Successfully updated email addresses for ${personName}`),
+          {
+            variant: 'success',
+          },
+        );
+      },
+      onError: () => {
+        enqueueSnackbar(t(`Error updating email addresses for ${personName}`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+  };
+
   return (
     <Container>
       {!loading && data && dataState ? (
@@ -298,6 +345,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     handleChange={handleChange}
                     handleDelete={handleDeleteModalOpen}
                     handleChangePrimary={handleChangePrimary}
+                    handleSingleConfirm={handleSingleConfirm}
                     setContactFocus={setContactFocus}
                   />
                 ))}

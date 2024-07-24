@@ -42,6 +42,7 @@ const person: PersonInvalidEmailFragment = {
 };
 
 const setContactFocus = jest.fn();
+const handleSingleConfirm = jest.fn();
 
 const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
   const handleChangeMock = jest.fn();
@@ -68,6 +69,7 @@ const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
             handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
             handleChangePrimary={handleChangePrimaryMock}
+            handleSingleConfirm={handleSingleConfirm}
             setContactFocus={setContactFocus}
           />
         </GqlMockedProvider>

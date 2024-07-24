@@ -4,10 +4,14 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap, ErgonoMockShape } from 'graphql-ergonomock';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetInvalidEmailAddressesQuery } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import {
+  GetInvalidEmailAddressesQuery,
+  UpdateEmailAddressesMutation,
+} from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
 import { FixEmailAddresses } from './FixEmailAddresses';
@@ -27,6 +31,18 @@ const router = {
 
 const setContactFocus = jest.fn();
 
+const mockEnqueue = jest.fn();
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 const Components = ({
   mocks = {
     GetInvalidEmailAddresses: {
@@ -39,22 +55,25 @@ const Components = ({
   cache?: ApolloCache<object>;
 }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
-      <TestWrapper>
-        <GqlMockedProvider<{
-          GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-          EmailAddresses: EmailAddressesMutation;
-        }>
-          mocks={mocks}
-          cache={cache}
-        >
-          <FixEmailAddresses
-            accountListId={accountListId}
-            setContactFocus={setContactFocus}
-          />
-        </GqlMockedProvider>
-      </TestWrapper>
-    </TestRouter>
+    <SnackbarProvider>
+      <TestRouter router={router}>
+        <TestWrapper>
+          <GqlMockedProvider<{
+            GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            EmailAddresses: EmailAddressesMutation;
+            UpdateEmailAddresses: UpdateEmailAddressesMutation;
+          }>
+            mocks={mocks}
+            cache={cache}
+          >
+            <FixEmailAddresses
+              accountListId={accountListId}
+              setContactFocus={setContactFocus}
+            />
+          </GqlMockedProvider>
+        </TestWrapper>
+      </TestRouter>
+    </SnackbarProvider>
   </ThemeProvider>
 );
 
@@ -302,6 +321,97 @@ describe('FixPhoneNumbers-Home', () => {
       expect(contactName).toBeInTheDocument();
       userEvent.click(contactName);
       expect(setContactFocus).toHaveBeenCalledWith(contactId);
+    });
+  });
+
+  describe('handleSingleConfirm', () => {
+    it('should successfully submit changes to multiple emails', async () => {
+      const cache = new InMemoryCache();
+      const personName = 'Test Contact';
+
+      const updatePerson = {
+        person: {
+          id: mockInvalidEmailAddressesResponse[0].id,
+          emailAddresses: {
+            nodes: [
+              {
+                ...contactOneEmailAddressNodes[0],
+                email: 'different@email.com',
+              },
+              {
+                ...contactOneEmailAddressNodes[1],
+                email: 'different2@email.com',
+              },
+              {
+                ...contactOneEmailAddressNodes[2],
+              },
+            ],
+          },
+        },
+      } as ErgonoMockShape;
+
+      const { getAllByRole, queryByTestId, queryByText } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+            UpdateEmailAddresses: { updatePerson },
+          }}
+          cache={cache}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const confirmButton = getAllByRole('button', { name: 'Confirm' })[0];
+      userEvent.click(confirmButton);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Successfully updated email addresses for ${personName}`,
+          { variant: 'success' },
+        );
+        expect(queryByText(personName)).not.toBeInTheDocument();
+      });
+    });
+
+    it('should handle an error', async () => {
+      const cache = new InMemoryCache();
+
+      const { getAllByRole, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+            UpdateEmailAddresses: () => {
+              throw new Error('Server Error');
+            },
+          }}
+          cache={cache}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const confirmButton = getAllByRole('button', { name: 'Confirm' })[0];
+      userEvent.click(confirmButton);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Error updating email addresses for Test Contact',
+          { variant: 'error', autoHideDuration: 7000 },
+        );
+      });
     });
   });
 });

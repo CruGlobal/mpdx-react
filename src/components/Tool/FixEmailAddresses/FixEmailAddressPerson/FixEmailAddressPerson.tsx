@@ -22,7 +22,7 @@ import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { ConfirmButtonIcon } from '../../ConfirmButtonIcon';
 import EmailValidationForm from '../EmailValidationForm';
-import { PersonEmailAddresses } from '../FixEmailAddresses';
+import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
 import { PersonInvalidEmailFragment } from '../FixEmailAddresses.generated';
 
 const PersonCard = styled(Box)(({ theme }) => ({
@@ -102,6 +102,10 @@ export interface FixEmailAddressPersonProps {
   ) => void;
   handleDelete: (personId: string, id: string, email: string) => void;
   handleChangePrimary: (personId: string, emailIndex: number) => void;
+  handleSingleConfirm: (
+    person: PersonInvalidEmailFragment,
+    emails: EmailAddressData[],
+  ) => void;
   setContactFocus: SetContactFocus;
 }
 
@@ -111,6 +115,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   handleChange,
   handleDelete,
   handleChangePrimary,
+  handleSingleConfirm,
   setContactFocus,
 }) => {
   const { t } = useTranslation();
@@ -130,7 +135,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
         ...email,
         isValid: false,
         personId: id,
-        isPrimary: email.primary,
+        primary: email.primary,
       })) || []
     );
   }, [person, dataState]);
@@ -202,7 +207,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               )})`}
                             </Typography>
                           </Box>
-                          {email.isPrimary ? (
+                          {email.primary ? (
                             <Box data-testid={`starIcon-${id}-${index}`}>
                               <HoverableIcon path={mdiStar} size={1} />
                             </Box>
@@ -289,7 +294,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <ConfirmButtonWrapper>
-              <Button variant="contained" style={{ width: '100%' }}>
+              <Button
+                variant="contained"
+                style={{ width: '100%' }}
+                onClick={() =>
+                  handleSingleConfirm(person, emails as EmailAddressData[])
+                }
+              >
                 <ConfirmButtonIcon />
                 {t('Confirm')}
               </Button>
