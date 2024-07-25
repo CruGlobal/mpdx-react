@@ -17,6 +17,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -118,6 +119,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   handleSingleConfirm,
   setContactFocus,
 }) => {
+  const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
@@ -239,10 +241,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               event: React.ChangeEvent<HTMLInputElement>,
                             ) => handleChange(id, index, event)}
                             value={email.email}
-                            disabled={email.source !== 'MPDX'}
+                            disabled={email.source !== appName}
                           />
 
-                          {email.source === 'MPDX' ? (
+                          {email.source === appName ? (
                             <Box
                               data-testid={`delete-${id}-${index}`}
                               onClick={() =>

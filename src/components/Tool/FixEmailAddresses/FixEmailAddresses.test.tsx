@@ -13,6 +13,7 @@ import {
   UpdateEmailAddressesMutation,
   UpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
 import { FixEmailAddresses } from './FixEmailAddresses';
@@ -43,6 +44,8 @@ jest.mock('notistack', () => ({
     };
   },
 }));
+
+jest.mock('src/hooks/useGetAppSettings');
 
 const Components = ({
   mocks = {
@@ -80,24 +83,43 @@ const Components = ({
 );
 
 describe('FixPhoneNumbers-Home', () => {
-  it('default with test data', async () => {
-    const { getByText, getByTestId, queryByTestId } = render(<Components />);
+  beforeEach(() => {
+    (useGetAppSettings as jest.Mock).mockReturnValue({ appName: 'MPDX' });
+  });
 
-    await waitFor(() =>
-      expect(getByText('Fix Email Addresses')).toBeInTheDocument(),
-    );
-    await waitFor(() =>
-      expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument(),
-    );
-    await expect(
-      getByText('You have 2 email addresses to confirm.'),
-    ).toBeInTheDocument();
-    expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
-    expect(getByText('Test Contact')).toBeInTheDocument();
-    expect(getByText('Simba Lion')).toBeInTheDocument();
-    expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
-    expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
-    expect(queryByTestId('no-data')).not.toBeInTheDocument();
+  describe('render', () => {
+    it('default with test data', async () => {
+      const { getByText, getByTestId, queryByTestId } = render(<Components />);
+
+      await waitFor(() =>
+        expect(getByText('Fix Email Addresses')).toBeInTheDocument(),
+      );
+      await waitFor(() =>
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument(),
+      );
+      await expect(
+        getByText('You have 2 email addresses to confirm.'),
+      ).toBeInTheDocument();
+      expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
+      expect(getByText('Test Contact')).toBeInTheDocument();
+      expect(getByText('Simba Lion')).toBeInTheDocument();
+      expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
+      expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
+      expect(queryByTestId('no-data')).not.toBeInTheDocument();
+    });
+
+    it('should show the app name as a source value', async () => {
+      (useGetAppSettings as jest.Mock).mockReturnValue({
+        appName: 'OtherThing',
+      });
+
+      const { getByRole, getByText } = render(<Components />);
+      await waitFor(() => {
+        expect(getByText('Fix Email Addresses')).toBeInTheDocument();
+        expect(getByText('Confirm 2 as OtherThing')).toBeInTheDocument();
+        expect(getByRole('combobox')).toHaveDisplayValue('OtherThing');
+      });
+    });
   });
 
   describe('handleChangePrimary()', () => {

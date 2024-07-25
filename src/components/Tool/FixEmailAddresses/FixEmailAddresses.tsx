@@ -20,6 +20,7 @@ import {
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
@@ -115,7 +116,8 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   accountListId,
   setContactFocus,
 }) => {
-  const [defaultSource, setDefaultSource] = useState('MPDX');
+  const { appName } = useGetAppSettings();
+  const [defaultSource, setDefaultSource] = useState(appName);
   const [deleteModalState, setDeleteModalState] = useState<ModalState | null>(
     null,
   );
@@ -361,7 +363,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                         handleSourceChange(event)
                       }
                     >
-                      <option value="MPDX">MPDX</option>
+                      <option value={appName}>{appName}</option>
                       <option value="DataServer">DataServer</option>
                     </SourceSelect>
                     <ConfirmButton
