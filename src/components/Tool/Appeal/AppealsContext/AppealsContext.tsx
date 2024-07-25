@@ -169,7 +169,7 @@ export const AppealsProvider: React.FC<Props> = ({
       } else {
         setViewMode(
           (userOptions.find((option) => option.key === 'contacts_view')
-            ?.value as TableViewModeEnum) || TableViewModeEnum.List,
+            ?.value as TableViewModeEnum) || TableViewModeEnum.Flows,
         );
       }
     },
