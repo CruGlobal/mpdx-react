@@ -504,6 +504,7 @@ describe('FixPhoneNumbers-Home', () => {
         name: 'Confirm 2 as MPDX',
       });
       userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
@@ -543,12 +544,48 @@ describe('FixPhoneNumbers-Home', () => {
         name: 'Confirm 2 as MPDX',
       });
       userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
           `Error updating email addresses`,
           { variant: 'error', autoHideDuration: 7000 },
         );
+        expect(getByText(personName1)).toBeVisible();
+        expect(getByText(personName2)).toBeVisible();
+      });
+    });
+
+    it('should cancel the bulk confirmation', async () => {
+      const cache = new InMemoryCache();
+      const personName1 = 'Test Contact';
+      const personName2 = 'Simba Lion';
+
+      const { getByRole, getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+          cache={cache}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'No' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).not.toHaveBeenCalled();
         expect(getByText(personName1)).toBeVisible();
         expect(getByText(personName2)).toBeVisible();
       });

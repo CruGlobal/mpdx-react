@@ -18,6 +18,7 @@ import {
   useUpdateEmailAddressesMutation,
   useUpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
@@ -118,6 +119,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   const [deleteModalState, setDeleteModalState] = useState<ModalState | null>(
     null,
   );
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -362,7 +364,9 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                       <option value="MPDX">MPDX</option>
                       <option value="DataServer">DataServer</option>
                     </SourceSelect>
-                    <ConfirmButton onClick={handleBulkConfirm}>
+                    <ConfirmButton
+                      onClick={() => setShowBulkConfirmModal(true)}
+                    >
                       <ConfirmButtonIcon />
                       {t('Confirm {{amount}} as {{source}}', {
                         amount: data.people.nodes.length,
@@ -420,6 +424,15 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           handleDelete={handleDelete}
         />
       )}
+      <Confirmation
+        isOpen={showBulkConfirmModal}
+        handleClose={() => setShowBulkConfirmModal(false)}
+        mutation={handleBulkConfirm}
+        title={t('Confirm')}
+        message={t(`You are updating all contacts visible on this page, setting the first ${defaultSource} email address as the
+          primary email address. If no such email address exists the contact will not be updated.
+          Are you sure you want to do this?`)}
+      />
     </Container>
   );
 };
