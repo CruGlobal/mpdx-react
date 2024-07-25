@@ -46,7 +46,7 @@ const GridContainer = styled(Grid)(() => ({
   borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
 }));
 
-type AppealHeaderInfoProps = {
+export type AppealHeaderInfoProps = {
   appealInfo?: AppealFieldsFragment;
   loading: boolean;
 };
@@ -81,6 +81,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                 {loading || !name ? (
                   <Skeleton
                     variant="text"
+                    data-testid="appeal-name-skeleton"
                     style={{
                       display: 'inline',
                       width: 200,
@@ -108,6 +109,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                 {loading || !amount ? (
                   <Skeleton
                     variant="text"
+                    data-testid="appeal-goal-skeleton"
                     style={{
                       display: 'inline',
                       width: 100,
