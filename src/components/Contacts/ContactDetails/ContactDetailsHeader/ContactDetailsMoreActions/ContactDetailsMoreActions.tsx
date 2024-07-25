@@ -127,7 +127,12 @@ interface ContactDetailsMoreAcitionsProps {
 
 export const ContactDetailsMoreAcitions: React.FC<
   ContactDetailsMoreAcitionsProps
-> = ({ contactId, status, onClose, contextType }) => {
+> = ({
+  contactId,
+  status,
+  onClose,
+  contextType = ContactContextTypesEnum.Contacts,
+}) => {
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { t } = useTranslation();
   const { query, push } = useRouter();
