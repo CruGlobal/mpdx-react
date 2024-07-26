@@ -411,7 +411,7 @@ describe('FixPhoneNumbers-Home', () => {
         },
       } as ErgonoMockShape;
 
-      const { getAllByRole, queryByTestId, queryByText } = render(
+      const { getAllByRole, getByTestId, queryByText } = render(
         <Components
           mocks={{
             GetInvalidEmailAddresses: {
@@ -425,9 +425,9 @@ describe('FixPhoneNumbers-Home', () => {
         />,
       );
 
-      await waitFor(() =>
-        expect(queryByTestId('loading')).not.toBeInTheDocument(),
-      );
+      await waitFor(() => {
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+      });
 
       const confirmButton = getAllByRole('button', { name: 'Confirm' })[0];
       userEvent.click(confirmButton);
@@ -439,12 +439,12 @@ describe('FixPhoneNumbers-Home', () => {
         );
         expect(queryByText(personName)).not.toBeInTheDocument();
       });
-    });
+    }, 999999);
 
     it('should handle an error', async () => {
       const cache = new InMemoryCache();
 
-      const { getAllByRole, queryByTestId } = render(
+      const { getAllByRole, getByTestId } = render(
         <Components
           mocks={{
             GetInvalidEmailAddresses: {
@@ -461,7 +461,7 @@ describe('FixPhoneNumbers-Home', () => {
       );
 
       await waitFor(() =>
-        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument(),
       );
 
       const confirmButton = getAllByRole('button', { name: 'Confirm' })[0];

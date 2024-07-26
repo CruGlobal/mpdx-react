@@ -144,6 +144,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
     setContactFocus(contactId);
   };
 
+  const hasOnePrimaryEmail = (): boolean => {
+    return emails.filter((email) => email.primary)?.length === 1;
+  };
+
   return (
     <Container container>
       <Grid container>
@@ -303,6 +307,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                 onClick={() =>
                   handleSingleConfirm(person, emails as EmailAddressData[])
                 }
+                disabled={!hasOnePrimaryEmail()}
               >
                 <ConfirmButtonIcon />
                 {t('Confirm')}

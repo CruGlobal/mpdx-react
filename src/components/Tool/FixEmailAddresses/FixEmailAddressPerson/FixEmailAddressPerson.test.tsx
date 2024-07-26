@@ -44,15 +44,20 @@ const person: PersonInvalidEmailFragment = {
 const setContactFocus = jest.fn();
 const handleSingleConfirm = jest.fn();
 
-const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
-  const handleChangeMock = jest.fn();
-  const handleDeleteModalOpenMock = jest.fn();
-  const handleChangePrimaryMock = jest.fn();
-  const dataState = {
+const TestComponent = ({
+  mocks,
+  dataState = {
     contactTestId: {
       emailAddresses: person.emailAddresses.nodes as EmailAddressData[],
     },
-  } as { [key: string]: PersonEmailAddresses };
+  },
+}: {
+  mocks?: ApolloErgonoMockMap;
+  dataState?: { [key: string]: PersonEmailAddresses };
+}) => {
+  const handleChangeMock = jest.fn();
+  const handleDeleteModalOpenMock = jest.fn();
+  const handleChangePrimaryMock = jest.fn();
 
   return (
     <ThemeProvider theme={theme}>
@@ -198,6 +203,68 @@ describe('FixEmailAddressPerson', () => {
       const addButton = getByTestId('addButton-contactTestId');
       await waitFor(() => {
         expect(addButton).not.toBeDisabled();
+      });
+    });
+  });
+
+  describe('confirm button', () => {
+    it('should disable confirm button if there is more than one primary email', async () => {
+      const dataState = {
+        contactTestId: {
+          emailAddresses: [
+            {
+              ...person.emailAddresses.nodes[0],
+              primary: true,
+            },
+            {
+              ...person.emailAddresses.nodes[1],
+              primary: true,
+            },
+          ] as EmailAddressData[],
+        },
+      };
+
+      const { getByRole, queryByRole } = render(
+        <TestComponent dataState={dataState} />,
+      );
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).toBeDisabled();
+      });
+    });
+
+    it('should disable confirm button if there are no primary emails', async () => {
+      const dataState = {
+        contactTestId: {
+          emailAddresses: [
+            {
+              ...person.emailAddresses.nodes[0],
+              primary: false,
+            },
+            {
+              ...person.emailAddresses.nodes[1],
+              primary: false,
+            },
+          ] as EmailAddressData[],
+        },
+      };
+      const { getByRole, queryByRole } = render(
+        <TestComponent dataState={dataState} />,
+      );
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).toBeDisabled();
+      });
+    });
+
+    it('should not disable confirm button if there is exactly one primary email', async () => {
+      const { getByRole, queryByRole } = render(<TestComponent />);
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).not.toBeDisabled();
       });
     });
   });
