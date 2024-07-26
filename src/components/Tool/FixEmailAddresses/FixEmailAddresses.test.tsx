@@ -60,7 +60,7 @@ const Components = ({
   </ThemeProvider>
 );
 
-describe('FixPhoneNumbers-Home', () => {
+describe('FixEmailAddresses-Home', () => {
   it('default with test data', async () => {
     const { getByText, getByTestId, queryByTestId } = render(<Components />);
 
