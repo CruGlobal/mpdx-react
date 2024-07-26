@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -147,7 +147,6 @@ describe('Appeal navigation', () => {
 
     await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
     expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
-    screen.logTestingPlaygroundURL();
 
     expect(queryByRole('heading', { name: 'Given' })).not.toBeInTheDocument();
     expect(
@@ -222,7 +221,6 @@ describe('Appeal navigation', () => {
 
     userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
 
-    screen.logTestingPlaygroundURL();
     await waitFor(() => {
       expect(getByRole('heading', { name: 'Filter' })).toBeInTheDocument();
       expect(
