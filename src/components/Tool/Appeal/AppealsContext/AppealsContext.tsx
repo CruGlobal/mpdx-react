@@ -307,10 +307,7 @@ export const AppealsProvider: React.FC<Props> = ({
       appealId: _appealId,
       ...filteredQuery
     } = query;
-    if (viewMode === TableViewModeEnum.Map && ids && ids.length > 0) {
-      filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
-    }
-    if (viewMode !== TableViewModeEnum.Map && urlFilters && urlFilters.ids) {
+    if (urlFilters && urlFilters.ids) {
       const newFilters = omit(activeFilters, 'ids');
       if (Object.keys(newFilters).length > 0) {
         filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
