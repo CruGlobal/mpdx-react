@@ -19,7 +19,10 @@ import {
   useUpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { PersonEmailAddressInput } from 'src/graphql/types.generated';
+import {
+  PersonEmailAddressInput,
+  PersonUpdateInput,
+} from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
@@ -111,6 +114,36 @@ interface FixEmailAddressesProps {
   accountListId: string;
   setContactFocus: SetContactFocus;
 }
+
+export const determineBulkDataToSend = (
+  dataState: {
+    [key: string]: PersonEmailAddresses;
+  },
+  defaultSource: string,
+): PersonUpdateInput[] => {
+  const dataToSend = [] as PersonUpdateInput[];
+
+  Object.entries(dataState).forEach((value) => {
+    const primaryEmailAddress = value[1].emailAddresses.find(
+      (email) => email.source === defaultSource,
+    );
+    if (primaryEmailAddress) {
+      dataToSend.push({
+        id: value[0],
+        emailAddresses: value[1].emailAddresses.map(
+          (emailAddress) =>
+            ({
+              email: emailAddress.email,
+              id: emailAddress.id,
+              primary: emailAddress.id === primaryEmailAddress.id,
+              validValues: true,
+            } as PersonEmailAddressInput),
+        ),
+      });
+    }
+  });
+  return dataToSend;
+};
 
 export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   accountListId,
@@ -294,41 +327,42 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   };
 
   const handleBulkConfirm = async () => {
-    await updatePeople({
-      variables: {
-        input: {
-          accountListId,
-          attributes: Object.entries(dataState).map((value) => ({
-            id: value[0],
-            emailAddresses: value[1].emailAddresses.map(
-              (emailAddress) =>
-                ({
-                  email: emailAddress.email,
-                  id: emailAddress.id,
-                  primary: emailAddress.primary,
-                  validValues: true,
-                } as PersonEmailAddressInput),
-            ),
-          })),
+    const dataToSend = determineBulkDataToSend(dataState, defaultSource ?? '');
+
+    if (dataToSend.length) {
+      await updatePeople({
+        variables: {
+          input: {
+            accountListId,
+            attributes: dataToSend,
+          },
         },
-      },
-      update: (cache) => {
-        data?.people.nodes.forEach((person) => {
-          cache.evict({ id: `Person:${person.id}` });
-        });
-      },
-      onCompleted: () => {
-        enqueueSnackbar(t(`Successfully updated email addresses`), {
-          variant: 'success',
-        });
-      },
-      onError: () => {
-        enqueueSnackbar(t(`Error updating email addresses`), {
-          variant: 'error',
+        update: (cache) => {
+          data?.people.nodes.forEach((person) => {
+            cache.evict({ id: `Person:${person.id}` });
+          });
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t(`Successfully updated email addresses`), {
+            variant: 'success',
+          });
+        },
+        onError: () => {
+          enqueueSnackbar(t(`Error updating email addresses`), {
+            variant: 'error',
+            autoHideDuration: 7000,
+          });
+        },
+      });
+    } else {
+      enqueueSnackbar(
+        t(`No ${defaultSource} primary email address exists to update`),
+        {
+          variant: 'warning',
           autoHideDuration: 7000,
-        });
-      },
-    });
+        },
+      );
+    }
   };
 
   return (

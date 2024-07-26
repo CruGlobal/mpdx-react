@@ -16,7 +16,11 @@ import {
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
-import { FixEmailAddresses } from './FixEmailAddresses';
+import {
+  FixEmailAddresses,
+  PersonEmailAddresses,
+  determineBulkDataToSend,
+} from './FixEmailAddresses';
 import {
   contactId,
   contactOneEmailAddressNodes,
@@ -505,22 +509,15 @@ describe('FixPhoneNumbers-Home', () => {
       const cache = new InMemoryCache();
       const noPeopleMessage = 'No people with email addresses need attention';
 
-      const { getByRole, getByText, queryByTestId } = render(
-        <Components
-          mocks={{
-            GetInvalidEmailAddresses: {
-              people: {
-                nodes: mockInvalidEmailAddressesResponse,
-              },
-            },
-          }}
-          cache={cache}
-        />,
+      const { getByRole, getByText, getByTestId, queryByTestId } = render(
+        <Components cache={cache} />,
       );
 
-      await waitFor(() =>
-        expect(queryByTestId('loading')).not.toBeInTheDocument(),
-      );
+      await waitFor(() => {
+        expect(queryByTestId('loading')).not.toBeInTheDocument();
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+      });
+      userEvent.click(getByTestId('starOutlineIcon-testid-1'));
 
       const bulkConfirmButton = getByRole('button', {
         name: 'Confirm 2 as MPDX',
@@ -611,6 +608,84 @@ describe('FixPhoneNumbers-Home', () => {
         expect(getByText(personName1)).toBeVisible();
         expect(getByText(personName2)).toBeVisible();
       });
+    });
+
+    it('should not update if there is no email for the default source', async () => {
+      const cache = new InMemoryCache();
+      const noPrimaryEmailMessage =
+        'No DataServer primary email address exists to update';
+
+      const { getByRole, queryByTestId } = render(<Components cache={cache} />);
+
+      await waitFor(() => {
+        expect(queryByTestId('loading')).not.toBeInTheDocument();
+      });
+      userEvent.selectOptions(getByRole('combobox'), 'DataServer');
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as DataServer',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(noPrimaryEmailMessage, {
+          variant: 'warning',
+          autoHideDuration: 7000,
+        });
+        expect(bulkConfirmButton).toBeVisible();
+      });
+    });
+  });
+
+  describe('determineBulkDataToSend', () => {
+    it('should set the first email of the given source to primary', () => {
+      const dataState = {
+        testid: {
+          emailAddresses: [
+            {
+              ...contactOneEmailAddressNodes[0],
+              primary: false,
+            },
+            {
+              ...contactOneEmailAddressNodes[1],
+            },
+            {
+              ...contactOneEmailAddressNodes[2],
+              primary: true,
+            },
+          ],
+        },
+      } as { [key: string]: PersonEmailAddresses };
+      const defaultSource = 'MPDX';
+
+      const dataToSend = determineBulkDataToSend(dataState, defaultSource);
+
+      const emails = dataToSend[0].emailAddresses ?? [];
+      expect(emails[0].primary).toEqual(true);
+      expect(emails[2].primary).toEqual(false);
+    });
+
+    it('should be empty if there is no email of the given source', () => {
+      const dataState = {
+        testid: {
+          emailAddresses: [
+            {
+              ...contactOneEmailAddressNodes[0],
+            },
+            {
+              ...contactOneEmailAddressNodes[1],
+            },
+            {
+              ...contactOneEmailAddressNodes[2],
+            },
+          ],
+        },
+      } as { [key: string]: PersonEmailAddresses };
+      const defaultSource = 'DataServer';
+
+      const dataToSend = determineBulkDataToSend(dataState, defaultSource);
+      expect(dataToSend.length).toEqual(0);
     });
   });
 });
