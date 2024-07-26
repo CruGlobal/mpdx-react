@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from 'react';
-import { mdiDelete, mdiLock, mdiPlus, mdiStar, mdiStarOutline } from '@mdi/js';
+import React, { Fragment, useMemo } from 'react';
+import { mdiDelete, mdiLock, mdiStar, mdiStarOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
   Avatar,
@@ -22,6 +22,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
+import EmailValidationForm from './EmailValidationForm';
 import { EmailAddressData } from './FixEmailAddresses';
 
 const PersonCard = styled(Box)(({ theme }) => ({
@@ -32,8 +33,8 @@ const PersonCard = styled(Box)(({ theme }) => ({
 
 const Container = styled(Grid)(({ theme }) => ({
   display: 'flex',
-  alignItems: 'center',
-  marginBottom: theme.spacing(2),
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
   [theme.breakpoints.down('sm')]: {
     border: `1px solid ${theme.palette.cruGrayMedium.main}`,
   },
@@ -73,7 +74,7 @@ const ColumnHeaderWrapper = styled(Grid)(({ theme }) => ({
   paddingBottom: theme.spacing(2),
 }));
 
-const RowWrapper = styled(Grid)(({ theme }) => ({
+export const RowWrapper = styled(Grid)(({ theme }) => ({
   paddingBottom: theme.spacing(2),
 }));
 
@@ -91,9 +92,9 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-interface FixEmailAddressPersonProps {
+export interface FixEmailAddressPersonProps {
   name: string;
-  emails: EmailAddressData[];
+  emailAddresses?: EmailAddressData[];
   personId: string;
   toDelete: PersonEmailAddressInput[];
   contactId: string;
@@ -110,34 +111,29 @@ interface FixEmailAddressPersonProps {
 
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
-  emails,
+  emailAddresses,
   personId,
   contactId,
   handleChange,
   handleDelete,
-  handleAdd,
   handleChangePrimary,
   setContactFocus,
+  handleAdd,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
-  const [newEmailAddress, setNewEmailAddress] = useState<string>('');
-  //TODO: Add button functionality
-  //TODO: Make name pop up a modal to edit the person info
 
-  const updateNewEmailAddress = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setNewEmailAddress(event.target.value);
-  };
-
-  const addNewEmailAddress = (): void => {
-    if (newEmailAddress) {
-      handleAdd(personId, newEmailAddress);
-      setNewEmailAddress('');
-    }
-  };
+  const emails = useMemo(
+    () =>
+      emailAddresses?.map((email) => ({
+        ...email,
+        isValid: false,
+        personId: personId,
+        isPrimary: email.primary,
+      })) || [],
+    [emailAddresses],
+  );
 
   const handleContactNameClick = () => {
     setContactFocus(contactId);
@@ -164,7 +160,6 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                   </Box>
                 </Box>
               </Grid>
-
               <EmailAddressListWrapper item xs={12}>
                 <Grid container>
                   <Hidden xsDown>
@@ -179,7 +174,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       </Box>
                     </ColumnHeaderWrapper>
                     <ColumnHeaderWrapper item xs={12} sm={6}>
-                      <Box display="flex" justifyContent="flex-start" px={2}>
+                      <Box display="flex" justifyContent="flex-start" px={3.25}>
                         <Typography>
                           <strong>{t('Address')}</strong>
                         </Typography>
@@ -207,24 +202,20 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               )})`}
                             </Typography>
                           </Box>
-                          <Typography>
-                            {email.primary ? (
-                              <Box
-                                data-testid={`starIcon-${personId}-${index}`}
-                              >
-                                <HoverableIcon path={mdiStar} size={1} />
-                              </Box>
-                            ) : (
-                              <Box
-                                data-testid={`starOutlineIcon-${personId}-${index}`}
-                                onClick={() =>
-                                  handleChangePrimary(personId, index)
-                                }
-                              >
-                                <HoverableIcon path={mdiStarOutline} size={1} />
-                              </Box>
-                            )}
-                          </Typography>
+                          {email.isPrimary ? (
+                            <Box data-testid={`starIcon-${personId}-${index}`}>
+                              <HoverableIcon path={mdiStar} size={1} />
+                            </Box>
+                          ) : (
+                            <Box
+                              data-testid={`starOutlineIcon-${personId}-${index}`}
+                              onClick={() =>
+                                handleChangePrimary(personId, index)
+                              }
+                            >
+                              <HoverableIcon path={mdiStarOutline} size={1} />
+                            </Box>
+                          )}
                         </Box>
                       </RowWrapper>
                       <RowWrapper item xs={12} sm={6}>
@@ -283,22 +274,14 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       justifyContent="flex-start"
                       px={2}
                     >
-                      <TextField
-                        style={{ width: '100%' }}
-                        onChange={(
-                          event: React.ChangeEvent<HTMLInputElement>,
-                        ) => updateNewEmailAddress(event)}
-                        inputProps={{
-                          'data-testid': `addNewEmailInput-${personId}`,
-                        }}
-                        value={newEmailAddress}
+                      {
+                        //TODO: index will need to be mapped to the correct personId
+                      }
+                      <EmailValidationForm
+                        handleAdd={handleAdd}
+                        index={0}
+                        personId={personId}
                       />
-                      <Box
-                        onClick={() => addNewEmailAddress()}
-                        data-testid={`addButton-${personId}`}
-                      >
-                        <HoverableIcon path={mdiPlus} size={1} />
-                      </Box>
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>
