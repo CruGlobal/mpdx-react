@@ -4,19 +4,17 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
-import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import theme from 'src/theme';
-import useTaskModal from '../../../hooks/useTaskModal';
-import {
-  ContactsContext,
-  ContactsType,
-} from '../ContactsContext/ContactsContext';
-import { ContactRow } from './ContactRow';
+import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import {
   ContactRowFragment,
   ContactRowFragmentDoc,
-} from './ContactRow.generated';
+} from 'src/components/Contacts/ContactRow/ContactRow.generated';
+import theme from 'src/theme';
+import {
+  AppealsContext,
+  AppealsType,
+} from '../../AppealsContext/AppealsContext';
+import { ContactRow } from './ContactRow';
 
 const accountListId = 'account-list-1';
 
@@ -59,9 +57,6 @@ const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
   mocks: contactMock,
 });
 
-jest.mock('../../../hooks/useTaskModal');
-
-const openTaskModal = jest.fn();
 const setContactFocus = jest.fn();
 const contactDetailsOpen = true;
 const toggleSelectionById = jest.fn();
@@ -71,47 +66,31 @@ const Components = () => (
   <TestRouter router={router}>
     <GqlMockedProvider>
       <ThemeProvider theme={theme}>
-        <ContactsWrapper>
-          <ContactsContext.Provider
+        <AppealsWrapper>
+          <AppealsContext.Provider
             value={
               {
-                accountListId,
                 setContactFocus,
+                isRowChecked,
                 contactDetailsOpen,
                 toggleSelectionById,
-                isRowChecked,
-              } as unknown as ContactsType
+              } as unknown as AppealsType
             }
           >
             <ContactRow contact={contact} />
-          </ContactsContext.Provider>
-        </ContactsWrapper>
+          </AppealsContext.Provider>
+        </AppealsWrapper>
       </ThemeProvider>
     </GqlMockedProvider>
   </TestRouter>
 );
 
-beforeEach(() => {
-  (useTaskModal as jest.Mock).mockReturnValue({
-    openTaskModal,
-    preloadTaskModal: jest.fn(),
-  });
-});
-
 describe('ContactsRow', () => {
   it('default', () => {
     const { getByText } = render(<Components />);
 
-    expect(
-      getByText(
-        [
-          contact.primaryAddress?.street,
-          contact.primaryAddress?.city,
-          contact.primaryAddress?.state,
-          contact.primaryAddress?.postalCode,
-        ].join(', '),
-      ),
-    ).toBeInTheDocument();
+    expect(getByText('Test, Name')).toBeInTheDocument();
+    expect(getByText('CA$0')).toBeInTheDocument();
   });
 
   it('should render check event', async () => {
@@ -123,20 +102,7 @@ describe('ContactsRow', () => {
     expect(checkbox).toBeChecked();
   });
 
-  it('should open log task modal', async () => {
-    const { getByTitle } = render(<Components />);
-
-    const taskButton = getByTitle('Log Task');
-    userEvent.click(taskButton);
-    expect(openTaskModal).toHaveBeenCalledWith({
-      view: TaskModalEnum.Log,
-      defaultValues: {
-        contactIds: ['test-id'],
-      },
-    });
-  });
-
-  it('should render contact select event', () => {
+  it('should open contact on click', () => {
     isRowChecked.mockImplementationOnce((id) => id === contact.id);
 
     const { getByTestId } = render(<Components />);
@@ -147,5 +113,14 @@ describe('ContactsRow', () => {
     userEvent.click(rowButton);
 
     expect(setContactFocus).toHaveBeenCalledWith(contact.id);
+  });
+
+  it('should rendered checked', () => {
+    isRowChecked.mockImplementationOnce(() => true);
+
+    const { getByRole } = render(<Components />);
+
+    const checkbox = getByRole('checkbox');
+    expect(checkbox).toBeChecked();
   });
 });

@@ -13,7 +13,7 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
-import { ContactListRow } from '../ContactListRow/ContactListRow';
+import { ContactRow } from '../ContactRow/ContactRow';
 
 interface ContactsListProps {
   appealInfo?: AppealQuery;
@@ -43,7 +43,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoHeight})`,
         }}
         itemContent={(index, contact) => (
-          <ContactListRow
+          <ContactRow
             key={contact.id}
             contact={contact}
             useTopMargin={index === 0}

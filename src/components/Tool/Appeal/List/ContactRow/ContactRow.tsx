@@ -1,16 +1,17 @@
 import React, { useMemo } from 'react';
 import {
   Box,
-  ButtonBase,
-  Checkbox,
   Grid,
   Hidden,
   ListItemIcon,
   ListItemText,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import {
+  ListItemButton,
+  StyledCheckbox,
+} from 'src/components/Contacts/ContactRow/ContactRow';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { Contact } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
@@ -20,6 +21,9 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+
+// When making changes in this file, also check to see if you don't need to make changes to the below file
+// src/components/Contacts/ContactRow/ContactRow.tsx
 
 type ContactRow = Pick<
   Contact,
@@ -35,7 +39,7 @@ interface Props {
   useTopMargin?: boolean;
 }
 
-export const ContactListRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const {
     isRowChecked: isChecked,
     contactDetailsOpen,
@@ -44,26 +48,6 @@ export const ContactListRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   } = React.useContext(AppealsContext) as AppealsType;
   const { t } = useTranslation();
   const locale = useLocale();
-  const ListItemButton = styled(ButtonBase)(({ theme }) => ({
-    flex: '1 1 auto',
-    textAlign: 'left',
-    marginTop: useTopMargin ? '16px' : '0',
-    padding: theme.spacing(0, 0.5, 0, 2),
-    [theme.breakpoints.up('sm')]: {
-      padding: theme.spacing(0, 0.5),
-    },
-    ...(isChecked(contactId)
-      ? { backgroundColor: theme.palette.cruGrayLight.main }
-      : {}),
-  }));
-
-  const StyledCheckbox = styled(Checkbox, {
-    shouldForwardProp: (prop) => prop !== 'value',
-  })(() => ({
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    },
-  }));
 
   const handleContactClick = () => {
     onContactSelected(contact.id);
@@ -96,6 +80,9 @@ export const ContactListRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       focusRipple
       onClick={handleContactClick}
       onMouseEnter={preloadContactsRightPanel}
+      useTopMargin={useTopMargin}
+      isChecked={isChecked}
+      contactId={contactId}
       data-testid="rowButton"
     >
       <Hidden xsDown>
