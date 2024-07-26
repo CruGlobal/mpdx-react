@@ -1,4 +1,4 @@
-import { fetchAllData } from '../helper';
+import { fetchAllData } from 'src/lib/deserializeJsonApi';
 
 export interface SearchOrganizationsContactsResponse {
   data: Contacts[];
