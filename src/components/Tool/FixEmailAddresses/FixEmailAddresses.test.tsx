@@ -5,6 +5,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap, ErgonoMockShape } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -66,20 +67,24 @@ const Components = ({
     <SnackbarProvider>
       <TestRouter router={router}>
         <TestWrapper>
-          <GqlMockedProvider<{
-            GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            EmailAddresses: EmailAddressesMutation;
-            UpdateEmailAddresses: UpdateEmailAddressesMutation;
-            UpdatePeople: UpdatePeopleMutation;
-          }>
-            mocks={mocks}
-            cache={cache}
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
           >
-            <FixEmailAddresses
-              accountListId={accountListId}
-              setContactFocus={setContactFocus}
-            />
-          </GqlMockedProvider>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+              EmailAddresses: EmailAddressesMutation;
+              UpdateEmailAddresses: UpdateEmailAddressesMutation;
+              UpdatePeople: UpdatePeopleMutation;
+            }>
+              mocks={mocks}
+              cache={cache}
+            >
+              <FixEmailAddresses
+                accountListId={accountListId}
+                setContactFocus={setContactFocus}
+              />
+            </GqlMockedProvider>
+          </VirtuosoMockContext.Provider>
         </TestWrapper>
       </TestRouter>
     </SnackbarProvider>
