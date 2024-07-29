@@ -150,7 +150,7 @@ const FixSendNewsletter: React.FC<Props> = ({
             <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
             <Divider className={classes.divider} />
           </Grid>
-          {numberOfContacts > 0 ? (
+          {!!numberOfContacts ? (
             <>
               <Grid item xs={12}>
                 <Box className={classes.descriptionBox}>
