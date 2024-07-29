@@ -6,6 +6,7 @@ import { ErgonoMockShape } from 'graphql-ergonomock';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockInvalidEmailAddressesResponse } from 'src/components/Tool/FixEmailAddresses/FixEmailAddressesMocks';
@@ -51,23 +52,27 @@ const Components = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <GqlMockedProvider<{
-        InvalidAddresses: InvalidAddressesQuery;
-      }>
-        mocks={{
-          GetInvalidEmailAddresses: {
-            people: {
-              nodes: mockNodes,
-            },
-          },
-        }}
+      <VirtuosoMockContext.Provider
+        value={{ viewportHeight: 1000, itemHeight: 100 }}
       >
-        <I18nextProvider i18n={i18n}>
-          <SnackbarProvider>
-            <FixEmailAddressesPage />
-          </SnackbarProvider>
-        </I18nextProvider>
-      </GqlMockedProvider>
+        <GqlMockedProvider<{
+          InvalidAddresses: InvalidAddressesQuery;
+        }>
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockNodes,
+              },
+            },
+          }}
+        >
+          <I18nextProvider i18n={i18n}>
+            <SnackbarProvider>
+              <FixEmailAddressesPage />
+            </SnackbarProvider>
+          </I18nextProvider>
+        </GqlMockedProvider>
+      </VirtuosoMockContext.Provider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -85,12 +90,12 @@ describe('FixEmailAddressesPage', () => {
   });
 
   it('should open up contact details', async () => {
-    const { getByText, queryByTestId } = render(<Components />);
+    const { findByText, queryByTestId } = render(<Components />);
     await waitFor(() =>
       expect(queryByTestId('loading')).not.toBeInTheDocument(),
     );
 
-    const contactName = getByText('Test Contact');
+    const contactName = await findByText('Test Contact');
 
     expect(contactName).toBeInTheDocument();
     userEvent.click(contactName);

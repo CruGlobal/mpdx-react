@@ -14,6 +14,8 @@ import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import {
   PersonInvalidEmailFragment,
   useGetInvalidEmailAddressesQuery,
@@ -153,7 +155,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data, loading } = useGetInvalidEmailAddressesQuery({
+  const { data, loading, fetchMore } = useGetInvalidEmailAddressesQuery({
     variables: { accountListId },
   });
   const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
@@ -310,7 +312,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
 
   return (
     <Container>
-      {!loading && data && dataState ? (
+      {data && dataState ? (
         <FixEmailAddressesWrapper container>
           <Grid item xs={12}>
             <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
@@ -360,27 +362,55 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           </Grid>
           {!!data.people.nodes.length ? (
             <>
-              <Grid item xs={12}>
-                {data?.people.nodes.map((person) => (
-                  <FixEmailAddressPerson
-                    person={person}
-                    key={person.id}
-                    dataState={dataState}
-                    accountListId={accountListId}
-                    handleChange={handleChange}
-                    handleChangePrimary={handleChangePrimary}
-                    handleSingleConfirm={handleSingleConfirm}
-                    setContactFocus={setContactFocus}
-                  />
-                ))}
-              </Grid>
+              <InfiniteList
+                loading={loading}
+                data={data.people.nodes}
+                itemContent={(index, person) => (
+                  <Grid
+                    key={index}
+                    item
+                    xs={12}
+                    sx={{
+                      marginBottom: `${theme.spacing(2)}`,
+                    }}
+                  >
+                    <FixEmailAddressPerson
+                      person={person}
+                      key={person.id}
+                      dataState={dataState}
+                      accountListId={accountListId}
+                      handleChange={handleChange}
+                      handleChangePrimary={handleChangePrimary}
+                      handleSingleConfirm={handleSingleConfirm}
+                      setContactFocus={setContactFocus}
+                    />
+                  </Grid>
+                )}
+                endReached={() =>
+                  data.people.pageInfo.hasNextPage &&
+                  fetchMore({
+                    variables: { after: data.people.pageInfo.endCursor },
+                  })
+                }
+                EmptyPlaceholder={<NoData tool="fixEmailAddresses" />}
+                style={{
+                  height: `calc(100vh - ${navBarHeight} - ${theme.spacing(
+                    33,
+                  )})`,
+                  width: '100%',
+                  scrollbarWidth: 'none',
+                }}
+              ></InfiniteList>
               <Grid item xs={12}>
                 <Box width="100%" display="flex" justifyContent="center">
                   <Typography>
                     <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      defaults="Showing <bold>{{value}}</bold> of <bold>{{total}}</bold>"
                       shouldUnescape
-                      values={{ value: data.people.nodes.length }}
+                      values={{
+                        value: data.people.nodes.length,
+                        total: data.people.totalCount,
+                      }}
                       components={{ bold: <strong /> }}
                     />
                   </Typography>

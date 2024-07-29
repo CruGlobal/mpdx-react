@@ -4,6 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -51,7 +52,10 @@ jest.mock('src/hooks/useGetAppSettings');
 
 const defaultGraphQLMock = {
   GetInvalidEmailAddresses: {
-    people: { nodes: mockInvalidEmailAddressesResponse },
+    people: {
+      nodes: mockInvalidEmailAddressesResponse,
+      pageInfo: { hasNextPage: false },
+    },
   },
 };
 
@@ -64,20 +68,24 @@ const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <TestWrapper>
-          <GqlMockedProvider<{
-            GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            EmailAddresses: EmailAddressesMutation;
-            UpdateEmailAddresses: UpdateEmailAddressesMutation;
-            UpdatePeople: UpdatePeopleMutation;
-          }>
-            mocks={mocks}
-            onCall={mutationSpy}
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
           >
-            <FixEmailAddresses
-              accountListId={accountListId}
-              setContactFocus={setContactFocus}
-            />
-          </GqlMockedProvider>
+            <GqlMockedProvider<{
+              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+              EmailAddresses: EmailAddressesMutation;
+              UpdateEmailAddresses: UpdateEmailAddressesMutation;
+              UpdatePeople: UpdatePeopleMutation;
+            }>
+              mocks={mocks}
+              onCall={mutationSpy}
+            >
+              <FixEmailAddresses
+                accountListId={accountListId}
+                setContactFocus={setContactFocus}
+              />
+            </GqlMockedProvider>
+          </VirtuosoMockContext.Provider>
         </TestWrapper>
       </TestRouter>
     </ThemeProvider>
@@ -208,11 +216,7 @@ describe('FixEmailAddresses-Home', () => {
         variant: 'success',
       }),
     );
-
-    expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
-      'EmailAddresses',
-    );
-    expect(mutationSpy.mock.calls[1][0].operation.variables).toEqual({
+    expect(mutationSpy).toHaveGraphqlOperation('EmailAddresses', {
       input: {
         accountListId: accountListId,
         attributes: {
@@ -221,7 +225,7 @@ describe('FixEmailAddresses-Home', () => {
         },
       },
     });
-    expect(textFieldNew).toHaveValue('');
+    await waitFor(() => expect(textFieldNew).toHaveValue(''));
   });
 
   it('delete third email from first person', async () => {
