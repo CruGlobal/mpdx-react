@@ -21,10 +21,13 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useUserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { FilterOption } from 'src/graphql/types.generated';
-import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
+import {
+  PledgeCurrencyOptionFormatEnum,
+  getPledgeCurrencyOptions,
+} from 'src/lib/getCurrencyOptions';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
 import { ContactType, UpdateTypeEnum } from './FixCommitmentInfo';
@@ -196,7 +199,9 @@ const Contact: React.FC<Props> = ({
   statuses,
   setContactFocus,
 }) => {
-  const { data: constants } = useLoadConstantsQuery();
+  const constants = useApiConstants();
+  const pledgeCurrencies = constants?.pledgeCurrency;
+
   const { locale } = useUserPreferenceContext();
   const { classes } = useStyles();
   const { t } = useTranslation();
@@ -346,10 +351,10 @@ const Contact: React.FC<Props> = ({
                           <MenuItem value={'Currency'} disabled>
                             {t('Currency')}
                           </MenuItem>
-                          {constants?.constant?.pledgeCurrency &&
+                          {pledgeCurrencies &&
                             getPledgeCurrencyOptions(
-                              constants?.constant?.pledgeCurrency,
-                              'short',
+                              pledgeCurrencies,
+                              PledgeCurrencyOptionFormatEnum.Short,
                             )}
                         </Select>
                         <FormHelperText
