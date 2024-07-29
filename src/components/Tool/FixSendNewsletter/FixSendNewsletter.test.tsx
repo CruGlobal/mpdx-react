@@ -13,7 +13,7 @@ import {
   mockInvalidNewslettersResponse,
   mockUploadNewsletterChange,
 } from './FixSendNewsletterMock';
-import { GetInvalidNewsletterQuery } from './GetInvalidNewsletter.generated';
+import { InvalidNewsletterQuery } from './InvalidNewsletter.generated';
 import { UpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
 
 const mockEnqueue = jest.fn();
@@ -47,7 +47,7 @@ const TestComponent = ({
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
-          GetInvalidNewsletter: GetInvalidNewsletterQuery;
+          InvalidNewsletter: InvalidNewsletterQuery;
           UpdateContactNewsletter: UpdateContactNewsletterMutation;
         }>
           mocks={mocks}
@@ -66,7 +66,7 @@ const TestComponent = ({
 
 describe('FixSendNewsletter', () => {
   const deceasedName =
-    mockInvalidNewslettersResponse.GetInvalidNewsletter.contacts.nodes[2].name;
+    mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[2].name;
 
   beforeEach(() => {
     setContactFocus.mockClear();
@@ -77,8 +77,8 @@ describe('FixSendNewsletter', () => {
       const { getByText } = render(
         <TestComponent
           mocks={{
-            GetInvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
             },
           }}
         />,
@@ -93,8 +93,8 @@ describe('FixSendNewsletter', () => {
       const { getAllByRole } = render(
         <TestComponent
           mocks={{
-            GetInvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
             },
           }}
         />,
@@ -109,8 +109,8 @@ describe('FixSendNewsletter', () => {
       const { queryByRole, queryByText } = render(
         <TestComponent
           mocks={{
-            GetInvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
             },
           }}
         />,
@@ -128,25 +128,23 @@ describe('FixSendNewsletter', () => {
 
   describe('confirm single', () => {
     const name =
-      mockInvalidNewslettersResponse.GetInvalidNewsletter.contacts.nodes[0]
-        .name;
+      mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[0].name;
     const otherName =
-      mockInvalidNewslettersResponse.GetInvalidNewsletter.contacts.nodes[1]
-        .name;
+      mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[1].name;
     const initialNewsletterValue = 'None';
     const newNewsletterValue = 'Physical';
 
     it('should successfully update the newsletter', async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'readQuery').mockReturnValue({
-        ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+        ...mockInvalidNewslettersResponse.InvalidNewsletter,
       });
 
       const { getAllByRole, queryByText, queryByRole } = render(
         <TestComponent
           mocks={{
-            GetInvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
             },
             UpdateContactNewsletter: {
               ...mockUploadNewsletterChange.UpdateContactNewsletter,
@@ -178,8 +176,8 @@ describe('FixSendNewsletter', () => {
       const { getAllByRole, queryByRole } = render(
         <TestComponent
           mocks={{
-            GetInvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
             },
             UpdateContactNewsletter: () => {
               throw new Error('Server Error');
@@ -208,15 +206,15 @@ describe('FixSendNewsletter', () => {
     it('should filter out deceased', async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'readQuery').mockReturnValue({
-        ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+        ...mockInvalidNewslettersResponse.InvalidNewsletter,
       });
       jest.spyOn(cache, 'writeQuery');
 
       const { getAllByRole, queryByText, queryByRole } = render(
         <TestComponent
           mocks={{
-            GetInvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
             },
             UpdateContactNewsletter: {
               ...mockUploadNewsletterChange.UpdateContactNewsletter,
@@ -242,10 +240,10 @@ describe('FixSendNewsletter', () => {
               contacts: {
                 nodes: [
                   {
-                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
-                      .contacts.nodes[0],
-                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
-                      .contacts.nodes[1],
+                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
+                      .nodes[0],
+                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
+                      .nodes[1],
                   },
                 ],
               },
@@ -259,12 +257,12 @@ describe('FixSendNewsletter', () => {
               contacts: {
                 nodes: [
                   {
-                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
-                      .contacts.nodes[0],
-                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
-                      .contacts.nodes[1],
-                    ...mockInvalidNewslettersResponse.GetInvalidNewsletter
-                      .contacts.nodes[2],
+                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
+                      .nodes[0],
+                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
+                      .nodes[1],
+                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
+                      .nodes[2],
                   },
                 ],
               },

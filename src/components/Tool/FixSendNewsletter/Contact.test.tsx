@@ -5,7 +5,7 @@ import Contact from './Contact';
 import {
   ContactPrimaryAddressFragment,
   ContactPrimaryPersonFragment,
-} from './GetInvalidNewsletter.generated';
+} from './InvalidNewsletter.generated';
 
 const TestComponent = ({
   primaryPerson,

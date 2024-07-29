@@ -19,7 +19,7 @@ import { StyledInput } from '../StyledInput';
 import {
   ContactPrimaryAddressFragment,
   ContactPrimaryPersonFragment,
-} from './GetInvalidNewsletter.generated';
+} from './InvalidNewsletter.generated';
 
 const useStyles = makeStyles()(() => ({
   left: {

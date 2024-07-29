@@ -18,10 +18,10 @@ import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
 import {
-  GetInvalidNewsletterDocument,
-  GetInvalidNewsletterQuery,
-  useGetInvalidNewsletterQuery,
-} from './GetInvalidNewsletter.generated';
+  InvalidNewsletterDocument,
+  InvalidNewsletterQuery,
+  useInvalidNewsletterQuery,
+} from './InvalidNewsletter.generated';
 import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -73,7 +73,7 @@ const FixSendNewsletter: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { data, loading } = useGetInvalidNewsletterQuery({
+  const { data, loading } = useInvalidNewsletterQuery({
     variables: { accountListId },
   });
 
@@ -106,13 +106,13 @@ const FixSendNewsletter: React.FC<Props> = ({
           updateContactData?.updateContact?.contact.id || '';
 
         const query = {
-          query: GetInvalidNewsletterDocument,
+          query: InvalidNewsletterDocument,
           variables: {
             accountListId,
           },
         };
 
-        const dataFromCache = cache.readQuery<GetInvalidNewsletterQuery>(query);
+        const dataFromCache = cache.readQuery<InvalidNewsletterQuery>(query);
 
         if (dataFromCache) {
           const data = {

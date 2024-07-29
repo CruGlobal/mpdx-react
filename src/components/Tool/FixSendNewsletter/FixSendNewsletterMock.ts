@@ -20,7 +20,7 @@ export const primaryPerson = {
 };
 
 export const mockInvalidNewslettersResponse = {
-  GetInvalidNewsletter: {
+  InvalidNewsletter: {
     contacts: {
       nodes: [
         {
