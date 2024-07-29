@@ -69,8 +69,8 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   };
 
   useEffect(() => {
-    if (query.tabKey) {
-      setSelectedTabKey(query.tabKey);
+    if (query?.tabKey) {
+      setSelectedTabKey(query?.tabKey);
     }
   }, [query]);
 
