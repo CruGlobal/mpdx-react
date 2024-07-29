@@ -13,8 +13,12 @@ import {
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
+import { ItemProps } from 'react-virtuoso';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
+import {
+  InfiniteList,
+  ItemWithBorders,
+} from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import {
   PersonInvalidEmailFragment,
@@ -92,6 +96,10 @@ const DefaultSourceWrapper = styled(Box)(({ theme }) => ({
     alignItems: 'start',
   },
 }));
+
+const ItemOverride: React.ComponentType<ItemProps> = (props) => (
+  <ItemWithBorders disableGutters disableHover={true} {...props} />
+);
 
 export interface EmailAddressData {
   id: string;
@@ -400,6 +408,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                   width: '100%',
                   scrollbarWidth: 'none',
                 }}
+                ItemOverride={ItemOverride}
               ></InfiniteList>
               <Grid item xs={12}>
                 <Box width="100%" display="flex" justifyContent="center">
