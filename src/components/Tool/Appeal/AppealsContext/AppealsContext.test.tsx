@@ -105,7 +105,7 @@ const TestRenderContactsFilters: React.FC = () => {
 };
 
 describe('ContactsPageContext', () => {
-  it('opens up contact and checks URL is redirected', async () => {
+  it('should open a contact and the URL should reflect the opened contact', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
@@ -155,7 +155,7 @@ describe('ContactsPageContext', () => {
     );
   });
 
-  it('switches views to flows and back to list', async () => {
+  it('should switch views to flows and back to list', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
