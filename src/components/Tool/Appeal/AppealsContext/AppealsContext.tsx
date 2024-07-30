@@ -11,7 +11,6 @@ import {
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
-import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
@@ -26,6 +25,11 @@ export enum AppealStatusEnum {
   Processed = 'processed',
 }
 
+export enum TableViewModeEnum {
+  List = 'list',
+  Flows = 'flows',
+}
+
 export interface AppealsType
   extends Omit<
     ContactsType,
@@ -36,7 +40,9 @@ export interface AppealsType
     | 'mapData'
     | 'contactsQueryResult'
     | 'setContactFocus'
+    | 'setViewMode'
   > {
+  setViewMode: (mode: TableViewModeEnum) => void;
   setContactFocus: (id?: string | undefined, openDetails?: boolean) => void;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
@@ -117,7 +123,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     },
     skip: !accountListId || page === PageEnum.InitialPage,
   });
-  const { data, loading, fetchMore } = contactsQueryResult;
+  const { data, loading } = contactsQueryResult;
 
   //#region Mass Actions
 
@@ -179,15 +185,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         : undefined,
       contactId ? true : false,
     );
-    if (!loading && viewMode === TableViewModeEnum.Map) {
-      if (data?.contacts.pageInfo.hasNextPage) {
-        fetchMore({
-          variables: {
-            after: data.contacts?.pageInfo.endCursor,
-          },
-        });
-      }
-    }
   }, [loading, viewMode]);
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
