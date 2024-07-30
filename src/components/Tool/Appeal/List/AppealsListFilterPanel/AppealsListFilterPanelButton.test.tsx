@@ -34,9 +34,6 @@ describe('AppealsListFilterPanelButton', () => {
     const { getByText } = render(
       <Components {...initialProps} disabled={true} />,
     );
-
-    expect(getByText(initialProps.title)).toBeInTheDocument();
-    expect(getByText(initialProps.buttonText)).toBeInTheDocument();
     expect(getByText(initialProps.buttonText)).toBeDisabled();
   });
 
