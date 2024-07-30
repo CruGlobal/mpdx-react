@@ -30,7 +30,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-export interface Props {
+export interface AppealProgressBarProps {
   given: number;
   received: number;
   committed: number;
@@ -44,7 +44,7 @@ const AppealProgressBar = ({
   committed,
   amount,
   amountCurrency,
-}: Props): ReactElement => {
+}: AppealProgressBarProps): ReactElement => {
   const { classes } = useStyles();
   const locale = useLocale();
   const givenAmount = useMemo(
