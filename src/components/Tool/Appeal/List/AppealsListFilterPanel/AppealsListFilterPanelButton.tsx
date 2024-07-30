@@ -23,7 +23,7 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-interface Props {
+export interface AppealsListFilterPanelButtonProps {
   title: string;
   onClick: () => void;
   buttonText: string;
@@ -39,7 +39,7 @@ export const AppealsListFilterPanelButton = ({
   buttonError = 'primary',
   buttonVariant = 'contained',
   disabled,
-}: Props): ReactElement => {
+}: AppealsListFilterPanelButtonProps): ReactElement => {
   const { classes } = useStyles();
 
   return (

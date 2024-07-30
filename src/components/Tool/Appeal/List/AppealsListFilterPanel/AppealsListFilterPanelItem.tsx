@@ -7,7 +7,6 @@ import {
   Skeleton,
   Typography,
 } from '@mui/material';
-import clsx from 'clsx';
 import { makeStyles } from 'tss-react/mui';
 import theme from 'src/theme';
 import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
@@ -19,29 +18,42 @@ const useStyles = makeStyles()(() => ({
       backgroundColor: theme.palette.cruGrayLight.main,
     },
   },
-  red: {
-    backgroundColor: theme.palette.statusDanger.main,
-  },
-  green: {
-    backgroundColor: theme.palette.mpdxGreen.main,
-  },
-  gold: {
-    backgroundColor: theme.palette.cruYellow.main,
-    color: theme.palette.cruGrayDark.main,
-  },
-  gray: {
-    backgroundColor: theme.palette.cruGrayMedium.main,
-    border: '1px solid #ffffff',
-  },
-  valueText: {
+}));
+
+const countBoxStyles = (id: AppealStatusEnum): object => {
+  let styles: object = {
     color: '#ffffff',
     borderRadius: 5,
     fontWeight: 600,
     padding: '2px 8px 2px 8px',
-  },
-}));
+  };
+  switch (id) {
+    case AppealStatusEnum.Excluded:
+      styles = { ...styles, backgroundColor: theme.palette.statusDanger.main };
+      break;
+    case AppealStatusEnum.Asked:
+      styles = {
+        ...styles,
+        backgroundColor: theme.palette.cruGrayMedium.main,
+        border: '1px solid #ffffff',
+      };
+      break;
+    case AppealStatusEnum.Processed:
+      styles = { ...styles, backgroundColor: theme.palette.mpdxGreen.main };
+      break;
+    default:
+      styles = {
+        ...styles,
+        backgroundColor: theme.palette.cruYellow.main,
+        color: theme.palette.cruGrayDark.main,
+      };
+      break;
+  }
 
-interface Props {
+  return styles;
+};
+
+export interface AppealsListFilterPanelItemProps {
   id: AppealStatusEnum;
   title: string;
   isSelected: boolean;
@@ -57,7 +69,7 @@ export const AppealsListFilterPanelItem = ({
   count,
   loading,
   onClick,
-}: Props): ReactElement => {
+}: AppealsListFilterPanelItemProps): ReactElement => {
   const { classes } = useStyles();
 
   const handleClick = () => {
@@ -80,20 +92,13 @@ export const AppealsListFilterPanelItem = ({
       />
 
       {loading && count === undefined && (
-        <Skeleton width={'25px'} height={'35px'} />
+        <Skeleton
+          data-testid="panel-item-skeleton"
+          width={'25px'}
+          height={'35px'}
+        />
       )}
-      <Box
-        className={clsx(
-          classes.valueText,
-          id === AppealStatusEnum.Excluded
-            ? classes.red
-            : id === AppealStatusEnum.Asked
-            ? classes.gray
-            : id === AppealStatusEnum.Processed
-            ? classes.green
-            : classes.gold,
-        )}
-      >
+      <Box style={countBoxStyles(id)} data-testid="panel-item-count-box">
         <Typography variant="body2">{count}</Typography>
       </Box>
       <ArrowForwardIos fontSize="small" color="disabled" />
