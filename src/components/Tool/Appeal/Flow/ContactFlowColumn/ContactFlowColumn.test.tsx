@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -8,7 +9,7 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
@@ -50,7 +51,7 @@ describe('ContactFlowColumn', () => {
                   },
                 }}
               >
-                <ContactsWrapper>
+                <AppealsWrapper>
                   <VirtuosoMockContext.Provider
                     value={{ viewportHeight: 300, itemHeight: 100 }}
                   >
@@ -64,7 +65,7 @@ describe('ContactFlowColumn', () => {
                       appealStatus={AppealStatusEnum.Processed}
                     />
                   </VirtuosoMockContext.Provider>
-                </ContactsWrapper>
+                </AppealsWrapper>
               </GqlMockedProvider>
             </TestRouter>
           </ThemeProvider>
@@ -76,6 +77,55 @@ describe('ContactFlowColumn', () => {
     expect(getByText('Test Person')).toBeInTheDocument();
     expect(getByTestId('column-header')).toHaveStyle({
       backgroundColor: 'theme.palette.mpdxBlue.main',
+    });
+  });
+
+  it('should open menu', async () => {
+    const { getByText, getByTestId, getByRole } = render(
+      <SnackbarProvider>
+        <DndProvider backend={HTML5Backend}>
+          <ThemeProvider theme={theme}>
+            <TestRouter router={router}>
+              <GqlMockedProvider<{ Contacts: ContactsQuery }>
+                mocks={{
+                  Contacts: {
+                    contacts: {
+                      nodes: [contact],
+                      pageInfo: { endCursor: 'Mg', hasNextPage: false },
+                      totalCount: 1,
+                    },
+                  },
+                }}
+              >
+                <AppealsWrapper>
+                  <VirtuosoMockContext.Provider
+                    value={{ viewportHeight: 300, itemHeight: 100 }}
+                  >
+                    <ContactFlowColumn
+                      accountListId={accountListId}
+                      selectedFilters={{}}
+                      color={theme.palette.mpdxBlue.main}
+                      title={title}
+                      onContactSelected={onContactSelected}
+                      changeContactStatus={changeContactStatus}
+                      appealStatus={AppealStatusEnum.Processed}
+                    />
+                  </VirtuosoMockContext.Provider>
+                </AppealsWrapper>
+              </GqlMockedProvider>
+            </TestRouter>
+          </ThemeProvider>
+        </DndProvider>
+      </SnackbarProvider>,
+    );
+
+    await waitFor(() => expect(getByText(title)).toBeInTheDocument());
+
+    userEvent.click(getByTestId('MoreVertIcon'));
+    expect(getByText('Not Interested')).toBeInTheDocument();
+
+    await waitFor(() => {
+      getByRole('menuitem', { name: 'Select 1 contact' });
     });
   });
 });

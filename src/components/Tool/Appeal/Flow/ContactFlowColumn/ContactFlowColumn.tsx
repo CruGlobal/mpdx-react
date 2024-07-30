@@ -85,10 +85,12 @@ export const ContactFlowColumn: React.FC<Props> = ({
 
   const handleSelectAll = () => {
     setAnchorEl(null);
+    // TODO implement select all
   };
 
   const handleDeselectAll = () => {
     setAnchorEl(null);
+    // TODO implement deselect all
   };
 
   const totalContacts = data?.contacts.totalCount || 0;
