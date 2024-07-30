@@ -1,12 +1,14 @@
 import React, { useContext } from 'react';
+import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import { AppealsLeftPanel } from './AppealDetails/AppealLeftPanel/AppealsLeftPanel';
 import { AppealsMainPanel } from './AppealDetails/AppealsMainPanel/AppealsMainPanel';
 import { AppealsContext, AppealsType } from './AppealsContext/AppealsContext';
 
 const AppealsDetailsPage: React.FC = () => {
-  const { filterPanelOpen, contactDetailsOpen } = useContext(
+  const { filterPanelOpen, setContactFocus, contactDetailsOpen } = useContext(
     AppealsContext,
   ) as AppealsType;
 
@@ -16,7 +18,12 @@ const AppealsDetailsPage: React.FC = () => {
       leftOpen={filterPanelOpen}
       leftWidth="290px"
       mainContent={<AppealsMainPanel />}
-      rightPanel={<p>Contact</p>}
+      rightPanel={
+        <DynamicContactsRightPanel
+          onClose={() => setContactFocus(undefined, true)}
+          contextType={ContactContextTypesEnum.Appeals}
+        />
+      }
       rightOpen={contactDetailsOpen}
       rightWidth="60%"
       headerHeight={headerHeight}
