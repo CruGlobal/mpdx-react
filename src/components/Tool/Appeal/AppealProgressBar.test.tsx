@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
@@ -52,8 +52,6 @@ describe('AppealProgressBar', () => {
         />,
       );
 
-      screen.logTestingPlaygroundURL();
-
       await waitFor(() => {
         expect(getAllByText(/\$0 \(10%\)/i).length).toBe(3);
       });
@@ -69,8 +67,6 @@ describe('AppealProgressBar', () => {
           amountCurrency="USD"
         />,
       );
-
-      screen.logTestingPlaygroundURL();
 
       await waitFor(() => {
         expect(getAllByText(/\$0 \(0%\)/i).length).toBe(3);
@@ -90,8 +86,6 @@ describe('AppealProgressBar', () => {
         />,
       );
 
-      screen.logTestingPlaygroundURL();
-
       await waitFor(() => {
         expect(getByText(/\$100 \(10%\)/i)).toBeInTheDocument();
         expect(getByText(/\$300 \(30%\)/i)).toBeInTheDocument();
@@ -110,8 +104,6 @@ describe('AppealProgressBar', () => {
         />,
       );
 
-      screen.logTestingPlaygroundURL();
-
       await waitFor(() => {
         expect(getByText(/\€100 \(10%\)/i)).toBeInTheDocument();
         expect(getByText(/\€300 \(30%\)/i)).toBeInTheDocument();
@@ -129,8 +121,6 @@ describe('AppealProgressBar', () => {
           amountCurrency="NZD"
         />,
       );
-
-      screen.logTestingPlaygroundURL();
 
       await waitFor(() => {
         expect(getByText(/nz\$100 \(10%\)/i)).toBeInTheDocument();
