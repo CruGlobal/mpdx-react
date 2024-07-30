@@ -1,5 +1,4 @@
 query GetInvalidEmailAddresses($accountListId: ID!, $after: String) {
-  # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
   people(
     accountListId: $accountListId
     peopleFilter: { emailAddressValid: false }
