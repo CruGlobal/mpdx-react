@@ -142,6 +142,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
         </Grid>
       </GridContainer>
 
+      {/* TODO - Build modal */}
       {isEditAppealModalOpen && <p>Modal</p>}
     </>
   );
