@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetAppealsQuery } from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
-import theme from '../../../theme';
+import theme from '../../../../theme';
 import Appeals from './Appeals';
 
 const accountListId = 'test121';
