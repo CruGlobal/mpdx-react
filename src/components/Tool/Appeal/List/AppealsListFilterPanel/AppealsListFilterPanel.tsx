@@ -119,6 +119,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const appealListView = activeFilters.appealStatus;
   const noContactsSelected = !selectedIds.length;
 
+  // TODO - Finish this function off
   const handleFilterButtonClick = () => {};
 
   return (
