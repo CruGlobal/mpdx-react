@@ -115,7 +115,7 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
 );
 
 describe('AppealsDetailsPage', () => {
-  describe('Open and Close Contact Drawer', () => {
+  describe('Contact drawer', () => {
     it('should open and close on List view', async () => {
       const { getByText, findByTestId, getByRole, queryByRole } = render(
         <Components
@@ -178,7 +178,7 @@ describe('AppealsDetailsPage', () => {
     });
   });
 
-  describe('Open and Close Filters', () => {
+  describe('Filters', () => {
     it('should open and close on List view', async () => {
       const { getByRole, queryByRole } = render(
         <Components
