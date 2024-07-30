@@ -23,41 +23,30 @@ const contact = {
 } as ContactFragmentFragment;
 const onContactSelected = jest.fn();
 
+const Components = () => (
+  <DndProvider backend={HTML5Backend}>
+    <ThemeProvider theme={theme}>
+      <TestWrapper>
+        <ContactFlowRow
+          accountListId={accountListId}
+          contact={contact}
+          appealStatus={AppealStatusEnum.Processed}
+          onContactSelected={onContactSelected}
+        />
+      </TestWrapper>
+    </ThemeProvider>
+  </DndProvider>
+);
+
 describe('ContactFlowRow', () => {
   it('should display contact name and status', () => {
-    const { getByText, getByTitle } = render(
-      <DndProvider backend={HTML5Backend}>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <ContactFlowRow
-              accountListId={accountListId}
-              contact={contact}
-              appealStatus={AppealStatusEnum.Processed}
-              onContactSelected={onContactSelected}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </DndProvider>,
-    );
+    const { getByText, getByTitle } = render(<Components />);
     expect(getByText('Test Name')).toBeInTheDocument();
     expect(getByTitle('Filled Star Icon')).toBeInTheDocument();
   });
 
   it('should call contact selected function', () => {
-    const { getByText } = render(
-      <DndProvider backend={HTML5Backend}>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <ContactFlowRow
-              accountListId={accountListId}
-              contact={contact}
-              appealStatus={AppealStatusEnum.Processed}
-              onContactSelected={onContactSelected}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </DndProvider>,
-    );
+    const { getByText } = render(<Components />);
     userEvent.click(getByText('Test Name'));
     expect(getByText('Test Name')).toBeInTheDocument();
     expect(onContactSelected).toHaveBeenCalledWith('123', true, true);
