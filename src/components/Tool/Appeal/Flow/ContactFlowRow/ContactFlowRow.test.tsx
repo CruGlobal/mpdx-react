@@ -6,15 +6,11 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { ContactFragmentFragment } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { StatusEnum } from 'src/graphql/types.generated';
-import theme from '../../../../theme';
+import theme from 'src/theme';
+import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
 import { ContactFlowRow } from './ContactFlowRow';
 
 const accountListId = 'abc';
-const status = {
-  id: StatusEnum.PartnerFinancial,
-  value: 'Partner - Financial',
-};
 const contact = {
   id: '123',
   name: 'Test Name',
@@ -25,44 +21,32 @@ const contact = {
   pledgeReceived: false,
   uncompletedTasksCount: 0,
 } as ContactFragmentFragment;
-
 const onContactSelected = jest.fn();
+
+const Components = () => (
+  <DndProvider backend={HTML5Backend}>
+    <ThemeProvider theme={theme}>
+      <TestWrapper>
+        <ContactFlowRow
+          accountListId={accountListId}
+          contact={contact}
+          appealStatus={AppealStatusEnum.Processed}
+          onContactSelected={onContactSelected}
+        />
+      </TestWrapper>
+    </ThemeProvider>
+  </DndProvider>
+);
 
 describe('ContactFlowRow', () => {
   it('should display contact name and status', () => {
-    const { getByText, getByTitle } = render(
-      <DndProvider backend={HTML5Backend}>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <ContactFlowRow
-              accountListId={accountListId}
-              contact={contact}
-              status={status}
-              onContactSelected={onContactSelected}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </DndProvider>,
-    );
+    const { getByText, getByTitle } = render(<Components />);
     expect(getByText('Test Name')).toBeInTheDocument();
     expect(getByTitle('Filled Star Icon')).toBeInTheDocument();
   });
 
   it('should call contact selected function', () => {
-    const { getByText } = render(
-      <DndProvider backend={HTML5Backend}>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <ContactFlowRow
-              accountListId={accountListId}
-              contact={contact}
-              status={status}
-              onContactSelected={onContactSelected}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </DndProvider>,
-    );
+    const { getByText } = render(<Components />);
     userEvent.click(getByText('Test Name'));
     expect(getByText('Test Name')).toBeInTheDocument();
     expect(onContactSelected).toHaveBeenCalledWith('123', true, true);
