@@ -93,25 +93,23 @@ jest.mock('notistack', () => ({
 const Components = ({ router = defaultRouter }: { router?: object }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider<{ Contacts: ContactsQuery; Appeal: AppealQuery }>
-        mocks={{
-          Contacts: mockResponse,
-          Appeal: mockAppealResponse,
-        }}
-      >
-        <VirtuosoMockContext.Provider
-          value={{ viewportHeight: 1000, itemHeight: 100 }}
+      <DndProvider backend={HTML5Backend}>
+        <GqlMockedProvider<{ Contacts: ContactsQuery; Appeal: AppealQuery }>
+          mocks={{
+            Contacts: mockResponse,
+            Appeal: mockAppealResponse,
+          }}
         >
-          <Appeal />
-        </VirtuosoMockContext.Provider>
-      </GqlMockedProvider>
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
+          >
+            <Appeal />
+          </VirtuosoMockContext.Provider>
+        </GqlMockedProvider>
+      </DndProvider>
     </TestRouter>
   </ThemeProvider>
 );
-
-// Initial page
-// Detail List
-// Detail Flows
 
 describe('Appeal navigation', () => {
   it('should show initial appeal page', async () => {
@@ -126,7 +124,7 @@ describe('Appeal navigation', () => {
     );
   });
 
-  it('should show List detail appeal page and open filters', async () => {
+  it('should show list detail appeal page and open filters', async () => {
     const { getByText, findByTestId, queryByText, getByRole, queryByRole } =
       render(
         <Components
@@ -172,34 +170,17 @@ describe('Appeal navigation', () => {
     });
   });
 
-  it('should show Flows detail appeal page and open filters', async () => {
+  it('should show flows detail appeal page and open filters', async () => {
     const { queryByText, getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter
-          router={{
-            ...defaultRouter,
-            query: {
-              ...defaultRouter.query,
-              appealId: ['1', 'flows'],
-            },
-          }}
-        >
-          <DndProvider backend={HTML5Backend}>
-            <GqlMockedProvider<{ Contacts: ContactsQuery; Appeal: AppealQuery }>
-              mocks={{
-                Contacts: mockResponse,
-                Appeal: mockAppealResponse,
-              }}
-            >
-              <VirtuosoMockContext.Provider
-                value={{ viewportHeight: 300, itemHeight: 100 }}
-              >
-                <Appeal />
-              </VirtuosoMockContext.Provider>
-            </GqlMockedProvider>
-          </DndProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <Components
+        router={{
+          ...defaultRouter,
+          query: {
+            ...defaultRouter.query,
+            appealId: ['1', 'flows'],
+          },
+        }}
+      />,
     );
 
     await waitFor(() => {
