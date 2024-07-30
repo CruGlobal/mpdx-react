@@ -1,0 +1,8 @@
+query ContactsCount(
+  $accountListId: ID!
+  $contactsFilter: ContactFilterSetInput
+) {
+  contacts(accountListId: $accountListId, contactsFilter: $contactsFilter) {
+    totalCount
+  }
+}
