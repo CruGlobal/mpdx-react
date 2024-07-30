@@ -11,7 +11,7 @@ query Contacts(
     first: $first
   ) {
     nodes {
-      ...contactFragment
+      ...ContactRow
     }
     totalCount
     pageInfo {
@@ -22,12 +22,6 @@ query Contacts(
   allContacts: contacts(accountListId: $accountListId, after: $after) {
     totalCount
   }
-}
-
-fragment contactFragment on Contact {
-  id
-  avatar
-  ...ContactRow
 }
 
 query ContactFilters($accountListId: ID!) {
