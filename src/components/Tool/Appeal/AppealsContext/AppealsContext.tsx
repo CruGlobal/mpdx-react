@@ -1,128 +1,62 @@
 import { useRouter } from 'next/router';
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { type DebouncedFunc, debounce, omit } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { debounce, omit } from 'lodash';
+import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { PageEnum } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
+import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
+import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import {
-  ContactFiltersQuery,
-  useContactFiltersQuery,
-  useContactsQuery,
-} from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import {
-  coordinatesFromContacts,
-  getRedirectPathname,
-} from 'pages/accountLists/[accountListId]/contacts/helpers';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
+  ContactsContextSavedFilters as AppealsContextSavedFilters,
+  ContactsContextProps,
+  ContactsType,
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useLocale } from 'src/hooks/useLocale';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { useAccountListId } from '../../../hooks/useAccountListId';
-import { useMassSelection } from '../../../hooks/useMassSelection';
-import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
-import {
-  ListHeaderCheckBoxState,
-  TableViewModeEnum,
-} from '../../Shared/Header/ListHeader';
-import { useUpdateUserOptionsMutation } from '../ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import { useGetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
-import { Coordinates } from '../ContactsMap/coordinates';
+import { useContactsQuery } from './contacts.generated';
 
-export type ContactsType = {
-  accountListId: string | undefined;
-  contactId: string | string[] | undefined;
-  searchTerm: string | string[] | undefined;
-  contactsQueryResult: ReturnType<typeof useContactsQuery>;
-  selectionType: ListHeaderCheckBoxState;
-  isRowChecked: (id: string) => boolean;
-  toggleSelectAll: () => void;
-  toggleSelectionById: (id: string) => void;
-  filterData: ContactFiltersQuery | undefined;
-  filtersLoading: boolean;
-  toggleFilterPanel: () => void;
-  handleClearAll: () => void;
-  savedFilters: UserOptionFragment[];
-  setContactFocus: (
-    id?: string | undefined,
-    openDetails?: boolean,
-    flows?: boolean,
-    map?: boolean,
-  ) => void;
-  setSearchTerm: DebouncedFunc<(searchTerm: string) => void>;
-  handleViewModeChange: (
-    event: React.MouseEvent<HTMLElement>,
-    view: string,
-  ) => void;
-  selected: Coordinates | null;
-  setSelected: Dispatch<SetStateAction<Coordinates | null>>;
-  mapRef: React.MutableRefObject<google.maps.Map | null>;
-  panTo: (coords: { lat: number; lng: number }) => void;
-  mapData: Coordinates[] | undefined;
-  activeFilters: ContactFilterSetInput;
-  sanitizedFilters: ContactFilterSetInput;
-  setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
-  starredFilter: ContactFilterSetInput;
-  setStarredFilter: (filter: ContactFilterSetInput) => void;
-  filterPanelOpen: boolean;
-  setFilterPanelOpen: (open: boolean) => void;
-  contactDetailsOpen: boolean;
-  setContactDetailsOpen: (open: boolean) => void;
-  contactDetailsId: string | undefined;
-  setContactDetailsId: (id: string) => void;
-  viewMode: TableViewModeEnum | undefined;
-  setViewMode: (mode: TableViewModeEnum) => void;
-  urlFilters: any;
-  isFiltered: boolean;
-  selectedIds: string[];
-  deselectAll: () => void;
-  userOptionsLoading: boolean;
-};
-
-export const ContactsContext = React.createContext<ContactsType | null>(null);
-
-export interface ContactsContextProps {
-  children?: React.ReactNode;
-  urlFilters?: any;
-  activeFilters: ContactFilterSetInput;
-  setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
-  starredFilter: ContactFilterSetInput;
-  setStarredFilter: (filter: ContactFilterSetInput) => void;
-  filterPanelOpen: boolean;
-  setFilterPanelOpen: (open: boolean) => void;
-  contactId: string | string[] | undefined;
-  searchTerm: string | string[] | undefined;
+export enum AppealStatusEnum {
+  Excluded = 'excluded',
+  Asked = 'asked',
+  NotReceived = 'not_received',
+  ReceivedNotProcessed = 'received_not_processed',
+  Processed = 'processed',
 }
 
-export const ContactsContextSavedFilters = (
-  filterData: ContactFiltersQuery | undefined,
-  accountListId: string | undefined,
-): UserOptionFragment[] => {
-  return (
-    filterData?.userOptions.filter((option) => {
-      let parsedJson: Record<string, string>;
-      try {
-        parsedJson = JSON.parse(option.value ?? '');
-      } catch (e) {
-        parsedJson = {};
-      }
-      return (
-        (option.key?.includes('saved_contacts_filter_') ||
-          option.key?.includes('graphql_saved_contacts_filter_')) &&
-        ((parsedJson.account_list_id === accountListId &&
-          !parsedJson.accountListId) ||
-          (parsedJson.accountListId === accountListId &&
-            !parsedJson.account_list_id))
-      );
-    }) ?? []
-  );
-};
+export enum TableViewModeEnum {
+  List = 'list',
+  Flows = 'flows',
+}
 
-export const ContactsProvider: React.FC<ContactsContextProps> = ({
+export interface AppealsType
+  extends Omit<
+    ContactsType,
+    | 'selected'
+    | 'setSelected'
+    | 'mapRef'
+    | 'panTo'
+    | 'mapData'
+    | 'contactsQueryResult'
+    | 'setContactFocus'
+    | 'setViewMode'
+  > {
+  setViewMode: (mode: TableViewModeEnum) => void;
+  setContactFocus: (id?: string | undefined, openDetails?: boolean) => void;
+  contactsQueryResult: ReturnType<typeof useContactsQuery>;
+  appealId: string | undefined;
+  page: PageEnum | undefined;
+}
+
+export const AppealsContext = React.createContext<AppealsType | null>(null);
+
+interface AppealsContextProps extends ContactsContextProps {
+  appealId: string | undefined;
+  page?: PageEnum;
+}
+
+export const AppealsProvider: React.FC<AppealsContextProps> = ({
   children,
   urlFilters,
   activeFilters,
@@ -131,10 +65,11 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   setStarredFilter,
   filterPanelOpen,
   setFilterPanelOpen,
+  appealId,
   contactId,
   searchTerm,
+  page,
 }) => {
-  const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
   const router = useRouter();
   const { query, push, replace, isReady, pathname } = router;
@@ -142,8 +77,9 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
   const [viewMode, setViewMode] = useState<TableViewModeEnum>(
-    TableViewModeEnum.List,
+    TableViewModeEnum.Flows,
   );
+
   const sanitizedFilters = useMemo(
     () => sanitizeFilters(activeFilters),
     [activeFilters],
@@ -161,10 +97,11 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       } else {
         setViewMode(
           (userOptions.find((option) => option.key === 'contacts_view')
-            ?.value as TableViewModeEnum) || TableViewModeEnum.List,
+            ?.value as TableViewModeEnum) || TableViewModeEnum.Flows,
         );
       }
     },
+    skip: page === PageEnum.InitialPage,
   });
 
   const contactsFilters = useMemo(
@@ -172,8 +109,8 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       ...sanitizedFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
-      ids:
-        viewMode === TableViewModeEnum.Map && urlFilters ? urlFilters.ids : [],
+      ids: [],
+      appeal: [appealId || ''],
     }),
     [sanitizedFilters, starredFilter, searchTerm],
   );
@@ -182,11 +119,11 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters,
-      first: contactId?.includes('map') ? 20000 : 25,
+      first: 25,
     },
-    skip: !accountListId,
+    skip: !accountListId || page === PageEnum.InitialPage,
   });
-  const { data, loading, fetchMore } = contactsQueryResult;
+  const { data, loading } = contactsQueryResult;
 
   //#region Mass Actions
 
@@ -197,7 +134,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       first: contactCount,
       contactsFilters,
     },
-    skip: contactCount === 0,
+    skip: contactCount === 0 || page === PageEnum.InitialPage,
   });
   const allContactIds = useMemo(
     () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
@@ -224,7 +161,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     if (isReady && contactId) {
       if (
         contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'map' &&
         contactId[contactId.length - 1] !== 'list'
       ) {
         setContactDetailsId(contactId[contactId.length - 1]);
@@ -244,26 +180,16 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     setContactFocus(
       contactId &&
         contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'map' &&
         contactId[contactId.length - 1] !== 'list'
         ? contactId[contactId.length - 1]
         : undefined,
       contactId ? true : false,
     );
-    if (!loading && viewMode === TableViewModeEnum.Map) {
-      if (data?.contacts.pageInfo.hasNextPage) {
-        fetchMore({
-          variables: {
-            after: data.contacts?.pageInfo.endCursor,
-          },
-        });
-      }
-    }
   }, [loading, viewMode]);
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId,
+    skip: !accountListId || page === PageEnum.InitialPage,
     context: {
       doNotBatch: true,
     },
@@ -277,7 +203,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     setSearchTerm('');
   };
 
-  const savedFilters: UserOptionFragment[] = ContactsContextSavedFilters(
+  const savedFilters: UserOptionFragment[] = AppealsContextSavedFilters(
     filterData,
     accountListId,
   );
@@ -291,15 +217,16 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   //#region User Actions
   const setContactFocus = (id?: string, openDetails = true) => {
+    if (page === PageEnum.InitialPage) {
+      return;
+    }
     const {
       accountListId: _accountListId,
       contactId: _contactId,
+      appealId: _appealId,
       ...filteredQuery
     } = query;
-    if (viewMode === TableViewModeEnum.Map && ids && ids.length > 0) {
-      filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
-    }
-    if (viewMode !== TableViewModeEnum.Map && urlFilters && urlFilters.ids) {
+    if (urlFilters && urlFilters.ids) {
       const newFilters = omit(activeFilters, 'ids');
       if (Object.keys(newFilters).length > 0) {
         filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
@@ -308,12 +235,20 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       }
     }
 
-    const pathname = getRedirectPathname({
-      routerPathname: router.pathname,
-      accountListId,
-      contactId: id,
-      viewMode,
-    });
+    let pathname = '';
+    pathname = `/accountLists/${accountListId}/tools/appeals`;
+    if (appealId) {
+      pathname += `/${appealId}`;
+    }
+    if (viewMode === TableViewModeEnum.Flows) {
+      pathname += '/flows';
+    } else if (viewMode === TableViewModeEnum.List) {
+      pathname += '/list';
+    }
+    if (id) {
+      pathname += `/${id}`;
+    }
+
     push({
       pathname,
       query: filteredQuery,
@@ -348,10 +283,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     [accountListId],
   );
 
-  const handleViewModeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    view: string,
-  ) => {
+  const handleViewModeChange = (_, view: string) => {
     setViewMode(view as TableViewModeEnum);
     updateOptions(view);
   };
@@ -370,32 +302,11 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     });
   };
 
-  // map states and functions
-  const [selected, setSelected] = useState<Coordinates | null>(null);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mapRef = useRef<google.maps.Map | null>(null);
-
-  const panTo = useCallback(
-    ({ lat, lng }) => {
-      if (mapRef.current) {
-        mapRef.current.panTo({ lat, lng });
-        mapRef.current.setZoom(14);
-      }
-    },
-    [mapRef.current],
-  );
-
-  const mapData = useMemo(
-    () => data && coordinatesFromContacts(data.contacts, locale),
-    [data],
-  );
-
   return (
-    <ContactsContext.Provider
+    <AppealsContext.Provider
       value={{
         accountListId: accountListId ?? '',
-        contactId: contactId,
+        contactId: contactId, //
         searchTerm: searchTerm,
         contactsQueryResult: contactsQueryResult,
         selectionType: selectionType,
@@ -410,11 +321,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         setContactFocus: setContactFocus,
         setSearchTerm: setSearchTerm,
         handleViewModeChange: handleViewModeChange,
-        selected: selected,
-        setSelected: setSelected,
-        mapRef: mapRef,
-        mapData: mapData,
-        panTo: panTo,
         activeFilters: activeFilters,
         sanitizedFilters,
         setActiveFilters: setActiveFilters,
@@ -433,9 +339,11 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         selectedIds: ids,
         deselectAll: deselectAll,
         userOptionsLoading: userOptionsLoading,
+        appealId,
+        page,
       }}
     >
       {children}
-    </ContactsContext.Provider>
+    </AppealsContext.Provider>
   );
 };
