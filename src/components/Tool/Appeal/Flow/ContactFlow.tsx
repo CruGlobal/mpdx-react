@@ -16,7 +16,7 @@ import { AppealQuery } from '../AppealDetails/AppealsMainPanel/appealInfo.genera
 import { AppealStatusEnum } from '../AppealsContext/AppealsContext';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 
-interface Props {
+export interface ContactFlowProps {
   accountListId: string;
   selectedFilters: ContactFilterSetInput;
   searchTerm?: string | string[];
@@ -77,14 +77,14 @@ const flowOptions: ContactFlowOption[] = [
   },
 ];
 
-export const ContactFlow: React.FC<Props> = ({
+export const ContactFlow: React.FC<ContactFlowProps> = ({
   accountListId,
   selectedFilters,
   onContactSelected,
   searchTerm,
   appealInfo,
   appealInfoLoading,
-}: Props) => {
+}: ContactFlowProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -92,11 +92,12 @@ export const ContactFlow: React.FC<Props> = ({
 
   const changeContactStatus = async (
     id: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     appealId: AppealStatusEnum,
   ): Promise<void> => {
+    // TODO Fix this when we have the appeal status added to contact
     const attributes = {
       id,
-      appealId,
     };
     await updateContactOther({
       variables: {

@@ -38,6 +38,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
       key={status}
       isOver={isOver}
       canDrop={canDrop}
+      data-testid="contact-flow-drop-zone"
       {...{ ref: drop }}
     >
       <Typography variant="h5" align="center">

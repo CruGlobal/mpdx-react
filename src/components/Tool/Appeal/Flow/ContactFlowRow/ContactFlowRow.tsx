@@ -47,6 +47,7 @@ export const ContactFlowRow: React.FC<Props> = ({
       item: {
         id,
         appealStatus,
+        status: contactStatus,
         contactStatus,
         name,
         starred,
