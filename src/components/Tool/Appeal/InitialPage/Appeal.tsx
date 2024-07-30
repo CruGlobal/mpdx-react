@@ -6,10 +6,10 @@ import { Box, CardContent, IconButton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { AppealFieldsFragment } from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
-import { useAccountListId } from '../../../hooks/useAccountListId';
-import theme from '../../../theme';
-import AnimatedCard from '../../AnimatedCard';
-import AppealProgressBar from './AppealProgressBar';
+import { useAccountListId } from '../../../../hooks/useAccountListId';
+import theme from '../../../../theme';
+import AnimatedCard from '../../../AnimatedCard';
+import AppealProgressBar from '../AppealProgressBar';
 
 const useStyles = makeStyles()(() => ({
   cardContent: {

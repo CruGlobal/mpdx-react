@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import { Box, CardContent, Theme, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import AnimatedCard from '../../AnimatedCard';
+import AnimatedCard from '../../../AnimatedCard';
 
 export interface Props {
   primary?: boolean;

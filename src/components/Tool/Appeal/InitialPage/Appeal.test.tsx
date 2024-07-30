@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestWrapper from '__tests__/util/TestWrapper';
-import theme from '../../../theme';
+import theme from '../../../../theme';
 import Appeal from './Appeal';
 
 const appeal = {
