@@ -208,7 +208,7 @@ describe('ContactsPageContext', () => {
     );
   });
 
-  it('viewing a contact and switches back to flows view', async () => {
+  it('should redirect back to flows view on contact page', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
