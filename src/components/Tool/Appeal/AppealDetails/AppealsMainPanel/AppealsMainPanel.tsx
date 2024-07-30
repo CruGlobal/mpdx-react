@@ -4,13 +4,22 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { DynamicContactFlow } from '../../Flow/DynamicContactFlow';
 import { DynamicContactsList } from '../../List/ContactsList/DynamicContactsList';
 import { AppealsMainPanelHeader } from './AppealsMainPanelHeader';
 import { useAppealQuery } from './appealInfo.generated';
 
 export const AppealsMainPanel: React.FC = () => {
-  const { accountListId, appealId, viewMode, userOptionsLoading } =
-    React.useContext(AppealsContext) as AppealsType;
+  const {
+    accountListId,
+    appealId,
+    activeFilters,
+    starredFilter,
+    searchTerm,
+    setContactFocus,
+    viewMode,
+    userOptionsLoading,
+  } = React.useContext(AppealsContext) as AppealsType;
 
   const { data: appealInfo, loading: appealInfoLoading } = useAppealQuery({
     variables: {
@@ -30,7 +39,17 @@ export const AppealsMainPanel: React.FC = () => {
             appealInfoLoading={appealInfoLoading}
           />
         ) : (
-          <p>Flows</p>
+          <DynamicContactFlow
+            accountListId={accountListId ?? ''}
+            selectedFilters={{
+              ...activeFilters,
+              ...starredFilter,
+            }}
+            searchTerm={searchTerm}
+            onContactSelected={setContactFocus}
+            appealInfo={appealInfo}
+            appealInfoLoading={appealInfoLoading}
+          />
         ))}
     </>
   );
