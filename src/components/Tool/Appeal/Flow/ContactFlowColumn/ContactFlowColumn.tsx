@@ -137,7 +137,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
                 ? t('Select {{count}} contact', { count: totalContacts })
                 : t('Select all {{count}} contacts', { count: totalContacts })}
             </MenuItem>
-            <MenuItem onClick={handleDeselectAll}>Deselect All</MenuItem>
+            <MenuItem onClick={handleDeselectAll}>{t('Deselect All')}</MenuItem>
           </Menu>
         </Box>
       </ContainerBox>

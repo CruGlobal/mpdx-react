@@ -33,45 +33,47 @@ const router = {
   isReady: true,
 };
 
+const Components = () => (
+  <SnackbarProvider>
+    <DndProvider backend={HTML5Backend}>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{ Contacts: ContactsQuery }>
+            mocks={{
+              Contacts: {
+                contacts: {
+                  nodes: [contact],
+                  pageInfo: { endCursor: 'Mg', hasNextPage: false },
+                  totalCount: 1,
+                },
+              },
+            }}
+          >
+            <AppealsWrapper>
+              <VirtuosoMockContext.Provider
+                value={{ viewportHeight: 300, itemHeight: 100 }}
+              >
+                <ContactFlowColumn
+                  accountListId={accountListId}
+                  selectedFilters={{}}
+                  color={theme.palette.mpdxBlue.main}
+                  title={title}
+                  onContactSelected={onContactSelected}
+                  changeContactStatus={changeContactStatus}
+                  appealStatus={AppealStatusEnum.Processed}
+                />
+              </VirtuosoMockContext.Provider>
+            </AppealsWrapper>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>
+    </DndProvider>
+  </SnackbarProvider>
+);
+
 describe('ContactFlowColumn', () => {
   it('should render a column with correct details', async () => {
-    const { getByText, getByTestId } = render(
-      <SnackbarProvider>
-        <DndProvider backend={HTML5Backend}>
-          <ThemeProvider theme={theme}>
-            <TestRouter router={router}>
-              <GqlMockedProvider<{ Contacts: ContactsQuery }>
-                mocks={{
-                  Contacts: {
-                    contacts: {
-                      nodes: [contact],
-                      pageInfo: { endCursor: 'Mg', hasNextPage: false },
-                      totalCount: 1,
-                    },
-                  },
-                }}
-              >
-                <AppealsWrapper>
-                  <VirtuosoMockContext.Provider
-                    value={{ viewportHeight: 300, itemHeight: 100 }}
-                  >
-                    <ContactFlowColumn
-                      accountListId={accountListId}
-                      selectedFilters={{}}
-                      color={theme.palette.mpdxBlue.main}
-                      title={title}
-                      onContactSelected={onContactSelected}
-                      changeContactStatus={changeContactStatus}
-                      appealStatus={AppealStatusEnum.Processed}
-                    />
-                  </VirtuosoMockContext.Provider>
-                </AppealsWrapper>
-              </GqlMockedProvider>
-            </TestRouter>
-          </ThemeProvider>
-        </DndProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText, getByTestId } = render(<Components />);
     await waitFor(() => expect(getByText(title)).toBeInTheDocument());
     expect(getByText('1')).toBeInTheDocument();
     expect(getByText('Test Person')).toBeInTheDocument();
@@ -81,43 +83,7 @@ describe('ContactFlowColumn', () => {
   });
 
   it('should open menu', async () => {
-    const { getByText, getByTestId, getByRole } = render(
-      <SnackbarProvider>
-        <DndProvider backend={HTML5Backend}>
-          <ThemeProvider theme={theme}>
-            <TestRouter router={router}>
-              <GqlMockedProvider<{ Contacts: ContactsQuery }>
-                mocks={{
-                  Contacts: {
-                    contacts: {
-                      nodes: [contact],
-                      pageInfo: { endCursor: 'Mg', hasNextPage: false },
-                      totalCount: 1,
-                    },
-                  },
-                }}
-              >
-                <AppealsWrapper>
-                  <VirtuosoMockContext.Provider
-                    value={{ viewportHeight: 300, itemHeight: 100 }}
-                  >
-                    <ContactFlowColumn
-                      accountListId={accountListId}
-                      selectedFilters={{}}
-                      color={theme.palette.mpdxBlue.main}
-                      title={title}
-                      onContactSelected={onContactSelected}
-                      changeContactStatus={changeContactStatus}
-                      appealStatus={AppealStatusEnum.Processed}
-                    />
-                  </VirtuosoMockContext.Provider>
-                </AppealsWrapper>
-              </GqlMockedProvider>
-            </TestRouter>
-          </ThemeProvider>
-        </DndProvider>
-      </SnackbarProvider>,
-    );
+    const { getByText, getByTestId, getByRole } = render(<Components />);
 
     await waitFor(() => expect(getByText(title)).toBeInTheDocument());
 
