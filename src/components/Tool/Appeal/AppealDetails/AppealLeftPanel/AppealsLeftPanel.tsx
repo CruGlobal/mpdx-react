@@ -4,14 +4,14 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { DynamicAppealsListFilterPanel } from '../../List/AppealsListFilterPanel/DynamicAppealsListFilterPanel';
 
 export const AppealsLeftPanel: React.FC = () => {
-  const { filterData, filtersLoading, viewMode } = React.useContext(
-    AppealsContext,
-  ) as AppealsType;
+  const { filterData, filtersLoading, toggleFilterPanel, viewMode } =
+    React.useContext(AppealsContext) as AppealsType;
 
   return viewMode !== TableViewModeEnum.Flows ? (
-    <p>List Filters</p>
+    <DynamicAppealsListFilterPanel onClose={toggleFilterPanel} />
   ) : filterData && !filtersLoading ? (
     <p>Flows Filters</p>
   ) : null;
