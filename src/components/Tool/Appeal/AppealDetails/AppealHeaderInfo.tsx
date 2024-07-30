@@ -8,7 +8,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import AppealProgressBar from '../AppealProgressBar';
-import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
 
 export const appealHeaderInfoHeight = theme.spacing(9);
 
@@ -57,7 +56,6 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const {} = React.useContext(AppealsContext) as AppealsType;
 
   const [isEditAppealModalOpen, setIsEditAppealModalOpen] = useState(false);
 

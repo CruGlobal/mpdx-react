@@ -6,6 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import theme from 'src/theme';
+import { appealInfo } from '../appealMockData';
 import { AppealHeaderInfo, AppealHeaderInfoProps } from './AppealHeaderInfo';
 
 const router = {
@@ -27,21 +28,10 @@ const Components = ({ appealInfo, loading }: AppealHeaderInfoProps) => (
   </LocalizationProvider>
 );
 
-const initialAppealInfo = {
-  id: '1',
-  name: 'Test Appeal',
-  amount: 100,
-  amountCurrency: 'USD',
-  pledgesAmountProcessed: 50,
-  pledgesAmountReceivedNotProcessed: 25,
-  pledgesAmountNotReceivedNotProcessed: 25,
-  pledgesAmountTotal: 100,
-};
-
 describe('AppealHeaderInfo', () => {
   it('renders skeletons when loading', () => {
     const { getByTestId, getByRole } = render(
-      <Components appealInfo={initialAppealInfo} loading={true} />,
+      <Components appealInfo={appealInfo} loading={true} />,
     );
 
     expect(getByRole('heading', { name: 'Name:' })).toBeInTheDocument();
@@ -53,7 +43,7 @@ describe('AppealHeaderInfo', () => {
 
   it('renders appeal info', async () => {
     const { getByText } = render(
-      <Components appealInfo={initialAppealInfo} loading={false} />,
+      <Components appealInfo={appealInfo} loading={false} />,
     );
 
     await waitFor(() => {
