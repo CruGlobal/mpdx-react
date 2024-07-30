@@ -1,26 +1,17 @@
 import { useRouter } from 'next/router';
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import { type DebouncedFunc, debounce, omit } from 'lodash';
-import {
-  ContactFiltersQuery,
-  useContactFiltersQuery,
-} from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { debounce, omit } from 'lodash';
+import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { PageEnum } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
-import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
 import {
-  ListHeaderCheckBoxState,
-  TableViewModeEnum,
-} from 'src/components/Shared/Header/ListHeader';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
+  ContactsContextSavedFilters as AppealsContextSavedFilters,
+  ContactsContextProps,
+  ContactsType,
+} from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
+import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
@@ -35,97 +26,31 @@ export enum AppealStatusEnum {
   Processed = 'processed',
 }
 
-export type AppealsType = {
-  accountListId: string | undefined;
-  contactId: string | string[] | undefined;
-  searchTerm: string | string[] | undefined;
+export interface AppealsType
+  extends Omit<
+    ContactsType,
+    | 'selected'
+    | 'setSelected'
+    | 'mapRef'
+    | 'panTo'
+    | 'mapData'
+    | 'contactsQueryResult'
+    | 'setContactFocus'
+  > {
+  setContactFocus: (id?: string | undefined, openDetails?: boolean) => void;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
-  selectionType: ListHeaderCheckBoxState;
-  isRowChecked: (id: string) => boolean;
-  toggleSelectAll: () => void;
-  toggleSelectionById: (id: string) => void;
-  filterData: ContactFiltersQuery | undefined;
-  filtersLoading: boolean;
-  toggleFilterPanel: () => void;
-  handleClearAll: () => void;
-  savedFilters: UserOptionFragment[];
-  setContactFocus: (
-    id?: string | undefined,
-    openDetails?: boolean,
-    flows?: boolean,
-    map?: boolean,
-  ) => void;
-  setSearchTerm: DebouncedFunc<(searchTerm: string) => void>;
-  handleViewModeChange: (
-    event: React.MouseEvent<HTMLElement>,
-    view: string,
-  ) => void;
-  activeFilters: ContactFilterSetInput;
-  sanitizedFilters: ContactFilterSetInput;
-  setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
-  starredFilter: ContactFilterSetInput;
-  setStarredFilter: (filter: ContactFilterSetInput) => void;
-  filterPanelOpen: boolean;
-  setFilterPanelOpen: (open: boolean) => void;
-  contactDetailsOpen: boolean;
-  setContactDetailsOpen: (open: boolean) => void;
-  contactDetailsId: string | undefined;
-  setContactDetailsId: (id: string) => void;
-  viewMode: TableViewModeEnum | undefined;
-  setViewMode: (mode: TableViewModeEnum) => void;
-  urlFilters: any;
-  isFiltered: boolean;
-  selectedIds: string[];
-  deselectAll: () => void;
-  userOptionsLoading: boolean;
   appealId: string | undefined;
   page: PageEnum | undefined;
-  appealListView: AppealStatusEnum;
-  setAppealListView: Dispatch<SetStateAction<AppealStatusEnum>>;
-};
+}
 
 export const AppealsContext = React.createContext<AppealsType | null>(null);
 
-interface Props {
-  children?: React.ReactNode;
-  urlFilters?: any;
-  activeFilters: ContactFilterSetInput;
-  setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
-  starredFilter: ContactFilterSetInput;
-  setStarredFilter: (filter: ContactFilterSetInput) => void;
-  filterPanelOpen: boolean;
-  setFilterPanelOpen: (open: boolean) => void;
+interface AppealsContextProps extends ContactsContextProps {
   appealId: string | undefined;
-  contactId: string | string[] | undefined;
-  searchTerm: string | string[] | undefined;
   page?: PageEnum;
 }
 
-export const AppealsContextSavedFilters = (
-  filterData: ContactFiltersQuery | undefined,
-  accountListId: string | undefined,
-): UserOptionFragment[] => {
-  return (
-    filterData?.userOptions.filter((option) => {
-      let parsedJson: Record<string, string>;
-      try {
-        parsedJson = JSON.parse(option.value ?? '');
-      } catch (e) {
-        parsedJson = {};
-      }
-      return (
-        (option.key?.includes('saved_contacts_filter_') ||
-          option.key?.includes('graphql_saved_contacts_filter_')) &&
-        ((parsedJson.account_list_id === accountListId &&
-          !parsedJson.accountListId) ||
-          (parsedJson.accountListId === accountListId &&
-            !parsedJson.account_list_id))
-      );
-    }) ?? []
-  );
-};
-
-export const AppealsProvider: React.FC<Props> = ({
+export const AppealsProvider: React.FC<AppealsContextProps> = ({
   children,
   urlFilters,
   activeFilters,
@@ -147,9 +72,6 @@ export const AppealsProvider: React.FC<Props> = ({
   const [contactDetailsId, setContactDetailsId] = useState<string>();
   const [viewMode, setViewMode] = useState<TableViewModeEnum>(
     TableViewModeEnum.Flows,
-  );
-  const [appealListView, setAppealListView] = useState<AppealStatusEnum>(
-    AppealStatusEnum.Processed,
   );
 
   const sanitizedFilters = useMemo(
@@ -364,10 +286,7 @@ export const AppealsProvider: React.FC<Props> = ({
     [accountListId],
   );
 
-  const handleViewModeChange = (
-    event: React.MouseEvent<HTMLElement>,
-    view: string,
-  ) => {
+  const handleViewModeChange = (_, view: string) => {
     setViewMode(view as TableViewModeEnum);
     updateOptions(view);
   };
@@ -390,7 +309,7 @@ export const AppealsProvider: React.FC<Props> = ({
     <AppealsContext.Provider
       value={{
         accountListId: accountListId ?? '',
-        contactId: contactId,
+        contactId: contactId, //
         searchTerm: searchTerm,
         contactsQueryResult: contactsQueryResult,
         selectionType: selectionType,
@@ -425,8 +344,6 @@ export const AppealsProvider: React.FC<Props> = ({
         userOptionsLoading: userOptionsLoading,
         appealId,
         page,
-        appealListView,
-        setAppealListView,
       }}
     >
       {children}
