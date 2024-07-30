@@ -68,10 +68,10 @@ describe('AppealsListFilterPanel', () => {
     const { getAllByRole } = render(<Components ids={[]} />);
 
     expect(
-      getAllByRole('button', { name: 'Export {{number}} Selected' })[0],
+      getAllByRole('button', { name: 'Export 0 Selected' })[0],
     ).toBeDisabled();
     expect(
-      getAllByRole('button', { name: 'Export {{number}} Selected' })[1],
+      getAllByRole('button', { name: 'Export 0 Selected' })[1],
     ).toBeDisabled();
   });
 
@@ -92,10 +92,10 @@ describe('AppealsListFilterPanel', () => {
     expect(getByText('Delete Appeal')).toBeInTheDocument();
 
     expect(
-      getAllByRole('button', { name: 'Export {{number}} Selected' })[0],
+      getAllByRole('button', { name: 'Export 2 Selected' })[0],
     ).toBeInTheDocument();
     expect(
-      getAllByRole('button', { name: 'Export {{number}} Selected' })[1],
+      getAllByRole('button', { name: 'Export 2 Selected' })[1],
     ).not.toBeDisabled();
     expect(getByRole('button', { name: 'Select Contact' })).toBeInTheDocument();
   });
