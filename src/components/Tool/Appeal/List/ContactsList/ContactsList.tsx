@@ -13,6 +13,7 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { ContactRow } from '../ContactRow/ContactRow';
 
 interface ContactsListProps {
   appealInfo?: AppealQuery;
@@ -41,7 +42,13 @@ export const ContactsList: React.FC<ContactsListProps> = ({
         style={{
           height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoHeight})`,
         }}
-        itemContent={(index, contact) => <p key={index}>{contact.name}</p>}
+        itemContent={(index, contact) => (
+          <ContactRow
+            key={contact.id}
+            contact={contact}
+            useTopMargin={index === 0}
+          />
+        )}
         groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
         endReached={() =>
           data?.contacts?.pageInfo.hasNextPage &&
