@@ -80,7 +80,7 @@ describe('FixCommitmentContact', () => {
     userEvent.click(getByTestId('doNotChangeButton'));
     expect(handleShowModal).toHaveBeenCalledTimes(1);
     userEvent.click(getByTestId('hideButton'));
-    expect(handleShowModal).toHaveBeenCalled();
+    expect(handleShowModal).toHaveBeenCalledTimes(2);
   });
 
   it('should redirect the page', () => {
@@ -92,7 +92,7 @@ describe('FixCommitmentContact', () => {
     userEvent.click(getByTestId('goToContactsButton'));
     expect(setContactFocus).toHaveBeenCalledWith(testData.id, 'Donations');
     userEvent.click(getByTestId('contactSelect'));
-    expect(setContactFocus).toHaveBeenCalledWith(testData.id, 'Donations');
+    expect(setContactFocus).toHaveBeenCalledTimes(2);
   });
 
   it('should fail validation', async () => {

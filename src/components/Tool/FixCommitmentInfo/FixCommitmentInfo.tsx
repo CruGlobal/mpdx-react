@@ -121,8 +121,8 @@ const FixCommitmentInfo: React.FC<Props> = ({
   useEffect(() => {
     if (descriptionBoxRef.current && headingBoxRef.current) {
       setDescriptionBoxHeight(
-        descriptionBoxRef?.current.clientHeight +
-          headingBoxRef?.current.clientHeight,
+        descriptionBoxRef.current.clientHeight +
+          headingBoxRef.current.clientHeight,
       );
     }
   });
@@ -156,7 +156,6 @@ const FixCommitmentInfo: React.FC<Props> = ({
     : [{ name: '', value: '' }];
 
   const updateContact = async (): Promise<void> => {
-    let errorOccurred = false;
     let attributes;
 
     switch (modalState.updateType) {
@@ -165,7 +164,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
           id: modalState.contact.id,
           status: modalState.contact.status,
           pledgeAmount: modalState.contact.pledgeAmount,
-          pledgeCurrency: modalState.contact.pledgeFrequency,
+          pledgeCurrency: modalState.contact.pledgeCurrency,
           pledgeFrequency: modalState.contact.pledgeFrequency,
           statusValid: true,
         };
@@ -190,28 +189,25 @@ const FixCommitmentInfo: React.FC<Props> = ({
         attributes,
       },
       onError() {
-        errorOccurred = true;
+        enqueueSnackbar(
+          t(`Error updating ${modalState.contact.name}'s commitment info`),
+          {
+            variant: 'error',
+            autoHideDuration: 7000,
+          },
+        );
+      },
+      onCompleted() {
+        enqueueSnackbar(
+          t(`${modalState.contact.name}'s commitment info updated!`),
+          {
+            variant: 'success',
+            autoHideDuration: 7000,
+          },
+        );
+        hideContactFromView(modalState.contact.id);
       },
     });
-
-    if (errorOccurred) {
-      enqueueSnackbar(
-        t(`Error updating ${modalState.contact.name}'s commitment info`),
-        {
-          variant: 'error',
-          autoHideDuration: 7000,
-        },
-      );
-    } else {
-      enqueueSnackbar(
-        t(`${modalState.contact.name}'s commitment info updated!`),
-        {
-          variant: 'success',
-          autoHideDuration: 7000,
-        },
-      );
-      hideContactFromView(modalState.contact.id);
-    }
   };
 
   const hideContactFromView = (hideId?: string): void => {

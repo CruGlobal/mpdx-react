@@ -393,7 +393,7 @@ const Contact: React.FC<Props> = ({
                                 onChange={(event) =>
                                   setFieldValue(
                                     'pledgeAmount',
-                                    event.target.value,
+                                    parseFloat(event.target.value),
                                   )
                                 }
                               />
