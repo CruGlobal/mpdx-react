@@ -434,7 +434,7 @@ const Contact: React.FC<Props> = ({
                             }
                           >
                             <MenuItem value="Frequency" disabled>
-                              Frequency
+                              {t('Frequency')}
                             </MenuItem>
                             {Object.entries(frequencies).map(
                               ([freqValue, freqTranslated]) => (
