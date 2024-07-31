@@ -190,22 +190,25 @@ const Contact: React.FC<Props> = ({
   statuses,
   setContactFocus,
 }) => {
-  const constants = useApiConstants();
-  const pledgeCurrencies = constants?.pledgeCurrency;
-
+  const { pledgeCurrency: pledgeCurrencies } = useApiConstants() || {};
   const { locale } = useUserPreferenceContext();
   const { classes } = useStyles();
   const { t } = useTranslation();
 
-  const onSubmit = async (props: FormAttributes) => {
+  const onSubmit = async ({
+    status,
+    pledgeCurrency,
+    pledgeAmount,
+    pledgeFrequency,
+  }: FormAttributes) => {
     showModal(
       {
         id,
-        status: props.status,
+        status,
         name,
-        pledgeCurrency: props.pledgeCurrency,
-        pledgeAmount: props.pledgeAmount,
-        pledgeFrequency: props.pledgeFrequency,
+        pledgeCurrency,
+        pledgeAmount,
+        pledgeFrequency,
       },
       t(`Are you sure you wish to update {{source}} commitment info?`, {
         source: name,

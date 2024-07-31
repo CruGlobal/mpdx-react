@@ -1,4 +1,4 @@
-query GetInvalidStatuses($accountListId: ID!, $after: String) {
+query InvalidStatuses($accountListId: ID!, $after: String) {
   contacts(
     accountListId: $accountListId
     contactsFilter: { statusValid: false }

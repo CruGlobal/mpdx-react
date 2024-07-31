@@ -11,7 +11,7 @@ import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
-import { GetInvalidStatusesQuery } from './GetInvalidStatuses.generated';
+import { InvalidStatusesQuery } from './GetInvalidStatuses.generated';
 
 jest.setTimeout(8000);
 
@@ -46,7 +46,7 @@ const Components = ({
       <TestRouter router={router}>
         <TestWrapper>
           <GqlMockedProvider<{
-            GetInvalidStatuses: GetInvalidStatusesQuery;
+            GetInvalidStatuses: InvalidStatusesQuery;
           }>
             mocks={{
               GetInvalidStatuses: {

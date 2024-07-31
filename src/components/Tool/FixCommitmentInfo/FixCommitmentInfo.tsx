@@ -15,7 +15,6 @@ import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/conta
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
-// import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   MultiselectFilter,
@@ -28,9 +27,9 @@ import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
 import {
-  GetInvalidStatusesDocument,
-  GetInvalidStatusesQuery,
-  useGetInvalidStatusesQuery,
+  InvalidStatusesDocument,
+  InvalidStatusesQuery,
+  useInvalidStatusesQuery,
 } from './GetInvalidStatuses.generated';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateStatusMutation } from './UpdateStatus.generated';
@@ -119,7 +118,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
   const client = useApolloClient();
-  const { data, loading, fetchMore } = useGetInvalidStatusesQuery({
+  const { data, loading, fetchMore } = useInvalidStatusesQuery({
     variables: { accountListId },
   });
 
@@ -223,13 +222,13 @@ const FixCommitmentInfo: React.FC<Props> = ({
 
   const hideContactFromView = (hideId?: string): void => {
     const query = {
-      query: GetInvalidStatusesDocument,
+      query: InvalidStatusesDocument,
       variables: {
         accountListId,
       },
     };
 
-    const dataFromCache = client.readQuery<GetInvalidStatusesQuery>(query);
+    const dataFromCache = client.readQuery<InvalidStatusesQuery>(query);
 
     if (dataFromCache) {
       const data = {
