@@ -14,6 +14,7 @@ import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdow
 import {
   ListHeader,
   ListHeaderCheckBoxState,
+  PageEnum,
   TableViewModeEnum,
 } from './ListHeader';
 
@@ -96,7 +97,7 @@ describe('ListHeader', () => {
         <MocksProviders>
           <ListHeader
             selectedIds={selectedIds}
-            page="contact"
+            page={PageEnum.Contact}
             activeFilters={false}
             starredFilter={{}}
             headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
@@ -118,7 +119,7 @@ describe('ListHeader', () => {
         <MocksProviders>
           <ListHeader
             selectedIds={selectedIds}
-            page="contact"
+            page={PageEnum.Contact}
             activeFilters={false}
             starredFilter={{}}
             contactsView={TableViewModeEnum.List}
@@ -142,7 +143,7 @@ describe('ListHeader', () => {
           <MocksProviders>
             <ListHeader
               selectedIds={selectedIds}
-              page="contact"
+              page={PageEnum.Contact}
               activeFilters={false}
               starredFilter={{}}
               contactsView={TableViewModeEnum.List}
@@ -188,7 +189,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={false}
           starredFilter={{}}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
@@ -220,7 +221,7 @@ describe('ListHeader', () => {
         <MocksProviders>
           <ListHeader
             selectedIds={selectedIds}
-            page="task"
+            page={PageEnum.Task}
             activeFilters={false}
             headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
             starredFilter={{}}
@@ -240,7 +241,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           totalItems={50}
@@ -267,7 +268,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           totalItems={0}
@@ -287,7 +288,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           totalItems={50}
@@ -311,7 +312,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
@@ -336,7 +337,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
@@ -363,7 +364,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
@@ -390,7 +391,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
@@ -417,7 +418,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={false}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
@@ -445,7 +446,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
@@ -471,7 +472,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{}}
@@ -493,7 +494,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{ starred: true }}
@@ -515,7 +516,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
           starredFilter={{ starred: true }}
@@ -536,7 +537,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="contact"
+          page={PageEnum.Contact}
           activeFilters={true}
           contactsView={TableViewModeEnum.Flows}
           headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
@@ -556,7 +557,7 @@ describe('ListHeader', () => {
       <MocksProviders>
         <ListHeader
           selectedIds={selectedIds}
-          page="task"
+          page={PageEnum.Task}
           activeFilters={true}
           headerCheckboxState={ListHeaderCheckBoxState.Checked}
           starredFilter={{ starred: true }}
@@ -583,7 +584,7 @@ describe('ListHeader', () => {
         <MocksProviders>
           <ListHeader
             selectedIds={[]}
-            page="report"
+            page={PageEnum.Report}
             activeFilters={false}
             headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
             filterPanelOpen={false}
@@ -605,7 +606,7 @@ describe('ListHeader', () => {
         <MocksProviders>
           <ListHeader
             selectedIds={selectedIds}
-            page="report"
+            page={PageEnum.Report}
             activeFilters={false}
             headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
             filterPanelOpen={false}
