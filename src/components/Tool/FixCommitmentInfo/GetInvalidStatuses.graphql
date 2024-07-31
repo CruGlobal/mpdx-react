@@ -3,7 +3,7 @@ query InvalidStatuses($accountListId: ID!, $after: String) {
     accountListId: $accountListId
     contactsFilter: { statusValid: false }
     after: $after
-    first: 100
+    first: 15
   ) {
     nodes {
       id
