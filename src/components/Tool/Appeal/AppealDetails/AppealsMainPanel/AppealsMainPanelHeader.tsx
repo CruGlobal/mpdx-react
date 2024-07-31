@@ -38,6 +38,12 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   marginLeft: theme.spacing(1),
 }));
 
+const StyledBox = styled(Box)(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  marginRight: '12px',
+}));
+
 export const AppealsMainPanelHeader: React.FC = () => {
   const { t } = useTranslation();
 
@@ -49,8 +55,6 @@ export const AppealsMainPanelHeader: React.FC = () => {
     toggleSelectAll,
     setSearchTerm,
     searchTerm,
-    starredFilter,
-    setStarredFilter,
     selectionType,
     filterPanelOpen,
     contactDetailsOpen,
@@ -72,8 +76,6 @@ export const AppealsMainPanelHeader: React.FC = () => {
       onSearchTermChanged={setSearchTerm}
       searchTerm={searchTerm}
       totalItems={contactsQueryResult.data?.contacts.totalCount}
-      starredFilter={starredFilter}
-      toggleStarredFilter={setStarredFilter}
       headerCheckboxState={selectionType}
       selectedIds={selectedIds}
       showShowingCount={viewMode === TableViewModeEnum.List}
@@ -91,7 +93,7 @@ export const AppealsMainPanelHeader: React.FC = () => {
       }
       buttonGroup={
         <Hidden xsDown>
-          <Box display="flex" alignItems="center">
+          <StyledBox>
             <StyledToggleButtonGroup
               exclusive
               value={viewMode}
@@ -110,7 +112,7 @@ export const AppealsMainPanelHeader: React.FC = () => {
                 <ViewColumnIcon titleAccess={t('Column Workflow View')} />
               </ToggleButton>
             </StyledToggleButtonGroup>
-          </Box>
+          </StyledBox>
         </Hidden>
       }
     />
