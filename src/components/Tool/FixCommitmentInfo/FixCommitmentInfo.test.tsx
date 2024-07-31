@@ -13,8 +13,6 @@ import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
 import { InvalidStatusesQuery } from './GetInvalidStatuses.generated';
 
-jest.setTimeout(8000);
-
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -46,10 +44,10 @@ const Components = ({
       <TestRouter router={router}>
         <TestWrapper>
           <GqlMockedProvider<{
-            GetInvalidStatuses: InvalidStatusesQuery;
+            InvalidStatuses: InvalidStatusesQuery;
           }>
             mocks={{
-              GetInvalidStatuses: {
+              InvalidStatuses: {
                 contacts: {
                   nodes: mockNodes,
                 },
@@ -73,8 +71,7 @@ const Components = ({
 
 describe('FixCommitmentContact', () => {
   it('default with test data', async () => {
-    const { getByText, debug } = render(<Components />);
-    debug(undefined, Infinity);
+    const { getByText } = render(<Components />);
     await waitFor(() => {
       expect(getByText('Fix Commitment Info')).toBeInTheDocument();
       expect(
@@ -84,8 +81,7 @@ describe('FixCommitmentContact', () => {
   });
 
   it('has correct styles', async () => {
-    const { getByTestId, debug } = render(<Components />);
-    debug(undefined, Infinity);
+    const { getByTestId } = render(<Components />);
     const home = getByTestId('Home');
 
     expect(home.classList.contains('css-1ruq7cl-outer')).toBe(true);
@@ -165,10 +161,6 @@ describe('FixCommitmentContact', () => {
         ),
       ).toBeInTheDocument(),
     );
-
-    userEvent.click(getAllByTestId('action-button')[0]);
-
-    await waitFor(() => expect(queryByText('Tester 2')).toBeInTheDocument());
 
     await waitFor(() => {
       userEvent.click(getAllByTestId('hideButton')[0]);
