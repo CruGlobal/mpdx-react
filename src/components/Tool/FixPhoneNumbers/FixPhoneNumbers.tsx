@@ -241,15 +241,15 @@ const FixPhoneNumbers: React.FC<Props> = ({
 
   const updatePhoneNumber = async (
     personId: string,
-    contact: PersonPhoneNumbers,
+    numbers: PhoneNumberData[],
   ): Promise<void> => {
     const attributes = [
       {
-        phoneNumbers: contact.phoneNumbers.map((phoneNumber) => ({
+        phoneNumbers: numbers.map((phoneNumber) => ({
           id: phoneNumber.id,
           primary: phoneNumber.primary,
           number: phoneNumber.number,
-          validValues: true,
+          validValues: false,
         })),
         id: personId,
       },
@@ -342,7 +342,6 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     name={`${person.firstName} ${person.lastName}`}
                     key={person.id}
                     personId={person.id}
-                    contact={dataState[person.id]}
                     numbers={dataState[person.id]?.phoneNumbers || []}
                     toDelete={dataState[person.id]?.toDelete}
                     handleChange={handleChange}

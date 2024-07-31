@@ -23,7 +23,7 @@ import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
-import { PersonPhoneNumbers, PhoneNumberData } from './FixPhoneNumbers';
+import { PhoneNumberData } from './FixPhoneNumbers';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   left: {
@@ -105,7 +105,6 @@ interface Props {
   numbers: PhoneNumberData[];
   toDelete: PersonPhoneNumberInput[];
   personId: string;
-  contact: PersonPhoneNumbers;
   handleChange: (
     personId: string,
     numberIndex: number,
@@ -115,14 +114,13 @@ interface Props {
   handleAdd: (personId: string, number: string) => void;
   handleChangePrimary: (personId: string, numberIndex: number) => void;
   setContactFocus: SetContactFocus;
-  handleUpdate: (personId: string, contact: PersonPhoneNumbers) => void;
+  handleUpdate: (personId: string, numbers: PhoneNumberData[]) => void;
 }
 
 const Contact: React.FC<Props> = ({
   name,
   numbers,
   personId,
-  contact,
   handleChange,
   handleDelete,
   handleAdd,
@@ -354,7 +352,7 @@ const Contact: React.FC<Props> = ({
           >
             <Box className={classes.buttonTop}>
               <Button
-                onClick={() => handleUpdate(personId, contact)}
+                onClick={() => handleUpdate(personId, numbers)}
                 variant="contained"
                 style={{ width: '100%' }}
               >
