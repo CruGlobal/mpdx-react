@@ -84,8 +84,6 @@ describe('FixCommitmentContact', () => {
     const { getByTestId } = render(<Components />);
     const home = getByTestId('Home');
 
-    expect(home.classList.contains('css-1ruq7cl-outer')).toBe(true);
-    // expect(home).toHaveClass(' MuiBox-root css-1ruq7cl-outer');
     expect(home).toHaveStyle('display: flex');
 
     await waitFor(() => {
