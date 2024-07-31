@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Close from '@mui/icons-material/Close';
 import {
   Box,
@@ -11,6 +11,15 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import {
+  DynamicExportsModal,
+  preloadExportsModal,
+} from 'src/components/Contacts/MassActions/Exports/DynamicExportsModal';
+import {
+  DynamicMassActionsExportEmailsModal,
+  preloadMassActionsExportEmailsModal,
+} from 'src/components/Contacts/MassActions/Exports/Emails/DynamicMassActionsExportEmailsModal';
+import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/DynamicMailMergedLabelModal';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   AppealStatusEnum,
@@ -66,7 +75,9 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     selectedIds,
     deselectAll,
   } = React.useContext(AppealsContext) as AppealsType;
-
+  const [exportsModalOpen, setExportsModalOpen] = useState(false);
+  const [labelModalOpen, setLabelModalOpen] = useState(false);
+  const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
   const nameSearch = searchTerm ? { wildcardSearch: searchTerm as string } : {};
   const defaultFilters = {
     appeal: [appealId || ''],
@@ -222,19 +233,25 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
                 <AppealsListFilterPanelButton
                   title={t('Export to CSV')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Export {{number}} Selected', {
                     number: selectedIds.length,
                   })}
                   disabled={noContactsSelected}
+                  onClick={() => {
+                    setExportsModalOpen(true);
+                  }}
+                  onMouseEnter={preloadExportsModal}
                 />
                 <AppealsListFilterPanelButton
                   title={t('Export Emails')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Export {{number}} Selected', {
                     number: selectedIds.length,
                   })}
                   disabled={noContactsSelected}
+                  onClick={() => {
+                    setExportEmailsModalOpen(true);
+                  }}
+                  onMouseEnter={preloadMassActionsExportEmailsModal}
                 />
                 <AppealsListFilterPanelButton
                   title={t('Add Contact to Appeal')}
@@ -255,6 +272,29 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           </div>
         </Slide>
       </div>
+
+      {exportsModalOpen && (
+        <DynamicExportsModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setExportsModalOpen(false)}
+          openMailMergedLabelModal={() => setLabelModalOpen(true)}
+        />
+      )}
+      {labelModalOpen && (
+        <DynamicMailMergedLabelModal
+          accountListId={accountListId ?? ''}
+          ids={selectedIds}
+          handleClose={() => setLabelModalOpen(false)}
+        />
+      )}
+      {exportEmailsModalOpen && (
+        <DynamicMassActionsExportEmailsModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setExportEmailsModalOpen(false)}
+        />
+      )}
     </Box>
   );
 };
