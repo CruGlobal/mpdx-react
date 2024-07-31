@@ -3,6 +3,7 @@ import Close from '@mui/icons-material/Close';
 import {
   Box,
   BoxProps,
+  Button,
   IconButton,
   List,
   Slide,
@@ -10,6 +11,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   AppealStatusEnum,
   AppealsContext,
@@ -42,6 +44,15 @@ export interface FilterPanelProps {
   onClose: () => void;
 }
 
+const LinkButton = styled(Button)(({ theme }) => ({
+  width: '100%',
+  textTransform: 'none',
+  fontSize: 16,
+  color: theme.palette.info.main,
+  fontWeight: 'bold',
+  marginTop: theme.spacing(1),
+}));
+
 export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   onClose,
 }) => {
@@ -51,15 +62,22 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     appealId,
     activeFilters,
     setActiveFilters,
+    searchTerm,
     selectedIds,
     deselectAll,
   } = React.useContext(AppealsContext) as AppealsType;
+
+  const nameSearch = searchTerm ? { wildcardSearch: searchTerm as string } : {};
+  const defaultFilters = {
+    appeal: [appealId || ''],
+    ...nameSearch,
+  };
 
   const { data: askedCount, loading: askedLoading } = useContactsCountQuery({
     variables: {
       accountListId: accountListId || '',
       contactsFilter: {
-        appeal: [appealId || ''],
+        ...defaultFilters,
         appealStatus: AppealStatusEnum.Asked,
       },
     },
@@ -70,7 +88,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       variables: {
         accountListId: accountListId || '',
         contactsFilter: {
-          appeal: [appealId || ''],
+          ...defaultFilters,
           appealStatus: AppealStatusEnum.Excluded,
         },
       },
@@ -81,7 +99,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       variables: {
         accountListId: accountListId || '',
         contactsFilter: {
-          appeal: [appealId || ''],
+          ...defaultFilters,
           appealStatus: AppealStatusEnum.NotReceived,
         },
       },
@@ -91,7 +109,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     variables: {
       accountListId: accountListId || '',
       contactsFilter: {
-        appeal: [appealId || ''],
+        ...defaultFilters,
         appealStatus: AppealStatusEnum.Processed,
       },
     },
@@ -102,7 +120,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       variables: {
         accountListId: accountListId || '',
         contactsFilter: {
-          appeal: [appealId || ''],
+          ...defaultFilters,
           appealStatus: AppealStatusEnum.ReceivedNotProcessed,
         },
       },
@@ -121,6 +139,13 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   // TODO - Finish this function off
   const handleFilterButtonClick = () => {};
+
+  const handleClearAllClick = () => {
+    setActiveFilters({});
+  };
+
+  const noActiveFilters =
+    Object.keys(sanitizeFilters(activeFilters)).length === 0;
 
   return (
     <Box>
@@ -142,6 +167,13 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   <Close titleAccess={t('Close')} />
                 </IconButton>
               </Box>
+              <LinkButton
+                disabled={noActiveFilters}
+                onClick={handleClearAllClick}
+                variant="outlined"
+              >
+                {t('Clear All')}
+              </LinkButton>
             </FilterHeader>
             <FilterList dense sx={{ paddingY: 0 }}>
               <List sx={{ padding: '0' }}>
