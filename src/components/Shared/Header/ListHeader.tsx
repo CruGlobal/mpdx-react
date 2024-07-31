@@ -179,15 +179,16 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
       </HeaderWrapInner>
       <HeaderWrapInner style={{ marginLeft: 8 }}>
         <>
-          {page === PageEnum.Contact && (
-            <ContactsMassActionsDropdown
-              filterPanelOpen={filterPanelOpen}
-              contactDetailsOpen={contactDetailsOpen}
-              buttonGroup={buttonGroup}
-              contactsView={contactsView}
-              selectedIds={selectedIds}
-            />
-          )}
+          {page === PageEnum.Contact ||
+            (page === PageEnum.Appeal && (
+              <ContactsMassActionsDropdown
+                filterPanelOpen={filterPanelOpen}
+                contactDetailsOpen={contactDetailsOpen}
+                buttonGroup={buttonGroup}
+                contactsView={contactsView}
+                selectedIds={selectedIds}
+              />
+            ))}
           {page === PageEnum.Report && (
             <Box mr={2}>
               <ContactsMassActionsDropdown
@@ -211,8 +212,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               }
             />
           )}
-
-          {page === PageEnum.Appeal && <Box>{buttonGroup}</Box>}
 
           {starredFilter && toggleStarredFilter && (
             // This hidden doesn't remove from document
