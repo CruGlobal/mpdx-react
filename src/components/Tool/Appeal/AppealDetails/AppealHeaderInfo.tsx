@@ -8,6 +8,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import AppealProgressBar from '../AppealProgressBar';
+import { EditAppealHeaderInfoModal } from './EditAppealHeaderInfoModal/EditAppealHeaderInfoModal';
 
 export const appealHeaderInfoHeight = theme.spacing(9);
 
@@ -140,8 +141,12 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
         </Grid>
       </GridContainer>
 
-      {/* TODO - Build modal */}
-      {isEditAppealModalOpen && <p>Modal</p>}
+      {isEditAppealModalOpen && appealInfo && (
+        <EditAppealHeaderInfoModal
+          handleClose={() => setIsEditAppealModalOpen(false)}
+          appealInfo={appealInfo}
+        />
+      )}
     </>
   );
 };
