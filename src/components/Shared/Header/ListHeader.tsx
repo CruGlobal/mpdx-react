@@ -216,16 +216,15 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         )}
 =======
         <>
-          {page === PageEnum.Contact ||
-            (page === PageEnum.Appeal && (
-              <ContactsMassActionsDropdown
-                filterPanelOpen={filterPanelOpen}
-                contactDetailsOpen={contactDetailsOpen}
-                buttonGroup={buttonGroup}
-                contactsView={contactsView}
-                selectedIds={selectedIds}
-              />
-            ))}
+          {(page === PageEnum.Contact || page === PageEnum.Appeal) && (
+            <ContactsMassActionsDropdown
+              filterPanelOpen={filterPanelOpen}
+              contactDetailsOpen={contactDetailsOpen}
+              buttonGroup={buttonGroup}
+              contactsView={contactsView}
+              selectedIds={selectedIds}
+            />
+          )}
           {page === PageEnum.Report && (
             <Box mr={2}>
               <ContactsMassActionsDropdown
