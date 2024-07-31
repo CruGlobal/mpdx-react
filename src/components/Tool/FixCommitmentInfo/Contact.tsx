@@ -77,7 +77,7 @@ const useStyles = makeStyles()(() => ({
     },
   },
   container: {
-    display: 'flex',
+    display: 'block',
     alignItems: 'center',
     width: '100%',
     height: '100%',
@@ -137,6 +137,8 @@ const useStyles = makeStyles()(() => ({
     margin: theme.spacing(1),
   },
   ButtonIcons: {
+    display: 'flex',
+    justifyContent: 'center',
     [theme.breakpoints.down('md')]: {
       display: 'flex',
     },
