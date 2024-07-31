@@ -10,6 +10,7 @@ import {
   NativeSelect,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
@@ -20,6 +21,7 @@ import { StyledInput } from '../StyledInput';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
 import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
+import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -108,7 +110,7 @@ export interface PhoneNumberData {
   destroy?: boolean;
 }
 
-interface PersonPhoneNumbers {
+export interface PersonPhoneNumbers {
   phoneNumbers: PhoneNumberData[];
   toDelete: PersonPhoneNumberInput[];
 }
@@ -123,11 +125,13 @@ const FixPhoneNumbers: React.FC<Props> = ({
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
-
+  const { enqueueSnackbar } = useSnackbar();
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
   );
+  const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
+
   const { data, loading } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
@@ -235,6 +239,34 @@ const FixPhoneNumbers: React.FC<Props> = ({
     setDefaultSource(event.target.value);
   };
 
+  const updatePhoneNumber = async (
+    personId: string,
+    contact: PersonPhoneNumbers,
+  ): Promise<void> => {
+    const attributes = [
+      {
+        phoneNumbers: contact.phoneNumbers.map((phoneNumber) => ({
+          id: phoneNumber.id,
+          primary: phoneNumber.primary,
+          number: phoneNumber.number,
+          validValues: true,
+        })),
+        id: personId,
+      },
+    ];
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes,
+        },
+      },
+    });
+    enqueueSnackbar(t('Phone Number updated!'), {
+      variant: 'success',
+    });
+  };
+
   return (
     <Box className={classes.container}>
       {!loading && data ? (
@@ -310,6 +342,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     name={`${person.firstName} ${person.lastName}`}
                     key={person.id}
                     personId={person.id}
+                    contact={dataState[person.id]}
                     numbers={dataState[person.id]?.phoneNumbers || []}
                     toDelete={dataState[person.id]?.toDelete}
                     handleChange={handleChange}
@@ -317,6 +350,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     handleAdd={handleAdd}
                     handleChangePrimary={handleChangePrimary}
                     setContactFocus={setContactFocus}
+                    handleUpdate={updatePhoneNumber}
                   />
                 ))}
               </Grid>

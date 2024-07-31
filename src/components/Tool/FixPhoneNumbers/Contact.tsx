@@ -23,7 +23,7 @@ import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
-import { PhoneNumberData } from './FixPhoneNumbers';
+import { PersonPhoneNumbers, PhoneNumberData } from './FixPhoneNumbers';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   left: {
@@ -105,6 +105,7 @@ interface Props {
   numbers: PhoneNumberData[];
   toDelete: PersonPhoneNumberInput[];
   personId: string;
+  contact: PersonPhoneNumbers;
   handleChange: (
     personId: string,
     numberIndex: number,
@@ -114,12 +115,14 @@ interface Props {
   handleAdd: (personId: string, number: string) => void;
   handleChangePrimary: (personId: string, numberIndex: number) => void;
   setContactFocus: SetContactFocus;
+  handleUpdate: (personId: string, contact: PersonPhoneNumbers) => void;
 }
 
 const Contact: React.FC<Props> = ({
   name,
   numbers,
   personId,
+  contact,
   handleChange,
   handleDelete,
   handleAdd,
@@ -127,6 +130,7 @@ const Contact: React.FC<Props> = ({
   // Remove below line when function is being used.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
+  handleUpdate,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -349,7 +353,11 @@ const Contact: React.FC<Props> = ({
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <Box className={classes.buttonTop}>
-              <Button variant="contained" style={{ width: '100%' }}>
+              <Button
+                onClick={() => handleUpdate(personId, contact)}
+                variant="contained"
+                style={{ width: '100%' }}
+              >
                 <Icon
                   path={mdiCheckboxMarkedCircle}
                   size={0.8}
