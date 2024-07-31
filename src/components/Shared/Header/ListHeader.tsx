@@ -171,6 +171,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </Hidden>
       </HeaderWrapInner>
       <HeaderWrapInner style={{ marginLeft: 8 }}>
+<<<<<<< HEAD
         {page === 'contact' && (
           <ContactsMassActionsDropdown
             filterPanelOpen={filterPanelOpen}
@@ -213,6 +214,53 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             />
           </Hidden>
         )}
+=======
+        <>
+          {page === PageEnum.Contact ||
+            (page === PageEnum.Appeal && (
+              <ContactsMassActionsDropdown
+                filterPanelOpen={filterPanelOpen}
+                contactDetailsOpen={contactDetailsOpen}
+                buttonGroup={buttonGroup}
+                contactsView={contactsView}
+                selectedIds={selectedIds}
+              />
+            ))}
+          {page === PageEnum.Report && (
+            <Box mr={2}>
+              <ContactsMassActionsDropdown
+                filterPanelOpen={filterPanelOpen}
+                contactDetailsOpen={contactDetailsOpen}
+                buttonGroup={buttonGroup}
+                contactsView={contactsView}
+                selectedIds={selectedIds}
+              />
+            </Box>
+          )}
+          {page === PageEnum.Task && (
+            <TasksMassActionsDropdown
+              buttonGroup={buttonGroup}
+              selectedIds={selectedIds}
+              massDeselectAll={massDeselectAll}
+              selectedIdCount={
+                headerCheckboxState === ListHeaderCheckBoxState.Checked
+                  ? totalItems ?? 0
+                  : selectedIds.length
+              }
+            />
+          )}
+
+          {starredFilter && toggleStarredFilter && (
+            // This hidden doesn't remove from document
+            <Hidden smDown>
+              <StarFilterButton
+                starredFilter={starredFilter}
+                toggleStarredFilter={toggleStarredFilter}
+              />
+            </Hidden>
+          )}
+        </>
+>>>>>>> f9da5c071 (Adding the mass actions back to the List Header.)
       </HeaderWrapInner>
     </HeaderWrap>
   );
