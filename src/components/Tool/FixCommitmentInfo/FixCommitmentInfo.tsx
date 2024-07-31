@@ -16,11 +16,7 @@ import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToo
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import {
-  MultiselectFilter,
-  PledgeFrequencyEnum,
-  StatusEnum,
-} from 'src/graphql/types.generated';
+import { MultiselectFilter, StatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
@@ -159,38 +155,30 @@ const FixCommitmentInfo: React.FC<Props> = ({
       )
     : [{ name: '', value: '' }];
 
-  const updateContact = async (
-    updateType: UpdateTypeEnum,
-    name?: string,
-    id?: string,
-    status?: string,
-    pledgeCurrency?: string,
-    pledgeAmount?: number,
-    pledgeFrequency?: string,
-  ): Promise<void> => {
+  const updateContact = async (): Promise<void> => {
     let errorOccurred = false;
     let attributes;
 
-    switch (updateType) {
+    switch (modalState.updateType) {
       case 'CHANGE':
         attributes = {
-          id,
-          status: status as StatusEnum,
-          pledgeAmount,
-          pledgeCurrency,
-          pledgeFrequency: pledgeFrequency as PledgeFrequencyEnum,
+          id: modalState.contact.id,
+          status: modalState.contact.status,
+          pledgeAmount: modalState.contact.pledgeAmount,
+          pledgeCurrency: modalState.contact.pledgeFrequency,
+          pledgeFrequency: modalState.contact.pledgeFrequency,
           statusValid: true,
         };
         break;
       case 'DONT_CHANGE':
         attributes = {
-          id,
+          id: modalState.contact.id,
           statusValid: true,
         };
         break;
       case 'HIDE':
         attributes = {
-          id,
+          id: modalState.contact.id,
           status: 'NEVER_ASK' as StatusEnum,
         };
         break;
@@ -207,16 +195,22 @@ const FixCommitmentInfo: React.FC<Props> = ({
     });
 
     if (errorOccurred) {
-      enqueueSnackbar(t(`Error updating ${name}'s commitment info`), {
-        variant: 'error',
-        autoHideDuration: 7000,
-      });
+      enqueueSnackbar(
+        t(`Error updating ${modalState.contact.name}'s commitment info`),
+        {
+          variant: 'error',
+          autoHideDuration: 7000,
+        },
+      );
     } else {
-      enqueueSnackbar(t(`${name}'s commitment info updated!`), {
-        variant: 'success',
-        autoHideDuration: 7000,
-      });
-      hideContactFromView(id);
+      enqueueSnackbar(
+        t(`${modalState.contact.name}'s commitment info updated!`),
+        {
+          variant: 'success',
+          autoHideDuration: 7000,
+        },
+      );
+      hideContactFromView(modalState.contact.id);
     }
   };
 
@@ -356,17 +350,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
           title={modalState.title}
           message={modalState.message}
           handleClose={() => setModalState(defaultModalState)}
-          mutation={() =>
-            updateContact(
-              modalState.updateType!,
-              modalState.contact.name,
-              modalState.contact.id,
-              modalState.contact.status,
-              modalState.contact.pledgeCurrency,
-              modalState.contact.pledgeAmount,
-              modalState.contact.pledgeFrequency,
-            )
-          }
+          mutation={updateContact}
         />
       )}
     </Box>

@@ -23,12 +23,13 @@ import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { useUserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { FilterOption } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
 import {
   PledgeCurrencyOptionFormatEnum,
   getPledgeCurrencyOptions,
 } from 'src/lib/getCurrencyOptions';
+import { currencyFormat } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
 import { ContactType, UpdateTypeEnum } from './FixCommitmentInfo';
@@ -191,7 +192,7 @@ const Contact: React.FC<Props> = ({
   setContactFocus,
 }) => {
   const { pledgeCurrency: pledgeCurrencies } = useApiConstants() || {};
-  const { locale } = useUserPreferenceContext();
+  const locale = useLocale();
   const { classes } = useStyles();
   const { t } = useTranslation();
 
@@ -277,10 +278,11 @@ const Contact: React.FC<Props> = ({
                           <Typography variant="h6">{name}</Typography>
                         </Link>
                         <Typography>
-                          Current:{' '}
-                          {`${statusTitle} ${
-                            typeof amount === 'number' && amount.toFixed(2)
-                          } ${amountCurrency} ${frequencyTitle}`}
+                          {`Current: ${statusTitle} ${currencyFormat(
+                            amount,
+                            amountCurrency,
+                            locale,
+                          )} ${frequencyTitle}`}
                         </Typography>
                       </Box>
                     </Box>
