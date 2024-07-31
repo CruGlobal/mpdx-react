@@ -278,11 +278,11 @@ const Contact: React.FC<Props> = ({
                           <Typography variant="h6">{name}</Typography>
                         </Link>
                         <Typography>
-                          {`Current: ${statusTitle} ${currencyFormat(
-                            amount,
-                            amountCurrency,
-                            locale,
-                          )} ${frequencyTitle}`}
+                          {`Current: ${statusTitle} ${
+                            amount &&
+                            amountCurrency &&
+                            currencyFormat(amount, amountCurrency, locale)
+                          } ${frequencyTitle}`}
                         </Typography>
                       </Box>
                     </Box>
@@ -458,7 +458,7 @@ const Contact: React.FC<Props> = ({
                       </Grid>
                     </Grid>
                   </Grid>
-                  {donations.length > 0 && (
+                  {!!donations.length && (
                     <Grid container className={classes.donationsTable} lg={12}>
                       {donations.map((donation) => (
                         <Grid

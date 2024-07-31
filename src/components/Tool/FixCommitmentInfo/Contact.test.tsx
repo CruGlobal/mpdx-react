@@ -19,7 +19,7 @@ let testData = {
   frequencyTitle: 'Monthly',
   frequencyValue: 'monthly',
   amount: 50,
-  amountCurrency: 'US Dollar - USD ($)',
+  amountCurrency: 'ARM',
   donations: {
     nodes: [
       {
@@ -70,11 +70,7 @@ describe('FixCommitmentContact', () => {
     const { getByText, getByTestId } = render(<TestComponent />);
     expect(getByText(testData.name)).toBeInTheDocument();
     expect(
-      getByText(
-        `Current: ${testData.statusTitle} ${testData.amount.toFixed(2)} ${
-          testData.amountCurrency
-        } ${testData.frequencyTitle}`,
-      ),
+      getByText('Current: Partner - Financial ARM 50 Monthly'),
     ).toBeInTheDocument();
     expect(getByTestId('pledgeCurrency-input')).toBeInTheDocument();
   });
@@ -82,7 +78,7 @@ describe('FixCommitmentContact', () => {
   it('should call hide and update functions', async () => {
     const { getByTestId } = render(<TestComponent />);
     userEvent.click(getByTestId('doNotChangeButton'));
-    expect(handleShowModal).toHaveBeenCalled();
+    expect(handleShowModal).toHaveBeenCalledTimes(1);
     userEvent.click(getByTestId('hideButton'));
     expect(handleShowModal).toHaveBeenCalled();
   });
@@ -155,8 +151,8 @@ describe('FixCommitmentContact', () => {
       statusValue: '',
       frequencyTitle: '',
       frequencyValue: '',
-      amount: null!,
-      amountCurrency: '',
+      amount: 0,
+      amountCurrency: 'AMR',
       donations: {
         nodes: [
           {
