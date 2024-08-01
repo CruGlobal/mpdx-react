@@ -8,7 +8,10 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import AppealProgressBar from '../AppealProgressBar';
-import { EditAppealHeaderInfoModal } from './EditAppealHeaderInfoModal/EditAppealHeaderInfoModal';
+import {
+  DynamicEditAppealHeaderInfoModal,
+  preloadEditAppealHeaderInfoModal,
+} from './EditAppealHeaderInfoModal/DynamicEditAppealHeaderInfoModal';
 
 export const appealHeaderInfoHeight = theme.spacing(9);
 
@@ -90,6 +93,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                     <AppealInfo variant="h5">{name}</AppealInfo>
                     <IconButton
                       onClick={() => setIsEditAppealModalOpen(true)}
+                      onMouseOver={preloadEditAppealHeaderInfoModal}
                       aria-label={t('Edit Icon')}
                     >
                       <EditIcon />
@@ -120,6 +124,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                     </AppealInfo>
                     <IconButton
                       onClick={() => setIsEditAppealModalOpen(true)}
+                      onMouseOver={preloadEditAppealHeaderInfoModal}
                       aria-label={t('Edit Icon')}
                     >
                       <EditIcon />
@@ -142,7 +147,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
       </GridContainer>
 
       {isEditAppealModalOpen && appealInfo && (
-        <EditAppealHeaderInfoModal
+        <DynamicEditAppealHeaderInfoModal
           handleClose={() => setIsEditAppealModalOpen(false)}
           appealInfo={appealInfo}
         />
