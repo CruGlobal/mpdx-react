@@ -26,6 +26,10 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import {
+  DynamicAddContactToAppealModal,
+  preloadAddContactToAppealModal,
+} from './AddContactToAppealModal/DynamicAddContactToAppealModal';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
 import { useContactsCountQuery } from './contactsCount.generated';
@@ -78,6 +82,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
+  const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
   const nameSearch = searchTerm ? { wildcardSearch: searchTerm as string } : {};
   const defaultFilters = {
     appeal: [appealId || ''],
@@ -255,9 +260,12 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 />
                 <AppealsListFilterPanelButton
                   title={t('Add Contact to Appeal')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Select Contact')}
                   disabled={false}
+                  onClick={() => {
+                    setAddContactsModalOpen(true);
+                  }}
+                  onMouseEnter={preloadAddContactToAppealModal}
                 />
                 <AppealsListFilterPanelButton
                   title={t('Delete Appeal')}
@@ -293,6 +301,12 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setExportEmailsModalOpen(false)}
+        />
+      )}
+
+      {addContactsModalOpen && (
+        <DynamicAddContactToAppealModal
+          handleClose={() => setAddContactsModalOpen(false)}
         />
       )}
     </Box>
