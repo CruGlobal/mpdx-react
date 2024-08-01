@@ -32,6 +32,10 @@ import {
 } from './AddContactToAppealModal/DynamicAddContactToAppealModal';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
+import {
+  DynamicDeleteAppealModal,
+  preloadDeleteAppealModal,
+} from './DeleteAppealModal/DynamicAddContactToAppealModal';
 import { useContactsCountQuery } from './contactsCount.generated';
 
 const FilterHeader = styled(Box)(({ theme }) => ({
@@ -83,6 +87,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
   const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
+  const [deleteAppealModalOpen, setDeleteAppealModalOpen] = useState(false);
   const nameSearch = searchTerm ? { wildcardSearch: searchTerm as string } : {};
   const defaultFilters = {
     appeal: [appealId || ''],
@@ -152,9 +157,6 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const appealListView = activeFilters.appealStatus;
   const noContactsSelected = !selectedIds.length;
-
-  // TODO - Finish this function off
-  const handleFilterButtonClick = () => {};
 
   const handleClearAllClick = () => {
     setActiveFilters({});
@@ -269,11 +271,14 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 />
                 <AppealsListFilterPanelButton
                   title={t('Delete Appeal')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Permanently Delete Appeal')}
                   disabled={false}
                   buttonError={'error'}
                   buttonVariant={'outlined'}
+                  onClick={() => {
+                    setDeleteAppealModalOpen(true);
+                  }}
+                  onMouseEnter={preloadDeleteAppealModal}
                 />
               </List>
             </FilterList>
@@ -303,10 +308,14 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           handleClose={() => setExportEmailsModalOpen(false)}
         />
       )}
-
       {addContactsModalOpen && (
         <DynamicAddContactToAppealModal
           handleClose={() => setAddContactsModalOpen(false)}
+        />
+      )}
+      {deleteAppealModalOpen && (
+        <DynamicDeleteAppealModal
+          handleClose={() => setDeleteAppealModalOpen(false)}
         />
       )}
     </Box>
