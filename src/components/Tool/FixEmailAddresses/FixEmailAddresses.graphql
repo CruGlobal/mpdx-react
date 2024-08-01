@@ -1,12 +1,16 @@
-query GetInvalidEmailAddresses($accountListId: ID!) {
-  # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
+query GetInvalidEmailAddresses($accountListId: ID!, $after: String) {
   people(
     accountListId: $accountListId
     peopleFilter: { emailAddressValid: false }
-    first: 50
+    after: $after
   ) {
     nodes {
       ...PersonInvalidEmail
+    }
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }

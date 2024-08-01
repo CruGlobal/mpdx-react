@@ -11,7 +11,13 @@ import {
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
+import { ItemProps } from 'react-virtuoso';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import {
+  InfiniteList,
+  ItemWithBorders,
+} from 'src/components/InfiniteList/InfiniteList';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import {
   PersonInvalidEmailFragment,
   useGetInvalidEmailAddressesQuery,
@@ -92,6 +98,10 @@ const DefaultSourceWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
+const ItemOverride: React.ComponentType<ItemProps> = (props) => (
+  <ItemWithBorders disableGutters disableHover={true} {...props} />
+);
+
 export interface ModalState {
   personId: string;
   id: string;
@@ -158,7 +168,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data, loading } = useGetInvalidEmailAddressesQuery({
+  const { data, loading, fetchMore } = useGetInvalidEmailAddressesQuery({
     variables: { accountListId },
   });
   const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
@@ -416,20 +426,46 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           </Grid>
           {data.people.nodes.length > 0 ? (
             <>
-              <Grid item xs={12}>
-                {data?.people.nodes.map((person) => (
-                  <FixEmailAddressPerson
-                    person={person}
-                    key={person.id}
-                    dataState={dataState}
-                    handleChange={handleChange}
-                    handleDelete={handleDeleteModalOpen}
-                    handleChangePrimary={handleChangePrimary}
-                    handleSingleConfirm={handleSingleConfirm}
-                    setContactFocus={setContactFocus}
-                  />
-                ))}
-              </Grid>
+              <InfiniteList
+                loading={loading}
+                data={data.people.nodes}
+                itemContent={(index, person) => (
+                  <Grid
+                    key={index}
+                    item
+                    xs={12}
+                    sx={{
+                      marginBottom: `${theme.spacing(2)}`,
+                    }}
+                  >
+                    <FixEmailAddressPerson
+                      person={person as PersonInvalidEmailFragment}
+                      key={(person as PersonInvalidEmailFragment).id}
+                      dataState={dataState}
+                      handleChange={handleChange}
+                      handleDelete={handleDeleteModalOpen}
+                      handleChangePrimary={handleChangePrimary}
+                      handleSingleConfirm={handleSingleConfirm}
+                      setContactFocus={setContactFocus}
+                    />
+                  </Grid>
+                )}
+                endReached={() =>
+                  data.people.pageInfo.hasNextPage &&
+                  fetchMore({
+                    variables: { after: data.people.pageInfo.endCursor },
+                  })
+                }
+                EmptyPlaceholder={<NoData tool="fixEmailAddresses" />}
+                style={{
+                  height: `calc(100vh - ${navBarHeight} - ${theme.spacing(
+                    32,
+                  )})`,
+                  width: '100%',
+                  scrollbarWidth: 'none',
+                }}
+                ItemOverride={ItemOverride}
+              ></InfiniteList>
               <Grid item xs={12}>
                 <Box width="100%" display="flex" justifyContent="center">
                   <Typography>
