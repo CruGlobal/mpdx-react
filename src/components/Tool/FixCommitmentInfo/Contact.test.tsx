@@ -12,8 +12,8 @@ import theme from '../../../theme';
 import Contact from './Contact';
 
 let testData = {
-  id: 'test123',
-  name: 'Test test',
+  id: 'test 1',
+  name: 'Tester 1',
   statusTitle: 'Partner - Financial',
   statusValue: 'NEW_CONNECTION',
   frequencyTitle: 'Monthly',
@@ -66,6 +66,11 @@ const TestComponent: React.FC = () => (
 );
 
 describe('FixCommitmentContact', () => {
+  beforeEach(() => {
+    handleShowModal.mockClear();
+    setContactFocus.mockClear();
+  });
+
   it('default', () => {
     const { getByText, getByTestId } = render(<TestComponent />);
     expect(getByText(testData.name)).toBeInTheDocument();
@@ -97,9 +102,9 @@ describe('FixCommitmentContact', () => {
 
   it('should fail validation', async () => {
     testData = {
-      id: 'test123',
-      name: 'Test test',
-      statusTitle: 'Partner - Financial',
+      id: 'test 2',
+      name: 'Tester 2',
+      statusTitle: '',
       statusValue: '',
       frequencyTitle: '',
       frequencyValue: '',
@@ -109,10 +114,10 @@ describe('FixCommitmentContact', () => {
         nodes: [
           {
             amount: {
-              amount: 175,
-              currency: 'USD',
-              conversionDate: '2019-10-15',
-              convertedCurrency: 'USD',
+              amount: 0,
+              currency: 'UGX',
+              conversionDate: '2021-12-24',
+              convertedCurrency: 'UGX',
             },
           },
         ],
@@ -144,28 +149,6 @@ describe('FixCommitmentContact', () => {
   });
 
   it('should should render select field options and inputs', async () => {
-    testData = {
-      id: 'test123',
-      name: 'Test test',
-      statusTitle: 'Partner - Financial',
-      statusValue: '',
-      frequencyTitle: '',
-      frequencyValue: '',
-      amount: 0,
-      amountCurrency: 'AMR',
-      donations: {
-        nodes: [
-          {
-            amount: {
-              amount: 175,
-              currency: 'USD',
-              conversionDate: '2019-10-15',
-              convertedCurrency: 'USD',
-            },
-          },
-        ],
-      },
-    };
     statuses = [
       { name: 'Partner - Financial', value: 'PARTNER_FINANCIAL' },
       { name: 'test_option_1', value: 'test1' },
@@ -216,8 +199,8 @@ describe('FixCommitmentContact', () => {
       </TestRouter>,
     );
     const donationDate = getByTestId('donationDate');
-    expect(donationDate).toHaveTextContent('10/15/2019');
+    expect(donationDate).toHaveTextContent('12/24/2021');
     const donationAmount = getByTestId('donationAmount');
-    expect(donationAmount).toHaveTextContent('175 USD');
+    expect(donationAmount).toHaveTextContent('0 UGX');
   });
 });

@@ -70,6 +70,9 @@ const Components = ({
 );
 
 describe('FixCommitmentContact', () => {
+  beforeEach(() => {
+    setContactFocus.mockClear();
+  });
   it('default with test data', async () => {
     const { getByText } = render(<Components />);
     await waitFor(() => {
