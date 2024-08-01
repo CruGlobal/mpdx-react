@@ -19,9 +19,12 @@ export const currencyFormat = (
 ): string => {
   const amount = Number.isNaN(value) ? 0 : value;
   const decimal = amount % 1 !== 0;
+  if (!currency) {
+    currency = 'USD';
+  }
   return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: currency ?? 'USD',
+      currency: currency,
     minimumFractionDigits: decimal ? 2 : 0,
     maximumFractionDigits: decimal ? 2 : 0,
   }).format(Number.isFinite(amount) ? amount : 0);
