@@ -22,12 +22,18 @@ export const currencyFormat = (
   if (!currency) {
     currency = 'USD';
   }
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
       currency: currency,
-    minimumFractionDigits: decimal ? 2 : 0,
-    maximumFractionDigits: decimal ? 2 : 0,
-  }).format(Number.isFinite(amount) ? amount : 0);
+      minimumFractionDigits: decimal ? 2 : 0,
+      maximumFractionDigits: decimal ? 2 : 0,
+    }).format(Number.isFinite(amount) ? amount : 0);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Error formatting currency: ${error}`);
+    return `${amount} ${currency}`;
+  }
 };
 
 export const dayMonthFormat = (
