@@ -22,6 +22,7 @@ export const currencyFormat = (
   if (!currency) {
     currency = 'USD';
   }
+  window.Intl;
   try {
     return new Intl.NumberFormat(locale, {
       style: 'currency',

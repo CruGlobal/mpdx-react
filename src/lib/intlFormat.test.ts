@@ -82,6 +82,13 @@ describe('intlFormat', () => {
       it('handles undefined case', () => {
         expect(currencyFormat(1000, undefined, 'en-US')).toEqual('$1,000');
       });
+      it('handles empty string case', () => {
+        expect(currencyFormat(1234.56, '', 'en-GB')).toEqual('US$1,234.56');
+      });
+
+      it('handles an error', () => {
+        expect(currencyFormat(1234.56, ' ', 'en-GB')).toEqual('1234.56  ');
+      });
     });
 
     describe('different language', () => {
