@@ -3,9 +3,14 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { DateTime } from 'luxon';
+import { SnackbarProvider } from 'notistack';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import {
+  render,
+  screen,
+  waitFor,
+} from '__tests__/util/testingLibraryReactMock';
 import theme from 'src/theme';
 import { EmailAddressesMutation } from '../AddEmailAddress.generated';
 import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
@@ -16,6 +21,7 @@ import {
 import { mockInvalidEmailAddressesResponse } from '../FixEmailAddressesMocks';
 import { FixEmailAddressPerson } from './FixEmailAddressPerson';
 
+const accountListId = 'accountListId';
 const person: PersonInvalidEmailFragment = {
   id: 'contactTestId',
   firstName: 'Test',
@@ -42,10 +48,22 @@ const person: PersonInvalidEmailFragment = {
 };
 
 const setContactFocus = jest.fn();
+const mutationSpy = jest.fn();
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
   const handleChangeMock = jest.fn();
-  const handleDeleteModalOpenMock = jest.fn();
   const handleChangePrimaryMock = jest.fn();
   const dataState = {
     contactTestId: {
@@ -54,25 +72,28 @@ const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
   } as { [key: string]: PersonEmailAddresses };
 
   return (
-    <ThemeProvider theme={theme}>
-      <TestWrapper>
-        <GqlMockedProvider<{
-          GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-          EmailAddresses: EmailAddressesMutation;
-        }>
-          mocks={mocks}
-        >
-          <FixEmailAddressPerson
-            person={person}
-            dataState={dataState}
-            handleChange={handleChangeMock}
-            handleDelete={handleDeleteModalOpenMock}
-            handleChangePrimary={handleChangePrimaryMock}
-            setContactFocus={setContactFocus}
-          />
-        </GqlMockedProvider>
-      </TestWrapper>
-    </ThemeProvider>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <GqlMockedProvider<{
+            GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            EmailAddresses: EmailAddressesMutation;
+          }>
+            mocks={mocks}
+            onCall={mutationSpy}
+          >
+            <FixEmailAddressPerson
+              person={person}
+              dataState={dataState}
+              handleChange={handleChangeMock}
+              accountListId={accountListId}
+              handleChangePrimary={handleChangePrimaryMock}
+              setContactFocus={setContactFocus}
+            />
+          </GqlMockedProvider>
+        </TestWrapper>
+      </ThemeProvider>
+    </SnackbarProvider>
   );
 };
 
@@ -197,6 +218,59 @@ describe('FixEmailAddressPerson', () => {
       await waitFor(() => {
         expect(addButton).not.toBeDisabled();
       });
+    });
+
+    it('should show delete confirmation', async () => {
+      const { getByTestId, getByRole } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+        />,
+      );
+      await waitFor(() => getByTestId('delete-contactTestId-1'));
+
+      userEvent.click(getByTestId('delete-contactTestId-1'));
+      screen.logTestingPlaygroundURL();
+      await waitFor(() => {
+        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
+      });
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      const { id, email } = person.emailAddresses.nodes[1];
+
+      await waitFor(() => {
+        expect(mutationSpy.mock.lastCall[0].operation.operationName).toEqual(
+          'UpdateEmailAddresses',
+        );
+        expect(mutationSpy.mock.lastCall[0].operation.variables).toEqual({
+          input: {
+            accountListId,
+            attributes: {
+              id: person.id,
+              emailAddresses: [
+                {
+                  id,
+                  destroy: true,
+                },
+              ],
+            },
+          },
+        });
+      });
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Successfully deleted email address ${email}`,
+          {
+            variant: 'success',
+          },
+        ),
+      );
     });
   });
 });
