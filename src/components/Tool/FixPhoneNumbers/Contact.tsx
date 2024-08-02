@@ -356,6 +356,7 @@ const Contact: React.FC<Props> = ({
           >
             <Box className={classes.buttonTop}>
               <Button
+                data-testid={`confirmButton-${personId}`}
                 onClick={() => handleUpdate(personId, name, numbers)}
                 variant="contained"
                 style={{ width: '100%' }}
