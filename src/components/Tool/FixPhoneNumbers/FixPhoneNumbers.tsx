@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
@@ -20,7 +21,11 @@ import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
-import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
+import {
+  GetInvalidPhoneNumbersDocument,
+  GetInvalidPhoneNumbersQuery,
+  useGetInvalidPhoneNumbersQuery,
+} from './GetInvalidPhoneNumbers.generated';
 import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -126,6 +131,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
 }: Props) => {
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const client = useApolloClient();
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
@@ -241,6 +247,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
 
   const updatePhoneNumber = async (
     personId: string,
+    name: string,
     numbers: PhoneNumberData[],
   ): Promise<void> => {
     const attributes = [
@@ -261,10 +268,44 @@ const FixPhoneNumbers: React.FC<Props> = ({
           attributes,
         },
       },
+      onError() {
+        enqueueSnackbar(t(`Error updating ${name}'s phone numbers`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+      onCompleted() {
+        enqueueSnackbar(t(`${name}'s phone numbers updated!`), {
+          variant: 'success',
+          autoHideDuration: 7000,
+        });
+        hideContactFromView(personId);
+      },
     });
-    enqueueSnackbar(t('Phone Number updated!'), {
-      variant: 'success',
-    });
+  };
+
+  const hideContactFromView = (hideId: string): void => {
+    const query = {
+      query: GetInvalidPhoneNumbersDocument,
+      variables: {
+        accountListId,
+      },
+    };
+
+    const dataFromCache = client.readQuery<GetInvalidPhoneNumbersQuery>(query);
+
+    if (dataFromCache) {
+      const data = {
+        ...dataFromCache,
+        people: {
+          ...dataFromCache.people,
+          nodes: dataFromCache.people.nodes.filter(
+            (person) => person.id !== hideId,
+          ),
+        },
+      };
+      client.writeQuery({ ...query, data });
+    }
   };
 
   return (
