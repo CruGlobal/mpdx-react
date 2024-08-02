@@ -19,12 +19,21 @@ export const currencyFormat = (
 ): string => {
   const amount = Number.isNaN(value) ? 0 : value;
   const decimal = amount % 1 !== 0;
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: currency ?? 'USD',
-    minimumFractionDigits: decimal ? 2 : 0,
-    maximumFractionDigits: decimal ? 2 : 0,
-  }).format(Number.isFinite(amount) ? amount : 0);
+  if (!currency) {
+    currency = 'USD';
+  }
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: decimal ? 2 : 0,
+      maximumFractionDigits: decimal ? 2 : 0,
+    }).format(Number.isFinite(amount) ? amount : 0);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Error formatting currency: ${error}`);
+    return `${amount} ${currency}`;
+  }
 };
 
 export const dayMonthFormat = (

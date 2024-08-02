@@ -19,7 +19,7 @@ import { StyledInput } from '../StyledInput';
 import {
   ContactPrimaryAddressFragment,
   ContactPrimaryPersonFragment,
-} from './GetInvalidNewsletter.generated';
+} from './InvalidNewsletter.generated';
 
 const useStyles = makeStyles()(() => ({
   left: {
@@ -85,7 +85,11 @@ interface Props {
   status?: string;
   primaryAddress?: ContactPrimaryAddressFragment;
   source?: string;
-  updateFunction: (id: string, sendNewsletter: string) => Promise<void>;
+  handleSingleConfirm: (
+    id: string,
+    name: string,
+    sendNewsletter: string,
+  ) => Promise<void>;
   setContactFocus: SetContactFocus;
 }
 
@@ -95,7 +99,7 @@ const Contact = ({
   primaryPerson,
   status,
   primaryAddress,
-  updateFunction,
+  handleSingleConfirm,
   setContactFocus,
 }: Props): ReactElement => {
   const { t } = useTranslation();
@@ -120,8 +124,6 @@ const Contact = ({
     }
     setNewsletter(newNewsletterValue);
   }, [primaryAddress]);
-
-  //TODO: Add button functionality
 
   const handleChange = (
     event:
@@ -252,7 +254,7 @@ const Contact = ({
             <Box className={classes.buttonTop}>
               <Button
                 variant="contained"
-                onClick={() => updateFunction(id, newsletter)}
+                onClick={() => handleSingleConfirm(id, name, newsletter)}
               >
                 <Icon
                   path={mdiCheckboxMarkedCircle}

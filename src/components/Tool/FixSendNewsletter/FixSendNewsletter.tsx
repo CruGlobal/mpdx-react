@@ -18,10 +18,10 @@ import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
 import {
-  GetInvalidNewsletterDocument,
-  GetInvalidNewsletterQuery,
-  useGetInvalidNewsletterQuery,
-} from './GetInvalidNewsletter.generated';
+  InvalidNewsletterDocument,
+  InvalidNewsletterQuery,
+  useInvalidNewsletterQuery,
+} from './InvalidNewsletter.generated';
 import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -73,15 +73,23 @@ const FixSendNewsletter: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { data, loading } = useGetInvalidNewsletterQuery({
+  const { data, loading } = useInvalidNewsletterQuery({
     variables: { accountListId },
   });
+
+  let numberOfContacts = data?.contacts.nodes.length ?? 0;
+  if (data) {
+    const filtered = data.contacts.nodes.filter((node) => {
+      return !node.primaryPerson?.deceased;
+    });
+    numberOfContacts = filtered.length;
+  }
   const [updateNewsletter, { loading: updating }] =
     useUpdateContactNewsletterMutation();
 
-  //TODO: Add deceased to contact filters
-  const updateContact = async (
+  const handleSingleConfirm = async (
     id: string,
+    name: string,
     sendNewsletter: string,
   ): Promise<void> => {
     const attributes = {
@@ -98,13 +106,13 @@ const FixSendNewsletter: React.FC<Props> = ({
           updateContactData?.updateContact?.contact.id || '';
 
         const query = {
-          query: GetInvalidNewsletterDocument,
+          query: InvalidNewsletterDocument,
           variables: {
             accountListId,
           },
         };
 
-        const dataFromCache = cache.readQuery<GetInvalidNewsletterQuery>(query);
+        const dataFromCache = cache.readQuery<InvalidNewsletterQuery>(query);
 
         if (dataFromCache) {
           const data = {
@@ -112,13 +120,21 @@ const FixSendNewsletter: React.FC<Props> = ({
             contacts: {
               ...dataFromCache.contacts,
               nodes: dataFromCache.contacts.nodes.filter(
-                (contact) => contact.id !== updateContactId,
+                (contact) =>
+                  contact.id !== updateContactId &&
+                  !contact.primaryPerson?.deceased,
               ),
             },
             constant: dataFromCache.constant,
           };
           cache.writeQuery({ ...query, data });
         }
+      },
+      onError() {
+        enqueueSnackbar(t(`Error updating contact ${name}`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
       },
     });
     enqueueSnackbar(t('Newsletter updated!'), {
@@ -134,7 +150,7 @@ const FixSendNewsletter: React.FC<Props> = ({
             <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
             <Divider className={classes.divider} />
           </Grid>
-          {data?.contacts.nodes.length > 0 ? (
+          {!!numberOfContacts ? (
             <>
               <Grid item xs={12}>
                 <Box className={classes.descriptionBox}>
@@ -143,7 +159,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                       {t(
                         'You have {{amount}} newsletter statuses to confirm.',
                         {
-                          amount: data?.contacts.nodes.length,
+                          amount: numberOfContacts,
                         },
                       )}
                     </strong>
@@ -162,48 +178,52 @@ const FixSendNewsletter: React.FC<Props> = ({
                     <Trans
                       defaults="Cofirm {{value}}"
                       values={{
-                        value: data?.contacts.nodes.length,
+                        value: numberOfContacts,
                       }}
                     />
                   </Button>
                 </Box>
               </Grid>
               <Grid item xs={12}>
-                {data.contacts.nodes.map((contact) => (
-                  <Contact
-                    id={contact.id}
-                    name={contact.name}
-                    // need to fix this after changes to fix commitment info get merged
-                    status={
-                      data.constant.status?.find(
-                        (status) => contact.status === status.id,
-                      )?.value || ''
-                    }
-                    primaryPerson={
-                      contact.primaryPerson || {
-                        firstName: '',
-                        lastName: '',
-                        primaryEmailAddress: {
-                          email: '',
-                        },
-                        optoutEnewsletter: false,
-                      }
-                    }
-                    key={contact.id}
-                    primaryAddress={
-                      contact.primaryAddress || {
-                        street: '',
-                        city: '',
-                        state: '',
-                        postalCode: '',
-                        source: '',
-                        createdAt: '',
-                      }
-                    }
-                    updateFunction={updateContact}
-                    setContactFocus={setContactFocus}
-                  />
-                ))}
+                {data.contacts.nodes.map(
+                  (contact) =>
+                    !contact.primaryPerson?.deceased && (
+                      <Contact
+                        id={contact.id}
+                        name={contact.name}
+                        // need to fix this after changes to fix commitment info get merged
+                        status={
+                          data.constant.status?.find(
+                            (status) => contact.status === status.id,
+                          )?.value || ''
+                        }
+                        primaryPerson={
+                          contact.primaryPerson || {
+                            firstName: '',
+                            lastName: '',
+                            primaryEmailAddress: {
+                              email: '',
+                            },
+                            optoutEnewsletter: false,
+                            deceased: false,
+                          }
+                        }
+                        key={contact.id}
+                        primaryAddress={
+                          contact.primaryAddress || {
+                            street: '',
+                            city: '',
+                            state: '',
+                            postalCode: '',
+                            source: '',
+                            createdAt: '',
+                          }
+                        }
+                        handleSingleConfirm={handleSingleConfirm}
+                        setContactFocus={setContactFocus}
+                      />
+                    ),
+                )}
               </Grid>
               <Grid item xs={12}>
                 <Box className={classes.footer}>
@@ -212,7 +232,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
                       shouldUnescape
                       values={{
-                        value: data?.contacts.nodes.length,
+                        value: numberOfContacts,
                       }}
                       components={{ bold: <strong /> }}
                     />
