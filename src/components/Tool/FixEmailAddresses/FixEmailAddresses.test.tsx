@@ -1,57 +1,81 @@
 import React from 'react';
+import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ErgonoMockShape } from 'graphql-ergonomock';
+import { ApolloErgonoMockMap, ErgonoMockShape } from 'graphql-ergonomock';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetInvalidEmailAddressesQuery } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import theme from '../../../theme';
+import { EmailAddressesMutation } from './AddEmailAddress.generated';
 import { FixEmailAddresses } from './FixEmailAddresses';
 import {
   contactId,
+  contactOneEmailAddressNodes,
+  contactTwoEmailAddressNodes,
+  mockCacheWriteData,
+  mockCacheWriteDataContactTwo,
   mockInvalidEmailAddressesResponse,
+  newEmail,
 } from './FixEmailAddressesMocks';
-import { GetInvalidEmailAddressesQuery } from './GetInvalidEmailAddresses.generated';
 
-const accountListId = 'test121';
+const accountListId = 'accountListId';
 const router = {
   query: { accountListId },
   isReady: true,
 };
 
 const setContactFocus = jest.fn();
+const mutationSpy = jest.fn();
+const mockEnqueue = jest.fn();
 
-const Components = ({
-  mockNodes = mockInvalidEmailAddressesResponse,
-}: {
-  mockNodes?: ErgonoMockShape[];
-}) => (
-  <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
-      <TestWrapper>
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
+const defaultGraphQLMock = {
+  GetInvalidEmailAddresses: {
+    people: { nodes: mockInvalidEmailAddressesResponse },
+  },
+};
+
+interface ComponentsProps {
+  mocks?: ApolloErgonoMockMap;
+  cache?: ApolloCache<object>;
+}
+
+const Components = ({ mocks = defaultGraphQLMock, cache }: ComponentsProps) => (
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
         <GqlMockedProvider<{
           GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+          EmailAddresses: EmailAddressesMutation;
         }>
-          mocks={{
-            GetInvalidEmailAddresses: {
-              people: {
-                nodes: mockNodes,
-              },
-            },
-          }}
+          mocks={mocks}
+          cache={cache}
+          onCall={mutationSpy}
         >
           <FixEmailAddresses
             accountListId={accountListId}
             setContactFocus={setContactFocus}
           />
         </GqlMockedProvider>
-      </TestWrapper>
-    </TestRouter>
-  </ThemeProvider>
+      </TestRouter>
+    </ThemeProvider>
+  </SnackbarProvider>
 );
 
-describe('FixPhoneNumbers-Home', () => {
+describe('FixEmailAddresses-Home', () => {
   it('default with test data', async () => {
     const { getByText, getByTestId, queryByTestId } = render(<Components />);
 
@@ -81,6 +105,39 @@ describe('FixPhoneNumbers-Home', () => {
     expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
     expect(getByTestId('starIcon-testid-1')).toBeInTheDocument();
     expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
+  });
+
+  it('should add an new email address, firing a GraphQL mutation and resetting the form', async () => {
+    const { getByTestId, getAllByLabelText } = render(<Components />);
+    await waitFor(() => {
+      expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
+    });
+    const textFieldNew = getAllByLabelText('New Email Address')[0];
+    userEvent.type(textFieldNew, newEmail.email);
+    const addButton = getByTestId('addButton-testid');
+    expect(textFieldNew).toHaveValue(newEmail.email);
+
+    userEvent.click(addButton);
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Added email address', {
+        variant: 'success',
+      }),
+    );
+
+    expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
+      'EmailAddresses',
+    );
+    expect(mutationSpy.mock.calls[1][0].operation.variables).toEqual({
+      input: {
+        accountListId: accountListId,
+        attributes: {
+          id: 'testid',
+          emailAddresses: [{ email: newEmail.email }],
+        },
+      },
+    });
+    expect(textFieldNew).toHaveValue('');
   });
 
   //TODO: Fix during MPDX-7936
@@ -115,28 +172,16 @@ describe('FixPhoneNumbers-Home', () => {
     expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument();
   });
 
-  //TODO: Fix during MPDX-7946
-  it.skip('add an email address to second person', async () => {
-    const { getByTestId, getByDisplayValue } = render(<Components />);
-    await waitFor(() =>
-      expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument(),
-    );
-    expect(getByTestId('textfield-testid2-0')).toBeInTheDocument();
-
-    const textfieldNew1 = getByTestId(
-      'addNewEmailInput-testid2',
-    ) as HTMLInputElement;
-    userEvent.type(textfieldNew1, 'email12345@gmail.com');
-    const addButton1 = getByTestId('addButton-testid2');
-    userEvent.click(addButton1);
-
-    expect(textfieldNew1.value).toBe('');
-    expect(getByTestId('textfield-testid2-2')).toBeInTheDocument();
-    expect(getByDisplayValue('email12345@gmail.com')).toBeInTheDocument();
-  });
-
   it('should render no contacts with no data', async () => {
-    const { getByText, getByTestId } = render(<Components mockNodes={[]} />);
+    const { getByText, getByTestId } = render(
+      <Components
+        mocks={{
+          GetInvalidEmailAddresses: {
+            people: { nodes: [] },
+          },
+        }}
+      />,
+    );
     await waitFor(() =>
       expect(getByTestId('fixEmailAddresses-null-state')).toBeInTheDocument(),
     );
@@ -145,17 +190,16 @@ describe('FixPhoneNumbers-Home', () => {
     ).toBeInTheDocument();
   });
 
-  //TODO: Fix during MPDX-7946
-  it.skip('should modify first email of first contact', async () => {
+  it('should modify first email of first contact', async () => {
     const { getByTestId } = render(<Components />);
     await waitFor(() => {
       expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     });
-    const firstInput = getByTestId('textfield-testid-0') as HTMLInputElement;
+    const firstInput = getByTestId('textfield-testid-0');
 
-    expect(firstInput.value).toBe('email1@gmail.com');
+    expect(firstInput).toHaveValue('email1@gmail.com');
     userEvent.type(firstInput, '123');
-    expect(firstInput.value).toBe('email1@gmail.com123');
+    expect(firstInput).toHaveValue('email1@gmail.com123');
   });
 
   describe('setContactFocus()', () => {
@@ -171,6 +215,137 @@ describe('FixPhoneNumbers-Home', () => {
       expect(contactName).toBeInTheDocument();
       userEvent.click(contactName);
       expect(setContactFocus).toHaveBeenCalledWith(contactId);
+    });
+  });
+
+  describe('Add email address - Testing cache', () => {
+    interface AddEmailAddressProps {
+      postSaveResponse: object;
+      emailAddressNodes: object[];
+      elementToWaitFor: string;
+      textFieldIndex: number;
+      addButtonId: string;
+      cache: InMemoryCache;
+    }
+
+    const addEmailAddress = async ({
+      postSaveResponse,
+      emailAddressNodes,
+      elementToWaitFor,
+      textFieldIndex,
+      addButtonId,
+      cache,
+    }: AddEmailAddressProps) => {
+      let cardinality = 0;
+      jest.spyOn(cache, 'readQuery').mockReturnValue(postSaveResponse);
+      jest.spyOn(cache, 'writeQuery');
+
+      const updatePerson = {
+        person: {
+          emailAddresses: {
+            nodes: [
+              ...emailAddressNodes,
+              {
+                email: newEmail.email,
+              },
+            ],
+          },
+        },
+      } as ErgonoMockShape;
+
+      const { getByTestId, getAllByLabelText } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: () => {
+              let queryResult;
+              if (cardinality === 0) {
+                queryResult = {
+                  people: {
+                    nodes: mockInvalidEmailAddressesResponse,
+                  },
+                };
+              } else {
+                queryResult = postSaveResponse;
+              }
+              cardinality++;
+              return queryResult;
+            },
+            EmailAddresses: { updatePerson },
+          }}
+          cache={cache}
+        />,
+      );
+      await waitFor(() => {
+        expect(getByTestId(elementToWaitFor)).toBeInTheDocument();
+      });
+
+      const textFieldNew =
+        getAllByLabelText('New Email Address')[textFieldIndex];
+      userEvent.type(textFieldNew, newEmail.email);
+      const addButton = getByTestId(addButtonId);
+      userEvent.click(addButton);
+    };
+
+    it('should add an email address to the first person', async () => {
+      const cache = new InMemoryCache();
+      const postSaveResponse = {
+        people: {
+          nodes: [
+            {
+              ...mockInvalidEmailAddressesResponse[0],
+              emailAddresses: {
+                nodes: [...contactOneEmailAddressNodes, newEmail],
+              },
+            },
+            { ...mockInvalidEmailAddressesResponse[1] },
+          ],
+        },
+      };
+      await addEmailAddress({
+        postSaveResponse,
+        emailAddressNodes: contactOneEmailAddressNodes,
+        elementToWaitFor: 'textfield-testid-0',
+        textFieldIndex: 0,
+        addButtonId: 'addButton-testid',
+        cache,
+      });
+
+      await waitFor(() => {
+        expect(cache.writeQuery).toHaveBeenLastCalledWith(
+          expect.objectContaining({ data: mockCacheWriteData }),
+        );
+      });
+    });
+
+    it('should add an email address to the second person', async () => {
+      const cache = new InMemoryCache();
+      const postSaveResponse = {
+        people: {
+          nodes: [
+            { ...mockInvalidEmailAddressesResponse[0] },
+            {
+              ...mockInvalidEmailAddressesResponse[1],
+              emailAddresses: {
+                nodes: [...contactTwoEmailAddressNodes, newEmail],
+              },
+            },
+          ],
+        },
+      };
+      await addEmailAddress({
+        postSaveResponse,
+        emailAddressNodes: contactTwoEmailAddressNodes,
+        elementToWaitFor: 'textfield-testid2-0',
+        textFieldIndex: 1,
+        addButtonId: 'addButton-testid2',
+        cache,
+      });
+
+      await waitFor(() => {
+        expect(cache.writeQuery).toHaveBeenLastCalledWith(
+          expect.objectContaining({ data: mockCacheWriteDataContactTwo }),
+        );
+      });
     });
   });
 });

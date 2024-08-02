@@ -1,10 +1,18 @@
 import { Grid, IconButton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Form, Formik } from 'formik';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import * as Yup from 'yup';
+import * as yup from 'yup';
 import { AddIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import i18n from 'src/lib/i18n';
+import { useEmailAddressesMutation } from './AddEmailAddress.generated';
 import { RowWrapper } from './FixEmailAddressPerson';
+import {
+  GetInvalidEmailAddressesDocument,
+  GetInvalidEmailAddressesQuery,
+} from './FixEmailAddresses.generated';
 
 const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -24,16 +32,25 @@ interface EmailValidationFormEmail {
 interface EmailValidationFormProps {
   index: number;
   personId: string;
-  handleAdd?: (personId: string, email: string) => void;
 }
 
-//TODO: Implement during MPDX-7946
-const onSubmit = (values, actions) => {
-  actions.resetForm();
-};
+const validationSchema = yup.object({
+  email: yup
+    .string()
+    .email(i18n.t('Invalid Email Address Format'))
+    .required(i18n.t('Please enter a valid email address')),
+  isPrimary: yup.bool().default(false),
+  updatedAt: yup.string(),
+  source: yup.string(),
+  personId: yup.string(),
+  isValid: yup.bool().default(false),
+});
 
 const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const [emailAddressesMutation] = useEmailAddressesMutation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const initialEmail = {
     email: '',
@@ -44,16 +61,71 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
     isValid: false,
   } as EmailValidationFormEmail;
 
-  const validationSchema = Yup.object({
-    email: Yup.string()
-      .email(t('Invalid Email Address Format'))
-      .required('Please enter a valid email address'),
-    isPrimary: Yup.bool().default(false),
-    updatedAt: Yup.string(),
-    source: Yup.string(),
-    personId: Yup.string(),
-    isValid: Yup.bool().default(false),
-  });
+  const onSubmit = (values, actions) => {
+    emailAddressesMutation({
+      variables: {
+        input: {
+          accountListId: accountListId || '',
+          attributes: {
+            id: personId,
+            emailAddresses: [
+              {
+                email: values.email,
+              },
+            ],
+          },
+        },
+      },
+      update: (cache, { data: addEmailAddressData }) => {
+        actions.resetForm();
+        const query = {
+          query: GetInvalidEmailAddressesDocument,
+          variables: {
+            accountListId: accountListId,
+          },
+        };
+        const dataFromCache =
+          cache.readQuery<GetInvalidEmailAddressesQuery>(query);
+        if (dataFromCache) {
+          const peopleWithNewEmail = dataFromCache.people.nodes.map(
+            (person) => {
+              if (
+                person.id === personId &&
+                addEmailAddressData?.updatePerson?.person.emailAddresses.nodes
+              ) {
+                return {
+                  ...person,
+                  emailAddresses: {
+                    nodes:
+                      addEmailAddressData?.updatePerson?.person.emailAddresses
+                        .nodes,
+                  },
+                };
+              } else {
+                return person;
+              }
+            },
+          );
+
+          cache.writeQuery({
+            ...query,
+            data: {
+              people: {
+                ...dataFromCache.people,
+                nodes: peopleWithNewEmail,
+              },
+            },
+          });
+        }
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Added email address'), { variant: 'success' });
+      },
+      onError: () => {
+        enqueueSnackbar(t('Failed to add email address'), { variant: 'error' });
+      },
+    });
+  };
 
   return (
     <Formik

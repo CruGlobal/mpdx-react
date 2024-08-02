@@ -1,15 +1,21 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { DateTime } from 'luxon';
 import TestWrapper from '__tests__/util/TestWrapper';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
+import { EmailAddressesMutation } from './AddEmailAddress.generated';
 import {
   FixEmailAddressPerson,
   FixEmailAddressPersonProps,
 } from './FixEmailAddressPerson';
-import { EmailAddressData } from './FixEmailAddresses';
+import { EmailAddressData, PersonEmailAddresses } from './FixEmailAddresses';
+import { GetInvalidEmailAddressesQuery } from './FixEmailAddresses.generated';
+import { mockInvalidEmailAddressesResponse } from './FixEmailAddressesMocks';
 
 const testData = {
   name: 'Test Contact',
@@ -38,26 +44,40 @@ const testData = {
 const setContactFocus = jest.fn();
 const handleChangeMock = jest.fn();
 const handleDeleteModalOpenMock = jest.fn();
-const handleAddMock = jest.fn();
 const handleChangePrimaryMock = jest.fn();
 
-const TestComponent: React.FC = () => {
+const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
+  const toDelete = [] as PersonEmailAddressInput[];
+  const dataState = {
+    id: {
+      emailAddresses: testData.emailAddresses as EmailAddressData[],
+      toDelete,
+    },
+  } as { [key: string]: PersonEmailAddresses };
+
   return (
     <ThemeProvider theme={theme}>
       <TestWrapper>
-        <FixEmailAddressPerson
-          toDelete={[]}
-          name={testData.name}
-          key={testData.name}
-          personId={testData.personId}
-          contactId={testData.contactId}
-          emailAddresses={testData.emailAddresses}
-          handleChange={handleChangeMock}
-          handleDelete={handleDeleteModalOpenMock}
-          handleAdd={handleAddMock}
-          handleChangePrimary={handleChangePrimaryMock}
-          setContactFocus={setContactFocus}
-        />
+        <GqlMockedProvider<{
+          GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+          EmailAddresses: EmailAddressesMutation;
+        }>
+          mocks={mocks}
+        >
+          <FixEmailAddressPerson
+            toDelete={toDelete}
+            name={testData.name}
+            key={testData.name}
+            personId={testData.personId}
+            dataState={dataState}
+            contactId={testData.contactId}
+            emailAddresses={testData.emailAddresses}
+            handleChange={handleChangeMock}
+            handleDelete={handleDeleteModalOpenMock}
+            handleChangePrimary={handleChangePrimaryMock}
+            setContactFocus={setContactFocus}
+          />
+        </GqlMockedProvider>
       </TestWrapper>
     </ThemeProvider>
   );
@@ -66,7 +86,15 @@ const TestComponent: React.FC = () => {
 describe('FixEmailAddressPerson', () => {
   it('default', () => {
     const { getByText, getByTestId, getByDisplayValue } = render(
-      <TestComponent />,
+      <TestComponent
+        mocks={{
+          GetInvalidEmailAddresses: {
+            people: {
+              nodes: mockInvalidEmailAddressesResponse,
+            },
+          },
+        }}
+      />,
     );
 
     expect(getByText(testData.name)).toBeInTheDocument();
@@ -80,7 +108,17 @@ describe('FixEmailAddressPerson', () => {
   });
 
   it('input reset after adding an email address', async () => {
-    const { getByTestId, getByLabelText } = render(<TestComponent />);
+    const { getByTestId, getByLabelText } = render(
+      <TestComponent
+        mocks={{
+          GetInvalidEmailAddresses: {
+            people: {
+              nodes: mockInvalidEmailAddressesResponse,
+            },
+          },
+        }}
+      />,
+    );
 
     const addInput = getByLabelText('New Email Address');
     const addButton = getByTestId('addButton-testid');
@@ -98,7 +136,15 @@ describe('FixEmailAddressPerson', () => {
   describe('validation', () => {
     it('should show an error message if there is no email', async () => {
       const { getByLabelText, getByTestId, getByText } = render(
-        <TestComponent />,
+        <TestComponent
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+        />,
       );
 
       const addInput = getByLabelText('New Email Address');
@@ -114,7 +160,15 @@ describe('FixEmailAddressPerson', () => {
 
     it('should show an error message if there is an invalid email', async () => {
       const { getByLabelText, getByTestId, getByText } = render(
-        <TestComponent />,
+        <TestComponent
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+        />,
       );
 
       const addInput = getByLabelText('New Email Address');
@@ -129,7 +183,17 @@ describe('FixEmailAddressPerson', () => {
     });
 
     it('should not disable the add button', async () => {
-      const { getByLabelText, getByTestId } = render(<TestComponent />);
+      const { getByLabelText, getByTestId } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+        />,
+      );
 
       const addInput = getByLabelText('New Email Address');
       userEvent.type(addInput, 'new@new.com');

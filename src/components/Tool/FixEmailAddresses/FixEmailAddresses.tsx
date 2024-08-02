@@ -11,6 +11,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { useGetInvalidEmailAddressesQuery } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
@@ -18,7 +19,6 @@ import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
 import DeleteModal from './DeleteModal';
 import { FixEmailAddressPerson } from './FixEmailAddressPerson';
-import { useGetInvalidEmailAddressesQuery } from './GetInvalidEmailAddresses.generated';
 
 const Container = styled(Box)(() => ({
   padding: theme.spacing(3),
@@ -104,7 +104,7 @@ export interface EmailAddressData {
   destroy?: boolean;
 }
 
-interface PersonEmailAddresses {
+export interface PersonEmailAddresses {
   emailAddresses: EmailAddressData[];
   toDelete: PersonEmailAddressInput[];
 }
@@ -206,25 +206,13 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     handleDeleteModalClose();
   };
 
-  // Add a new email address to the state
-  const handleAdd = (personId: string, email: string): void => {
-    const temp = { ...dataState };
-    temp[personId].emailAddresses.push({
-      updatedAt: new Date().toISOString(),
-      email: email,
-      primary: false,
-      source: 'MPDX',
-    });
-    setDataState(temp);
-  };
-
   // Change the primary address in the state
   const handleChangePrimary = (personId: string, emailIndex: number): void => {
     const temp = { ...dataState };
     temp[personId].emailAddresses = temp[personId].emailAddresses.map(
       (email, index) => ({
         ...email,
-        primary: index === emailIndex ? true : false,
+        primary: index === emailIndex,
       }),
     );
     setDataState(temp);
@@ -291,12 +279,12 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     name={`${person.firstName} ${person.lastName}`}
                     key={person.id}
                     personId={person.id}
+                    dataState={dataState}
                     emailAddresses={dataState[person.id]?.emailAddresses}
                     toDelete={dataState[person.id]?.toDelete}
                     contactId={person.contactId}
                     handleChange={handleChange}
                     handleDelete={handleDeleteModalOpen}
-                    handleAdd={handleAdd}
                     handleChangePrimary={handleChangePrimary}
                     setContactFocus={setContactFocus}
                   />

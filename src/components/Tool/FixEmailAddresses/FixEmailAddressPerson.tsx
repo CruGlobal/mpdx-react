@@ -23,7 +23,7 @@ import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import EmailValidationForm from './EmailValidationForm';
-import { EmailAddressData } from './FixEmailAddresses';
+import { EmailAddressData, PersonEmailAddresses } from './FixEmailAddresses';
 
 const PersonCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -96,6 +96,7 @@ export interface FixEmailAddressPersonProps {
   name: string;
   emailAddresses?: EmailAddressData[];
   personId: string;
+  dataState: { [key: string]: PersonEmailAddresses };
   toDelete: PersonEmailAddressInput[];
   contactId: string;
   handleChange: (
@@ -104,7 +105,6 @@ export interface FixEmailAddressPersonProps {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
   handleDelete: (personId: string, emailAddress: number) => void;
-  handleAdd: (personId: string, email: string) => void;
   handleChangePrimary: (personId: string, emailIndex: number) => void;
   setContactFocus: SetContactFocus;
 }
@@ -113,12 +113,12 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   name,
   emailAddresses,
   personId,
+  dataState,
   contactId,
   handleChange,
   handleDelete,
   handleChangePrimary,
   setContactFocus,
-  handleAdd,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -132,7 +132,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
         personId: personId,
         isPrimary: email.primary,
       })) || [],
-    [emailAddresses],
+    [emailAddresses, dataState],
   );
 
   const handleContactNameClick = () => {
@@ -277,11 +277,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       {
                         //TODO: index will need to be mapped to the correct personId
                       }
-                      <EmailValidationForm
-                        handleAdd={handleAdd}
-                        index={0}
-                        personId={personId}
-                      />
+                      <EmailValidationForm index={0} personId={personId} />
                     </BoxWithResponsiveBorder>
                   </RowWrapper>
                 </Grid>
