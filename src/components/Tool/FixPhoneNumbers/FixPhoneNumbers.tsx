@@ -256,7 +256,6 @@ const FixPhoneNumbers: React.FC<Props> = ({
           id: phoneNumber.id,
           primary: phoneNumber.primary,
           number: phoneNumber.number,
-          validValues: true,
         })),
         id: personId,
       },
