@@ -7,11 +7,13 @@ import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import FixSendNewsletter from './FixSendNewsletter';
 import {
   mockInvalidNewslettersResponse,
+  mockMassActionsUpdateContactsData,
   mockUploadNewsletterChange,
 } from './FixSendNewsletterMock';
 import { InvalidNewsletterQuery } from './InvalidNewsletter.generated';
@@ -50,6 +52,7 @@ const TestComponent = ({
         <GqlMockedProvider<{
           InvalidNewsletter: InvalidNewsletterQuery;
           UpdateContactNewsletter: UpdateContactNewsletterMutation;
+          MassActionsUpdateContacts: MassActionsUpdateContactsMutation;
         }>
           mocks={mocks}
           cache={cache}
@@ -68,6 +71,12 @@ const TestComponent = ({
 describe('FixSendNewsletter', () => {
   const deceasedName =
     mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[2].name;
+  const firstContactName =
+    mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[0].name;
+  const secondContactName =
+    mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[1].name;
+  const initialNewsletterValue = 'None';
+  const newNewsletterValue = 'Physical';
 
   beforeEach(() => {
     setContactFocus.mockClear();
@@ -144,13 +153,6 @@ describe('FixSendNewsletter', () => {
   });
 
   describe('confirm single', () => {
-    const name =
-      mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[0].name;
-    const otherName =
-      mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[1].name;
-    const initialNewsletterValue = 'None';
-    const newNewsletterValue = 'Physical';
-
     it('should successfully update the newsletter', async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'readQuery').mockReturnValue({
@@ -192,8 +194,8 @@ describe('FixSendNewsletter', () => {
         expect(mockEnqueue).toHaveBeenCalledWith('Newsletter updated!', {
           variant: 'success',
         });
-        expect(queryByText(name)).not.toBeInTheDocument();
-        expect(queryByText(otherName)).toBeInTheDocument();
+        expect(queryByText(firstContactName)).not.toBeInTheDocument();
+        expect(queryByText(secondContactName)).toBeInTheDocument();
       });
     });
 
@@ -219,7 +221,7 @@ describe('FixSendNewsletter', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          `Error updating contact ${name}`,
+          `Error updating contact ${firstContactName}`,
           {
             variant: 'error',
             autoHideDuration: 7000,
@@ -257,7 +259,7 @@ describe('FixSendNewsletter', () => {
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
       await waitFor(() => {
         expect(queryByText(deceasedName)).not.toBeInTheDocument();
-        expect(queryByText(otherName)).toBeInTheDocument();
+        expect(queryByText(secondContactName)).toBeInTheDocument();
         expect(cache.writeQuery).toHaveBeenCalledWith(
           expect.objectContaining({
             data: {
@@ -303,8 +305,8 @@ describe('FixSendNewsletter', () => {
       const { getByRole, getByText, queryByRole } = render(
         <TestComponent
           mocks={{
-            GetInvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.GetInvalidNewsletter,
+            InvalidNewsletter: {
+              ...mockInvalidNewslettersResponse.InvalidNewsletter,
             },
             UpdateContactNewsletter: {
               ...mockUploadNewsletterChange.UpdateContactNewsletter,
@@ -325,6 +327,77 @@ describe('FixSendNewsletter', () => {
             'You are updating all contacts visible on this page, setting it to the visible newsletter selection. Are you sure you want to do this?',
           ),
         ).toBeVisible();
+      });
+    });
+
+    it('should successfully update all the contacts', async () => {
+      const secondContactNewNewsletterValue = 'Both';
+      let cardinality = 0;
+
+      const { getAllByRole, getByRole, queryByText, queryByRole } = render(
+        <TestComponent
+          mocks={{
+            InvalidNewsletter: () => {
+              let queryResult;
+              if (cardinality === 0) {
+                queryResult = {
+                  ...mockInvalidNewslettersResponse.InvalidNewsletter,
+                };
+              } else {
+                queryResult = {
+                  contacts: {
+                    nodes: [
+                      {
+                        ...mockInvalidNewslettersResponse.InvalidNewsletter
+                          .contacts.nodes[2],
+                      },
+                    ],
+                  },
+                };
+              }
+              cardinality++;
+              return queryResult;
+            },
+            MassActionsUpdateContacts: {
+              ...mockMassActionsUpdateContactsData.MassActionsUpdateContacts,
+            },
+          }}
+        />,
+      );
+      await waitFor(() =>
+        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+      );
+
+      const firstNewsletterDropdown = getAllByRole('combobox')[0];
+      await waitFor(() => {
+        expect(firstNewsletterDropdown).toHaveDisplayValue([
+          initialNewsletterValue,
+        ]);
+      });
+      userEvent.selectOptions(firstNewsletterDropdown, newNewsletterValue);
+
+      const secondNewsletterDropdown = getAllByRole('combobox')[1];
+      await waitFor(() => {
+        expect(secondNewsletterDropdown).toHaveDisplayValue([
+          initialNewsletterValue,
+        ]);
+      });
+      userEvent.selectOptions(
+        secondNewsletterDropdown,
+        secondContactNewNewsletterValue,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Confirm 2' }));
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Newsletter statuses updated successfully',
+          {
+            variant: 'success',
+          },
+        );
+        expect(queryByText(firstContactName)).not.toBeInTheDocument();
+        expect(queryByText(secondContactName)).not.toBeInTheDocument();
       });
     });
   });
