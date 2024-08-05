@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Close from '@mui/icons-material/Close';
 import {
   Box,
   BoxProps,
+  Button,
   IconButton,
   List,
   Slide,
@@ -11,12 +12,30 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
+  DynamicExportsModal,
+  preloadExportsModal,
+} from 'src/components/Contacts/MassActions/Exports/DynamicExportsModal';
+import {
+  DynamicMassActionsExportEmailsModal,
+  preloadMassActionsExportEmailsModal,
+} from 'src/components/Contacts/MassActions/Exports/Emails/DynamicMassActionsExportEmailsModal';
+import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/DynamicMailMergedLabelModal';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import {
   AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import {
+  DynamicAddContactToAppealModal,
+  preloadAddContactToAppealModal,
+} from './AddContactToAppealModal/DynamicAddContactToAppealModal';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
+import {
+  DynamicDeleteAppealModal,
+  preloadDeleteAppealModal,
+} from './DeleteAppealModal/DynamicAddContactToAppealModal';
 import { useContactsCountQuery } from './contactsCount.generated';
 
 const FilterHeader = styled(Box)(({ theme }) => ({
@@ -42,6 +61,15 @@ export interface FilterPanelProps {
   onClose: () => void;
 }
 
+const LinkButton = styled(Button)(({ theme }) => ({
+  width: '100%',
+  textTransform: 'none',
+  fontSize: 16,
+  color: theme.palette.info.main,
+  fontWeight: 'bold',
+  marginTop: theme.spacing(1),
+}));
+
 export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   onClose,
 }) => {
@@ -51,15 +79,26 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     appealId,
     activeFilters,
     setActiveFilters,
+    searchTerm,
     selectedIds,
     deselectAll,
   } = React.useContext(AppealsContext) as AppealsType;
+  const [exportsModalOpen, setExportsModalOpen] = useState(false);
+  const [labelModalOpen, setLabelModalOpen] = useState(false);
+  const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
+  const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
+  const [deleteAppealModalOpen, setDeleteAppealModalOpen] = useState(false);
+  const nameSearch = searchTerm ? { wildcardSearch: searchTerm as string } : {};
+  const defaultFilters = {
+    appeal: [appealId || ''],
+    ...nameSearch,
+  };
 
   const { data: askedCount, loading: askedLoading } = useContactsCountQuery({
     variables: {
       accountListId: accountListId || '',
       contactsFilter: {
-        appeal: [appealId || ''],
+        ...defaultFilters,
         appealStatus: AppealStatusEnum.Asked,
       },
     },
@@ -70,7 +109,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       variables: {
         accountListId: accountListId || '',
         contactsFilter: {
-          appeal: [appealId || ''],
+          ...defaultFilters,
           appealStatus: AppealStatusEnum.Excluded,
         },
       },
@@ -81,7 +120,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       variables: {
         accountListId: accountListId || '',
         contactsFilter: {
-          appeal: [appealId || ''],
+          ...defaultFilters,
           appealStatus: AppealStatusEnum.NotReceived,
         },
       },
@@ -91,7 +130,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     variables: {
       accountListId: accountListId || '',
       contactsFilter: {
-        appeal: [appealId || ''],
+        ...defaultFilters,
         appealStatus: AppealStatusEnum.Processed,
       },
     },
@@ -102,7 +141,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       variables: {
         accountListId: accountListId || '',
         contactsFilter: {
-          appeal: [appealId || ''],
+          ...defaultFilters,
           appealStatus: AppealStatusEnum.ReceivedNotProcessed,
         },
       },
@@ -119,8 +158,12 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const appealListView = activeFilters.appealStatus;
   const noContactsSelected = !selectedIds.length;
 
-  // TODO - Finish this function off
-  const handleFilterButtonClick = () => {};
+  const handleClearAllClick = () => {
+    setActiveFilters({});
+  };
+
+  const noActiveFilters =
+    Object.keys(sanitizeFilters(activeFilters)).length === 0;
 
   return (
     <Box>
@@ -142,6 +185,13 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   <Close titleAccess={t('Close')} />
                 </IconButton>
               </Box>
+              <LinkButton
+                disabled={noActiveFilters}
+                onClick={handleClearAllClick}
+                variant="outlined"
+              >
+                {t('Clear All')}
+              </LinkButton>
             </FilterHeader>
             <FilterList dense sx={{ paddingY: 0 }}>
               <List sx={{ padding: '0' }}>
@@ -190,39 +240,84 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
                 <AppealsListFilterPanelButton
                   title={t('Export to CSV')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Export {{number}} Selected', {
                     number: selectedIds.length,
                   })}
                   disabled={noContactsSelected}
+                  onClick={() => {
+                    setExportsModalOpen(true);
+                  }}
+                  onMouseEnter={preloadExportsModal}
                 />
                 <AppealsListFilterPanelButton
                   title={t('Export Emails')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Export {{number}} Selected', {
                     number: selectedIds.length,
                   })}
                   disabled={noContactsSelected}
+                  onClick={() => {
+                    setExportEmailsModalOpen(true);
+                  }}
+                  onMouseEnter={preloadMassActionsExportEmailsModal}
                 />
                 <AppealsListFilterPanelButton
                   title={t('Add Contact to Appeal')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Select Contact')}
                   disabled={false}
+                  onClick={() => {
+                    setAddContactsModalOpen(true);
+                  }}
+                  onMouseEnter={preloadAddContactToAppealModal}
                 />
                 <AppealsListFilterPanelButton
                   title={t('Delete Appeal')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Permanently Delete Appeal')}
                   disabled={false}
                   buttonError={'error'}
                   buttonVariant={'outlined'}
+                  onClick={() => {
+                    setDeleteAppealModalOpen(true);
+                  }}
+                  onMouseEnter={preloadDeleteAppealModal}
                 />
               </List>
             </FilterList>
           </div>
         </Slide>
       </div>
+
+      {exportsModalOpen && (
+        <DynamicExportsModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setExportsModalOpen(false)}
+          openMailMergedLabelModal={() => setLabelModalOpen(true)}
+        />
+      )}
+      {labelModalOpen && (
+        <DynamicMailMergedLabelModal
+          accountListId={accountListId ?? ''}
+          ids={selectedIds}
+          handleClose={() => setLabelModalOpen(false)}
+        />
+      )}
+      {exportEmailsModalOpen && (
+        <DynamicMassActionsExportEmailsModal
+          ids={selectedIds}
+          accountListId={accountListId ?? ''}
+          handleClose={() => setExportEmailsModalOpen(false)}
+        />
+      )}
+      {addContactsModalOpen && (
+        <DynamicAddContactToAppealModal
+          handleClose={() => setAddContactsModalOpen(false)}
+        />
+      )}
+      {deleteAppealModalOpen && (
+        <DynamicDeleteAppealModal
+          handleClose={() => setDeleteAppealModalOpen(false)}
+        />
+      )}
     </Box>
   );
 };

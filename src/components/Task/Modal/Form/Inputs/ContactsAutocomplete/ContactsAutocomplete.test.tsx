@@ -11,9 +11,13 @@ const onChange = jest.fn();
 
 interface TestComponentProps {
   value?: string[];
+  excludeContactIds?: string[];
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ value = [] }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  value = [],
+  excludeContactIds = [],
+}) => (
   <GqlMockedProvider<{
     ContactOptions: ContactOptionsQuery;
   }>
@@ -34,6 +38,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ value = [] }) => (
       accountListId={accountListId}
       value={value}
       onChange={onChange}
+      excludeContactIds={excludeContactIds}
     />
   </GqlMockedProvider>
 );
@@ -46,13 +51,13 @@ describe('ContactsAutocomplete', () => {
     expect(await findByRole('option', { name: 'Alice' })).toBeInTheDocument();
 
     expect(mutationSpy).toHaveBeenCalledTimes(1);
-    expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
-      operationName: 'ContactOptions',
-      variables: {
-        accountListId,
-        first: 10,
-        contactsFilters: { wildcardSearch: '' },
-      },
+    expect(mutationSpy.mock.lastCall[0].operation.operationName).toEqual(
+      'ContactOptions',
+    );
+    expect(mutationSpy.mock.lastCall[0].operation.variables).toEqual({
+      accountListId,
+      first: 10,
+      contactsFilters: { wildcardSearch: '' },
     });
   });
 
@@ -62,21 +67,22 @@ describe('ContactsAutocomplete', () => {
     );
 
     await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(2));
-    expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
-      operationName: 'ContactOptions',
-      variables: {
-        accountListId,
-        first: 10,
-        contactsFilters: { wildcardSearch: '' },
-      },
+    expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
+      'ContactOptions',
+    );
+    expect(mutationSpy.mock.calls[0][0].operation.variables).toEqual({
+      accountListId,
+      first: 10,
+      contactsFilters: { wildcardSearch: '' },
     });
-    expect(mutationSpy.mock.calls[1][0].operation).toMatchObject({
-      operationName: 'ContactOptions',
-      variables: {
-        accountListId,
-        first: 2,
-        contactsFilters: { ids: ['contact-1', 'contact-2'] },
-      },
+
+    expect(mutationSpy.mock.lastCall[0].operation.operationName).toEqual(
+      'ContactOptions',
+    );
+    expect(mutationSpy.mock.lastCall[0].operation.variables).toEqual({
+      accountListId,
+      first: 2,
+      contactsFilters: { ids: ['contact-1', 'contact-2'] },
     });
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
@@ -89,13 +95,13 @@ describe('ContactsAutocomplete', () => {
     userEvent.type(getByRole('combobox', { name: 'Contacts' }), 'Search');
 
     await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(2));
-    expect(mutationSpy.mock.calls[1][0].operation).toMatchObject({
-      operationName: 'ContactOptions',
-      variables: {
-        accountListId,
-        first: 10,
-        contactsFilters: { wildcardSearch: 'Search' },
-      },
+    expect(mutationSpy.mock.lastCall[0].operation.operationName).toEqual(
+      'ContactOptions',
+    );
+    expect(mutationSpy.mock.lastCall[0].operation.variables).toEqual({
+      accountListId,
+      first: 10,
+      contactsFilters: { wildcardSearch: 'Search' },
     });
   });
 
@@ -119,5 +125,22 @@ describe('ContactsAutocomplete', () => {
     userEvent.tab();
 
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('should limit what Ids it brings back', async () => {
+    render(<TestComponent value={[]} excludeContactIds={['contact-1']} />);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledTimes(1);
+      expect(mutationSpy.mock.lastCall[0].operation.variables).toEqual({
+        accountListId: 'account-list-1',
+        first: 10,
+        contactsFilters: {
+          wildcardSearch: '',
+          ids: ['contact-1'],
+          reverseIds: true,
+        },
+      });
+    });
   });
 });

@@ -8,12 +8,14 @@ interface ContactsAutocompleteProps {
   accountListId: string;
   value: string[];
   onChange: (value: string[]) => void;
+  excludeContactIds?: string[];
 }
 
 export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
   accountListId,
   value,
   onChange,
+  excludeContactIds = [],
 }) => {
   const { t } = useTranslation();
 
@@ -27,6 +29,15 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
 
   // There are too many contacts to display all of them as options, so we load the contacts that
   // the user has selected and the contacts matching the user's current search, and merge the results
+
+  const contactsFilters = excludeContactIds.length
+    ? {
+        wildcardSearch: searchTerm,
+        ids: excludeContactIds,
+        reverseIds: true,
+      }
+    : { wildcardSearch: searchTerm };
+
   const {
     data: currentSearchedContacts,
     previousData: previousSearchedContacts,
@@ -35,7 +46,7 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
     variables: {
       accountListId,
       first: 10,
-      contactsFilters: { wildcardSearch: searchTerm },
+      contactsFilters,
     },
   });
   // When this query loads contacts once and the user changes the search query, `data` will be
