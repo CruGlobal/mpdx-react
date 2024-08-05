@@ -189,7 +189,7 @@ const Contact: React.FC<Props> = ({
               </Grid>
 
               <CardContent className={(classes.paddingX, classes.paddingY)}>
-                <Grid container>
+                <Grid container display="flex" alignItems="center">
                   <Hidden xsDown>
                     <Grid item xs={12} sm={6} className={classes.paddingY}>
                       <Box
@@ -279,8 +279,11 @@ const Contact: React.FC<Props> = ({
 
                           {phoneNumber.source === 'MPDX' ? (
                             <Box
+                              display="flex"
+                              alignItems="center"
                               data-testid={`delete-${personId}-${index}`}
                               onClick={() => handleDelete(personId, index)}
+                              className={classes.paddingX}
                             >
                               <Icon
                                 path={mdiDelete}
@@ -337,6 +340,9 @@ const Contact: React.FC<Props> = ({
                         value={newPhoneNumber}
                       />
                       <Box
+                        className={classes.paddingX}
+                        display="flex"
+                        alignItems="center"
                         onClick={() => addNewPhoneNumber()}
                         data-testid={`addButton-${personId}`}
                       >
