@@ -11,8 +11,14 @@ import {
   Typography,
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import { ItemProps } from 'react-virtuoso';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import {
+  InfiniteList,
+  ItemWithBorders,
+} from 'src/components/InfiniteList/InfiniteList';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -85,6 +91,10 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
+const ItemOverride: React.ComponentType<ItemProps> = (props) => (
+  <ItemWithBorders disableGutters disableHover={true} {...props} />
+);
+
 export interface ModalState {
   open: boolean;
   personId: string;
@@ -128,7 +138,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
   );
-  const { data, loading } = useGetInvalidPhoneNumbersQuery({
+  const { data, loading, fetchMore } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
   const [dataState, setDataState] = useState<{
@@ -305,20 +315,48 @@ const FixPhoneNumbers: React.FC<Props> = ({
                 </Box>
               </Grid>
               <Grid item xs={12}>
-                {data.people.nodes.map((person) => (
-                  <Contact
-                    name={`${person.firstName} ${person.lastName}`}
-                    key={person.id}
-                    personId={person.id}
-                    numbers={dataState[person.id]?.phoneNumbers || []}
-                    toDelete={dataState[person.id]?.toDelete}
-                    handleChange={handleChange}
-                    handleDelete={handleDeleteModalOpen}
-                    handleAdd={handleAdd}
-                    handleChangePrimary={handleChangePrimary}
-                    setContactFocus={setContactFocus}
-                  />
-                ))}
+                <InfiniteList
+                  loading={loading}
+                  data={data.people.nodes}
+                  itemContent={(index, person) => (
+                    <Grid
+                      key={index}
+                      item
+                      xs={12}
+                      sx={{
+                        marginBottom: `${theme.spacing(2)}`,
+                      }}
+                    >
+                      <Contact
+                        name={`${person.firstName} ${person.lastName}`}
+                        key={person.id}
+                        personId={person.id}
+                        numbers={dataState[person.id]?.phoneNumbers || []}
+                        toDelete={dataState[person.id]?.toDelete}
+                        handleChange={handleChange}
+                        handleDelete={handleDeleteModalOpen}
+                        handleAdd={handleAdd}
+                        handleChangePrimary={handleChangePrimary}
+                        setContactFocus={setContactFocus}
+                      />
+                    </Grid>
+                  )}
+                  endReached={() =>
+                    data.people.pageInfo.hasNextPage &&
+                    fetchMore({
+                      variables: { after: data.people.pageInfo.endCursor },
+                    })
+                  }
+                  EmptyPlaceholder={<NoData tool="fixEmailAddresses" />}
+                  style={{
+                    height: `calc(100vh - ${navBarHeight} - ${theme.spacing(
+                      32,
+                    )})`,
+                    width: '100%',
+                    scrollbarWidth: 'none',
+                  }}
+                  ItemOverride={ItemOverride}
+                ></InfiniteList>
               </Grid>
               <Grid item xs={12}>
                 <Box className={classes.footer}>

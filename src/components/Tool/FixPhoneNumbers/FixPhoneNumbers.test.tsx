@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -79,22 +80,26 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
+              <GqlMockedProvider<{
+                GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+              }>
+                mocks={{
+                  GetInvalidPhoneNumbers: {
+                    people: {
+                      nodes: testData,
+                    },
+                  },
+                }}
+              >
+                <FixPhoneNumbers
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
           </TestWrapper>
         </TestRouter>
       </ThemeProvider>,
@@ -117,22 +122,26 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
+              <GqlMockedProvider<{
+                GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+              }>
+                mocks={{
+                  GetInvalidPhoneNumbers: {
+                    people: {
+                      nodes: testData,
+                    },
+                  },
+                }}
+              >
+                <FixPhoneNumbers
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
           </TestWrapper>
         </TestRouter>
       </ThemeProvider>,
@@ -151,22 +160,26 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
+              <GqlMockedProvider<{
+                GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+              }>
+                mocks={{
+                  GetInvalidPhoneNumbers: {
+                    people: {
+                      nodes: testData,
+                    },
+                  },
+                }}
+              >
+                <FixPhoneNumbers
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
           </TestWrapper>
         </TestRouter>
       </ThemeProvider>,
@@ -186,22 +199,26 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
+              <GqlMockedProvider<{
+                GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+              }>
+                mocks={{
+                  GetInvalidPhoneNumbers: {
+                    people: {
+                      nodes: testData,
+                    },
+                  },
+                }}
+              >
+                <FixPhoneNumbers
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
           </TestWrapper>
         </TestRouter>
       </ThemeProvider>,
@@ -227,22 +244,26 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
+              <GqlMockedProvider<{
+                GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+              }>
+                mocks={{
+                  GetInvalidPhoneNumbers: {
+                    people: {
+                      nodes: testData,
+                    },
+                  },
+                }}
+              >
+                <FixPhoneNumbers
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
           </TestWrapper>
         </TestRouter>
       </ThemeProvider>,
@@ -269,22 +290,26 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: [],
-                  },
-                },
-              }}
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
+              <GqlMockedProvider<{
+                GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+              }>
+                mocks={{
+                  GetInvalidPhoneNumbers: {
+                    people: {
+                      nodes: [],
+                    },
+                  },
+                }}
+              >
+                <FixPhoneNumbers
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
           </TestWrapper>
         </TestRouter>
       </ThemeProvider>,
@@ -302,22 +327,26 @@ describe('FixPhoneNumbers-Home', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
+              <GqlMockedProvider<{
+                GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+              }>
+                mocks={{
+                  GetInvalidPhoneNumbers: {
+                    people: {
+                      nodes: testData,
+                    },
+                  },
+                }}
+              >
+                <FixPhoneNumbers
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
           </TestWrapper>
         </TestRouter>
       </ThemeProvider>,
