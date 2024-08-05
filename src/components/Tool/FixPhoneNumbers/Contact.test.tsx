@@ -137,5 +137,7 @@ describe('FixPhoneNumbers-Contact', () => {
     expect(handleChangePrimaryMock).toHaveBeenCalled();
     userEvent.click(getByTestId('delete-testid-1'));
     expect(handleDeleteModalOpenMock).toHaveBeenCalled();
+    userEvent.click(getByTestId(`confirmButton-${testData.id}`));
+    expect(updatePhoneNumber).toHaveBeenCalled();
   });
 });
