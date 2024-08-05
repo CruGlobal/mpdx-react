@@ -185,6 +185,16 @@ const Contact: React.FC<Props> = ({
                       <Typography variant="h6">{name}</Typography>
                     </Link>
                   }
+                  action={
+                    <Button variant="contained" style={{ width: '100%' }}>
+                      <Icon
+                        path={mdiCheckboxMarkedCircle}
+                        size={0.8}
+                        className={classes.buttonIcon}
+                      />
+                      {t('Confirm')}
+                    </Button>
+                  }
                 ></ContactHeader>
               </Grid>
 
@@ -359,24 +369,6 @@ const Contact: React.FC<Props> = ({
             </Grid>
           </Box>
         </Card>
-        <Grid item xs={12} md={2}>
-          <Box
-            display="flex"
-            flexDirection="column"
-            style={{ paddingLeft: theme.spacing(1) }}
-          >
-            <Box className={classes.buttonTop}>
-              <Button variant="contained" style={{ width: '100%' }}>
-                <Icon
-                  path={mdiCheckboxMarkedCircle}
-                  size={0.8}
-                  className={classes.buttonIcon}
-                />
-                {t('Confirm')}
-              </Button>
-            </Box>
-          </Box>
-        </Grid>
       </Grid>
     </Grid>
   );
