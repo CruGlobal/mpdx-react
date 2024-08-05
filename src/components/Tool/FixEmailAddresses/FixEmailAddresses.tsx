@@ -79,11 +79,6 @@ const DefaultSourceWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-export interface ModalState {
-  personId: string;
-  id: string;
-  email: string;
-}
 export interface EmailAddressData {
   id: string;
   primary: boolean;
