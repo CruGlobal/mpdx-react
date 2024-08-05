@@ -73,7 +73,7 @@ describe('DeleteAppealModal', () => {
       getByText(/you are about to permanently delete this appeal/i),
     ).toBeInTheDocument();
     expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Delete Appeal' })).toBeInTheDocument();
   });
 
   it('should close modal', () => {
@@ -92,7 +92,7 @@ describe('DeleteAppealModal', () => {
 
     expect(mutationSpy).toHaveBeenCalledTimes(0);
 
-    userEvent.click(getByRole('button', { name: 'Save' }));
+    userEvent.click(getByRole('button', { name: 'Delete Appeal' }));
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Successfully deleted appeal.', {
