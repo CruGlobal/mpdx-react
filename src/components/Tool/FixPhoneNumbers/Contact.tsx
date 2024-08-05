@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from 'react';
+import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import StarIcon from '@mui/icons-material/Star';
@@ -7,6 +8,9 @@ import {
   Avatar,
   Box,
   Button,
+  Card,
+  CardContent,
+  CardHeader,
   Grid,
   Hidden,
   Link,
@@ -26,25 +30,20 @@ import theme from '../../../theme';
 import { PhoneNumberData } from './FixPhoneNumbers';
 
 const useStyles = makeStyles()((theme: Theme) => ({
-  left: {
-    [theme.breakpoints.up('md')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
+  left: {},
   container: {
     display: 'flex',
     alignItems: 'center',
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
   },
   boxBottom: {
-    backgroundColor: theme.palette.cruGrayLight.main,
     width: '100%',
     [theme.breakpoints.down('xs')]: {
       paddingTop: theme.spacing(2),
     },
+  },
+  contactCard: {
+    marginBottom: theme.spacing(2),
   },
   buttonTop: {
     marginLeft: theme.spacing(2),
@@ -98,6 +97,17 @@ const useStyles = makeStyles()((theme: Theme) => ({
     width: theme.spacing(7),
     height: theme.spacing(7),
   },
+}));
+
+const ContactHeader = styled(CardHeader)(() => ({
+  '.MuiCardHeader-action': {
+    alignSelf: 'center',
+  },
+}));
+
+const ContactAvatar = styled(Avatar)(() => ({
+  width: theme.spacing(4),
+  height: theme.spacing(4),
 }));
 
 interface Props {
@@ -158,26 +168,27 @@ const Contact: React.FC<Props> = ({
   return (
     <Grid container className={classes.container}>
       <Grid container>
-        <Grid item md={10} xs={12}>
+        <Card className={classes.contactCard}>
           <Box display="flex" alignItems="center" className={classes.left}>
             <Grid container>
               <Grid item xs={12}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  style={{ height: '100%' }}
-                  p={2}
-                >
-                  <Avatar src="" className={classes.avatar} />
-                  <Box display="flex" flexDirection="column" ml={2}>
+                <ContactHeader
+                  avatar={
+                    <ContactAvatar
+                      src=""
+                      aria-label="Contact Avatar"
+                      onClick={handleContactNameClick}
+                    />
+                  }
+                  title={
                     <Link underline="hover" onClick={handleContactNameClick}>
                       <Typography variant="h6">{name}</Typography>
                     </Link>
-                  </Box>
-                </Box>
+                  }
+                ></ContactHeader>
               </Grid>
 
-              <Grid item xs={12} className={classes.boxBottom}>
+              <CardContent className={(classes.paddingX, classes.paddingY)}>
                 <Grid container>
                   <Hidden xsDown>
                     <Grid item xs={12} sm={6} className={classes.paddingY}>
@@ -338,10 +349,10 @@ const Contact: React.FC<Props> = ({
                     </Box>
                   </Grid>
                 </Grid>
-              </Grid>
+              </CardContent>
             </Grid>
           </Box>
-        </Grid>
+        </Card>
         <Grid item xs={12} md={2}>
           <Box
             display="flex"
