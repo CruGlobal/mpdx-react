@@ -66,7 +66,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       pledgeAmount && pledgeCurrency
         ? currencyFormat(pledgeAmount, pledgeCurrency, locale)
         : pledgeAmount || currencyFormat(0, pledgeCurrency, locale),
-    [pledgeAmount, pledgeAmount, pledgeCurrency, locale],
+    [pledgeAmount, pledgeCurrency, locale],
   );
   const frequency = useMemo(
     () =>
