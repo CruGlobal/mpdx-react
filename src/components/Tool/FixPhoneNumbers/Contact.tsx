@@ -158,9 +158,7 @@ const Contact: React.FC<Props> = ({
         initialValues={{ phoneNums: numbers, newPhoneNumber: '' }}
         enableReinitialize={true}
         validationSchema={appealFormSchema}
-        onSubmit={(values) => {
-          handleChange(personId, values.phoneNums);
-        }}
+        onSubmit={(values) => handleChange(personId, values.phoneNums)}
       >
         {({
           values: { phoneNums, newPhoneNumber },
@@ -169,7 +167,7 @@ const Contact: React.FC<Props> = ({
           setValues,
         }): ReactElement => {
           return (
-            <Form>
+            <Form data-testid={`contact-${personId}`}>
               <Grid container>
                 <Grid item md={10} xs={12}>
                   <Box
@@ -457,6 +455,7 @@ const Contact: React.FC<Props> = ({
                   >
                     <Box className={classes.buttonTop}>
                       <Button
+                        data-testid={`confirm-${personId}`}
                         type="submit"
                         variant="contained"
                         style={{ width: '100%' }}

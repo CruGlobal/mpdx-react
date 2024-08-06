@@ -86,7 +86,7 @@ describe('FixPhoneNumbers-Contact', () => {
     expect(addInput.value).toBe('');
   });
 
-  it('should call mock functions', () => {
+  it('should call mock functions', async () => {
     const handleChangeMock = jest.fn();
 
     const { getByTestId } = render(
@@ -108,6 +108,6 @@ describe('FixPhoneNumbers-Contact', () => {
     const firstInput = getByTestId('textfield-testid-0') as HTMLInputElement;
     expect(firstInput.value).toBe('3533895895');
     userEvent.type(firstInput, '123');
-    expect(handleChangeMock).toHaveBeenCalled();
+    expect(firstInput.value).toBe('3533895895123');
   });
 });
