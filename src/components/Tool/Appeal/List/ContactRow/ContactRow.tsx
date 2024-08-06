@@ -1,12 +1,14 @@
-import React, { useMemo } from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
   Grid,
   Hidden,
+  IconButton,
   ListItemIcon,
   ListItemText,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   ListItemButton,
@@ -16,11 +18,13 @@ import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRight
 import { Contact } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { useDeleteAppealContactMutation } from './DeleteAppealContact.generated';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx
@@ -48,6 +52,8 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   } = React.useContext(AppealsContext) as AppealsType;
   const { t } = useTranslation();
   const locale = useLocale();
+  const { enqueueSnackbar } = useSnackbar();
+  const [deleteAppealContact] = useDeleteAppealContactMutation();
 
   const handleContactClick = () => {
     onContactSelected(contact.id);
@@ -75,6 +81,29 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     [pledgeFrequency],
   );
 
+  const handleRemoveContact = async (contactId: string) => {
+    await deleteAppealContact({
+      variables: {
+        input: {
+          id: contactId,
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Contact:${contactId}` });
+      },
+      onCompleted: () => {
+        enqueueSnackbar('Successfully remove contact from appeal.', {
+          variant: 'success',
+        });
+      },
+      onError: () => {
+        enqueueSnackbar('Error while removing contact from appeal.', {
+          variant: 'error',
+        });
+      },
+    });
+  };
+
   return (
     <ListItemButton
       focusRipple
@@ -97,7 +126,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </ListItemIcon>
       </Hidden>
       <Grid container alignItems="center">
-        <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
+          <Grid item xs={8} md={6} style={{ paddingRight: 16 }}>
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -108,19 +137,48 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             }
           />
         </Grid>
-        <Grid item xs={2} md={6}>
+          <Grid
+            item
+            xs={2}
+            md={6}
+            display={'flex'}
+            style={{ justifyContent: 'space-between' }}
+          >
           <Box
             display="flex"
             alignItems="center"
             justifyContent={contactDetailsOpen ? 'flex-end' : undefined}
           >
-            <Box display="flex" flexDirection="column" justifyContent="center">
+              <Box
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+              >
               <Typography component="span">
                 {`${pledge} ${frequency}`}
               </Typography>
             </Box>
           </Box>
-        </Grid>
+
+            <Box
+              display="flex"
+              alignItems="center"
+              style={{
+                paddingRight: theme.spacing(2),
+              }}
+            >
+              <IconButton
+                size={'small'}
+                component="div"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleRemoveContact(contactId);
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          </Grid>
       </Grid>
       <Hidden xsDown>
         <Box></Box>
