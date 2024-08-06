@@ -32,9 +32,6 @@ const setContactFocus = jest.fn();
 describe('FixPhoneNumbers-Contact', () => {
   it('default', () => {
     const handleChangeMock = jest.fn();
-    const handleDeleteModalOpenMock = jest.fn();
-    const handleAddMock = jest.fn();
-    const handleChangePrimaryMock = jest.fn();
 
     const { getByText, getByTestId, getByDisplayValue } = render(
       <ThemeProvider theme={theme}>
@@ -46,9 +43,6 @@ describe('FixPhoneNumbers-Contact', () => {
             numbers={testData.numbers}
             toDelete={[]}
             handleChange={handleChangeMock}
-            handleDelete={handleDeleteModalOpenMock}
-            handleAdd={handleAddMock}
-            handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
           />
         </TestWrapper>
@@ -64,9 +58,6 @@ describe('FixPhoneNumbers-Contact', () => {
 
   it('input reset after adding an email address', () => {
     const handleChangeMock = jest.fn();
-    const handleDeleteModalOpenMock = jest.fn();
-    const handleAddMock = jest.fn();
-    const handleChangePrimaryMock = jest.fn();
 
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
@@ -78,9 +69,6 @@ describe('FixPhoneNumbers-Contact', () => {
             numbers={testData.numbers}
             toDelete={[]}
             handleChange={handleChangeMock}
-            handleDelete={handleDeleteModalOpenMock}
-            handleAdd={handleAddMock}
-            handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
           />
         </TestWrapper>
@@ -100,9 +88,6 @@ describe('FixPhoneNumbers-Contact', () => {
 
   it('should call mock functions', () => {
     const handleChangeMock = jest.fn();
-    const handleDeleteModalOpenMock = jest.fn();
-    const handleAddMock = jest.fn();
-    const handleChangePrimaryMock = jest.fn();
 
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
@@ -114,9 +99,6 @@ describe('FixPhoneNumbers-Contact', () => {
             numbers={testData.numbers}
             toDelete={[]}
             handleChange={handleChangeMock}
-            handleDelete={handleDeleteModalOpenMock}
-            handleAdd={handleAddMock}
-            handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
           />
         </TestWrapper>
@@ -127,9 +109,5 @@ describe('FixPhoneNumbers-Contact', () => {
     expect(firstInput.value).toBe('3533895895');
     userEvent.type(firstInput, '123');
     expect(handleChangeMock).toHaveBeenCalled();
-    userEvent.click(getByTestId('starOutlineIcon-testid-1'));
-    expect(handleChangePrimaryMock).toHaveBeenCalled();
-    userEvent.click(getByTestId('delete-testid-1'));
-    expect(handleDeleteModalOpenMock).toHaveBeenCalled();
   });
 });
