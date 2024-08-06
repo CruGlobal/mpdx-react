@@ -28,6 +28,7 @@ const testData = {
 };
 
 const setContactFocus = jest.fn();
+const handleDeleteModalOpen = jest.fn();
 
 describe('FixPhoneNumbers-Contact', () => {
   it('default', () => {
@@ -44,6 +45,7 @@ describe('FixPhoneNumbers-Contact', () => {
             toDelete={[]}
             handleChange={handleChangeMock}
             setContactFocus={setContactFocus}
+            handleDelete={handleDeleteModalOpen}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -70,6 +72,7 @@ describe('FixPhoneNumbers-Contact', () => {
             toDelete={[]}
             handleChange={handleChangeMock}
             setContactFocus={setContactFocus}
+            handleDelete={handleDeleteModalOpen}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -100,6 +103,7 @@ describe('FixPhoneNumbers-Contact', () => {
             toDelete={[]}
             handleChange={handleChangeMock}
             setContactFocus={setContactFocus}
+            handleDelete={handleDeleteModalOpen}
           />
         </TestWrapper>
       </ThemeProvider>,

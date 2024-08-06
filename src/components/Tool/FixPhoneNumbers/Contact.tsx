@@ -109,6 +109,7 @@ interface Props {
   toDelete: PersonPhoneNumberInput[];
   personId: string;
   handleChange: (personId: string, number: PhoneNumberData[]) => void;
+  handleDelete: (personId: string, numberIndex: number) => void;
   setContactFocus: SetContactFocus;
 }
 
@@ -117,6 +118,7 @@ const Contact: React.FC<Props> = ({
   numbers,
   personId,
   handleChange,
+  handleDelete,
   // Remove below line when function is being used.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
@@ -332,16 +334,9 @@ const Contact: React.FC<Props> = ({
                                   {phoneNum.source === 'MPDX' ? (
                                     <Box
                                       data-testid={`delete-${personId}-${index}`}
-                                      onClick={() => {
-                                        const newPhoneNums = phoneNums.filter(
-                                          (n) => n !== phoneNums[index],
-                                        );
-                                        newPhoneNums[0].primary = true;
-                                        setValues({
-                                          newPhoneNumber,
-                                          phoneNums: newPhoneNums,
-                                        });
-                                      }}
+                                      onClick={() =>
+                                        handleDelete(personId, index)
+                                      }
                                     >
                                       <Icon
                                         path={mdiDelete}

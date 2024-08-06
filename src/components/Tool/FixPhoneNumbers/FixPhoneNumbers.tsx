@@ -18,6 +18,7 @@ import theme from '../../../theme';
 import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
 import Contact from './Contact';
+import DeleteModal from './DeleteModal';
 import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -84,13 +85,6 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-export interface ModalState {
-  open: boolean;
-  personId: string;
-  numberIndex: number;
-  phoneNumber: string;
-}
-
 export interface PhoneNumberData {
   id?: string;
   primary: boolean;
@@ -105,17 +99,33 @@ interface PersonPhoneNumbers {
   toDelete: PersonPhoneNumberInput[];
 }
 
+export interface ModalState {
+  open: boolean;
+  personId: string;
+  numberIndex: number;
+  phoneNumber: string;
+}
+
 interface Props {
   accountListId: string;
   setContactFocus: SetContactFocus;
 }
+
+const defaultDeleteModalState = {
+  open: false,
+  personId: '',
+  numberIndex: 0,
+  phoneNumber: '',
+};
 
 const FixPhoneNumbers: React.FC<Props> = ({
   accountListId,
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
-
+  const [deleteModalState, setDeleteModalState] = useState<ModalState>(
+    defaultDeleteModalState,
+  );
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const { data, loading } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
@@ -151,6 +161,40 @@ const FixPhoneNumbers: React.FC<Props> = ({
       ),
     [loading],
   );
+
+  const handleDeleteModalOpen = (
+    personId: string,
+    numberIndex: number,
+  ): void => {
+    setDeleteModalState({
+      open: true,
+      personId: personId,
+      numberIndex: numberIndex,
+      phoneNumber: dataState[personId].phoneNumbers[numberIndex].number,
+    });
+  };
+
+  const handleDeleteModalClose = (): void => {
+    setDeleteModalState(defaultDeleteModalState);
+  };
+
+  const handleDelete = (): void => {
+    const temp = { ...dataState };
+    const deleting = temp[deleteModalState.personId].phoneNumbers.splice(
+      deleteModalState.numberIndex,
+      1,
+    )[0];
+    deleting.destroy = true;
+    deleting.primary &&
+      (temp[deleteModalState.personId].phoneNumbers[0].primary = true); // If the deleted number was primary, set the new first index to primary
+    deleting.id &&
+      temp[deleteModalState.personId].toDelete.push({
+        destroy: true,
+        id: deleting.id,
+      }); //Only destroy the number if it already exists (has an ID)
+    setDataState(temp);
+    handleDeleteModalClose();
+  };
 
   const handleChange = (personId: string, numbers: PhoneNumberData[]): void => {
     const temp = { ...dataState };
@@ -243,6 +287,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     toDelete={dataState[person.id]?.toDelete}
                     handleChange={handleChange}
                     setContactFocus={setContactFocus}
+                    handleDelete={handleDeleteModalOpen}
                   />
                 ))}
               </Grid>
@@ -266,6 +311,11 @@ const FixPhoneNumbers: React.FC<Props> = ({
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}
+      <DeleteModal
+        modalState={deleteModalState}
+        handleClose={handleDeleteModalClose}
+        handleDelete={handleDelete}
+      />
     </Box>
   );
 };
