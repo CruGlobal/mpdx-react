@@ -334,14 +334,16 @@ const Contact: React.FC<Props> = ({
                                   {phoneNum.source === 'MPDX' ? (
                                     <Box
                                       data-testid={`delete-${personId}-${index}`}
-                                      onClick={() =>
+                                      onClick={() => {
+                                        const newPhoneNums = phoneNums.filter(
+                                          (n) => n !== phoneNums[index],
+                                        );
+                                        newPhoneNums[0].primary = true;
                                         setValues({
                                           newPhoneNumber,
-                                          phoneNums: phoneNums.filter(
-                                            (n) => n !== phoneNums[index],
-                                          ),
-                                        })
-                                      }
+                                          phoneNums: newPhoneNums,
+                                        });
+                                      }}
                                     >
                                       <Icon
                                         path={mdiDelete}
