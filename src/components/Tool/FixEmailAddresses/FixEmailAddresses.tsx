@@ -18,7 +18,7 @@ import {
   useUpdateEmailAddressesMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { PersonEmailAddressInput } from 'src/graphql/types.generated';
-import theme from '../../../theme';
+import theme from 'src/theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
