@@ -8,7 +8,7 @@ import { AddIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsTa
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import { useEmailAddressesMutation } from './AddEmailAddress.generated';
-import { RowWrapper } from './FixEmailAddressPerson';
+import { RowWrapper } from './FixEmailAddressPerson/FixEmailAddressPerson';
 import {
   GetInvalidEmailAddressesDocument,
   GetInvalidEmailAddressesQuery,
@@ -30,7 +30,6 @@ interface EmailValidationFormEmail {
 }
 
 interface EmailValidationFormProps {
-  index: number;
   personId: string;
 }
 

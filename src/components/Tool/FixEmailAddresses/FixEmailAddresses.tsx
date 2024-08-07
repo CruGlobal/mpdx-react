@@ -12,13 +12,11 @@ import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useGetInvalidEmailAddressesQuery } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
-import { PersonEmailAddressInput } from 'src/graphql/types.generated';
-import theme from '../../../theme';
+import theme from 'src/theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
-import DeleteModal from './DeleteModal';
-import { FixEmailAddressPerson } from './FixEmailAddressPerson';
+import { FixEmailAddressPerson } from './FixEmailAddressPerson/FixEmailAddressPerson';
 
 const Container = styled(Box)(() => ({
   padding: theme.spacing(3),
@@ -81,22 +79,8 @@ const DefaultSourceWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-export interface ModalState {
-  open: boolean;
-  personId: string;
-  emailIndex: number;
-  emailAddress: string;
-}
-
-const defaultDeleteModalState = {
-  open: false,
-  personId: '',
-  emailIndex: 0,
-  emailAddress: '',
-};
-
 export interface EmailAddressData {
-  id?: string;
+  id: string;
   primary: boolean;
   updatedAt: string;
   source: string;
@@ -106,7 +90,6 @@ export interface EmailAddressData {
 
 export interface PersonEmailAddresses {
   emailAddresses: EmailAddressData[];
-  toDelete: PersonEmailAddressInput[];
 }
 
 interface FixEmailAddressesProps {
@@ -119,15 +102,11 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   setContactFocus,
 }) => {
   const [defaultSource, setDefaultSource] = useState('MPDX');
-  const [deleteModalState, setDeleteModalState] = useState<ModalState>(
-    defaultDeleteModalState,
-  );
   const { t } = useTranslation();
 
   const { data, loading } = useGetInvalidEmailAddressesQuery({
     variables: { accountListId },
   });
-
   const [dataState, setDataState] = useState<{
     [key: string]: PersonEmailAddresses;
   }>({});
@@ -150,31 +129,14 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                       email: emailAddress.email,
                     }),
                   ),
-                  toDelete: [],
                 },
               }),
               {},
             )
           : {},
       ),
-    [loading],
+    [loading, data],
   );
-
-  const handleDeleteModalOpen = (
-    personId: string,
-    emailIndex: number,
-  ): void => {
-    setDeleteModalState({
-      open: true,
-      personId: personId,
-      emailIndex: emailIndex,
-      emailAddress: dataState[personId].emailAddresses[emailIndex].email,
-    });
-  };
-
-  const handleDeleteModalClose = (): void => {
-    setDeleteModalState(defaultDeleteModalState);
-  };
 
   // Update the state with the textfield's value
   const handleChange = (
@@ -187,34 +149,17 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     setDataState(temp);
   };
 
-  // Delete function called after confirming with the delete modal
-  const handleDelete = (): void => {
-    const temp = { ...dataState };
-    const deleting = temp[deleteModalState.personId].emailAddresses.splice(
-      deleteModalState.emailIndex,
-      1,
-    )[0];
-    deleting.destroy = true;
-    deleting.primary &&
-      (temp[deleteModalState.personId].emailAddresses[0].primary = true); // If the deleted email was primary, set the new first index to primary
-    deleting.id &&
-      temp[deleteModalState.personId].toDelete.push({
-        destroy: true,
-        id: deleting.id,
-      }); //Only destroy the email if it already exists (has an ID)
-    setDataState(temp);
-    handleDeleteModalClose();
-  };
-
   // Change the primary address in the state
   const handleChangePrimary = (personId: string, emailIndex: number): void => {
     const temp = { ...dataState };
-    temp[personId].emailAddresses = temp[personId].emailAddresses.map(
-      (email, index) => ({
-        ...email,
-        primary: index === emailIndex,
-      }),
-    );
+    if (temp[personId]) {
+      temp[personId].emailAddresses = temp[personId].emailAddresses.map(
+        (email, index) => ({
+          ...email,
+          primary: index === emailIndex,
+        }),
+      );
+    }
     setDataState(temp);
   };
 
@@ -232,7 +177,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
             <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
             <ContentDivider />
             <Box mb={2}>
-              {data.people.nodes.length > 0 && (
+              {data.people.nodes.length && (
                 <>
                   <Typography>
                     <strong>
@@ -276,15 +221,11 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
               <Grid item xs={12}>
                 {data?.people.nodes.map((person) => (
                   <FixEmailAddressPerson
-                    name={`${person.firstName} ${person.lastName}`}
+                    person={person}
                     key={person.id}
-                    personId={person.id}
                     dataState={dataState}
-                    emailAddresses={dataState[person.id]?.emailAddresses}
-                    toDelete={dataState[person.id]?.toDelete}
-                    contactId={person.contactId}
+                    accountListId={accountListId}
                     handleChange={handleChange}
-                    handleDelete={handleDeleteModalOpen}
                     handleChangePrimary={handleChangePrimary}
                     setContactFocus={setContactFocus}
                   />
@@ -313,11 +254,6 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           style={{ marginTop: theme.spacing(3) }}
         />
       )}
-      <DeleteModal
-        modalState={deleteModalState}
-        handleClose={handleDeleteModalClose}
-        handleDelete={handleDelete}
-      />
     </Container>
   );
 };
