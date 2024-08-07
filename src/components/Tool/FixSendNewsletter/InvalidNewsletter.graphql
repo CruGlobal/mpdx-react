@@ -1,16 +1,23 @@
-query InvalidNewsletter($accountListId: ID!) {
+query InvalidNewsletter($accountListId: ID!, $after: String) {
   contacts(
     accountListId: $accountListId
     contactsFilter: {
       newsletter: NO_VALUE
       status: [PARTNER_FINANCIAL, PARTNER_SPECIAL, PARTNER_PRAY]
     }
-    first: 100
+    first: 25
+    after: $after
   ) {
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
     nodes {
       id
       name
       status
+      avatar
       source
       primaryAddress {
         ...ContactPrimaryAddress
@@ -20,6 +27,7 @@ query InvalidNewsletter($accountListId: ID!) {
       }
     }
   }
+
   constant {
     ...Status
   }

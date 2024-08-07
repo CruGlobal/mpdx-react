@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
@@ -13,6 +13,7 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -73,16 +74,20 @@ const FixSendNewsletter: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { data, loading } = useInvalidNewsletterQuery({
+  const { data, loading, fetchMore } = useInvalidNewsletterQuery({
     variables: { accountListId },
   });
+  let numberOfContacts = data?.contacts.nodes?.length ?? 0;
 
-  let numberOfContacts = data?.contacts.nodes.length ?? 0;
-  if (data) {
-    const filtered = data.contacts.nodes.filter((node) => {
-      return !node.primaryPerson?.deceased;
-    });
-    numberOfContacts = filtered.length;
+  const contactsToFix = useMemo(
+    () =>
+      data?.contacts?.nodes.filter(
+        (contact) => !contact?.primaryPerson?.deceased,
+      ),
+    [data],
+  );
+  if (contactsToFix) {
+    numberOfContacts = contactsToFix?.length;
   }
   const [updateNewsletter, { loading: updating }] =
     useUpdateContactNewsletterMutation();
@@ -143,7 +148,12 @@ const FixSendNewsletter: React.FC<Props> = ({
   };
 
   return (
-    <Box className={classes.outer} data-testid="Home">
+    <Box
+      className={classes.outer}
+      display="flex"
+      flexDirection="column"
+      data-testid="Home"
+    >
       {!loading && !updating && data ? (
         <Grid container className={classes.container}>
           <Grid item xs={12}>
@@ -184,61 +194,61 @@ const FixSendNewsletter: React.FC<Props> = ({
                   </Button>
                 </Box>
               </Grid>
-              <Grid item xs={12}>
-                {data.contacts.nodes.map(
-                  (contact) =>
-                    !contact.primaryPerson?.deceased && (
-                      <Contact
-                        id={contact.id}
-                        name={contact.name}
-                        // need to fix this after changes to fix commitment info get merged
-                        status={
-                          data.constant.status?.find(
-                            (status) => contact.status === status.id,
-                          )?.value || ''
-                        }
-                        primaryPerson={
-                          contact.primaryPerson || {
-                            firstName: '',
-                            lastName: '',
-                            primaryEmailAddress: {
-                              email: '',
-                            },
-                            optoutEnewsletter: false,
-                            deceased: false,
-                          }
-                        }
-                        key={contact.id}
-                        primaryAddress={
-                          contact.primaryAddress || {
-                            street: '',
-                            city: '',
-                            state: '',
-                            postalCode: '',
-                            source: '',
-                            createdAt: '',
-                          }
-                        }
-                        handleSingleConfirm={handleSingleConfirm}
-                        setContactFocus={setContactFocus}
-                      />
-                    ),
+              <InfiniteList
+                loading={loading}
+                disableHover={true}
+                data={contactsToFix}
+                itemContent={(_, contact) => (
+                  <Contact
+                    id={contact.id}
+                    name={contact.name}
+                    // need to fix this after changes to fix commitment info get merged
+                    avatar={contact.avatar}
+                    status={
+                      data.constant.status?.find(
+                        (status) => contact.status === status.id,
+                      )?.value || ''
+                    }
+                    primaryPerson={
+                      contact.primaryPerson || {
+                        firstName: '',
+                        lastName: '',
+                        primaryEmailAddress: {
+                          email: '',
+                        },
+                        optoutEnewsletter: false,
+                        deceased: false,
+                      }
+                    }
+                    key={contact.id}
+                    primaryAddress={
+                      contact.primaryAddress || {
+                        street: '',
+                        city: '',
+                        state: '',
+                        postalCode: '',
+                        source: '',
+                        createdAt: '',
+                      }
+                    }
+                    handleSingleConfirm={handleSingleConfirm}
+                    setContactFocus={setContactFocus}
+                  />
                 )}
-              </Grid>
-              <Grid item xs={12}>
-                <Box className={classes.footer}>
-                  <Typography>
-                    <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                      shouldUnescape
-                      values={{
-                        value: numberOfContacts,
-                      }}
-                      components={{ bold: <strong /> }}
-                    />
-                  </Typography>
-                </Box>
-              </Grid>
+                endReached={() =>
+                  data.contacts.pageInfo.hasNextPage &&
+                  fetchMore({
+                    variables: { after: data.contacts.pageInfo.endCursor },
+                  })
+                }
+                EmptyPlaceholder={<NoData tool="fixSendNewsletter" />}
+                style={{
+                  height: '100vh',
+                  width: '100%',
+                  position: 'relative',
+                  scrollbarWidth: 'none',
+                }}
+              ></InfiniteList>
             </>
           ) : (
             <NoData tool="fixSendNewsletter" />
