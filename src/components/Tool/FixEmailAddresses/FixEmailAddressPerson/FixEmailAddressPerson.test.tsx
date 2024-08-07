@@ -6,11 +6,7 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  render,
-  screen,
-  waitFor,
-} from '__tests__/util/testingLibraryReactMock';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from 'src/theme';
 import { EmailAddressesMutation } from '../AddEmailAddress.generated';
 import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
@@ -246,7 +242,6 @@ describe('FixEmailAddressPerson', () => {
       await waitFor(() => getByTestId('delete-contactTestId-1'));
 
       userEvent.click(getByTestId('delete-contactTestId-1'));
-      screen.logTestingPlaygroundURL();
       await waitFor(() => {
         expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
       });

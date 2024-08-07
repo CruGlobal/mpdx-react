@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
@@ -238,7 +238,6 @@ describe('FixEmailAddresses-Home', () => {
     );
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    screen.logTestingPlaygroundURL();
     await waitFor(() => {
       expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
       expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument();
