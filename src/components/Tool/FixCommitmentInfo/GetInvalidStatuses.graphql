@@ -12,7 +12,7 @@ query InvalidStatuses($accountListId: ID!, $after: String) {
       pledgeAmount
       pledgeCurrency
       pledgeFrequency
-      donations(first: 5) {
+      donations(first: 6) {
         nodes {
           amount {
             amount

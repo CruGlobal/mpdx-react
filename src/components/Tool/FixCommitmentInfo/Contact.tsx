@@ -263,7 +263,7 @@ const Contact: React.FC<Props> = ({
               <Grid container className={classes.formWrapper}>
                 <Card className={classes.formInner}>
                   <Grid container>
-                    <Grid item lg={6} md={4} xs={12}>
+                    <Grid item lg={4} md={4} xs={12}>
                       <Box
                         display="flex"
                         p={2}
@@ -273,8 +273,8 @@ const Contact: React.FC<Props> = ({
                         <Avatar
                           src=""
                           style={{
-                            width: theme.spacing(7),
-                            height: theme.spacing(7),
+                            width: theme.spacing(4),
+                            height: theme.spacing(4),
                           }}
                         />
                         <Box display="flex" flexDirection="column" ml={2}>
@@ -283,19 +283,19 @@ const Contact: React.FC<Props> = ({
                             underline="hover"
                             onClick={() => setContactFocus(id, 'Donations')}
                           >
-                            <Typography variant="h6">{name}</Typography>
+                            <Typography variant="subtitle1">{name}</Typography>
                           </Link>
-                          <Typography>
+                          <Typography variant="subtitle2">
                             {`Current: ${statusTitle} ${
-                              amount &&
-                              amountCurrency &&
-                              currencyFormat(amount, amountCurrency, locale)
+                              amount && amountCurrency
+                                ? currencyFormat(amount, amountCurrency, locale)
+                                : ''
                             } ${frequencyTitle}`}
                           </Typography>
                         </Box>
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={8} lg={6} className={classes.right}>
+                    <Grid item xs={12} md={8} lg={8} className={classes.right}>
                       <Grid
                         container
                         style={{ paddingRight: theme.spacing(1) }}
@@ -307,6 +307,7 @@ const Contact: React.FC<Props> = ({
                             </InputLabel>
                             <Select
                               className={classes.select}
+                              size="small"
                               placeholder="Status"
                               labelId="status-label"
                               label={t('Status')}
@@ -320,9 +321,7 @@ const Contact: React.FC<Props> = ({
                                 setFieldValue('statusValue', event.target.value)
                               }
                             >
-                              <MenuItem value="" disabled>
-                                Status
-                              </MenuItem>
+                              <MenuItem value="">Status</MenuItem>
                               {statuses.map((status) => (
                                 <MenuItem
                                   value={status.value}
@@ -349,6 +348,7 @@ const Contact: React.FC<Props> = ({
                             <Select
                               className={classes.select}
                               labelId="currency-label"
+                              size="small"
                               label={t('Currency')}
                               placeholder="Currency"
                               data-testid="pledgeCurrency"
@@ -402,6 +402,7 @@ const Contact: React.FC<Props> = ({
                                   name={'pledgeAmount'}
                                   value={pledgeAmount}
                                   type="number"
+                                  size="small"
                                   error={Boolean(errors.pledgeAmount)}
                                   onChange={(event) =>
                                     setFieldValue(
@@ -437,6 +438,7 @@ const Contact: React.FC<Props> = ({
                               label={t('Frequency')}
                               labelId="frequency-label"
                               placeholder="Frequency"
+                              size="small"
                               style={{ width: '100%' }}
                               value={pledgeFrequency}
                               onChange={(event) =>
@@ -486,6 +488,7 @@ const Contact: React.FC<Props> = ({
                             <Box>
                               <Typography
                                 fontWeight={700}
+                                variant="body2"
                                 data-testid="donationDate"
                               >
                                 {DateTime.fromISO(
@@ -498,6 +501,7 @@ const Contact: React.FC<Props> = ({
                             <Box>
                               <Typography
                                 sx={{ textAlign: 'center' }}
+                                variant="body2"
                                 data-testid="donationAmount"
                               >
                                 {`${donation.amount.amount} ${donation.amount.currency}`}
