@@ -177,7 +177,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
             <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
             <ContentDivider />
             <Box mb={2}>
-              {data.people.nodes.length > 0 && (
+              {data.people.nodes.length && (
                 <>
                   <Typography>
                     <strong>

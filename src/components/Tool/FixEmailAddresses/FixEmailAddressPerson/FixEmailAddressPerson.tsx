@@ -181,7 +181,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
         },
       },
       update: (cache) => {
-        cache.evict({ id: `EmailAddress:${id}` });
+        cache.evict({ id: `EmailAddress:${email.id}` });
         cache.gc();
       },
       onCompleted: () => {
